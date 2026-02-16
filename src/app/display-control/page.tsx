@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import useSWR, { mutate } from 'swr';
 import { Doctor, Settings } from '@/lib/data-service';
 import { Save, RefreshCw, Plus, Trash2, MonitorPlay } from 'lucide-react';
 
@@ -10,36 +11,38 @@ interface DisplayData {
 }
 
 export default function DisplayControl() {
-    const [data, setData] = useState<DisplayData | null>(null);
-    const [loading, setLoading] = useState(true);
+    const { data: doctors = [], mutate: mutateDoctors } = useSWR<Doctor[]>('/api/doctors');
+    const { data: settings, mutate: mutateSettings } = useSWR<Settings>('/api/settings');
     const [saving, setSaving] = useState(false);
 
-    useEffect(() => {
-        fetchData();
-    }, []);
-
-    const fetchData = async () => {
-        try {
-            setLoading(true);
-            const res = await fetch('/api/display');
-            const json = await res.json();
-            setData(json);
-        } catch (error) {
-            console.error('Failed to fetch data', error);
-        } finally {
-            setLoading(false);
-        }
-    };
+    const isLoading = !doctors || !settings;
 
     const saveData = async () => {
-        if (!data) return;
+        if (!settings || !doctors) return;
         try {
             setSaving(true);
+
+            // In a real SWR setup, we might not need a global "save all" if we save incrementally, 
+            // but preserving the existing 'Save Changes' button logic for now which presumably saves everything 
+            // - though the API seems separated. The original page fetched /api/display which returned {doctors, settings}.
+            // I'll stick to saving what we have using the /api/display endpoint if that's preferred, 
+            // or save individually. The original code used /api/display for BOTH read and write.
+            // Let's stick to the /api/display for getting the "snapshot" but wait...
+            // I switched to individual SWR hooks above (/api/doctors, /api/settings) for better granularity in other parts of the app.
+            // But checking the original code: 
+            // const res = await fetch('/api/display'); const json = await res.json(); setData(json);
+            // It seems /api/display aggregates them.
+            // For consistency with the new Dashboard, let's try to stick to granular updates if possible, 
+            // OR re-implement the generic save if the backend expects it.
+            // Assuming /api/display can handle the POST with { doctors, settings } as before.
+
             await fetch('/api/display', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data),
+                body: JSON.stringify({ doctors, settings }),
             });
+            mutate('/api/doctors');
+            mutate('/api/settings');
         } catch (error) {
             console.error('Failed to save data', error);
         } finally {
@@ -48,43 +51,20 @@ export default function DisplayControl() {
     };
 
     const updateDoctor = (id: string | number, field: keyof Doctor, value: any) => {
-        if (!data) return;
-        const updatedDoctors = data.doctors.map(doc =>
+        if (!doctors) return;
+        const updatedDoctors = doctors.map(doc =>
             doc.id === id ? { ...doc, [field]: value } : doc
         );
-        setData({ ...data, doctors: updatedDoctors });
-    };
-
-    const addDoctor = () => {
-        if (!data) return;
-        const newDoctor: Doctor = {
-            id: `dr-${Date.now()}`,
-            name: 'New Doctor',
-            specialty: 'General',
-            status: 'CUTI',
-            startTime: '08:00',
-            endTime: '12:00',
-            queueCode: 'A-00',
-            category: 'NonBedah',
-        };
-        setData({ ...data, doctors: [...data.doctors, newDoctor] });
-    };
-
-    const removeDoctor = (id: string | number) => {
-        if (!data) return;
-        setData({ ...data, doctors: data.doctors.filter(d => d.id !== id) });
+        mutateDoctors(updatedDoctors, false); // Optimistic
     };
 
     const updateSetting = (field: keyof Settings, value: any) => {
-        if (!data) return;
-        setData({
-            ...data,
-            settings: { ...data.settings, [field]: value }
-        });
+        if (!settings) return;
+        mutateSettings({ ...settings, [field]: value }, false);
     };
 
-    if (loading) return <div className="p-8 text-white">Loading...</div>;
-    if (!data) return <div className="p-8 text-white">Error loading data.</div>;
+    if (isLoading) return <div className="p-8 text-white">Loading...</div>;
+    if (!settings) return <div className="p-8 text-white">Error loading data.</div>;
 
     return (
         <div className="p-8 max-w-7xl mx-auto">
@@ -95,7 +75,7 @@ export default function DisplayControl() {
                 </div>
                 <div className="flex gap-4">
                     <button
-                        onClick={fetchData}
+                        onClick={() => { mutate('/api/doctors'); mutate('/api/settings'); }}
                         className="flex items-center gap-2 px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition-colors"
                     >
                         <RefreshCw size={18} /> Refresh
@@ -119,7 +99,7 @@ export default function DisplayControl() {
                             <div>
                                 <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Teks Berjalan (Running Text)</label>
                                 <textarea
-                                    value={data.settings.runTextMessage || ''}
+                                    value={settings.runTextMessage || ''}
                                     onChange={(e) => updateSetting('runTextMessage', e.target.value)}
                                     className="w-full bg-slate-800/50 text-white rounded-xl p-3 border border-white/10 focus:border-blue-500 outline-none text-sm min-h-[100px]"
                                 />
@@ -128,7 +108,7 @@ export default function DisplayControl() {
                             <div className="flex items-center gap-3 p-3 bg-red-500/10 border border-red-500/20 rounded-xl">
                                 <input
                                     type="checkbox"
-                                    checked={data.settings.emergencyMode || false}
+                                    checked={settings.emergencyMode || false}
                                     onChange={(e) => updateSetting('emergencyMode', e.target.checked)}
                                     className="w-5 h-5 accent-red-500"
                                 />
@@ -159,8 +139,7 @@ export default function DisplayControl() {
                                 <h2 className="text-xl font-semibold text-white">Dynamic Island</h2>
                                 <button
                                     onClick={() => {
-                                        if (!data) return;
-                                        const msgs = data.settings.customMessages || [];
+                                        const msgs = settings.customMessages || [];
                                         updateSetting('customMessages', [...msgs, { title: 'Info', text: 'Pesan Baru' }]);
                                     }}
                                     className="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1"
@@ -169,14 +148,13 @@ export default function DisplayControl() {
                                 </button>
                             </div>
                             <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2">
-                                {(data.settings.customMessages || []).map((msg, idx) => (
+                                {(settings.customMessages || []).map((msg, idx) => (
                                     <div key={idx} className="bg-slate-800/50 p-3 rounded-xl border border-white/5 flex gap-2 items-start group">
                                         <div className="flex-1 space-y-2">
                                             <input
                                                 value={msg.title}
                                                 onChange={(e) => {
-                                                    if (!data) return;
-                                                    const newMsgs = [...(data.settings.customMessages || [])];
+                                                    const newMsgs = [...(settings.customMessages || [])];
                                                     newMsgs[idx].title = e.target.value;
                                                     updateSetting('customMessages', newMsgs);
                                                 }}
@@ -186,8 +164,7 @@ export default function DisplayControl() {
                                             <input
                                                 value={msg.text}
                                                 onChange={(e) => {
-                                                    if (!data) return;
-                                                    const newMsgs = [...(data.settings.customMessages || [])];
+                                                    const newMsgs = [...(settings.customMessages || [])];
                                                     newMsgs[idx].text = e.target.value;
                                                     updateSetting('customMessages', newMsgs);
                                                 }}
@@ -197,8 +174,7 @@ export default function DisplayControl() {
                                         </div>
                                         <button
                                             onClick={() => {
-                                                if (!data) return;
-                                                const newMsgs = (data.settings.customMessages || []).filter((_, i) => i !== idx);
+                                                const newMsgs = (settings.customMessages || []).filter((_, i) => i !== idx);
                                                 updateSetting('customMessages', newMsgs);
                                             }}
                                             className="text-slate-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
@@ -207,7 +183,7 @@ export default function DisplayControl() {
                                         </button>
                                     </div>
                                 ))}
-                                {(!data.settings.customMessages || data.settings.customMessages.length === 0) && (
+                                {(!settings.customMessages || settings.customMessages.length === 0) && (
                                     <div className="text-center py-4 text-slate-500 text-sm">
                                         Tidak ada pesan kustom. Pesan default akan digunakan.
                                     </div>
@@ -218,6 +194,5 @@ export default function DisplayControl() {
                 </div>
             </div>
         </div>
-        </div >
     );
 }

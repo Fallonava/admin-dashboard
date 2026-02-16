@@ -1,30 +1,15 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import useSWR, { mutate } from "swr";
 import { LeaveCalendar } from "@/components/leaves/LeaveCalendar";
 import { Search, Bell, Filter } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { LeaveRequest } from "@/lib/data-service";
 
 export default function LeavesPage() {
-    const [leaves, setLeaves] = useState<LeaveRequest[]>([]);
+    const { data: leaves = [] } = useSWR<LeaveRequest[]>('/api/leaves');
     const [searchQuery, setSearchQuery] = useState("");
-
-    const fetchData = async () => {
-        try {
-            const res = await fetch('/api/leaves');
-            const data = await res.json();
-            setLeaves(data);
-        } catch (error) {
-            console.error("Failed to fetch leaves", error);
-        }
-    };
-
-    useEffect(() => {
-        fetchData();
-        const interval = setInterval(fetchData, 10000); // Polling every 10s
-        return () => clearInterval(interval);
-    }, []);
 
     // Stats Calculation
     const totalLeaves = leaves.length;
@@ -110,7 +95,7 @@ export default function LeavesPage() {
                     </div>
                 </div>
 
-                <LeaveCalendar leaves={leaves} onRefresh={fetchData} />
+                <LeaveCalendar leaves={leaves} onRefresh={() => mutate('/api/leaves')} />
             </div>
         </div>
     );

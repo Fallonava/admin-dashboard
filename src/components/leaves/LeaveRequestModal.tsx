@@ -1,7 +1,7 @@
-"use client";
-
 import { useState } from "react";
 import { X } from "lucide-react";
+import useSWR from "swr";
+import type { Doctor } from "@/lib/data-service";
 
 interface LeaveRequestModalProps {
     isOpen: boolean;
@@ -10,6 +10,7 @@ interface LeaveRequestModalProps {
 }
 
 export function LeaveRequestModal({ isOpen, onClose, onSubmit }: LeaveRequestModalProps) {
+    const { data: doctors = [] } = useSWR<Doctor[]>('/api/doctors');
     const [newLeave, setNewLeave] = useState({
         doctor: "",
         type: "Vacation",
@@ -22,6 +23,12 @@ export function LeaveRequestModal({ isOpen, onClose, onSubmit }: LeaveRequestMod
 
     const handleSubmit = async () => {
         if (!newLeave.doctor || !newLeave.startDate || !newLeave.endDate) return;
+
+        // Validation: End Date cannot be before Start Date
+        if (new Date(newLeave.endDate) < new Date(newLeave.startDate)) {
+            alert("End date cannot be before start date");
+            return;
+        }
 
         await onSubmit({
             ...newLeave,
@@ -47,13 +54,17 @@ export function LeaveRequestModal({ isOpen, onClose, onSubmit }: LeaveRequestMod
                 <div className="space-y-3.5">
                     <div>
                         <label className="text-[10px] text-slate-500 font-medium uppercase tracking-wider block mb-1.5">Doctor Name</label>
-                        <input
-                            className="w-full bg-white/[0.03] border border-white/[0.08] rounded-xl p-2.5 text-sm text-white focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 outline-none transition-all placeholder:text-slate-600"
+                        <select
+                            className="w-full bg-white/[0.03] border border-white/[0.08] rounded-xl p-2.5 text-sm text-white focus:border-blue-500/50 outline-none transition-all [&>option]:bg-slate-900"
                             value={newLeave.doctor}
                             onChange={e => setNewLeave({ ...newLeave, doctor: e.target.value })}
-                            placeholder="Dr. Name"
                             autoFocus
-                        />
+                        >
+                            <option value="" disabled>Select Doctor</option>
+                            {doctors.map(doc => (
+                                <option key={doc.id} value={doc.name}>{doc.name}</option>
+                            ))}
+                        </select>
                     </div>
                     <div>
                         <label className="text-[10px] text-slate-500 font-medium uppercase tracking-wider block mb-1.5">Type</label>
@@ -91,7 +102,8 @@ export function LeaveRequestModal({ isOpen, onClose, onSubmit }: LeaveRequestMod
 
                     <button
                         onClick={handleSubmit}
-                        className="w-full py-2.5 mt-1 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-semibold text-sm transition-all shadow-lg shadow-blue-600/20 active:scale-[0.98]"
+                        disabled={!newLeave.doctor || !newLeave.startDate || !newLeave.endDate}
+                        className="w-full py-2.5 mt-1 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl font-semibold text-sm transition-all shadow-lg shadow-blue-600/20 active:scale-[0.98]"
                     >
                         Submit Request
                     </button>
