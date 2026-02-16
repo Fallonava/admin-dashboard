@@ -25,8 +25,7 @@ export function DoctorFormModal({ isOpen, onClose, doctor, onSuccess }: DoctorFo
         status: "Idle",
         queueCode: "",
         startTime: "",
-        endTime: "",
-        registrationTime: ""
+        endTime: ""
     });
 
     // Reset or Populate form on open
@@ -40,8 +39,7 @@ export function DoctorFormModal({ isOpen, onClose, doctor, onSuccess }: DoctorFo
                     status: doctor.status,
                     queueCode: doctor.queueCode,
                     startTime: doctor.startTime,
-                    endTime: doctor.endTime,
-                    registrationTime: doctor.registrationTime
+                    endTime: doctor.endTime
                 });
             } else {
                 setFormData({
@@ -51,8 +49,7 @@ export function DoctorFormModal({ isOpen, onClose, doctor, onSuccess }: DoctorFo
                     status: "Idle",
                     queueCode: "",
                     startTime: "",
-                    endTime: "",
-                    registrationTime: ""
+                    endTime: ""
                 });
             }
         }
@@ -165,7 +162,7 @@ export function DoctorFormModal({ isOpen, onClose, doctor, onSuccess }: DoctorFo
                         </div>
 
                         {/* Time Settings */}
-                        <div className="grid grid-cols-3 gap-2">
+                        <div className="grid grid-cols-2 gap-2">
                             <div className="space-y-1.5">
                                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Mulai</label>
                                 <input
@@ -184,16 +181,6 @@ export function DoctorFormModal({ isOpen, onClose, doctor, onSuccess }: DoctorFo
                                     maxLength={5}
                                     value={formData.endTime || ""}
                                     onChange={e => setFormData({ ...formData, endTime: e.target.value })}
-                                />
-                            </div>
-                            <div className="space-y-1.5">
-                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Jam Daftar</label>
-                                <input
-                                    className="w-full bg-slate-900/50 border border-white/[0.1] focus:border-violet-500/50 focus:ring-1 focus:ring-violet-500/20 rounded-xl p-3 text-white text-sm outline-none transition-all placeholder:text-slate-600 text-center"
-                                    placeholder="07:30"
-                                    maxLength={5}
-                                    value={formData.registrationTime || ""}
-                                    onChange={e => setFormData({ ...formData, registrationTime: e.target.value })}
                                 />
                             </div>
                         </div>

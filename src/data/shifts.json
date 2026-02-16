@@ -87,7 +87,8 @@
     "title": "Bedah Umum",
     "doctor": "dr. Endro RI Wibowo, Sp. B",
     "color": "blue",
-    "formattedTime": "06:00-07:30"
+    "formattedTime": "06:00-07:30",
+    "registrationTime": "07.00"
   },
   {
     "id": 11,
@@ -96,7 +97,8 @@
     "title": "Bedah Umum",
     "doctor": "dr. Endro RI Wibowo, Sp. B",
     "color": "blue",
-    "formattedTime": "06:00-07:30"
+    "formattedTime": "06:00-07:30",
+    "registrationTime": "07.00"
   },
   {
     "id": 12,
@@ -105,7 +107,8 @@
     "title": "Bedah Umum",
     "doctor": "dr. Endro RI Wibowo, Sp. B",
     "color": "blue",
-    "formattedTime": "06:00-07:30"
+    "formattedTime": "06:00-07:30",
+    "registrationTime": "07.00"
   },
   {
     "id": 13,
@@ -114,7 +117,8 @@
     "title": "Bedah Umum",
     "doctor": "dr. Endro RI Wibowo, Sp. B",
     "color": "blue",
-    "formattedTime": "06:00-07:30"
+    "formattedTime": "06:00-07:30",
+    "registrationTime": "07.00"
   },
   {
     "id": 14,
@@ -123,7 +127,8 @@
     "title": "Bedah Umum",
     "doctor": "dr. Endro RI Wibowo, Sp. B",
     "color": "blue",
-    "formattedTime": "06:00-07:30"
+    "formattedTime": "06:00-07:30",
+    "registrationTime": "07.00"
   },
   {
     "id": 15,
@@ -132,7 +137,8 @@
     "title": "Bedah Umum",
     "doctor": "dr. Endro RI Wibowo, Sp. B",
     "color": "blue",
-    "formattedTime": "06:00-07:30"
+    "formattedTime": "06:00-07:30",
+    "registrationTime": "07.00"
   },
   {
     "id": 16,
@@ -141,7 +147,8 @@
     "title": "Bedah Umum (Siang)",
     "doctor": "dr. Endro RI Wibowo, Sp. B",
     "color": "blue",
-    "formattedTime": "14:00-17:00"
+    "formattedTime": "14:00-17:00",
+    "registrationTime": "13.00"
   },
   {
     "id": 17,
@@ -150,7 +157,8 @@
     "title": "Bedah Umum (Siang)",
     "doctor": "dr. Endro RI Wibowo, Sp. B",
     "color": "blue",
-    "formattedTime": "14:00-17:00"
+    "formattedTime": "14:00-17:00",
+    "registrationTime": "13.00"
   },
   {
     "id": 18,
@@ -159,7 +167,8 @@
     "title": "Bedah Umum (Siang)",
     "doctor": "dr. Endro RI Wibowo, Sp. B",
     "color": "blue",
-    "formattedTime": "14:00-17:00"
+    "formattedTime": "14:00-17:00",
+    "registrationTime": "13.00"
   },
   {
     "id": 19,
@@ -168,7 +177,8 @@
     "title": "Bedah Umum (Siang)",
     "doctor": "dr. Endro RI Wibowo, Sp. B",
     "color": "blue",
-    "formattedTime": "14:00-17:00"
+    "formattedTime": "14:00-17:00",
+    "registrationTime": "13.00"
   },
   {
     "id": 20,
@@ -177,7 +187,8 @@
     "title": "Bedah Umum (Siang)",
     "doctor": "dr. Endro RI Wibowo, Sp. B",
     "color": "blue",
-    "formattedTime": "13:00-17:00"
+    "formattedTime": "13:00-17:00",
+    "registrationTime": "13.00"
   },
   {
     "id": 21,

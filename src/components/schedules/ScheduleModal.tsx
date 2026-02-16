@@ -25,6 +25,7 @@ export function ScheduleModal({ doctor, shifts, isOpen, onClose, onUpdate }: Sch
     const [formData, setFormData] = useState<Partial<Shift>>({
         title: "",
         formattedTime: "",
+        registrationTime: "",
         color: "blue"
     });
 
@@ -34,7 +35,7 @@ export function ScheduleModal({ doctor, shifts, isOpen, onClose, onUpdate }: Sch
     const docShifts = shifts.filter(s => s.doctor === doctor.name);
 
     const resetForm = () => {
-        setFormData({ title: "", formattedTime: "", color: "blue" });
+        setFormData({ title: "", formattedTime: "", registrationTime: "", color: "blue" });
         setEditingShiftId(null);
         setIsAddingDay(null);
     };
@@ -43,6 +44,7 @@ export function ScheduleModal({ doctor, shifts, isOpen, onClose, onUpdate }: Sch
         setFormData({
             title: shift.title,
             formattedTime: shift.formattedTime,
+            registrationTime: shift.registrationTime || "",
             color: shift.color
         });
         setEditingShiftId(shift.id);
@@ -50,7 +52,7 @@ export function ScheduleModal({ doctor, shifts, isOpen, onClose, onUpdate }: Sch
     };
 
     const handleAddClick = (dayIdx: number) => {
-        setFormData({ title: "Praktek", formattedTime: "08:00-12:00", color: "blue" });
+        setFormData({ title: "Praktek", formattedTime: "08:00-12:00", registrationTime: "07:30", color: "blue" });
         setIsAddingDay(dayIdx);
         setEditingShiftId(null);
     };
@@ -149,6 +151,13 @@ export function ScheduleModal({ doctor, shifts, isOpen, onClose, onUpdate }: Sch
                                                             onChange={e => setFormData({ ...formData, formattedTime: e.target.value })}
                                                             placeholder="08:00-14:00"
                                                         />
+                                                        <input
+                                                            className="w-16 bg-slate-950 border border-white/10 rounded px-2 py-1 text-xs text-white text-center"
+                                                            value={formData.registrationTime}
+                                                            onChange={e => setFormData({ ...formData, registrationTime: e.target.value })}
+                                                            placeholder="07:30"
+                                                            title="Jam Daftar"
+                                                        />
                                                         <div className="flex gap-1">
                                                             <button onClick={() => handleSave()} className="p-1.5 bg-blue-600 rounded hover:bg-blue-500 text-white"><Save size={12} /></button>
                                                             <button onClick={resetForm} className="p-1.5 bg-slate-700 rounded hover:bg-slate-600 text-slate-300"><X size={12} /></button>
@@ -166,6 +175,9 @@ export function ScheduleModal({ doctor, shifts, isOpen, onClose, onUpdate }: Sch
                                                     <div className="flex items-center gap-1.5 text-xs text-slate-400">
                                                         <Clock size={10} />
                                                         {shift.formattedTime}
+                                                        {shift.registrationTime && (
+                                                            <span className="text-slate-500">• Daftar: {shift.registrationTime}</span>
+                                                        )}
                                                     </div>
                                                 </div>
 
@@ -193,6 +205,13 @@ export function ScheduleModal({ doctor, shifts, isOpen, onClose, onUpdate }: Sch
                                                     value={formData.formattedTime}
                                                     onChange={e => setFormData({ ...formData, formattedTime: e.target.value })}
                                                     placeholder="08:00-14:00"
+                                                />
+                                                <input
+                                                    className="w-16 bg-slate-950 border border-white/10 rounded px-2 py-1 text-xs text-white text-center"
+                                                    value={formData.registrationTime}
+                                                    onChange={e => setFormData({ ...formData, registrationTime: e.target.value })}
+                                                    placeholder="07:30"
+                                                    title="Jam Daftar"
                                                 />
                                                 <div className="flex gap-1">
                                                     <button onClick={() => handleSave(idx)} className="p-1.5 bg-green-600 rounded hover:bg-green-500 text-white"><Save size={12} /></button>

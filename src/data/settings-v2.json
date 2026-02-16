@@ -38,5 +38,49 @@
   {
     "id": 1771160404994,
     "automationEnabled": false
+  },
+  {
+    "id": 1771239307388,
+    "automationEnabled": true
+  },
+  {
+    "id": 1771239308327,
+    "automationEnabled": true
+  },
+  {
+    "id": 1771239310283,
+    "automationEnabled": true
+  },
+  {
+    "id": 1771239311345,
+    "automationEnabled": true
+  },
+  {
+    "id": 1771239312269,
+    "automationEnabled": true
+  },
+  {
+    "id": 1771239313017,
+    "automationEnabled": true
+  },
+  {
+    "id": 1771239314042,
+    "automationEnabled": true
+  },
+  {
+    "id": 1771240479428,
+    "automationEnabled": true
+  },
+  {
+    "id": 1771240480451,
+    "automationEnabled": true
+  },
+  {
+    "id": 1771240481111,
+    "automationEnabled": true
+  },
+  {
+    "id": 1771240481683,
+    "automationEnabled": true
   }
 ]

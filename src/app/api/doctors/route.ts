@@ -1,8 +1,27 @@
 import { NextResponse } from 'next/server';
-import { doctorStore } from '@/lib/data-service';
+import { doctorStore, shiftStore } from '@/lib/data-service';
 
 export async function GET() {
-    return NextResponse.json(doctorStore.getAll());
+    const doctors = doctorStore.getAll();
+    const shifts = shiftStore.getAll();
+
+    // Calculate Today's Index (0=Senin, ..., 6=Minggu)
+    // JS getDay(): 0=Sun, 1=Mon, ..., 6=Sat
+    const jsDay = new Date().getDay();
+    const todayIdx = (jsDay + 6) % 7;
+
+    const enhancedDoctors = doctors.map(doc => {
+        // Find shift for today
+        const todayShift = shifts.find((s: any) => s.doctor === doc.name && s.dayIdx === todayIdx);
+
+        return {
+            ...doc,
+            // Prioritize shift-specific registration time, fallback to doctor profile (legacy), fallback to null
+            currentRegistrationTime: todayShift?.registrationTime || doc.registrationTime
+        };
+    });
+
+    return NextResponse.json(enhancedDoctors);
 }
 
 export async function POST(req: Request) {

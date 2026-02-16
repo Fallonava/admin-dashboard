@@ -1,8 +1,25 @@
 import { NextResponse } from 'next/server';
-import { doctorStore, settingsStore, Doctor, Settings } from '@/lib/data-service';
+import { doctorStore, shiftStore, settingsStore, Doctor, Settings } from '@/lib/data-service';
 
 export async function GET() {
-    const doctors = doctorStore.getAll();
+    const allDoctors = doctorStore.getAll();
+    const shifts = shiftStore.getAll();
+
+    // Calculate Today's Index (0=Senin, ..., 6=Minggu)
+    const jsDay = new Date().getDay();
+    const todayIdx = (jsDay + 6) % 7;
+
+    const doctors = allDoctors.map(doc => {
+        // Find shift for today
+        const todayShift = shifts.find((s: any) => s.doctor === doc.name && s.dayIdx === todayIdx);
+
+        return {
+            ...doc,
+            // Prioritize shift-specific registration time, fallback to doctor profile (legacy), fallback to null
+            currentRegistrationTime: todayShift?.registrationTime || doc.registrationTime
+        };
+    });
+
     const settings = settingsStore.getAll()[0] || { id: 1, automationEnabled: false, runTextMessage: "Selamat Datang di RSU Siaga Medika", emergencyMode: false };
 
     // Inject default custom messages if missing (migration for existing data)

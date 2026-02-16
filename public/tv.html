@@ -2073,6 +2073,7 @@
                         Status: d.status,
                         Jam: d.practiceTime || `${d.startTime}-${d.endTime}`,
                         CallTime: d.callTime || '00:00',
+                        RegistrationTime: d.currentRegistrationTime || '-',
                         Code: d.queueCode,
                         Jenis: d.category
                     }));
@@ -2227,8 +2228,10 @@
                         <div class="status-col">
                             <div class="time-group-s">
                                 <div class="tg-row" style="flex-direction:column; gap:0; align-items:flex-end;">
-                                    <span class="tg-label">DI PANGGIL</span>
-                                    <span class="tg-val-lg ${isActive ? 'active-time-lg' : ''}">${callTimeFn(doc.CallTime)}</span>
+                                    <span class="tg-label">JAM DAFTAR</span>
+                                    <span class="tg-val-lg ${isActive ? 'active-time-lg' : ''}">
+                                        ${(doc.RegistrationTime && doc.RegistrationTime !== '-') ? esc(doc.RegistrationTime) : ''}
+                                    </span>
                                 </div>
                             </div>
                             <div class="status-pill">${esc(doc.Status)}</div>

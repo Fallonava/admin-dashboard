@@ -1,1 +1,192 @@
-[]
+[
+  {
+    "doctor": "dr. Annisa Noor A, Sp. A",
+    "specialty": "Anak (Sore)",
+    "type": "Vacation",
+    "dates": "2026-02-17 - 2026-02-17",
+    "reason": "Libur/Tanggal Merah",
+    "status": "Approved",
+    "avatar": "/avatars/default.png",
+    "id": 1771241258725
+  },
+  {
+    "doctor": "dr. Setyo Dirahayu, Sp. N",
+    "specialty": "Saraf",
+    "type": "Vacation",
+    "dates": "2026-02-17 - 2026-02-17",
+    "reason": "Tanggal Merah",
+    "status": "Approved",
+    "avatar": "/avatars/default.png",
+    "id": 1771241258743
+  },
+  {
+    "doctor": "dr. Endro RI Wibowo, Sp. B",
+    "specialty": "Bedah Umum",
+    "type": "Vacation",
+    "dates": "2026-02-17 - 2026-02-17",
+    "reason": "Libur",
+    "status": "Approved",
+    "avatar": "/avatars/default.png",
+    "id": 1771241258764
+  },
+  {
+    "doctor": "dr. RR Irma Rossyana, Sp. A",
+    "specialty": "Anak",
+    "type": "Shift Change",
+    "dates": "2026-02-21 - 2026-02-21",
+    "reason": "Geser merah 17",
+    "status": "Approved",
+    "avatar": "/avatars/default.png",
+    "id": 1771241357408
+  },
+  {
+    "doctor": "dr. Annisa Noor A, Sp. A",
+    "specialty": "Anak (Sore)",
+    "type": "Vacation",
+    "dates": "2026-02-17 - 2026-02-17",
+    "reason": "Libur/Tanggal Merah",
+    "status": "Approved",
+    "avatar": "/avatars/default.png",
+    "id": 1771241357419
+  },
+  {
+    "doctor": "dr. Pritasari Dewi D, Sp. OG",
+    "specialty": "Kandungan (Sore)",
+    "type": "Vacation",
+    "dates": "Feb 01 - 07",
+    "reason": "Cuti",
+    "status": "Approved",
+    "avatar": "/avatars/default.png",
+    "id": 1771241357436
+  },
+  {
+    "doctor": "dr. Gatot Hananta, Sp. OG",
+    "specialty": "Kandungan (Pagi)",
+    "type": "Vacation",
+    "dates": "2026-02-17 - 2026-02-17",
+    "reason": "Libur/Tanggal Merah",
+    "status": "Approved",
+    "avatar": "/avatars/default.png",
+    "id": 1771241357449
+  },
+  {
+    "doctor": "dr. Leo Chandra WPW, Sp. PD, M. KES",
+    "specialty": "Penyakit Dalam (Pagi)",
+    "type": "Personal",
+    "dates": "2026-02-17 - 2026-02-17",
+    "reason": "Buka Pagi Saja",
+    "status": "Approved",
+    "avatar": "/avatars/default.png",
+    "id": 1771241357465
+  },
+  {
+    "doctor": "dr. Leo Chandra WPW, Sp. PD, M. KES",
+    "specialty": "Penyakit Dalam (Pagi)",
+    "type": "Personal",
+    "dates": "2026-02-19 - 2026-02-19",
+    "reason": "Buka Pagi Saja",
+    "status": "Approved",
+    "avatar": "/avatars/default.png",
+    "id": 1771241357477
+  },
+  {
+    "doctor": "dr. Sigit Purnomohadi, Sp. PD",
+    "specialty": "Penyakit Dalam",
+    "type": "Vacation",
+    "dates": "2026-02-17 - 2026-02-17",
+    "reason": "Libur",
+    "status": "Approved",
+    "avatar": "/avatars/default.png",
+    "id": 1771241357496
+  },
+  {
+    "doctor": "dr. Taufik Hidayanto, Sp. KJ",
+    "specialty": "Kesehatan Jiwa",
+    "type": "Vacation",
+    "dates": "2026-02-16 - 2026-02-16",
+    "reason": "Cuti",
+    "status": "Approved",
+    "avatar": "/avatars/default.png",
+    "id": 1771241357512
+  },
+  {
+    "doctor": "dr. Taufik Hidayanto, Sp. KJ",
+    "specialty": "Kesehatan Jiwa",
+    "type": "Vacation",
+    "dates": "2026-02-17 - 2026-02-17",
+    "reason": "Tanggal Merah",
+    "status": "Approved",
+    "avatar": "/avatars/default.png",
+    "id": 1771241357529
+  },
+  {
+    "doctor": "dr. Nova Kurniasari, Sp. KJ",
+    "specialty": "Kesehatan Jiwa",
+    "type": "Vacation",
+    "dates": "2026-02-17 - 2026-02-17",
+    "reason": "Tanggal Merah",
+    "status": "Approved",
+    "avatar": "/avatars/default.png",
+    "id": 1771241357540
+  },
+  {
+    "doctor": "dr. Setyo Dirahayu, Sp. N",
+    "specialty": "Saraf",
+    "type": "Vacation",
+    "dates": "2026-02-17 - 2026-02-17",
+    "reason": "Tanggal Merah",
+    "status": "Approved",
+    "avatar": "/avatars/default.png",
+    "id": 1771241357551
+  },
+  {
+    "doctor": "dr. Endro RI Wibowo, Sp. B",
+    "specialty": "Bedah Umum",
+    "type": "Vacation",
+    "dates": "2026-02-17 - 2026-02-17",
+    "reason": "Libur",
+    "status": "Approved",
+    "avatar": "/avatars/default.png",
+    "id": 1771241357563
+  },
+  {
+    "doctor": "dr. Oke Viska, Sp. P",
+    "specialty": "Penyakit Paru",
+    "type": "Vacation",
+    "dates": "Feb 13 - 14",
+    "reason": "Cuti",
+    "status": "Approved",
+    "avatar": "/avatars/default.png",
+    "id": 1771241357576
+  },
+  {
+    "doctor": "dr. Lita Hati Dwi PE, Sp. JP",
+    "specialty": "Jantung & Pembuluh Darah",
+    "type": "Vacation",
+    "dates": "2026-02-17 - 2026-02-17",
+    "reason": "Libur Tanggal Merah",
+    "status": "Approved",
+    "avatar": "/avatars/default.png",
+    "id": 1771241357588
+  },
+  {
+    "doctor": "dr. Wati, SP. KFR",
+    "specialty": "Rehab Medik",
+    "type": "Vacation",
+    "dates": "2026-02-16 - 2026-02-16",
+    "reason": "Cuti",
+    "status": "Approved",
+    "avatar": "/avatars/default.png",
+    "id": 1771241357599
+  },
+  {
+    "doctor": "dr. Wati, SP. KFR",
+    "specialty": "Rehab Medik",
+    "type": "Vacation",
+    "dates": "2026-02-17 - 2026-02-17",
+    "reason": "Libur Tanggal Merah",
+    "status": "Approved",
+    "avatar": "/avatars/default.png",
+    "id": 1771241357610
+  }
+]
