@@ -11,6 +11,7 @@ export interface Shift {
     formattedTime?: string; // e.g. "09:00-14:00"
     registrationTime?: string; // e.g. "07:30"
     extra?: string;
+    disabled?: boolean; // Per-shift disable (e.g. partial leave)
 }
 
 export interface LeaveRequest {

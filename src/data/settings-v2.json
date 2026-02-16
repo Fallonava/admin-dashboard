@@ -1,9 +1,9 @@
 [
   {
-    "id": 1771157626980,
+    "id": 1,
     "automationEnabled": true,
     "emergencyMode": false,
-    "runTextMessage": "tes",
+    "runTextMessage": "Selamat Datang di RSU Siaga Medika - Melayani dengan Sepenuh Hati",
     "customMessages": [
       {
         "title": "Info",
@@ -22,101 +22,5 @@
         "text": "Terimakasih sudah mengantri 😊"
       }
     ]
-  },
-  {
-    "id": 1771157878367,
-    "automationEnabled": true
-  },
-  {
-    "id": 1771157878998,
-    "automationEnabled": false
-  },
-  {
-    "id": 1771160403920,
-    "automationEnabled": true
-  },
-  {
-    "id": 1771160404994,
-    "automationEnabled": false
-  },
-  {
-    "id": 1771239307388,
-    "automationEnabled": true
-  },
-  {
-    "id": 1771239308327,
-    "automationEnabled": true
-  },
-  {
-    "id": 1771239310283,
-    "automationEnabled": true
-  },
-  {
-    "id": 1771239311345,
-    "automationEnabled": true
-  },
-  {
-    "id": 1771239312269,
-    "automationEnabled": true
-  },
-  {
-    "id": 1771239313017,
-    "automationEnabled": true
-  },
-  {
-    "id": 1771239314042,
-    "automationEnabled": true
-  },
-  {
-    "id": 1771240479428,
-    "automationEnabled": true
-  },
-  {
-    "id": 1771240480451,
-    "automationEnabled": true
-  },
-  {
-    "id": 1771240481111,
-    "automationEnabled": true
-  },
-  {
-    "id": 1771240481683,
-    "automationEnabled": true
-  },
-  {
-    "id": 1771241912327,
-    "automationEnabled": true
-  },
-  {
-    "id": 1771241913270,
-    "automationEnabled": true
-  },
-  {
-    "id": 1771241914013,
-    "automationEnabled": true
-  },
-  {
-    "id": 1771242202791,
-    "automationEnabled": true
-  },
-  {
-    "id": 1771242203622,
-    "automationEnabled": true
-  },
-  {
-    "id": 1771242204205,
-    "automationEnabled": true
-  },
-  {
-    "id": 1771242204590,
-    "automationEnabled": true
-  },
-  {
-    "id": 1771242204784,
-    "automationEnabled": true
-  },
-  {
-    "id": 1771242204951,
-    "automationEnabled": true
   }
 ]

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { X, Clock, Calendar, Plus, Trash2, Save, Edit2, Copy } from "lucide-react";
+import { X, Clock, Calendar, Plus, Trash2, Save, Edit2, Copy, Power } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
@@ -103,6 +103,19 @@ export function ScheduleModal({ doctor, shifts, isOpen, onClose, onUpdate }: Sch
         }
     };
 
+    const toggleShiftDisabled = async (shift: Shift) => {
+        try {
+            await fetch('/api/shifts', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: shift.id, disabled: !shift.disabled })
+            });
+            if (onUpdate) onUpdate();
+        } catch (error) {
+            console.error("Failed to toggle shift", error);
+        }
+    };
+
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
             <DialogContent className="bg-slate-950/90 border-slate-800 text-white max-w-2xl max-h-[80vh] overflow-y-auto backdrop-blur-xl">
@@ -179,15 +192,37 @@ export function ScheduleModal({ doctor, shifts, isOpen, onClose, onUpdate }: Sch
                                         }
 
                                         return (
-                                            <div key={shift.id} className="flex items-center gap-3 bg-slate-900/50 p-2.5 rounded-lg border border-slate-800 group/item relative">
-                                                <div className={cn("w-1 h-8 rounded-full", `bg-${shift.color}-500`)} />
+                                            <div key={shift.id} className={cn(
+                                                "flex items-center gap-3 p-2.5 rounded-lg border group/item relative transition-all",
+                                                shift.disabled
+                                                    ? "bg-slate-900/20 border-slate-800/50 opacity-50"
+                                                    : "bg-slate-900/50 border-slate-800"
+                                            )}>
+                                                {/* Toggle Button */}
+                                                <button
+                                                    onClick={() => toggleShiftDisabled(shift)}
+                                                    className={cn(
+                                                        "p-1 rounded-md transition-all shrink-0",
+                                                        shift.disabled
+                                                            ? "text-red-400 bg-red-500/10 hover:bg-red-500/20"
+                                                            : "text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20"
+                                                    )}
+                                                    title={shift.disabled ? "Aktifkan shift" : "Nonaktifkan shift"}
+                                                >
+                                                    <Power size={12} />
+                                                </button>
+
+                                                <div className={cn("w-1 h-8 rounded-full", shift.disabled ? "bg-slate-700" : `bg-${shift.color}-500`)} />
                                                 <div className="flex-1">
-                                                    <p className="text-sm font-semibold text-white">{shift.title}</p>
-                                                    <div className="flex items-center gap-1.5 text-xs text-slate-400">
+                                                    <p className={cn("text-sm font-semibold", shift.disabled ? "text-slate-500 line-through" : "text-white")}>{shift.title}</p>
+                                                    <div className={cn("flex items-center gap-1.5 text-xs", shift.disabled ? "text-slate-600" : "text-slate-400")}>
                                                         <Clock size={10} />
-                                                        {shift.formattedTime}
+                                                        <span className={cn(shift.disabled && "line-through")}>{shift.formattedTime}</span>
                                                         {shift.registrationTime && (
                                                             <span className="text-slate-500">• Daftar: {shift.registrationTime}</span>
+                                                        )}
+                                                        {shift.disabled && (
+                                                            <span className="text-red-400/70 font-medium ml-1">NONAKTIF</span>
                                                         )}
                                                     </div>
                                                 </div>

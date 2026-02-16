@@ -17,6 +17,15 @@ export default function Home() {
 
   const [searchQuery, setSearchQuery] = useState("");
 
+  // Calculate today's day index (0=Mon, 6=Sun)
+  const now = new Date();
+  const todayDayIdx = now.getDay() === 0 ? 6 : now.getDay() - 1;
+
+  // Filter: Only show doctors who have an active (non-disabled) shift TODAY
+  const todayDoctors = doctors.filter(doc =>
+    shifts.some(s => s.doctor === doc.name && s.dayIdx === todayDayIdx && !s.disabled)
+  );
+
   // Automation Logic
   const automationEnabled = settings?.automationEnabled || false;
 
@@ -71,8 +80,8 @@ export default function Home() {
     mutateDoctors();
   };
 
-  const activeDocs = doctors.filter(d => d.status === 'BUKA' || d.status === 'PENUH');
-  const onLeaveDocs = doctors.filter(d => d.status === 'CUTI');
+  const activeDocs = todayDoctors.filter(d => d.status === 'BUKA' || d.status === 'PENUH');
+  const onLeaveDocs = todayDoctors.filter(d => d.status === 'CUTI');
 
   // Stats calculation
   const pendingLeaves = leaves.filter(l => l.status === 'Pending').length;
@@ -81,20 +90,20 @@ export default function Home() {
 
   // Calculate efficiency
   useEffect(() => {
-    if (doctors.length > 0) {
-      const baseEff = Math.round((activeDocs.length / doctors.length) * 100);
+    if (todayDoctors.length > 0) {
+      const baseEff = Math.round((activeDocs.length / todayDoctors.length) * 100);
       setEfficiency(baseEff > 0 ? 90 + Math.round(Math.random() * 5) : 0);
     }
-  }, [doctors.length, activeDocs.length]);
+  }, [todayDoctors.length, activeDocs.length]);
 
   const stats = {
     activeDoctors: activeDocs.length,
-    totalDoctors: doctors.length,
+    totalDoctors: todayDoctors.length,
     onLeave: onLeaveDocs.length,
     efficiency: efficiency,
   };
 
-  const filteredDoctors = doctors.filter(doc =>
+  const filteredDoctors = todayDoctors.filter(doc =>
     doc.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     doc.specialty.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -116,18 +125,39 @@ export default function Home() {
           </div>
 
           <div className="flex items-center gap-4">
-            {/* Overpower Automation Button */}
+            {/* Automation Control Button */}
             <button
               onClick={toggleAutomation}
               className={cn(
-                "flex items-center gap-2 px-4 py-2 rounded-xl transition-all font-bold border shadow-lg hover:shadow-xl active:scale-95",
+                "flex items-center gap-3 px-5 py-2.5 rounded-xl transition-all border shadow-lg hover:shadow-xl active:scale-[0.97] group",
                 automationEnabled
-                  ? "bg-violet-600 text-white border-violet-500 shadow-violet-500/20"
-                  : "bg-slate-800 text-slate-400 border-slate-700 hover:text-white"
+                  ? "bg-gradient-to-r from-violet-600 to-indigo-600 text-white border-violet-500/50 shadow-violet-500/25"
+                  : "bg-muted/50 text-muted-foreground border-border hover:text-foreground hover:bg-muted"
               )}
             >
-              <Zap size={18} className={cn(automationEnabled && "fill-current animate-pulse")} />
-              {automationEnabled ? "SISTEM OVERPOWER: AKTIF" : "Otomatisasi: Nonaktif"}
+              <div className="relative">
+                <Zap size={18} className={cn(
+                  "transition-all",
+                  automationEnabled ? "fill-current drop-shadow-[0_0_6px_rgba(167,139,250,0.8)]" : "group-hover:scale-110"
+                )} />
+                {automationEnabled && (
+                  <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
+                  </span>
+                )}
+              </div>
+              <div className="text-left">
+                <div className="text-sm font-bold leading-tight">
+                  {automationEnabled ? "Otomatisasi Aktif" : "Otomatisasi Nonaktif"}
+                </div>
+                <div className={cn("text-[10px] leading-tight", automationEnabled ? "text-violet-200" : "text-muted-foreground")}>
+                  {automationEnabled
+                    ? `${todayDoctors.length} dokter dikelola • ${activeDocs.length} aktif`
+                    : "Klik untuk mengaktifkan"
+                  }
+                </div>
+              </div>
             </button>
 
             <div className="h-8 w-px bg-border mx-2" />
@@ -243,11 +273,12 @@ export default function Home() {
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-4 gap-2 relative z-10">
+                    <div className="grid grid-cols-5 gap-1.5 relative z-10">
                       {[
                         { id: 'Idle', label: 'Otomatis', className: 'bg-slate-500 text-white border-slate-600 shadow-slate-500/20 hover:bg-slate-600' },
                         { id: 'BUKA', label: 'Buka', className: 'bg-blue-500 text-white border-blue-600 shadow-blue-500/20 hover:bg-blue-600' },
                         { id: 'PENUH', label: 'Penuh', className: 'bg-orange-500 text-white border-orange-600 shadow-orange-500/20 hover:bg-orange-600' },
+                        { id: 'SELESAI', label: 'Selesai', className: 'bg-emerald-500 text-white border-emerald-600 shadow-emerald-500/20 hover:bg-emerald-600' },
                         { id: 'CUTI', label: 'Cuti', className: 'bg-pink-500 text-white border-pink-600 shadow-pink-500/20 hover:bg-pink-600' },
                       ].map((action) => (
                         <button
