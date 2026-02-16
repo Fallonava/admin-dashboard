@@ -3,7 +3,7 @@
     "id": 103,
     "name": "dr. Endro RI Wibowo, Sp. B",
     "specialty": "Bedah Umum",
-    "status": "SELESAI",
+    "status": "Idle",
     "category": "Bedah",
     "queueCode": "BP",
     "startTime": "06:00",
@@ -11,7 +11,7 @@
     "lastCall": "19:21",
     "registrationTime": "08.00",
     "isAuto": true,
-    "lastManualOverride": 1771244469378
+    "lastManualOverride": 1771244618301
   },
   {
     "id": 123,

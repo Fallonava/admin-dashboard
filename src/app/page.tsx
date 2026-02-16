@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import useSWR, { mutate } from "swr";
-import { Activity, Users, MonitorPlay, AlertCircle, Search, Filter, Zap, Power } from "lucide-react";
+import { Activity, Users, MonitorPlay, AlertCircle, Search, Filter, Zap, Power, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Doctor, LeaveRequest, Shift, Settings } from "@/lib/data-service";
 import { StatsCards } from "@/components/schedules/StatsCards";
@@ -12,7 +12,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 export default function Home() {
   const { data: doctors = [], mutate: mutateDoctors } = useSWR<Doctor[]>('/api/doctors');
   const { data: leaves = [] } = useSWR<LeaveRequest[]>('/api/leaves');
-  const { data: shifts = [] } = useSWR<Shift[]>('/api/shifts');
+  const { data: shifts = [], mutate: mutateShifts } = useSWR<Shift[]>('/api/shifts');
   const { data: settings, mutate: mutateSettings } = useSWR<Settings>('/api/settings');
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -21,9 +21,12 @@ export default function Home() {
   const now = new Date();
   const todayDayIdx = now.getDay() === 0 ? 6 : now.getDay() - 1;
 
-  // Filter: Only show doctors who have an active (non-disabled) shift TODAY
+  // Today's date string for disabledDates comparison
+  const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+
+  // Filter: Only show doctors who have an active shift TODAY (not disabled for today)
   const todayDoctors = doctors.filter(doc =>
-    shifts.some(s => s.doctor === doc.name && s.dayIdx === todayDayIdx && !s.disabled)
+    shifts.some(s => s.doctor === doc.name && s.dayIdx === todayDayIdx && !(s.disabledDates || []).includes(todayStr))
   );
 
   // Automation Logic
@@ -48,6 +51,29 @@ export default function Home() {
     } catch (e) {
       console.error("Failed to save settings", e);
       mutateSettings(); // Revert on error
+    }
+  };
+
+  // Toggle shift disabled for today
+  const toggleShiftDisabled = async (shiftId: number, shift: Shift) => {
+    const dates = shift.disabledDates || [];
+    const isDisabledToday = dates.includes(todayStr);
+    const newDates = isDisabledToday
+      ? dates.filter(d => d !== todayStr)  // Remove today
+      : [...dates, todayStr];              // Add today
+
+    // Optimistic update
+    mutateShifts(curr => curr?.map(s => s.id === shiftId ? { ...s, disabledDates: newDates } : s), false);
+    try {
+      await fetch('/api/shifts', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: shiftId, disabledDates: newDates })
+      });
+      mutateShifts();
+    } catch (e) {
+      console.error('Failed to toggle shift', e);
+      mutateShifts();
     }
   };
 
@@ -272,6 +298,44 @@ export default function Home() {
                         {doc.status || 'Offline'}
                       </div>
                     </div>
+
+                    {/* Shift Pills */}
+                    {(() => {
+                      const docShiftsToday = shifts.filter(s => s.doctor === doc.name && s.dayIdx === todayDayIdx);
+                      if (docShiftsToday.length === 0) return null;
+                      const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
+                      return (
+                        <div className="flex flex-wrap gap-1.5 mb-3 relative z-10">
+                          {docShiftsToday.map(shift => {
+                            const [startStr, endStr] = (shift.formattedTime || '').split('-');
+                            const startM = parseInt(startStr?.split(':')[0] || '0') * 60 + parseInt(startStr?.split(':')[1] || '0');
+                            const endM = parseInt(endStr?.split(':')[0] || '0') * 60 + parseInt(endStr?.split(':')[1] || '0');
+                            const isDisabledToday = (shift.disabledDates || []).includes(todayStr);
+                            const isActive = currentTimeMinutes >= startM && currentTimeMinutes < endM && !isDisabledToday;
+                            return (
+                              <button
+                                key={shift.id}
+                                onClick={() => toggleShiftDisabled(shift.id, shift)}
+                                className={cn(
+                                  "flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-semibold border transition-all",
+                                  isDisabledToday
+                                    ? "bg-red-500/5 text-red-400/60 border-red-500/10 line-through hover:bg-red-500/10"
+                                    : isActive
+                                      ? "bg-emerald-500/15 text-emerald-500 border-emerald-500/30 ring-1 ring-emerald-500/20"
+                                      : "bg-muted/50 text-muted-foreground border-border/50 hover:bg-muted"
+                                )}
+                                title={isDisabledToday ? 'Klik untuk aktifkan hari ini' : 'Klik untuk nonaktifkan hari ini'}
+                              >
+                                <Clock size={9} />
+                                {shift.formattedTime}
+                                {isDisabledToday && <span className="text-red-400 ml-0.5">✕</span>}
+                                {isActive && <span className="relative flex h-1.5 w-1.5 ml-0.5"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span></span>}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      );
+                    })()}
 
                     <div className="grid grid-cols-5 gap-1.5 relative z-10">
                       {[

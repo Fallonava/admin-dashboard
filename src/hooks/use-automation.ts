@@ -55,9 +55,10 @@ export function useAutomation() {
                 }
 
                 // === SHIFT-BASED STATUS ===
-                // Get ALL active shifts for this doctor today (skip disabled shifts)
+                // Get ALL active shifts for this doctor today (skip shifts disabled for today)
                 const todayShifts = shifts.filter(s =>
-                    s.doctor === doc.name && s.dayIdx === currentDayIdx && s.formattedTime && !s.disabled
+                    s.doctor === doc.name && s.dayIdx === currentDayIdx && s.formattedTime &&
+                    !(s.disabledDates || []).includes(todayStr)
                 );
 
                 if (todayShifts.length === 0) {

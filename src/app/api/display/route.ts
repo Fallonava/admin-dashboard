@@ -8,15 +8,26 @@ export async function GET() {
     // Calculate Today's Index (0=Senin, ..., 6=Minggu)
     const jsDay = new Date().getDay();
     const todayIdx = (jsDay + 6) % 7;
+    const todayStr = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
 
     const doctors = allDoctors.map(doc => {
-        // Find shift for today
-        const todayShift = shifts.find((s: any) => s.doctor === doc.name && s.dayIdx === todayIdx);
+        // Find ALL shifts for today
+        const todayShifts = shifts.filter((s: any) => s.doctor === doc.name && s.dayIdx === todayIdx);
+
+        // Build shift pills data (time + disabled status for today)
+        const shiftPills = todayShifts.map((s: any) => ({
+            time: s.formattedTime || '',
+            disabled: (s.disabledDates || []).includes(todayStr),
+            registrationTime: s.registrationTime || ''
+        }));
+
+        // Find the first active (non-disabled) shift's registration time
+        const activeShift = todayShifts.find((s: any) => !(s.disabledDates || []).includes(todayStr));
 
         return {
             ...doc,
-            // Prioritize shift-specific registration time, fallback to doctor profile (legacy), fallback to null
-            currentRegistrationTime: todayShift?.registrationTime || doc.registrationTime
+            shiftPills,
+            currentRegistrationTime: activeShift?.registrationTime || doc.registrationTime
         };
     });
 

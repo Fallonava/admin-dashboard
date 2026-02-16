@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { X, Clock, Calendar, Plus, Trash2, Save, Edit2, Copy, Power } from "lucide-react";
+import { X, Clock, Calendar, Plus, Trash2, Save, Edit2, Copy, Power, CalendarOff } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
@@ -104,17 +104,55 @@ export function ScheduleModal({ doctor, shifts, isOpen, onClose, onUpdate }: Sch
     };
 
     const toggleShiftDisabled = async (shift: Shift) => {
+        const today = new Date();
+        const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+        const dates = shift.disabledDates || [];
+        const isDisabledToday = dates.includes(todayStr);
+        const newDates = isDisabledToday ? dates.filter(d => d !== todayStr) : [...dates, todayStr];
         try {
             await fetch('/api/shifts', {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id: shift.id, disabled: !shift.disabled })
+                body: JSON.stringify({ id: shift.id, disabledDates: newDates })
             });
             if (onUpdate) onUpdate();
         } catch (error) {
             console.error("Failed to toggle shift", error);
         }
     };
+
+    const addDisabledDate = async (shift: Shift, dateStr: string) => {
+        if (!dateStr) return;
+        const dates = shift.disabledDates || [];
+        if (dates.includes(dateStr)) return;
+        const newDates = [...dates, dateStr].sort();
+        try {
+            await fetch('/api/shifts', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: shift.id, disabledDates: newDates })
+            });
+            if (onUpdate) onUpdate();
+        } catch (error) {
+            console.error("Failed to add disabled date", error);
+        }
+    };
+
+    const removeDisabledDate = async (shift: Shift, dateStr: string) => {
+        const newDates = (shift.disabledDates || []).filter(d => d !== dateStr);
+        try {
+            await fetch('/api/shifts', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: shift.id, disabledDates: newDates })
+            });
+            if (onUpdate) onUpdate();
+        } catch (error) {
+            console.error("Failed to remove disabled date", error);
+        }
+    };
+
+    const [expandedShiftId, setExpandedShiftId] = useState<number | null>(null);
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
@@ -192,46 +230,94 @@ export function ScheduleModal({ doctor, shifts, isOpen, onClose, onUpdate }: Sch
                                         }
 
                                         return (
-                                            <div key={shift.id} className={cn(
-                                                "flex items-center gap-3 p-2.5 rounded-lg border group/item relative transition-all",
-                                                shift.disabled
-                                                    ? "bg-slate-900/20 border-slate-800/50 opacity-50"
-                                                    : "bg-slate-900/50 border-slate-800"
-                                            )}>
-                                                {/* Toggle Button */}
-                                                <button
-                                                    onClick={() => toggleShiftDisabled(shift)}
-                                                    className={cn(
-                                                        "p-1 rounded-md transition-all shrink-0",
-                                                        shift.disabled
-                                                            ? "text-red-400 bg-red-500/10 hover:bg-red-500/20"
-                                                            : "text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20"
-                                                    )}
-                                                    title={shift.disabled ? "Aktifkan shift" : "Nonaktifkan shift"}
-                                                >
-                                                    <Power size={12} />
-                                                </button>
+                                            <div key={shift.id} className="space-y-1">
+                                                <div className={cn(
+                                                    "flex items-center gap-3 p-2.5 rounded-lg border group/item relative transition-all",
+                                                    (shift.disabledDates || []).length > 0
+                                                        ? "bg-slate-900/30 border-slate-800/50"
+                                                        : "bg-slate-900/50 border-slate-800"
+                                                )}>
+                                                    {/* Toggle today */}
+                                                    <button
+                                                        onClick={() => toggleShiftDisabled(shift)}
+                                                        className={cn(
+                                                            "p-1 rounded-md transition-all shrink-0",
+                                                            (shift.disabledDates || []).includes((() => { const t = new Date(); return `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, '0')}-${String(t.getDate()).padStart(2, '0')}`; })())
+                                                                ? "text-red-400 bg-red-500/10 hover:bg-red-500/20"
+                                                                : "text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20"
+                                                        )}
+                                                        title="Toggle hari ini"
+                                                    >
+                                                        <Power size={12} />
+                                                    </button>
 
-                                                <div className={cn("w-1 h-8 rounded-full", shift.disabled ? "bg-slate-700" : `bg-${shift.color}-500`)} />
-                                                <div className="flex-1">
-                                                    <p className={cn("text-sm font-semibold", shift.disabled ? "text-slate-500 line-through" : "text-white")}>{shift.title}</p>
-                                                    <div className={cn("flex items-center gap-1.5 text-xs", shift.disabled ? "text-slate-600" : "text-slate-400")}>
-                                                        <Clock size={10} />
-                                                        <span className={cn(shift.disabled && "line-through")}>{shift.formattedTime}</span>
-                                                        {shift.registrationTime && (
-                                                            <span className="text-slate-500">• Daftar: {shift.registrationTime}</span>
-                                                        )}
-                                                        {shift.disabled && (
-                                                            <span className="text-red-400/70 font-medium ml-1">NONAKTIF</span>
-                                                        )}
+                                                    <div className={cn("w-1 h-8 rounded-full", `bg-${shift.color}-500`)} />
+                                                    <div className="flex-1">
+                                                        <p className="text-sm font-semibold text-white">{shift.title}</p>
+                                                        <div className="flex items-center gap-1.5 text-xs text-slate-400">
+                                                            <Clock size={10} />
+                                                            {shift.formattedTime}
+                                                            {shift.registrationTime && (
+                                                                <span className="text-slate-500">• Daftar: {shift.registrationTime}</span>
+                                                            )}
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Disabled dates count badge */}
+                                                    {(shift.disabledDates || []).length > 0 && (
+                                                        <button
+                                                            onClick={() => setExpandedShiftId(expandedShiftId === shift.id ? null : shift.id)}
+                                                            className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-red-500/10 text-red-400 text-[9px] font-bold hover:bg-red-500/20 transition-all"
+                                                        >
+                                                            <CalendarOff size={9} />
+                                                            {(shift.disabledDates || []).length}
+                                                        </button>
+                                                    )}
+
+                                                    {/* Plan dates button */}
+                                                    <button
+                                                        onClick={() => setExpandedShiftId(expandedShiftId === shift.id ? null : shift.id)}
+                                                        className="p-1 text-slate-500 hover:text-amber-400 rounded-md hover:bg-amber-500/10 transition-all"
+                                                        title="Jadwalkan nonaktif"
+                                                    >
+                                                        <Calendar size={11} />
+                                                    </button>
+
+                                                    <div className="flex gap-1 list-none opacity-0 group-hover/item:opacity-100 transition-all">
+                                                        <button onClick={() => handleDuplicate(shift)} className="p-1 text-slate-400 hover:text-green-400" title="Duplicate"><Copy size={10} /></button>
+                                                        <button onClick={() => handleEditClick(shift)} className="p-1 text-slate-400 hover:text-white" title="Edit"><Edit2 size={10} /></button>
+                                                        <button onClick={() => handleDelete(shift.id)} className="p-1 text-slate-400 hover:text-red-400" title="Delete"><Trash2 size={10} /></button>
                                                     </div>
                                                 </div>
 
-                                                <div className="absolute right-2 flex gap-1 list-none opacity-0 group-hover/item:opacity-100 transition-all bg-slate-950/80 p-1 rounded backdrop-blur-sm">
-                                                    <button onClick={() => handleDuplicate(shift)} className="p-1 text-slate-400 hover:text-green-400" title="Duplicate"><Copy size={10} /></button>
-                                                    <button onClick={() => handleEditClick(shift)} className="p-1 text-slate-400 hover:text-white" title="Edit"><Edit2 size={10} /></button>
-                                                    <button onClick={() => handleDelete(shift.id)} className="p-1 text-slate-400 hover:text-red-400" title="Delete"><Trash2 size={10} /></button>
-                                                </div>
+                                                {/* Expanded: Disabled dates management */}
+                                                {expandedShiftId === shift.id && (
+                                                    <div className="bg-slate-900/50 border border-slate-800/50 rounded-lg p-2.5 space-y-2 ml-6 animation-fade-in">
+                                                        <div className="flex items-center justify-between">
+                                                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Tanggal Nonaktif</p>
+                                                            <input
+                                                                type="date"
+                                                                className="bg-slate-950 border border-white/10 rounded px-2 py-0.5 text-[10px] text-white"
+                                                                onChange={(e) => {
+                                                                    addDisabledDate(shift, e.target.value);
+                                                                    e.target.value = '';
+                                                                }}
+                                                            />
+                                                        </div>
+                                                        {(shift.disabledDates || []).length === 0 ? (
+                                                            <p className="text-[10px] text-slate-600 italic">Belum ada tanggal nonaktif</p>
+                                                        ) : (
+                                                            <div className="flex flex-wrap gap-1">
+                                                                {(shift.disabledDates || []).sort().map(d => (
+                                                                    <span key={d} className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-red-500/10 text-red-400 text-[10px] font-mono">
+                                                                        {d}
+                                                                        <button onClick={() => removeDisabledDate(shift, d)} className="hover:text-white"><X size={8} /></button>
+                                                                    </span>
+                                                                ))}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                )}
                                             </div>
                                         );
                                     })}

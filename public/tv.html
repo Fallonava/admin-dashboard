@@ -409,6 +409,77 @@
             opacity: 0.9;
         }
 
+        /* Shift Pill Tags */
+        .shift-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-top: 4px;
+        }
+
+        .shift-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text-secondary);
+            letter-spacing: 0.02em;
+        }
+
+        .shift-pill.sp-active {
+            background: rgba(48, 209, 88, 0.15);
+            border-color: rgba(48, 209, 88, 0.3);
+            color: #30D158;
+        }
+
+        .shift-pill.sp-active .sp-dot {
+            display: inline-block;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: #30D158;
+            animation: spPulse 1.5s ease-in-out infinite;
+        }
+
+        .shift-pill.sp-disabled {
+            background: rgba(255, 69, 58, 0.05);
+            border-color: rgba(255, 69, 58, 0.15);
+            color: rgba(255, 69, 58, 0.5);
+            text-decoration: line-through;
+        }
+
+        @keyframes spPulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.3;
+            }
+        }
+
+        [data-theme="light"] .shift-pill {
+            background: rgba(0, 0, 0, 0.04);
+            border-color: rgba(0, 0, 0, 0.08);
+        }
+
+        [data-theme="light"] .shift-pill.sp-active {
+            background: rgba(48, 209, 88, 0.1);
+            border-color: rgba(48, 209, 88, 0.25);
+        }
+
+        [data-theme="light"] .shift-pill.sp-disabled {
+            background: rgba(255, 69, 58, 0.05);
+            border-color: rgba(255, 69, 58, 0.1);
+        }
+
         [data-theme="light"] .doc-jam {
             color: #86868b !important;
         }
@@ -2075,7 +2146,8 @@
                         CallTime: d.callTime || '00:00',
                         RegistrationTime: d.currentRegistrationTime || '-',
                         Code: d.queueCode,
-                        Jenis: d.category
+                        Jenis: d.category,
+                        ShiftPills: d.shiftPills || []
                     }));
 
                     this._detectChanges(mappedDoctors);
@@ -2206,11 +2278,32 @@
                 const cls = statusMap[doc.Status] || 'st-nopoli';
                 const isActive = doc.Status === 'BUKA';
 
-                // Time Display Logic (Replaces Queue)
+                // Time Display Logic
                 const callTimeFn = (t) => {
                     if (!t || t === '00:00' || t === '-') return '-';
                     return t;
                 };
+
+                // Build shift pills HTML
+                let shiftPillsHtml = '';
+                if (doc.ShiftPills && doc.ShiftPills.length > 0) {
+                    const now = new Date();
+                    const curMins = now.getHours() * 60 + now.getMinutes();
+                    const pills = doc.ShiftPills.map(sp => {
+                        if (!sp.time) return '';
+                        const parts = sp.time.split('-');
+                        if (parts.length < 2) return '';
+                        const startM = parseInt(parts[0].split(':')[0]) * 60 + parseInt(parts[0].split(':')[1] || '0');
+                        const endM = parseInt(parts[1].split(':')[0]) * 60 + parseInt(parts[1].split(':')[1] || '0');
+                        const isNow = curMins >= startM && curMins < endM && !sp.disabled;
+                        const cls = sp.disabled ? 'sp-disabled' : isNow ? 'sp-active' : '';
+                        return `<span class="shift-pill ${cls}"><span class="material-icons-round" style="font-size:9px;opacity:0.7">schedule</span>${esc(sp.time)}${isNow ? '<span class="sp-dot"></span>' : ''}${sp.disabled ? ' <span style="font-size:8px">✕</span>' : ''}</span>`;
+                    }).filter(Boolean).join('');
+                    shiftPillsHtml = `<div class="shift-pills">${pills}</div>`;
+                } else if (doc.Jam && doc.Jam !== '-') {
+                    // Fallback: single time display
+                    shiftPillsHtml = `<div class="doc-jam"><span class="material-icons-round" style="font-size:10px; opacity:0.7">schedule</span> ${esc(doc.Jam)}</div>`;
+                }
 
                 return `
                 <div class="platter ${cls}" ${isActive ? 'data-active="true"' : ''}>
@@ -2222,7 +2315,7 @@
                             <div class="doc-name">${esc(doc.Dokter)}</div>
                             <div style="display:flex; flex-direction:column; gap:2px;">
                                 <div class="doc-spec">${esc(doc.Spesialis)}</div>
-                                ${(doc.Jam && doc.Jam !== '-') ? `<div class="doc-jam"><span class="material-icons-round" style="font-size:10px; opacity:0.7">schedule</span> ${esc(doc.Jam)}</div>` : ''}
+                                ${shiftPillsHtml}
                             </div>
                         </div>
                         <div class="status-col">

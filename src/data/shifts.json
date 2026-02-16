@@ -148,7 +148,8 @@
     "doctor": "dr. Endro RI Wibowo, Sp. B",
     "color": "blue",
     "formattedTime": "14:00-17:00",
-    "registrationTime": "13.00"
+    "registrationTime": "13.00",
+    "disabled": false
   },
   {
     "id": 17,
