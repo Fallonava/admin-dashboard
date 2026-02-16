@@ -8,7 +8,7 @@ import type { Doctor } from "@/lib/data-service";
 export default function DoctorsPage() {
     const [doctors, setDoctors] = useState<Doctor[]>([]);
     const [showModal, setShowModal] = useState(false);
-    const [editingId, setEditingId] = useState<number | null>(null);
+    const [editingId, setEditingId] = useState<string | number | null>(null);
     const [searchTerm, setSearchTerm] = useState("");
 
     // Form State
@@ -16,7 +16,11 @@ export default function DoctorsPage() {
         name: "",
         specialty: "",
         category: "NonBedah",
-        status: "Idle"
+        status: "Idle",
+        queueCode: "",
+        startTime: "",
+        endTime: "",
+        registrationTime: ""
     });
 
     useEffect(() => {
@@ -45,7 +49,7 @@ export default function DoctorsPage() {
         fetchDoctors();
     };
 
-    const handleDelete = async (id: number) => {
+    const handleDelete = async (id: string | number) => {
         if (!confirm("Are you sure you want to delete this doctor?")) return;
         await fetch(`/api/doctors?id=${id}`, { method: 'DELETE' });
         fetchDoctors();
@@ -60,7 +64,7 @@ export default function DoctorsPage() {
     const closeModal = () => {
         setShowModal(false);
         setEditingId(null);
-        setFormData({ name: "", specialty: "", category: "NonBedah", status: "Idle" });
+        setFormData({ name: "", specialty: "", category: "NonBedah", status: "Idle", queueCode: "", startTime: "", endTime: "", registrationTime: "" });
     };
 
     const requestStatusChange = async (doc: Doctor, newStatus: Doctor['status']) => {
@@ -114,8 +118,8 @@ export default function DoctorsPage() {
                     <div key={doc.id} className="group glass-card rounded-2xl p-5 hover:border-primary/50 transition-all">
                         <div className="flex items-start justify-between mb-4">
                             <div className="flex items-center gap-4">
-                                <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center text-muted-foreground">
-                                    {doc.image ? <img src={doc.image} alt={doc.name} className="h-full w-full rounded-full object-cover" /> : <User size={24} />}
+                                <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-lg border border-primary/20">
+                                    {doc.queueCode || doc.name.charAt(0)}
                                 </div>
                                 <div>
                                     <h3 className="font-bold text-foreground text-lg">{doc.name}</h3>
@@ -144,8 +148,9 @@ export default function DoctorsPage() {
                                 <span className={cn(
                                     "text-xs font-bold",
                                     doc.status === 'Idle' ? "text-muted-foreground" :
-                                        doc.status === 'Buka' ? "text-blue-500" :
-                                            doc.status === 'Penuh' ? "text-orange-500" : "text-amber-500"
+                                        doc.status === 'BUKA' ? "text-blue-500" :
+                                            doc.status === 'PENUH' ? "text-orange-500" :
+                                                doc.status === 'CUTI' ? "text-pink-500" : "text-amber-500"
                                 )}>
                                     {doc.status || "AUTO"}
                                 </span>
@@ -195,13 +200,55 @@ export default function DoctorsPage() {
                                 </select>
                             </div>
 
-                            <div className="pt-4 flex gap-3">
-                                <button onClick={closeModal} className="flex-1 py-2.5 rounded-lg border border-border text-muted-foreground text-sm font-medium hover:bg-muted">
-                                    Cancel
-                                </button>
-                                <button onClick={handleSubmit} className="flex-1 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90">
-                                    {editingId ? 'Save Changes' : 'Create Doctor'}
-                                </button>
+                            <div className="grid grid-cols-3 gap-2">
+                                <div>
+                                    <label className="block text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wide">Mulai</label>
+                                    <input
+                                        className="w-full bg-secondary/30 border border-transparent hover:border-border focus:border-primary rounded-xl p-3 text-foreground text-sm outline-none transition-all placeholder:text-muted-foreground/50 text-center"
+                                        placeholder="08:00"
+                                        maxLength={5}
+                                        value={formData.startTime || ""}
+                                        onChange={e => setFormData({ ...formData, startTime: e.target.value })}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wide">Selesai</label>
+                                    <input
+                                        className="w-full bg-secondary/30 border border-transparent hover:border-border focus:border-primary rounded-xl p-3 text-foreground text-sm outline-none transition-all placeholder:text-muted-foreground/50 text-center"
+                                        placeholder="14:00"
+                                        maxLength={5}
+                                        value={formData.endTime || ""}
+                                        onChange={e => setFormData({ ...formData, endTime: e.target.value })}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wide">Jam Daftar</label>
+                                    <input
+                                        className="w-full bg-secondary/30 border border-transparent hover:border-border focus:border-primary rounded-xl p-3 text-foreground text-sm outline-none transition-all placeholder:text-muted-foreground/50 text-center"
+                                        placeholder="07:30"
+                                        maxLength={5}
+                                        value={formData.registrationTime || ""}
+                                        onChange={e => setFormData({ ...formData, registrationTime: e.target.value })}
+                                    />
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wide">Queue Code</label>
+                                <input
+                                    className="w-full bg-secondary/30 border border-transparent hover:border-border focus:border-primary rounded-xl p-3 text-foreground text-sm outline-none transition-all placeholder:text-muted-foreground/50"
+                                    placeholder="e.g. A-01"
+                                    value={formData.queueCode || ""}
+                                    onChange={e => setFormData({ ...formData, queueCode: e.target.value })}
+                                />
+
+                                <div className="pt-4 flex gap-3">
+                                    <button onClick={closeModal} className="flex-1 py-2.5 rounded-lg border border-border text-muted-foreground text-sm font-medium hover:bg-muted">
+                                        Cancel
+                                    </button>
+                                    <button onClick={handleSubmit} className="flex-1 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90">
+                                        {editingId ? 'Save Changes' : 'Create Doctor'}
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -1,55 +1,25 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import useSWR, { mutate } from "swr";
 import { Activity, Users, MonitorPlay, AlertCircle, Search, Filter, Zap, Power } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { Doctor, LeaveRequest, Shift } from "@/lib/data-service";
+import type { Doctor, LeaveRequest, Shift, Settings } from "@/lib/data-service";
 import { StatsCards } from "@/components/schedules/StatsCards";
-import { UpcomingShifts } from "@/components/schedules/UpcomingShifts";
+
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 export default function Home() {
-  const [doctors, setDoctors] = useState<Doctor[]>([]);
-  const [leaves, setLeaves] = useState<LeaveRequest[]>([]);
-  const [shifts, setShifts] = useState<Shift[]>([]); // Need shifts for automation
-  const [loading, setLoading] = useState(true);
+  const { data: doctors = [], mutate: mutateDoctors } = useSWR<Doctor[]>('/api/doctors');
+  const { data: leaves = [] } = useSWR<LeaveRequest[]>('/api/leaves');
+  const { data: shifts = [] } = useSWR<Shift[]>('/api/shifts');
+  const { data: settings, mutate: mutateSettings } = useSWR<Settings>('/api/settings');
+
   const [searchQuery, setSearchQuery] = useState("");
-  const [automationEnabled, setAutomationEnabled] = useState(false);
-
-  // Initial Fetch
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [docRes, leaveRes, shiftRes, setRes] = await Promise.all([
-          fetch('/api/doctors'),
-          fetch('/api/leaves'),
-          fetch('/api/shifts'),
-          fetch('/api/settings')
-        ]);
-
-        const docData = await docRes.json();
-        const leaveData = await leaveRes.json();
-        const shiftData = await shiftRes.json();
-        const settingsData = await setRes.json();
-
-        setDoctors(docData);
-        setLeaves(leaveData);
-        setShifts(shiftData);
-        setAutomationEnabled(settingsData.automationEnabled);
-        setLoading(false);
-      } catch (error) {
-        console.error("Failed to fetch data", error);
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-    // Poll for data updates
-    const interval = setInterval(fetchData, 10000);
-    return () => clearInterval(interval);
-  }, []);
 
   // Automation Logic
+  const automationEnabled = settings?.automationEnabled || false;
+
   useEffect(() => {
     if (!automationEnabled || doctors.length === 0 || shifts.length === 0) return;
 
@@ -57,10 +27,17 @@ export default function Home() {
       const now = new Date();
       const currentDayIdx = now.getDay() === 0 ? 6 : now.getDay() - 1; // 0=Mon
       const currentHour = now.getHours();
+      const currentTs = now.getTime();
+      const OVERRIDE_TIMEOUT = 30 * 60 * 1000; // 30 minutes
 
       doctors.forEach(async (doc) => {
-        // Skip if currently on leave or break (unless we want to force override, but usually leave takes precedence)
-        if (doc.status === 'Cuti') return;
+        // Skip if currently on leave or break
+        if (doc.status === 'CUTI') return;
+
+        // SKIP if manually overridden recently
+        if (doc.lastManualOverride && (currentTs - doc.lastManualOverride < OVERRIDE_TIMEOUT)) {
+          return;
+        }
 
         // Find active shift for this doctor
         const activeShift = shifts.find(s => {
@@ -73,19 +50,17 @@ export default function Home() {
 
         let newStatus: Doctor['status'] = 'Idle';
         if (activeShift) {
-          newStatus = 'Buka'; // Default to Open if shift is active
+          newStatus = 'BUKA'; // Default to Open if shift is active
         }
 
         // If status should change, update it
-        // Note: This logic is simple. "Penuh" could be a manual override we respect?
-        // For "Overpower" mode, let's say we strictly enforce Open/Idle based on schedule, 
-        // but maybe respect "Penuh" if they are currently Open? 
-        // Let's stick to: Shift = Buka, No Shift = Idle.
-        if (doc.status !== newStatus && doc.status !== 'Penuh') { // Respect 'Penuh' manual override
-          if (doc.status === 'Idle' && newStatus === 'Buka') {
-            await updateStatus(doc.id, 'Buka');
-          } else if ((doc.status === 'Buka') && newStatus === 'Idle') {
-            await updateStatus(doc.id, 'Idle');
+        // Note: Shift = BUKA, No Shift = Idle.
+        if (doc.status !== newStatus && doc.status !== 'PENUH') { // Respect 'PENUH' manual override (unless we want strict enforcement)
+          // Actually, let's allow 'PENUH' to persist as well if it was set manually, effectively treated as an override found above.
+          if (doc.status === 'Idle' && newStatus === 'BUKA') {
+            await autoUpdateStatus(doc.id, 'BUKA');
+          } else if ((doc.status === 'BUKA') && newStatus === 'Idle') {
+            await autoUpdateStatus(doc.id, 'Idle');
           }
         }
       });
@@ -97,30 +72,38 @@ export default function Home() {
   }, [automationEnabled, doctors, shifts]);
 
   const toggleAutomation = async () => {
-    const newState = !automationEnabled;
-    setAutomationEnabled(newState);
-    // Persist
+    if (!settings) return;
+    const newState = !settings.automationEnabled;
+
+    // Optimistic update for settings
+    mutateSettings({ ...settings, automationEnabled: newState }, false);
+
     try {
       await fetch('/api/settings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ automationEnabled: newState })
       });
-    } catch (e) { console.error("Failed to save settings", e); }
+      mutateSettings(); // Revalidate
+    } catch (e) {
+      console.error("Failed to save settings", e);
+      mutateSettings(); // Revert on error
+    }
   };
 
-  const updateStatus = async (id: number, status: Doctor['status']) => {
+  // Helper for Automation (does NOT set manual override flag)
+  const autoUpdateStatus = async (id: string | number, status: Doctor['status']) => {
     const now = new Date();
-    const timeString = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+    const timeString = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false }).replace('.', ':');
 
     // Optimistic update
-    setDoctors(docs => docs.map(d =>
+    mutateDoctors(docs => docs?.map(d =>
       d.id === id ? {
         ...d,
         status,
-        lastCall: (status === 'Buka' || status === 'Penuh') ? timeString : d.lastCall
+        lastCall: (status === 'BUKA' || status === 'PENUH') ? timeString : d.lastCall
       } : d
-    ));
+    ), false);
 
     await fetch('/api/doctors', {
       method: 'PUT',
@@ -128,27 +111,57 @@ export default function Home() {
       body: JSON.stringify({
         id,
         status,
-        lastCall: (status === 'Buka' || status === 'Penuh') ? timeString : undefined
+        lastCall: (status === 'BUKA' || status === 'PENUH') ? timeString : undefined,
+        // No lastManualOverride sent here
       })
     });
+    mutateDoctors();
   };
 
-  const activeDocs = doctors.filter(d => d.status === 'Buka' || d.status === 'Penuh');
-  const onLeaveDocs = doctors.filter(d => d.status === 'Cuti');
+  // Manual Status Update (SETS manual override flag)
+  const manualUpdateStatus = async (id: string | number, status: Doctor['status']) => {
+    const now = new Date();
+    const timeString = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false }).replace('.', ':');
+    const timestamp = now.getTime();
+
+    // Optimistic update
+    mutateDoctors(docs => docs?.map(d =>
+      d.id === id ? {
+        ...d,
+        status,
+        lastCall: (status === 'BUKA' || status === 'PENUH') ? timeString : d.lastCall,
+        lastManualOverride: timestamp
+      } : d
+    ), false);
+
+    await fetch('/api/doctors', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        id,
+        status,
+        lastCall: (status === 'BUKA' || status === 'PENUH') ? timeString : undefined,
+        lastManualOverride: timestamp
+      })
+    });
+    mutateDoctors();
+  };
+
+  const activeDocs = doctors.filter(d => d.status === 'BUKA' || d.status === 'PENUH');
+  const onLeaveDocs = doctors.filter(d => d.status === 'CUTI');
 
   // Stats calculation
   const pendingLeaves = leaves.filter(l => l.status === 'Pending').length;
 
   const [efficiency, setEfficiency] = useState(0);
 
-  // Calculate efficiency (mock calculation based on active vs total)
-  // 100% if all doctors are active, but normally ~80-90% is good
+  // Calculate efficiency
   useEffect(() => {
     if (doctors.length > 0) {
       const baseEff = Math.round((activeDocs.length / doctors.length) * 100);
       setEfficiency(baseEff > 0 ? 90 + Math.round(Math.random() * 5) : 0);
     }
-  }, [doctors, activeDocs.length]);
+  }, [doctors.length, activeDocs.length]);
 
   const stats = {
     activeDoctors: activeDocs.length,
@@ -164,7 +177,7 @@ export default function Home() {
 
   // Dynamic greeting
   const hour = new Date().getHours();
-  const greeting = hour < 12 ? "Good Morning" : hour < 18 ? "Good Afternoon" : "Good Evening";
+  const greeting = hour < 11 ? "Selamat Pagi" : hour < 15 ? "Selamat Siang" : hour < 18 ? "Selamat Sore" : "Selamat Malam";
 
   return (
     <div className="flex h-full">
@@ -175,7 +188,7 @@ export default function Home() {
             <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70">
               {greeting}, Dr. Admin
             </h1>
-            <p className="text-sm text-muted-foreground mt-1">Here is the latest update for your clinic today.</p>
+            <p className="text-sm text-muted-foreground mt-1">Berikut update terbaru klinik Anda hari ini.</p>
           </div>
 
           <div className="flex items-center gap-4">
@@ -190,7 +203,7 @@ export default function Home() {
               )}
             >
               <Zap size={18} className={cn(automationEnabled && "fill-current animate-pulse")} />
-              {automationEnabled ? "SYSTEM OVERPOWER: ON" : "Automation: Off"}
+              {automationEnabled ? "SISTEM OVERPOWER: AKTIF" : "Otomatisasi: Nonaktif"}
             </button>
 
             <div className="h-8 w-px bg-border mx-2" />
@@ -199,7 +212,7 @@ export default function Home() {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <input
                 type="text"
-                placeholder="Search doctors..."
+                placeholder="Cari dokter..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-9 pr-4 py-2 rounded-xl bg-muted/50 border border-border focus:bg-background focus:ring-2 focus:ring-primary/20 transition-all text-sm w-48 outline-none"
@@ -223,7 +236,7 @@ export default function Home() {
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-bold flex items-center gap-2">
                   <span className="w-1.5 h-6 rounded-full bg-primary/80"></span>
-                  Live Status Control
+                  Kontrol Status Langsung
                 </h3>
 
                 <div className="flex items-center gap-2">
@@ -243,7 +256,7 @@ export default function Home() {
                         automationEnabled ? "bg-violet-500" : "bg-emerald-500"
                       )}></span>
                     </span>
-                    {automationEnabled ? "AI Managing System" : "System Online"}
+                    {automationEnabled ? "AI Mengelola Sistem" : "Sistem Online"}
                   </div>
                 </div>
               </div>
@@ -262,18 +275,18 @@ export default function Home() {
                         <Avatar className="h-12 w-12 border-2 border-background shadow-sm">
                           <AvatarFallback className={cn(
                             "text-sm font-bold text-white",
-                            doc.status === 'Buka' ? "bg-blue-500" :
-                              doc.status === 'Penuh' ? "bg-orange-500" :
-                                doc.status === 'Cuti' ? "bg-pink-500" : "bg-slate-500"
+                            doc.status === 'BUKA' ? "bg-blue-500" :
+                              doc.status === 'PENUH' ? "bg-orange-500" :
+                                doc.status === 'CUTI' ? "bg-pink-500" : "bg-slate-500"
                           )}>
-                            {doc.name.charAt(4)}
+                            {doc.queueCode || doc.name.charAt(4)}
                           </AvatarFallback>
                         </Avatar>
                         <div>
                           <h4 className="font-bold text-base text-foreground leading-tight group-hover:text-primary transition-colors">{doc.name}</h4>
                           <div className="flex items-center gap-2 mt-0.5">
                             <p className="text-xs text-muted-foreground font-medium">{doc.specialty}</p>
-                            {(doc.status === 'Buka' || doc.status === 'Penuh') && (
+                            {(doc.status === 'BUKA' || doc.status === 'PENUH') && (
                               <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded-md border border-border/50">
                                 <span className="text-[9px] font-medium tracking-wide">BATAS JAM:</span>
                                 <input
@@ -281,7 +294,7 @@ export default function Home() {
                                   value={doc.lastCall || ''}
                                   onChange={(e) => {
                                     const newTime = e.target.value;
-                                    setDoctors(curr => curr.map(d => d.id === doc.id ? { ...d, lastCall: newTime } : d));
+                                    mutateDoctors(curr => curr?.map(d => d.id === doc.id ? { ...d, lastCall: newTime } : d), false);
                                     fetch('/api/doctors', {
                                       method: 'PUT',
                                       headers: { 'Content-Type': 'application/json' },
@@ -297,9 +310,9 @@ export default function Home() {
                       </div>
                       <div className={cn(
                         "px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider border",
-                        doc.status === 'Buka' ? "bg-blue-500/10 text-blue-600 border-blue-500/20" :
-                          doc.status === 'Penuh' ? "bg-orange-500/10 text-orange-600 border-orange-500/20" :
-                            doc.status === 'Cuti' ? "bg-pink-500/10 text-pink-600 border-pink-500/20" :
+                        doc.status === 'BUKA' ? "bg-blue-500/10 text-blue-600 border-blue-500/20" :
+                          doc.status === 'PENUH' ? "bg-orange-500/10 text-orange-600 border-orange-500/20" :
+                            doc.status === 'CUTI' ? "bg-pink-500/10 text-pink-600 border-pink-500/20" :
                               "bg-slate-500/10 text-slate-500 border-slate-500/20"
                       )}>
                         {doc.status || 'Offline'}
@@ -308,21 +321,21 @@ export default function Home() {
 
                     <div className="grid grid-cols-4 gap-2 relative z-10">
                       {[
-                        { id: 'Idle', label: 'Auto', className: 'bg-slate-500 text-white border-slate-600 shadow-slate-500/20 hover:bg-slate-600' },
-                        { id: 'Buka', label: 'Open', className: 'bg-blue-500 text-white border-blue-600 shadow-blue-500/20 hover:bg-blue-600' },
-                        { id: 'Penuh', label: 'Full', className: 'bg-orange-500 text-white border-orange-600 shadow-orange-500/20 hover:bg-orange-600' },
-                        { id: 'Cuti', label: 'Leave', className: 'bg-pink-500 text-white border-pink-600 shadow-pink-500/20 hover:bg-pink-600' },
+                        { id: 'Idle', label: 'Otomatis', className: 'bg-slate-500 text-white border-slate-600 shadow-slate-500/20 hover:bg-slate-600' },
+                        { id: 'BUKA', label: 'Buka', className: 'bg-blue-500 text-white border-blue-600 shadow-blue-500/20 hover:bg-blue-600' },
+                        { id: 'PENUH', label: 'Penuh', className: 'bg-orange-500 text-white border-orange-600 shadow-orange-500/20 hover:bg-orange-600' },
+                        { id: 'CUTI', label: 'Cuti', className: 'bg-pink-500 text-white border-pink-600 shadow-pink-500/20 hover:bg-pink-600' },
                       ].map((action) => (
                         <button
                           key={action.id}
-                          onClick={() => !automationEnabled && updateStatus(doc.id, action.id as any)}
-                          disabled={automationEnabled}
+                          // Allow manual update even if automation is enabled, to trigger manual override
+                          onClick={() => manualUpdateStatus(doc.id, action.id as any)}
                           className={cn(
                             "py-1.5 rounded-lg text-[10px] font-bold transition-all border shadow-md",
                             doc.status === action.id
                               ? action.className
                               : "bg-muted hover:bg-muted/80 text-muted-foreground border-transparent hover:border-border shadow-none",
-                            automationEnabled && "opacity-50 cursor-not-allowed grayscale hover:bg-muted"
+                            // Warning style if overriding automation? Nah, just let them do it.
                           )}
                         >
                           {action.label}
@@ -351,8 +364,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Right Sidebar: Upcoming Shifts (Visible on XL screens) */}
-      <UpcomingShifts />
+
     </div>
   );
 }

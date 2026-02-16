@@ -1,102 +1,33 @@
 import { NextResponse } from 'next/server';
-import { doctorStore, shiftStore, broadcastStore } from '@/lib/data-service';
+import { doctorStore, settingsStore, Doctor, Settings } from '@/lib/data-service';
 
 export async function GET() {
-    // 1. Get real doctors from doctorStore
-    const allDoctors = doctorStore.getAll();
-    const allShifts = shiftStore.getAll();
+    const doctors = doctorStore.getAll();
+    const settings = settingsStore.getAll()[0] || { id: 1, automationEnabled: false, runTextMessage: "Selamat Datang di RSU Siaga Medika", emergencyMode: false };
 
-    // Today's day index (Mon=0, Sun=6)
-    const today = new Date();
-    const dayIdx = today.getDay() === 0 ? 6 : today.getDay() - 1;
+    // Inject default custom messages if missing (migration for existing data)
+    if (!settings.customMessages || settings.customMessages.length === 0) {
+        settings.customMessages = [
+            { title: 'Info', text: 'Terimakasih sudah menunggu 🙏' },
+            { title: 'Info', text: 'Terimakasih sudah tertib 🌟' },
+            { title: 'Antrian', text: 'Belum online? Yo ambil antrian 🎫' },
+            { title: 'Info', text: 'Terimakasih sudah mengantri 😊' }
+        ];
+        // Persist the migration
+        settingsStore.update(settings.id, settings);
+    }
 
-    // Build a map: doctor name -> their shifts today
-    const doctorShiftsToday: Record<string, typeof allShifts> = {};
-    allShifts.forEach(s => {
-        if (s.dayIdx === dayIdx) {
-            if (!doctorShiftsToday[s.doctor]) doctorShiftsToday[s.doctor] = [];
-            doctorShiftsToday[s.doctor].push(s);
-        }
-    });
+    // Format data to match what display/index.html expects
+    // Based on index.html: it expects { doctors: [...], settings: {...} }
+    // Doctor fields expected: name, specialty, status, startTime, endTime, queueCode, category, callTime?
 
-    // Map doctors to display format
-    const doctors = allDoctors.map(doc => {
-        const shifts = doctorShiftsToday[doc.name] || [];
-        const hasShiftToday = shifts.length > 0;
+    // We Map 'Doctor' from data-service to the format expected by Display
+    // Actually, our new Doctor interface in data-service ALREADY matches what Display needs mostly.
 
-        // Determine practice time from shift
-        let practiceTime = '-';
-        let startTime = '-';
-        let endTime = '-';
-        // Admin-set status is the PRIMARY source of truth
-        const STATUS_MAP: Record<string, string> = {
-            'Buka': 'BUKA',
-            'Penuh': 'PENUH',
-            'Cuti': 'CUTI',
-            'Istirahat': 'ISTIRAHAT',
-            'Selesai': 'SELESAI',
-        };
-
-        // Use admin status directly if it's explicitly set (not Idle)
-        let status = STATUS_MAP[doc.status] || 'TIDAK PRAKTEK';
-
-        if (hasShiftToday) {
-            const shift = shifts[0];
-            if (shift.formattedTime) {
-                practiceTime = shift.formattedTime;
-                const parts = shift.formattedTime.split('-');
-                startTime = parts[0] || '-';
-                endTime = parts[1] || '-';
-            } else {
-                const times = ["08:00-12:00", "12:00-16:00", "16:00-20:00", "20:00-24:00"];
-                const timeStr = times[shift.timeIdx] || "08:00-12:00";
-                practiceTime = timeStr;
-                const parts = timeStr.split('-');
-                startTime = parts[0];
-                endTime = parts[1];
-            }
-
-            // Only use time-based fallback when doctor status is 'Idle'
-            if (doc.status === 'Idle') {
-                const currentH = today.getHours();
-                const startH = parseInt(startTime.split(':')[0] || '0');
-                const endH = parseInt(endTime.split(':')[0] || '24');
-
-                if (currentH >= startH && currentH < endH) {
-                    status = 'BUKA';
-                } else if (currentH < startH) {
-                    status = 'BELUM BUKA';
-                } else {
-                    status = 'SELESAI';
-                }
-            }
-        }
-
-        return {
-            name: doc.name,
-            specialty: doc.specialty,
-            status,
-            practiceTime,
-            startTime,
-            endTime,
-            category: doc.category,
-            queueCode: 'A-' + doc.id,
-            callTime: '00:00'
-        };
-    });
-
-    // 2. Get active broadcast for ticker
-    const broadcasts = broadcastStore.getAll();
-    const activeBroadcast = broadcasts.find(b => b.active) || { message: "" };
-
-    const responseData = {
+    return NextResponse.json({
         doctors,
-        settings: {
-            runTextMessage: activeBroadcast.message || '© 2026 TPPRJ RSU Siaga Medika Purbalingga'
-        }
-    };
-
-    return NextResponse.json(responseData, {
+        settings
+    }, {
         headers: {
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
@@ -107,13 +38,69 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-    return NextResponse.json({ success: true }, {
-        headers: {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-            'Access-Control-Allow-Headers': 'Content-Type',
-        },
-    });
+    try {
+        const body = await request.json();
+
+        // Handle updates from Display Control Page
+        if (body.doctors) {
+            // Bulk update or overwrite?
+            // The display control page sends the WHOLE state back.
+            // We should probably replace our store data or update individually.
+            // For simplicity and to match previous behavior (saveDisplayData), we save the list.
+
+            // However, JSONStore doesn't have a 'setAll' method openly exposed as 'save' is private.
+            // We need to implement a way to update. 
+            // Since we don't want to break encapsulation too much, we can iterate update or delete all and create.
+            // But 'JSONStore' is simple. Let's assume we can add a 'setAll' or just map updates.
+
+            // Ideally we should update individual items to avoid overwriting IDs or other separate fields if we were a real DB.
+            // But here, let's treat the body.doctors as the source of truth for now, 
+            // OR update matching IDs.
+
+            const currentDocs = doctorStore.getAll();
+            const incomingDocs = body.doctors as Doctor[];
+
+            // 1. Update existing and Create new
+            incomingDocs.forEach(inc => {
+                const exists = currentDocs.find(d => d.id == inc.id);
+                if (exists) {
+                    doctorStore.update(inc.id, inc);
+                } else {
+                    doctorStore.create(inc);
+                }
+            });
+
+            // 2. Delete missing? 
+            // If the control panel removes a doctor, it won't be in incomingDocs.
+            // So we should find IDs in currentDocs that are NOT in incomingDocs and delete them.
+            const incomingIds = new Set(incomingDocs.map(d => d.id));
+            currentDocs.forEach(d => {
+                if (!incomingIds.has(d.id)) {
+                    doctorStore.delete(d.id);
+                }
+            });
+        }
+
+        if (body.settings) {
+            const currentSettings = settingsStore.getAll()[0];
+            if (currentSettings) {
+                settingsStore.update(currentSettings.id, body.settings);
+            } else {
+                settingsStore.create(body.settings);
+            }
+        }
+
+        return NextResponse.json({ success: true }, {
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+                'Access-Control-Allow-Headers': 'Content-Type',
+            },
+        });
+    } catch (error) {
+        console.error("Error in POST /api/display", error);
+        return NextResponse.json({ error: "Failed to save data" }, { status: 500 });
+    }
 }
 
 export async function OPTIONS() {

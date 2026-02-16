@@ -1,18 +1,1 @@
-[
-  {
-    "id": 1,
-    "message": "Welcome to RSU Siaga Medika",
-    "alertLevel": "Information",
-    "targetZone": "All Zones",
-    "duration": 60,
-    "active": true
-  },
-  {
-    "message": "Budayakan Mengantri",
-    "alertLevel": "Information",
-    "targetZone": "All Zones",
-    "duration": 15,
-    "active": true,
-    "id": 1771079371218
-  }
-]
+[]

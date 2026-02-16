@@ -41,7 +41,8 @@ export function RealtimeCalendar() {
         dayIdx: 0,
         start: "08:00",
         end: "12:00",
-        title: "Praktek"
+        title: "Praktek",
+        registrationTime: "07:30"
     });
 
     useEffect(() => {
@@ -119,11 +120,12 @@ export function RealtimeCalendar() {
                 dayIdx: newShift.dayIdx,
                 timeIdx: 0,
                 formattedTime,
+                registrationTime: newShift.registrationTime,
                 color: 'blue'
             })
         });
         setShowAddModal(false);
-        setNewShift({ doctor: "", dayIdx: 0, start: "08:00", end: "12:00", title: "Praktek" });
+        setNewShift({ doctor: "", dayIdx: 0, start: "08:00", end: "12:00", title: "Praktek", registrationTime: "07:30" });
         fetchData();
     };
 
@@ -241,6 +243,11 @@ export function RealtimeCalendar() {
                                                         <Clock size={8} className="text-slate-500 flex-shrink-0" />
                                                         <span className="text-[9px] font-mono text-slate-500">{shift.formattedTime}</span>
                                                     </div>
+                                                    {shift.registrationTime && (
+                                                        <div className="text-[8px] text-slate-500 mt-1 opacity-75">
+                                                            Reg: {shift.registrationTime}
+                                                        </div>
+                                                    )}
                                                 </div>
                                             );
                                         })}
@@ -321,6 +328,16 @@ export function RealtimeCalendar() {
                                         onChange={e => setNewShift({ ...newShift, end: e.target.value })}
                                     />
                                 </div>
+                            </div>
+
+                            <div>
+                                <label className="text-[10px] text-slate-500 font-medium uppercase tracking-wider block mb-1.5">Registration Time</label>
+                                <input
+                                    type="time"
+                                    className="w-full bg-white/[0.03] border border-white/[0.08] rounded-xl p-2.5 text-sm text-white focus:border-blue-500/50 outline-none transition-all"
+                                    value={newShift.registrationTime || ''}
+                                    onChange={e => setNewShift({ ...newShift, registrationTime: e.target.value })}
+                                />
                             </div>
 
                             <div className="pt-2 flex gap-3">

@@ -61,9 +61,9 @@ export function UpcomingShifts() {
         setIsFormOpen(true);
     };
 
-    const handleDelete = async (e: React.MouseEvent, id: number) => {
+    const handleDelete = async (e: React.MouseEvent, id: string | number) => {
         e.stopPropagation();
-        if (!confirm("Are you sure you want to delete this doctor?")) return;
+        if (!confirm("Apakah Anda yakin ingin menghapus dokter ini?")) return;
 
         try {
             await fetch(`/api/doctors?id=${id}`, { method: 'DELETE' });
@@ -81,14 +81,14 @@ export function UpcomingShifts() {
                 <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
                         <Users size={12} className="text-violet-400" />
-                        <h3 className="text-[10px] font-bold text-white uppercase tracking-widest">All Doctors</h3>
+                        <h3 className="text-[10px] font-bold text-white uppercase tracking-widest">Semua Dokter</h3>
                     </div>
                     <div className="flex items-center gap-3">
                         <span className="text-[9px] text-slate-500 font-bold">{filteredDoctors.length}</span>
                         <button
                             onClick={handleAdd}
                             className="bg-violet-600 hover:bg-violet-500 text-white p-1 rounded-md transition-colors shadow-lg shadow-violet-500/20"
-                            title="Add Doctor"
+                            title="Tambah Dokter"
                         >
                             <Plus size={12} />
                         </button>
@@ -100,7 +100,7 @@ export function UpcomingShifts() {
                     <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500 h-3 w-3" />
                     <input
                         type="text"
-                        placeholder="Find doctor..."
+                        placeholder="Cari dokter..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         className="w-full bg-slate-900/50 border border-white/[0.05] rounded-lg pl-8 pr-3 py-1.5 text-[10px] text-white placeholder:text-slate-600 focus:outline-none focus:border-violet-500/50 transition-colors"
@@ -120,7 +120,7 @@ export function UpcomingShifts() {
                                     <img src={doc.image} alt={doc.name} className="h-full w-full object-cover" />
                                 ) : (
                                     <AvatarFallback className="bg-slate-800 text-[10px] font-bold text-slate-400 group-hover:text-white group-hover:bg-violet-500 transition-colors">
-                                        {getInitials(doc.name)}
+                                        {doc.queueCode || getInitials(doc.name)}
                                     </AvatarFallback>
                                 )}
                             </Avatar>
@@ -141,7 +141,7 @@ export function UpcomingShifts() {
                                 <button
                                     onClick={(e) => handleDelete(e, doc.id)}
                                     className="p-1.5 text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-md transition-colors"
-                                    title="Delete"
+                                    title="Hapus"
                                 >
                                     <Trash2 size={10} />
                                 </button>
@@ -156,6 +156,7 @@ export function UpcomingShifts() {
                 shifts={shifts}
                 isOpen={isScheduleModalOpen}
                 onClose={() => setIsScheduleModalOpen(false)}
+                onUpdate={fetchAll}
             />
 
             <DoctorFormModal

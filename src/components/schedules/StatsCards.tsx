@@ -25,7 +25,7 @@ export function StatsCards({ stats }: StatsCardsProps) {
 
     const cards = [
         {
-            label: "On Duty",
+            label: "Bertugas",
             value: safeStats.activeDoctors,
             sub: `/ ${safeStats.totalDoctors}`,
             icon: BriefcaseMedical,
@@ -33,14 +33,14 @@ export function StatsCards({ stats }: StatsCardsProps) {
             progress: safeStats.totalDoctors > 0 ? (safeStats.activeDoctors / safeStats.totalDoctors) * 100 : 0,
         },
         {
-            label: "On Leave",
+            label: "Cuti",
             value: safeStats.onLeave,
-            sub: "doctors",
+            sub: "dokter",
             icon: FileClock,
             color: "violet",
         },
         {
-            label: "Efficiency",
+            label: "Efisiensi",
             value: `${safeStats.efficiency}%`,
             sub: "+2.4%", // This could be dynamic later if we have historical data
             subColor: "text-emerald-400",

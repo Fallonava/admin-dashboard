@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1771157626980,
+    "automationEnabled": true,
+    "emergencyMode": false,
+    "runTextMessage": "tes",
+    "customMessages": [
+      {
+        "title": "Info",
+        "text": "Terimakasih sudah menunggu 🙏"
+      },
+      {
+        "title": "Info",
+        "text": "Terimakasih sudah tertib 🌟"
+      },
+      {
+        "title": "Antrian",
+        "text": "Belum online? Yo ambil antrian 🎫"
+      },
+      {
+        "title": "Info",
+        "text": "Terimakasih sudah mengantri 😊"
+      }
+    ]
+  },
+  {
+    "id": 1771157878367,
+    "automationEnabled": true
+  },
+  {
+    "id": 1771157878998,
+    "automationEnabled": false
+  },
+  {
+    "id": 1771160403920,
+    "automationEnabled": true
+  },
+  {
+    "id": 1771160404994,
+    "automationEnabled": false
+  }
+]

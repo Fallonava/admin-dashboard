@@ -1,0 +1,244 @@
+[
+  {
+    "id": 103,
+    "name": "dr. Endro RI Wibowo, Sp. B",
+    "specialty": "Bedah Umum",
+    "status": "Idle",
+    "category": "Bedah",
+    "queueCode": "BP",
+    "startTime": "06:00",
+    "endTime": "13:00",
+    "lastCall": "19:17",
+    "registrationTime": "08.00"
+  },
+  {
+    "id": 1031,
+    "name": "dr. Endro RI Wibowo, Sp. B",
+    "specialty": "Bedah Umum (Siang)",
+    "status": "Idle",
+    "category": "Bedah",
+    "queueCode": "BS",
+    "startTime": "13:00",
+    "endTime": "17:00"
+  },
+  {
+    "id": 123,
+    "name": "drg. Robby Ramadhonie, Sp. BMM",
+    "specialty": "Gigi Bedah Mulut",
+    "status": "Idle",
+    "category": "Bedah",
+    "queueCode": "BM",
+    "startTime": "08:00",
+    "endTime": "12:00"
+  },
+  {
+    "id": 108,
+    "name": "dr. Ardian Rahmansyah, Sp. OG",
+    "specialty": "Kandungan (Malam)",
+    "status": "Idle",
+    "category": "Bedah",
+    "queueCode": "KM",
+    "startTime": "18:30",
+    "endTime": "21:00"
+  },
+  {
+    "id": 105,
+    "name": "dr. Gatot Hananta, Sp. OG",
+    "specialty": "Kandungan (Pagi)",
+    "status": "Idle",
+    "category": "Bedah",
+    "queueCode": "KP",
+    "startTime": "10:00",
+    "endTime": "14:00"
+  },
+  {
+    "id": 107,
+    "name": "dr. Pritasari Dewi D, Sp. OG",
+    "specialty": "Kandungan (Sore)",
+    "status": "Idle",
+    "category": "Bedah",
+    "queueCode": "KS",
+    "startTime": "14:30",
+    "endTime": "17:00"
+  },
+  {
+    "id": 117,
+    "name": "dr. Wahid Heru Widodo, Sp. M",
+    "specialty": "Mata",
+    "status": "Idle",
+    "category": "NonBedah",
+    "queueCode": "M",
+    "startTime": "07:00",
+    "endTime": "12:00"
+  },
+  {
+    "id": 101,
+    "name": "dr. Muhammad Luthfi, Sp. OT",
+    "specialty": "Orthopaedi",
+    "status": "Idle",
+    "category": "Bedah",
+    "queueCode": "OL",
+    "startTime": "09:00",
+    "endTime": "14:00"
+  },
+  {
+    "id": 102,
+    "name": "dr. Nanda Notario, Sp. OT",
+    "specialty": "Orthopaedi",
+    "status": "Idle",
+    "category": "Bedah",
+    "queueCode": "ON",
+    "startTime": "08:00",
+    "endTime": "10:30"
+  },
+  {
+    "id": 118,
+    "name": "dr. Lirans Tia K, Sp. THT KL",
+    "specialty": "THT-KL",
+    "status": "Idle",
+    "category": "Bedah",
+    "queueCode": "TP",
+    "startTime": "08:00",
+    "endTime": "12:00"
+  },
+  {
+    "id": 119,
+    "name": "dr. Wahyu Dwi K, Sp. THT KL",
+    "specialty": "THT-KL",
+    "status": "Idle",
+    "category": "Bedah",
+    "queueCode": "TS",
+    "startTime": "16:00",
+    "endTime": "19:00"
+  },
+  {
+    "id": 104,
+    "name": "dr. Eko Subekti, Sp. U",
+    "specialty": "Urologi",
+    "status": "Idle",
+    "category": "Bedah",
+    "queueCode": "U",
+    "startTime": "18:00",
+    "endTime": "21:00"
+  },
+  {
+    "id": 109,
+    "name": "dr. RR Irma Rossyana, Sp. A",
+    "specialty": "Anak",
+    "status": "Idle",
+    "category": "NonBedah",
+    "queueCode": "AP",
+    "startTime": "08:30",
+    "endTime": "14:00"
+  },
+  {
+    "id": 110,
+    "name": "dr. Annisa Noor A, Sp. A",
+    "specialty": "Anak (Sore)",
+    "status": "Idle",
+    "category": "NonBedah",
+    "queueCode": "AS",
+    "startTime": "15:00",
+    "endTime": "18:00"
+  },
+  {
+    "id": 131,
+    "name": "dr. Lita Hati Dwi PE, Sp. JP",
+    "specialty": "Jantung & Pembuluh Darah",
+    "status": "Idle",
+    "category": "NonBedah",
+    "queueCode": "H",
+    "startTime": "08:00",
+    "endTime": "14:00"
+  },
+  {
+    "id": 112,
+    "name": "dr. Nova Kurniasari, Sp. KJ",
+    "specialty": "Kesehatan Jiwa",
+    "status": "Idle",
+    "category": "NonBedah",
+    "queueCode": "JP",
+    "startTime": "07:30",
+    "endTime": "09:30"
+  },
+  {
+    "id": 111,
+    "name": "dr. Taufik Hidayanto, Sp. KJ",
+    "specialty": "Kesehatan Jiwa",
+    "status": "Idle",
+    "category": "NonBedah",
+    "queueCode": "JS",
+    "startTime": "14:30",
+    "endTime": "17:00"
+  },
+  {
+    "id": 130,
+    "name": "dr. Sigit Purnomohadi, Sp. PD",
+    "specialty": "Penyakit Dalam",
+    "status": "Idle",
+    "category": "NonBedah",
+    "queueCode": "DS",
+    "startTime": "13:30",
+    "endTime": "16:00"
+  },
+  {
+    "id": 129,
+    "name": "dr. Leo Chandra WPW, Sp. PD, M. KES",
+    "specialty": "Penyakit Dalam (Pagi)",
+    "status": "Idle",
+    "category": "NonBedah",
+    "queueCode": "DP",
+    "startTime": "09:00",
+    "endTime": "14:00"
+  },
+  {
+    "id": 1291,
+    "name": "dr. Leo Chandra WPW, Sp. PD, M. KES",
+    "specialty": "Penyakit Dalam (Sore)",
+    "status": "Idle",
+    "category": "NonBedah",
+    "queueCode": "DM",
+    "startTime": "18:00",
+    "endTime": "21:00"
+  },
+  {
+    "id": 132,
+    "name": "dr. Oke Viska, Sp. P",
+    "specialty": "Penyakit Paru",
+    "status": "Idle",
+    "category": "NonBedah",
+    "queueCode": "P",
+    "startTime": "10:00",
+    "endTime": "13:00"
+  },
+  {
+    "id": 124,
+    "name": "dr. Wati, SP. KFR",
+    "specialty": "Rehab Medik",
+    "status": "Idle",
+    "category": "NonBedah",
+    "queueCode": "RM",
+    "startTime": "11:30",
+    "endTime": "14:00"
+  },
+  {
+    "id": 1234,
+    "name": "dr. Setyo Dirahayu, Sp. N",
+    "specialty": "Saraf",
+    "status": "Idle",
+    "category": "NonBedah",
+    "queueCode": "SS",
+    "startTime": "13:00",
+    "endTime": "16:00"
+  },
+  {
+    "id": 127,
+    "name": "dr. Ahmad Tanji, Sp. N",
+    "specialty": "Saraf",
+    "status": "Idle",
+    "category": "NonBedah",
+    "queueCode": "SP",
+    "startTime": "06:00",
+    "endTime": "09:30"
+  }
+]

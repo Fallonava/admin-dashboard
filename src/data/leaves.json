@@ -1,18 +1,1 @@
-[
-  {
-    "id": 1,
-    "doctor": "Dr. Sarah Johnson",
-    "type": "Vacation",
-    "dates": "Oct 24 - 28",
-    "status": "Pending",
-    "avatar": "/avatars/dr-sarah.png"
-  },
-  {
-    "id": 2,
-    "doctor": "Dr. Michael Chen",
-    "type": "Conference",
-    "dates": "Nov 05 - 07",
-    "status": "Approved",
-    "avatar": "/avatars/dr-mike.png"
-  }
-]
+[]

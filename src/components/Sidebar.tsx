@@ -19,17 +19,17 @@ import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 const navigation = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
-  { name: "Schedules", href: "/schedules", icon: Calendar },
-  { name: "Doctors", href: "/doctors", icon: Users },
-  { name: "Leave Schedule", href: "/leaves", icon: Calendar },
-  { name: "Analytics", href: "/analytics", icon: BarChart3 },
+  { name: "Jadwal", href: "/schedules", icon: Calendar },
+  { name: "Dokter", href: "/doctors", icon: Users },
+  { name: "Jadwal Cuti", href: "/leaves", icon: Calendar },
+  { name: "Analitik", href: "/analytics", icon: BarChart3 },
 ];
 
 const systems = [
-  { name: "Automation", href: "/automation", icon: Bot },
-  { name: "Infrastructure", href: "/infrastructure", icon: Server },
-  { name: "Live Display", href: "/tv.html", icon: Tv, external: true },
-  { name: "Settings", href: "/settings", icon: Settings },
+  { name: "Otomatisasi", href: "/automation", icon: Bot },
+  { name: "Kontrol Layar", href: "/display-control", icon: Settings },
+  { name: "Infrastruktur", href: "/infrastructure", icon: Server },
+  { name: "Layar Langsung", href: "/tv.html", icon: Tv, external: true },
 ];
 
 export function Sidebar() {
@@ -70,7 +70,7 @@ export function Sidebar() {
         </nav>
 
         <div className="px-3 mb-2">
-          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Systems</p>
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Sistem</p>
         </div>
         <nav className="space-y-1">
           {systems.map((item) => {
