@@ -20,56 +20,7 @@ export default function Home() {
   // Automation Logic
   const automationEnabled = settings?.automationEnabled || false;
 
-  useEffect(() => {
-    if (!automationEnabled || doctors.length === 0 || shifts.length === 0) return;
 
-    const checkAutomation = () => {
-      const now = new Date();
-      const currentDayIdx = now.getDay() === 0 ? 6 : now.getDay() - 1; // 0=Mon
-      const currentHour = now.getHours();
-      const currentTs = now.getTime();
-      const OVERRIDE_TIMEOUT = 30 * 60 * 1000; // 30 minutes
-
-      doctors.forEach(async (doc) => {
-        // Skip if currently on leave or break
-        if (doc.status === 'CUTI') return;
-
-        // SKIP if manually overridden recently
-        if (doc.lastManualOverride && (currentTs - doc.lastManualOverride < OVERRIDE_TIMEOUT)) {
-          return;
-        }
-
-        // Find active shift for this doctor
-        const activeShift = shifts.find(s => {
-          if (s.doctor !== doc.name || s.dayIdx !== currentDayIdx || !s.formattedTime) return false;
-          const [startStr, endStr] = s.formattedTime.split('-');
-          const startH = parseInt(startStr?.split(':')[0] || '0');
-          const endH = parseInt(endStr?.split(':')[0] || '24');
-          return currentHour >= startH && currentHour < endH;
-        });
-
-        let newStatus: Doctor['status'] = 'Idle';
-        if (activeShift) {
-          newStatus = 'BUKA'; // Default to Open if shift is active
-        }
-
-        // If status should change, update it
-        // Note: Shift = BUKA, No Shift = Idle.
-        if (doc.status !== newStatus && doc.status !== 'PENUH') { // Respect 'PENUH' manual override (unless we want strict enforcement)
-          // Actually, let's allow 'PENUH' to persist as well if it was set manually, effectively treated as an override found above.
-          if (doc.status === 'Idle' && newStatus === 'BUKA') {
-            await autoUpdateStatus(doc.id, 'BUKA');
-          } else if ((doc.status === 'BUKA') && newStatus === 'Idle') {
-            await autoUpdateStatus(doc.id, 'Idle');
-          }
-        }
-      });
-    };
-
-    const autoInterval = setInterval(checkAutomation, 5000); // Check every 5s
-    checkAutomation(); // Run immediately
-    return () => clearInterval(autoInterval);
-  }, [automationEnabled, doctors, shifts]);
 
   const toggleAutomation = async () => {
     if (!settings) return;
@@ -89,33 +40,6 @@ export default function Home() {
       console.error("Failed to save settings", e);
       mutateSettings(); // Revert on error
     }
-  };
-
-  // Helper for Automation (does NOT set manual override flag)
-  const autoUpdateStatus = async (id: string | number, status: Doctor['status']) => {
-    const now = new Date();
-    const timeString = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false }).replace('.', ':');
-
-    // Optimistic update
-    mutateDoctors(docs => docs?.map(d =>
-      d.id === id ? {
-        ...d,
-        status,
-        lastCall: (status === 'BUKA' || status === 'PENUH') ? timeString : d.lastCall
-      } : d
-    ), false);
-
-    await fetch('/api/doctors', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        id,
-        status,
-        lastCall: (status === 'BUKA' || status === 'PENUH') ? timeString : undefined,
-        // No lastManualOverride sent here
-      })
-    });
-    mutateDoctors();
   };
 
   // Manual Status Update (SETS manual override flag)

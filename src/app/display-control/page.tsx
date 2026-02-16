@@ -2,66 +2,62 @@
 
 import { useState } from 'react';
 import useSWR, { mutate } from 'swr';
-import { Doctor, Settings } from '@/lib/data-service';
+import { Settings } from '@/lib/data-service';
 import { Save, RefreshCw, Plus, Trash2, MonitorPlay } from 'lucide-react';
 
-interface DisplayData {
-    doctors: Doctor[];
-    settings: Settings;
-}
+
 
 export default function DisplayControl() {
-    const { data: doctors = [], mutate: mutateDoctors } = useSWR<Doctor[]>('/api/doctors');
+    // Only fetch settings, not doctors
     const { data: settings, mutate: mutateSettings } = useSWR<Settings>('/api/settings');
     const [saving, setSaving] = useState(false);
 
-    const isLoading = !doctors || !settings;
+    const isLoading = !settings;
 
     const saveData = async () => {
-        if (!settings || !doctors) return;
+        if (!settings) return;
         try {
             setSaving(true);
-
-            // In a real SWR setup, we might not need a global "save all" if we save incrementally, 
-            // but preserving the existing 'Save Changes' button logic for now which presumably saves everything 
-            // - though the API seems separated. The original page fetched /api/display which returned {doctors, settings}.
-            // I'll stick to saving what we have using the /api/display endpoint if that's preferred, 
-            // or save individually. The original code used /api/display for BOTH read and write.
-            // Let's stick to the /api/display for getting the "snapshot" but wait...
-            // I switched to individual SWR hooks above (/api/doctors, /api/settings) for better granularity in other parts of the app.
-            // But checking the original code: 
-            // const res = await fetch('/api/display'); const json = await res.json(); setData(json);
-            // It seems /api/display aggregates them.
-            // For consistency with the new Dashboard, let's try to stick to granular updates if possible, 
-            // OR re-implement the generic save if the backend expects it.
-            // Assuming /api/display can handle the POST with { doctors, settings } as before.
-
-            await fetch('/api/display', {
+            await fetch('/api/settings', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ doctors, settings }),
+                body: JSON.stringify(settings),
             });
-            mutate('/api/doctors');
-            mutate('/api/settings');
+            mutateSettings();
         } catch (error) {
-            console.error('Failed to save data', error);
+            console.error('Failed to save settings', error);
         } finally {
             setSaving(false);
         }
-    };
-
-    const updateDoctor = (id: string | number, field: keyof Doctor, value: any) => {
-        if (!doctors) return;
-        const updatedDoctors = doctors.map(doc =>
-            doc.id === id ? { ...doc, [field]: value } : doc
-        );
-        mutateDoctors(updatedDoctors, false); // Optimistic
     };
 
     const updateSetting = (field: keyof Settings, value: any) => {
         if (!settings) return;
         mutateSettings({ ...settings, [field]: value }, false);
     };
+
+    const handleResetStatus = async () => {
+        if (!confirm("Reset status semua dokter menjadi 'TIDAK PRAKTEK'?")) return;
+        try {
+            await fetch('/api/doctors?action=reset', { method: 'POST' });
+            alert("Status berhasil di-reset.");
+        } catch (e) {
+            console.error(e);
+            alert("Gagal mereset status.");
+        }
+    };
+
+    const handleClearQueue = async () => {
+        if (!confirm("Reset semua antrian? Ini akan menghapus data antrian hari ini.")) return;
+        try {
+            await fetch('/api/queue?action=reset', { method: 'POST' });
+            alert("Antrian berhasil di-reset.");
+        } catch (e) {
+            console.error(e);
+            alert("Gagal mereset antrian.");
+        }
+    };
+
 
     if (isLoading) return <div className="p-8 text-white">Loading...</div>;
     if (!settings) return <div className="p-8 text-white">Error loading data.</div>;
@@ -71,11 +67,11 @@ export default function DisplayControl() {
             <header className="flex items-center justify-between mb-8">
                 <div>
                     <h1 className="text-3xl font-bold text-white mb-2">Pusat Kontrol Layar</h1>
-                    <p className="text-slate-400">Kelola jadwal dokter dan pesan tampilan</p>
+                    <p className="text-slate-400">Kelola pesan tampilan dan broadcast</p>
                 </div>
                 <div className="flex gap-4">
                     <button
-                        onClick={() => { mutate('/api/doctors'); mutate('/api/settings'); }}
+                        onClick={() => mutateSettings()}
                         className="flex items-center gap-2 px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition-colors"
                     >
                         <RefreshCw size={18} /> Refresh
@@ -124,10 +120,16 @@ export default function DisplayControl() {
                         <div className="bg-slate-900/50 backdrop-blur-xl border border-white/10 rounded-2xl p-6">
                             <h2 className="text-xl font-semibold text-white mb-4">Aksi Cepat</h2>
                             <div className="grid grid-cols-2 gap-3">
-                                <button className="p-3 bg-slate-800 hover:bg-slate-700 text-white text-sm rounded-xl border border-white/5 transition-colors">
+                                <button
+                                    onClick={handleResetStatus}
+                                    className="p-3 bg-slate-800 hover:bg-slate-700 text-white text-sm rounded-xl border border-white/5 transition-colors"
+                                >
                                     Reset Status
                                 </button>
-                                <button className="p-3 bg-slate-800 hover:bg-slate-700 text-white text-sm rounded-xl border border-white/5 transition-colors">
+                                <button
+                                    onClick={handleClearQueue}
+                                    className="p-3 bg-slate-800 hover:bg-slate-700 text-white text-sm rounded-xl border border-white/5 transition-colors"
+                                >
                                     Hapus Antrian
                                 </button>
                             </div>

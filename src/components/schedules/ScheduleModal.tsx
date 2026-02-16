@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { X, Clock, Calendar, Plus, Trash2, Save, Edit2 } from "lucide-react";
+import { X, Clock, Calendar, Plus, Trash2, Save, Edit2, Copy } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
@@ -80,6 +80,17 @@ export function ScheduleModal({ doctor, shifts, isOpen, onClose, onUpdate }: Sch
         } catch (error) {
             console.error("Failed to save shift", error);
         }
+    };
+
+    const handleDuplicate = (shift: Shift) => {
+        setFormData({
+            title: shift.title,
+            formattedTime: shift.formattedTime,
+            registrationTime: shift.registrationTime || "",
+            color: shift.color
+        });
+        setIsAddingDay(shift.dayIdx);
+        setEditingShiftId(null);
     };
 
     const handleDelete = async (id: number) => {
@@ -182,8 +193,9 @@ export function ScheduleModal({ doctor, shifts, isOpen, onClose, onUpdate }: Sch
                                                 </div>
 
                                                 <div className="absolute right-2 flex gap-1 list-none opacity-0 group-hover/item:opacity-100 transition-all bg-slate-950/80 p-1 rounded backdrop-blur-sm">
-                                                    <button onClick={() => handleEditClick(shift)} className="p-1 text-slate-400 hover:text-white"><Edit2 size={10} /></button>
-                                                    <button onClick={() => handleDelete(shift.id)} className="p-1 text-slate-400 hover:text-red-400"><Trash2 size={10} /></button>
+                                                    <button onClick={() => handleDuplicate(shift)} className="p-1 text-slate-400 hover:text-green-400" title="Duplicate"><Copy size={10} /></button>
+                                                    <button onClick={() => handleEditClick(shift)} className="p-1 text-slate-400 hover:text-white" title="Edit"><Edit2 size={10} /></button>
+                                                    <button onClick={() => handleDelete(shift.id)} className="p-1 text-slate-400 hover:text-red-400" title="Delete"><Trash2 size={10} /></button>
                                                 </div>
                                             </div>
                                         );
