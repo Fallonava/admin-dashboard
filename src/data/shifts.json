@@ -1,0 +1,1136 @@
+[
+  {
+    "id": 1,
+    "dayIdx": 0,
+    "timeIdx": 0,
+    "title": "Orthopaedi",
+    "doctor": "dr. Muhammad Luthfi, Sp. OT",
+    "color": "blue",
+    "formattedTime": "11:00-14:00"
+  },
+  {
+    "id": 2,
+    "dayIdx": 5,
+    "timeIdx": 0,
+    "title": "Orthopaedi",
+    "doctor": "dr. Muhammad Luthfi, Sp. OT",
+    "color": "blue",
+    "formattedTime": "11:00-14:00"
+  },
+  {
+    "id": 3,
+    "dayIdx": 1,
+    "timeIdx": 0,
+    "title": "Orthopaedi",
+    "doctor": "dr. Muhammad Luthfi, Sp. OT",
+    "color": "blue",
+    "formattedTime": "09:00-12:00"
+  },
+  {
+    "id": 4,
+    "dayIdx": 3,
+    "timeIdx": 0,
+    "title": "Orthopaedi",
+    "doctor": "dr. Muhammad Luthfi, Sp. OT",
+    "color": "blue",
+    "formattedTime": "09:00-12:00"
+  },
+  {
+    "id": 5,
+    "dayIdx": 4,
+    "timeIdx": 0,
+    "title": "Orthopaedi",
+    "doctor": "dr. Muhammad Luthfi, Sp. OT",
+    "color": "blue",
+    "formattedTime": "09:00-12:00"
+  },
+  {
+    "id": 6,
+    "dayIdx": 2,
+    "timeIdx": 0,
+    "title": "Orthopaedi",
+    "doctor": "dr. Muhammad Luthfi, Sp. OT",
+    "color": "blue",
+    "formattedTime": "07:00-08:00"
+  },
+  {
+    "id": 7,
+    "dayIdx": 0,
+    "timeIdx": 0,
+    "title": "Orthopaedi",
+    "doctor": "dr. Nanda Notario, Sp. OT",
+    "color": "blue",
+    "formattedTime": "08:00-10:30"
+  },
+  {
+    "id": 8,
+    "dayIdx": 5,
+    "timeIdx": 0,
+    "title": "Orthopaedi",
+    "doctor": "dr. Nanda Notario, Sp. OT",
+    "color": "blue",
+    "formattedTime": "08:00-10:30"
+  },
+  {
+    "id": 9,
+    "dayIdx": 2,
+    "timeIdx": 0,
+    "title": "Orthopaedi",
+    "doctor": "dr. Nanda Notario, Sp. OT",
+    "color": "blue",
+    "formattedTime": "11:00-14:00"
+  },
+  {
+    "id": 10,
+    "dayIdx": 0,
+    "timeIdx": 0,
+    "title": "Bedah Umum",
+    "doctor": "dr. Endro RI Wibowo, Sp. B",
+    "color": "blue",
+    "formattedTime": "06:00-07:30"
+  },
+  {
+    "id": 11,
+    "dayIdx": 1,
+    "timeIdx": 0,
+    "title": "Bedah Umum",
+    "doctor": "dr. Endro RI Wibowo, Sp. B",
+    "color": "blue",
+    "formattedTime": "06:00-07:30"
+  },
+  {
+    "id": 12,
+    "dayIdx": 2,
+    "timeIdx": 0,
+    "title": "Bedah Umum",
+    "doctor": "dr. Endro RI Wibowo, Sp. B",
+    "color": "blue",
+    "formattedTime": "06:00-07:30"
+  },
+  {
+    "id": 13,
+    "dayIdx": 3,
+    "timeIdx": 0,
+    "title": "Bedah Umum",
+    "doctor": "dr. Endro RI Wibowo, Sp. B",
+    "color": "blue",
+    "formattedTime": "06:00-07:30"
+  },
+  {
+    "id": 14,
+    "dayIdx": 4,
+    "timeIdx": 0,
+    "title": "Bedah Umum",
+    "doctor": "dr. Endro RI Wibowo, Sp. B",
+    "color": "blue",
+    "formattedTime": "06:00-07:30"
+  },
+  {
+    "id": 15,
+    "dayIdx": 5,
+    "timeIdx": 0,
+    "title": "Bedah Umum",
+    "doctor": "dr. Endro RI Wibowo, Sp. B",
+    "color": "blue",
+    "formattedTime": "06:00-07:30"
+  },
+  {
+    "id": 16,
+    "dayIdx": 0,
+    "timeIdx": 0,
+    "title": "Bedah Umum",
+    "doctor": "dr. Endro RI Wibowo, Sp. B",
+    "color": "blue",
+    "formattedTime": "14:00-17:00"
+  },
+  {
+    "id": 17,
+    "dayIdx": 1,
+    "timeIdx": 0,
+    "title": "Bedah Umum",
+    "doctor": "dr. Endro RI Wibowo, Sp. B",
+    "color": "blue",
+    "formattedTime": "14:00-17:00"
+  },
+  {
+    "id": 18,
+    "dayIdx": 2,
+    "timeIdx": 0,
+    "title": "Bedah Umum",
+    "doctor": "dr. Endro RI Wibowo, Sp. B",
+    "color": "blue",
+    "formattedTime": "14:00-17:00"
+  },
+  {
+    "id": 19,
+    "dayIdx": 3,
+    "timeIdx": 0,
+    "title": "Bedah Umum",
+    "doctor": "dr. Endro RI Wibowo, Sp. B",
+    "color": "blue",
+    "formattedTime": "14:00-17:00"
+  },
+  {
+    "id": 20,
+    "dayIdx": 4,
+    "timeIdx": 0,
+    "title": "Bedah Umum",
+    "doctor": "dr. Endro RI Wibowo, Sp. B",
+    "color": "blue",
+    "formattedTime": "13:00-17:00"
+  },
+  {
+    "id": 21,
+    "dayIdx": 0,
+    "timeIdx": 0,
+    "title": "Urologi",
+    "doctor": "dr. Eko Subekti, Sp. U",
+    "color": "blue",
+    "formattedTime": "18:00-21:00"
+  },
+  {
+    "id": 22,
+    "dayIdx": 2,
+    "timeIdx": 0,
+    "title": "Urologi",
+    "doctor": "dr. Eko Subekti, Sp. U",
+    "color": "blue",
+    "formattedTime": "18:00-21:00"
+  },
+  {
+    "id": 23,
+    "dayIdx": 4,
+    "timeIdx": 0,
+    "title": "Urologi",
+    "doctor": "dr. Eko Subekti, Sp. U",
+    "color": "blue",
+    "formattedTime": "18:00-21:00"
+  },
+  {
+    "id": 24,
+    "dayIdx": 1,
+    "timeIdx": 0,
+    "title": "Kandungan",
+    "doctor": "dr. Gatot Hananta, Sp. OG",
+    "color": "emerald",
+    "formattedTime": "10:00-14:00"
+  },
+  {
+    "id": 25,
+    "dayIdx": 3,
+    "timeIdx": 0,
+    "title": "Kandungan",
+    "doctor": "dr. Gatot Hananta, Sp. OG",
+    "color": "emerald",
+    "formattedTime": "10:00-14:00"
+  },
+  {
+    "id": 26,
+    "dayIdx": 5,
+    "timeIdx": 0,
+    "title": "Kandungan",
+    "doctor": "dr. Gatot Hananta, Sp. OG",
+    "color": "emerald",
+    "formattedTime": "10:00-14:00"
+  },
+  {
+    "id": 27,
+    "dayIdx": 0,
+    "timeIdx": 0,
+    "title": "Kandungan",
+    "doctor": "dr. Hepta Lidia, Sp. OG",
+    "color": "emerald",
+    "formattedTime": "10:00-14:00"
+  },
+  {
+    "id": 28,
+    "dayIdx": 2,
+    "timeIdx": 0,
+    "title": "Kandungan",
+    "doctor": "dr. Hepta Lidia, Sp. OG",
+    "color": "emerald",
+    "formattedTime": "10:00-14:00"
+  },
+  {
+    "id": 29,
+    "dayIdx": 4,
+    "timeIdx": 0,
+    "title": "Kandungan",
+    "doctor": "dr. Hepta Lidia, Sp. OG",
+    "color": "emerald",
+    "formattedTime": "10:00-14:00"
+  },
+  {
+    "id": 30,
+    "dayIdx": 0,
+    "timeIdx": 0,
+    "title": "Kandungan",
+    "doctor": "dr. Pritasari Dewi D, Sp. OG",
+    "color": "emerald",
+    "formattedTime": "14:30-17:00"
+  },
+  {
+    "id": 31,
+    "dayIdx": 1,
+    "timeIdx": 0,
+    "title": "Kandungan",
+    "doctor": "dr. Pritasari Dewi D, Sp. OG",
+    "color": "emerald",
+    "formattedTime": "14:30-17:00"
+  },
+  {
+    "id": 32,
+    "dayIdx": 3,
+    "timeIdx": 0,
+    "title": "Kandungan",
+    "doctor": "dr. Pritasari Dewi D, Sp. OG",
+    "color": "emerald",
+    "formattedTime": "14:30-17:00"
+  },
+  {
+    "id": 33,
+    "dayIdx": 4,
+    "timeIdx": 0,
+    "title": "Kandungan",
+    "doctor": "dr. Pritasari Dewi D, Sp. OG",
+    "color": "emerald",
+    "formattedTime": "14:30-17:00"
+  },
+  {
+    "id": 34,
+    "dayIdx": 0,
+    "timeIdx": 0,
+    "title": "Kandungan",
+    "doctor": "dr. Ardian Rahmansyah, Sp. OG",
+    "color": "emerald",
+    "formattedTime": "18:30-21:00"
+  },
+  {
+    "id": 35,
+    "dayIdx": 2,
+    "timeIdx": 0,
+    "title": "Kandungan",
+    "doctor": "dr. Ardian Rahmansyah, Sp. OG",
+    "color": "emerald",
+    "formattedTime": "18:30-21:00"
+  },
+  {
+    "id": 36,
+    "dayIdx": 4,
+    "timeIdx": 0,
+    "title": "Kandungan",
+    "doctor": "dr. Ardian Rahmansyah, Sp. OG",
+    "color": "emerald",
+    "formattedTime": "18:30-21:00"
+  },
+  {
+    "id": 37,
+    "dayIdx": 0,
+    "timeIdx": 0,
+    "title": "Anak",
+    "doctor": "dr. RR Irma Rossyana, Sp. A",
+    "color": "emerald",
+    "formattedTime": "08:30-14:00"
+  },
+  {
+    "id": 38,
+    "dayIdx": 1,
+    "timeIdx": 0,
+    "title": "Anak",
+    "doctor": "dr. RR Irma Rossyana, Sp. A",
+    "color": "emerald",
+    "formattedTime": "08:30-14:00"
+  },
+  {
+    "id": 39,
+    "dayIdx": 2,
+    "timeIdx": 0,
+    "title": "Anak",
+    "doctor": "dr. RR Irma Rossyana, Sp. A",
+    "color": "emerald",
+    "formattedTime": "08:30-14:00"
+  },
+  {
+    "id": 40,
+    "dayIdx": 3,
+    "timeIdx": 0,
+    "title": "Anak",
+    "doctor": "dr. RR Irma Rossyana, Sp. A",
+    "color": "emerald",
+    "formattedTime": "08:30-14:00"
+  },
+  {
+    "id": 41,
+    "dayIdx": 4,
+    "timeIdx": 0,
+    "title": "Anak",
+    "doctor": "dr. RR Irma Rossyana, Sp. A",
+    "color": "emerald",
+    "formattedTime": "08:30-14:00"
+  },
+  {
+    "id": 42,
+    "dayIdx": 5,
+    "timeIdx": 0,
+    "title": "Anak",
+    "doctor": "dr. RR Irma Rossyana, Sp. A",
+    "color": "emerald",
+    "formattedTime": "08:30-14:00"
+  },
+  {
+    "id": 43,
+    "dayIdx": 0,
+    "timeIdx": 0,
+    "title": "Anak",
+    "doctor": "dr. Annisa Noor A, Sp. A",
+    "color": "emerald",
+    "formattedTime": "15:00-18:00"
+  },
+  {
+    "id": 44,
+    "dayIdx": 1,
+    "timeIdx": 0,
+    "title": "Anak",
+    "doctor": "dr. Annisa Noor A, Sp. A",
+    "color": "emerald",
+    "formattedTime": "15:00-18:00"
+  },
+  {
+    "id": 45,
+    "dayIdx": 2,
+    "timeIdx": 0,
+    "title": "Anak",
+    "doctor": "dr. Annisa Noor A, Sp. A",
+    "color": "emerald",
+    "formattedTime": "15:00-18:00"
+  },
+  {
+    "id": 46,
+    "dayIdx": 3,
+    "timeIdx": 0,
+    "title": "Anak",
+    "doctor": "dr. Annisa Noor A, Sp. A",
+    "color": "emerald",
+    "formattedTime": "15:00-18:00"
+  },
+  {
+    "id": 47,
+    "dayIdx": 4,
+    "timeIdx": 0,
+    "title": "Anak",
+    "doctor": "dr. Annisa Noor A, Sp. A",
+    "color": "emerald",
+    "formattedTime": "15:00-18:00"
+  },
+  {
+    "id": 48,
+    "dayIdx": 0,
+    "timeIdx": 0,
+    "title": "Kedokteran Jiwa",
+    "doctor": "dr. Taufik Hidayanto, Sp. KJ",
+    "color": "emerald",
+    "formattedTime": "14:30-17:00"
+  },
+  {
+    "id": 49,
+    "dayIdx": 1,
+    "timeIdx": 0,
+    "title": "Kedokteran Jiwa",
+    "doctor": "dr. Taufik Hidayanto, Sp. KJ",
+    "color": "emerald",
+    "formattedTime": "14:30-17:00"
+  },
+  {
+    "id": 50,
+    "dayIdx": 3,
+    "timeIdx": 0,
+    "title": "Kedokteran Jiwa",
+    "doctor": "dr. Taufik Hidayanto, Sp. KJ",
+    "color": "emerald",
+    "formattedTime": "14:30-17:00"
+  },
+  {
+    "id": 51,
+    "dayIdx": 4,
+    "timeIdx": 0,
+    "title": "Kedokteran Jiwa",
+    "doctor": "dr. Taufik Hidayanto, Sp. KJ",
+    "color": "emerald",
+    "formattedTime": "14:30-17:00"
+  },
+  {
+    "id": 52,
+    "dayIdx": 0,
+    "timeIdx": 0,
+    "title": "Kedokteran Jiwa",
+    "doctor": "dr. Nova Kurniasari, Sp. KJ",
+    "color": "emerald",
+    "formattedTime": "07:30-09:30"
+  },
+  {
+    "id": 53,
+    "dayIdx": 1,
+    "timeIdx": 0,
+    "title": "Kedokteran Jiwa",
+    "doctor": "dr. Nova Kurniasari, Sp. KJ",
+    "color": "emerald",
+    "formattedTime": "07:30-09:30"
+  },
+  {
+    "id": 54,
+    "dayIdx": 2,
+    "timeIdx": 0,
+    "title": "Kedokteran Jiwa",
+    "doctor": "dr. Nova Kurniasari, Sp. KJ",
+    "color": "emerald",
+    "formattedTime": "07:30-09:30"
+  },
+  {
+    "id": 55,
+    "dayIdx": 0,
+    "timeIdx": 0,
+    "title": "Saraf",
+    "doctor": "dr. Ajeng Putri, Sp. N",
+    "color": "emerald",
+    "formattedTime": "15:00-18:00"
+  },
+  {
+    "id": 56,
+    "dayIdx": 3,
+    "timeIdx": 0,
+    "title": "Saraf",
+    "doctor": "dr. Ajeng Putri, Sp. N",
+    "color": "emerald",
+    "formattedTime": "13:00-16:00"
+  },
+  {
+    "id": 57,
+    "dayIdx": 4,
+    "timeIdx": 0,
+    "title": "Saraf",
+    "doctor": "dr. Ajeng Putri, Sp. N",
+    "color": "emerald",
+    "formattedTime": "14:00-17:00"
+  },
+  {
+    "id": 58,
+    "dayIdx": 1,
+    "timeIdx": 0,
+    "title": "Saraf",
+    "doctor": "dr. Setyo Dirahayu, Sp. N",
+    "color": "emerald",
+    "formattedTime": "14:00-17:00"
+  },
+  {
+    "id": 59,
+    "dayIdx": 2,
+    "timeIdx": 0,
+    "title": "Saraf",
+    "doctor": "dr. Setyo Dirahayu, Sp. N",
+    "color": "emerald",
+    "formattedTime": "14:00-17:00"
+  },
+  {
+    "id": 60,
+    "dayIdx": 5,
+    "timeIdx": 0,
+    "title": "Saraf",
+    "doctor": "dr. Setyo Dirahayu, Sp. N",
+    "color": "emerald",
+    "formattedTime": "13:00-16:00"
+  },
+  {
+    "id": 61,
+    "dayIdx": 0,
+    "timeIdx": 0,
+    "title": "Saraf",
+    "doctor": "dr. Ahmad Tanji, Sp. N",
+    "color": "emerald",
+    "formattedTime": "06:00-08:00"
+  },
+  {
+    "id": 62,
+    "dayIdx": 2,
+    "timeIdx": 0,
+    "title": "Saraf",
+    "doctor": "dr. Ahmad Tanji, Sp. N",
+    "color": "emerald",
+    "formattedTime": "07:30-09:30"
+  },
+  {
+    "id": 63,
+    "dayIdx": 0,
+    "timeIdx": 0,
+    "title": "Psikologi",
+    "doctor": "Siti K Sa'diyah, M. Psi. Psikologi",
+    "color": "emerald",
+    "formattedTime": "08:00-11:00"
+  },
+  {
+    "id": 64,
+    "dayIdx": 1,
+    "timeIdx": 0,
+    "title": "Psikologi",
+    "doctor": "Siti K Sa'diyah, M. Psi. Psikologi",
+    "color": "emerald",
+    "formattedTime": "08:00-11:00"
+  },
+  {
+    "id": 65,
+    "dayIdx": 2,
+    "timeIdx": 0,
+    "title": "Psikologi",
+    "doctor": "Siti K Sa'diyah, M. Psi. Psikologi",
+    "color": "emerald",
+    "formattedTime": "08:00-11:00"
+  },
+  {
+    "id": 66,
+    "dayIdx": 3,
+    "timeIdx": 0,
+    "title": "Psikologi",
+    "doctor": "Siti K Sa'diyah, M. Psi. Psikologi",
+    "color": "emerald",
+    "formattedTime": "08:00-11:00"
+  },
+  {
+    "id": 67,
+    "dayIdx": 4,
+    "timeIdx": 0,
+    "title": "Psikologi",
+    "doctor": "Siti K Sa'diyah, M. Psi. Psikologi",
+    "color": "emerald",
+    "formattedTime": "08:00-11:00"
+  },
+  {
+    "id": 68,
+    "dayIdx": 0,
+    "timeIdx": 0,
+    "title": "Mata",
+    "doctor": "dr. Wahid Heru Widodo, Sp. M",
+    "color": "emerald",
+    "formattedTime": "07:00-08:00"
+  },
+  {
+    "id": 69,
+    "dayIdx": 4,
+    "timeIdx": 0,
+    "title": "Mata",
+    "doctor": "dr. Wahid Heru Widodo, Sp. M",
+    "color": "emerald",
+    "formattedTime": "07:00-08:00"
+  },
+  {
+    "id": 70,
+    "dayIdx": 1,
+    "timeIdx": 0,
+    "title": "Mata",
+    "doctor": "dr. Wahid Heru Widodo, Sp. M",
+    "color": "emerald",
+    "formattedTime": "07:00-12:00"
+  },
+  {
+    "id": 71,
+    "dayIdx": 2,
+    "timeIdx": 0,
+    "title": "Mata",
+    "doctor": "dr. Wahid Heru Widodo, Sp. M",
+    "color": "emerald",
+    "formattedTime": "07:00-12:00"
+  },
+  {
+    "id": 72,
+    "dayIdx": 3,
+    "timeIdx": 0,
+    "title": "Mata",
+    "doctor": "dr. Wahid Heru Widodo, Sp. M",
+    "color": "emerald",
+    "formattedTime": "07:00-12:00"
+  },
+  {
+    "id": 73,
+    "dayIdx": 0,
+    "timeIdx": 0,
+    "title": "THT KL",
+    "doctor": "dr. Lirans Tia K, Sp. THT KL",
+    "color": "emerald",
+    "formattedTime": "14:00-18:00"
+  },
+  {
+    "id": 74,
+    "dayIdx": 2,
+    "timeIdx": 0,
+    "title": "THT KL",
+    "doctor": "dr. Lirans Tia K, Sp. THT KL",
+    "color": "emerald",
+    "formattedTime": "14:00-18:00"
+  },
+  {
+    "id": 75,
+    "dayIdx": 1,
+    "timeIdx": 0,
+    "title": "THT KL",
+    "doctor": "dr. Lirans Tia K, Sp. THT KL",
+    "color": "emerald",
+    "formattedTime": "08:00-12:00"
+  },
+  {
+    "id": 76,
+    "dayIdx": 3,
+    "timeIdx": 0,
+    "title": "THT KL",
+    "doctor": "dr. Lirans Tia K, Sp. THT KL",
+    "color": "emerald",
+    "formattedTime": "08:00-12:00"
+  },
+  {
+    "id": 77,
+    "dayIdx": 4,
+    "timeIdx": 0,
+    "title": "THT KL",
+    "doctor": "dr. Lirans Tia K, Sp. THT KL",
+    "color": "emerald",
+    "formattedTime": "13:00-15:00"
+  },
+  {
+    "id": 78,
+    "dayIdx": 3,
+    "timeIdx": 0,
+    "title": "THT KL",
+    "doctor": "dr. Wahyu Dwi K, Sp. THT KL",
+    "color": "emerald",
+    "formattedTime": "16:00-19:00"
+  },
+  {
+    "id": 79,
+    "dayIdx": 5,
+    "timeIdx": 0,
+    "title": "THT KL",
+    "doctor": "dr. Wahyu Dwi K, Sp. THT KL",
+    "color": "emerald",
+    "formattedTime": "14:00-17:00"
+  },
+  {
+    "id": 80,
+    "dayIdx": 0,
+    "timeIdx": 0,
+    "title": "Gigi Umum",
+    "doctor": "drg. Rafika Yusniar",
+    "color": "emerald",
+    "formattedTime": "14:30-17:00"
+  },
+  {
+    "id": 81,
+    "dayIdx": 2,
+    "timeIdx": 0,
+    "title": "Gigi Umum",
+    "doctor": "drg. Rafika Yusniar",
+    "color": "emerald",
+    "formattedTime": "14:30-17:00"
+  },
+  {
+    "id": 82,
+    "dayIdx": 4,
+    "timeIdx": 0,
+    "title": "Gigi Umum",
+    "doctor": "drg. Rafika Yusniar",
+    "color": "emerald",
+    "formattedTime": "14:30-17:00"
+  },
+  {
+    "id": 83,
+    "dayIdx": 1,
+    "timeIdx": 0,
+    "title": "Gigi Umum",
+    "doctor": "drg. Yulinda Primilisa",
+    "color": "emerald",
+    "formattedTime": "14:30-17:00"
+  },
+  {
+    "id": 84,
+    "dayIdx": 3,
+    "timeIdx": 0,
+    "title": "Gigi Umum",
+    "doctor": "drg. Yulinda Primilisa",
+    "color": "emerald",
+    "formattedTime": "14:30-17:00"
+  },
+  {
+    "id": 85,
+    "dayIdx": 5,
+    "timeIdx": 0,
+    "title": "Gigi Umum",
+    "doctor": "drg. Yulinda Primilisa",
+    "color": "emerald",
+    "formattedTime": "14:30-17:00"
+  },
+  {
+    "id": 86,
+    "dayIdx": 2,
+    "timeIdx": 0,
+    "title": "Gigi Konservasi",
+    "doctor": "drg. Dyah Tri Kusuma, Sp. KG",
+    "color": "emerald",
+    "formattedTime": "17:00-20:00"
+  },
+  {
+    "id": 87,
+    "dayIdx": 1,
+    "timeIdx": 0,
+    "title": "Bedah Mulut",
+    "doctor": "drg. Robby Ramadhonie, Sp. BMM",
+    "color": "blue",
+    "formattedTime": "08:00-12:00"
+  },
+  {
+    "id": 88,
+    "dayIdx": 4,
+    "timeIdx": 0,
+    "title": "Bedah Mulut",
+    "doctor": "drg. Robby Ramadhonie, Sp. BMM",
+    "color": "blue",
+    "formattedTime": "14:00-17:00"
+  },
+  {
+    "id": 89,
+    "dayIdx": 5,
+    "timeIdx": 0,
+    "title": "Bedah Mulut",
+    "doctor": "drg. Robby Ramadhonie, Sp. BMM",
+    "color": "blue",
+    "formattedTime": "14:00-17:00"
+  },
+  {
+    "id": 90,
+    "dayIdx": 0,
+    "timeIdx": 0,
+    "title": "Rehab Medik",
+    "doctor": "dr. Wati, SP. KFR",
+    "color": "emerald",
+    "formattedTime": "11:30-14:00"
+  },
+  {
+    "id": 91,
+    "dayIdx": 2,
+    "timeIdx": 0,
+    "title": "Rehab Medik",
+    "doctor": "dr. Wati, SP. KFR",
+    "color": "emerald",
+    "formattedTime": "11:30-14:00"
+  },
+  {
+    "id": 92,
+    "dayIdx": 3,
+    "timeIdx": 0,
+    "title": "Rehab Medik",
+    "doctor": "dr. Wati, SP. KFR",
+    "color": "emerald",
+    "formattedTime": "11:30-14:00"
+  },
+  {
+    "id": 93,
+    "dayIdx": 1,
+    "timeIdx": 0,
+    "title": "Rehab Medik",
+    "doctor": "dr. Wati, SP. KFR",
+    "color": "emerald",
+    "formattedTime": "12:15-14:00"
+  },
+  {
+    "id": 94,
+    "dayIdx": 0,
+    "timeIdx": 0,
+    "title": "Fisioterapi",
+    "doctor": "Bingsar Galih, Amd. Ftr",
+    "color": "emerald",
+    "formattedTime": "07:00-16:30"
+  },
+  {
+    "id": 95,
+    "dayIdx": 2,
+    "timeIdx": 0,
+    "title": "Fisioterapi",
+    "doctor": "Bingsar Galih, Amd. Ftr",
+    "color": "emerald",
+    "formattedTime": "07:00-16:30"
+  },
+  {
+    "id": 96,
+    "dayIdx": 3,
+    "timeIdx": 0,
+    "title": "Fisioterapi",
+    "doctor": "Bingsar Galih, Amd. Ftr",
+    "color": "emerald",
+    "formattedTime": "07:00-16:30"
+  },
+  {
+    "id": 97,
+    "dayIdx": 1,
+    "timeIdx": 0,
+    "title": "Fisioterapi",
+    "doctor": "Panca Nugraha, Amd. Ftr",
+    "color": "emerald",
+    "formattedTime": "07:00-13:30"
+  },
+  {
+    "id": 98,
+    "dayIdx": 4,
+    "timeIdx": 0,
+    "title": "Fisioterapi",
+    "doctor": "Panca Nugraha, Amd. Ftr",
+    "color": "emerald",
+    "formattedTime": "07:00-13:30"
+  },
+  {
+    "id": 99,
+    "dayIdx": 5,
+    "timeIdx": 0,
+    "title": "Fisioterapi",
+    "doctor": "Panca Nugraha, Amd. Ftr",
+    "color": "emerald",
+    "formattedTime": "07:00-13:30"
+  },
+  {
+    "id": 100,
+    "dayIdx": 2,
+    "timeIdx": 0,
+    "title": "VCT",
+    "doctor": "dr. Oktavia Adiyani",
+    "color": "emerald",
+    "formattedTime": "08:00-12:00"
+  },
+  {
+    "id": 101,
+    "dayIdx": 0,
+    "timeIdx": 0,
+    "title": "Umum",
+    "doctor": "dr. Almer Belami",
+    "color": "emerald",
+    "formattedTime": "09:00-12:00"
+  },
+  {
+    "id": 102,
+    "dayIdx": 1,
+    "timeIdx": 0,
+    "title": "Umum",
+    "doctor": "dr. Almer Belami",
+    "color": "emerald",
+    "formattedTime": "09:00-12:00"
+  },
+  {
+    "id": 103,
+    "dayIdx": 2,
+    "timeIdx": 0,
+    "title": "Umum",
+    "doctor": "dr. Almer Belami",
+    "color": "emerald",
+    "formattedTime": "09:00-12:00"
+  },
+  {
+    "id": 104,
+    "dayIdx": 3,
+    "timeIdx": 0,
+    "title": "Umum",
+    "doctor": "dr. Almer Belami",
+    "color": "emerald",
+    "formattedTime": "09:00-12:00"
+  },
+  {
+    "id": 105,
+    "dayIdx": 4,
+    "timeIdx": 0,
+    "title": "Umum",
+    "doctor": "dr. Almer Belami",
+    "color": "emerald",
+    "formattedTime": "09:00-12:00"
+  },
+  {
+    "id": 106,
+    "dayIdx": 0,
+    "timeIdx": 0,
+    "title": "Penyakit Dalam",
+    "doctor": "dr. Leo Chandra WPW, Sp. PD, M. KES",
+    "color": "emerald",
+    "formattedTime": "09:00-14:00"
+  },
+  {
+    "id": 107,
+    "dayIdx": 1,
+    "timeIdx": 0,
+    "title": "Penyakit Dalam",
+    "doctor": "dr. Leo Chandra WPW, Sp. PD, M. KES",
+    "color": "emerald",
+    "formattedTime": "09:00-14:00"
+  },
+  {
+    "id": 108,
+    "dayIdx": 2,
+    "timeIdx": 0,
+    "title": "Penyakit Dalam",
+    "doctor": "dr. Leo Chandra WPW, Sp. PD, M. KES",
+    "color": "emerald",
+    "formattedTime": "09:00-14:00"
+  },
+  {
+    "id": 109,
+    "dayIdx": 3,
+    "timeIdx": 0,
+    "title": "Penyakit Dalam",
+    "doctor": "dr. Leo Chandra WPW, Sp. PD, M. KES",
+    "color": "emerald",
+    "formattedTime": "09:00-14:00"
+  },
+  {
+    "id": 110,
+    "dayIdx": 4,
+    "timeIdx": 0,
+    "title": "Penyakit Dalam",
+    "doctor": "dr. Leo Chandra WPW, Sp. PD, M. KES",
+    "color": "emerald",
+    "formattedTime": "09:00-14:00"
+  },
+  {
+    "id": 111,
+    "dayIdx": 5,
+    "timeIdx": 0,
+    "title": "Penyakit Dalam",
+    "doctor": "dr. Leo Chandra WPW, Sp. PD, M. KES",
+    "color": "emerald",
+    "formattedTime": "09:00-14:00"
+  },
+  {
+    "id": 112,
+    "dayIdx": 0,
+    "timeIdx": 0,
+    "title": "Penyakit Dalam",
+    "doctor": "dr. Leo Chandra WPW, Sp. PD, M. KES",
+    "color": "emerald",
+    "formattedTime": "18:00-21:00"
+  },
+  {
+    "id": 113,
+    "dayIdx": 1,
+    "timeIdx": 0,
+    "title": "Penyakit Dalam",
+    "doctor": "dr. Leo Chandra WPW, Sp. PD, M. KES",
+    "color": "emerald",
+    "formattedTime": "18:00-21:00"
+  },
+  {
+    "id": 114,
+    "dayIdx": 2,
+    "timeIdx": 0,
+    "title": "Penyakit Dalam",
+    "doctor": "dr. Leo Chandra WPW, Sp. PD, M. KES",
+    "color": "emerald",
+    "formattedTime": "18:00-21:00"
+  },
+  {
+    "id": 115,
+    "dayIdx": 3,
+    "timeIdx": 0,
+    "title": "Penyakit Dalam",
+    "doctor": "dr. Leo Chandra WPW, Sp. PD, M. KES",
+    "color": "emerald",
+    "formattedTime": "18:00-21:00"
+  },
+  {
+    "id": 116,
+    "dayIdx": 1,
+    "timeIdx": 0,
+    "title": "Penyakit Dalam",
+    "doctor": "dr. Sigit Purnomohadi, Sp. PD",
+    "color": "emerald",
+    "formattedTime": "14:30-17:00"
+  },
+  {
+    "id": 117,
+    "dayIdx": 4,
+    "timeIdx": 0,
+    "title": "Penyakit Dalam",
+    "doctor": "dr. Sigit Purnomohadi, Sp. PD",
+    "color": "emerald",
+    "formattedTime": "13:30-16:00"
+  },
+  {
+    "id": 118,
+    "dayIdx": 1,
+    "timeIdx": 0,
+    "title": "Jantung",
+    "doctor": "dr. Lita Hati Dwi PE, Sp. JP",
+    "color": "emerald",
+    "formattedTime": "14:00-18:00"
+  },
+  {
+    "id": 119,
+    "dayIdx": 3,
+    "timeIdx": 0,
+    "title": "Jantung",
+    "doctor": "dr. Lita Hati Dwi PE, Sp. JP",
+    "color": "emerald",
+    "formattedTime": "14:00-18:00"
+  },
+  {
+    "id": 120,
+    "dayIdx": 5,
+    "timeIdx": 0,
+    "title": "Jantung",
+    "doctor": "dr. Lita Hati Dwi PE, Sp. JP",
+    "color": "emerald",
+    "formattedTime": "08:00-14:00"
+  },
+  {
+    "id": 121,
+    "dayIdx": 4,
+    "timeIdx": 0,
+    "title": "Paru",
+    "doctor": "dr. Oke Viska, Sp. P",
+    "color": "emerald",
+    "formattedTime": "10:00-13:00"
+  },
+  {
+    "id": 122,
+    "dayIdx": 0,
+    "timeIdx": 0,
+    "title": "Paru",
+    "doctor": "dr. Oke Viska, Sp. P",
+    "color": "emerald",
+    "formattedTime": "13:00-16:00"
+  },
+  {
+    "id": 123,
+    "dayIdx": 1,
+    "timeIdx": 0,
+    "title": "Paru",
+    "doctor": "dr. Oke Viska, Sp. P",
+    "color": "emerald",
+    "formattedTime": "13:00-16:00"
+  },
+  {
+    "id": 124,
+    "dayIdx": 2,
+    "timeIdx": 0,
+    "title": "Paru",
+    "doctor": "dr. Oke Viska, Sp. P",
+    "color": "emerald",
+    "formattedTime": "13:00-16:00"
+  },
+  {
+    "id": 125,
+    "dayIdx": 3,
+    "timeIdx": 0,
+    "title": "Paru",
+    "doctor": "dr. Oke Viska, Sp. P",
+    "color": "emerald",
+    "formattedTime": "10:00-13:00"
+  },
+  {
+    "id": 126,
+    "dayIdx": 5,
+    "timeIdx": 0,
+    "title": "Paru",
+    "doctor": "dr. Oke Viska, Sp. P",
+    "color": "emerald",
+    "formattedTime": "10:00-13:00"
+  }
+]
