@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Jadwal Dokter - RSU Siaga Medika</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
     <style>
@@ -1693,6 +1694,207 @@
             background: #FF375F !important;
             box-shadow: 0 0 8px #FF375F !important;
         }
+
+        /* ===== IMPROVEMENT #1: ACTIVE SHIFT HIGHLIGHT ===== */
+        .platter.has-active-shift {
+            border-color: rgba(48, 209, 88, 0.4) !important;
+            box-shadow:
+                0 4px 12px rgba(0, 0, 0, 0.1),
+                0 0 20px rgba(48, 209, 88, 0.12),
+                inset 0 0 0 1px rgba(48, 209, 88, 0.08);
+        }
+
+        .platter.has-active-shift::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: #30D158;
+            border-radius: 3px 0 0 3px;
+            box-shadow: 0 0 10px rgba(48, 209, 88, 0.5);
+        }
+
+        [data-theme="light"] .platter.has-active-shift {
+            border-color: rgba(48, 209, 88, 0.3) !important;
+            box-shadow:
+                0 4px 12px rgba(0, 0, 0, 0.06),
+                0 0 20px rgba(48, 209, 88, 0.08);
+        }
+
+        /* ===== IMPROVEMENT #3: CARD ENTER ANIMATION ===== */
+        @keyframes cardEnter {
+            0% {
+                opacity: 0;
+                transform: translateY(12px) scale(0.97);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .platter.card-enter {
+            animation: cardEnter 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        }
+
+        .mini-card.card-enter {
+            animation: cardEnter 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        }
+
+        /* ===== IMPROVEMENT #4: PROMINENT JAM DAFTAR ===== */
+        .reg-time-box {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 2px;
+        }
+
+        .reg-label {
+            font-size: 8px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-secondary);
+            opacity: 0.6;
+        }
+
+        .reg-time {
+            font-size: 28px;
+            font-weight: 800;
+            font-variant-numeric: tabular-nums;
+            color: var(--text-primary);
+            line-height: 1;
+            letter-spacing: -0.02em;
+        }
+
+        .reg-time.is-active {
+            font-size: 34px;
+            color: #30D158;
+            text-shadow: 0 0 24px rgba(48, 209, 88, 0.4);
+        }
+
+        [data-theme="light"] .reg-time {
+            color: #1d1d1f;
+        }
+
+        [data-theme="light"] .reg-time.is-active {
+            color: #30D158;
+            text-shadow: none;
+        }
+
+        /* ===== IMPROVEMENT #6: PHONE FOOTER ===== */
+        .footer-phone {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            padding-left: 16px;
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .footer-phone .material-icons-round {
+            font-size: 14px;
+            color: var(--accent-green);
+        }
+
+        [data-theme="light"] .footer-phone {
+            border-left-color: rgba(0, 0, 0, 0.1);
+        }
+
+        /* ===== IMPROVEMENT #7: AUTO-SIZING CARDS ===== */
+        .scroller.auto-size .platter {
+            padding: 20px 24px;
+        }
+
+        .scroller.auto-size .platter .doc-name {
+            font-size: 17px;
+        }
+
+        .scroller.auto-size .platter .avatar {
+            width: 64px;
+            height: 64px;
+            font-size: 18px;
+        }
+
+        .scroller.auto-size .platter .reg-time {
+            font-size: 34px;
+        }
+
+        .scroller.auto-size .platter .reg-time.is-active {
+            font-size: 40px;
+        }
+
+        /* ===== IMPROVEMENT #8: PAGINATION SLIDE ===== */
+        .paginator {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 0 4px;
+            flex-shrink: 0;
+        }
+
+        .paginator .pg-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transition: all 0.4s ease;
+        }
+
+        .paginator .pg-dot.pg-active {
+            width: 20px;
+            border-radius: 3px;
+            background: var(--accent-blue);
+        }
+
+        [data-theme="light"] .paginator .pg-dot {
+            background: rgba(0, 0, 0, 0.15);
+        }
+
+        [data-theme="light"] .paginator .pg-dot.pg-active {
+            background: var(--accent-blue);
+        }
+
+        .slide-container {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .slide-page {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            padding: 16px;
+            gap: 12px;
+            transition: transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.4s ease;
+        }
+
+        .slide-page.slide-active {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .slide-page.slide-left {
+            transform: translateX(-100%);
+            opacity: 0;
+        }
+
+        .slide-page.slide-right {
+            transform: translateX(100%);
+            opacity: 0;
+        }
     </style>
 </head>
 
@@ -1820,9 +2022,10 @@
                         </span>
                         <span class="island-badge" id="countBedah">0</span>
                     </div>
-                    <div class="scroll-mask" id="maskBedah">
-                        <div class="scroller" id="scrollBedah"></div>
+                    <div class="slide-container" id="slideBedah">
+                        <!-- JS will inject slide pages here -->
                     </div>
+                    <div class="paginator" id="pagBedah"></div>
                 </section>
 
                 <!-- Non Bedah Island -->
@@ -1834,9 +2037,10 @@
                         </span>
                         <span class="island-badge" id="countNonBedah">0</span>
                     </div>
-                    <div class="scroll-mask" id="maskNonBedah">
-                        <div class="scroller" id="scrollNonBedah"></div>
+                    <div class="slide-container" id="slideNonBedah">
+                        <!-- JS will inject slide pages here -->
                     </div>
+                    <div class="paginator" id="pagNonBedah"></div>
                 </section>
             </div>
 
@@ -1858,6 +2062,10 @@
                 </div>
                 <div class="ticker">
                     <div class="ticker-inner" id="tickerText">Processing live data stream...</div>
+                </div>
+                <div class="footer-phone">
+                    <span class="material-icons-round">call</span>
+                    <span>(0281) 891-610</span>
                 </div>
                 <div class="status-pill-lg">
                     <div class="live-dot" id="liveDot"></div>
@@ -1924,63 +2132,88 @@
             return false;
         };
 
-        // Performance-optimized scroller
-        class SmoothScroller {
-            constructor(id) {
-                this.el = $(id);
-                this.y = 0;
-                this.dir = 1;
-                this.paused = false;
-                this.active = true;
-                this.h = 0; // Cached scrollHeight
-                this.vh = 0; // Cached clientHeight
-                // Update metrics on resize
-                window.addEventListener('resize', () => this.updateMetrics());
+        // Slide Paginator (replaces SmoothScroller)
+        class Paginator {
+            constructor(containerId, paginatorId) {
+                this.container = $(containerId);
+                this.paginator = $(paginatorId);
+                this.pages = [];
+                this.current = 0;
+                this.timer = null;
+                this.interval = 6000; // 6s per page
             }
-            updateMetrics() {
-                if (!this.el) return;
-                this.h = this.el.scrollHeight;
-                this.vh = this.el.parentElement.clientHeight;
-                // Reset position if content is smaller than view
-                if (this.h <= this.vh) {
-                    this.y = 0;
-                    this.el.style.transform = `translate3d(0,0,0)`;
+            setPages(htmlList, perPage) {
+                if (!this.container) return;
+                // Chunk items into pages
+                this.pages = [];
+                for (let i = 0; i < htmlList.length; i += perPage) {
+                    this.pages.push(htmlList.slice(i, i + perPage));
+                }
+                if (this.pages.length === 0) {
+                    this.container.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;opacity:0.3;font-size:13px;font-weight:600">Belum ada dokter</div>';
+                    if (this.paginator) this.paginator.innerHTML = '';
+                    this.stopAuto();
+                    return;
+                }
+                this.current = Math.min(this.current, this.pages.length - 1);
+                this.showPage(this.current, false);
+                // Paginator dots
+                if (this.paginator) {
+                    if (this.pages.length <= 1) {
+                        this.paginator.innerHTML = '';
+                    } else {
+                        this.paginator.innerHTML = this.pages.map((_, i) =>
+                            `<span class="pg-dot ${i === this.current ? 'pg-active' : ''}"></span>`
+                        ).join('');
+                    }
+                }
+                // Auto-advance
+                this.startAuto();
+            }
+            showPage(idx, animate = true) {
+                if (!this.container || !this.pages[idx]) return;
+                const html = this.pages[idx].join('');
+                if (animate) {
+                    // Create new page, slide in
+                    const oldPage = this.container.querySelector('.slide-active');
+                    if (oldPage) {
+                        oldPage.className = 'slide-page slide-left';
+                        setTimeout(() => oldPage.remove(), 600);
+                    }
+                    const newPage = document.createElement('div');
+                    newPage.className = 'slide-page slide-right';
+                    newPage.innerHTML = html;
+                    this.container.appendChild(newPage);
+                    requestAnimationFrame(() => {
+                        requestAnimationFrame(() => {
+                            newPage.className = 'slide-page slide-active';
+                        });
+                    });
+                } else {
+                    this.container.innerHTML = `<div class="slide-page slide-active">${html}</div>`;
+                }
+                this.current = idx;
+                // Update dots
+                if (this.paginator) {
+                    const dots = this.paginator.querySelectorAll('.pg-dot');
+                    dots.forEach((d, i) => d.className = 'pg-dot' + (i === idx ? ' pg-active' : ''));
                 }
             }
-            start() {
-                const tick = () => {
-                    if (!this.active) return;
-                    requestAnimationFrame(tick);
-                    // Optimization: overflow checks done in updateMetrics
-                    if (this.paused || !this.el || this.h <= this.vh) return;
-                    this.y += CFG.SCROLL_PX * this.dir;
-                    // Boundary Logic with Cached Metrics
-                    if (this.y >= (this.h - this.vh)) {
-                        this.y = this.h - this.vh;
-                        this.pause(-1);
-                    } else if (this.y <= 0) {
-                        this.y = 0;
-                        this.pause(1);
-                    }
-                    this.el.style.transform = `translate3d(0, -${this.y}px, 0)`;
-                };
-                tick();
+            startAuto() {
+                this.stopAuto();
+                if (this.pages.length <= 1) return;
+                this.timer = setInterval(() => {
+                    const next = (this.current + 1) % this.pages.length;
+                    this.showPage(next, true);
+                }, this.interval);
             }
-            pause(newDir) {
-                this.paused = true;
-                setTimeout(() => { this.dir = newDir; this.paused = false; }, CFG.SCROLL_PAUSE);
-            }
-            reset() {
-                this.y = 0;
-                this.dir = 1;
-                this.paused = false;
-                // Important: Recalculate metrics after content update
-                // We'll call updateMetrics manually after render
+            stopAuto() {
+                if (this.timer) { clearInterval(this.timer); this.timer = null; }
             }
         }
 
-        const s1 = new SmoothScroller('scrollBedah');
-        const s2 = new SmoothScroller('scrollNonBedah');
+        const pagBedah = new Paginator('slideBedah', 'pagBedah');
+        const pagNonBedah = new Paginator('slideNonBedah', 'pagNonBedah');
         const s3 = new SmoothScroller('scrollPenuh');
         const s4 = new SmoothScroller('scrollCuti');
 
@@ -2059,7 +2292,7 @@
                 this.skel();
 
                 await this.fetch();
-                s1.start(); s2.start(); s3.start(); s4.start();
+                s3.start(); s4.start(); // Sidebar scrollers only
                 setInterval(() => this.fetch(), CFG.POLL_MS);
 
                 // Keyboard Shortcuts
@@ -2125,8 +2358,9 @@
                 const make = () => Array(4).fill(0).map(() =>
                     `<div class="platter" style="height:76px; opacity:0.6"><div class="skel" style="width:48px;height:48px;border-radius:50%"></div><div class="skel" style="width:60%;height:16px"></div></div>`
                 ).join('');
-                $('scrollBedah').innerHTML = make();
-                $('scrollNonBedah').innerHTML = make();
+                const skelPage = `<div class="slide-page slide-active">${make()}</div>`;
+                $('slideBedah').innerHTML = skelPage;
+                $('slideNonBedah').innerHTML = skelPage;
             },
 
             async fetch() {
@@ -2223,29 +2457,34 @@
                     } else if (s.includes('CUTI') || s.includes('IJIN')) {
                         group.Cuti.push(d);
                     } else {
-                        // Available / Active Doctors
                         const g = d.Jenis === 'Bedah' ? 'Bedah' : 'NonBedah';
                         if (group[g]) group[g].push(d);
                     }
                 });
 
+                // Improvement #7: Auto-size — calculate items per page
+                // If ≤4 doctors, show all on 1 page (larger cards)
+                const PER_PAGE = 5; // Max cards per page
+                const bedahCards = group.Bedah.map((d, i) => this.renderDoctor(d, i));
+                const nonBedahCards = group.NonBedah.map((d, i) => this.renderDoctor(d, i));
+
+                // Improvement #8: Pagination
+                pagBedah.setPages(bedahCards, PER_PAGE);
+                pagNonBedah.setPages(nonBedahCards, PER_PAGE);
+
+                // Sidebar lists (keep scroll)
                 const renderList = (id, list, renderer) => {
                     const el = $(id);
                     if (el) el.innerHTML = list.map(renderer).join('');
                 };
-
-                renderList('scrollBedah', group.Bedah, d => this.renderDoctor(d));
-                renderList('scrollNonBedah', group.NonBedah, d => this.renderDoctor(d));
                 renderList('listPenuh', group.Penuh, d => this.renderMiniCard(d, 'st-penuh'));
                 renderList('listCuti', group.Cuti, d => this.renderMiniCard(d, 'st-cuti'));
 
                 $('countBedah').textContent = group.Bedah.length;
                 $('countNonBedah').textContent = group.NonBedah.length;
 
-                // Recalculate scroll metrics after content change
+                // Sidebar scroll metrics
                 requestAnimationFrame(() => {
-                    if (s1) s1.updateMetrics();
-                    if (s2) s2.updateMetrics();
                     if (s3) s3.updateMetrics();
                     if (s4) s4.updateMetrics();
                 });
@@ -2264,7 +2503,7 @@
                 `;
             },
 
-            renderDoctor(doc) {
+            renderDoctor(doc, idx) {
                 const statusMap = {
                     'BUKA': 'st-buka',
                     'PENUH': 'st-penuh',
@@ -2278,17 +2517,13 @@
                 const cls = statusMap[doc.Status] || 'st-nopoli';
                 const isActive = doc.Status === 'BUKA';
 
-                // Time Display Logic
-                const callTimeFn = (t) => {
-                    if (!t || t === '00:00' || t === '-') return '-';
-                    return t;
-                };
-
-                // Build shift pills HTML
+                // Build shift pills HTML + detect active shift (#1)
                 let shiftPillsHtml = '';
+                let hasActiveShift = false;
+                const now = new Date();
+                const curMins = now.getHours() * 60 + now.getMinutes();
+
                 if (doc.ShiftPills && doc.ShiftPills.length > 0) {
-                    const now = new Date();
-                    const curMins = now.getHours() * 60 + now.getMinutes();
                     const pills = doc.ShiftPills.map(sp => {
                         if (!sp.time) return '';
                         const parts = sp.time.split('-');
@@ -2296,17 +2531,32 @@
                         const startM = parseInt(parts[0].split(':')[0]) * 60 + parseInt(parts[0].split(':')[1] || '0');
                         const endM = parseInt(parts[1].split(':')[0]) * 60 + parseInt(parts[1].split(':')[1] || '0');
                         const isNow = curMins >= startM && curMins < endM && !sp.disabled;
-                        const cls = sp.disabled ? 'sp-disabled' : isNow ? 'sp-active' : '';
-                        return `<span class="shift-pill ${cls}"><span class="material-icons-round" style="font-size:9px;opacity:0.7">schedule</span>${esc(sp.time)}${isNow ? '<span class="sp-dot"></span>' : ''}${sp.disabled ? ' <span style="font-size:8px">✕</span>' : ''}</span>`;
+                        if (isNow) hasActiveShift = true;
+                        const pcls = sp.disabled ? 'sp-disabled' : isNow ? 'sp-active' : '';
+                        return `<span class="shift-pill ${pcls}"><span class="material-icons-round" style="font-size:9px;opacity:0.7">schedule</span>${esc(sp.time)}${isNow ? '<span class="sp-dot"></span>' : ''}${sp.disabled ? ' <span style="font-size:8px">\u2715</span>' : ''}</span>`;
                     }).filter(Boolean).join('');
                     shiftPillsHtml = `<div class="shift-pills">${pills}</div>`;
                 } else if (doc.Jam && doc.Jam !== '-') {
-                    // Fallback: single time display
                     shiftPillsHtml = `<div class="doc-jam"><span class="material-icons-round" style="font-size:10px; opacity:0.7">schedule</span> ${esc(doc.Jam)}</div>`;
+                    hasActiveShift = checkTime(doc.Jam);
                 }
 
+                // Improvement #1: active shift highlight class
+                const activeShiftCls = hasActiveShift ? ' has-active-shift' : '';
+                // Improvement #3: staggered card enter animation
+                const animDelay = idx !== undefined ? `animation-delay:${idx * 80}ms` : '';
+
+                // Improvement #4: Prominent Jam Daftar
+                const hasRegTime = doc.RegistrationTime && doc.RegistrationTime !== '-';
+                const regTimeHtml = hasRegTime
+                    ? `<div class="reg-time-box">
+                        <span class="reg-label">JAM DAFTAR</span>
+                        <span class="reg-time ${isActive ? 'is-active' : ''}">${esc(doc.RegistrationTime)}</span>
+                       </div>`
+                    : '';
+
                 return `
-                <div class="platter ${cls}" ${isActive ? 'data-active="true"' : ''}>
+                <div class="platter ${cls}${activeShiftCls} card-enter" style="${animDelay}" ${isActive ? 'data-active="true"' : ''}>
                     <div class="platter-body">
                         <div class="avatar-col">
                             <div class="avatar">${doc.Code || initials(doc.Dokter)}</div>
@@ -2319,14 +2569,7 @@
                             </div>
                         </div>
                         <div class="status-col">
-                            <div class="time-group-s">
-                                <div class="tg-row" style="flex-direction:column; gap:0; align-items:flex-end;">
-                                    <span class="tg-label">JAM DAFTAR</span>
-                                    <span class="tg-val-lg ${isActive ? 'active-time-lg' : ''}">
-                                        ${(doc.RegistrationTime && doc.RegistrationTime !== '-') ? esc(doc.RegistrationTime) : ''}
-                                    </span>
-                                </div>
-                            </div>
+                            ${regTimeHtml}
                             <div class="status-pill">${esc(doc.Status)}</div>
                         </div>
                     </div>

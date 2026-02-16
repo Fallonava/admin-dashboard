@@ -27,7 +27,7 @@
     "id": 108,
     "name": "dr. Ardian Rahmansyah, Sp. OG",
     "specialty": "Kandungan (Malam)",
-    "status": "BUKA",
+    "status": "SELESAI",
     "category": "Bedah",
     "queueCode": "KM",
     "startTime": "18:30",
@@ -110,12 +110,13 @@
     "id": 104,
     "name": "dr. Eko Subekti, Sp. U",
     "specialty": "Urologi",
-    "status": "PENUH",
+    "status": "SELESAI",
     "category": "Bedah",
     "queueCode": "U",
     "startTime": "18:00",
     "endTime": "21:00",
-    "lastCall": "17:55"
+    "lastCall": "17:55",
+    "isAuto": true
   },
   {
     "id": 109,
@@ -184,7 +185,7 @@
     "id": 129,
     "name": "dr. Leo Chandra WPW, Sp. PD, M. KES",
     "specialty": "Penyakit Dalam (Pagi)",
-    "status": "BUKA",
+    "status": "SELESAI",
     "category": "NonBedah",
     "queueCode": "DP",
     "startTime": "09:00",
