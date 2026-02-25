@@ -15,7 +15,6 @@ import {
   Tv
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 const navigation = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
@@ -36,7 +35,7 @@ export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <div className="flex h-screen w-64 flex-col justify-between glass-panel border-r border-border p-4 transition-colors duration-300">
+    <div className="flex h-screen w-64 flex-col justify-between super-glass p-4 transition-colors duration-300 shadow-[4px_0_24px_-8px_rgba(0,0,0,0.05)] z-20 relative">
       <div>
         <div className="flex items-center gap-3 px-2 mb-8">
           <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-bold shadow-lg shadow-primary/20">
@@ -56,10 +55,10 @@ export function Sidebar() {
                 key={item.name}
                 href={item.href}
                 className={cn(
-                  "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200",
+                  "flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold transition-all duration-300",
                   isActive
-                    ? "bg-primary/10 text-primary shadow-sm ring-1 ring-primary/20"
-                    : "hover:bg-muted hover:text-foreground text-muted-foreground"
+                    ? "btn-gradient text-white shadow-[0_4px_14px_0_rgba(0,92,255,0.39)]"
+                    : "hover:bg-black/[0.03] hover:text-foreground text-muted-foreground"
                 )}
               >
                 <item.icon className={cn("h-5 w-5", isActive ? "text-primary" : "text-muted-foreground")} />
@@ -81,13 +80,13 @@ export function Sidebar() {
                 href={item.href}
                 target={item.external ? "_blank" : undefined}
                 className={cn(
-                  "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200",
+                  "flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold transition-all duration-300",
                   isActive
-                    ? "bg-primary/10 text-primary shadow-sm ring-1 ring-primary/20"
-                    : "hover:bg-muted hover:text-foreground text-muted-foreground"
+                    ? "btn-gradient text-white shadow-[0_4px_14px_0_rgba(0,92,255,0.39)]"
+                    : "hover:bg-black/[0.03] hover:text-foreground text-muted-foreground"
                 )}
               >
-                <item.icon className={cn("h-5 w-5", isActive ? "text-primary" : "text-muted-foreground")} />
+                <item.icon className={cn("h-5 w-5", isActive ? "text-white" : "text-muted-foreground")} />
                 {item.name}
               </Link>
             );
@@ -95,16 +94,15 @@ export function Sidebar() {
         </nav>
       </div>
 
-      <div className="mt-auto border-t border-border pt-4">
+      <div className="mt-auto pt-4">
         <div className="flex items-center justify-between px-2">
           <div className="flex items-center gap-3">
-            <div className="h-8 w-8 rounded-full bg-muted border border-border"></div>
+            <div className="h-8 w-8 rounded-full bg-muted"></div>
             <div>
               <p className="text-sm font-medium">Dr. Admin</p>
               <p className="text-xs text-muted-foreground">Super Admin</p>
             </div>
           </div>
-          <ThemeToggle />
         </div>
       </div>
     </div>

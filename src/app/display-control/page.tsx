@@ -89,7 +89,7 @@ export default function DisplayControl() {
             {/* Content: Global Settings */}
             <div className="lg:col-span-3 space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="bg-slate-900/50 backdrop-blur-xl border border-white/10 rounded-2xl p-6">
+                    <div className="bg-slate-900/50 backdrop-blur-xl rounded-2xl p-6">
                         <h2 className="text-xl font-semibold text-white mb-4">Siaran (Broadcast)</h2>
                         <div className="space-y-4">
                             <div>
@@ -97,11 +97,11 @@ export default function DisplayControl() {
                                 <textarea
                                     value={settings.runTextMessage || ''}
                                     onChange={(e) => updateSetting('runTextMessage', e.target.value)}
-                                    className="w-full bg-slate-800/50 text-white rounded-xl p-3 border border-white/10 focus:border-blue-500 outline-none text-sm min-h-[100px]"
+                                    className="w-full bg-slate-800/50 text-white rounded-xl p-3 focus:border-blue-500 outline-none text-sm min-h-[100px]"
                                 />
                             </div>
 
-                            <div className="flex items-center gap-3 p-3 bg-red-500/10 border border-red-500/20 rounded-xl">
+                            <div className="flex items-center gap-3 p-3 bg-red-500/10 border-500/20 rounded-xl">
                                 <input
                                     type="checkbox"
                                     checked={settings.emergencyMode || false}
@@ -117,18 +117,18 @@ export default function DisplayControl() {
                     </div>
 
                     <div className="space-y-6">
-                        <div className="bg-slate-900/50 backdrop-blur-xl border border-white/10 rounded-2xl p-6">
+                        <div className="bg-slate-900/50 backdrop-blur-xl rounded-2xl p-6">
                             <h2 className="text-xl font-semibold text-white mb-4">Aksi Cepat</h2>
                             <div className="grid grid-cols-2 gap-3">
                                 <button
                                     onClick={handleResetStatus}
-                                    className="p-3 bg-slate-800 hover:bg-slate-700 text-white text-sm rounded-xl border border-white/5 transition-colors"
+                                    className="p-3 bg-slate-800 hover:bg-slate-700 text-white text-sm rounded-xl transition-colors"
                                 >
                                     Reset Status
                                 </button>
                                 <button
                                     onClick={handleClearQueue}
-                                    className="p-3 bg-slate-800 hover:bg-slate-700 text-white text-sm rounded-xl border border-white/5 transition-colors"
+                                    className="p-3 bg-slate-800 hover:bg-slate-700 text-white text-sm rounded-xl transition-colors"
                                 >
                                     Hapus Antrian
                                 </button>
@@ -136,7 +136,7 @@ export default function DisplayControl() {
                         </div>
 
                         {/* Dynamic Island Custom Messages */}
-                        <div className="bg-slate-900/50 backdrop-blur-xl border border-white/10 rounded-2xl p-6">
+                        <div className="bg-slate-900/50 backdrop-blur-xl rounded-2xl p-6">
                             <div className="flex items-center justify-between mb-4">
                                 <h2 className="text-xl font-semibold text-white">Dynamic Island</h2>
                                 <button
@@ -151,7 +151,7 @@ export default function DisplayControl() {
                             </div>
                             <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2">
                                 {(settings.customMessages || []).map((msg, idx) => (
-                                    <div key={idx} className="bg-slate-800/50 p-3 rounded-xl border border-white/5 flex gap-2 items-start group">
+                                    <div key={idx} className="bg-slate-800/50 p-3 rounded-xl flex gap-2 items-start group">
                                         <div className="flex-1 space-y-2">
                                             <input
                                                 value={msg.title}

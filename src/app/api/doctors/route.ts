@@ -62,7 +62,7 @@ export async function POST(req: Request) {
 
 export async function PUT(req: Request) {
     const body = await req.json();
-    const { id, currentRegistrationTime, ...updates } = body;
+    const { id, currentRegistrationTime, isAuto, ...updates } = body;
 
     if (updates.lastManualOverride !== undefined && updates.lastManualOverride !== null) {
         updates.lastManualOverride = BigInt(updates.lastManualOverride);

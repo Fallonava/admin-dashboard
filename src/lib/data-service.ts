@@ -18,10 +18,9 @@ export interface LeaveRequest {
     id: number;
     doctor: string;
     specialty?: string;
-    type: 'Sick Leave' | 'Vacation' | 'Personal' | 'Conference';
+    type: 'Sakit' | 'Liburan' | 'Pribadi' | 'Konferensi' | 'Lainnya';
     dates: string;
     reason?: string;
-    status: 'Pending' | 'Approved' | 'Rejected';
     avatar?: string;
 }
 
@@ -71,20 +70,18 @@ const INITIAL_LEAVE: LeaveRequest[] = [
         id: 1,
         doctor: "Dr. Sarah Johnson",
         specialty: "Sp. Bedah",
-        type: "Vacation",
+        type: "Liburan",
         dates: "Oct 24 - 28",
         reason: "Annual family vacation",
-        status: "Pending",
         avatar: "/avatars/dr-sarah.png"
     },
     {
         id: 2,
         doctor: "Dr. Michael Chen",
         specialty: "Sp. Anak",
-        type: "Conference",
+        type: "Konferensi",
         dates: "Nov 05 - 07",
         reason: "International Pediatrics Conference",
-        status: "Approved",
         avatar: "/avatars/dr-mike.png"
     },
 ];

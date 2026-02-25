@@ -109,8 +109,8 @@ export default function Home() {
   const activeDocs = todayDoctors.filter(d => d.status === 'BUKA' || d.status === 'PENUH');
   const onLeaveDocs = todayDoctors.filter(d => d.status === 'CUTI');
 
-  // Stats calculation
-  const pendingLeaves = leaves.filter(l => l.status === 'Pending').length;
+  // Stats calculation — leaves (no status concept anymore)
+  const pendingLeaves = 0;
 
   const [efficiency, setEfficiency] = useState(0);
 
@@ -144,10 +144,10 @@ export default function Home() {
         {/* Header Section */}
         <header className="px-8 py-6 flex items-center justify-between shrink-0">
           <div>
-            <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70">
+            <h1 className="text-3xl font-extrabold tracking-tight text-gradient pb-1">
               {greeting}, Dr. Admin
             </h1>
-            <p className="text-sm text-muted-foreground mt-1">Berikut update terbaru klinik Anda hari ini.</p>
+            <p className="text-sm text-foreground/60 mt-0.5">Berikup update terbaru klinik Anda hari ini.</p>
           </div>
 
           <div className="flex items-center gap-4">
@@ -155,10 +155,10 @@ export default function Home() {
             <button
               onClick={toggleAutomation}
               className={cn(
-                "flex items-center gap-3 px-5 py-2.5 rounded-xl transition-all border shadow-lg hover:shadow-xl active:scale-[0.97] group",
+                "flex items-center gap-3 px-5 py-2.5 rounded-2xl transition-all shadow-[0_4px_14px_0_rgba(0,0,0,0.05)] active:scale-[0.97] group",
                 automationEnabled
-                  ? "bg-gradient-to-r from-violet-600 to-indigo-600 text-white border-violet-500/50 shadow-violet-500/25"
-                  : "bg-muted/50 text-muted-foreground border-border hover:text-foreground hover:bg-muted"
+                  ? "btn-gradient shadow-[0_4px_14px_0_rgba(99,102,241,0.39)]"
+                  : "bg-white text-muted-foreground hover:shadow-[0_6px_20px_rgba(0,0,0,0.06)]"
               )}
             >
               <div className="relative">
@@ -188,17 +188,20 @@ export default function Home() {
 
             <div className="h-8 w-px bg-border mx-2" />
 
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
-              <input
-                type="text"
-                placeholder="Cari dokter..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9 pr-4 py-2 rounded-xl bg-muted/50 border border-border focus:bg-background focus:ring-2 focus:ring-primary/20 transition-all text-sm w-48 outline-none"
-              />
+            <div className="relative group">
+              <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-2xl blur opacity-0 group-focus-within:opacity-100 transition duration-500"></div>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                <input
+                  type="text"
+                  placeholder="Cari dokter..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-9 pr-4 py-2.5 rounded-2xl bg-white focus:border-blue-500/50 shadow-[0_2px_10px_-3px_rgba(0,0,0,0.02)] transition-all text-sm w-56 outline-none"
+                />
+              </div>
             </div>
-            <button className="p-2 rounded-xl bg-muted/50 border border-border text-muted-foreground hover:text-foreground hover:bg-background transition-all">
+            <button className="p-2.5 rounded-2xl bg-white text-muted-foreground hover:text-foreground hover:shadow-[0_4px_14px_0_rgba(0,0,0,0.05)] transition-all">
               <Filter size={18} />
             </button>
           </div>
@@ -221,10 +224,10 @@ export default function Home() {
 
                 <div className="flex items-center gap-2">
                   <div className={cn(
-                    "px-3 py-1 rounded-full text-xs font-bold border flex items-center gap-2 transition-all",
+                    "px-3 py-1 rounded-full text-xs font-bold flex items-center gap-2 transition-all",
                     automationEnabled
-                      ? "bg-violet-500/10 text-violet-400 border-violet-500/20"
-                      : "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
+                      ? "bg-violet-500/10 text-violet-400-500/20"
+                      : "bg-emerald-500/10 text-emerald-600-500/20"
                   )}>
                     <span className="relative flex h-2 w-2">
                       <span className={cn(
@@ -244,7 +247,7 @@ export default function Home() {
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
                 {filteredDoctors.map(doc => (
                   <div key={doc.id} className={cn(
-                    "glass-card p-4 rounded-xl group transition-all duration-300 border border-border/50 relative overflow-hidden",
+                    "super-glass-card p-4 rounded-xl group relative overflow-hidden",
                     automationEnabled && "opacity-90 hover:opacity-100"
                   )}>
                     {automationEnabled && (
@@ -252,7 +255,7 @@ export default function Home() {
                     )}
                     <div className="flex items-start justify-between mb-4 relative z-10">
                       <div className="flex items-center gap-3">
-                        <Avatar className="h-12 w-12 border-2 border-background shadow-sm">
+                        <Avatar className="h-12 w-12 shadow-sm">
                           <AvatarFallback className={cn(
                             "text-sm font-bold text-white",
                             doc.status === 'BUKA' ? "bg-blue-500" :
@@ -269,7 +272,7 @@ export default function Home() {
                           <div className="flex items-center gap-2 mt-0.5">
                             <p className="text-xs text-muted-foreground font-medium">{doc.specialty}</p>
                             {(doc.status === 'BUKA' || doc.status === 'PENUH') && (
-                              <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded-md border border-border/50">
+                              <div className="flex items-center gap-1 bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded-md">
                                 <span className="text-[9px] font-medium tracking-wide">BATAS JAM:</span>
                                 <input
                                   type="time"
@@ -291,12 +294,12 @@ export default function Home() {
                         </div>
                       </div>
                       <div className={cn(
-                        "px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider border",
-                        doc.status === 'BUKA' ? "bg-blue-500/10 text-blue-600 border-blue-500/20" :
-                          doc.status === 'PENUH' ? "bg-orange-500/10 text-orange-600 border-orange-500/20" :
-                            doc.status === 'CUTI' ? "bg-pink-500/10 text-pink-600 border-pink-500/20" :
-                              doc.status === 'OPERASI' ? "bg-red-500/10 text-red-600 border-red-500/20" :
-                                "bg-slate-500/10 text-slate-500 border-slate-500/20"
+                        "px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider",
+                        doc.status === 'BUKA' ? "bg-blue-500/10 text-blue-600-500/20" :
+                          doc.status === 'PENUH' ? "bg-orange-500/10 text-orange-600-500/20" :
+                            doc.status === 'CUTI' ? "bg-pink-500/10 text-pink-600-500/20" :
+                              doc.status === 'OPERASI' ? "bg-red-500/10 text-red-600-500/20" :
+                                "bg-slate-500/10 text-slate-500-500/20"
                       )}>
                         {doc.status || 'Offline'}
                       </div>
@@ -320,12 +323,12 @@ export default function Home() {
                                 key={shift.id}
                                 onClick={() => toggleShiftDisabled(shift.id, shift)}
                                 className={cn(
-                                  "flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-semibold border transition-all",
+                                  "flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-semibold transition-all",
                                   isDisabledToday
-                                    ? "bg-red-500/5 text-red-400/60 border-red-500/10 line-through hover:bg-red-500/10"
+                                    ? "bg-red-500/5 text-red-400/60-500/10 line-through hover:bg-red-500/10"
                                     : isActive
-                                      ? "bg-emerald-500/15 text-emerald-500 border-emerald-500/30 ring-1 ring-emerald-500/20"
-                                      : "bg-muted/50 text-muted-foreground border-border/50 hover:bg-muted"
+                                      ? "bg-emerald-500/15 text-emerald-500-500/30 ring-1 ring-emerald-500/20"
+                                      : "bg-muted/50 text-muted-foreground hover:bg-muted"
                                 )}
                                 title={isDisabledToday ? 'Klik untuk aktifkan hari ini' : 'Klik untuk nonaktifkan hari ini'}
                               >
@@ -342,22 +345,22 @@ export default function Home() {
 
                     <div className="grid grid-cols-6 gap-1.5 relative z-10">
                       {[
-                        { id: 'TIDAK PRAKTEK', label: 'Off', className: 'bg-slate-500 text-white border-slate-600 shadow-slate-500/20 hover:bg-slate-600' },
-                        { id: 'BUKA', label: 'Buka', className: 'bg-blue-500 text-white border-blue-600 shadow-blue-500/20 hover:bg-blue-600' },
-                        { id: 'PENUH', label: 'Penuh', className: 'bg-orange-500 text-white border-orange-600 shadow-orange-500/20 hover:bg-orange-600' },
-                        { id: 'OPERASI', label: 'Ops', className: 'bg-red-500 text-white border-red-600 shadow-red-500/20 hover:bg-red-600' },
-                        { id: 'SELESAI', label: 'Slsai', className: 'bg-emerald-500 text-white border-emerald-600 shadow-emerald-500/20 hover:bg-emerald-600' },
-                        { id: 'CUTI', label: 'Cuti', className: 'bg-pink-500 text-white border-pink-600 shadow-pink-500/20 hover:bg-pink-600' },
+                        { id: 'TIDAK PRAKTEK', label: 'Off', className: 'bg-slate-500 text-white-600 shadow-slate-500/20 hover:bg-slate-600' },
+                        { id: 'BUKA', label: 'Buka', className: 'bg-blue-500 text-white-600 shadow-blue-500/20 hover:bg-blue-600' },
+                        { id: 'PENUH', label: 'Penuh', className: 'bg-orange-500 text-white-600 shadow-orange-500/20 hover:bg-orange-600' },
+                        { id: 'OPERASI', label: 'Ops', className: 'bg-red-500 text-white-600 shadow-red-500/20 hover:bg-red-600' },
+                        { id: 'SELESAI', label: 'Slsai', className: 'bg-emerald-500 text-white-600 shadow-emerald-500/20 hover:bg-emerald-600' },
+                        { id: 'CUTI', label: 'Cuti', className: 'bg-pink-500 text-white-600 shadow-pink-500/20 hover:bg-pink-600' },
                       ].map((action) => (
                         <button
                           key={action.id}
                           // Allow manual update even if automation is enabled, to trigger manual override
                           onClick={() => manualUpdateStatus(doc.id, action.id as any)}
                           className={cn(
-                            "py-1.5 rounded-lg text-[10px] font-bold transition-all border shadow-md",
+                            "py-1.5 rounded-lg text-[10px] font-bold transition-all shadow-md",
                             doc.status === action.id
                               ? action.className
-                              : "bg-muted hover:bg-muted/80 text-muted-foreground border-transparent hover:border-border shadow-none",
+                              : "bg-muted hover:bg-muted/80 text-muted-foreground hover:border-border shadow-none",
                             // Warning style if overriding automation? Nah, just let them do it.
                           )}
                         >
@@ -372,13 +375,13 @@ export default function Home() {
 
             {/* Right Column: Display Preview (Visible only on small screens now maybe? Or unused?) */}
             <div className="block lg:hidden xl:hidden space-y-6">
-              <div className="glass-card p-6 rounded-2xl text-center">
-                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 text-primary">
+              <div className="super-glass-card p-6 rounded-3xl text-center">
+                <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4 text-blue-500 shadow-inner">
                   <MonitorPlay size={32} />
                 </div>
                 <h3 className="font-bold text-foreground">Display Preview</h3>
-                <p className="text-sm text-muted-foreground mb-4">View what patients currently see on the main screen.</p>
-                <button className="w-full py-2 bg-primary text-primary-foreground rounded-xl font-medium shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all">
+                <p className="text-sm text-foreground/60 mb-4">View what patients currently see on the main screen.</p>
+                <button className="w-full py-2.5 btn-gradient rounded-2xl font-semibold">
                   Open Display View
                 </button>
               </div>

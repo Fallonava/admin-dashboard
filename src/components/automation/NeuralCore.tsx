@@ -57,7 +57,7 @@ export function NeuralCore() {
     const dashOffset = circumference - (efficiency / 100) * circumference;
 
     return (
-        <div className="rounded-2xl border border-white/[0.06] bg-slate-950/40 p-6 backdrop-blur-xl relative overflow-hidden group">
+        <div className="rounded-2xl border[0.06] bg-slate-950/40 p-6 backdrop-blur-xl relative overflow-hidden group">
             {/* Ambient glow */}
             <div className="absolute top-0 right-0 h-48 w-48 bg-blue-500/5 blur-3xl -z-10 group-hover:bg-blue-500/10 transition-all duration-700" />
 
@@ -72,7 +72,7 @@ export function NeuralCore() {
                         <p className="text-[10px] text-slate-500 font-mono uppercase tracking-wider">Real-time Engine Status</p>
                     </div>
                 </div>
-                <div className="flex items-center gap-1.5 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full">
+                <div className="flex items-center gap-1.5 bg-emerald-500/10 border-500/20 px-2.5 py-1 rounded-full">
                     <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
                     <span className="text-[9px] font-bold text-emerald-400 tracking-wider">ONLINE</span>
                 </div>
@@ -100,14 +100,14 @@ export function NeuralCore() {
 
                 {/* Stats Grid */}
                 <div className="space-y-3">
-                    <div className="bg-white/[0.02] rounded-xl p-3 border border-white/[0.04]">
+                    <div className="bg-white/[0.02] rounded-xl p-3 border[0.04]">
                         <div className="flex items-center gap-2 mb-1">
                             <Users size={10} className="text-blue-400" />
                             <p className="text-[9px] text-slate-500 uppercase font-bold tracking-wider">Total Doctors</p>
                         </div>
                         <span className="text-lg font-bold text-white">{totalDoctors}</span>
                     </div>
-                    <div className="bg-white/[0.02] rounded-xl p-3 border border-white/[0.04]">
+                    <div className="bg-white/[0.02] rounded-xl p-3 border[0.04]">
                         <div className="flex items-center gap-2 mb-1">
                             <Calendar size={10} className="text-violet-400" />
                             <p className="text-[9px] text-slate-500 uppercase font-bold tracking-wider">Total Shifts</p>
@@ -117,7 +117,7 @@ export function NeuralCore() {
                             <span className="text-[10px] text-slate-500">{todayShifts} today</span>
                         </div>
                     </div>
-                    <div className="bg-blue-500/[0.05] rounded-xl p-3 border border-blue-500/10">
+                    <div className="bg-blue-500/[0.05] rounded-xl p-3 border-500/10">
                         <div className="flex items-center gap-2 mb-1">
                             <RotateCw size={10} className="text-blue-400 animate-spin" style={{ animationDuration: '4s' }} />
                             <p className="text-[9px] text-blue-300 uppercase font-bold tracking-wider">Next Sync</p>
@@ -128,7 +128,7 @@ export function NeuralCore() {
             </div>
 
             {/* Bottom Status Indicators */}
-            <div className="flex items-center gap-5 mt-5 pt-4 border-t border-white/[0.04]">
+            <div className="flex items-center gap-5 mt-5 pt-4[0.04]">
                 {[
                     { label: "Scheduling", ok: true },
                     { label: "Broadcasting", ok: activeBroadcasts > 0 },

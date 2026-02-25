@@ -1,111 +1,169 @@
 import { useState } from "react";
-import { X } from "lucide-react";
+import { X, CalendarDays } from "lucide-react";
 import useSWR from "swr";
 import type { Doctor } from "@/lib/data-service";
 
-interface LeaveRequestModalProps {
+const TIPE_CUTI = [
+    { value: "Sakit", label: "🤒 Sakit" },
+    { value: "Liburan", label: "🏖 Liburan" },
+    { value: "Pribadi", label: "👤 Keperluan Pribadi" },
+    { value: "Konferensi", label: "🎤 Konferensi / Seminar" },
+    { value: "Lainnya", label: "📋 Lainnya" },
+];
+
+interface Props {
     isOpen: boolean;
     onClose: () => void;
     onSubmit: (data: any) => Promise<void>;
 }
 
-export function LeaveRequestModal({ isOpen, onClose, onSubmit }: LeaveRequestModalProps) {
+export function LeaveRequestModal({ isOpen, onClose, onSubmit }: Props) {
     const { data: doctors = [] } = useSWR<Doctor[]>('/api/doctors');
-    const [newLeave, setNewLeave] = useState({
+    const [form, setForm] = useState({
         doctor: "",
-        type: "Vacation",
+        type: "Sakit",
         startDate: "",
         endDate: "",
-        status: "Pending"
+        reason: "",
     });
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     if (!isOpen) return null;
 
+    const isValid = form.doctor && form.startDate && form.endDate;
+    const isEndBeforeStart = form.endDate && form.startDate && new Date(form.endDate) < new Date(form.startDate);
+
     const handleSubmit = async () => {
-        if (!newLeave.doctor || !newLeave.startDate || !newLeave.endDate) return;
-
-        // Validation: End Date cannot be before Start Date
-        if (new Date(newLeave.endDate) < new Date(newLeave.startDate)) {
-            alert("End date cannot be before start date");
-            return;
+        if (!isValid || isEndBeforeStart) return;
+        setIsSubmitting(true);
+        try {
+            await onSubmit({
+                doctor: form.doctor,
+                type: form.type,
+                dates: `${form.startDate} - ${form.endDate}`,
+                reason: form.reason,
+                avatar: "/avatars/default.png",
+            });
+            setForm({ doctor: "", type: "Sakit", startDate: "", endDate: "", reason: "" });
+            onClose();
+        } finally {
+            setIsSubmitting(false);
         }
-
-        await onSubmit({
-            ...newLeave,
-            dates: `${newLeave.startDate} - ${newLeave.endDate}`,
-            avatar: "/avatars/default.png" // Placeholder, ideally fetch doctor's avatar
-        });
-
-        setNewLeave({ doctor: "", type: "Vacation", startDate: "", endDate: "", status: "Pending" });
-        onClose();
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-200">
-            <div className="bg-slate-900/95 border border-white/10 rounded-2xl p-6 w-full max-w-sm shadow-2xl shadow-black/50 relative backdrop-blur-xl animate-in zoom-in-95 duration-200">
-                <button
-                    onClick={onClose}
-                    className="absolute top-4 right-4 text-slate-500 hover:text-white transition-colors"
-                >
-                    <X size={16} />
-                </button>
-                <h3 className="text-base font-bold text-white mb-5">Add Leave Request</h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
+            <div className="bg-white rounded-[28px] p-6 w-full max-w-sm shadow-2xl animate-in zoom-in-95 duration-200">
+                {/* Header */}
+                <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-2xl bg-emerald-50 flex items-center justify-center">
+                            <CalendarDays className="h-5 w-5 text-emerald-600" />
+                        </div>
+                        <div>
+                            <h3 className="text-base font-black text-slate-800">Tambah Cuti</h3>
+                            <p className="text-xs text-slate-400">Catat jadwal cuti dokter</p>
+                        </div>
+                    </div>
+                    <button
+                        onClick={onClose}
+                        className="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-50 transition-colors"
+                    >
+                        <X size={16} />
+                    </button>
+                </div>
 
-                <div className="space-y-3.5">
+                <div className="space-y-4">
+                    {/* Dokter */}
                     <div>
-                        <label className="text-[10px] text-slate-500 font-medium uppercase tracking-wider block mb-1.5">Doctor Name</label>
+                        <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-2">
+                            Nama Dokter
+                        </label>
                         <select
-                            className="w-full bg-white/[0.03] border border-white/[0.08] rounded-xl p-2.5 text-sm text-white focus:border-blue-500/50 outline-none transition-all [&>option]:bg-slate-900"
-                            value={newLeave.doctor}
-                            onChange={e => setNewLeave({ ...newLeave, doctor: e.target.value })}
-                            autoFocus
+                            className="w-full bg-slate-50 rounded-2xl px-4 py-3 text-sm font-medium text-slate-700 outline-none focus:ring-2 focus:ring-emerald-500/20 focus:bg-white transition-all"
+                            value={form.doctor}
+                            onChange={e => setForm({ ...form, doctor: e.target.value })}
                         >
-                            <option value="" disabled>Select Doctor</option>
+                            <option value="" disabled>Pilih dokter...</option>
                             {doctors.map(doc => (
                                 <option key={doc.id} value={doc.name}>{doc.name}</option>
                             ))}
                         </select>
                     </div>
+
+                    {/* Tipe */}
                     <div>
-                        <label className="text-[10px] text-slate-500 font-medium uppercase tracking-wider block mb-1.5">Type</label>
-                        <select
-                            className="w-full bg-white/[0.03] border border-white/[0.08] rounded-xl p-2.5 text-sm text-white focus:border-blue-500/50 outline-none transition-all [&>option]:bg-slate-900"
-                            value={newLeave.type}
-                            onChange={e => setNewLeave({ ...newLeave, type: e.target.value as any })}
-                        >
-                            <option value="Vacation">Vacation</option>
-                            <option value="Sick Leave">Sick Leave</option>
-                            <option value="Conference">Conference</option>
-                            <option value="Personal">Personal</option>
-                        </select>
+                        <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-2">
+                            Jenis Cuti
+                        </label>
+                        <div className="grid grid-cols-2 gap-2">
+                            {TIPE_CUTI.map(t => (
+                                <button
+                                    key={t.value}
+                                    type="button"
+                                    onClick={() => setForm({ ...form, type: t.value })}
+                                    className={`px-3 py-2.5 rounded-xl text-xs font-bold text-left transition-all ${form.type === t.value
+                                            ? "bg-slate-900 text-white shadow-md"
+                                            : "bg-slate-50 text-slate-500 hover:bg-slate-100"
+                                        }`}
+                                >
+                                    {t.label}
+                                </button>
+                            ))}
+                        </div>
                     </div>
+
+                    {/* Tanggal */}
                     <div className="grid grid-cols-2 gap-3">
                         <div>
-                            <label className="text-[10px] text-slate-500 font-medium uppercase tracking-wider block mb-1.5">Start</label>
+                            <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-2">
+                                Mulai
+                            </label>
                             <input
                                 type="date"
-                                className="w-full bg-white/[0.03] border border-white/[0.08] rounded-xl p-2.5 text-sm text-white focus:border-blue-500/50 outline-none transition-all [color-scheme:dark]"
-                                value={newLeave.startDate}
-                                onChange={e => setNewLeave({ ...newLeave, startDate: e.target.value })}
+                                className="w-full bg-slate-50 rounded-2xl px-4 py-3 text-sm font-medium text-slate-700 outline-none focus:ring-2 focus:ring-emerald-500/20 focus:bg-white transition-all"
+                                value={form.startDate}
+                                onChange={e => setForm({ ...form, startDate: e.target.value })}
                             />
                         </div>
                         <div>
-                            <label className="text-[10px] text-slate-500 font-medium uppercase tracking-wider block mb-1.5">End</label>
+                            <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-2">
+                                Selesai
+                            </label>
                             <input
                                 type="date"
-                                className="w-full bg-white/[0.03] border border-white/[0.08] rounded-xl p-2.5 text-sm text-white focus:border-blue-500/50 outline-none transition-all [color-scheme:dark]"
-                                value={newLeave.endDate}
-                                onChange={e => setNewLeave({ ...newLeave, endDate: e.target.value })}
+                                className={`w-full bg-slate-50 rounded-2xl px-4 py-3 text-sm font-medium text-slate-700 outline-none focus:ring-2 transition-all ${isEndBeforeStart ? "ring-2 ring-red-300 bg-red-50" : "focus:ring-emerald-500/20 focus:bg-white"
+                                    }`}
+                                value={form.endDate}
+                                min={form.startDate}
+                                onChange={e => setForm({ ...form, endDate: e.target.value })}
                             />
                         </div>
+                    </div>
+                    {isEndBeforeStart && (
+                        <p className="text-xs text-red-500 font-medium -mt-2">Tanggal selesai tidak boleh sebelum tanggal mulai</p>
+                    )}
+
+                    {/* Keterangan (opsional) */}
+                    <div>
+                        <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-2">
+                            Keterangan <span className="normal-case font-medium">(opsional)</span>
+                        </label>
+                        <input
+                            type="text"
+                            placeholder="Tambahkan keterangan..."
+                            className="w-full bg-slate-50 rounded-2xl px-4 py-3 text-sm font-medium text-slate-700 outline-none focus:ring-2 focus:ring-emerald-500/20 focus:bg-white transition-all placeholder:text-slate-300"
+                            value={form.reason}
+                            onChange={e => setForm({ ...form, reason: e.target.value })}
+                        />
                     </div>
 
                     <button
                         onClick={handleSubmit}
-                        disabled={!newLeave.doctor || !newLeave.startDate || !newLeave.endDate}
-                        className="w-full py-2.5 mt-1 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl font-semibold text-sm transition-all shadow-lg shadow-blue-600/20 active:scale-[0.98]"
+                        disabled={!isValid || !!isEndBeforeStart || isSubmitting}
+                        className="w-full py-3.5 mt-1 bg-slate-900 hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-2xl font-bold text-sm transition-all shadow-md active:scale-[0.98]"
                     >
-                        Submit Request
+                        {isSubmitting ? "Menyimpan..." : "Simpan Cuti"}
                     </button>
                 </div>
             </div>

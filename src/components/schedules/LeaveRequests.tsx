@@ -1,8 +1,19 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Check, X, Loader2 } from "lucide-react";
+import { Loader2, CalendarDays } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { LeaveRequest } from "@/lib/data-service";
+
+const TYPE_CONFIG: Record<string, { color: string; bg: string; emoji: string }> = {
+    'Sakit': { color: "text-red-600", bg: "bg-red-50", emoji: "🤒" },
+    'Liburan': { color: "text-emerald-600", bg: "bg-emerald-50", emoji: "🏖" },
+    'Konferensi': { color: "text-purple-600", bg: "bg-purple-50", emoji: "🎤" },
+    'Pribadi': { color: "text-blue-600", bg: "bg-blue-50", emoji: "👤" },
+    'Lainnya': { color: "text-slate-600", bg: "bg-slate-100", emoji: "📋" },
+    'Sick Leave': { color: "text-red-600", bg: "bg-red-50", emoji: "🤒" },
+    'Vacation': { color: "text-emerald-600", bg: "bg-emerald-50", emoji: "🏖" },
+    'Conference': { color: "text-purple-600", bg: "bg-purple-50", emoji: "🎤" },
+    'Personal': { color: "text-blue-600", bg: "bg-blue-50", emoji: "👤" },
+};
 
 export function LeaveRequests() {
     const [leaves, setLeaves] = useState<LeaveRequest[]>([]);
@@ -11,10 +22,7 @@ export function LeaveRequests() {
     const fetchLeaves = async () => {
         try {
             const res = await fetch('/api/leaves');
-            if (res.ok) {
-                const data = await res.json();
-                setLeaves(data);
-            }
+            if (res.ok) setLeaves(await res.json());
         } catch (error) {
             console.error("Failed to fetch leaves", error);
         } finally {
@@ -24,117 +32,118 @@ export function LeaveRequests() {
 
     useEffect(() => {
         fetchLeaves();
-
-        // Poll for updates every 10 seconds to keep in sync
         const interval = setInterval(fetchLeaves, 10000);
         return () => clearInterval(interval);
     }, []);
 
-    const handleApprove = async (id: number) => {
-        try {
-            const res = await fetch('/api/leaves', {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id, status: 'Approved' })
-            });
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
-            if (res.ok) {
-                // Optimistic update or refetch
-                fetchLeaves();
+    const isDateInLeave = (checkDate: Date, leaveDates: string) => {
+        const target = new Date(checkDate);
+        target.setHours(0, 0, 0, 0);
+        try {
+            if (leaveDates.includes(' - ')) {
+                const [startStr, endStr] = leaveDates.split(' - ');
+                const start = new Date(startStr);
+                const end = new Date(endStr);
+                start.setHours(0, 0, 0, 0);
+                end.setHours(0, 0, 0, 0);
+                return target >= start && target <= end;
             }
-        } catch (error) {
-            console.error("Failed to approve", error);
-        }
+            const d = new Date(leaveDates);
+            if (!isNaN(d.getTime())) {
+                d.setHours(0, 0, 0, 0);
+                return d.getTime() === target.getTime();
+            }
+        } catch { return false; }
+        return false;
     };
 
-    // Filter lists
-    const pendingRequests = leaves.filter(l => l.status === 'Pending');
-    const approvedRequests = leaves.filter(l => l.status === 'Approved').slice(0, 5); // Show last 5
+    const todayLeaves = leaves.filter(l => isDateInLeave(today, l.dates));
+    const upcomingLeaves = leaves
+        .filter(l => {
+            const dateStr = l.dates.includes(' - ') ? l.dates.split(' - ')[0] : l.dates;
+            const d = new Date(dateStr);
+            return !isNaN(d.getTime()) && d > today;
+        })
+        .slice(0, 5);
 
     if (isLoading && leaves.length === 0) {
         return (
-            <div className="w-80 border-l border-white/5 bg-slate-900/50 p-6 backdrop-blur-xl h-full ml-6 hidden xl:flex items-center justify-center">
-                <Loader2 className="animate-spin text-slate-500" />
+            <div className="w-80 bg-white/60 backdrop-blur-xl p-6 h-full ml-6 hidden xl:flex items-center justify-center rounded-2xl">
+                <Loader2 className="animate-spin text-slate-300" />
             </div>
         );
     }
 
     return (
-        <div className="w-80 border-l border-white/5 bg-slate-900/50 p-6 backdrop-blur-xl h-full ml-6 hidden xl:block overflow-y-auto">
-            <h2 className="text-lg font-bold text-white">Leave Requests</h2>
-            <p className="text-xs text-slate-500 mb-6">Manage Cuti Approvals</p>
+        <div className="w-80 bg-white/60 backdrop-blur-xl p-5 h-full ml-5 hidden xl:flex flex-col gap-5 overflow-y-auto rounded-2xl shadow-sm">
+            {/* Header */}
+            <div>
+                <h2 className="text-base font-black text-slate-800">Jadwal Cuti</h2>
+                <p className="text-xs text-slate-400 font-medium mt-0.5">Hari ini & mendatang</p>
+            </div>
 
-            <div className="space-y-6">
-                {pendingRequests.length === 0 ? (
-                    <div className="text-center py-8 border border-dashed border-white/10 rounded-xl">
-                        <p className="text-xs text-slate-500">No pending requests</p>
+            {/* Cuti hari ini */}
+            <div>
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Cuti Hari Ini</p>
+                {todayLeaves.length === 0 ? (
+                    <div className="flex items-center gap-2 py-3 px-3 bg-emerald-50 rounded-xl">
+                        <CalendarDays className="h-4 w-4 text-emerald-400" />
+                        <p className="text-xs text-emerald-600 font-semibold">Semua dokter tersedia</p>
                     </div>
                 ) : (
-                    pendingRequests.map((req) => (
-                        <div key={req.id} className="rounded-xl border border-white/5 bg-slate-800/50 p-4 transition-all hover:bg-slate-800/80">
-                            <div className="flex items-center gap-3 mb-3">
-                                <Avatar>
-                                    <AvatarImage src={req.avatar} />
-                                    <AvatarFallback className="bg-slate-700 text-white font-bold text-xs">{req.doctor.charAt(0)}</AvatarFallback>
-                                </Avatar>
-                                <div>
-                                    <h3 className="text-sm font-semibold text-white">{req.doctor}</h3>
-                                    <p className="text-xs text-slate-400">{req.specialty || "General"}</p>
-                                </div>
-                            </div>
-
-                            <div className="space-y-2 mb-4">
-                                <div className="flex justify-between text-xs">
-                                    <span className="text-slate-500">Type</span>
-                                    <span className="text-amber-400 font-medium bg-amber-400/10 px-2 py-0.5 rounded text-[10px]">{req.type}</span>
-                                </div>
-                                <div className="flex justify-between text-xs">
-                                    <span className="text-slate-500">Dates</span>
-                                    <span className="text-slate-300">{req.dates}</span>
-                                </div>
-                                {req.reason && (
-                                    <div className="text-[10px] text-slate-500 italic border-l-2 border-slate-700 pl-2 mt-2">
-                                        "{req.reason}"
+                    <div className="space-y-2">
+                        {todayLeaves.map(l => {
+                            const conf = TYPE_CONFIG[l.type] || { color: "text-slate-500", bg: "bg-slate-50", emoji: "📋" };
+                            return (
+                                <div key={l.id} className="flex items-center gap-3 p-3 bg-amber-50 rounded-xl">
+                                    <Avatar className="h-8 w-8 rounded-xl flex-shrink-0">
+                                        <AvatarImage src={l.avatar} />
+                                        <AvatarFallback className="bg-gradient-to-br from-slate-600 to-slate-800 text-[10px] text-white font-black rounded-xl">
+                                            {l.doctor[0]}
+                                        </AvatarFallback>
+                                    </Avatar>
+                                    <div className="min-w-0">
+                                        <p className="text-xs font-bold text-slate-700 truncate">{l.doctor}</p>
+                                        <p className="text-[10px] text-slate-400">{conf.emoji} {l.type}</p>
                                     </div>
-                                )}
-                            </div>
-
-                            <div className="grid grid-cols-1 gap-2">
-                                <Button
-                                    onClick={() => handleApprove(req.id)}
-                                    className="w-full bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-500/20 h-8 text-xs"
-                                >
-                                    Approve Request
-                                </Button>
-                            </div>
-                        </div>
-                    ))
+                                </div>
+                            );
+                        })}
+                    </div>
                 )}
             </div>
 
-            <div className="mt-8">
-                <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-4">Recently Approved</h3>
-                <div className="space-y-3">
-                    {approvedRequests.length === 0 ? (
-                        <p className="text-[10px] text-slate-600 italic">No approved leaves yet.</p>
-                    ) : (
-                        approvedRequests.map((app, i) => (
-                            <div key={i} className="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition-colors">
-                                <Avatar className="h-8 w-8">
-                                    <AvatarImage src={app.avatar} />
-                                    <AvatarFallback className="bg-gradient-to-br from-emerald-400 to-cyan-500 opacity-80 text-[10px] text-white">
-                                        {app.doctor.charAt(0)}
-                                    </AvatarFallback>
-                                </Avatar>
-                                <div>
-                                    <p className="text-sm font-medium text-slate-200">{app.doctor}</p>
-                                    <p className="text-[10px] text-slate-500">{app.dates}</p>
+            {/* Cuti mendatang */}
+            {upcomingLeaves.length > 0 && (
+                <div>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Akan Datang</p>
+                    <div className="space-y-2">
+                        {upcomingLeaves.map(l => {
+                            const conf = TYPE_CONFIG[l.type] || { color: "text-slate-500", bg: "bg-slate-50", emoji: "📋" };
+                            return (
+                                <div key={l.id} className="flex items-center gap-3 p-3 hover:bg-slate-50 rounded-xl transition-colors">
+                                    <Avatar className="h-8 w-8 rounded-xl flex-shrink-0">
+                                        <AvatarImage src={l.avatar} />
+                                        <AvatarFallback className="bg-gradient-to-br from-slate-500 to-slate-700 text-[10px] text-white font-black rounded-xl">
+                                            {l.doctor[0]}
+                                        </AvatarFallback>
+                                    </Avatar>
+                                    <div className="min-w-0 flex-1">
+                                        <p className="text-xs font-bold text-slate-700 truncate">{l.doctor}</p>
+                                        <p className="text-[10px] text-slate-400">{l.dates}</p>
+                                    </div>
+                                    <span className={`text-[9px] font-black px-1.5 py-0.5 rounded-md flex-shrink-0 ${conf.color} ${conf.bg}`}>
+                                        {conf.emoji}
+                                    </span>
                                 </div>
-                            </div>
-                        ))
-                    )}
+                            );
+                        })}
+                    </div>
                 </div>
-            </div>
+            )}
         </div>
     );
 }

@@ -27,73 +27,76 @@
 
 @layer base {
   :root {
-    /* Light Mode Variables (Harmonized Zinc) */
-    --background: 240 5% 98%;
-    /* Soft Zinc White */
-    --foreground: 240 10% 3.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
+    /* Apple Modern 2026 Aesthetic Variables */
+    --background: 240 10% 97%;   /* #f5f5f7 - Apple classic light gray */
+    --foreground: 240 10% 12%;   /* #1c1c1e - Dark text, highly readable */
+    
+    --card: 0 0% 100%;           /* Pure white */
+    --card-foreground: 240 10% 12%;
+    
     --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-    --primary: 212 100% 45%;
-    /* Deep Vivid Blue */
+    --popover-foreground: 240 10% 12%;
+    
+    --primary: 219 100% 50%;     /* #005cff - Apple vivid blue */
     --primary-foreground: 0 0% 100%;
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 212 100% 45%;
-    --radius: 1rem;
-  }
-
-  .dark {
-    /* Dark Mode Variables (Harmonized Zinc Obsidian) */
-    --background: 240 10% 4%;
-    /* Deep Obsidian Black (same hue as light) */
-    --foreground: 0 0% 98%;
-    --card: 240 10% 6%;
-    /* Slightly lighter obsidian */
-    --card-foreground: 0 0% 98%;
-    --popover: 240 10% 6%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 212 100% 60%;
-    /* Luminous Blue (Lighter for Dark Mode) */
-    --primary-foreground: 240 5.9% 10%;
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 240 3.7% 15.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 212 100% 60%;
+    
+    --secondary: 240 5% 90%;    /* #e5e5ea */
+    --secondary-foreground: 240 10% 12%;
+    
+    --muted: 240 5% 94%;        /* #f2f2f7 */
+    --muted-foreground: 240 5% 45%; /* #8e8e93 */
+    
+    --accent: 219 100% 95%;     /* Soft blue background for active */
+    --accent-foreground: 219 100% 40%;
+    
+    --destructive: 348 100% 54%; /* #ff2d55 - Apple vivid pink/red */
+    --destructive-foreground: 0 0% 100%;
+    
+    --border: 240 5% 96%;        /* Extremely soft border, like Apple's thin lines */
+    --input: 240 5% 96%;
+    --ring: 219 100% 50%;
+    --radius: 1.25rem;           /* Smooth Apple-like squircle radius */
   }
 }
 
 @layer base {
-  * {
-    @apply border-border;
-  }
-
   body {
-    @apply bg-background text-foreground transition-all duration-300;
+    /* Base background color + Elegant Soft Mesh Gradient Overlay */
+    background-color: hsl(var(--background));
+    background-image: 
+      radial-gradient(at 10% 0%, hsla(219, 100%, 75%, 0.15) 0px, transparent 50%), /* Soft Blue */
+      radial-gradient(at 90% 10%, hsla(320, 100%, 80%, 0.12) 0px, transparent 50%), /* Soft Pink */
+      radial-gradient(at 50% 100%, hsla(260, 100%, 80%, 0.1) 0px, transparent 50%); /* Soft Purple */
+    background-attachment: fixed;
+    color: hsl(var(--foreground));
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", sans-serif;
+    -webkit-font-smoothing: antialiased;
   }
 }
 
-/* Glass Utilities (Smart Harmonics) */
+/* Base UI Components (Super Premium Glassmorphism Apple Style) */
 .glass-panel {
-  @apply bg-white/70 dark:bg-black/40 backdrop-blur-3xl border-r border-black/5 dark:border-white/5;
+  @apply bg-white/60 backdrop-blur-[40px] saturate-150 shadow-[4px_0_24px_-8px_rgba(0,0,0,0.05)];
 }
 
-.glass-card {
-  @apply bg-white dark:bg-zinc-900/50 border border-black/5 dark:border-white/5 shadow-sm hover:shadow-md transition-all duration-300;
+.super-glass-card {
+  @apply relative overflow-hidden bg-white/50 backdrop-blur-[30px] saturate-[1.2] shadow-[0_8px_32px_-8px_rgba(0,0,0,0.08),inset_0_1px_1px_rgba(255,255,255,0.8)] hover:shadow-[0_16px_48px_-12px_rgba(0,0,0,0.12),inset_0_1px_1px_rgba(255,255,255,0.9)] transition-all duration-500 ease-out z-10;
+}
+
+.super-glass-card::before {
+  content: '';
+  @apply absolute inset-0 bg-gradient-to-br from-blue-500/[0.03] via-purple-500/[0.03] to-pink-500/[0.03] opacity-0 hover:opacity-100 transition-opacity duration-500 ease-out -z-10;
+}
+
+.super-glass {
+  @apply bg-white/40 backdrop-blur-[50px] saturate-200 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),0_8px_32px_rgba(0,0,0,0.06)];
+}
+
+/* Apple-like gradients for buttons/accents */
+.btn-gradient {
+  @apply bg-gradient-to-br from-indigo-500/90 via-blue-500/90 to-cyan-500/90 backdrop-blur-md text-white shadow-[inset_0_1px_1px_rgba(255,255,255,0.3),0_4px_14px_0_rgba(59,130,246,0.39)] hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.4),0_6px_20px_rgba(59,130,246,0.23)] hover:-translate-y-0.5 transition-all duration-300;
+}
+
+.text-gradient {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-500;
 }

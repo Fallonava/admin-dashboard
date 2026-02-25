@@ -94,7 +94,7 @@ export function ActivityStream() {
     }, []);
 
     return (
-        <div className="rounded-2xl border border-white/[0.06] bg-slate-950/40 p-5 backdrop-blur-xl h-full flex flex-col">
+        <div className="rounded-2xl border[0.06] bg-slate-950/40 p-5 backdrop-blur-xl h-full flex flex-col">
             <div className="flex items-center gap-2 mb-5">
                 <div className="h-7 w-7 rounded-lg bg-violet-500/10 flex items-center justify-center">
                     <FileCode2 className="text-violet-400 h-3.5 w-3.5" />
@@ -117,7 +117,7 @@ export function ActivityStream() {
                             <div key={item.id} className="relative pl-7 group">
                                 {/* Dot */}
                                 <div className={cn(
-                                    "absolute left-0 top-1 h-[14px] w-[14px] rounded-full border-2 border-slate-900 flex items-center justify-center transition-all group-hover:scale-110",
+                                    "absolute left-0 top-1 h-[14px] w-[14px] rounded-full-900 flex items-center justify-center transition-all group-hover:scale-110",
                                     color.dot
                                 )}>
                                     <div className="w-1 h-1 rounded-full bg-white/60" />

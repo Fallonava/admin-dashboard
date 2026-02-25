@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { ChevronLeft, ChevronRight, Upload, Plus, Trash2, X, User, Check, Ban } from "lucide-react";
+import { ChevronLeft, ChevronRight, Upload, Plus, Trash2, User, CalendarCheck } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import type { LeaveRequest } from "@/lib/data-service";
@@ -12,21 +12,29 @@ interface LeaveCalendarProps {
     onRefresh: () => void;
 }
 
-const DAY_LABELS = [
-    { key: "sun", label: "S" },
-    { key: "mon", label: "M" },
-    { key: "tue", label: "T" },
-    { key: "wed", label: "W" },
-    { key: "thu", label: "T" },
-    { key: "fri", label: "F" },
-    { key: "sat", label: "S" },
+const MONTHS_ID = [
+    "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+    "Juli", "Agustus", "September", "Oktober", "November", "Desember"
 ];
+const DAY_LABELS = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
+
+const TYPE_CONFIG: Record<string, { color: string; bg: string; emoji: string }> = {
+    'Sakit': { color: "text-red-600", bg: "bg-red-50", emoji: "🤒" },
+    'Liburan': { color: "text-emerald-600", bg: "bg-emerald-50", emoji: "🏖" },
+    'Konferensi': { color: "text-purple-600", bg: "bg-purple-50", emoji: "🎤" },
+    'Pribadi': { color: "text-blue-600", bg: "bg-blue-50", emoji: "👤" },
+    'Lainnya': { color: "text-slate-600", bg: "bg-slate-100", emoji: "📋" },
+    // Fallback untuk data lama (bahasa Inggris)
+    'Sick Leave': { color: "text-red-600", bg: "bg-red-50", emoji: "🤒" },
+    'Vacation': { color: "text-emerald-600", bg: "bg-emerald-50", emoji: "🏖" },
+    'Conference': { color: "text-purple-600", bg: "bg-purple-50", emoji: "🎤" },
+    'Personal': { color: "text-blue-600", bg: "bg-blue-50", emoji: "👤" },
+};
 
 export function LeaveCalendar({ leaves, onRefresh }: LeaveCalendarProps) {
     const [currentDate, setCurrentDate] = useState(new Date());
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const isDateInLeave = (checkDate: Date, leaveDates: string) => {
@@ -76,17 +84,8 @@ export function LeaveCalendar({ leaves, onRefresh }: LeaveCalendarProps) {
     };
 
     const handleDelete = async (id: number) => {
-        if (!confirm("Delete this leave request?")) return;
+        if (!confirm("Hapus data cuti ini?")) return;
         await fetch(`/api/leaves?id=${id}`, { method: 'DELETE' });
-        onRefresh();
-    };
-
-    const handleStatusUpdate = async (id: number, status: 'Approved' | 'Rejected') => {
-        await fetch('/api/leaves', {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id, status })
-        });
         onRefresh();
     };
 
@@ -102,9 +101,8 @@ export function LeaveCalendar({ leaves, onRefresh }: LeaveCalendarProps) {
                 if (!doctor || !start) return null;
                 return {
                     doctor,
-                    type: type || 'Vacation',
+                    type: type || 'Lainnya',
                     dates: end ? `${start} - ${end}` : start,
-                    status: 'Approved',
                     avatar: "/avatars/default.png"
                 };
             }).filter(Boolean);
@@ -115,7 +113,6 @@ export function LeaveCalendar({ leaves, onRefresh }: LeaveCalendarProps) {
                     body: JSON.stringify(parsedLeaves)
                 });
                 onRefresh();
-                alert(`Successfully imported ${parsedLeaves.length} leaves.`);
             }
         };
         reader.readAsText(file);
@@ -124,45 +121,54 @@ export function LeaveCalendar({ leaves, onRefresh }: LeaveCalendarProps) {
 
     const activeLeaves = leaves.filter(l => isDateInLeave(selectedDate, l.dates));
 
-    return (
-        <div className="flex flex-col lg:flex-row gap-8 h-full">
-            {/* ── Left: Compact Calendar Widget ─────────────────────── */}
-            <div className="w-full lg:w-[280px] flex-shrink-0">
-                <div className="bg-slate-950/60 rounded-3xl border border-white/[0.08] p-5 backdrop-blur-2xl shadow-2xl shadow-black/40 relative overflow-hidden">
-                    {/* Ambient glow */}
-                    <div className="absolute -top-20 -right-20 w-40 h-40 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
+    const selectedDateLabel = selectedDate.toLocaleDateString('id-ID', {
+        weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+    });
 
+    return (
+        <div className="flex flex-col lg:flex-row gap-6 h-full">
+
+            {/* ══════════ KIRI: KALENDER ══════════ */}
+            <div className="w-full lg:w-[300px] flex-shrink-0 flex flex-col gap-4">
+                <div className="bg-white rounded-[28px] p-5 shadow-sm">
                     {/* Month Nav */}
-                    <div className="flex items-center justify-between mb-5 relative z-10">
-                        <h2 className="text-sm font-semibold text-white/90 tracking-wide">
-                            {currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                    <div className="flex items-center justify-between mb-4">
+                        <h2 className="text-sm font-black text-slate-800">
+                            {MONTHS_ID[currentDate.getMonth()]} {currentDate.getFullYear()}
                         </h2>
-                        <div className="flex items-center gap-0.5 bg-white/[0.04] rounded-full p-0.5 border border-white/[0.06]">
-                            <button onClick={prevMonth} className="p-1.5 hover:bg-white/10 rounded-full text-slate-400 hover:text-white transition-all active:scale-90">
-                                <ChevronLeft size={12} />
+                        <div className="flex items-center gap-0.5 bg-slate-50 rounded-xl p-0.5">
+                            <button
+                                onClick={prevMonth}
+                                className="p-2 hover:bg-white rounded-lg text-slate-400 hover:text-slate-700 transition-all"
+                            >
+                                <ChevronLeft size={14} />
                             </button>
                             <button
                                 onClick={() => { setCurrentDate(new Date()); setSelectedDate(new Date()); }}
-                                className="w-1.5 h-1.5 rounded-full bg-blue-500 mx-1.5 hover:bg-blue-400 transition-colors"
-                                title="Today"
-                            />
-                            <button onClick={nextMonth} className="p-1.5 hover:bg-white/10 rounded-full text-slate-400 hover:text-white transition-all active:scale-90">
-                                <ChevronRight size={12} />
+                                className="px-2 py-1 text-[10px] font-bold text-slate-500 hover:text-slate-800 hover:bg-white rounded-lg transition-all"
+                            >
+                                Hari ini
+                            </button>
+                            <button
+                                onClick={nextMonth}
+                                className="p-2 hover:bg-white rounded-lg text-slate-400 hover:text-slate-700 transition-all"
+                            >
+                                <ChevronRight size={14} />
                             </button>
                         </div>
                     </div>
 
                     {/* Day Headers */}
-                    <div className="grid grid-cols-7 mb-2 relative z-10">
+                    <div className="grid grid-cols-7 mb-1">
                         {DAY_LABELS.map(d => (
-                            <div key={d.key} className="text-center text-[9px] font-medium text-slate-500/80 py-1">
-                                {d.label}
+                            <div key={d} className="text-center text-[10px] font-bold text-slate-400 py-1">
+                                {d}
                             </div>
                         ))}
                     </div>
 
                     {/* Day Grid */}
-                    <div className="grid grid-cols-7 gap-[3px] relative z-10">
+                    <div className="grid grid-cols-7 gap-[2px]">
                         {grid.map((date, i) => {
                             if (!date) return <div key={`e-${i}`} className="aspect-square" />;
 
@@ -175,19 +181,19 @@ export function LeaveCalendar({ leaves, onRefresh }: LeaveCalendarProps) {
                                     key={`d-${i}`}
                                     onClick={() => setSelectedDate(date)}
                                     className={cn(
-                                        "aspect-square rounded-[10px] flex flex-col items-center justify-center relative transition-all duration-200 text-[11px] font-medium",
+                                        "aspect-square rounded-xl flex flex-col items-center justify-center relative transition-all duration-200 text-[12px] font-semibold",
                                         isSelected
-                                            ? "bg-blue-500 text-white shadow-lg shadow-blue-500/30 scale-[1.08]"
-                                            : "text-slate-400 hover:bg-white/[0.06] hover:text-white active:scale-95",
-                                        isToday && !isSelected && "text-blue-400 bg-blue-500/[0.08] ring-1 ring-blue-500/30",
-                                        hasLeave && !isSelected && "text-slate-200"
+                                            ? "bg-slate-900 text-white shadow-md scale-[1.05]"
+                                            : isToday
+                                                ? "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200"
+                                                : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                                     )}
                                 >
                                     {date.getDate()}
                                     {hasLeave && (
                                         <div className={cn(
-                                            "w-[3px] h-[3px] rounded-full absolute bottom-[5px]",
-                                            isSelected ? "bg-white/80" : "bg-amber-400"
+                                            "w-1 h-1 rounded-full absolute bottom-1",
+                                            isSelected ? "bg-white/70" : "bg-amber-400"
                                         )} />
                                     )}
                                 </button>
@@ -195,121 +201,188 @@ export function LeaveCalendar({ leaves, onRefresh }: LeaveCalendarProps) {
                         })}
                     </div>
 
-                    {/* Action Buttons */}
-                    <div className="mt-5 flex gap-2 relative z-10">
-                        <button
-                            onClick={() => fileInputRef.current?.click()}
-                            className="flex-1 h-8 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] text-slate-400 hover:text-white text-[10px] font-medium transition-all flex items-center justify-center gap-1.5 active:scale-95"
-                        >
-                            <Upload size={11} /> Import
-                        </button>
-                        <input type="file" accept=".csv" ref={fileInputRef} className="hidden" onChange={handleFileUpload} />
-
-                        <button
-                            onClick={() => setIsAddModalOpen(true)}
-                            className="flex-1 h-8 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-semibold transition-all shadow-lg shadow-blue-600/20 flex items-center justify-center gap-1.5 active:scale-95"
-                        >
-                            <Plus size={11} /> Add
-                        </button>
+                    {/* Legenda */}
+                    <div className="mt-4 pt-3 border-t border-slate-50 flex items-center gap-4 text-[10px] text-slate-400 font-medium">
+                        <div className="flex items-center gap-1.5">
+                            <div className="w-2 h-2 rounded-full bg-amber-400" />
+                            <span>Ada cuti</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                            <div className="w-2 h-2 rounded-full bg-emerald-400" />
+                            <span>Hari ini</span>
+                        </div>
                     </div>
+                </div>
+
+                {/* Tombol Aksi */}
+                <div className="flex gap-2">
+                    <button
+                        onClick={() => fileInputRef.current?.click()}
+                        className="flex-1 h-11 rounded-2xl bg-white text-slate-500 hover:text-slate-800 hover:bg-slate-50 text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-sm"
+                    >
+                        <Upload size={13} />
+                        Import CSV
+                    </button>
+                    <input type="file" accept=".csv" ref={fileInputRef} className="hidden" onChange={handleFileUpload} />
+
+                    <button
+                        onClick={() => setIsAddModalOpen(true)}
+                        className="flex-1 h-11 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all shadow-md flex items-center justify-center gap-2"
+                    >
+                        <Plus size={13} />
+                        Tambah Cuti
+                    </button>
+                </div>
+
+                {/* Ringkasan bulan ini */}
+                <div className="bg-white rounded-[24px] p-4 shadow-sm">
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">
+                        Bulan Ini — {MONTHS_ID[currentDate.getMonth()]}
+                    </p>
+                    {leaves.some(l => {
+                        const monthStart = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+                        const monthEnd = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+                        for (let d = new Date(monthStart); d <= monthEnd; d.setDate(d.getDate() + 1)) {
+                            if (isDateInLeave(new Date(d), l.dates)) return true;
+                        }
+                        return false;
+                    }) ? (
+                        <div className="space-y-2">
+                            {leaves
+                                .filter(l => {
+                                    const monthStart = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+                                    const monthEnd = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+                                    for (let d = new Date(monthStart); d <= monthEnd; d.setDate(d.getDate() + 1)) {
+                                        if (isDateInLeave(new Date(d), l.dates)) return true;
+                                    }
+                                    return false;
+                                })
+                                .slice(0, 4)
+                                .map(leave => {
+                                    const conf = TYPE_CONFIG[leave.type] || { color: "text-slate-500", bg: "bg-slate-50", emoji: "📋" };
+                                    return (
+                                        <div key={leave.id} className="flex items-center justify-between text-xs">
+                                            <span className="font-semibold text-slate-700 truncate mr-2">{leave.doctor}</span>
+                                            <span className={cn("text-[9px] font-black px-2 py-0.5 rounded-lg flex-shrink-0", conf.color, conf.bg)}>
+                                                {conf.emoji} {leave.type}
+                                            </span>
+                                        </div>
+                                    );
+                                })
+                            }
+                        </div>
+                    ) : (
+                        <p className="text-xs text-slate-400 text-center py-2">Tidak ada cuti bulan ini</p>
+                    )}
                 </div>
             </div>
 
-            {/* ── Right: Doctor Leave List ──────────────────────────── */}
-            <div className="flex-1 bg-slate-950/30 rounded-3xl border border-white/[0.06] p-6 backdrop-blur-xl flex flex-col relative overflow-hidden">
-                {/* Ambient */}
-                <div className="absolute -bottom-20 -left-20 w-60 h-60 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none" />
-
-                <div className="flex items-center justify-between mb-6 pb-5 border-b border-white/[0.06] relative z-10">
+            {/* ══════════ KANAN: DAFTAR CUTI TANGGAL TERPILIH ══════════ */}
+            <div className="flex-1 bg-white rounded-[28px] p-6 shadow-sm flex flex-col min-h-0">
+                {/* Header Panel Kanan */}
+                <div className="flex items-center justify-between mb-5 pb-4 border-b border-slate-50">
                     <div>
-                        <h3 className="text-lg font-bold text-white tracking-tight mb-0.5">On Leave</h3>
-                        <p className="text-xs text-slate-500 font-medium">
-                            {selectedDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
-                        </p>
+                        <h3 className="text-base font-black text-slate-800">Dokter Cuti</h3>
+                        <p className="text-xs text-slate-400 font-medium mt-0.5 capitalize">{selectedDateLabel}</p>
                     </div>
-                    <div className="h-9 w-9 rounded-full bg-white/[0.04] flex items-center justify-center border border-white/[0.06]">
-                        <span className="text-sm font-bold text-white">{activeLeaves.length}</span>
+                    <div className={cn(
+                        "flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-black",
+                        activeLeaves.length > 0 ? "bg-amber-50 text-amber-600" : "bg-emerald-50 text-emerald-600"
+                    )}>
+                        <CalendarCheck size={12} />
+                        {activeLeaves.length > 0 ? `${activeLeaves.length} dokter cuti` : "Semua tersedia"}
                     </div>
                 </div>
 
-                <div className="flex-1 overflow-y-auto space-y-3 -mr-2 pr-2 relative z-10">
+                {/* Daftar Cuti Tanggal Terpilih */}
+                <div className="flex-1 overflow-y-auto space-y-2.5 custom-scrollbar pr-1">
                     {activeLeaves.length > 0 ? (
-                        activeLeaves.map(leave => (
-                            <div
-                                key={leave.id}
-                                className="group relative bg-white/[0.02] hover:bg-white/[0.05] rounded-2xl p-4 border border-white/[0.05] transition-all duration-300 hover:shadow-xl hover:shadow-black/20"
-                            >
-                                <div className="absolute right-3 top-3 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
-                                    {leave.status === 'Pending' && (
-                                        <>
-                                            <button
-                                                onClick={() => handleStatusUpdate(leave.id, 'Approved')}
-                                                className="p-1.5 text-slate-500 hover:text-emerald-400 hover:bg-emerald-500/10 rounded-full transition-colors"
-                                                title="Approve"
-                                            >
-                                                <Check size={13} />
-                                            </button>
-                                            <button
-                                                onClick={() => handleStatusUpdate(leave.id, 'Rejected')}
-                                                className="p-1.5 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded-full transition-colors"
-                                                title="Reject"
-                                            >
-                                                <Ban size={13} />
-                                            </button>
-                                        </>
-                                    )}
+                        activeLeaves.map(leave => {
+                            const conf = TYPE_CONFIG[leave.type] || { color: "text-slate-600", bg: "bg-slate-100", emoji: "📋" };
+                            return (
+                                <div
+                                    key={leave.id}
+                                    className="group relative bg-slate-50/60 hover:bg-white rounded-2xl p-4 transition-all duration-300 hover:shadow-md"
+                                >
+                                    {/* Hapus */}
                                     <button
                                         onClick={() => handleDelete(leave.id)}
-                                        className="p-1.5 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded-full transition-colors"
-                                        title="Delete"
+                                        className="absolute right-3 top-3 opacity-0 group-hover:opacity-100 p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all"
+                                        title="Hapus"
                                     >
                                         <Trash2 size={13} />
                                     </button>
-                                </div>
 
-                                <div className="flex items-center gap-3.5">
-                                    <Avatar className="h-10 w-10 border border-white/10 shadow-lg">
-                                        <AvatarImage src={leave.avatar} />
-                                        <AvatarFallback className="bg-gradient-to-br from-slate-700 to-slate-800 text-[10px] text-white font-bold">
-                                            {leave.doctor[0]}
-                                        </AvatarFallback>
-                                    </Avatar>
-                                    <div className="min-w-0">
-                                        <div className="flex items-center gap-2 mb-0.5">
-                                            <h4 className="font-semibold text-sm text-white truncate">{leave.doctor}</h4>
-                                            <span className={cn(
-                                                "text-[9px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider flex-shrink-0",
-                                                leave.type === 'Sick Leave' ? "bg-red-500/15 text-red-300" :
-                                                    leave.type === 'Vacation' ? "bg-emerald-500/15 text-emerald-300" :
-                                                        leave.type === 'Conference' ? "bg-purple-500/15 text-purple-300" :
-                                                            "bg-blue-500/15 text-blue-300"
-                                            )}>
-                                                {leave.type}
-                                            </span>
-                                        </div>
-                                        <div className="flex items-center gap-3 text-[11px] text-slate-500 font-medium">
-                                            <span>{leave.dates}</span>
-                                            <span className="w-1 h-1 rounded-full bg-slate-700" />
-                                            <span className={cn(
-                                                "font-semibold",
-                                                leave.status === 'Approved' ? "text-emerald-400" :
-                                                    leave.status === 'Rejected' ? "text-red-400" : "text-amber-400"
-                                            )}>{leave.status}</span>
+                                    <div className="flex items-center gap-3.5">
+                                        <Avatar className="h-11 w-11 rounded-2xl flex-shrink-0">
+                                            <AvatarImage src={leave.avatar} />
+                                            <AvatarFallback className="bg-gradient-to-br from-slate-600 to-slate-800 text-[11px] text-white font-black rounded-2xl">
+                                                {leave.doctor[0]}
+                                            </AvatarFallback>
+                                        </Avatar>
+
+                                        <div className="min-w-0 flex-1">
+                                            <div className="flex items-center gap-2 mb-1.5">
+                                                <h4 className="font-black text-sm text-slate-800 truncate">{leave.doctor}</h4>
+                                                <span className={cn(
+                                                    "text-[9px] px-2 py-0.5 rounded-lg font-black flex-shrink-0",
+                                                    conf.color, conf.bg
+                                                )}>
+                                                    {conf.emoji} {leave.type}
+                                                </span>
+                                            </div>
+                                            <p className="text-[11px] text-slate-400 font-medium">{leave.dates}</p>
+                                            {leave.reason && (
+                                                <p className="text-[11px] text-slate-400 mt-0.5 italic">"{leave.reason}"</p>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        ))
+                            );
+                        })
                     ) : (
-                        <div className="flex flex-col items-center justify-center h-full text-slate-600 py-12">
-                            <div className="w-14 h-14 rounded-full bg-white/[0.03] flex items-center justify-center mb-3 border border-white/[0.05]">
-                                <User size={22} className="opacity-30" />
+                        <div className="flex flex-col items-center justify-center h-full text-center py-16">
+                            <div className="w-16 h-16 bg-emerald-50 rounded-[20px] flex items-center justify-center mb-4">
+                                <User size={24} className="text-emerald-300" />
                             </div>
-                            <p className="text-sm font-medium text-slate-500">No doctors on leave</p>
-                            <p className="text-[11px] text-slate-600 mt-0.5">Everyone is available</p>
+                            <p className="text-sm font-bold text-slate-600">Semua dokter tersedia</p>
+                            <p className="text-xs text-slate-400 mt-1">Tidak ada cuti pada tanggal ini</p>
                         </div>
                     )}
                 </div>
+
+                {/* ── Semua Data Cuti (Footer) ── */}
+                {leaves.length > 0 && (
+                    <div className="mt-4 pt-4 border-t border-slate-50">
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">
+                            Semua Data Cuti ({leaves.length})
+                        </p>
+                        <div className="space-y-1.5 max-h-44 overflow-y-auto custom-scrollbar">
+                            {leaves.map(leave => {
+                                const conf = TYPE_CONFIG[leave.type] || { color: "text-slate-500", bg: "bg-slate-50", emoji: "📋" };
+                                return (
+                                    <div key={leave.id} className="group flex items-center justify-between text-xs py-2 px-3 rounded-xl hover:bg-slate-50 transition-colors">
+                                        <div className="flex items-center gap-2 min-w-0">
+                                            <span className="font-semibold text-slate-700 truncate">{leave.doctor}</span>
+                                            <span className={cn("text-[9px] font-black px-1.5 py-0.5 rounded-md flex-shrink-0", conf.color, conf.bg)}>
+                                                {conf.emoji}
+                                            </span>
+                                        </div>
+                                        <div className="flex items-center gap-2 flex-shrink-0 ml-2">
+                                            <span className="text-slate-400">{leave.dates}</span>
+                                            <button
+                                                onClick={() => handleDelete(leave.id)}
+                                                className="opacity-0 group-hover:opacity-100 p-1 text-slate-300 hover:text-red-500 rounded-lg transition-all"
+                                            >
+                                                <Trash2 size={11} />
+                                            </button>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                )}
             </div>
 
             <LeaveRequestModal

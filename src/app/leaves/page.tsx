@@ -3,28 +3,15 @@
 import { useState } from "react";
 import useSWR, { mutate } from "swr";
 import { LeaveCalendar } from "@/components/leaves/LeaveCalendar";
-import { Search, Bell, Filter } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Search, CalendarDays, UserCheck, Clock3 } from "lucide-react";
 import type { LeaveRequest } from "@/lib/data-service";
 
 export default function LeavesPage() {
     const { data: leaves = [] } = useSWR<LeaveRequest[]>('/api/leaves');
     const [searchQuery, setSearchQuery] = useState("");
 
-    // Stats Calculation
     const totalLeaves = leaves.length;
-    const pendingApproval = leaves.filter(l => l.status === 'Pending').length;
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
 
-    const onLeaveToday = leaves.filter(l => {
-        // Simple string check for now since format is "YYYY-MM-DD" or "YYYY-MM-DD - YYYY-MM-DD"
-        // In a real app, use the same isDateInLeave logic from Calendar or a shared helper
-        // For dashboard quick stats, we can just check if any leave covers today
-        return isDateInLeave(today, l.dates);
-    }).length;
-
-    // Helper reused from Calendar (ideally move to utils)
     function isDateInLeave(checkDate: Date, leaveDates: string) {
         const target = new Date(checkDate);
         target.setHours(0, 0, 0, 0);
@@ -42,60 +29,101 @@ export default function LeavesPage() {
         } catch { return false; }
     }
 
+    const now = new Date();
+    const onLeaveToday = leaves.filter(l => isDateInLeave(now, l.dates)).length;
+
+    // Cuti bulan ini
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    const cutiBuilanIni = leaves.filter(l => {
+        for (let d = new Date(monthStart); d <= monthEnd; d.setDate(d.getDate() + 1)) {
+            if (isDateInLeave(new Date(d), l.dates)) return true;
+        }
+        return false;
+    }).length;
+
+    const stats = [
+        {
+            label: "Total Data Cuti",
+            value: totalLeaves,
+            icon: CalendarDays,
+            color: "text-blue-600",
+            bg: "bg-blue-50",
+            iconBg: "bg-blue-100",
+        },
+        {
+            label: "Cuti Hari Ini",
+            value: onLeaveToday,
+            icon: UserCheck,
+            color: "text-amber-600",
+            bg: "bg-amber-50",
+            iconBg: "bg-amber-100",
+        },
+        {
+            label: "Cuti Bulan Ini",
+            value: cutiBuilanIni,
+            icon: Clock3,
+            color: "text-emerald-600",
+            bg: "bg-emerald-50",
+            iconBg: "bg-emerald-100",
+        },
+    ];
+
     return (
-        <div className="flex h-full flex-col">
-            <header className="flex items-center justify-between mb-8">
-                <div className="flex items-baseline gap-4">
-                    <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-white/70 tracking-tight">Leave Schedule</h1>
-                    <span className="text-slate-500 text-lg font-light">Doctor Availability</span>
+        <div className="max-w-7xl mx-auto h-full flex flex-col">
+
+            {/* ═══ HEADER ═══ */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
+                <div>
+                    <h1 className="text-3xl font-black tracking-tight text-slate-900">
+                        Jadwal <span className="bg-gradient-to-r from-emerald-500 to-teal-600 bg-clip-text text-transparent">Cuti</span>
+                    </h1>
+                    <p className="text-slate-400 text-sm font-medium mt-1">Kelola dan pantau jadwal cuti seluruh dokter</p>
                 </div>
 
-                <div className="flex items-center gap-6">
-                    <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 h-4 w-4" />
-                        <input
-                            type="text"
-                            placeholder="Search doctor..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="bg-slate-900/50 border border-slate-800 rounded-full pl-10 pr-4 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 w-64 placeholder:text-slate-600"
-                        />
-                    </div>
+                {/* Search */}
+                <div className="relative w-full md:w-72">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 h-4 w-4" />
+                    <input
+                        type="text"
+                        placeholder="Cari dokter..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="w-full bg-white rounded-2xl pl-11 pr-4 py-3 text-sm font-medium text-slate-700 outline-none shadow-sm focus:shadow-md focus:ring-2 focus:ring-emerald-500/20 transition-all placeholder:text-slate-400"
+                    />
+                </div>
+            </div>
 
-                    <button className="relative p-2 text-slate-400 hover:text-white transition-colors">
-                        <Filter className="h-6 w-6" />
-                    </button>
-
-                    <div className="flex items-center gap-3 pl-6 border-l border-slate-800">
-                        <div className="text-right hidden md:block">
-                            <p className="text-sm font-medium text-white">Dr. Admin</p>
-                            <p className="text-xs text-blue-400">Super Admin</p>
+            {/* ═══ STATS CARDS ═══ */}
+            <div className="grid grid-cols-3 gap-4 mb-6">
+                {stats.map((stat) => {
+                    const Icon = stat.icon;
+                    return (
+                        <div
+                            key={stat.label}
+                            className="bg-white rounded-2xl p-5 flex items-center gap-4 shadow-sm hover:shadow-md transition-shadow"
+                        >
+                            <div className={`flex-shrink-0 w-12 h-12 rounded-2xl ${stat.iconBg} flex items-center justify-center`}>
+                                <Icon className={`h-6 w-6 ${stat.color}`} />
+                            </div>
+                            <div>
+                                <p className="text-2xl font-black text-slate-800">{stat.value}</p>
+                                <p className="text-xs font-semibold text-slate-400 mt-0.5">{stat.label}</p>
+                            </div>
                         </div>
-                        <Avatar className="h-10 w-10 border-2 border-slate-800">
-                            <AvatarImage src="/avatars/admin.png" />
-                            <AvatarFallback className="bg-gradient-to-tr from-blue-500 to-cyan-400 text-white font-bold">DA</AvatarFallback>
-                        </Avatar>
-                    </div>
-                </div>
-            </header>
+                    );
+                })}
+            </div>
 
-            <div className="flex-1 min-h-0 bg-slate-900/30 backdrop-blur-md rounded-2xl border border-slate-800/50 p-6 flex flex-col shadow-2xl">
-                <div className="mb-6 flex gap-4">
-                    <div className="bg-blue-500/10 border border-blue-500/20 px-4 py-3 rounded-xl flex-1 backdrop-blur-sm">
-                        <p className="text-blue-400 text-xs font-bold uppercase tracking-wider mb-1">Total Leaves</p>
-                        <p className="text-2xl font-bold text-white">{totalLeaves}</p>
-                    </div>
-                    <div className="bg-amber-500/10 border border-amber-500/20 px-4 py-3 rounded-xl flex-1 backdrop-blur-sm">
-                        <p className="text-amber-400 text-xs font-bold uppercase tracking-wider mb-1">Pending Approval</p>
-                        <p className="text-2xl font-bold text-white">{pendingApproval}</p>
-                    </div>
-                    <div className="bg-emerald-500/10 border border-emerald-500/20 px-4 py-3 rounded-xl flex-1 backdrop-blur-sm">
-                        <p className="text-emerald-400 text-xs font-bold uppercase tracking-wider mb-1">On Leave Today</p>
-                        <p className="text-2xl font-bold text-white">{onLeaveToday}</p>
-                    </div>
-                </div>
-
-                <LeaveCalendar leaves={leaves} onRefresh={() => mutate('/api/leaves')} />
+            {/* ═══ CALENDAR CONTENT ═══ */}
+            <div className="flex-1 min-h-0">
+                <LeaveCalendar
+                    leaves={leaves.filter(l =>
+                        searchQuery === "" ||
+                        l.doctor.toLowerCase().includes(searchQuery.toLowerCase())
+                    )}
+                    onRefresh={() => mutate('/api/leaves')}
+                />
             </div>
         </div>
     );

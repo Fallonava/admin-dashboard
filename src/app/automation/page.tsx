@@ -20,13 +20,13 @@ export default function AutomationPage() {
                 </div>
 
                 <div className="flex items-center gap-3">
-                    <div className="hidden md:flex items-center gap-1.5 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full">
+                    <div className="hidden md:flex items-center gap-1.5 bg-emerald-500/10 border-500/20 px-2.5 py-1 rounded-full">
                         <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
                         <span className="text-[9px] font-bold text-emerald-400 tracking-wider">SYSTEM ONLINE</span>
                     </div>
                     <button className="relative p-2 text-slate-400 hover:text-white transition-colors">
                         <Bell className="h-5 w-5" />
-                        <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-red-500 border-2 border-slate-950" />
+                        <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-red-500-950" />
                     </button>
                 </div>
             </header>

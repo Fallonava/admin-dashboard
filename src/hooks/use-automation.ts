@@ -36,7 +36,6 @@ export function useAutomation() {
 
                 // === CHECK LEAVE (CUTI) ===
                 const isOnLeaveToday = leaves.some(leave =>
-                    leave.status === 'Approved' &&
                     matchDoctorName(leave.doctor, doc.name) &&
                     isDateInRange(todayStr, leave.dates)
                 );

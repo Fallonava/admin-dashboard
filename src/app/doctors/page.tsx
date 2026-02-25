@@ -2,15 +2,38 @@
 
 import { useState } from "react";
 import useSWR, { mutate } from "swr";
-import { Plus, Search, Edit2, Trash2 } from "lucide-react";
+import { Plus, Search, Edit2, Trash2, UserRound, Activity } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Doctor } from "@/lib/data-service";
 import { DoctorFormModal } from "@/components/schedules/DoctorFormModal";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 
+// Palet warna avatar berdasarkan indeks — Apple 2026 gradient style
+const avatarGradients = [
+    "from-blue-500 to-cyan-400",
+    "from-violet-500 to-purple-400",
+    "from-rose-500 to-pink-400",
+    "from-amber-500 to-orange-400",
+    "from-emerald-500 to-teal-400",
+    "from-indigo-500 to-blue-400",
+    "from-fuchsia-500 to-pink-400",
+    "from-sky-500 to-cyan-400",
+];
+
+// Map status ke konfigurasi visual
+const statusConfig: Record<string, { label: string; color: string; bg: string; dot?: string; pulse?: boolean }> = {
+    'BUKA': { label: 'Aktif', color: 'text-blue-600', bg: 'bg-blue-50', dot: 'bg-blue-500' },
+    'OPERASI': { label: 'Operasi', color: 'text-red-600', bg: 'bg-red-50', dot: 'bg-red-500', pulse: true },
+    'PENUH': { label: 'Penuh', color: 'text-amber-600', bg: 'bg-amber-50' },
+    'CUTI': { label: 'Cuti', color: 'text-purple-600', bg: 'bg-purple-50' },
+    'SELESAI': { label: 'Selesai', color: 'text-emerald-600', bg: 'bg-emerald-50' },
+    'TIDAK PRAKTEK': { label: 'Tidak Aktif', color: 'text-slate-400', bg: 'bg-slate-50' },
+};
+
 export default function DoctorsPage() {
     const { data: doctors = [] } = useSWR<Doctor[]>('/api/doctors');
     const [searchTerm, setSearchTerm] = useState("");
+    const [activeFilter, setActiveFilter] = useState<"Semua" | "Bedah" | "NonBedah">("Semua");
 
     // Modal States
     const [isFormOpen, setIsFormOpen] = useState(false);
@@ -42,100 +65,215 @@ export default function DoctorsPage() {
             mutate('/api/doctors');
             setDeleteId(null);
         } catch (error) {
-            console.error("Failed to delete doctor", error);
-            alert("Failed to delete doctor");
+            console.error("Gagal menghapus dokter", error);
+            alert("Gagal menghapus dokter");
         } finally {
             setIsDeleting(false);
         }
     };
 
-    const filteredDoctors = doctors.filter(d =>
-        d.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        d.specialty.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const filteredDoctors = doctors.filter(d => {
+        const matchesSearch = d.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            d.specialty.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesFilter = activeFilter === "Semua" ? true : d.category === activeFilter;
+        return matchesSearch && matchesFilter;
+    });
+
+    const totalAktif = doctors.filter(d => d.status === 'BUKA' || d.status === 'OPERASI').length;
+    const totalBedah = doctors.filter(d => d.category === 'Bedah').length;
+    const totalNonBedah = doctors.filter(d => d.category === 'NonBedah').length;
+
+    const getStatusConfig = (status: string | null | undefined) => {
+        if (!status) return { label: 'Auto', color: 'text-slate-400', bg: 'bg-slate-50' };
+        return statusConfig[status] || { label: status, color: 'text-slate-400', bg: 'bg-slate-50' };
+    };
 
     return (
         <div className="max-w-7xl mx-auto h-full flex flex-col">
-            {/* Header */}
-            <div className="flex items-center justify-between mb-8">
+            {/* ═══════════════════ HEADER KOMPAK ═══════════════════ */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-foreground tracking-tight">Doctors Directory</h1>
-                    <p className="text-muted-foreground mt-1">Manage doctor profiles and specialties.</p>
+                    <h1 className="text-3xl font-black tracking-tight text-slate-900">
+                        Direktori <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Dokter</span>
+                    </h1>
+                    <p className="text-slate-400 text-sm font-medium mt-1">Kelola profil dan jadwal tayang dokter</p>
                 </div>
-                <button
-                    onClick={() => { setEditingDoctor(undefined); setIsFormOpen(true); }}
-                    className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-lg flex items-center gap-2 font-medium shadow-lg shadow-primary/20 transition-all active:scale-95"
-                >
-                    <Plus size={18} />
-                    Add Doctor
-                </button>
+
+                <div className="flex items-center gap-5">
+                    {/* Stats Mini */}
+                    <div className="hidden lg:flex items-center gap-4 text-center">
+                        <div>
+                            <p className="text-2xl font-black text-slate-800">{doctors.length}</p>
+                            <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Total</p>
+                        </div>
+                        <div className="w-px h-8 bg-slate-200/60" />
+                        <div>
+                            <p className="text-2xl font-black text-blue-600">{totalAktif}</p>
+                            <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Aktif</p>
+                        </div>
+                        <div className="w-px h-8 bg-slate-200/60" />
+                        <div>
+                            <p className="text-2xl font-black text-rose-500">{totalBedah}</p>
+                            <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Bedah</p>
+                        </div>
+                    </div>
+
+                    <button
+                        onClick={() => { setEditingDoctor(undefined); setIsFormOpen(true); }}
+                        className="bg-slate-900 text-white px-5 py-3 rounded-2xl flex items-center gap-2.5 font-bold text-sm shadow-lg shadow-slate-900/20 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 active:scale-[0.98]"
+                    >
+                        <Plus size={16} />
+                        <span>Tambah Dokter</span>
+                    </button>
+                </div>
             </div>
 
-            {/* Toolbar */}
-            <div className="flex items-center gap-4 mb-6">
-                <div className="relative flex-1 max-w-md">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            {/* ═══════════════════ TOOLBAR PENCARIAN & FILTER ═══════════════════ */}
+            <div className="flex flex-col md:flex-row items-center gap-3 mb-6">
+                {/* Kolom Pencarian */}
+                <div className="relative flex-1 w-full">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 h-4 w-4" />
                     <input
                         type="text"
-                        placeholder="Search by name or specialty..."
-                        className="w-full bg-secondary/30 border border-transparent hover:border-border focus:border-primary rounded-xl pl-10 pr-4 py-2 text-sm text-foreground outline-none transition-all placeholder:text-muted-foreground/50"
+                        placeholder="Cari nama dokter atau spesialisasi..."
+                        className="w-full bg-white rounded-2xl pl-11 pr-4 py-3.5 text-sm font-medium text-slate-700 outline-none shadow-sm focus:shadow-md focus:ring-2 focus:ring-blue-500/20 transition-all placeholder:text-slate-400"
                         value={searchTerm}
                         onChange={e => setSearchTerm(e.target.value)}
                     />
                 </div>
-            </div>
 
-            {/* Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 overflow-y-auto pb-10">
-                {filteredDoctors.map((doc) => (
-                    <div key={doc.id} className="group glass-card rounded-2xl p-5 hover:border-primary/50 transition-all border border-border/50 bg-card/40 backdrop-blur-sm">
-                        <div className="flex items-start justify-between mb-4">
-                            <div className="flex items-center gap-4">
-                                <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-lg border border-primary/20 shadow-inner">
-                                    {doc.queueCode || doc.name.charAt(0)}
-                                </div>
-                                <div>
-                                    <h3 className="font-bold text-foreground text-lg leading-tight">{doc.name}</h3>
-                                    <p className="text-xs font-medium text-primary uppercase tracking-wide mt-1">{doc.specialty}</p>
-                                </div>
-                            </div>
-                            <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <button onClick={() => handleEdit(doc)} className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors" title="Edit">
-                                    <Edit2 size={16} />
-                                </button>
-                                <button onClick={() => handleDeleteClick(doc.id)} className="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg transition-colors" title="Delete">
-                                    <Trash2 size={16} />
-                                </button>
-                            </div>
-                        </div>
-
-                        <div className="flex items-center justify-between pt-4 border-t border-border/50">
+                {/* Filter Kategori */}
+                <div className="flex items-center gap-1.5 bg-white rounded-2xl p-1.5 shadow-sm w-full md:w-auto">
+                    {([
+                        { key: "Semua" as const, label: "Semua", count: doctors.length },
+                        { key: "Bedah" as const, label: "Bedah", count: totalBedah },
+                        { key: "NonBedah" as const, label: "Non Bedah", count: totalNonBedah },
+                    ]).map((filter) => (
+                        <button
+                            key={filter.key}
+                            onClick={() => setActiveFilter(filter.key)}
+                            className={cn(
+                                "px-4 py-2.5 flex-shrink-0 rounded-xl text-xs font-bold transition-all duration-300 whitespace-nowrap flex items-center gap-2",
+                                activeFilter === filter.key
+                                    ? "bg-slate-900 text-white shadow-md"
+                                    : "text-slate-500 hover:text-slate-700 hover:bg-slate-50"
+                            )}
+                        >
+                            <span>{filter.label}</span>
                             <span className={cn(
-                                "text-[10px] px-2 py-1 rounded-md font-bold uppercase tracking-wider",
-                                doc.category === 'Bedah' ? "bg-red-500/10 text-red-500" : "bg-emerald-500/10 text-emerald-500"
+                                "text-[10px] font-black px-1.5 py-0.5 rounded-md min-w-[20px] text-center",
+                                activeFilter === filter.key
+                                    ? "bg-white/20 text-white"
+                                    : "bg-slate-100 text-slate-400"
                             )}>
-                                {doc.category}
+                                {filter.count}
                             </span>
-                            <div className="flex items-center gap-2">
-                                <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">Status</span>
-                                <span className={cn(
-                                    "text-[10px] font-bold px-2 py-0.5 rounded-full bg-secondary",
-                                    doc.status === 'TIDAK PRAKTEK' ? "text-muted-foreground" :
-                                        doc.status === 'BUKA' ? "text-blue-500 bg-blue-500/10" :
-                                            doc.status === 'PENUH' ? "text-orange-500 bg-orange-500/10" :
-                                                doc.status === 'CUTI' ? "text-pink-500 bg-pink-500/10" :
-                                                    doc.status === 'OPERASI' ? "text-red-500 bg-red-500/10" :
-                                                        "text-amber-500 bg-amber-500/10"
-                                )}>
-                                    {doc.status || "AUTO"}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                ))}
+                        </button>
+                    ))}
+                </div>
             </div>
 
-            {/* Modals */}
+            {/* ═══════════════════ GRID KARTU DOKTER ═══════════════════ */}
+            {filteredDoctors.length === 0 ? (
+                <div className="flex-1 flex flex-col items-center justify-center text-center py-24">
+                    <div className="h-28 w-28 bg-slate-50 rounded-[28px] flex items-center justify-center mb-8 shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)]">
+                        <UserRound size={44} className="text-slate-200" />
+                    </div>
+                    <h3 className="text-2xl font-black text-slate-800 mb-3">Tidak Ada Dokter</h3>
+                    <p className="text-slate-400 font-medium max-w-sm leading-relaxed">
+                        Coba sesuaikan kata kunci pencarian atau ubah filter kategori yang aktif.
+                    </p>
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 overflow-y-auto pb-10 custom-scrollbar">
+                    {filteredDoctors.map((doc, idx) => {
+                        const gradientClass = avatarGradients[idx % avatarGradients.length];
+                        const status = getStatusConfig(doc.status);
+
+                        return (
+                            <div
+                                key={doc.id}
+                                className="group relative bg-white rounded-[28px] p-6 flex flex-col shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.12)] transition-all duration-500 ease-out hover:-translate-y-1.5"
+                            >
+                                {/* Gradient accent bar di atas */}
+                                <div className={cn("absolute top-0 left-6 right-6 h-1 rounded-b-full bg-gradient-to-r opacity-40 group-hover:opacity-80 transition-opacity duration-500", gradientClass)} />
+
+                                {/* ── Baris Atas: Avatar + Info ── */}
+                                <div className="flex items-center gap-4 mb-5">
+                                    {/* Avatar */}
+                                    <div className="relative flex-shrink-0">
+                                        <div className={cn(
+                                            "h-14 w-14 rounded-2xl bg-gradient-to-br flex items-center justify-center text-white font-black text-xl shadow-lg group-hover:scale-105 transition-transform duration-500",
+                                            gradientClass
+                                        )}>
+                                            {doc.queueCode || doc.name.charAt(0)}
+                                        </div>
+                                        {/* Status Dot */}
+                                        {status.dot && (
+                                            <span className="absolute -bottom-1 -right-1 flex h-4 w-4">
+                                                {status.pulse && <span className={cn("animate-ping absolute inline-flex h-full w-full rounded-full opacity-60", status.dot)} />}
+                                                <span className={cn("relative inline-flex rounded-full h-4 w-4 ring-[3px] ring-white", status.dot)} />
+                                            </span>
+                                        )}
+                                    </div>
+
+                                    {/* Nama & Spesialisasi */}
+                                    <div className="flex-1 min-w-0">
+                                        <h3 className="font-black text-slate-800 text-base tracking-tight leading-snug truncate">
+                                            {doc.name}
+                                        </h3>
+                                        <p className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.1em] truncate mt-1">
+                                            {doc.specialty}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                {/* ── Badges Kategori & Status ── */}
+                                <div className="mt-auto pt-4 flex items-center justify-between gap-3 border-t border-slate-50">
+                                    <span className={cn(
+                                        "inline-flex items-center gap-1.5 text-[10px] px-3 py-1.5 rounded-xl font-black uppercase tracking-wider",
+                                        doc.category === 'Bedah'
+                                            ? "text-rose-500 bg-rose-50"
+                                            : "text-emerald-500 bg-emerald-50"
+                                    )}>
+                                        <Activity size={10} />
+                                        {doc.category === 'NonBedah' ? 'Non Bedah' : doc.category}
+                                    </span>
+
+                                    <span className={cn(
+                                        "inline-flex items-center gap-1.5 text-[10px] px-3 py-1.5 rounded-xl font-black uppercase tracking-wider",
+                                        status.color, status.bg,
+                                        status.pulse && "animate-pulse"
+                                    )}>
+                                        {status.dot && <span className={cn("w-1.5 h-1.5 rounded-full", status.dot)} />}
+                                        {status.label}
+                                    </span>
+                                </div>
+
+                                {/* ── Tombol Aksi Hover ── */}
+                                <div className="absolute top-4 right-4 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 translate-y-1 group-hover:translate-y-0 transition-all duration-400 z-20">
+                                    <button
+                                        onClick={() => handleEdit(doc)}
+                                        className="p-2 rounded-xl bg-white/90 backdrop-blur-sm text-slate-400 hover:text-blue-600 hover:bg-blue-50 shadow-sm hover:shadow-md transition-all duration-300"
+                                        title="Edit Dokter"
+                                    >
+                                        <Edit2 size={14} />
+                                    </button>
+                                    <button
+                                        onClick={() => handleDeleteClick(doc.id)}
+                                        className="p-2 rounded-xl bg-white/90 backdrop-blur-sm text-slate-400 hover:text-red-600 hover:bg-red-50 shadow-sm hover:shadow-md transition-all duration-300"
+                                        title="Hapus Dokter"
+                                    >
+                                        <Trash2 size={14} />
+                                    </button>
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+            )}
+
+            {/* ═══════════════════ MODALS ═══════════════════ */}
             <DoctorFormModal
                 isOpen={isFormOpen}
                 onClose={handleCloseForm}
@@ -147,9 +285,9 @@ export default function DoctorsPage() {
                 isOpen={!!deleteId}
                 onClose={() => setDeleteId(null)}
                 onConfirm={confirmDelete}
-                title="Delete Doctor"
-                description="Are you sure you want to delete this doctor? This action cannot be undone."
-                confirmText="Delete"
+                title="Hapus Dokter"
+                description="Apakah Anda yakin ingin menghapus dokter ini? Tindakan ini tidak dapat dibatalkan."
+                confirmText="Hapus"
                 variant="danger"
                 isLoading={isDeleting}
             />

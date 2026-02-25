@@ -67,7 +67,7 @@ export function BroadcastControl() {
     const activePreview = rules.find(r => r.active);
 
     return (
-        <div className="rounded-2xl border border-white/[0.06] bg-slate-950/40 p-6 backdrop-blur-xl h-full flex flex-col">
+        <div className="rounded-2xl border[0.06] bg-slate-950/40 p-6 backdrop-blur-xl h-full flex flex-col">
             {/* Header */}
             <div className="flex items-center justify-between mb-5">
                 <div className="flex items-center gap-3.5">
@@ -98,13 +98,13 @@ export function BroadcastControl() {
                         </div>
                     )}
                 </div>
-                <div className="relative aspect-[21/9] bg-slate-950 rounded-xl overflow-hidden border border-white/[0.06] shadow-inner">
+                <div className="relative aspect-[21/9] bg-slate-950 rounded-xl overflow-hidden border[0.06] shadow-inner">
                     <div className="absolute inset-0 flex items-center justify-center opacity-20 pointer-events-none">
                         <MonitorPlay className="h-10 w-10 text-slate-700" />
                     </div>
                     {activePreview ? (
                         <>
-                            <div className="absolute top-3 right-3 bg-slate-900/80 backdrop-blur border border-white/10 p-2.5 rounded-lg max-w-[220px]">
+                            <div className="absolute top-3 right-3 bg-slate-900/80 backdrop-blur p-2.5 rounded-lg max-w-[220px]">
                                 <div className="flex items-center gap-1.5 mb-1">
                                     <div className={cn("h-1.5 w-1.5 rounded-full", ALERT_COLORS[activePreview.alertLevel]?.badge)} />
                                     <span className="text-[9px] font-bold text-slate-400 uppercase">{activePreview.alertLevel}</span>
@@ -144,10 +144,10 @@ export function BroadcastControl() {
                         <div
                             key={rule.id}
                             className={cn(
-                                "group relative rounded-xl p-3.5 border transition-all",
+                                "group relative rounded-xl p-3.5 transition-all",
                                 rule.active
                                     ? `${color.bg} ${color.border}`
-                                    : "bg-white/[0.01] border-white/[0.04] opacity-60"
+                                    : "bg-white/[0.01][0.04] opacity-60"
                             )}
                         >
                             <div className="flex items-start justify-between gap-3">
@@ -199,7 +199,7 @@ export function BroadcastControl() {
             {/* ── Edit / Create Modal ──────────────────────── */}
             {editingRule && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
-                    <div className="bg-slate-900/95 border border-white/10 rounded-2xl p-6 w-full max-w-md shadow-2xl shadow-black/50 backdrop-blur-xl relative">
+                    <div className="bg-slate-900/95 rounded-2xl p-6 w-full max-w-md shadow-2xl shadow-black/50 backdrop-blur-xl relative">
                         <div className="flex justify-between items-center mb-5">
                             <h3 className="text-base font-bold text-white">
                                 {isCreating ? "Create Broadcast Rule" : "Edit Broadcast Rule"}
@@ -213,7 +213,7 @@ export function BroadcastControl() {
                             <div>
                                 <label className="text-[10px] text-slate-500 font-medium uppercase tracking-wider block mb-1.5">Message</label>
                                 <textarea
-                                    className="w-full bg-white/[0.03] border border-white/[0.08] rounded-xl p-3 text-sm text-white focus:border-blue-500/50 outline-none transition-all h-20 resize-none placeholder:text-slate-600"
+                                    className="w-full bg-white/[0.03] border[0.08] rounded-xl p-3 text-sm text-white focus:border-blue-500/50 outline-none transition-all h-20 resize-none placeholder:text-slate-600"
                                     placeholder="Enter broadcast message..."
                                     value={editingRule.message}
                                     onChange={e => setEditingRule({ ...editingRule, message: e.target.value })}
@@ -224,7 +224,7 @@ export function BroadcastControl() {
                                 <div>
                                     <label className="text-[10px] text-slate-500 font-medium uppercase tracking-wider block mb-1.5">Alert Level</label>
                                     <select
-                                        className="w-full bg-white/[0.03] border border-white/[0.08] rounded-xl p-2.5 text-sm text-white focus:border-blue-500/50 outline-none transition-all"
+                                        className="w-full bg-white/[0.03] border[0.08] rounded-xl p-2.5 text-sm text-white focus:border-blue-500/50 outline-none transition-all"
                                         value={editingRule.alertLevel}
                                         onChange={e => setEditingRule({ ...editingRule, alertLevel: e.target.value as any })}
                                     >
@@ -236,7 +236,7 @@ export function BroadcastControl() {
                                 <div>
                                     <label className="text-[10px] text-slate-500 font-medium uppercase tracking-wider block mb-1.5">Target Zone</label>
                                     <select
-                                        className="w-full bg-white/[0.03] border border-white/[0.08] rounded-xl p-2.5 text-sm text-white focus:border-blue-500/50 outline-none transition-all"
+                                        className="w-full bg-white/[0.03] border[0.08] rounded-xl p-2.5 text-sm text-white focus:border-blue-500/50 outline-none transition-all"
                                         value={editingRule.targetZone}
                                         onChange={e => setEditingRule({ ...editingRule, targetZone: e.target.value as any })}
                                     >
@@ -264,7 +264,7 @@ export function BroadcastControl() {
                             <div className="pt-2 flex gap-3">
                                 <button
                                     onClick={() => { setEditingRule(null); setIsCreating(false); }}
-                                    className="flex-1 py-2.5 rounded-xl border border-white/[0.08] text-slate-400 text-sm font-medium hover:bg-white/[0.04] transition-colors"
+                                    className="flex-1 py-2.5 rounded-xl border[0.08] text-slate-400 text-sm font-medium hover:bg-white/[0.04] transition-colors"
                                 >
                                     Cancel
                                 </button>
@@ -273,7 +273,7 @@ export function BroadcastControl() {
                                     disabled={saving}
                                     className="flex-1 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-semibold hover:bg-blue-500 transition-all shadow-lg shadow-blue-600/20 active:scale-[0.98] flex items-center justify-center gap-2"
                                 >
-                                    {saving ? <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Save size={14} />}
+                                    {saving ? <div className="h-4 w-4-white rounded-full animate-spin" /> : <Save size={14} />}
                                     {saving ? 'Saving...' : isCreating ? 'Create Rule' : 'Update Rule'}
                                 </button>
                             </div>
