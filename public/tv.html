@@ -2442,8 +2442,10 @@
                                 Dokter: d.name,
                                 Spesialis: d.specialty,
                                 Status: d.status,
-                                // Combine jam for legacy checkTime if needed, but display specific shift time
+                                // Combine jam for legacy checkTime 
                                 Jam: shift.formattedTime || d.currentRegistrationTime || d.registrationTime || d.startTime || '-',
+                                JamPraktek: shift.formattedTime || '-',
+                                JamDaftar: shift.registrationTime || d.currentRegistrationTime || d.registrationTime || '-',
                                 Jenis: d.category,
                                 'Code Antrian': d.queueCode,
                                 _shiftId: shift.id || index // Keep a unique identifier for the shift
@@ -2653,10 +2655,10 @@
                                     <div class="status-pill" style="background:var(--status-bg); color:var(--status-color)">
                                         <span class="material-icons-round" style="font-size:12px">${i}</span>${l}
                                     </div>
-                                    ${(d.Jam && d.Jam != '-' && !d._isActive) ? `
+                                    ${(d.JamPraktek && d.JamPraktek != '-' && !d._isActive) ? `
                                     <div class="jam-box">
-                                        <span class="jam-label">REGISTRASI</span>
-                                        <span class="jam-val">${esc(d.Jam)}</span>
+                                        <span class="jam-label">PRAKTEK</span>
+                                        <span class="jam-val text-xs text-slate-300">${esc(d.JamPraktek)}</span>
                                     </div>` : ''}
                                 </div>
                             </div>
@@ -2664,7 +2666,7 @@
                                     <div class="detail-info">
                                         <!-- #3: Label & Format Jam Baru -->
                                         <span class="detail-label">${labelJam}</span>
-                                        <span class="detail-time">${formatJam(d.Jam)}</span>
+                                        <span class="detail-time text-slate-200" style="font-size: 15px;">${d.JamDaftar !== '-' ? esc(d.JamDaftar) : formatJam(d.JamPraktek.split('-')[0])}</span>
                                     </div>
                                 <div class="live-status">
                                      <div class="pulse-dot"></div>
@@ -2694,10 +2696,10 @@
                                 }
 
                                 const jVal = el.querySelector('.jam-val');
-                                if (jVal && !d._isActive && d.Jam) jVal.textContent = d.Jam;
+                                if (jVal && !d._isActive && d.JamPraktek) jVal.textContent = d.JamPraktek;
 
                                 const dtTime = el.querySelector('.detail-time');
-                                if (dtTime) dtTime.textContent = formatJam(d.Jam);
+                                if (dtTime) dtTime.textContent = d.JamDaftar !== '-' ? d.JamDaftar : formatJam(d.JamPraktek.split('-')[0]);
 
                                 const dtLabel = el.querySelector('.detail-label');
                                 if (dtLabel) dtLabel.textContent = labelJam;
@@ -2819,10 +2821,10 @@
                                 <div class="status-pill" style="background:var(--status-bg); color:var(--status-color)">
                                     <span class="material-icons-round" style="font-size:12px">${i}</span>${l}
                                 </div>
-                                ${(d.Jam && d.Jam != '-' && !d._isActive) ? `
+                                ${(d.JamPraktek && d.JamPraktek != '-' && !d._isActive) ? `
                                 <div class="jam-box">
-                                    <span class="jam-label">REGISTRASI</span>
-                                    <span class="jam-val">${esc(d.Jam)}</span>
+                                    <span class="jam-label">PRAKTEK</span>
+                                    <span class="jam-val text-xs text-slate-300">${esc(d.JamPraktek)}</span>
                                 </div>` : ''}
                             </div>
                         </div>
@@ -2830,7 +2832,7 @@
                             <div class="detail-info">
                                 <!-- #3: Label & Format Jam Baru -->
                                 <span class="detail-label">REGISTRASI DIBUKA</span>
-                                <span class="detail-time">${formatJam(d.Jam)}</span>
+                                <span class="detail-time text-slate-200" style="font-size: 15px;">${d.JamDaftar !== '-' ? esc(d.JamDaftar) : formatJam(d.JamPraktek.split('-')[0])}</span>
                             </div>
                             <div class="live-status">
                                  <div class="pulse-dot"></div>
@@ -2858,10 +2860,10 @@
                             }
 
                             const jVal = el.querySelector('.jam-val');
-                            if (jVal && !d._isActive && d.Jam) jVal.textContent = d.Jam;
+                            if (jVal && !d._isActive && d.JamPraktek) jVal.textContent = d.JamPraktek;
 
                             const dtTime = el.querySelector('.detail-time');
-                            if (dtTime) dtTime.textContent = formatJam(d.Jam);
+                            if (dtTime) dtTime.textContent = d.JamDaftar !== '-' ? d.JamDaftar : formatJam(d.JamPraktek.split('-')[0]);
 
                             el.dataset.hash = hash;
                         }

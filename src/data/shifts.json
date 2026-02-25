@@ -290,7 +290,8 @@
     "title": "Kandungan (Malam)",
     "doctor": "dr. Ardian Rahmansyah, Sp. OG",
     "color": "emerald",
-    "formattedTime": "18:30-21:00"
+    "formattedTime": "18:30-21:00",
+    "registrationTime": "16.00"
   },
   {
     "id": 32,
@@ -635,7 +636,8 @@
     "title": "Gigi Bedah Mulut",
     "doctor": "drg. Robby Ramadhonie, Sp. BMM",
     "color": "blue",
-    "formattedTime": "08:00-12:00"
+    "formattedTime": "08:00-12:00",
+    "registrationTime": "08.00"
   },
   {
     "id": 70,
