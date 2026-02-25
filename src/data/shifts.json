@@ -108,7 +108,8 @@
     "doctor": "dr. Endro RI Wibowo, Sp. B",
     "color": "blue",
     "formattedTime": "06:00-07:30",
-    "registrationTime": "07.00"
+    "registrationTime": "07.00",
+    "disabledDates": []
   },
   {
     "id": 13,
@@ -297,7 +298,10 @@
     "title": "Kandungan (Malam)",
     "doctor": "dr. Ardian Rahmansyah, Sp. OG",
     "color": "emerald",
-    "formattedTime": "18:30-21:00"
+    "formattedTime": "18:30-21:00",
+    "disabledDates": [
+      "2026-02-25"
+    ]
   },
   {
     "id": 33,

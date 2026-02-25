@@ -27,13 +27,14 @@
     "id": 108,
     "name": "dr. Ardian Rahmansyah, Sp. OG",
     "specialty": "Kandungan (Malam)",
-    "status": "SELESAI",
+    "status": "Idle",
     "category": "Bedah",
     "queueCode": "KM",
     "startTime": "18:30",
     "endTime": "21:00",
     "lastCall": "17:56",
-    "isAuto": true
+    "isAuto": true,
+    "lastManualOverride": 1771982724795
   },
   {
     "id": 105,
@@ -59,11 +60,13 @@
     "id": 117,
     "name": "dr. Wahid Heru Widodo, Sp. M",
     "specialty": "Mata",
-    "status": "Idle",
+    "status": "BUKA",
     "category": "NonBedah",
     "queueCode": "M",
     "startTime": "07:00",
-    "endTime": "12:00"
+    "endTime": "12:00",
+    "isAuto": true,
+    "lastManualOverride": 1771982736786
   },
   {
     "id": 101,
@@ -110,23 +113,25 @@
     "id": 104,
     "name": "dr. Eko Subekti, Sp. U",
     "specialty": "Urologi",
-    "status": "SELESAI",
+    "status": "Idle",
     "category": "Bedah",
     "queueCode": "U",
     "startTime": "18:00",
     "endTime": "21:00",
     "lastCall": "17:55",
-    "isAuto": true
+    "isAuto": true,
+    "lastManualOverride": 1771982731573
   },
   {
     "id": 109,
     "name": "dr. RR Irma Rossyana, Sp. A",
     "specialty": "Anak",
-    "status": "Idle",
+    "status": "BUKA",
     "category": "NonBedah",
     "queueCode": "AP",
     "startTime": "08:30",
-    "endTime": "14:00"
+    "endTime": "14:00",
+    "isAuto": true
   },
   {
     "id": 110,
@@ -154,17 +159,19 @@
     "id": 112,
     "name": "dr. Nova Kurniasari, Sp. KJ",
     "specialty": "Kesehatan Jiwa",
-    "status": "Idle",
+    "status": "BUKA",
     "category": "NonBedah",
     "queueCode": "JP",
     "startTime": "07:30",
-    "endTime": "09:30"
+    "endTime": "09:30",
+    "isAuto": true,
+    "lastManualOverride": 1771982732310
   },
   {
     "id": 111,
     "name": "dr. Taufik Hidayanto, Sp. KJ",
     "specialty": "Kesehatan Jiwa",
-    "status": "CUTI",
+    "status": "Idle",
     "category": "NonBedah",
     "queueCode": "JS",
     "startTime": "14:30",
@@ -185,14 +192,14 @@
     "id": 129,
     "name": "dr. Leo Chandra WPW, Sp. PD, M. KES",
     "specialty": "Penyakit Dalam (Pagi)",
-    "status": "SELESAI",
+    "status": "Idle",
     "category": "NonBedah",
     "queueCode": "DP",
     "startTime": "09:00",
     "endTime": "14:00",
     "lastCall": "19:08",
     "isAuto": true,
-    "lastManualOverride": 1771243703787
+    "lastManualOverride": 1771982730929
   },
   {
     "id": 132,
@@ -208,7 +215,7 @@
     "id": 124,
     "name": "dr. Wati, SP. KFR",
     "specialty": "Rehab Medik",
-    "status": "CUTI",
+    "status": "Idle",
     "category": "NonBedah",
     "queueCode": "RM",
     "startTime": "11:30",
@@ -229,10 +236,12 @@
     "id": 127,
     "name": "dr. Ahmad Tanji, Sp. N",
     "specialty": "Saraf",
-    "status": "Idle",
+    "status": "BUKA",
     "category": "NonBedah",
     "queueCode": "SP",
     "startTime": "06:00",
-    "endTime": "09:30"
+    "endTime": "09:30",
+    "isAuto": true,
+    "lastManualOverride": 1771982733854
   }
 ]
