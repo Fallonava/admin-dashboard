@@ -30,7 +30,7 @@ export interface Doctor {
     id: string | number; // Allow both for compatibility
     name: string;
     specialty: string;
-    status: 'BUKA' | 'PENUH' | 'OPERASI' | 'CUTI' | 'SELESAI' | 'TIDAK PRAKTEK' | 'Idle' | 'Istirahat';
+    status: 'BUKA' | 'PENUH' | 'OPERASI' | 'CUTI' | 'SELESAI' | 'TIDAK PRAKTEK';
     image?: string;
     category: 'Bedah' | 'NonBedah';
     startTime: string; // e.g., "08:00"

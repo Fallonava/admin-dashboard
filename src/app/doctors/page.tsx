@@ -120,10 +120,12 @@ export default function DoctorsPage() {
                                 <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">Status</span>
                                 <span className={cn(
                                     "text-[10px] font-bold px-2 py-0.5 rounded-full bg-secondary",
-                                    doc.status === 'Idle' ? "text-muted-foreground" :
+                                    doc.status === 'TIDAK PRAKTEK' ? "text-muted-foreground" :
                                         doc.status === 'BUKA' ? "text-blue-500 bg-blue-500/10" :
                                             doc.status === 'PENUH' ? "text-orange-500 bg-orange-500/10" :
-                                                doc.status === 'CUTI' ? "text-pink-500 bg-pink-500/10" : "text-amber-500 bg-amber-500/10"
+                                                doc.status === 'CUTI' ? "text-pink-500 bg-pink-500/10" :
+                                                    doc.status === 'OPERASI' ? "text-red-500 bg-red-500/10" :
+                                                        "text-amber-500 bg-amber-500/10"
                                 )}>
                                     {doc.status || "AUTO"}
                                 </span>

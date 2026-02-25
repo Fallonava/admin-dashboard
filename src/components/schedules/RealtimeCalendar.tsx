@@ -31,9 +31,13 @@ const SHIFT_COLORS = [
     { bg: "bg-cyan-500/15", border: "border-cyan-500/30", text: "text-cyan-300", dot: "bg-cyan-400" },
 ];
 
-export function RealtimeCalendar() {
+interface RealtimeCalendarProps {
+    selectedDate: Date;
+    onDateChange: (date: Date) => void;
+}
+
+export function RealtimeCalendar({ selectedDate, onDateChange }: RealtimeCalendarProps) {
     const [shifts, setShifts] = useState<Shift[]>([]);
-    const [currentDate, setCurrentDate] = useState(new Date());
     const [doctors, setDoctors] = useState<Doctor[]>([]);
     const [showAddModal, setShowAddModal] = useState(false);
     const [newShift, setNewShift] = useState({
@@ -62,35 +66,13 @@ export function RealtimeCalendar() {
         } catch (e) { /* silent */ }
     };
 
-    // Week helpers
-    const getWeekDays = (date: Date) => {
-        const start = new Date(date);
-        const day = start.getDay();
-        const diff = start.getDate() - day + (day === 0 ? -6 : 1);
-        start.setDate(diff);
-        return Array.from({ length: 7 }, (_, i) => {
-            const d = new Date(start);
-            d.setDate(start.getDate() + i);
-            return d;
-        });
-    };
+    // Since we are showing daily view, weekDays and weekly navigation are no longer needed
+    // We only need info for the single selectedDate
+    const currentDayIdx = selectedDate.getDay() === 0 ? 6 : selectedDate.getDay() - 1;
 
-    const weekDays = getWeekDays(currentDate);
-
-    const formatDateRange = () => {
-        const opts: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric' };
-        return `${weekDays[0].toLocaleDateString('en-US', opts)} — ${weekDays[6].toLocaleDateString('en-US', { ...opts, year: 'numeric' })}`;
-    };
-
-    const prevWeek = () => {
-        const d = new Date(currentDate);
-        d.setDate(d.getDate() - 7);
-        setCurrentDate(d);
-    };
-    const nextWeek = () => {
-        const d = new Date(currentDate);
-        d.setDate(d.getDate() + 7);
-        setCurrentDate(d);
+    // Date formatter for header
+    const formatDateObj = (d: Date) => {
+        return d.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
     };
 
     // Map shift to hour row
@@ -135,28 +117,15 @@ export function RealtimeCalendar() {
         fetchData();
     };
 
-    const today = new Date().toDateString();
+    // Selected Date formatted for disabled date checks
+    const todayStr = selectedDate.getFullYear() + '-' + String(selectedDate.getMonth() + 1).padStart(2, '0') + '-' + String(selectedDate.getDate()).padStart(2, '0');
 
     return (
         <div className="flex-1 flex flex-col min-h-0 relative">
             {/* ── Header Controls ──────────────────────────────── */}
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
-                    <div className="flex items-center gap-1 bg-white/[0.03] rounded-xl p-1 border border-white/[0.06]">
-                        <button onClick={prevWeek} className="p-2 hover:bg-white/[0.06] rounded-lg text-slate-400 hover:text-white transition-all active:scale-90">
-                            <ChevronLeft size={16} />
-                        </button>
-                        <button
-                            onClick={() => setCurrentDate(new Date())}
-                            className="px-3 py-1.5 text-[11px] font-semibold text-blue-400 hover:bg-blue-500/10 rounded-lg transition-colors"
-                        >
-                            Today
-                        </button>
-                        <button onClick={nextWeek} className="p-2 hover:bg-white/[0.06] rounded-lg text-slate-400 hover:text-white transition-all active:scale-90">
-                            <ChevronRight size={16} />
-                        </button>
-                    </div>
-                    <h2 className="text-base font-semibold text-white/80">{formatDateRange()}</h2>
+                    <h2 className="text-lg font-bold text-white capitalize">{formatDateObj(selectedDate)}</h2>
                 </div>
 
                 <button
@@ -167,95 +136,86 @@ export function RealtimeCalendar() {
                 </button>
             </div>
 
-            {/* ── Weekly Grid ──────────────────────────────────── */}
+            {/* ── Daily Grid ──────────────────────────────────── */}
             <div className="flex-1 overflow-auto rounded-2xl border border-white/[0.06] bg-slate-950/40 backdrop-blur-xl">
-                <div className="min-w-[800px]">
-                    {/* Day Headers */}
-                    <div className="grid grid-cols-[70px_repeat(7,1fr)] sticky top-0 z-20 bg-slate-950/90 backdrop-blur-xl border-b border-white/[0.06]">
-                        <div className="p-3 border-r border-white/[0.04]" />
-                        {weekDays.map((d, i) => {
-                            const isToday = d.toDateString() === today;
-                            return (
-                                <div key={`dh-${i}`} className={cn(
-                                    "p-3 text-center border-r border-white/[0.04] last:border-r-0",
-                                    isToday && "bg-blue-500/[0.06]"
-                                )}>
-                                    <div className="text-[10px] font-semibold uppercase tracking-widest text-slate-500 mb-1">
-                                        {d.toLocaleDateString('en-US', { weekday: 'short' })}
-                                    </div>
-                                    <div className={cn(
-                                        "text-lg font-bold inline-flex items-center justify-center",
-                                        isToday
-                                            ? "text-white bg-blue-500 w-8 h-8 rounded-full shadow-lg shadow-blue-500/30"
-                                            : "text-slate-300"
-                                    )}>
-                                        {d.getDate()}
-                                    </div>
+                <div className="min-w-full">
+
+                    {/* Hour Rows for single day */}
+                    {HOURS.map((slot, hIdx) => {
+                        // Filter shifts that fall on this day and hour, AND are not disabled for this specific date
+                        const cellShifts = shifts.filter(s =>
+                            s.dayIdx === currentDayIdx &&
+                            getShiftHour(s) === slot.hour &&
+                            !(s.disabledDates || []).includes(todayStr)
+                        );
+
+                        return (
+                            <div key={`h-${hIdx}`} className="grid grid-cols-[80px_1fr] border-b border-white/[0.03] last:border-b-0 min-h-[64px] group/row hover:bg-white/[0.01] transition-colors relative">
+
+                                {/* Time label */}
+                                <div className="p-3 text-right border-r border-white/[0.04] bg-slate-950/50">
+                                    <span className="text-xs font-mono font-semibold text-slate-400 leading-none">{slot.label}</span>
                                 </div>
-                            );
-                        })}
-                    </div>
 
-                    {/* Hour Rows */}
-                    {HOURS.map((slot, hIdx) => (
-                        <div key={`h-${hIdx}`} className="grid grid-cols-[70px_repeat(7,1fr)] border-b border-white/[0.03] last:border-b-0 group/row hover:bg-white/[0.01] transition-colors">
-                            {/* Time label */}
-                            <div className="p-2 pr-3 text-right border-r border-white/[0.04]">
-                                <span className="text-[10px] font-mono text-slate-500 leading-none">{slot.label}</span>
-                            </div>
+                                {/* Timeline content */}
+                                <div className="p-2 relative">
+                                    <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 border-t border-dashed border-white/[0.03] pointer-events-none" />
 
-                            {/* Day cells */}
-                            {Array.from({ length: 7 }).map((_, dayIndex) => {
-                                const isToday = weekDays[dayIndex]?.toDateString() === today;
-                                const cellShifts = shifts.filter(s => s.dayIdx === dayIndex && getShiftHour(s) === slot.hour);
-
-                                return (
-                                    <div
-                                        key={`c-${hIdx}-${dayIndex}`}
-                                        className={cn(
-                                            "min-h-[48px] p-1 border-r border-white/[0.04] last:border-r-0 relative",
-                                            isToday && "bg-blue-500/[0.02]"
-                                        )}
-                                    >
-                                        {cellShifts.map(shift => {
+                                    <div className="flex flex-wrap gap-2 relative z-10">
+                                        {cellShifts.map((shift, sIdx) => {
                                             const color = getColor(shift.doctor);
                                             return (
                                                 <div
                                                     key={shift.id}
                                                     className={cn(
-                                                        "group/card mb-1 p-2 rounded-lg border-l-2 cursor-default transition-all hover:scale-[1.02] hover:shadow-lg",
+                                                        "group/card flex-1 min-w-[200px] max-w-[280px] p-3 rounded-xl border cursor-default transition-all hover:scale-[1.02] hover:shadow-xl",
                                                         color.bg, color.border
                                                     )}
                                                 >
-                                                    <div className="flex items-start justify-between gap-1">
-                                                        <div className="min-w-0">
-                                                            <p className={cn("text-[11px] font-bold truncate", color.text)}>{shift.doctor}</p>
-                                                            <p className="text-[9px] text-slate-500 font-medium mt-0.5">{shift.title}</p>
+                                                    <div className="flex items-start justify-between gap-2 mb-2">
+                                                        <div className="flex items-center gap-2 min-w-0">
+                                                            <div className={cn("w-2 h-2 rounded-full flex-shrink-0", color.dot)} />
+                                                            <p className={cn("text-xs font-bold truncate", color.text)}>{shift.doctor}</p>
                                                         </div>
                                                         <button
                                                             onClick={() => handleDelete(shift.id)}
-                                                            className="opacity-0 group-hover/card:opacity-100 p-0.5 text-slate-500 hover:text-red-400 transition-all flex-shrink-0"
+                                                            className="opacity-0 group-hover/card:opacity-100 p-1 bg-black/20 rounded-md text-slate-300 hover:text-red-400 hover:bg-black/40 transition-all flex-shrink-0"
+                                                            title="Hapus Jadwal"
                                                         >
-                                                            <X size={11} />
+                                                            <X size={14} />
                                                         </button>
                                                     </div>
-                                                    <div className="flex items-center gap-1 mt-1">
-                                                        <Clock size={8} className="text-slate-500 flex-shrink-0" />
-                                                        <span className="text-[9px] font-mono text-slate-500">{shift.formattedTime}</span>
-                                                    </div>
-                                                    {shift.registrationTime && (
-                                                        <div className="text-[8px] text-slate-500 mt-1 opacity-75">
-                                                            Reg: {shift.registrationTime}
+
+                                                    <div className="flex flex-col gap-1.5 pl-4 border-l-2 border-white/10 ml-1">
+                                                        <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">{shift.title}</p>
+
+                                                        <div className="flex items-center justify-between mt-1">
+                                                            <div className="flex items-center gap-1.5 bg-black/20 px-2 py-1 rounded w-fit">
+                                                                <Clock size={10} className="text-slate-400 flex-shrink-0" />
+                                                                <span className="text-[11px] font-mono text-slate-300 font-medium">{shift.formattedTime}</span>
+                                                            </div>
+
+                                                            {shift.registrationTime && (
+                                                                <div className="text-[9px] font-mono text-slate-500 bg-white/5 px-2 py-1 rounded">
+                                                                    Reg: {shift.registrationTime}
+                                                                </div>
+                                                            )}
                                                         </div>
-                                                    )}
+                                                    </div>
                                                 </div>
                                             );
                                         })}
+
+                                        {cellShifts.length === 0 && (
+                                            <div className="w-full h-full flex items-center justify-center opacity-0 group-hover/row:opacity-100 transition-opacity">
+                                                <span className="text-[10px] text-slate-600 font-medium uppercase tracking-widest">+ Kosong</span>
+                                            </div>
+                                        )}
                                     </div>
-                                );
-                            })}
-                        </div>
-                    ))}
+                                </div>
+                            </div>
+                        );
+                    })}
                 </div>
             </div>
 

@@ -50,7 +50,7 @@ export function useAutomation() {
 
                 // If doctor WAS on CUTI but leave ended, bring them back
                 if (doc.status === 'CUTI' && !isOnLeaveToday) {
-                    await autoUpdateStatus(doc.id, 'Idle');
+                    await autoUpdateStatus(doc.id, 'TIDAK PRAKTEK');
                     return;
                 }
 
@@ -62,9 +62,9 @@ export function useAutomation() {
                 );
 
                 if (todayShifts.length === 0) {
-                    // No shift today → should be Idle
-                    if (doc.status === 'BUKA' || doc.status === 'Istirahat') {
-                        await autoUpdateStatus(doc.id, 'Idle');
+                    // No shift today → should be TIDAK PRAKTEK
+                    if (doc.status === 'BUKA') {
+                        await autoUpdateStatus(doc.id, 'TIDAK PRAKTEK');
                     }
                     return;
                 }
@@ -94,18 +94,17 @@ export function useAutomation() {
                     }
                 }
 
-                if (isWithinAnyShift) {
-                    // During shift → BUKA (unless PENUH/Istirahat — manual states)
-                    if (doc.status === 'Idle' || doc.status === 'TIDAK PRAKTEK' || doc.status === 'SELESAI') {
+                if (!isAfterAllShifts) {
+                    // Before or during shift today → BUKA (unless PENUH — manual states)
+                    if (doc.status === 'TIDAK PRAKTEK' || doc.status === 'SELESAI') {
                         await autoUpdateStatus(doc.id, 'BUKA');
                     }
                 } else if (isAfterAllShifts && latestEndMinutes > 0) {
                     // After ALL shifts end → SELESAI
-                    if (doc.status === 'BUKA' || doc.status === 'PENUH' || doc.status === 'Istirahat') {
+                    if (doc.status === 'BUKA' || doc.status === 'PENUH') {
                         await autoUpdateStatus(doc.id, 'SELESAI');
                     }
                 }
-                // Before first shift: do nothing (keep current state)
             });
         };
 

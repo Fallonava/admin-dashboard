@@ -257,7 +257,9 @@ export default function Home() {
                             "text-sm font-bold text-white",
                             doc.status === 'BUKA' ? "bg-blue-500" :
                               doc.status === 'PENUH' ? "bg-orange-500" :
-                                doc.status === 'CUTI' ? "bg-pink-500" : "bg-slate-500"
+                                doc.status === 'CUTI' ? "bg-pink-500" :
+                                  doc.status === 'OPERASI' ? "bg-red-500" :
+                                    "bg-slate-500"
                           )}>
                             {doc.queueCode || doc.name.charAt(4)}
                           </AvatarFallback>
@@ -293,7 +295,8 @@ export default function Home() {
                         doc.status === 'BUKA' ? "bg-blue-500/10 text-blue-600 border-blue-500/20" :
                           doc.status === 'PENUH' ? "bg-orange-500/10 text-orange-600 border-orange-500/20" :
                             doc.status === 'CUTI' ? "bg-pink-500/10 text-pink-600 border-pink-500/20" :
-                              "bg-slate-500/10 text-slate-500 border-slate-500/20"
+                              doc.status === 'OPERASI' ? "bg-red-500/10 text-red-600 border-red-500/20" :
+                                "bg-slate-500/10 text-slate-500 border-slate-500/20"
                       )}>
                         {doc.status || 'Offline'}
                       </div>
@@ -337,12 +340,13 @@ export default function Home() {
                       );
                     })()}
 
-                    <div className="grid grid-cols-5 gap-1.5 relative z-10">
+                    <div className="grid grid-cols-6 gap-1.5 relative z-10">
                       {[
-                        { id: 'Idle', label: 'Otomatis', className: 'bg-slate-500 text-white border-slate-600 shadow-slate-500/20 hover:bg-slate-600' },
+                        { id: 'TIDAK PRAKTEK', label: 'Off', className: 'bg-slate-500 text-white border-slate-600 shadow-slate-500/20 hover:bg-slate-600' },
                         { id: 'BUKA', label: 'Buka', className: 'bg-blue-500 text-white border-blue-600 shadow-blue-500/20 hover:bg-blue-600' },
                         { id: 'PENUH', label: 'Penuh', className: 'bg-orange-500 text-white border-orange-600 shadow-orange-500/20 hover:bg-orange-600' },
-                        { id: 'SELESAI', label: 'Selesai', className: 'bg-emerald-500 text-white border-emerald-600 shadow-emerald-500/20 hover:bg-emerald-600' },
+                        { id: 'OPERASI', label: 'Ops', className: 'bg-red-500 text-white border-red-600 shadow-red-500/20 hover:bg-red-600' },
+                        { id: 'SELESAI', label: 'Slsai', className: 'bg-emerald-500 text-white border-emerald-600 shadow-emerald-500/20 hover:bg-emerald-600' },
                         { id: 'CUTI', label: 'Cuti', className: 'bg-pink-500 text-white border-pink-600 shadow-pink-500/20 hover:bg-pink-600' },
                       ].map((action) => (
                         <button

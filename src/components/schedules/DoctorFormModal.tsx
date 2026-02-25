@@ -22,7 +22,7 @@ export function DoctorFormModal({ isOpen, onClose, doctor, onSuccess }: DoctorFo
         name: "",
         specialty: "",
         category: "NonBedah",
-        status: "Idle",
+        status: "TIDAK PRAKTEK",
         queueCode: "",
         startTime: "",
         endTime: ""
@@ -46,7 +46,7 @@ export function DoctorFormModal({ isOpen, onClose, doctor, onSuccess }: DoctorFo
                     name: "",
                     specialty: "",
                     category: "NonBedah",
-                    status: "Idle",
+                    status: "TIDAK PRAKTEK",
                     queueCode: "",
                     startTime: "",
                     endTime: ""
@@ -161,35 +161,13 @@ export function DoctorFormModal({ isOpen, onClose, doctor, onSuccess }: DoctorFo
                             />
                         </div>
 
-                        {/* Time Settings */}
-                        <div className="grid grid-cols-2 gap-2">
-                            <div className="space-y-1.5">
-                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Mulai</label>
-                                <input
-                                    className="w-full bg-slate-900/50 border border-white/[0.1] focus:border-violet-500/50 focus:ring-1 focus:ring-violet-500/20 rounded-xl p-3 text-white text-sm outline-none transition-all placeholder:text-slate-600 text-center"
-                                    placeholder="08:00"
-                                    maxLength={5}
-                                    value={formData.startTime || ""}
-                                    onChange={e => setFormData({ ...formData, startTime: e.target.value })}
-                                />
-                            </div>
-                            <div className="space-y-1.5">
-                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Selesai</label>
-                                <input
-                                    className="w-full bg-slate-900/50 border border-white/[0.1] focus:border-violet-500/50 focus:ring-1 focus:ring-violet-500/20 rounded-xl p-3 text-white text-sm outline-none transition-all placeholder:text-slate-600 text-center"
-                                    placeholder="14:00"
-                                    maxLength={5}
-                                    value={formData.endTime || ""}
-                                    onChange={e => setFormData({ ...formData, endTime: e.target.value })}
-                                />
-                            </div>
-                        </div>
+
 
                         {/* Status Select */}
                         <div className="space-y-1.5">
                             <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Status Awal</label>
                             <div className="grid grid-cols-4 gap-1.5">
-                                {['Idle', 'BUKA', 'PENUH', 'CUTI'].map((status) => (
+                                {['TIDAK PRAKTEK', 'BUKA', 'PENUH', 'CUTI', 'SELESAI', 'OPERASI'].map((status) => (
                                     <button
                                         key={status}
                                         type="button"
@@ -200,7 +178,9 @@ export function DoctorFormModal({ isOpen, onClose, doctor, onSuccess }: DoctorFo
                                                 ? status === 'BUKA' ? "bg-blue-500/20 text-blue-400 border-blue-500/30" :
                                                     status === 'PENUH' ? "bg-orange-500/20 text-orange-400 border-orange-500/30" :
                                                         status === 'CUTI' ? "bg-pink-500/20 text-pink-400 border-pink-500/30" :
-                                                            "bg-slate-500/20 text-slate-400 border-slate-500/30"
+                                                            status === 'OPERASI' ? "bg-red-500/20 text-red-400 border-red-500/30" :
+                                                                status === 'SELESAI' ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/30" :
+                                                                    "bg-slate-500/20 text-slate-400 border-slate-500/30"
                                                 : "bg-slate-900/30 text-slate-600 border-white/[0.05] hover:bg-white/[0.02]"
                                         )}
                                     >
