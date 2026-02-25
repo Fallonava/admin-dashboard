@@ -1,0 +1,68 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Doctor {
+  id                 String  @id @default(cuid())
+  name               String
+  specialty          String
+  status             String
+  image              String? // Optional
+  category           String
+  startTime          String
+  endTime            String
+  queueCode          String
+  lastCall           String?
+  registrationTime   String?
+  lastManualOverride BigInt? // UNIX timestamp
+}
+
+model Shift {
+  id               Int      @id @default(autoincrement())
+  dayIdx           Int
+  timeIdx          Int
+  title            String
+  doctor           String
+  color            String
+  formattedTime    String?
+  registrationTime String?
+  extra            String?
+  disabledDates    String[] // Array of strings (Postgres supports arrays)
+}
+
+model LeaveRequest {
+  id        Int     @id @default(autoincrement())
+  doctor    String
+  specialty String?
+  type      String
+  dates     String
+  reason    String?
+  status    String
+  avatar    String?
+}
+
+model BroadcastRule {
+  id         Int     @id @default(autoincrement())
+  message    String
+  alertLevel String
+  targetZone String
+  duration   Int
+  active     Boolean
+}
+
+model Settings {
+  id                Int      @id @default(1)
+  automationEnabled Boolean  @default(false)
+  runTextMessage    String?
+  emergencyMode     Boolean? @default(false)
+  // We can store arrays of JSON for customMessages
+  customMessages    Json?
+}
