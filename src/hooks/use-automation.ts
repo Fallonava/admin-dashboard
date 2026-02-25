@@ -63,7 +63,7 @@ export function useAutomation() {
 
                 if (todayShifts.length === 0) {
                     // No shift today → should be TIDAK PRAKTEK
-                    if (doc.status === 'BUKA') {
+                    if (doc.status === 'BUKA' || doc.status === 'SELESAI') {
                         await autoUpdateStatus(doc.id, 'TIDAK PRAKTEK');
                     }
                     return;
@@ -86,7 +86,7 @@ export function useAutomation() {
                     }
 
                     if (currentTimeMinutes < endMinutes) {
-                        isAfterAllShifts = false;
+                        isAfterAllShifts = false; // There is still a shift that hasn't ended
                     }
 
                     if (endMinutes > latestEndMinutes) {
@@ -94,22 +94,30 @@ export function useAutomation() {
                     }
                 }
 
-                if (!isAfterAllShifts) {
-                    // Before or during shift today → BUKA (unless PENUH — manual states)
+                if (isWithinAnyShift) {
+                    // During shift today → BUKA (unless PENUH — manual states)
                     if (doc.status === 'TIDAK PRAKTEK' || doc.status === 'SELESAI') {
                         await autoUpdateStatus(doc.id, 'BUKA');
                     }
                 } else if (isAfterAllShifts && latestEndMinutes > 0) {
                     // After ALL shifts end → SELESAI
-                    if (doc.status === 'BUKA' || doc.status === 'PENUH') {
+                    if (doc.status === 'BUKA' || doc.status === 'PENUH' || doc.status === 'TIDAK PRAKTEK') {
                         await autoUpdateStatus(doc.id, 'SELESAI');
+                    }
+                } else if (!isWithinAnyShift && !isAfterAllShifts) {
+                    // e.g. Gap between shifts, currently we keep it BUKA or whatever it was, 
+                    // or maybe we switch to TIDAK PRAKTEK in between shifts? 
+                    // Usually we stay BUKA until the very end, or change to TIDAK PRAKTEK.
+                    // Let's just not touch it, or ensure it's not SELESAI.
+                    if (doc.status === 'SELESAI') {
+                        await autoUpdateStatus(doc.id, 'BUKA');
                     }
                 }
             });
         };
 
         const autoInterval = setInterval(checkAutomation, 5000);
-        checkAutomation();
+        checkAutomation(); // initial run
         return () => clearInterval(autoInterval);
     }, [automationEnabled, doctors, shifts, leaves]);
 }
