@@ -243,5 +243,16 @@
     "endTime": "09:30",
     "isAuto": true,
     "lastManualOverride": 1771982733854
+  },
+  {
+    "name": "dr. Hepta Lidia, Sp. OG",
+    "specialty": "Kandungan",
+    "category": "Bedah",
+    "status": "BUKA",
+    "queueCode": " KP",
+    "startTime": "08.00",
+    "endTime": "12.00",
+    "id": 1771984129707,
+    "isAuto": true
   }
 ]

@@ -2427,8 +2427,13 @@
                     const res = await fetch(CFG.API_MAIN).then(r => r.json());
                     if (!res || !res.doctors) throw new Error("Invalid API Response");
 
+                    // Filter doctors: only show those who have at least one active (non-disabled) shift today
+                    const scheduledDoctors = res.doctors.filter(d =>
+                        d.shiftPills && d.shiftPills.some(shift => !shift.disabled)
+                    );
+
                     // Map the new API format to the legacy index.html variable names
-                    const mappedData = res.doctors.map(d => ({
+                    const mappedData = scheduledDoctors.map(d => ({
                         Dokter: d.name,
                         Spesialis: d.specialty,
                         Status: d.status,

@@ -878,5 +878,15 @@
     "doctor": "dr. Oke Viska, Sp. P",
     "color": "emerald",
     "formattedTime": "10:00-13:00"
+  },
+  {
+    "doctor": "dr. Hepta Lidia, Sp. OG",
+    "title": "Praktek",
+    "dayIdx": 2,
+    "timeIdx": 0,
+    "formattedTime": "08:00-12:00",
+    "registrationTime": "07:30",
+    "color": "blue",
+    "id": 1771984153341
   }
 ]

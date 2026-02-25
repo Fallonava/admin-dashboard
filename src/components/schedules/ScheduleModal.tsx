@@ -29,6 +29,8 @@ export function ScheduleModal({ doctor, shifts, isOpen, onClose, onUpdate }: Sch
         color: "blue"
     });
 
+    const [expandedShiftId, setExpandedShiftId] = useState<number | null>(null);
+
     if (!doctor) return null;
 
     // Filter shifts for this doctor
@@ -152,7 +154,6 @@ export function ScheduleModal({ doctor, shifts, isOpen, onClose, onUpdate }: Sch
         }
     };
 
-    const [expandedShiftId, setExpandedShiftId] = useState<number | null>(null);
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
