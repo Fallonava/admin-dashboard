@@ -7,7 +7,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 model Doctor {
@@ -26,7 +25,7 @@ model Doctor {
 }
 
 model Shift {
-  id               Int      @id @default(autoincrement())
+  id               BigInt   @id @default(autoincrement())
   dayIdx           Int
   timeIdx          Int
   title            String
@@ -39,7 +38,7 @@ model Shift {
 }
 
 model LeaveRequest {
-  id        Int     @id @default(autoincrement())
+  id        BigInt  @id @default(autoincrement())
   doctor    String
   specialty String?
   type      String
@@ -50,7 +49,7 @@ model LeaveRequest {
 }
 
 model BroadcastRule {
-  id         Int     @id @default(autoincrement())
+  id         BigInt  @id @default(autoincrement())
   message    String
   alertLevel String
   targetZone String
@@ -59,7 +58,7 @@ model BroadcastRule {
 }
 
 model Settings {
-  id                Int      @id @default(1)
+  id                BigInt   @id @default(1)
   automationEnabled Boolean  @default(false)
   runTextMessage    String?
   emergencyMode     Boolean? @default(false)

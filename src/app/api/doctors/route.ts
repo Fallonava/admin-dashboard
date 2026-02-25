@@ -1,22 +1,19 @@
 import { NextResponse } from 'next/server';
-import { doctorStore, shiftStore } from '@/lib/data-service';
+import { prisma } from '@/lib/prisma';
 
 export async function GET() {
-    const doctors = doctorStore.getAll();
-    const shifts = shiftStore.getAll();
+    const doctors = await prisma.doctor.findMany();
+    const shifts = await prisma.shift.findMany();
 
     // Calculate Today's Index (0=Senin, ..., 6=Minggu)
-    // JS getDay(): 0=Sun, 1=Mon, ..., 6=Sat
     const jsDay = new Date().getDay();
     const todayIdx = (jsDay + 6) % 7;
 
     const enhancedDoctors = doctors.map(doc => {
-        // Find shift for today
-        const todayShift = shifts.find((s: any) => s.doctor === doc.name && s.dayIdx === todayIdx);
-
+        const todayShift = shifts.find(s => s.doctor === doc.name && s.dayIdx === todayIdx);
         return {
             ...doc,
-            // Prioritize shift-specific registration time, fallback to doctor profile (legacy), fallback to null
+            lastManualOverride: doc.lastManualOverride ? Number(doc.lastManualOverride) : undefined,
             currentRegistrationTime: todayShift?.registrationTime || doc.registrationTime
         };
     });
@@ -29,30 +26,57 @@ export async function POST(req: Request) {
     const action = searchParams.get('action');
 
     if (action === 'reset') {
-        const doctors = doctorStore.getAll();
-        doctors.forEach((doc: any) => {
-            // Reset status to TIDAK PRAKTEK, clear queue, override
-            doctorStore.update(doc.id, {
+        await prisma.doctor.updateMany({
+            data: {
                 status: 'TIDAK PRAKTEK',
-                queueCode: '', // Optional: clear queue code not usually needed but 'currentPatient' etc might
-                lastCall: undefined,
-                registrationTime: undefined,
-                lastManualOverride: undefined // Reset override so automation can take over again freely
-            });
+                queueCode: '',
+                lastCall: null,
+                registrationTime: null,
+                lastManualOverride: null
+            }
         });
         return NextResponse.json({ success: true, message: "All doctors reset." });
     }
 
     const body = await req.json();
-    const newDoctor = doctorStore.create(body);
-    return NextResponse.json(newDoctor);
+    // Exclude computed or unneeded fields before inserting
+    const { currentRegistrationTime, id, ...dataToInsert } = body;
+
+    // Convert lastManualOverride to BigInt if provided
+    if (dataToInsert.lastManualOverride) {
+        dataToInsert.lastManualOverride = BigInt(dataToInsert.lastManualOverride);
+    }
+
+    // Provide explicit ID if it exists and is not auto-generated (Prisma schema uses cuid by default, but we migrated old IDs)
+    if (id) {
+        dataToInsert.id = String(id);
+    }
+
+    const newDoctor = await prisma.doctor.create({ data: dataToInsert });
+
+    return NextResponse.json({
+        ...newDoctor,
+        lastManualOverride: newDoctor.lastManualOverride ? Number(newDoctor.lastManualOverride) : undefined
+    });
 }
 
 export async function PUT(req: Request) {
     const body = await req.json();
-    const { id, ...updates } = body;
-    const updated = doctorStore.update(id, updates);
-    return NextResponse.json(updated);
+    const { id, currentRegistrationTime, ...updates } = body;
+
+    if (updates.lastManualOverride !== undefined && updates.lastManualOverride !== null) {
+        updates.lastManualOverride = BigInt(updates.lastManualOverride);
+    }
+
+    const updated = await prisma.doctor.update({
+        where: { id: String(id) },
+        data: updates
+    });
+
+    return NextResponse.json({
+        ...updated,
+        lastManualOverride: updated.lastManualOverride ? Number(updated.lastManualOverride) : undefined
+    });
 }
 
 export async function DELETE(req: Request) {
@@ -60,6 +84,8 @@ export async function DELETE(req: Request) {
     const id = searchParams.get('id');
     if (!id) return NextResponse.json({ error: 'ID required' }, { status: 400 });
 
-    doctorStore.delete(id);
+    await prisma.doctor.delete({
+        where: { id: String(id) }
+    });
     return NextResponse.json({ success: true });
 }

@@ -1,60 +1,72 @@
 import { NextResponse } from 'next/server';
-import { doctorStore, shiftStore, settingsStore, Doctor, Settings } from '@/lib/data-service';
+import { prisma } from '@/lib/prisma';
+import { Doctor } from '@/lib/data-service'; // Only using for type if needed
 
 export async function GET() {
-    const allDoctors = doctorStore.getAll();
-    const shifts = shiftStore.getAll();
+    const allDoctors = await prisma.doctor.findMany();
+    const shifts = await prisma.shift.findMany();
 
-    // Calculate Today's Index (0=Senin, ..., 6=Minggu)
     const jsDay = new Date().getDay();
     const todayIdx = (jsDay + 6) % 7;
     const todayStr = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
 
     const doctors = allDoctors.map(doc => {
-        // Find ALL shifts for today
-        const todayShifts = shifts.filter((s: any) => s.doctor === doc.name && s.dayIdx === todayIdx);
-
-        // Build shift pills data (time + disabled status for today)
-        const shiftPills = todayShifts.map((s: any) => ({
+        const todayShifts = shifts.filter(s => s.doctor === doc.name && s.dayIdx === todayIdx);
+        const shiftPills = todayShifts.map(s => ({
             time: s.formattedTime || '',
-            disabled: (s.disabledDates || []).includes(todayStr),
+            disabled: s.disabledDates.includes(todayStr),
             registrationTime: s.registrationTime || ''
         }));
-
-        // Find the first active (non-disabled) shift's registration time
-        const activeShift = todayShifts.find((s: any) => !(s.disabledDates || []).includes(todayStr));
+        const activeShift = todayShifts.find(s => !s.disabledDates.includes(todayStr));
 
         return {
             ...doc,
+            lastManualOverride: doc.lastManualOverride ? Number(doc.lastManualOverride) : undefined,
             shiftPills,
             currentRegistrationTime: activeShift?.registrationTime || doc.registrationTime
         };
     });
 
-    const settings = settingsStore.getAll()[0] || { id: 1, automationEnabled: false, runTextMessage: "Selamat Datang di RSU Siaga Medika", emergencyMode: false };
+    const allSettings = await prisma.settings.findMany();
+    let settings = allSettings.length > 0 ? allSettings[0] : {
+        id: BigInt(1),
+        automationEnabled: false,
+        runTextMessage: "Selamat Datang di RSU Siaga Medika",
+        emergencyMode: false,
+        customMessages: [] as any
+    };
 
-    // Inject default custom messages if missing (migration for existing data)
-    if (!settings.customMessages || settings.customMessages.length === 0) {
+    if (!settings.customMessages || (settings.customMessages as any[]).length === 0) {
         settings.customMessages = [
             { title: 'Info', text: 'Terimakasih sudah menunggu 🙏' },
             { title: 'Info', text: 'Terimakasih sudah tertib 🌟' },
             { title: 'Antrian', text: 'Belum online? Yo ambil antrian 🎫' },
             { title: 'Info', text: 'Terimakasih sudah mengantri 😊' }
         ];
-        // Persist the migration
-        settingsStore.update(settings.id, settings);
+
+        // Ensure settings exist in DB with default if missing
+        const existing = await prisma.settings.findUnique({ where: { id: 1 } });
+        if (existing) {
+            await prisma.settings.update({
+                where: { id: 1 },
+                data: { customMessages: settings.customMessages }
+            });
+        } else {
+            await prisma.settings.create({
+                data: {
+                    id: 1,
+                    automationEnabled: settings.automationEnabled,
+                    runTextMessage: settings.runTextMessage,
+                    emergencyMode: settings.emergencyMode,
+                    customMessages: settings.customMessages
+                }
+            });
+        }
     }
-
-    // Format data to match what display/index.html expects
-    // Based on index.html: it expects { doctors: [...], settings: {...} }
-    // Doctor fields expected: name, specialty, status, startTime, endTime, queueCode, category, callTime?
-
-    // We Map 'Doctor' from data-service to the format expected by Display
-    // Actually, our new Doctor interface in data-service ALREADY matches what Display needs mostly.
 
     return NextResponse.json({
         doctors,
-        settings
+        settings: { ...settings, id: Number(settings.id) }
     }, {
         headers: {
             'Access-Control-Allow-Origin': '*',
@@ -69,52 +81,44 @@ export async function POST(request: Request) {
     try {
         const body = await request.json();
 
-        // Handle updates from Display Control Page
+        // Used by Display Control Page to force save state
         if (body.doctors) {
-            // Bulk update or overwrite?
-            // The display control page sends the WHOLE state back.
-            // We should probably replace our store data or update individually.
-            // For simplicity and to match previous behavior (saveDisplayData), we save the list.
-
-            // However, JSONStore doesn't have a 'setAll' method openly exposed as 'save' is private.
-            // We need to implement a way to update. 
-            // Since we don't want to break encapsulation too much, we can iterate update or delete all and create.
-            // But 'JSONStore' is simple. Let's assume we can add a 'setAll' or just map updates.
-
-            // Ideally we should update individual items to avoid overwriting IDs or other separate fields if we were a real DB.
-            // But here, let's treat the body.doctors as the source of truth for now, 
-            // OR update matching IDs.
-
-            const currentDocs = doctorStore.getAll();
-            const incomingDocs = body.doctors as Doctor[];
-
-            // 1. Update existing and Create new
-            incomingDocs.forEach(inc => {
-                const exists = currentDocs.find(d => d.id == inc.id);
-                if (exists) {
-                    doctorStore.update(inc.id, inc);
-                } else {
-                    doctorStore.create(inc);
-                }
-            });
-
-            // 2. Delete missing? 
-            // If the control panel removes a doctor, it won't be in incomingDocs.
-            // So we should find IDs in currentDocs that are NOT in incomingDocs and delete them.
+            const currentDocs = await prisma.doctor.findMany();
+            const incomingDocs = body.doctors as typeof currentDocs;
             const incomingIds = new Set(incomingDocs.map(d => d.id));
-            currentDocs.forEach(d => {
-                if (!incomingIds.has(d.id)) {
-                    doctorStore.delete(d.id);
+
+            for (const inc of incomingDocs) {
+                const dataToSave = { ...inc };
+                // properly parse BigInts
+                if (dataToSave.lastManualOverride !== undefined && dataToSave.lastManualOverride !== null) {
+                    dataToSave.lastManualOverride = BigInt(dataToSave.lastManualOverride);
                 }
-            });
+
+                const exists = currentDocs.find(d => d.id === inc.id);
+                if (exists) {
+                    await prisma.doctor.update({ where: { id: inc.id }, data: dataToSave });
+                } else {
+                    await prisma.doctor.create({ data: dataToSave });
+                }
+            }
+
+            for (const doc of currentDocs) {
+                if (!incomingIds.has(doc.id)) {
+                    await prisma.doctor.delete({ where: { id: doc.id } });
+                }
+            }
         }
 
         if (body.settings) {
-            const currentSettings = settingsStore.getAll()[0];
-            if (currentSettings) {
-                settingsStore.update(currentSettings.id, body.settings);
+            const currentSettings = await prisma.settings.findMany();
+            const existing = currentSettings[0];
+            const updates = { ...body.settings };
+            delete updates.id;
+
+            if (existing) {
+                await prisma.settings.update({ where: { id: existing.id }, data: updates });
             } else {
-                settingsStore.create(body.settings);
+                await prisma.settings.create({ data: { ...updates, id: 1 } });
             }
         }
 
