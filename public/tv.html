@@ -2433,14 +2433,23 @@
                     );
 
                     // Map the new API format to the legacy index.html variable names
-                    const mappedData = scheduledDoctors.map(d => ({
-                        Dokter: d.name,
-                        Spesialis: d.specialty,
-                        Status: d.status,
-                        Jam: d.currentRegistrationTime || d.registrationTime || d.startTime || '-',
-                        Jenis: d.category,
-                        'Code Antrian': d.queueCode
-                    }));
+                    // If a doctor has multiple active shifts today, flatten them so they appear as separate cards
+                    const mappedData = [];
+                    scheduledDoctors.forEach(d => {
+                        const activeShifts = d.shiftPills ? d.shiftPills.filter(shift => !shift.disabled) : [];
+                        activeShifts.forEach((shift, index) => {
+                            mappedData.push({
+                                Dokter: d.name,
+                                Spesialis: d.specialty,
+                                Status: d.status,
+                                // Combine jam for legacy checkTime if needed, but display specific shift time
+                                Jam: shift.formattedTime || d.currentRegistrationTime || d.registrationTime || d.startTime || '-',
+                                Jenis: d.category,
+                                'Code Antrian': d.queueCode,
+                                _shiftId: shift.id || index // Keep a unique identifier for the shift
+                            });
+                        });
+                    });
 
                     // Detect doctor status changes before render
                     this._detectChanges(mappedData);
@@ -2608,7 +2617,9 @@
 
                     let hasLayoutChange = false;
                     const newElements = list.map(d => {
-                        const id = d.Dokter;
+                        // Unique ID: Name + Shift Time so duplicate doctors don't overwrite each other
+                        const shiftJam = d.Jam && d.Jam !== '-' ? d.Jam : 'no-time';
+                        const id = `${d.Dokter}_${shiftJam}`;
                         // Hash: Change detection key (Status + Jam + Active + Code)
                         const hash = `${d.Status}|${d.Jam}|${d._isActive}|${d['Code Antrian'] || ''}`;
 
@@ -2784,7 +2795,9 @@
 
                 // Helper: Buat platter card (reuse dari updateList logic)
                 const makeCard = (d) => {
-                    const id = d.Dokter;
+                    // Unique ID: Name + Shift Time
+                    const shiftJam = d.Jam && d.Jam !== '-' ? d.Jam : 'no-time';
+                    const id = `${d.Dokter}_${shiftJam}`;
                     const hash = `${d.Status}|${d.Jam}|${d._isActive}|${d['Code Antrian'] || ''}`;
                     const st = d.Status.toUpperCase();
                     let c = 'st-nopoli', i = 'block', l = d.Status;
