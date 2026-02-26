@@ -126,9 +126,9 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="absolute inset-x-0 inset-y-0 px-3 lg:px-6 flex flex-col overflow-hidden">
+    <div className="w-full h-full px-3 lg:px-6 flex flex-col overflow-hidden">
       {/* ═══════════ PREMIUM HEADER ═══════════ */}
-      <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between pt-4 mb-4 lg:mb-5 flex-shrink-0 gap-3">
+      <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between pt-4 mb-4 lg:mb-5 flex-shrink-0 gap-3 pl-12 lg:pl-0">
         <div className="flex items-center gap-3">
           <div className="p-2.5 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl shadow-[0_4px_14px_0_rgba(0,92,255,0.3)] text-white flex-shrink-0">
             <Activity size={20} />

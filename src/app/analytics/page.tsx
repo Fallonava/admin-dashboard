@@ -58,9 +58,9 @@ export default function AnalyticsPage() {
     const utilizationRate = totalDoctors > 0 ? Math.round((activeDoctors / totalDoctors) * 100) : 0;
 
     return (
-        <div className="absolute inset-x-0 inset-y-4 px-2 lg:px-6 flex flex-col overflow-hidden">
+        <div className="w-full h-full px-2 lg:px-6 flex flex-col overflow-hidden">
             {/* ── Header ────────────────────────────────────────────── */}
-            <header className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 lg:mb-6 gap-3 flex-shrink-0">
+            <header className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 lg:mb-6 gap-3 flex-shrink-0 pl-12 lg:pl-0">
                 <div className="flex items-center gap-3">
                     <div className="p-2.5 bg-gradient-to-br from-violet-500 to-purple-600 rounded-2xl shadow-[0_4px_14px_0_rgba(139,92,246,0.3)] text-white flex-shrink-0">
                         <BarChart3 size={22} />

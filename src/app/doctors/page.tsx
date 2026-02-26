@@ -91,7 +91,7 @@ export default function DoctorsPage() {
     return (
         <div className="w-full h-full flex flex-col px-2 lg:px-4">
             {/* ═══════════════════ HEADER ═══════════════════ */}
-            <header className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 lg:mb-6 gap-3 flex-shrink-0">
+            <header className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 lg:mb-6 gap-3 flex-shrink-0 pl-12 lg:pl-0">
                 <div className="flex items-center gap-3">
                     <div className="p-2.5 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl shadow-[0_4px_14px_0_rgba(0,92,255,0.3)] text-white flex-shrink-0">
                         <Users size={22} />
