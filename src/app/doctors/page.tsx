@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import useSWR, { mutate } from "swr";
-import { Plus, Search, Edit2, Trash2, UserRound, Activity } from "lucide-react";
+import { Plus, Search, Edit2, Trash2, UserRound, Activity, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Doctor } from "@/lib/data-service";
 import { DoctorFormModal } from "@/components/schedules/DoctorFormModal";
@@ -90,16 +90,21 @@ export default function DoctorsPage() {
 
     return (
         <div className="w-full h-full flex flex-col px-2 lg:px-4">
-            {/* ═══════════════════ HEADER KOMPAK ═══════════════════ */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
-                <div>
-                    <h1 className="text-3xl font-black tracking-tight text-slate-900">
-                        Direktori <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Dokter</span>
-                    </h1>
-                    <p className="text-slate-400 text-sm font-medium mt-1">Kelola profil dan jadwal tayang dokter</p>
+            {/* ═══════════════════ HEADER ═══════════════════ */}
+            <header className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 lg:mb-6 gap-3 flex-shrink-0">
+                <div className="flex items-center gap-3">
+                    <div className="p-2.5 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl shadow-[0_4px_14px_0_rgba(0,92,255,0.3)] text-white flex-shrink-0">
+                        <Users size={22} />
+                    </div>
+                    <div>
+                        <h1 className="text-2xl lg:text-3xl font-black tracking-tight text-slate-900">
+                            Direktori <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Dokter</span>
+                        </h1>
+                        <p className="text-xs lg:text-sm text-slate-400 font-medium mt-0.5">Kelola profil dan jadwal tayang dokter</p>
+                    </div>
                 </div>
 
-                <div className="flex items-center gap-5">
+                <div className="flex items-center gap-2 lg:gap-4 flex-wrap">
                     {/* Stats Mini */}
                     <div className="hidden lg:flex items-center gap-4 text-center">
                         <div>
@@ -126,7 +131,7 @@ export default function DoctorsPage() {
                         <span>Tambah Dokter</span>
                     </button>
                 </div>
-            </div>
+            </header>
 
             {/* ═══════════════════ TOOLBAR PENCARIAN & FILTER ═══════════════════ */}
             <div className="flex flex-col md:flex-row items-center gap-4 mb-8">

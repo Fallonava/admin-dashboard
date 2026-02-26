@@ -74,12 +74,17 @@ export default function LeavesPage() {
         <div className="w-full h-full flex flex-col px-2 lg:px-4">
 
             {/* ═══ HEADER ═══ */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
-                <div>
-                    <h1 className="text-3xl font-black tracking-tight text-slate-900">
-                        Jadwal <span className="bg-gradient-to-r from-emerald-500 to-teal-600 bg-clip-text text-transparent">Cuti</span>
-                    </h1>
-                    <p className="text-slate-400 text-sm font-medium mt-1">Kelola dan pantau jadwal cuti seluruh dokter</p>
+            <header className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 lg:mb-6 gap-3 flex-shrink-0">
+                <div className="flex items-center gap-3">
+                    <div className="p-2.5 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl shadow-[0_4px_14px_0_rgba(16,185,129,0.3)] text-white flex-shrink-0">
+                        <CalendarDays size={22} />
+                    </div>
+                    <div>
+                        <h1 className="text-2xl lg:text-3xl font-black tracking-tight text-slate-900">
+                            Jadwal <span className="bg-gradient-to-r from-emerald-500 to-teal-600 bg-clip-text text-transparent">Cuti</span>
+                        </h1>
+                        <p className="text-xs lg:text-sm text-slate-400 font-medium mt-0.5">Kelola dan pantau jadwal cuti seluruh dokter</p>
+                    </div>
                 </div>
 
                 {/* Search */}
@@ -93,7 +98,7 @@ export default function LeavesPage() {
                         className="w-full bg-white rounded-2xl pl-11 pr-4 py-3 text-sm font-medium text-slate-700 outline-none shadow-sm focus:shadow-md focus:ring-2 focus:ring-emerald-500/20 transition-all placeholder:text-slate-400"
                     />
                 </div>
-            </div>
+            </header>
 
             {/* ═══ STATS CARDS ═══ */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">

@@ -126,19 +126,22 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="absolute inset-x-0 inset-y-0 px-2 lg:px-6 flex flex-col overflow-hidden">
+    <div className="absolute inset-x-0 inset-y-0 px-3 lg:px-6 flex flex-col overflow-hidden">
       {/* ═══════════ PREMIUM HEADER ═══════════ */}
-      <header className="flex items-center justify-between py-6 flex-shrink-0">
-        <div className="flex items-center gap-4">
+      <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between pt-4 mb-4 lg:mb-5 flex-shrink-0 gap-3">
+        <div className="flex items-center gap-3">
+          <div className="p-2.5 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl shadow-[0_4px_14px_0_rgba(0,92,255,0.3)] text-white flex-shrink-0">
+            <Activity size={20} />
+          </div>
           <div>
-            <h1 className="text-3xl font-black tracking-tight text-gradient pb-1">
-              {greeting}, Admin
+            <h1 className="text-2xl font-black tracking-tight text-slate-900 leading-tight">
+              {greeting}, <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Admin</span>
             </h1>
-            <p className="text-sm text-slate-400 font-medium mt-0.5">Berikut update terbaru klinik Anda hari ini.</p>
+            <p className="text-xs text-slate-400 font-medium mt-0.5">Berikut update terbaru klinik Anda hari ini.</p>
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 lg:gap-4 flex-wrap">
           {/* Live Clock Widget */}
           <div className="hidden md:flex items-center gap-3 super-glass-card px-4 py-2.5 rounded-2xl shadow-sm">
             <div className="text-right">
@@ -153,7 +156,7 @@ export default function Home() {
           <button
             onClick={toggleAutomation}
             className={cn(
-              "flex items-center gap-3 px-5 py-2.5 rounded-2xl transition-all active:scale-[0.97] group relative overflow-hidden",
+              "flex items-center gap-2 lg:gap-3 px-3 lg:px-5 py-2 lg:py-2.5 rounded-2xl transition-all active:scale-[0.97] group relative overflow-hidden",
               automationEnabled
                 ? "btn-gradient shadow-[0_4px_14px_0_rgba(99,102,241,0.39)]"
                 : "bg-white/80 backdrop-blur-xl text-slate-600 hover:shadow-[0_6px_20px_rgba(0,0,0,0.06)] border border-white shadow-sm"

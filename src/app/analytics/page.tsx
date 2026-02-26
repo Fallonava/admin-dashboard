@@ -60,16 +60,20 @@ export default function AnalyticsPage() {
     return (
         <div className="absolute inset-x-0 inset-y-4 px-2 lg:px-6 flex flex-col overflow-hidden">
             {/* ── Header ────────────────────────────────────────────── */}
-            <header className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 flex-shrink-0">
-                <div className="flex items-baseline gap-3">
-                    <div className="p-2.5 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl shadow-[0_4px_14px_0_rgba(0,92,255,0.39)] text-white mr-2">
-                        <BarChart3 size={24} />
+            <header className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 lg:mb-6 gap-3 flex-shrink-0">
+                <div className="flex items-center gap-3">
+                    <div className="p-2.5 bg-gradient-to-br from-violet-500 to-purple-600 rounded-2xl shadow-[0_4px_14px_0_rgba(139,92,246,0.3)] text-white flex-shrink-0">
+                        <BarChart3 size={22} />
                     </div>
-                    <h1 className="text-3xl font-extrabold tracking-tight text-gradient pb-1">Analytics</h1>
-                    <span className="text-slate-500 text-sm font-semibold hidden sm:inline-block">Daskbor Performa</span>
+                    <div>
+                        <h1 className="text-2xl lg:text-3xl font-black tracking-tight text-slate-900">
+                            <span className="bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent">Analitik</span>
+                        </h1>
+                        <p className="text-xs lg:text-sm text-slate-400 font-medium mt-0.5">Daskbor performa klinik secara real-time</p>
+                    </div>
                 </div>
 
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2 lg:gap-4 flex-wrap">
                     {/* Time Filter */}
                     <div className="relative group">
                         <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-2xl blur opacity-0 group-hover:opacity-100 transition duration-500"></div>

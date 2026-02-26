@@ -20,21 +20,28 @@ export default function SchedulesPage() {
     return (
         <div className="absolute inset-x-0 inset-y-4 px-2 lg:px-6 flex flex-col overflow-hidden">
             {/* Header */}
-            <header className="flex items-center justify-between mb-8">
-                <div className="flex items-baseline gap-3">
-                    <h1 className="text-3xl font-extrabold tracking-tight text-gradient pb-1">Schedules</h1>
-                    <span className="text-muted-foreground text-sm font-medium">Weekly Overview</span>
+            <header className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 lg:mb-6 gap-3 flex-shrink-0">
+                <div className="flex items-center gap-3">
+                    <div className="p-2.5 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl shadow-[0_4px_14px_0_rgba(0,92,255,0.3)] text-white flex-shrink-0">
+                        <CalendarIcon size={22} />
+                    </div>
+                    <div>
+                        <h1 className="text-2xl lg:text-3xl font-black tracking-tight text-slate-900">
+                            Jadwal <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Dokter</span>
+                        </h1>
+                        <p className="text-xs lg:text-sm text-slate-400 font-medium mt-0.5">Kelola jadwal mingguan dan shift dokter</p>
+                    </div>
                 </div>
 
-                <div className="flex items-center gap-5">
-                    <div className="relative group">
+                <div className="flex items-center gap-2 lg:gap-4 flex-wrap">
+                    <div className="relative group hidden md:block">
                         <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-2xl blur opacity-0 group-focus-within:opacity-100 transition duration-500"></div>
                         <div className="relative">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
                             <input
                                 type="text"
                                 placeholder="Search doctor or shift..."
-                                className="bg-white/40 backdrop-blur-xl rounded-2xl pl-10 pr-4 py-2.5 text-sm text-foreground focus:border-blue-500/50 outline-none transition-all shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),0_2px_10px_-3px_rgba(0,0,0,0.02)] focus:bg-white/60 w-72 placeholder:text-muted-foreground"
+                                className="bg-white/40 backdrop-blur-xl rounded-2xl pl-10 pr-4 py-2.5 text-sm text-foreground focus:border-blue-500/50 outline-none transition-all shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),0_2px_10px_-3px_rgba(0,0,0,0.02)] focus:bg-white/60 w-56 lg:w-72 placeholder:text-muted-foreground"
                             />
                         </div>
                     </div>
@@ -58,22 +65,27 @@ export default function SchedulesPage() {
             </header>
 
             {/* Main Content */}
-            <div className="flex flex-1 min-h-0 gap-6">
+            <div className="flex flex-col lg:flex-row flex-1 min-h-0 gap-4 lg:gap-6">
                 <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
 
                     {/* Calendar Strip (Premium Glass) */}
-                    <div className="mb-8 super-glass-card rounded-[32px] p-3 flex items-center gap-3 shadow-sm border border-white/40">
-                        <div className="flex flex-col items-center justify-center px-5 py-4 bg-gradient-to-b from-white/90 to-white/50 text-blue-600 rounded-[24px] mr-1 shadow-[inset_0_1px_1px_rgba(255,255,255,1),0_8px_20px_-6px_rgba(0,92,255,0.1)] backdrop-blur-xl border border-white transition-all hover:shadow-[inset_0_1px_1px_rgba(255,255,255,1),0_8px_30px_-6px_rgba(0,92,255,0.2)]">
-                            <CalendarIcon size={24} className="mb-1.5 opacity-90" strokeWidth={2.5} />
-                            <span className="text-[11px] font-black uppercase tracking-widest">{selectedDate.toLocaleDateString('id-ID', { month: 'short', year: 'numeric' })}</span>
+                    <div className="mb-4 lg:mb-8 super-glass-card rounded-[20px] lg:rounded-[32px] p-1.5 lg:p-3 flex items-center gap-1 lg:gap-3 shadow-sm border border-white/40">
+                        {/* Month Indicator — compact on mobile */}
+                        <div className="hidden sm:flex flex-col items-center justify-center px-4 lg:px-5 py-3 lg:py-4 bg-gradient-to-b from-white/90 to-white/50 text-blue-600 rounded-[16px] lg:rounded-[24px] mr-0.5 lg:mr-1 shadow-[inset_0_1px_1px_rgba(255,255,255,1),0_8px_20px_-6px_rgba(0,92,255,0.1)] backdrop-blur-xl border border-white transition-all flex-shrink-0">
+                            <CalendarIcon size={20} className="mb-1 opacity-90 lg:hidden" strokeWidth={2.5} />
+                            <CalendarIcon size={24} className="mb-1.5 opacity-90 hidden lg:block" strokeWidth={2.5} />
+                            <span className="text-[9px] lg:text-[11px] font-black uppercase tracking-widest whitespace-nowrap">{selectedDate.toLocaleDateString('id-ID', { month: 'short', year: 'numeric' })}</span>
                         </div>
 
-                        <button onClick={() => { const d = new Date(selectedDate); d.setDate(d.getDate() - 1); setSelectedDate(d); }} className="p-3.5 bg-white/40 hover:bg-white text-slate-400 hover:text-blue-600 rounded-[20px] transition-all duration-300 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8)] hover:shadow-[0_8px_20px_-6px_rgba(0,0,0,0.1)] border border-transparent hover:border-white hover:-translate-x-0.5 active:scale-95">
-                            <ChevronLeft size={22} strokeWidth={3} />
+                        {/* Prev Button */}
+                        <button onClick={() => { const d = new Date(selectedDate); d.setDate(d.getDate() - 1); setSelectedDate(d); }} className="p-2 lg:p-3.5 bg-white/40 hover:bg-white text-slate-400 hover:text-blue-600 rounded-xl lg:rounded-[20px] transition-all duration-300 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8)] hover:shadow-[0_8px_20px_-6px_rgba(0,0,0,0.1)] border border-transparent hover:border-white active:scale-95 flex-shrink-0">
+                            <ChevronLeft size={18} className="lg:hidden" strokeWidth={3} />
+                            <ChevronLeft size={22} className="hidden lg:block" strokeWidth={3} />
                         </button>
 
-                        <div className="flex-1 flex justify-between gap-2 overflow-hidden px-1 py-1">
-                            {stripDays.slice(0, 9).map((date, i) => {
+                        {/* Date Pills — show 7 on mobile, 9 on desktop */}
+                        <div className="flex-1 flex justify-between gap-1 lg:gap-2 overflow-hidden px-0.5 lg:px-1 py-0.5 lg:py-1">
+                            {stripDays.slice(0, 7).map((date, i) => {
                                 const isSelected = date.toDateString() === selectedDate.toDateString();
                                 const isToday = date.toDateString() === new Date().toDateString();
                                 return (
@@ -81,34 +93,34 @@ export default function SchedulesPage() {
                                         key={i}
                                         onClick={() => setSelectedDate(date)}
                                         className={cn(
-                                            "relative flex flex-col items-center justify-center py-3.5 px-4 rounded-[22px] transition-all duration-500 ease-out min-w-[75px] group overflow-hidden border",
+                                            "relative flex flex-col items-center justify-center py-2 lg:py-3.5 px-1.5 sm:px-2.5 lg:px-4 rounded-xl lg:rounded-[22px] transition-all duration-500 ease-out min-w-[40px] sm:min-w-[50px] lg:min-w-[75px] group overflow-hidden border",
                                             isSelected ? "text-white scale-105 shadow-[0_12px_30px_-8px_rgba(0,92,255,0.5)] border-transparent"
                                                 : "bg-transparent hover:bg-white/60 text-slate-500 hover:text-slate-800 hover:scale-105 border-transparent hover:border-white shadow-none hover:shadow-[0_8px_20px_-8px_rgba(0,0,0,0.05)]"
                                         )}
                                     >
-                                        {/* Active Background */}
                                         {isSelected && (
                                             <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-indigo-600 z-0"></div>
                                         )}
-                                        {/* Active Shimmer overlay */}
                                         {isSelected && (
                                             <div className="absolute inset-0 w-full h-full bg-white/20 -translate-x-full animate-shimmer z-0"></div>
                                         )}
 
-                                        <span className={cn("relative z-10 text-[11px] font-black uppercase tracking-widest mb-1.5 transition-colors duration-300", isSelected ? "text-blue-100" : (isToday ? "text-blue-600" : "text-slate-400 group-hover:text-slate-500"))}>
+                                        <span className={cn("relative z-10 text-[9px] lg:text-[11px] font-black uppercase tracking-widest mb-0.5 lg:mb-1.5 transition-colors duration-300", isSelected ? "text-blue-100" : (isToday ? "text-blue-600" : "text-slate-400 group-hover:text-slate-500"))}>
                                             {date.toLocaleDateString('id-ID', { weekday: 'short' })}
                                         </span>
-                                        <span className={cn("relative z-10 text-[22px] font-black transition-colors duration-300 leading-none", isSelected ? "text-white" : "text-slate-800 group-hover:text-slate-900")}>
+                                        <span className={cn("relative z-10 text-base lg:text-[22px] font-black transition-colors duration-300 leading-none", isSelected ? "text-white" : "text-slate-800 group-hover:text-slate-900")}>
                                             {date.getDate()}
                                         </span>
-                                        {isToday && !isSelected && <div className="absolute bottom-2.5 h-1.5 w-1.5 rounded-full bg-blue-600 shadow-[0_0_8px_rgba(37,99,235,0.6)]" />}
+                                        {isToday && !isSelected && <div className="absolute bottom-1.5 lg:bottom-2.5 h-1 w-1 lg:h-1.5 lg:w-1.5 rounded-full bg-blue-600 shadow-[0_0_8px_rgba(37,99,235,0.6)]" />}
                                     </button>
                                 );
                             })}
                         </div>
 
-                        <button onClick={() => { const d = new Date(selectedDate); d.setDate(d.getDate() + 1); setSelectedDate(d); }} className="p-3.5 bg-white/40 hover:bg-white text-slate-400 hover:text-blue-600 rounded-[20px] transition-all duration-300 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8)] hover:shadow-[0_8px_20px_-6px_rgba(0,0,0,0.1)] border border-transparent hover:border-white hover:translate-x-0.5 active:scale-95">
-                            <ChevronRight size={22} strokeWidth={3} />
+                        {/* Next Button */}
+                        <button onClick={() => { const d = new Date(selectedDate); d.setDate(d.getDate() + 1); setSelectedDate(d); }} className="p-2 lg:p-3.5 bg-white/40 hover:bg-white text-slate-400 hover:text-blue-600 rounded-xl lg:rounded-[20px] transition-all duration-300 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8)] hover:shadow-[0_8px_20px_-6px_rgba(0,0,0,0.1)] border border-transparent hover:border-white active:scale-95 flex-shrink-0">
+                            <ChevronRight size={18} className="lg:hidden" strokeWidth={3} />
+                            <ChevronRight size={22} className="hidden lg:block" strokeWidth={3} />
                         </button>
                     </div>
 

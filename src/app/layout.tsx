@@ -25,7 +25,7 @@ export default function RootLayout({
           <AutomationRunner />
           <div className="flex h-screen bg-background overflow-hidden relative">
             <Sidebar />
-            <main className="flex-1 overflow-y-auto p-8 relative bg-white/50 backdrop-blur-sm">
+            <main className="flex-1 overflow-y-auto p-4 lg:p-8 pt-16 lg:pt-8 relative bg-white/50 backdrop-blur-sm">
               {children}
             </main>
           </div>
