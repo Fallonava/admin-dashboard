@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { ChevronLeft, ChevronRight, Upload, Plus, Trash2, User, CalendarCheck } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus, Upload, X, Check, Search, Calendar as CalendarIcon, Clock, AlignLeft, Download, User, Trash2, CalendarCheck } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import type { LeaveRequest } from "@/lib/data-service";
@@ -119,6 +119,19 @@ export function LeaveCalendar({ leaves, onRefresh }: LeaveCalendarProps) {
         e.target.value = '';
     };
 
+    const handleDownloadFormat = () => {
+        const csvContent = "Nama Dokter,Tipe Cuti (Tahunan/Sakit/Hamil/Lainnya),Tanggal Mulai (YYYY-MM-DD),Tanggal Selesai (YYYY-MM-DD)\nDr. Sarah Johnson,Tahunan,2026-03-01,2026-03-05\nDr. Michael Chen,Sakit,2026-03-10,";
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement("a");
+        const url = URL.createObjectURL(blob);
+        link.setAttribute("href", url);
+        link.setAttribute("download", "format_import_cuti.csv");
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
     const activeLeaves = leaves.filter(l => isDateInLeave(selectedDate, l.dates));
 
     const selectedDateLabel = selectedDate.toLocaleDateString('id-ID', {
@@ -129,8 +142,8 @@ export function LeaveCalendar({ leaves, onRefresh }: LeaveCalendarProps) {
         <div className="flex flex-col lg:flex-row gap-6 h-full">
 
             {/* ══════════ KIRI: KALENDER ══════════ */}
-            <div className="w-full lg:w-[300px] flex-shrink-0 flex flex-col gap-4">
-                <div className="bg-white rounded-[28px] p-5 shadow-sm">
+            <div className="w-full lg:w-[360px] flex-shrink-0 flex flex-col gap-5">
+                <div className="super-glass-card rounded-[32px] p-6 shadow-sm">
                     {/* Month Nav */}
                     <div className="flex items-center justify-between mb-4">
                         <h2 className="text-sm font-black text-slate-800">
@@ -215,27 +228,38 @@ export function LeaveCalendar({ leaves, onRefresh }: LeaveCalendarProps) {
                 </div>
 
                 {/* Tombol Aksi */}
-                <div className="flex gap-2">
-                    <button
-                        onClick={() => fileInputRef.current?.click()}
-                        className="flex-1 h-11 rounded-2xl bg-white text-slate-500 hover:text-slate-800 hover:bg-slate-50 text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-sm"
-                    >
-                        <Upload size={13} />
-                        Import CSV
-                    </button>
-                    <input type="file" accept=".csv" ref={fileInputRef} className="hidden" onChange={handleFileUpload} />
+                <div className="flex flex-col gap-3 relative z-10">
+                    <div className="flex gap-3">
+                        <button
+                            onClick={() => fileInputRef.current?.click()}
+                            className="flex-1 h-12 rounded-2xl bg-white/60 text-slate-500 hover:text-slate-800 hover:bg-white border border-slate-100 text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-sm backdrop-blur-md active:scale-95"
+                        >
+                            <Upload size={13} />
+                            Import CSV
+                        </button>
+                        <input type="file" accept=".csv" ref={fileInputRef} className="hidden" onChange={handleFileUpload} />
+
+                        <button
+                            onClick={() => setIsAddModalOpen(true)}
+                            className="flex-1 h-12 rounded-2xl btn-gradient text-white text-xs font-bold transition-all shadow-[0_4px_14px_0_rgba(0,92,255,0.39)] flex items-center justify-center gap-2 active:scale-95 group relative overflow-hidden"
+                        >
+                            <div className="absolute inset-0 w-full h-full bg-white/20 -translate-x-full group-hover:animate-shimmer" />
+                            <Plus size={13} className="relative z-10" />
+                            <span className="relative z-10">Tambah Cuti</span>
+                        </button>
+                    </div>
 
                     <button
-                        onClick={() => setIsAddModalOpen(true)}
-                        className="flex-1 h-11 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all shadow-md flex items-center justify-center gap-2"
+                        onClick={handleDownloadFormat}
+                        className="w-full h-10 rounded-xl bg-blue-50/50 text-blue-600 hover:bg-blue-100/50 border border-blue-100/30 text-[11px] font-bold transition-all flex items-center justify-center gap-2 shadow-sm backdrop-blur-md active:scale-95 mt-1"
                     >
-                        <Plus size={13} />
-                        Tambah Cuti
+                        <Download size={13} />
+                        Download Format CSV
                     </button>
                 </div>
 
                 {/* Ringkasan bulan ini */}
-                <div className="bg-white rounded-[24px] p-4 shadow-sm">
+                <div className="super-glass-card rounded-[32px] p-6 shadow-sm">
                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">
                         Bulan Ini — {MONTHS_ID[currentDate.getMonth()]}
                     </p>
@@ -278,7 +302,7 @@ export function LeaveCalendar({ leaves, onRefresh }: LeaveCalendarProps) {
             </div>
 
             {/* ══════════ KANAN: DAFTAR CUTI TANGGAL TERPILIH ══════════ */}
-            <div className="flex-1 bg-white rounded-[28px] p-6 shadow-sm flex flex-col min-h-0">
+            <div className="flex-1 super-glass-card rounded-[32px] p-8 shadow-sm flex flex-col min-h-0 relative z-10">
                 {/* Header Panel Kanan */}
                 <div className="flex items-center justify-between mb-5 pb-4 border-b border-slate-50">
                     <div>
@@ -302,7 +326,7 @@ export function LeaveCalendar({ leaves, onRefresh }: LeaveCalendarProps) {
                             return (
                                 <div
                                     key={leave.id}
-                                    className="group relative bg-slate-50/60 hover:bg-white rounded-2xl p-4 transition-all duration-300 hover:shadow-md"
+                                    className="group relative bg-white/60 hover:bg-white border border-transparent hover:border-slate-100 rounded-2xl p-4 transition-all duration-300 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8)] hover:shadow-[0_8px_30px_-10px_rgba(0,0,0,0.08)] hover:-translate-y-0.5"
                                 >
                                     {/* Hapus */}
                                     <button
@@ -341,12 +365,12 @@ export function LeaveCalendar({ leaves, onRefresh }: LeaveCalendarProps) {
                             );
                         })
                     ) : (
-                        <div className="flex flex-col items-center justify-center h-full text-center py-16">
-                            <div className="w-16 h-16 bg-emerald-50 rounded-[20px] flex items-center justify-center mb-4">
-                                <User size={24} className="text-emerald-300" />
+                        <div className="flex flex-col items-center justify-center h-full text-center py-20">
+                            <div className="w-20 h-20 bg-emerald-50/50 border border-emerald-100 rounded-[28px] flex items-center justify-center mb-6 shadow-[inset_0_2px_4px_rgba(255,255,255,0.4)] backdrop-blur-sm">
+                                <User size={28} className="text-emerald-400" />
                             </div>
-                            <p className="text-sm font-bold text-slate-600">Semua dokter tersedia</p>
-                            <p className="text-xs text-slate-400 mt-1">Tidak ada cuti pada tanggal ini</p>
+                            <p className="text-xl font-black text-slate-800">Semua dokter tersedia</p>
+                            <p className="text-sm font-medium text-slate-400 mt-2">Tidak ada jadwal cuti pada tanggal ini.</p>
                         </div>
                     )}
                 </div>

@@ -121,16 +121,16 @@ export function RealtimeCalendar({ selectedDate, onDateChange }: RealtimeCalenda
     const todayStr = selectedDate.getFullYear() + '-' + String(selectedDate.getMonth() + 1).padStart(2, '0') + '-' + String(selectedDate.getDate()).padStart(2, '0');
 
     return (
-        <div className="flex-1 flex flex-col min-h-0 relative">
+        <div className="flex-1 flex flex-col min-h-0 relative h-full">
             {/* ── Header Controls ──────────────────────────────── */}
-            <div className="flex items-center justify-between mb-4 px-1">
+            <div className="flex items-center justify-between mb-4 px-1 flex-shrink-0">
                 <div className="flex items-center gap-3">
                     <h2 className="text-xl font-extrabold text-foreground capitalize tracking-tight">{formatDateObj(selectedDate)}</h2>
                 </div>
 
                 <button
                     onClick={() => setShowAddModal(true)}
-                    className="btn-gradient px-4 py-2.5 rounded-xl flex items-center gap-2 text-sm font-semibold shadow-[0_4px_14px_0_rgba(0,92,255,0.39)] transition-all active:scale-95 group overflow-hidden relative text-white"
+                    className="btn-gradient px-4 py-2.5 rounded-[14px] flex items-center gap-2 text-sm font-black shadow-[0_4px_14px_0_rgba(0,92,255,0.39)] transition-all active:scale-95 group overflow-hidden relative text-white"
                 >
                     <div className="absolute inset-0 w-full h-full bg-white/20 -translate-x-full group-hover:animate-shimmer" />
                     <Plus size={16} className="relative z-10" />
@@ -139,85 +139,87 @@ export function RealtimeCalendar({ selectedDate, onDateChange }: RealtimeCalenda
             </div>
 
             {/* ── Daily Grid ──────────────────────────────────── */}
-            <div className="flex-1 overflow-auto rounded-3xl super-glass custom-scrollbar shadow-[0_4px_30px_-6px_rgba(0,0,0,0.02)]">
-                <div className="min-w-full">
+            <div className="flex-1 min-h-0 super-glass-card rounded-[32px] shadow-sm overflow-hidden flex flex-col">
+                <div className="flex-1 overflow-y-auto w-full custom-scrollbar pr-1 pb-4">
+                    <div className="min-w-full">
 
-                    {/* Hour Rows for single day */}
-                    {HOURS.map((slot, hIdx) => {
-                        // Filter shifts that fall on this day and hour, AND are not disabled for this specific date
-                        const cellShifts = shifts.filter(s =>
-                            s.dayIdx === currentDayIdx &&
-                            getShiftHour(s) === slot.hour &&
-                            !(s.disabledDates || []).includes(todayStr)
-                        );
+                        {/* Hour Rows for single day */}
+                        {HOURS.map((slot, hIdx) => {
+                            // Filter shifts that fall on this day and hour, AND are not disabled for this specific date
+                            const cellShifts = shifts.filter(s =>
+                                s.dayIdx === currentDayIdx &&
+                                getShiftHour(s) === slot.hour &&
+                                !(s.disabledDates || []).includes(todayStr)
+                            );
 
-                        return (
-                            <div key={`h-${hIdx}`} className="grid grid-cols-[80px_1fr]-200/50 last:border-b-0 min-h-[72px] group/row hover:bg-white/40 transition-colors relative">
+                            return (
+                                <div key={`h-${hIdx}`} className="grid grid-cols-[80px_1fr]-200/50 last:border-b-0 min-h-[72px] group/row hover:bg-white/40 transition-colors relative">
 
-                                {/* Time label */}
-                                <div className="p-3 text-right bg-white/20 flex flex-col items-end backdrop-blur-sm">
-                                    <span className="text-[11px] font-bold text-muted-foreground tracking-wider">{slot.label}</span>
-                                </div>
+                                    {/* Time label */}
+                                    <div className="p-4 text-right bg-white/40 flex flex-col items-end backdrop-blur-md border-r border-white/50">
+                                        <span className="text-[12px] font-black text-slate-500 tracking-wider bg-white/60 px-2 py-1 rounded-lg shadow-sm border border-slate-100/50">{slot.label}</span>
+                                    </div>
 
-                                {/* Timeline content */}
-                                <div className="p-2.5 relative">
-                                    <div className="absolute inset-x-0 top-1/2 -translate-y-1/2-200/50 pointer-events-none" />
+                                    {/* Timeline content */}
+                                    <div className="p-2.5 relative">
+                                        <div className="absolute inset-x-0 top-1/2 -translate-y-1/2-200/50 pointer-events-none" />
 
-                                    <div className="flex flex-wrap gap-2.5 relative z-10">
-                                        {cellShifts.map((shift, sIdx) => {
-                                            const color = getColor(shift.doctor);
-                                            return (
-                                                <div
-                                                    key={shift.id}
-                                                    className={cn(
-                                                        "group/card flex-1 min-w-[220px] max-w-[300px] p-3 rounded-2xl cursor-default transition-all duration-300 hover:-translate-y-0.5 shadow-[inset_0_1px_1px_rgba(255,255,255,0.4)] hover:shadow-[0_12px_30px_-8px_rgba(0,0,0,0.15)]",
-                                                        color.bg, color.border
-                                                    )}
-                                                >
-                                                    <div className="flex items-start justify-between gap-2 mb-2">
-                                                        <div className="flex items-center gap-2.5 min-w-0">
-                                                            <div className={cn("w-2 h-2 rounded-full flex-shrink-0 shadow-sm", color.dot)} />
-                                                            <p className={cn("text-xs font-bold truncate tracking-tight", color.text)}>{shift.doctor}</p>
-                                                        </div>
-                                                        <button
-                                                            onClick={() => handleDelete(shift.id)}
-                                                            className="opacity-0 group-hover/card:opacity-100 p-1.5 bg-white/60 rounded-lg text-slate-400 hover:text-destructive hover:bg-white shadow-sm transition-all flex-shrink-0"
-                                                            title="Hapus Jadwal"
-                                                        >
-                                                            <X size={14} />
-                                                        </button>
-                                                    </div>
-
-                                                    <div className={cn("flex flex-col gap-2 pl-4-2 ml-1", color.border)}>
-                                                        <p className={cn("text-[10px] font-extrabold uppercase tracking-widest", color.text)}>{shift.title}</p>
-
-                                                        <div className="flex items-center justify-between mt-0.5">
-                                                            <div className={cn("flex items-center gap-1.5 px-2 py-1 rounded-lg text-xs font-semibold shadow-sm", color.innerBg, color.timeText)}>
-                                                                <Clock size={12} className={color.dotIcon} />
-                                                                {shift.formattedTime}
+                                        <div className="flex flex-wrap gap-2.5 relative z-10">
+                                            {cellShifts.map((shift, sIdx) => {
+                                                const color = getColor(shift.doctor);
+                                                return (
+                                                    <div
+                                                        key={shift.id}
+                                                        className={cn(
+                                                            "group/card flex-1 min-w-[220px] max-w-[300px] p-3 rounded-2xl cursor-default transition-all duration-300 hover:-translate-y-0.5 shadow-[inset_0_1px_1px_rgba(255,255,255,0.4)] hover:shadow-[0_12px_30px_-8px_rgba(0,0,0,0.15)]",
+                                                            color.bg, color.border
+                                                        )}
+                                                    >
+                                                        <div className="flex items-start justify-between gap-2 mb-2">
+                                                            <div className="flex items-center gap-2.5 min-w-0">
+                                                                <div className={cn("w-2 h-2 rounded-full flex-shrink-0 shadow-sm", color.dot)} />
+                                                                <p className={cn("text-xs font-bold truncate tracking-tight", color.text)}>{shift.doctor}</p>
                                                             </div>
+                                                            <button
+                                                                onClick={() => handleDelete(shift.id)}
+                                                                className="opacity-0 group-hover/card:opacity-100 p-1.5 bg-white/60 rounded-lg text-slate-400 hover:text-destructive hover:bg-white shadow-sm transition-all flex-shrink-0"
+                                                                title="Hapus Jadwal"
+                                                            >
+                                                                <X size={14} />
+                                                            </button>
+                                                        </div>
 
-                                                            {shift.registrationTime && (
-                                                                <div className={cn("text-[10px] font-bold px-2 py-1 rounded-lg shadow-sm uppercase tracking-wider", color.innerBg, color.timeText)}>
-                                                                    Reg: {shift.registrationTime}
+                                                        <div className={cn("flex flex-col gap-2 pl-4-2 ml-1", color.border)}>
+                                                            <p className={cn("text-[10px] font-extrabold uppercase tracking-widest", color.text)}>{shift.title}</p>
+
+                                                            <div className="flex items-center justify-between mt-0.5">
+                                                                <div className={cn("flex items-center gap-1.5 px-2 py-1 rounded-lg text-xs font-semibold shadow-sm", color.innerBg, color.timeText)}>
+                                                                    <Clock size={12} className={color.dotIcon} />
+                                                                    {shift.formattedTime}
                                                                 </div>
-                                                            )}
+
+                                                                {shift.registrationTime && (
+                                                                    <div className={cn("text-[10px] font-bold px-2 py-1 rounded-lg shadow-sm uppercase tracking-wider", color.innerBg, color.timeText)}>
+                                                                        Reg: {shift.registrationTime}
+                                                                    </div>
+                                                                )}
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                            );
-                                        })}
+                                                );
+                                            })}
 
-                                        {cellShifts.length === 0 && (
-                                            <div className="w-full h-full flex items-center justify-center opacity-0 group-hover/row:opacity-100 transition-opacity">
-                                                <span className="text-[10px] text-muted-foreground/60 font-bold uppercase tracking-widest">+ Kosong</span>
-                                            </div>
-                                        )}
+                                            {cellShifts.length === 0 && (
+                                                <div className="w-full h-full flex items-center justify-center opacity-0 group-hover/row:opacity-100 transition-opacity">
+                                                    <span className="text-[10px] text-muted-foreground/60 font-bold uppercase tracking-widest">+ Kosong</span>
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        );
-                    })}
+                            );
+                        })}
+                    </div>
                 </div>
             </div>
 

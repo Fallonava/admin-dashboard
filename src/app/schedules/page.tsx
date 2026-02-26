@@ -18,7 +18,7 @@ export default function SchedulesPage() {
     });
 
     return (
-        <div className="flex h-full flex-col">
+        <div className="absolute inset-x-0 inset-y-4 px-2 lg:px-6 flex flex-col overflow-hidden">
             {/* Header */}
             <header className="flex items-center justify-between mb-8">
                 <div className="flex items-baseline gap-3">
@@ -62,17 +62,17 @@ export default function SchedulesPage() {
                 <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
 
                     {/* Calendar Strip (Premium Glass) */}
-                    <div className="mb-6 super-glass rounded-3xl p-4 flex items-center gap-4">
-                        <div className="flex flex-col items-center justify-center p-3 bg-blue-50 text-blue-600 rounded-2xl mr-2 shadow-inner">
-                            <CalendarIcon size={24} className="mb-1" />
-                            <span className="text-[10px] font-extrabold uppercase tracking-widest">{selectedDate.toLocaleDateString('id-ID', { month: 'short', year: 'numeric' })}</span>
+                    <div className="mb-8 super-glass-card rounded-[32px] p-3 flex items-center gap-3 shadow-sm border border-white/40">
+                        <div className="flex flex-col items-center justify-center px-5 py-4 bg-gradient-to-b from-white/90 to-white/50 text-blue-600 rounded-[24px] mr-1 shadow-[inset_0_1px_1px_rgba(255,255,255,1),0_8px_20px_-6px_rgba(0,92,255,0.1)] backdrop-blur-xl border border-white transition-all hover:shadow-[inset_0_1px_1px_rgba(255,255,255,1),0_8px_30px_-6px_rgba(0,92,255,0.2)]">
+                            <CalendarIcon size={24} className="mb-1.5 opacity-90" strokeWidth={2.5} />
+                            <span className="text-[11px] font-black uppercase tracking-widest">{selectedDate.toLocaleDateString('id-ID', { month: 'short', year: 'numeric' })}</span>
                         </div>
 
-                        <button onClick={() => { const d = new Date(selectedDate); d.setDate(d.getDate() - 1); setSelectedDate(d); }} className="p-2 hover:bg-black/[0.03] rounded-xl text-muted-foreground hover:text-foreground transition-colors">
-                            <ChevronLeft size={20} />
+                        <button onClick={() => { const d = new Date(selectedDate); d.setDate(d.getDate() - 1); setSelectedDate(d); }} className="p-3.5 bg-white/40 hover:bg-white text-slate-400 hover:text-blue-600 rounded-[20px] transition-all duration-300 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8)] hover:shadow-[0_8px_20px_-6px_rgba(0,0,0,0.1)] border border-transparent hover:border-white hover:-translate-x-0.5 active:scale-95">
+                            <ChevronLeft size={22} strokeWidth={3} />
                         </button>
 
-                        <div className="flex-1 flex justify-between gap-2 overflow-hidden">
+                        <div className="flex-1 flex justify-between gap-2 overflow-hidden px-1 py-1">
                             {stripDays.slice(0, 9).map((date, i) => {
                                 const isSelected = date.toDateString() === selectedDate.toDateString();
                                 const isToday = date.toDateString() === new Date().toDateString();
@@ -81,25 +81,34 @@ export default function SchedulesPage() {
                                         key={i}
                                         onClick={() => setSelectedDate(date)}
                                         className={cn(
-                                            "flex flex-col items-center justify-center py-2.5 px-3 rounded-2xl transition-all duration-300 min-w-[60px]",
-                                            isSelected ? "btn-gradient shadow-[0_4px_14px_0_rgba(0,92,255,0.39)] text-white scale-105"
-                                                : "hover:bg-black/[0.03] text-muted-foreground hover:text-foreground"
+                                            "relative flex flex-col items-center justify-center py-3.5 px-4 rounded-[22px] transition-all duration-500 ease-out min-w-[75px] group overflow-hidden border",
+                                            isSelected ? "text-white scale-105 shadow-[0_12px_30px_-8px_rgba(0,92,255,0.5)] border-transparent"
+                                                : "bg-transparent hover:bg-white/60 text-slate-500 hover:text-slate-800 hover:scale-105 border-transparent hover:border-white shadow-none hover:shadow-[0_8px_20px_-8px_rgba(0,0,0,0.05)]"
                                         )}
                                     >
-                                        <span className={cn("text-[10px] font-bold uppercase tracking-wider mb-1", isSelected ? "text-blue-100" : (isToday ? "text-primary" : "text-muted-foreground/80"))}>
+                                        {/* Active Background */}
+                                        {isSelected && (
+                                            <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-indigo-600 z-0"></div>
+                                        )}
+                                        {/* Active Shimmer overlay */}
+                                        {isSelected && (
+                                            <div className="absolute inset-0 w-full h-full bg-white/20 -translate-x-full animate-shimmer z-0"></div>
+                                        )}
+
+                                        <span className={cn("relative z-10 text-[11px] font-black uppercase tracking-widest mb-1.5 transition-colors duration-300", isSelected ? "text-blue-100" : (isToday ? "text-blue-600" : "text-slate-400 group-hover:text-slate-500"))}>
                                             {date.toLocaleDateString('id-ID', { weekday: 'short' })}
                                         </span>
-                                        <span className={cn("text-lg font-extrabold", isSelected ? "text-white" : "text-foreground")}>
+                                        <span className={cn("relative z-10 text-[22px] font-black transition-colors duration-300 leading-none", isSelected ? "text-white" : "text-slate-800 group-hover:text-slate-900")}>
                                             {date.getDate()}
                                         </span>
-                                        {isToday && !isSelected && <div className="h-1.5 w-1.5 rounded-full bg-primary mt-1 shadow-sm" />}
+                                        {isToday && !isSelected && <div className="absolute bottom-2.5 h-1.5 w-1.5 rounded-full bg-blue-600 shadow-[0_0_8px_rgba(37,99,235,0.6)]" />}
                                     </button>
                                 );
                             })}
                         </div>
 
-                        <button onClick={() => { const d = new Date(selectedDate); d.setDate(d.getDate() + 1); setSelectedDate(d); }} className="p-2 hover:bg-black/[0.03] rounded-xl text-muted-foreground hover:text-foreground transition-colors">
-                            <ChevronRight size={20} />
+                        <button onClick={() => { const d = new Date(selectedDate); d.setDate(d.getDate() + 1); setSelectedDate(d); }} className="p-3.5 bg-white/40 hover:bg-white text-slate-400 hover:text-blue-600 rounded-[20px] transition-all duration-300 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8)] hover:shadow-[0_8px_20px_-6px_rgba(0,0,0,0.1)] border border-transparent hover:border-white hover:translate-x-0.5 active:scale-95">
+                            <ChevronRight size={22} strokeWidth={3} />
                         </button>
                     </div>
 

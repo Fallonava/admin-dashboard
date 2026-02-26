@@ -86,9 +86,9 @@ export function DoctorFormModal({ isOpen, onClose, doctor, onSuccess }: DoctorFo
     if (!isOpen || !mounted) return null;
 
     return createPortal(
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/30 backdrop-blur-sm animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/20 backdrop-blur-md animate-in fade-in duration-300">
             <div
-                className="bg-white rounded-[28px] w-full max-w-md shadow-2xl shadow-black/10 animate-in zoom-in-95 duration-200"
+                className="bg-white/80 backdrop-blur-[50px] saturate-200 rounded-[32px] w-full max-w-md shadow-[0_24px_80px_-12px_rgba(0,0,0,0.2)] border border-white/60 animate-in zoom-in-95 duration-300 relative overflow-hidden"
                 onClick={e => e.stopPropagation()}
             >
                 {/* ── Header ── */}
@@ -133,7 +133,7 @@ export function DoctorFormModal({ isOpen, onClose, doctor, onSuccess }: DoctorFo
                                 placeholder="cth. dr. Sarah Johnson, Sp. B"
                                 value={formData.name}
                                 onChange={e => setFormData({ ...formData, name: e.target.value })}
-                                className="w-full bg-slate-50 rounded-2xl px-4 py-3 text-sm font-medium text-slate-700 outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all placeholder:text-slate-300"
+                                className="w-full bg-white/50 backdrop-blur-md rounded-2xl px-4 py-3.5 text-sm font-semibold text-slate-800 outline-none shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),0_2px_10px_-3px_rgba(0,0,0,0.02)] focus:bg-white/90 focus:shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),0_4px_20px_-4px_rgba(0,92,255,0.15)] focus:ring-1 focus:ring-blue-500/30 transition-all placeholder:text-slate-400"
                             />
                         </div>
                         <div>
@@ -145,7 +145,7 @@ export function DoctorFormModal({ isOpen, onClose, doctor, onSuccess }: DoctorFo
                                 placeholder="cth. Bedah Umum, Penyakit Dalam..."
                                 value={formData.specialty}
                                 onChange={e => setFormData({ ...formData, specialty: e.target.value })}
-                                className="w-full bg-slate-50 rounded-2xl px-4 py-3 text-sm font-medium text-slate-700 outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all placeholder:text-slate-300"
+                                className="w-full bg-white/50 backdrop-blur-md rounded-2xl px-4 py-3.5 text-sm font-semibold text-slate-800 outline-none shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),0_2px_10px_-3px_rgba(0,0,0,0.02)] focus:bg-white/90 focus:shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),0_4px_20px_-4px_rgba(0,92,255,0.15)] focus:ring-1 focus:ring-blue-500/30 transition-all placeholder:text-slate-400"
                             />
                         </div>
                     </div>
@@ -163,10 +163,10 @@ export function DoctorFormModal({ isOpen, onClose, doctor, onSuccess }: DoctorFo
                                     type="button"
                                     onClick={() => setFormData({ ...formData, category: opt.value as any })}
                                     className={cn(
-                                        "py-3 rounded-2xl text-xs font-bold transition-all",
+                                        "py-3 rounded-2xl text-xs font-bold transition-all shadow-sm",
                                         formData.category === opt.value
-                                            ? `${opt.selColor} text-white shadow-md`
-                                            : "bg-slate-50 text-slate-500 hover:bg-slate-100"
+                                            ? `${opt.selColor} text-white shadow-md shadow-${opt.selColor.split('-')[1]}-500/20`
+                                            : "bg-white/60 text-slate-500 hover:bg-white hover:text-slate-800 border border-slate-100"
                                     )}
                                 >
                                     {opt.label}
@@ -210,7 +210,7 @@ export function DoctorFormModal({ isOpen, onClose, doctor, onSuccess }: DoctorFo
                                 placeholder="A-01"
                                 value={formData.queueCode}
                                 onChange={e => setFormData({ ...formData, queueCode: e.target.value })}
-                                className="w-full bg-slate-50 rounded-2xl px-3 py-3 text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all text-center placeholder:text-slate-300"
+                                className="w-full bg-white/50 backdrop-blur-md rounded-2xl px-3 py-3.5 text-sm font-bold text-slate-800 outline-none shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),0_2px_10px_-3px_rgba(0,0,0,0.02)] focus:bg-white/90 focus:ring-1 focus:ring-blue-500/30 transition-all text-center placeholder:text-slate-400"
                             />
                         </div>
                         <div>
@@ -221,7 +221,7 @@ export function DoctorFormModal({ isOpen, onClose, doctor, onSuccess }: DoctorFo
                                 type="time"
                                 value={formData.startTime}
                                 onChange={e => setFormData({ ...formData, startTime: e.target.value })}
-                                className="w-full bg-slate-50 rounded-2xl px-3 py-3 text-sm font-medium text-slate-700 outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all"
+                                className="w-full bg-white/50 backdrop-blur-md rounded-2xl px-3 py-3.5 text-sm font-semibold text-slate-800 outline-none shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),0_2px_10px_-3px_rgba(0,0,0,0.02)] focus:bg-white/90 focus:ring-1 focus:ring-blue-500/30 transition-all placeholder:text-slate-400"
                             />
                         </div>
                         <div>
@@ -232,17 +232,17 @@ export function DoctorFormModal({ isOpen, onClose, doctor, onSuccess }: DoctorFo
                                 type="time"
                                 value={formData.endTime}
                                 onChange={e => setFormData({ ...formData, endTime: e.target.value })}
-                                className="w-full bg-slate-50 rounded-2xl px-3 py-3 text-sm font-medium text-slate-700 outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all"
+                                className="w-full bg-white/50 backdrop-blur-md rounded-2xl px-3 py-3.5 text-sm font-semibold text-slate-800 outline-none shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),0_2px_10px_-3px_rgba(0,0,0,0.02)] focus:bg-white/90 focus:ring-1 focus:ring-blue-500/30 transition-all placeholder:text-slate-400"
                             />
                         </div>
                     </div>
                 </div>
 
                 {/* ── Footer Actions ── */}
-                <div className="px-6 pb-6 flex gap-3">
+                <div className="px-6 pb-6 pt-2 flex gap-3 relative z-10">
                     <button
                         onClick={onClose}
-                        className="flex-1 py-3.5 rounded-2xl bg-slate-50 hover:bg-slate-100 text-slate-500 text-sm font-bold transition-colors"
+                        className="flex-1 py-4 rounded-2xl bg-white/60 hover:bg-white border border-slate-100/80 text-slate-600 text-sm font-bold shadow-sm backdrop-blur-md transition-all active:scale-95"
                     >
                         Batal
                     </button>
@@ -250,18 +250,19 @@ export function DoctorFormModal({ isOpen, onClose, doctor, onSuccess }: DoctorFo
                         onClick={handleSubmit}
                         disabled={loading || !formData.name || !formData.specialty}
                         className={cn(
-                            "flex-[2] py-3.5 rounded-2xl text-sm font-black transition-all flex items-center justify-center gap-2",
+                            "flex-[2] py-4 rounded-2xl text-sm font-black transition-all flex items-center justify-center gap-2 active:scale-95 group relative overflow-hidden",
                             loading || !formData.name || !formData.specialty
                                 ? "bg-slate-100 text-slate-400 cursor-not-allowed"
-                                : "bg-slate-900 hover:bg-slate-800 text-white shadow-lg shadow-slate-900/20 active:scale-[0.98]"
+                                : "btn-gradient text-white shadow-[0_4px_14px_0_rgba(0,92,255,0.39)]"
                         )}
                     >
+                        {(!loading && formData.name && formData.specialty) && <div className="absolute inset-0 w-full h-full bg-white/20 -translate-x-full group-hover:animate-shimmer" />}
                         {loading ? (
                             <span className="animate-pulse">Menyimpan...</span>
                         ) : (
                             <>
-                                {isEditing ? <Save size={14} /> : <Plus size={14} />}
-                                {isEditing ? 'Simpan Perubahan' : 'Tambah Dokter'}
+                                {isEditing ? <Save size={16} className="relative z-10" /> : <Plus size={16} className="relative z-10" />}
+                                <span className="relative z-10">{isEditing ? 'Simpan Perubahan' : 'Tambah Dokter'}</span>
                             </>
                         )}
                     </button>

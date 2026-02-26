@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
-import { BrainCircuit, CheckCircle2, RotateCw, Users, Calendar, Clock, Activity } from "lucide-react";
+import { useEffect, useState } from "react";
+import { BrainCircuit, RotateCw, Users, Calendar, Activity, Cpu } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Shift, Doctor, BroadcastRule } from "@/lib/data-service";
 
@@ -9,7 +9,7 @@ export function NeuralCore() {
     const [shifts, setShifts] = useState<Shift[]>([]);
     const [doctors, setDoctors] = useState<Doctor[]>([]);
     const [broadcasts, setBroadcasts] = useState<BroadcastRule[]>([]);
-    const [syncCountdown, setSyncCountdown] = useState(300); // 5 min countdown
+    const [syncCountdown, setSyncCountdown] = useState(300);
 
     useEffect(() => {
         const fetchAll = async () => {
@@ -30,7 +30,6 @@ export function NeuralCore() {
         return () => clearInterval(iv);
     }, []);
 
-    // Countdown timer
     useEffect(() => {
         const iv = setInterval(() => {
             setSyncCountdown(prev => (prev <= 0 ? 300 : prev - 1));
@@ -51,97 +50,123 @@ export function NeuralCore() {
     const todayDayIdx = now.getDay() === 0 ? 6 : now.getDay() - 1;
     const todayShifts = shifts.filter(s => s.dayIdx === todayDayIdx).length;
 
-    // Efficiency mock (based on coverage)
     const efficiency = totalDoctors > 0 ? Math.min(Math.round((totalShifts / (totalDoctors * 1.5)) * 100), 100) : 0;
     const circumference = 2 * Math.PI * 60;
     const dashOffset = circumference - (efficiency / 100) * circumference;
 
     return (
-        <div className="rounded-2xl border[0.06] bg-slate-950/40 p-6 backdrop-blur-xl relative overflow-hidden group">
-            {/* Ambient glow */}
-            <div className="absolute top-0 right-0 h-48 w-48 bg-blue-500/5 blur-3xl -z-10 group-hover:bg-blue-500/10 transition-all duration-700" />
+        <div className="relative flex flex-col rounded-3xl border border-slate-200 bg-white p-6 overflow-hidden group shadow-lg shadow-slate-200/60 transition-all duration-500 hover:shadow-xl hover:border-slate-300 h-full">
+            {/* Soft ambient light glows */}
+            <div className="absolute top-0 right-0 h-40 w-40 bg-blue-50 blur-[80px] -z-10 pointer-events-none" />
+            <div className="absolute bottom-0 left-0 h-32 w-32 bg-indigo-50 blur-[60px] -z-10 pointer-events-none" />
 
             {/* Header */}
-            <div className="flex justify-between items-start mb-6">
-                <div className="flex gap-3.5">
-                    <div className="h-11 w-11 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
-                        <BrainCircuit className="text-white h-5 w-5" />
+            <div className="flex justify-between items-start mb-8 relative z-10">
+                <div className="flex gap-4">
+                    <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-600 shadow-lg shadow-blue-300/40 group-hover:shadow-blue-400/50 transition-shadow duration-500">
+                        <div className="absolute inset-0 rounded-2xl border border-white/30" />
+                        <BrainCircuit className="text-white h-7 w-7" />
+                        <div className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-emerald-400 border-2 border-white animate-pulse shadow-sm" />
                     </div>
-                    <div>
-                        <h3 className="text-base font-bold text-white">System Overview</h3>
-                        <p className="text-[10px] text-slate-500 font-mono uppercase tracking-wider">Real-time Engine Status</p>
+                    <div className="flex flex-col justify-center">
+                        <h3 className="text-lg font-bold text-slate-800 tracking-tight">Neural Engine</h3>
+                        <p className="text-[11px] text-blue-600 font-mono uppercase tracking-widest mt-0.5 flex items-center gap-1.5 font-semibold">
+                            <Cpu size={12} /> Core Process
+                        </p>
                     </div>
                 </div>
-                <div className="flex items-center gap-1.5 bg-emerald-500/10 border-500/20 px-2.5 py-1 rounded-full">
-                    <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    <span className="text-[9px] font-bold text-emerald-400 tracking-wider">ONLINE</span>
+
+                <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-full shadow-sm">
+                    <Activity className="h-3 w-3 text-emerald-500 animate-pulse" />
+                    <span className="text-[10px] font-bold text-slate-500 tracking-widest uppercase">Monitoring</span>
                 </div>
             </div>
 
             {/* Main Content */}
-            <div className="grid grid-cols-2 gap-5">
+            <div className="flex-1 grid grid-cols-2 gap-5 relative z-10">
                 {/* Circular Progress */}
-                <div className="relative flex items-center justify-center h-44">
-                    <svg className="w-32 h-32 transform -rotate-90">
-                        <circle cx="64" cy="64" r="60" stroke="currentColor" strokeWidth="6" fill="transparent" className="text-slate-800" />
+                <div className="relative flex items-center justify-center bg-slate-50 border border-slate-200 rounded-2xl p-4 shadow-inner">
+                    <svg className="w-36 h-36 transform -rotate-90">
+                        <circle cx="72" cy="72" r="60" stroke="currentColor" strokeWidth="8" fill="transparent" className="text-slate-200" />
                         <circle
-                            cx="64" cy="64" r="60" stroke="currentColor" strokeWidth="6" fill="transparent"
+                            cx="72" cy="72" r="60" stroke="currentColor" strokeWidth="8" fill="transparent"
                             strokeDasharray={circumference}
                             strokeDashoffset={dashOffset}
-                            className="text-blue-500 transition-all duration-1000"
+                            className="text-blue-500 transition-all duration-[1500ms] ease-out"
                             strokeLinecap="round"
                         />
                     </svg>
                     <div className="absolute inset-0 flex flex-col items-center justify-center">
-                        <span className="text-2xl font-bold text-white">{efficiency}%</span>
-                        <span className="text-[9px] text-slate-500 font-medium uppercase tracking-widest">Efficiency</span>
+                        <div className="flex items-baseline gap-0.5">
+                            <span className="text-4xl font-black text-slate-800">{efficiency}</span>
+                            <span className="text-xl font-bold text-blue-500">%</span>
+                        </div>
+                        <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Efficiency</span>
                     </div>
                 </div>
 
-                {/* Stats Grid */}
-                <div className="space-y-3">
-                    <div className="bg-white/[0.02] rounded-xl p-3 border[0.04]">
-                        <div className="flex items-center gap-2 mb-1">
-                            <Users size={10} className="text-blue-400" />
-                            <p className="text-[9px] text-slate-500 uppercase font-bold tracking-wider">Total Doctors</p>
+                {/* Stats */}
+                <div className="flex flex-col gap-4">
+                    {/* Doctors Card */}
+                    <div className="group/stat bg-blue-50 hover:bg-blue-100/60 rounded-2xl p-4 border border-blue-100 transition-all duration-300 relative overflow-hidden flex-1 flex flex-col justify-center shadow-sm">
+                        <div className="absolute right-[-8px] top-[-8px] text-blue-100/80 group-hover/stat:scale-110 transition-all duration-500">
+                            <Users size={56} />
                         </div>
-                        <span className="text-lg font-bold text-white">{totalDoctors}</span>
+                        <div className="flex items-center gap-2 mb-2 relative z-10">
+                            <div className="p-1.5 rounded-lg bg-blue-200/60 text-blue-700">
+                                <Users size={12} />
+                            </div>
+                            <p className="text-[10px] text-blue-700 uppercase font-bold tracking-wider">Active Doctors</p>
+                        </div>
+                        <span className="text-2xl font-black text-blue-900 relative z-10">{totalDoctors}</span>
                     </div>
-                    <div className="bg-white/[0.02] rounded-xl p-3 border[0.04]">
-                        <div className="flex items-center gap-2 mb-1">
-                            <Calendar size={10} className="text-violet-400" />
-                            <p className="text-[9px] text-slate-500 uppercase font-bold tracking-wider">Total Shifts</p>
+
+                    {/* Shifts Card */}
+                    <div className="group/stat bg-violet-50 hover:bg-violet-100/60 rounded-2xl p-4 border border-violet-100 transition-all duration-300 relative overflow-hidden flex-1 flex flex-col justify-center shadow-sm">
+                        <div className="absolute right-[-8px] top-[-8px] text-violet-100/80 group-hover/stat:scale-110 transition-all duration-500">
+                            <Calendar size={56} />
                         </div>
-                        <div className="flex items-baseline gap-2">
-                            <span className="text-lg font-bold text-white">{totalShifts}</span>
-                            <span className="text-[10px] text-slate-500">{todayShifts} today</span>
+                        <div className="flex items-center gap-2 mb-2 relative z-10">
+                            <div className="p-1.5 rounded-lg bg-violet-200/60 text-violet-700">
+                                <Calendar size={12} />
+                            </div>
+                            <p className="text-[10px] text-violet-700 uppercase font-bold tracking-wider">Total Shifts</p>
                         </div>
-                    </div>
-                    <div className="bg-blue-500/[0.05] rounded-xl p-3 border-500/10">
-                        <div className="flex items-center gap-2 mb-1">
-                            <RotateCw size={10} className="text-blue-400 animate-spin" style={{ animationDuration: '4s' }} />
-                            <p className="text-[9px] text-blue-300 uppercase font-bold tracking-wider">Next Sync</p>
+                        <div className="flex items-baseline gap-2 relative z-10">
+                            <span className="text-2xl font-black text-violet-900">{totalShifts}</span>
+                            <span className="text-xs font-semibold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-md border border-emerald-200">
+                                {todayShifts} Today
+                            </span>
                         </div>
-                        <span className="text-lg font-mono font-bold text-white">{formatCountdown(syncCountdown)}</span>
                     </div>
                 </div>
             </div>
 
-            {/* Bottom Status Indicators */}
-            <div className="flex items-center gap-5 mt-5 pt-4[0.04]">
-                {[
-                    { label: "Scheduling", ok: true },
-                    { label: "Broadcasting", ok: activeBroadcasts > 0 },
-                    { label: "Data Sync", ok: true },
-                ].map((s, i) => (
-                    <div key={i} className="flex items-center gap-1.5">
-                        <div className={cn(
-                            "h-1.5 w-1.5 rounded-full",
-                            s.ok ? "bg-emerald-500 shadow-[0_0_6px_#10b981]" : "bg-amber-500 shadow-[0_0_6px_#f59e0b]"
-                        )} />
-                        <span className="text-[10px] text-slate-400 font-medium">{s.label}</span>
+            {/* Bottom Status Panel */}
+            <div className="mt-6 pt-5 border-t border-slate-100 flex flex-col md:flex-row items-center justify-between gap-4 relative z-10">
+                <div className="flex items-center gap-3 w-full md:w-auto overflow-x-auto pb-1 md:pb-0 hide-scrollbar">
+                    {[
+                        { label: "Scheduling Engine", ok: true },
+                        { label: "Broadcast Service", ok: activeBroadcasts > 0 },
+                        { label: "Data Pipeline", ok: true },
+                    ].map((s, i) => (
+                        <div key={i} className="flex items-center gap-2 whitespace-nowrap bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-sm">
+                            <div className={cn(
+                                "h-2 w-2 rounded-full",
+                                s.ok ? "bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.5)]" : "bg-amber-400 shadow-[0_0_6px_rgba(251,191,36,0.5)]"
+                            )} />
+                            <span className="text-[11px] text-slate-600 font-semibold">{s.label}</span>
+                        </div>
+                    ))}
+                </div>
+
+                <div className="flex items-center gap-3 bg-blue-50 border border-blue-200 px-4 py-2 rounded-xl shrink-0 shadow-sm">
+                    <RotateCw size={14} className="text-blue-500 animate-spin" style={{ animationDuration: '4s' }} />
+                    <div className="flex flex-col">
+                        <span className="text-[9px] text-blue-500 uppercase font-bold tracking-[0.15em] leading-none mb-1">Next Sync</span>
+                        <span className="text-sm font-mono font-bold text-blue-700 leading-none">{formatCountdown(syncCountdown)}</span>
                     </div>
-                ))}
+                </div>
             </div>
         </div>
     );

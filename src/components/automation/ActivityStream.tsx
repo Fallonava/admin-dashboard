@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { FileCode2, Megaphone, Users, Calendar, Clock, RefreshCw } from "lucide-react";
+import { Megaphone, Users, Calendar, RefreshCw, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface ActivityItem {
@@ -20,17 +20,40 @@ const ICON_MAP = {
 };
 
 const COLOR_MAP = {
-    shift: { dot: "bg-blue-500", text: "text-blue-400" },
-    broadcast: { dot: "bg-orange-500", text: "text-orange-400" },
-    doctor: { dot: "bg-emerald-500", text: "text-emerald-400" },
-    system: { dot: "bg-slate-500", text: "text-slate-400" },
+    shift: {
+        dot: "bg-blue-400",
+        text: "text-blue-600",
+        badge: "bg-blue-50 border-blue-100 text-blue-600",
+        block: "hover:bg-blue-50/60 hover:border-blue-200",
+        icon: "bg-blue-100 text-blue-600",
+    },
+    broadcast: {
+        dot: "bg-orange-400",
+        text: "text-orange-600",
+        badge: "bg-orange-50 border-orange-100 text-orange-600",
+        block: "hover:bg-orange-50/60 hover:border-orange-200",
+        icon: "bg-orange-100 text-orange-600",
+    },
+    doctor: {
+        dot: "bg-emerald-400",
+        text: "text-emerald-600",
+        badge: "bg-emerald-50 border-emerald-100 text-emerald-600",
+        block: "hover:bg-emerald-50/60 hover:border-emerald-200",
+        icon: "bg-emerald-100 text-emerald-600",
+    },
+    system: {
+        dot: "bg-violet-400",
+        text: "text-violet-600",
+        badge: "bg-violet-50 border-violet-100 text-violet-600",
+        block: "hover:bg-violet-50/60 hover:border-violet-200",
+        icon: "bg-violet-100 text-violet-600",
+    },
 };
 
 export function ActivityStream() {
     const [activities, setActivities] = useState<ActivityItem[]>([]);
 
     useEffect(() => {
-        // Build activity from real API data
         const fetchActivities = async () => {
             try {
                 const [sRes, dRes, bRes] = await Promise.all([
@@ -44,42 +67,38 @@ export function ActivityStream() {
 
                 const items: ActivityItem[] = [];
 
-                // Recent shifts as activities
                 shifts.slice(-3).reverse().forEach((s: any, i: number) => {
                     items.push({
                         id: `shift-${s.id}`,
-                        title: `Shift: ${s.doctor}`,
+                        title: `Shift Schedule: ${s.doctor}`,
                         desc: `${s.title} — Day ${s.dayIdx + 1}, ${s.formattedTime || 'N/A'}`,
                         time: i === 0 ? 'Recent' : `${i + 1}h ago`,
                         type: 'shift'
                     });
                 });
 
-                // Recent broadcasts
-                broadcasts.slice(-2).reverse().forEach((b: any, i: number) => {
+                broadcasts.slice(-2).reverse().forEach((b: any) => {
                     items.push({
                         id: `broadcast-${b.id}`,
                         title: `Broadcast: ${b.alertLevel}`,
                         desc: b.message?.slice(0, 60) + (b.message?.length > 60 ? '...' : ''),
-                        time: b.active ? 'Active' : 'Inactive',
+                        time: b.active ? 'Airing Now' : 'Completed',
                         type: 'broadcast'
                     });
                 });
 
-                // Doctor count
                 items.push({
                     id: 'doctor-count',
                     title: `${doctors.length} Doctors Registered`,
-                    desc: 'System database is up to date.',
-                    time: 'Now',
+                    desc: 'System database successfully synchronized.',
+                    time: 'Verified',
                     type: 'doctor'
                 });
 
-                // System health
                 items.push({
                     id: 'sys-health',
-                    title: 'Data Sync Completed',
-                    desc: 'All stores synchronized successfully.',
+                    title: 'System Diagnostics OK',
+                    desc: 'All processes and stores synchronized.',
                     time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
                     type: 'system'
                 });
@@ -94,41 +113,59 @@ export function ActivityStream() {
     }, []);
 
     return (
-        <div className="rounded-2xl border[0.06] bg-slate-950/40 p-5 backdrop-blur-xl h-full flex flex-col">
-            <div className="flex items-center gap-2 mb-5">
-                <div className="h-7 w-7 rounded-lg bg-violet-500/10 flex items-center justify-center">
-                    <FileCode2 className="text-violet-400 h-3.5 w-3.5" />
+        <div className="relative rounded-3xl border border-slate-200 bg-white p-6 h-full flex flex-col group overflow-hidden shadow-lg shadow-slate-200/60 transition-all duration-500 hover:border-slate-300 hover:shadow-xl">
+            {/* Soft ambient glow */}
+            <div className="absolute top-0 right-0 h-32 w-32 bg-violet-50 blur-[60px] -z-10 pointer-events-none" />
+
+            {/* Header */}
+            <div className="flex items-center gap-3 mb-6 relative z-10">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-pink-500 shadow-lg shadow-violet-300/40">
+                    <Zap className="text-white h-5 w-5" />
                 </div>
                 <div>
-                    <h3 className="text-sm font-bold text-white">Activity Stream</h3>
-                    <p className="text-[9px] text-slate-500 font-medium">System events & changes</p>
+                    <h3 className="text-lg font-bold text-slate-800 tracking-tight">System Logs</h3>
+                    <p className="text-[11px] text-violet-600 font-mono uppercase tracking-widest mt-0.5 font-semibold">Activity Stream</p>
                 </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto relative">
-                {/* Vertical line */}
-                <div className="absolute left-[7px] top-1 bottom-1 w-px bg-gradient-to-b from-white/10 via-slate-800 to-transparent" />
+            {/* Timeline */}
+            <div className="flex-1 overflow-y-auto relative pr-1 -mr-1 z-10">
+                <div className="absolute left-[11px] top-2 bottom-2 w-px bg-gradient-to-b from-slate-200 via-slate-100 to-transparent" />
 
-                <div className="space-y-4">
+                <div className="space-y-4 pb-2">
                     {activities.map((item) => {
                         const color = COLOR_MAP[item.type];
                         const Icon = ICON_MAP[item.type];
                         return (
-                            <div key={item.id} className="relative pl-7 group">
-                                {/* Dot */}
+                            <div key={item.id} className="relative pl-10 group/item">
+                                {/* Timeline Dot */}
                                 <div className={cn(
-                                    "absolute left-0 top-1 h-[14px] w-[14px] rounded-full-900 flex items-center justify-center transition-all group-hover:scale-110",
+                                    "absolute left-1.5 top-2 h-3.5 w-3.5 rounded-full transition-all duration-300 group-hover/item:scale-125 border-2 border-white shadow-md",
                                     color.dot
-                                )}>
-                                    <div className="w-1 h-1 rounded-full bg-white/60" />
-                                </div>
+                                )} />
 
-                                <div className="flex justify-between items-start gap-2">
-                                    <div className="min-w-0">
-                                        <h4 className="text-[12px] font-semibold text-white group-hover:text-blue-400 transition-colors truncate">{item.title}</h4>
-                                        <p className="text-[10px] text-slate-500 mt-0.5 leading-snug">{item.desc}</p>
+                                {/* Content Block */}
+                                <div className={cn(
+                                    "bg-white border border-slate-100 rounded-2xl p-4 transition-all duration-300 shadow-sm group-hover/item:shadow-md",
+                                    color.block
+                                )}>
+                                    <div className="flex justify-between items-start gap-3">
+                                        <div className="min-w-0">
+                                            <div className="flex items-center gap-2 mb-1">
+                                                <div className={cn("p-1 rounded-md", color.icon)}>
+                                                    <Icon size={10} />
+                                                </div>
+                                                <h4 className="text-sm font-semibold text-slate-800 truncate">{item.title}</h4>
+                                            </div>
+                                            <p className="text-[11px] text-slate-500 mt-0.5 leading-relaxed">{item.desc}</p>
+                                        </div>
+                                        <span className={cn(
+                                            "text-[10px] font-mono font-bold tracking-wider flex-shrink-0 px-2.5 py-1 rounded-md border",
+                                            color.badge
+                                        )}>
+                                            {item.time}
+                                        </span>
                                     </div>
-                                    <span className={cn("text-[9px] font-mono flex-shrink-0 mt-0.5", color.text)}>{item.time}</span>
                                 </div>
                             </div>
                         );

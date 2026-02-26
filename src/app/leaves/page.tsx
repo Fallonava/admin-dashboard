@@ -4,6 +4,7 @@ import { useState } from "react";
 import useSWR, { mutate } from "swr";
 import { LeaveCalendar } from "@/components/leaves/LeaveCalendar";
 import { Search, CalendarDays, UserCheck, Clock3 } from "lucide-react";
+import { cn } from "@/lib/utils";
 import type { LeaveRequest } from "@/lib/data-service";
 
 export default function LeavesPage() {
@@ -70,7 +71,7 @@ export default function LeavesPage() {
     ];
 
     return (
-        <div className="max-w-7xl mx-auto h-full flex flex-col">
+        <div className="w-full h-full flex flex-col px-2 lg:px-4">
 
             {/* ═══ HEADER ═══ */}
             <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
@@ -95,20 +96,20 @@ export default function LeavesPage() {
             </div>
 
             {/* ═══ STATS CARDS ═══ */}
-            <div className="grid grid-cols-3 gap-4 mb-6">
-                {stats.map((stat) => {
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                {stats.map((stat, idx) => {
                     const Icon = stat.icon;
                     return (
                         <div
                             key={stat.label}
-                            className="bg-white rounded-2xl p-5 flex items-center gap-4 shadow-sm hover:shadow-md transition-shadow"
+                            className="super-glass-card p-6 rounded-[32px] flex items-center gap-5 transition-all duration-500 hover:-translate-y-1"
                         >
-                            <div className={`flex-shrink-0 w-12 h-12 rounded-2xl ${stat.iconBg} flex items-center justify-center`}>
-                                <Icon className={`h-6 w-6 ${stat.color}`} />
+                            <div className={cn("flex-shrink-0 w-16 h-16 rounded-[24px] flex items-center justify-center shadow-inner", stat.iconBg)}>
+                                <Icon className={cn("h-8 w-8", stat.color)} />
                             </div>
                             <div>
-                                <p className="text-2xl font-black text-slate-800">{stat.value}</p>
-                                <p className="text-xs font-semibold text-slate-400 mt-0.5">{stat.label}</p>
+                                <p className="text-3xl font-black text-slate-800 tracking-tight">{stat.value}</p>
+                                <p className="text-xs font-bold text-slate-400 mt-1 uppercase tracking-wider">{stat.label}</p>
                             </div>
                         </div>
                     );

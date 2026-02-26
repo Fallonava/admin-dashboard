@@ -1693,6 +1693,162 @@
             }
 
         }
+
+        /* ===== EMERGENCY BROADCAST OVERLAY ===== */
+        .broadcast-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+        }
+
+        .broadcast-overlay.active {
+            display: flex;
+        }
+
+        .broadcast-backdrop {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            animation: broadcastFadeIn 0.4s ease;
+        }
+
+        .broadcast-panel {
+            position: relative;
+            z-index: 1;
+            width: 90%;
+            max-width: 700px;
+            background: rgba(30, 30, 35, 0.95);
+            border-radius: 28px;
+            padding: 40px 48px;
+            text-align: center;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            animation: broadcastSlideIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        [data-theme="light"] .broadcast-panel {
+            background: rgba(255, 255, 255, 0.97);
+            border-color: rgba(0, 0, 0, 0.08);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        }
+
+        .broadcast-icon-ring {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            border: 3px solid;
+        }
+
+        .broadcast-icon-ring .material-icons-round {
+            font-size: 40px;
+        }
+
+        /* Alert level colors */
+        .broadcast-level-Information .broadcast-icon-ring {
+            background: rgba(10, 132, 255, 0.15);
+            border-color: rgba(10, 132, 255, 0.4);
+            color: #0A84FF;
+        }
+
+        .broadcast-level-Warning .broadcast-icon-ring {
+            background: rgba(255, 159, 10, 0.15);
+            border-color: rgba(255, 159, 10, 0.4);
+            color: #FF9F0A;
+        }
+
+        .broadcast-level-Critical .broadcast-icon-ring {
+            background: rgba(255, 69, 58, 0.15);
+            border-color: rgba(255, 69, 58, 0.4);
+            color: #FF453A;
+        }
+
+        .broadcast-level-Critical .broadcast-panel {
+            border-color: rgba(255, 69, 58, 0.4);
+            animation: broadcastSlideIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), broadcastPulse 2s ease-in-out infinite;
+        }
+
+        .broadcast-level-label {
+            display: inline-block;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            padding: 4px 14px;
+            border-radius: 20px;
+            margin-bottom: 16px;
+        }
+
+        .broadcast-level-Information .broadcast-level-label {
+            background: rgba(10, 132, 255, 0.15);
+            color: #0A84FF;
+        }
+
+        .broadcast-level-Warning .broadcast-level-label {
+            background: rgba(255, 159, 10, 0.15);
+            color: #FF9F0A;
+        }
+
+        .broadcast-level-Critical .broadcast-level-label {
+            background: rgba(255, 69, 58, 0.15);
+            color: #FF453A;
+        }
+
+        .broadcast-message {
+            font-size: 22px;
+            font-weight: 700;
+            line-height: 1.4;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+        }
+
+        .broadcast-zone {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        @keyframes broadcastFadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes broadcastSlideIn {
+            from {
+                opacity: 0;
+                transform: scale(0.85) translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        @keyframes broadcastPulse {
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 69, 58, 0);
+            }
+
+            50% {
+                box-shadow: 0 0 30px 4px rgba(255, 69, 58, 0.25);
+            }
+        }
     </style>
 </head>
 
@@ -1715,6 +1871,19 @@
         </div>
     </div>
     <div class="ambient-bg"></div>
+
+    <!-- EMERGENCY BROADCAST OVERLAY -->
+    <div id="broadcastOverlay" class="broadcast-overlay">
+        <div class="broadcast-backdrop"></div>
+        <div class="broadcast-panel">
+            <div class="broadcast-icon-ring">
+                <span class="material-icons-round">campaign</span>
+            </div>
+            <div id="broadcastLevelLabel" class="broadcast-level-label">INFORMATION</div>
+            <div id="broadcastMessage" class="broadcast-message">—</div>
+            <div id="broadcastZone" class="broadcast-zone">All Zones</div>
+        </div>
+    </div>
     <div class="app-container">
 
         <!-- Content -->
@@ -2293,6 +2462,7 @@
                     if (tick % 8 === 0) this.updateInfoBox();            // Info box setiap 8 detik
                     if (tick % 60 === 0) this.updateTheme();             // Tema setiap 60 detik (1 menit)
                     if (tick % Math.max(1, Math.floor(CFG.POLL_MS / 1000)) === 0) this.fetch(); // Data fetch berdasarkan konfigurasi
+                    if (tick % 10 === 0) this.checkBroadcast(); // Emergency broadcast polling setiap 10 detik
 
                     // Island Idle Cycle (setiap 180 detik / 3 menit)
                     if (tick % 180 === 0 && Island._queue.length === 0 && !Island._isAnimating) {
@@ -2312,6 +2482,7 @@
                 this.skel();
 
                 await this.fetch();
+                this.checkBroadcast(); // Initial broadcast check
                 this.updateInfoBox();
                 if (!isMobile) {
                     s1.start(); s2.start(); s3.start();
@@ -2515,6 +2686,54 @@
 
                 this._operasiDoctors = ops;
                 this._prevDoctors = now;
+            },
+
+            _lastBroadcastId: null, // Track to avoid re-rendering same popup
+
+            async checkBroadcast() {
+                try {
+                    const res = await fetch('/api/automation');
+                    const rules = await res.json();
+                    const active = rules.find(r => r.active);
+                    const overlay = $('broadcastOverlay');
+                    if (!overlay) return;
+
+                    if (active) {
+                        // Only update DOM if broadcast changed
+                        if (this._lastBroadcastId !== active.id) {
+                            this._lastBroadcastId = active.id;
+
+                            // Set level class on overlay
+                            overlay.className = `broadcast-overlay active broadcast-level-${active.alertLevel}`;
+
+                            // Icon
+                            const iconMap = { Information: 'info', Warning: 'warning', Critical: 'error' };
+                            const iconEl = overlay.querySelector('.broadcast-icon-ring .material-icons-round');
+                            if (iconEl) iconEl.textContent = iconMap[active.alertLevel] || 'campaign';
+
+                            // Label
+                            const labelEl = $('broadcastLevelLabel');
+                            if (labelEl) labelEl.textContent = active.alertLevel.toUpperCase();
+
+                            // Message
+                            const msgEl = $('broadcastMessage');
+                            if (msgEl) msgEl.textContent = active.message;
+
+                            // Zone
+                            const zoneEl = $('broadcastZone');
+                            if (zoneEl) zoneEl.textContent = active.targetZone + ' • ' + active.duration + ' menit';
+
+                            // Also show on Dynamic Island
+                            Island.show('EMERGENCY BROADCAST', active.message, active.alertLevel === 'Critical' ? 'error' : 'warn', 'campaign', 10000);
+                        }
+                    } else {
+                        // No active broadcast — hide overlay
+                        if (overlay.classList.contains('active')) {
+                            overlay.classList.remove('active');
+                            this._lastBroadcastId = null;
+                        }
+                    }
+                } catch { /* silent — display must not break */ }
             },
 
             updateInfoBox() {

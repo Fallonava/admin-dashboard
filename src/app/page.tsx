@@ -271,25 +271,20 @@ export default function Home() {
                           <h4 className="font-bold text-base text-foreground leading-tight group-hover:text-primary transition-colors">{doc.name}</h4>
                           <div className="flex items-center gap-2 mt-0.5">
                             <p className="text-xs text-muted-foreground font-medium">{doc.specialty}</p>
-                            {(doc.status === 'BUKA' || doc.status === 'PENUH') && (
-                              <div className="flex items-center gap-1 bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded-md">
-                                <span className="text-[9px] font-medium tracking-wide">BATAS JAM:</span>
-                                <input
-                                  type="time"
-                                  value={doc.lastCall || ''}
-                                  onChange={(e) => {
-                                    const newTime = e.target.value;
-                                    mutateDoctors(curr => curr?.map(d => d.id === doc.id ? { ...d, lastCall: newTime } : d), false);
-                                    fetch('/api/doctors', {
-                                      method: 'PUT',
-                                      headers: { 'Content-Type': 'application/json' },
-                                      body: JSON.stringify({ id: doc.id, lastCall: newTime })
-                                    });
-                                  }}
-                                  className="bg-transparent text-[10px] font-mono text-foreground focus:outline-none w-14"
-                                />
-                              </div>
-                            )}
+                            {(() => {
+                              const activeShift = shifts.find(s =>
+                                s.doctor === doc.name && s.dayIdx === todayDayIdx &&
+                                !(s.disabledDates || []).includes(todayStr) &&
+                                s.registrationTime
+                              );
+                              return activeShift?.registrationTime ? (
+                                <div className="flex items-center gap-1 bg-blue-50 text-blue-600 px-2 py-0.5 rounded-lg border border-blue-100">
+                                  <Clock size={10} />
+                                  <span className="text-[9px] font-bold tracking-wide">DAFTAR</span>
+                                  <span className="text-[10px] font-mono font-bold">{activeShift.registrationTime}</span>
+                                </div>
+                              ) : null;
+                            })()}
                           </div>
                         </div>
                       </div>
