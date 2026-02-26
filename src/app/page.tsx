@@ -2,12 +2,11 @@
 
 import { useState, useEffect } from "react";
 import useSWR, { mutate } from "swr";
-import { Activity, Users, MonitorPlay, AlertCircle, Search, Filter, Zap, Power, Clock } from "lucide-react";
+import { Activity, Users, MonitorPlay, AlertCircle, Search, Filter, Zap, Power, Clock, TrendingUp, BarChart3, CalendarCheck, BriefcaseMedical, FileClock, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Doctor, LeaveRequest, Shift, Settings } from "@/lib/data-service";
-import { StatsCards } from "@/components/schedules/StatsCards";
-
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+
 
 export default function Home() {
   const { data: doctors = [], mutate: mutateDoctors } = useSWR<Doctor[]>('/api/doctors');
@@ -32,25 +31,20 @@ export default function Home() {
   // Automation Logic
   const automationEnabled = settings?.automationEnabled || false;
 
-
-
   const toggleAutomation = async () => {
     if (!settings) return;
     const newState = !settings.automationEnabled;
-
-    // Optimistic update for settings
     mutateSettings({ ...settings, automationEnabled: newState }, false);
-
     try {
       await fetch('/api/settings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ automationEnabled: newState })
       });
-      mutateSettings(); // Revalidate
+      mutateSettings();
     } catch (e) {
       console.error("Failed to save settings", e);
-      mutateSettings(); // Revert on error
+      mutateSettings();
     }
   };
 
@@ -59,10 +53,9 @@ export default function Home() {
     const dates = shift.disabledDates || [];
     const isDisabledToday = dates.includes(todayStr);
     const newDates = isDisabledToday
-      ? dates.filter(d => d !== todayStr)  // Remove today
-      : [...dates, todayStr];              // Add today
+      ? dates.filter(d => d !== todayStr)
+      : [...dates, todayStr];
 
-    // Optimistic update
     mutateShifts(curr => curr?.map(s => s.id === shiftId ? { ...s, disabledDates: newDates } : s), false);
     try {
       await fetch('/api/shifts', {
@@ -83,7 +76,6 @@ export default function Home() {
     const timeString = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false }).replace('.', ':');
     const timestamp = now.getTime();
 
-    // Optimistic update
     mutateDoctors(docs => docs?.map(d =>
       d.id === id ? {
         ...d,
@@ -109,25 +101,13 @@ export default function Home() {
   const activeDocs = todayDoctors.filter(d => d.status === 'BUKA' || d.status === 'PENUH');
   const onLeaveDocs = todayDoctors.filter(d => d.status === 'CUTI');
 
-  // Stats calculation — leaves (no status concept anymore)
-  const pendingLeaves = 0;
-
   const [efficiency, setEfficiency] = useState(0);
-
-  // Calculate efficiency
   useEffect(() => {
     if (todayDoctors.length > 0) {
       const baseEff = Math.round((activeDocs.length / todayDoctors.length) * 100);
       setEfficiency(baseEff > 0 ? 90 + Math.round(Math.random() * 5) : 0);
     }
   }, [todayDoctors.length, activeDocs.length]);
-
-  const stats = {
-    activeDoctors: activeDocs.length,
-    totalDoctors: todayDoctors.length,
-    onLeave: onLeaveDocs.length,
-    efficiency: efficiency,
-  };
 
   const filteredDoctors = todayDoctors.filter(doc =>
     doc.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -138,254 +118,348 @@ export default function Home() {
   const hour = new Date().getHours();
   const greeting = hour < 11 ? "Selamat Pagi" : hour < 15 ? "Selamat Siang" : hour < 18 ? "Selamat Sore" : "Selamat Malam";
 
+  // Live clock
+  const [currentTime, setCurrentTime] = useState(new Date());
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
   return (
-    <div className="flex h-full">
-      <div className="flex-1 flex flex-col h-full overflow-hidden">
-        {/* Header Section */}
-        <header className="px-8 py-6 flex items-center justify-between shrink-0">
+    <div className="absolute inset-x-0 inset-y-0 px-2 lg:px-6 flex flex-col overflow-hidden">
+      {/* ═══════════ PREMIUM HEADER ═══════════ */}
+      <header className="flex items-center justify-between py-6 flex-shrink-0">
+        <div className="flex items-center gap-4">
           <div>
-            <h1 className="text-3xl font-extrabold tracking-tight text-gradient pb-1">
-              {greeting}, Dr. Admin
+            <h1 className="text-3xl font-black tracking-tight text-gradient pb-1">
+              {greeting}, Admin
             </h1>
-            <p className="text-sm text-foreground/60 mt-0.5">Berikup update terbaru klinik Anda hari ini.</p>
+            <p className="text-sm text-slate-400 font-medium mt-0.5">Berikut update terbaru klinik Anda hari ini.</p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-4">
+          {/* Live Clock Widget */}
+          <div className="hidden md:flex items-center gap-3 super-glass-card px-4 py-2.5 rounded-2xl shadow-sm">
+            <div className="text-right">
+              <p className="text-lg font-black text-slate-800 tracking-tight leading-none">{currentTime.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })}</p>
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{currentTime.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'short' })}</p>
+            </div>
+            <div className="w-px h-8 bg-slate-200"></div>
+            <CalendarCheck size={20} className="text-blue-500" />
           </div>
 
-          <div className="flex items-center gap-4">
-            {/* Automation Control Button */}
-            <button
-              onClick={toggleAutomation}
-              className={cn(
-                "flex items-center gap-3 px-5 py-2.5 rounded-2xl transition-all shadow-[0_4px_14px_0_rgba(0,0,0,0.05)] active:scale-[0.97] group",
-                automationEnabled
-                  ? "btn-gradient shadow-[0_4px_14px_0_rgba(99,102,241,0.39)]"
-                  : "bg-white text-muted-foreground hover:shadow-[0_6px_20px_rgba(0,0,0,0.06)]"
+          {/* Automation Control */}
+          <button
+            onClick={toggleAutomation}
+            className={cn(
+              "flex items-center gap-3 px-5 py-2.5 rounded-2xl transition-all active:scale-[0.97] group relative overflow-hidden",
+              automationEnabled
+                ? "btn-gradient shadow-[0_4px_14px_0_rgba(99,102,241,0.39)]"
+                : "bg-white/80 backdrop-blur-xl text-slate-600 hover:shadow-[0_6px_20px_rgba(0,0,0,0.06)] border border-white shadow-sm"
+            )}
+          >
+            {automationEnabled && <div className="absolute inset-0 w-full h-full bg-white/20 -translate-x-full group-hover:animate-shimmer" />}
+            <div className="relative z-10">
+              <Zap size={18} className={cn(
+                "transition-all",
+                automationEnabled ? "fill-current text-white drop-shadow-[0_0_6px_rgba(167,139,250,0.8)]" : "group-hover:scale-110"
+              )} />
+              {automationEnabled && (
+                <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
+                </span>
               )}
-            >
-              <div className="relative">
-                <Zap size={18} className={cn(
-                  "transition-all",
-                  automationEnabled ? "fill-current drop-shadow-[0_0_6px_rgba(167,139,250,0.8)]" : "group-hover:scale-110"
-                )} />
-                {automationEnabled && (
-                  <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
-                  </span>
-                )}
+            </div>
+            <div className="text-left relative z-10">
+              <div className={cn("text-sm font-bold leading-tight", automationEnabled ? "text-white" : "")}>
+                {automationEnabled ? "AI Aktif" : "AI Nonaktif"}
               </div>
-              <div className="text-left">
-                <div className="text-sm font-bold leading-tight">
-                  {automationEnabled ? "Otomatisasi Aktif" : "Otomatisasi Nonaktif"}
-                </div>
-                <div className={cn("text-[10px] leading-tight", automationEnabled ? "text-violet-200" : "text-muted-foreground")}>
-                  {automationEnabled
-                    ? `${todayDoctors.length} dokter dikelola • ${activeDocs.length} aktif`
-                    : "Klik untuk mengaktifkan"
-                  }
-                </div>
-              </div>
-            </button>
-
-            <div className="h-8 w-px bg-border mx-2" />
-
-            <div className="relative group">
-              <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-2xl blur opacity-0 group-focus-within:opacity-100 transition duration-500"></div>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                <input
-                  type="text"
-                  placeholder="Cari dokter..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-9 pr-4 py-2.5 rounded-2xl bg-white focus:border-blue-500/50 shadow-[0_2px_10px_-3px_rgba(0,0,0,0.02)] transition-all text-sm w-56 outline-none"
-                />
+              <div className={cn("text-[10px] leading-tight", automationEnabled ? "text-violet-200" : "text-slate-400")}>
+                {automationEnabled
+                  ? `${todayDoctors.length} dokter • ${activeDocs.length} aktif`
+                  : "Klik untuk aktifkan"
+                }
               </div>
             </div>
-            <button className="p-2.5 rounded-2xl bg-white text-muted-foreground hover:text-foreground hover:shadow-[0_4px_14px_0_rgba(0,0,0,0.05)] transition-all">
-              <Filter size={18} />
-            </button>
-          </div>
-        </header>
+          </button>
 
-        {/* Main Content Scrollable Area */}
-        <div className="flex-1 overflow-y-auto px-8 pb-8">
-          {/* Stats Row */}
-          <StatsCards stats={stats} />
+          <div className="h-8 w-px bg-slate-200 mx-1 hidden lg:block" />
 
-          {/* Dashboard Grid */}
-          <div className="flex flex-col gap-6">
-            {/* Live Control */}
-            <div className="w-full space-y-6">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-bold flex items-center gap-2">
-                  <span className="w-1.5 h-6 rounded-full bg-primary/80"></span>
-                  Kontrol Status Langsung
-                </h3>
-
-                <div className="flex items-center gap-2">
-                  <div className={cn(
-                    "px-3 py-1 rounded-full text-xs font-bold flex items-center gap-2 transition-all",
-                    automationEnabled
-                      ? "bg-violet-500/10 text-violet-400-500/20"
-                      : "bg-emerald-500/10 text-emerald-600-500/20"
-                  )}>
-                    <span className="relative flex h-2 w-2">
-                      <span className={cn(
-                        "animate-ping absolute inline-flex h-full w-full rounded-full opacity-75",
-                        automationEnabled ? "bg-violet-400" : "bg-emerald-400"
-                      )}></span>
-                      <span className={cn(
-                        "relative inline-flex rounded-full h-2 w-2",
-                        automationEnabled ? "bg-violet-500" : "bg-emerald-500"
-                      )}></span>
-                    </span>
-                    {automationEnabled ? "AI Mengelola Sistem" : "Sistem Online"}
-                  </div>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
-                {filteredDoctors.map(doc => (
-                  <div key={doc.id} className={cn(
-                    "super-glass-card p-4 rounded-xl group relative overflow-hidden",
-                    automationEnabled && "opacity-90 hover:opacity-100"
-                  )}>
-                    {automationEnabled && (
-                      <div className="absolute inset-0 bg-violet-500/5 pointer-events-none" />
-                    )}
-                    <div className="flex items-start justify-between mb-4 relative z-10">
-                      <div className="flex items-center gap-3">
-                        <Avatar className="h-12 w-12 shadow-sm">
-                          <AvatarFallback className={cn(
-                            "text-sm font-bold text-white",
-                            doc.status === 'BUKA' ? "bg-blue-500" :
-                              doc.status === 'PENUH' ? "bg-orange-500" :
-                                doc.status === 'CUTI' ? "bg-pink-500" :
-                                  doc.status === 'OPERASI' ? "bg-red-500" :
-                                    "bg-slate-500"
-                          )}>
-                            {doc.queueCode || doc.name.charAt(4)}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <h4 className="font-bold text-base text-foreground leading-tight group-hover:text-primary transition-colors">{doc.name}</h4>
-                          <div className="flex items-center gap-2 mt-0.5">
-                            <p className="text-xs text-muted-foreground font-medium">{doc.specialty}</p>
-                            {(() => {
-                              const activeShift = shifts.find(s =>
-                                s.doctor === doc.name && s.dayIdx === todayDayIdx &&
-                                !(s.disabledDates || []).includes(todayStr) &&
-                                s.registrationTime
-                              );
-                              return activeShift?.registrationTime ? (
-                                <div className="flex items-center gap-1 bg-blue-50 text-blue-600 px-2 py-0.5 rounded-lg border border-blue-100">
-                                  <Clock size={10} />
-                                  <span className="text-[9px] font-bold tracking-wide">DAFTAR</span>
-                                  <span className="text-[10px] font-mono font-bold">{activeShift.registrationTime}</span>
-                                </div>
-                              ) : null;
-                            })()}
-                          </div>
-                        </div>
-                      </div>
-                      <div className={cn(
-                        "px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider",
-                        doc.status === 'BUKA' ? "bg-blue-500/10 text-blue-600-500/20" :
-                          doc.status === 'PENUH' ? "bg-orange-500/10 text-orange-600-500/20" :
-                            doc.status === 'CUTI' ? "bg-pink-500/10 text-pink-600-500/20" :
-                              doc.status === 'OPERASI' ? "bg-red-500/10 text-red-600-500/20" :
-                                "bg-slate-500/10 text-slate-500-500/20"
-                      )}>
-                        {doc.status || 'Offline'}
-                      </div>
-                    </div>
-
-                    {/* Shift Pills */}
-                    {(() => {
-                      const docShiftsToday = shifts.filter(s => s.doctor === doc.name && s.dayIdx === todayDayIdx);
-                      if (docShiftsToday.length === 0) return null;
-                      const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
-                      return (
-                        <div className="flex flex-wrap gap-1.5 mb-3 relative z-10">
-                          {docShiftsToday.map(shift => {
-                            const [startStr, endStr] = (shift.formattedTime || '').split('-');
-                            const startM = parseInt(startStr?.split(':')[0] || '0') * 60 + parseInt(startStr?.split(':')[1] || '0');
-                            const endM = parseInt(endStr?.split(':')[0] || '0') * 60 + parseInt(endStr?.split(':')[1] || '0');
-                            const isDisabledToday = (shift.disabledDates || []).includes(todayStr);
-                            const isActive = currentTimeMinutes >= startM && currentTimeMinutes < endM && !isDisabledToday;
-                            return (
-                              <button
-                                key={shift.id}
-                                onClick={() => toggleShiftDisabled(shift.id, shift)}
-                                className={cn(
-                                  "flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-semibold transition-all",
-                                  isDisabledToday
-                                    ? "bg-red-500/5 text-red-400/60-500/10 line-through hover:bg-red-500/10"
-                                    : isActive
-                                      ? "bg-emerald-500/15 text-emerald-500-500/30 ring-1 ring-emerald-500/20"
-                                      : "bg-muted/50 text-muted-foreground hover:bg-muted"
-                                )}
-                                title={isDisabledToday ? 'Klik untuk aktifkan hari ini' : 'Klik untuk nonaktifkan hari ini'}
-                              >
-                                <Clock size={9} />
-                                {shift.formattedTime}
-                                {isDisabledToday && <span className="text-red-400 ml-0.5">✕</span>}
-                                {isActive && <span className="relative flex h-1.5 w-1.5 ml-0.5"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span></span>}
-                              </button>
-                            );
-                          })}
-                        </div>
-                      );
-                    })()}
-
-                    <div className="grid grid-cols-6 gap-1.5 relative z-10">
-                      {[
-                        { id: 'TIDAK PRAKTEK', label: 'Off', className: 'bg-slate-500 text-white-600 shadow-slate-500/20 hover:bg-slate-600' },
-                        { id: 'BUKA', label: 'Buka', className: 'bg-blue-500 text-white-600 shadow-blue-500/20 hover:bg-blue-600' },
-                        { id: 'PENUH', label: 'Penuh', className: 'bg-orange-500 text-white-600 shadow-orange-500/20 hover:bg-orange-600' },
-                        { id: 'OPERASI', label: 'Ops', className: 'bg-red-500 text-white-600 shadow-red-500/20 hover:bg-red-600' },
-                        { id: 'SELESAI', label: 'Slsai', className: 'bg-emerald-500 text-white-600 shadow-emerald-500/20 hover:bg-emerald-600' },
-                        { id: 'CUTI', label: 'Cuti', className: 'bg-pink-500 text-white-600 shadow-pink-500/20 hover:bg-pink-600' },
-                      ].map((action) => (
-                        <button
-                          key={action.id}
-                          // Allow manual update even if automation is enabled, to trigger manual override
-                          onClick={() => manualUpdateStatus(doc.id, action.id as any)}
-                          className={cn(
-                            "py-1.5 rounded-lg text-[10px] font-bold transition-all shadow-md",
-                            doc.status === action.id
-                              ? action.className
-                              : "bg-muted hover:bg-muted/80 text-muted-foreground hover:border-border shadow-none",
-                            // Warning style if overriding automation? Nah, just let them do it.
-                          )}
-                        >
-                          {action.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Right Column: Display Preview (Visible only on small screens now maybe? Or unused?) */}
-            <div className="block lg:hidden xl:hidden space-y-6">
-              <div className="super-glass-card p-6 rounded-3xl text-center">
-                <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4 text-blue-500 shadow-inner">
-                  <MonitorPlay size={32} />
-                </div>
-                <h3 className="font-bold text-foreground">Display Preview</h3>
-                <p className="text-sm text-foreground/60 mb-4">View what patients currently see on the main screen.</p>
-                <button className="w-full py-2.5 btn-gradient rounded-2xl font-semibold">
-                  Open Display View
-                </button>
-              </div>
+          {/* Search */}
+          <div className="relative group hidden lg:block">
+            <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-2xl blur opacity-0 group-focus-within:opacity-100 transition duration-500"></div>
+            <div className="relative">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 h-4 w-4" />
+              <input
+                type="text"
+                placeholder="Cari dokter..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 pr-4 py-2.5 rounded-2xl bg-white/60 backdrop-blur-xl focus:bg-white/90 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),0_2px_10px_-3px_rgba(0,0,0,0.02)] transition-all text-sm w-56 outline-none focus:ring-1 focus:ring-blue-500/30 font-medium text-slate-700 placeholder:text-slate-400 border border-white/50"
+              />
             </div>
           </div>
         </div>
+      </header>
+
+      {/* ═══════════ SCROLLABLE CONTENT ═══════════ */}
+      <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 pb-10 space-y-6">
+
+        {/* ── STATS CARDS ─────────────────────────── */}
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
+          {/* Stat 1: Dokter Bertugas */}
+          <div className="super-glass-card p-5 rounded-[28px] shadow-sm relative overflow-hidden group border border-white/30">
+            <div className="absolute top-0 right-0 w-28 h-28 bg-blue-500/10 rounded-full blur-3xl -mr-8 -mt-8 group-hover:bg-blue-500/20 transition-all duration-500"></div>
+            <div className="flex justify-between items-start mb-3 relative z-10">
+              <div className="p-2.5 bg-blue-50 text-blue-500 rounded-2xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.8)] backdrop-blur-md">
+                <BriefcaseMedical size={20} strokeWidth={2.5} />
+              </div>
+              <span className="flex items-center gap-1 text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-lg border border-emerald-100">
+                <TrendingUp size={10} strokeWidth={3} />
+                Live
+              </span>
+            </div>
+            <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1 relative z-10">Bertugas</h3>
+            <div className="flex items-baseline gap-2 relative z-10">
+              <span className="text-3xl font-black text-slate-800 tracking-tight">{activeDocs.length}</span>
+              <span className="text-xs font-semibold text-slate-400">/ {todayDoctors.length}</span>
+            </div>
+            <div className="mt-4 h-1.5 w-full bg-slate-100 rounded-full overflow-hidden relative z-10">
+              <div className="h-full rounded-full btn-gradient transition-all duration-1000 ease-out" style={{ width: `${todayDoctors.length > 0 ? (activeDocs.length / todayDoctors.length) * 100 : 0}%` }} />
+            </div>
+          </div>
+
+          {/* Stat 2: Cuti */}
+          <div className="super-glass-card p-5 rounded-[28px] shadow-sm relative overflow-hidden group border border-white/30">
+            <div className="absolute top-0 right-0 w-28 h-28 bg-violet-500/10 rounded-full blur-3xl -mr-8 -mt-8 group-hover:bg-violet-500/20 transition-all duration-500"></div>
+            <div className="flex justify-between items-start mb-3 relative z-10">
+              <div className="p-2.5 bg-violet-50 text-violet-500 rounded-2xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.8)] backdrop-blur-md">
+                <FileClock size={20} strokeWidth={2.5} />
+              </div>
+            </div>
+            <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1 relative z-10">Cuti</h3>
+            <div className="flex items-baseline gap-2 relative z-10">
+              <span className="text-3xl font-black text-slate-800 tracking-tight">{onLeaveDocs.length}</span>
+              <span className="text-xs font-semibold text-slate-400">dokter</span>
+            </div>
+          </div>
+
+          {/* Stat 3: Efisiensi */}
+          <div className="super-glass-card p-5 rounded-[28px] shadow-sm relative overflow-hidden group border border-white/30">
+            <div className="absolute top-0 right-0 w-28 h-28 bg-emerald-500/10 rounded-full blur-3xl -mr-8 -mt-8 group-hover:bg-emerald-500/20 transition-all duration-500"></div>
+            <div className="flex justify-between items-start mb-3 relative z-10">
+              <div className="p-2.5 bg-emerald-50 text-emerald-500 rounded-2xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.8)] backdrop-blur-md">
+                <CheckCircle2 size={20} strokeWidth={2.5} />
+              </div>
+              <span className="flex items-center gap-1 text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-lg border border-emerald-100">
+                <TrendingUp size={10} strokeWidth={3} />
+                +2.4%
+              </span>
+            </div>
+            <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1 relative z-10">Efisiensi</h3>
+            <div className="flex items-baseline gap-2 relative z-10">
+              <span className="text-3xl font-black text-slate-800 tracking-tight">{efficiency}%</span>
+            </div>
+          </div>
+
+          {/* Stat 4: Total Shift */}
+          <div className="super-glass-card p-5 rounded-[28px] shadow-sm relative overflow-hidden group border border-white/30">
+            <div className="absolute top-0 right-0 w-28 h-28 bg-amber-500/10 rounded-full blur-3xl -mr-8 -mt-8 group-hover:bg-amber-500/20 transition-all duration-500"></div>
+            <div className="flex justify-between items-start mb-3 relative z-10">
+              <div className="p-2.5 bg-amber-50 text-amber-500 rounded-2xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.8)] backdrop-blur-md">
+                <BarChart3 size={20} strokeWidth={2.5} />
+              </div>
+            </div>
+            <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1 relative z-10">Shift Hari Ini</h3>
+            <div className="flex items-baseline gap-2 relative z-10">
+              <span className="text-3xl font-black text-slate-800 tracking-tight">{shifts.filter(s => s.dayIdx === todayDayIdx).length}</span>
+              <span className="text-xs font-semibold text-slate-400">sesi</span>
+            </div>
+          </div>
+        </div>
+
+
+        {/* ── LIVE CONTROL PANEL ──────────────────── */}
+        <div className="w-full space-y-5">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-black text-slate-800 flex items-center gap-2.5">
+              <span className="w-1.5 h-6 rounded-full bg-gradient-to-b from-blue-500 to-indigo-600"></span>
+              Kontrol Status Langsung
+            </h3>
+
+            <div className="flex items-center gap-3">
+              {/* Mobile Search */}
+              <div className="relative group lg:hidden">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 h-4 w-4" />
+                <input
+                  type="text"
+                  placeholder="Cari..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-9 pr-3 py-2 rounded-xl bg-white/60 text-sm w-40 outline-none border border-white/50 shadow-sm"
+                />
+              </div>
+
+              <div className={cn(
+                "px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-2 transition-all shadow-sm border",
+                automationEnabled
+                  ? "bg-violet-50 text-violet-600 border-violet-100"
+                  : "bg-emerald-50 text-emerald-600 border-emerald-100"
+              )}>
+                <span className="relative flex h-2 w-2">
+                  <span className={cn(
+                    "animate-ping absolute inline-flex h-full w-full rounded-full opacity-75",
+                    automationEnabled ? "bg-violet-400" : "bg-emerald-400"
+                  )}></span>
+                  <span className={cn(
+                    "relative inline-flex rounded-full h-2 w-2",
+                    automationEnabled ? "bg-violet-500" : "bg-emerald-500"
+                  )}></span>
+                </span>
+                {automationEnabled ? "AI Mengelola Sistem" : "Sistem Online"}
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
+            {filteredDoctors.map(doc => (
+              <div key={doc.id} className={cn(
+                "super-glass-card p-4 rounded-[24px] group relative overflow-hidden border border-white/30 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300",
+                automationEnabled && "hover:opacity-100"
+              )}>
+                {automationEnabled && (
+                  <div className="absolute inset-0 bg-violet-500/3 pointer-events-none" />
+                )}
+
+                {/* LED Status Indicator */}
+                <div className={cn(
+                  "absolute top-4 right-4 w-3 h-3 rounded-full z-20 shadow-sm",
+                  doc.status === 'BUKA' ? "bg-blue-500 shadow-[0_0_12px_rgba(59,130,246,0.6)]" :
+                    doc.status === 'PENUH' ? "bg-orange-500 shadow-[0_0_12px_rgba(249,115,22,0.6)]" :
+                      doc.status === 'CUTI' ? "bg-pink-500 shadow-[0_0_12px_rgba(236,72,153,0.6)]" :
+                        doc.status === 'OPERASI' ? "bg-red-500 shadow-[0_0_12px_rgba(239,68,68,0.6)]" :
+                          doc.status === 'SELESAI' ? "bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.6)]" :
+                            "bg-slate-300"
+                )} />
+
+                <div className="flex items-start gap-3 mb-3 relative z-10">
+                  <Avatar className="h-12 w-12 shadow-sm border-2 border-white/50">
+                    <AvatarFallback className={cn(
+                      "text-sm font-bold text-white",
+                      doc.status === 'BUKA' ? "bg-gradient-to-br from-blue-500 to-indigo-500" :
+                        doc.status === 'PENUH' ? "bg-gradient-to-br from-orange-500 to-amber-500" :
+                          doc.status === 'CUTI' ? "bg-gradient-to-br from-pink-500 to-rose-500" :
+                            doc.status === 'OPERASI' ? "bg-gradient-to-br from-red-500 to-rose-600" :
+                              "bg-gradient-to-br from-slate-400 to-slate-500"
+                    )}>
+                      {doc.queueCode || doc.name.charAt(4)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="min-w-0 flex-1">
+                    <h4 className="font-bold text-sm text-slate-800 leading-tight group-hover:text-blue-600 transition-colors truncate">{doc.name}</h4>
+                    <div className="flex items-center gap-2 mt-1 flex-wrap">
+                      <p className="text-[11px] text-slate-400 font-medium">{doc.specialty}</p>
+                      {(() => {
+                        const activeShift = shifts.find(s =>
+                          s.doctor === doc.name && s.dayIdx === todayDayIdx &&
+                          !(s.disabledDates || []).includes(todayStr) &&
+                          s.registrationTime
+                        );
+                        return activeShift?.registrationTime ? (
+                          <div className="flex items-center gap-1 bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded-md border border-blue-100">
+                            <Clock size={9} />
+                            <span className="text-[9px] font-bold">{activeShift.registrationTime}</span>
+                          </div>
+                        ) : null;
+                      })()}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Status Badge */}
+                <div className="mb-3 relative z-10">
+                  <div className={cn(
+                    "inline-flex px-2.5 py-1 rounded-xl text-[10px] font-bold uppercase tracking-wider",
+                    doc.status === 'BUKA' ? "bg-blue-50 text-blue-600 border border-blue-100" :
+                      doc.status === 'PENUH' ? "bg-orange-50 text-orange-600 border border-orange-100" :
+                        doc.status === 'CUTI' ? "bg-pink-50 text-pink-600 border border-pink-100" :
+                          doc.status === 'OPERASI' ? "bg-red-50 text-red-600 border border-red-100" :
+                            doc.status === 'SELESAI' ? "bg-emerald-50 text-emerald-600 border border-emerald-100" :
+                              "bg-slate-50 text-slate-500 border border-slate-100"
+                  )}>
+                    {doc.status || 'Offline'}
+                  </div>
+                </div>
+
+                {/* Shift Pills */}
+                {(() => {
+                  const docShiftsToday = shifts.filter(s => s.doctor === doc.name && s.dayIdx === todayDayIdx);
+                  if (docShiftsToday.length === 0) return null;
+                  const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
+                  return (
+                    <div className="flex flex-wrap gap-1.5 mb-3 relative z-10">
+                      {docShiftsToday.map(shift => {
+                        const [startStr, endStr] = (shift.formattedTime || '').split('-');
+                        const startM = parseInt(startStr?.split(':')[0] || '0') * 60 + parseInt(startStr?.split(':')[1] || '0');
+                        const endM = parseInt(endStr?.split(':')[0] || '0') * 60 + parseInt(endStr?.split(':')[1] || '0');
+                        const isDisabledToday = (shift.disabledDates || []).includes(todayStr);
+                        const isActive = currentTimeMinutes >= startM && currentTimeMinutes < endM && !isDisabledToday;
+                        return (
+                          <button
+                            key={shift.id}
+                            onClick={() => toggleShiftDisabled(shift.id, shift)}
+                            className={cn(
+                              "flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-semibold transition-all border",
+                              isDisabledToday
+                                ? "bg-red-50 text-red-400 border-red-100 line-through hover:bg-red-100"
+                                : isActive
+                                  ? "bg-emerald-50 text-emerald-600 border-emerald-200 ring-1 ring-emerald-200"
+                                  : "bg-slate-50 text-slate-500 border-slate-100 hover:bg-slate-100"
+                            )}
+                            title={isDisabledToday ? 'Klik untuk aktifkan hari ini' : 'Klik untuk nonaktifkan hari ini'}
+                          >
+                            <Clock size={9} />
+                            {shift.formattedTime}
+                            {isDisabledToday && <span className="text-red-400 ml-0.5">✕</span>}
+                            {isActive && <span className="relative flex h-1.5 w-1.5 ml-0.5"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span></span>}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  );
+                })()}
+
+                <div className="grid grid-cols-6 gap-1.5 relative z-10">
+                  {[
+                    { id: 'TIDAK PRAKTEK', label: 'Off', bg: 'bg-slate-500', hover: 'hover:bg-slate-600' },
+                    { id: 'BUKA', label: 'Buka', bg: 'bg-blue-500', hover: 'hover:bg-blue-600' },
+                    { id: 'PENUH', label: 'Penuh', bg: 'bg-orange-500', hover: 'hover:bg-orange-600' },
+                    { id: 'OPERASI', label: 'Ops', bg: 'bg-red-500', hover: 'hover:bg-red-600' },
+                    { id: 'SELESAI', label: 'Slsai', bg: 'bg-emerald-500', hover: 'hover:bg-emerald-600' },
+                    { id: 'CUTI', label: 'Cuti', bg: 'bg-pink-500', hover: 'hover:bg-pink-600' },
+                  ].map((action) => (
+                    <button
+                      key={action.id}
+                      onClick={() => manualUpdateStatus(doc.id, action.id as any)}
+                      className={cn(
+                        "py-1.5 rounded-lg text-[10px] font-bold transition-all",
+                        doc.status === action.id
+                          ? `${action.bg} text-white shadow-md ${action.hover}`
+                          : "bg-slate-50 hover:bg-slate-100 text-slate-500 border border-slate-100 shadow-none",
+                      )}
+                    >
+                      {action.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
       </div>
-
-
     </div>
   );
 }
