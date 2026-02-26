@@ -77,10 +77,13 @@
 /* Base UI Components (Super Premium Glassmorphism Apple Style) */
 .glass-panel {
   @apply bg-white/60 backdrop-blur-[40px] saturate-150 shadow-[4px_0_24px_-8px_rgba(0,0,0,0.05)];
+  will-change: transform;
 }
 
 .super-glass-card {
   @apply relative overflow-hidden bg-white/50 backdrop-blur-[30px] saturate-[1.2] shadow-[0_8px_32px_-8px_rgba(0,0,0,0.08),inset_0_1px_1px_rgba(255,255,255,0.8)] hover:shadow-[0_16px_48px_-12px_rgba(0,0,0,0.12),inset_0_1px_1px_rgba(255,255,255,0.9)] transition-all duration-500 ease-out z-10;
+  contain: layout paint;
+  will-change: transform;
 }
 
 .super-glass-card::before {
@@ -90,6 +93,13 @@
 
 .super-glass {
   @apply bg-white/40 backdrop-blur-[50px] saturate-200 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),0_8px_32px_rgba(0,0,0,0.06)];
+  will-change: transform;
+}
+
+/* Skip rendering for off-screen sections until scrolled into view */
+.offscreen-section {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 400px;
 }
 
 /* Apple-like gradients for buttons/accents */
@@ -100,3 +110,90 @@
 .text-gradient {
   @apply bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-500;
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   PERFORMANCE FALLBACKS — Low-End Devices & Reduced Motion
+   Triggered by:
+   1. OS setting: prefers-reduced-motion: reduce
+   2. JS class: .reduce-effects on <html> (for Smart TV / weak GPU)
+   Desktop users are NOT affected.
+   ═══════════════════════════════════════════════════════════════════ */
+
+@media (prefers-reduced-motion: reduce) {
+  body {
+    background-attachment: scroll !important;
+    background-image: none !important;
+  }
+
+  .glass-panel {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background-color: rgba(255, 255, 255, 0.95) !important;
+    filter: none !important;
+  }
+
+  .super-glass-card {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background-color: rgba(255, 255, 255, 0.95) !important;
+    filter: none !important;
+    transition: none !important;
+  }
+
+  .super-glass-card::before {
+    display: none !important;
+  }
+
+  .super-glass {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background-color: rgba(255, 255, 255, 0.95) !important;
+    filter: none !important;
+  }
+
+  .btn-gradient {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    transition-duration: 0ms !important;
+  }
+
+  /* Kill all hover transforms and heavy animations */
+  * {
+    transition-duration: 0.1s !important;
+    animation-duration: 0.1s !important;
+  }
+}
+
+/* JS-driven class for Smart TV / programmatic low-end detection */
+.reduce-effects body,
+html.reduce-effects body {
+  background-attachment: scroll !important;
+  background-image: none !important;
+}
+
+html.reduce-effects .glass-panel,
+html.reduce-effects .super-glass-card,
+html.reduce-effects .super-glass {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  filter: none !important;
+}
+
+html.reduce-effects .super-glass-card::before {
+  display: none !important;
+}
+
+html.reduce-effects .super-glass-card {
+  transition: box-shadow 0.2s ease !important;
+}
+
+html.reduce-effects .btn-gradient {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Scrollbar for custom-scrollbar class (lightweight) */
+.custom-scrollbar::-webkit-scrollbar { width: 4px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 9999px; }

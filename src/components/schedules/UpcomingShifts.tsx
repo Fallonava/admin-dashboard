@@ -1,16 +1,21 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useMemo } from "react";
+import useSWR, { mutate } from "swr";
+import Image from "next/image";
+import { useDebounce } from "@/hooks/use-debounce";
 import { Users, Search, Plus, Edit2, Trash2 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { cn } from "@/lib/utils";
 import type { Shift, Doctor } from "@/lib/data-service";
 import { ScheduleModal } from "./ScheduleModal";
 import { DoctorFormModal } from "./DoctorFormModal";
 
+// Color hash for doctor initials
+const getInitials = (name: string) => name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+
 export function UpcomingShifts() {
-    const [shifts, setShifts] = useState<Shift[]>([]);
-    const [doctors, setDoctors] = useState<Doctor[]>([]);
+    const { data: shifts = [] } = useSWR<Shift[]>('/api/shifts');
+    const { data: doctors = [] } = useSWR<Doctor[]>('/api/doctors');
     const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
     const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
 
@@ -18,32 +23,20 @@ export function UpcomingShifts() {
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [editingDoctor, setEditingDoctor] = useState<Doctor | null>(null);
     const [searchQuery, setSearchQuery] = useState("");
+    const debouncedSearch = useDebounce(searchQuery, 200);
 
-    const fetchAll = async () => {
-        try {
-            const [sRes, dRes] = await Promise.all([
-                fetch('/api/shifts'),
-                fetch('/api/doctors')
-            ]);
-            setShifts(await sRes.json());
-            setDoctors(await dRes.json());
-        } catch { /* silent */ }
+    const fetchAll = () => {
+        mutate('/api/shifts');
+        mutate('/api/doctors');
     };
 
-    useEffect(() => {
-        fetchAll();
-        const iv = setInterval(fetchAll, 10000);
-        return () => clearInterval(iv);
-    }, []);
-
     // Filter doctors for list
-    const filteredDoctors = doctors.filter(d =>
-        d.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        d.specialty.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-
-    // Color hash for doctor initials
-    const getInitials = (name: string) => name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+    const filteredDoctors = useMemo(() => {
+        return doctors.filter(d =>
+            d.name.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+            d.specialty.toLowerCase().includes(debouncedSearch.toLowerCase())
+        );
+    }, [doctors, debouncedSearch]);
 
     const handleDoctorClick = (doc: Doctor) => {
         setSelectedDoctor(doc);
@@ -123,7 +116,7 @@ export function UpcomingShifts() {
                         >
                             <Avatar className="h-12 w-12 border-2 border-white/50 shadow-sm group-hover:scale-105 transition-transform">
                                 {doc.image ? (
-                                    <img src={doc.image} alt={doc.name} className="h-full w-full object-cover" />
+                                    <Image src={doc.image} alt={doc.name} width={48} height={48} className="h-full w-full object-cover" />
                                 ) : (
                                     <AvatarFallback className="bg-slate-100 text-[12px] font-extrabold text-slate-500 group-hover:text-blue-600 transition-colors">
                                         {doc.queueCode || getInitials(doc.name)}

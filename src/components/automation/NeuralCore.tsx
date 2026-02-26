@@ -1,34 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import useSWR from "swr";
 import { BrainCircuit, RotateCw, Users, Calendar, Activity, Cpu } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Shift, Doctor, BroadcastRule } from "@/lib/data-service";
 
 export function NeuralCore() {
-    const [shifts, setShifts] = useState<Shift[]>([]);
-    const [doctors, setDoctors] = useState<Doctor[]>([]);
-    const [broadcasts, setBroadcasts] = useState<BroadcastRule[]>([]);
+    const { data: shifts = [] } = useSWR<Shift[]>('/api/shifts');
+    const { data: doctors = [] } = useSWR<Doctor[]>('/api/doctors');
+    const { data: broadcasts = [] } = useSWR<BroadcastRule[]>('/api/automation');
     const [syncCountdown, setSyncCountdown] = useState(300);
-
-    useEffect(() => {
-        const fetchAll = async () => {
-            try {
-                const [sRes, dRes, bRes] = await Promise.all([
-                    fetch('/api/shifts'),
-                    fetch('/api/doctors'),
-                    fetch('/api/automation')
-                ]);
-                setShifts(await sRes.json());
-                setDoctors(await dRes.json());
-                setBroadcasts(await bRes.json());
-                setSyncCountdown(300);
-            } catch { /* silent */ }
-        };
-        fetchAll();
-        const iv = setInterval(fetchAll, 30000);
-        return () => clearInterval(iv);
-    }, []);
 
     useEffect(() => {
         const iv = setInterval(() => {
@@ -43,16 +25,18 @@ export function NeuralCore() {
         return `${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
     };
 
-    const totalShifts = shifts.length;
-    const totalDoctors = doctors.length;
-    const activeBroadcasts = broadcasts.filter(b => b.active).length;
-    const now = new Date();
-    const todayDayIdx = now.getDay() === 0 ? 6 : now.getDay() - 1;
-    const todayShifts = shifts.filter(s => s.dayIdx === todayDayIdx).length;
-
-    const efficiency = totalDoctors > 0 ? Math.min(Math.round((totalShifts / (totalDoctors * 1.5)) * 100), 100) : 0;
-    const circumference = 2 * Math.PI * 60;
-    const dashOffset = circumference - (efficiency / 100) * circumference;
+    const { totalShifts, totalDoctors, activeBroadcasts, todayShifts, efficiency, circumference, dashOffset } = useMemo(() => {
+        const totalShifts = shifts.length;
+        const totalDoctors = doctors.length;
+        const activeBroadcasts = broadcasts.filter(b => b.active).length;
+        const now = new Date();
+        const todayDayIdx = now.getDay() === 0 ? 6 : now.getDay() - 1;
+        const todayShifts = shifts.filter(s => s.dayIdx === todayDayIdx).length;
+        const efficiency = totalDoctors > 0 ? Math.min(Math.round((totalShifts / (totalDoctors * 1.5)) * 100), 100) : 0;
+        const circumference = 2 * Math.PI * 60;
+        const dashOffset = circumference - (efficiency / 100) * circumference;
+        return { totalShifts, totalDoctors, activeBroadcasts, todayShifts, efficiency, circumference, dashOffset };
+    }, [shifts, doctors, broadcasts]);
 
     return (
         <div className="relative flex flex-col rounded-3xl border border-slate-200 bg-white p-6 overflow-hidden group shadow-lg shadow-slate-200/60 transition-all duration-500 hover:shadow-xl hover:border-slate-300 h-full">

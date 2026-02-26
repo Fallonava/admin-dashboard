@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import useSWR, { mutate } from "swr";
 import { Megaphone, Plus, Trash2, Edit3, X, Power, PowerOff, Save, MonitorPlay, Sparkles, AlertTriangle, Zap, ShieldAlert, Wrench, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { BroadcastRule } from "@/lib/data-service";
@@ -36,20 +37,11 @@ const EMPTY_RULE: Partial<BroadcastRule> = {
 };
 
 export function BroadcastControl() {
-    const [rules, setRules] = useState<BroadcastRule[]>([]);
+    const { data: rules = [] } = useSWR<BroadcastRule[]>('/api/automation');
     const [editingRule, setEditingRule] = useState<Partial<BroadcastRule> | null>(null);
     const [isCreating, setIsCreating] = useState(false);
     const [saving, setSaving] = useState(false);
     const [stoppingAll, setStoppingAll] = useState(false);
-
-    useEffect(() => { fetchRules(); }, []);
-
-    const fetchRules = async () => {
-        try {
-            const res = await fetch('/api/automation');
-            setRules(await res.json());
-        } catch { /* silent */ }
-    };
 
     const handleSave = async () => {
         if (!editingRule?.message?.trim()) return;
@@ -63,13 +55,13 @@ export function BroadcastControl() {
         setSaving(false);
         setEditingRule(null);
         setIsCreating(false);
-        fetchRules();
+        mutate('/api/automation');
     };
 
     const handleDelete = async (id: number) => {
         if (!confirm("Hapus broadcast rule ini?")) return;
         await fetch(`/api/automation?id=${id}`, { method: 'DELETE' });
-        fetchRules();
+        mutate('/api/automation');
     };
 
     const handleToggle = async (rule: BroadcastRule) => {
@@ -78,7 +70,7 @@ export function BroadcastControl() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ ...rule, active: !rule.active })
         });
-        fetchRules();
+        mutate('/api/automation');
     };
 
     const handleStopAll = async () => {
@@ -92,7 +84,7 @@ export function BroadcastControl() {
             })
         ));
         setStoppingAll(false);
-        fetchRules();
+        mutate('/api/automation');
     };
 
     const handlePreset = (preset: typeof PRESETS[0]) => {

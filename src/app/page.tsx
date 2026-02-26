@@ -1,11 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import useSWR, { mutate } from "swr";
 import { Activity, Users, MonitorPlay, AlertCircle, Search, Filter, Zap, Power, Clock, TrendingUp, BarChart3, CalendarCheck, BriefcaseMedical, FileClock, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Doctor, LeaveRequest, Shift, Settings } from "@/lib/data-service";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { LiveClock } from "@/components/LiveClock";
+import { useDebounce } from "@/hooks/use-debounce";
 
 
 export default function Home() {
@@ -15,6 +17,7 @@ export default function Home() {
   const { data: settings, mutate: mutateSettings } = useSWR<Settings>('/api/settings');
 
   const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearch = useDebounce(searchQuery, 200);
 
   // Calculate today's day index (0=Mon, 6=Sun)
   const now = new Date();
@@ -24,9 +27,9 @@ export default function Home() {
   const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 
   // Filter: Only show doctors who have an active shift TODAY (not disabled for today)
-  const todayDoctors = doctors.filter(doc =>
+  const todayDoctors = useMemo(() => doctors.filter(doc =>
     shifts.some(s => s.doctor === doc.name && s.dayIdx === todayDayIdx && !(s.disabledDates || []).includes(todayStr))
-  );
+  ), [doctors, shifts, todayDayIdx, todayStr]);
 
   // Automation Logic
   const automationEnabled = settings?.automationEnabled || false;
@@ -98,8 +101,8 @@ export default function Home() {
     mutateDoctors();
   };
 
-  const activeDocs = todayDoctors.filter(d => d.status === 'BUKA' || d.status === 'PENUH');
-  const onLeaveDocs = todayDoctors.filter(d => d.status === 'CUTI');
+  const activeDocs = useMemo(() => todayDoctors.filter(d => d.status === 'BUKA' || d.status === 'PENUH'), [todayDoctors]);
+  const onLeaveDocs = useMemo(() => todayDoctors.filter(d => d.status === 'CUTI'), [todayDoctors]);
 
   const [efficiency, setEfficiency] = useState(0);
   useEffect(() => {
@@ -109,21 +112,16 @@ export default function Home() {
     }
   }, [todayDoctors.length, activeDocs.length]);
 
-  const filteredDoctors = todayDoctors.filter(doc =>
-    doc.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    doc.specialty.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredDoctors = useMemo(() => {
+    return todayDoctors.filter(doc =>
+      doc.name.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+      doc.specialty.toLowerCase().includes(debouncedSearch.toLowerCase())
+    );
+  }, [todayDoctors, debouncedSearch]);
 
   // Dynamic greeting
   const hour = new Date().getHours();
   const greeting = hour < 11 ? "Selamat Pagi" : hour < 15 ? "Selamat Siang" : hour < 18 ? "Selamat Sore" : "Selamat Malam";
-
-  // Live clock
-  const [currentTime, setCurrentTime] = useState(new Date());
-  useEffect(() => {
-    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
-    return () => clearInterval(timer);
-  }, []);
 
   return (
     <div className="w-full h-full px-3 lg:px-6 flex flex-col overflow-hidden">
@@ -143,14 +141,7 @@ export default function Home() {
 
         <div className="flex items-center gap-2 lg:gap-4 flex-wrap">
           {/* Live Clock Widget */}
-          <div className="hidden md:flex items-center gap-3 super-glass-card px-4 py-2.5 rounded-2xl shadow-sm">
-            <div className="text-right">
-              <p className="text-lg font-black text-slate-800 tracking-tight leading-none">{currentTime.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })}</p>
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{currentTime.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'short' })}</p>
-            </div>
-            <div className="w-px h-8 bg-slate-200"></div>
-            <CalendarCheck size={20} className="text-blue-500" />
-          </div>
+          <LiveClock />
 
           {/* Automation Control */}
           <button

@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, Fragment } from "react";
+import { useState, Fragment } from "react";
+import useSWR, { mutate } from "swr";
 import { ChevronLeft, ChevronRight, Plus, X, Clock, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Shift, Doctor } from "@/lib/data-service";
@@ -37,8 +38,8 @@ interface RealtimeCalendarProps {
 }
 
 export function RealtimeCalendar({ selectedDate, onDateChange }: RealtimeCalendarProps) {
-    const [shifts, setShifts] = useState<Shift[]>([]);
-    const [doctors, setDoctors] = useState<Doctor[]>([]);
+    const { data: shifts = [] } = useSWR<Shift[]>('/api/shifts');
+    const { data: doctors = [] } = useSWR<Doctor[]>('/api/doctors');
     const [showAddModal, setShowAddModal] = useState(false);
     const [newShift, setNewShift] = useState({
         doctor: "",
@@ -49,21 +50,9 @@ export function RealtimeCalendar({ selectedDate, onDateChange }: RealtimeCalenda
         registrationTime: "07:30"
     });
 
-    useEffect(() => {
-        fetchData();
-        const interval = setInterval(fetchData, 10000);
-        return () => clearInterval(interval);
-    }, []);
-
-    const fetchData = async () => {
-        try {
-            const [resShifts, resDocs] = await Promise.all([
-                fetch('/api/shifts'),
-                fetch('/api/doctors')
-            ]);
-            setShifts(await resShifts.json());
-            setDoctors(await resDocs.json());
-        } catch (e) { /* silent */ }
+    const fetchData = () => {
+        mutate('/api/shifts');
+        mutate('/api/doctors');
     };
 
     // Since we are showing daily view, weekDays and weekly navigation are no longer needed

@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import useSWR, { mutate } from "swr";
+import { useDebounce } from "@/hooks/use-debounce";
 import { Plus, Search, Edit2, Trash2, UserRound, Activity, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Doctor } from "@/lib/data-service";
@@ -33,6 +34,7 @@ const statusConfig: Record<string, { label: string; color: string; bg: string; d
 export default function DoctorsPage() {
     const { data: doctors = [] } = useSWR<Doctor[]>('/api/doctors');
     const [searchTerm, setSearchTerm] = useState("");
+    const debouncedSearch = useDebounce(searchTerm, 200);
     const [activeFilter, setActiveFilter] = useState<"Semua" | "Bedah" | "NonBedah">("Semua");
 
     // Modal States
@@ -72,16 +74,18 @@ export default function DoctorsPage() {
         }
     };
 
-    const filteredDoctors = doctors.filter(d => {
-        const matchesSearch = d.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            d.specialty.toLowerCase().includes(searchTerm.toLowerCase());
+    const filteredDoctors = useMemo(() => doctors.filter(d => {
+        const matchesSearch = d.name.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+            d.specialty.toLowerCase().includes(debouncedSearch.toLowerCase());
         const matchesFilter = activeFilter === "Semua" ? true : d.category === activeFilter;
         return matchesSearch && matchesFilter;
-    });
+    }), [doctors, debouncedSearch, activeFilter]);
 
-    const totalAktif = doctors.filter(d => d.status === 'BUKA' || d.status === 'OPERASI').length;
-    const totalBedah = doctors.filter(d => d.category === 'Bedah').length;
-    const totalNonBedah = doctors.filter(d => d.category === 'NonBedah').length;
+    const { totalAktif, totalBedah, totalNonBedah } = useMemo(() => ({
+        totalAktif: doctors.filter(d => d.status === 'BUKA' || d.status === 'OPERASI').length,
+        totalBedah: doctors.filter(d => d.category === 'Bedah').length,
+        totalNonBedah: doctors.filter(d => d.category === 'NonBedah').length,
+    }), [doctors]);
 
     const getStatusConfig = (status: string | null | undefined) => {
         if (!status) return { label: 'Auto', color: 'text-slate-400', bg: 'bg-slate-50' };

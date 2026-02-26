@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { RealtimeCalendar } from "@/components/schedules/RealtimeCalendar";
 import { UpcomingShifts } from "@/components/schedules/UpcomingShifts";
 import { Bell, Search, Calendar as CalendarIcon, ChevronLeft, ChevronRight } from "lucide-react";
@@ -11,11 +11,13 @@ export default function SchedulesPage() {
     const [selectedDate, setSelectedDate] = useState(new Date());
 
     // Generate 14 days around selected date for the strip
-    const stripDays = Array.from({ length: 14 }, (_, i) => {
-        const d = new Date(selectedDate);
-        d.setDate(selectedDate.getDate() - 3 + i);
-        return d;
-    });
+    const stripDays = useMemo(() => {
+        return Array.from({ length: 14 }, (_, i) => {
+            const d = new Date(selectedDate);
+            d.setDate(selectedDate.getDate() - 3 + i);
+            return d;
+        });
+    }, [selectedDate]);
 
     return (
         <div className="w-full h-full px-2 lg:px-6 flex flex-col overflow-hidden">

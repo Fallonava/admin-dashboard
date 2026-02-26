@@ -1,8 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
+import useSWR from "swr";
 import { Megaphone, Users, Calendar, RefreshCw, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
+import type { Shift, Doctor, BroadcastRule } from "@/lib/data-service";
 
 interface ActivityItem {
     id: string;
@@ -51,66 +53,51 @@ const COLOR_MAP = {
 };
 
 export function ActivityStream() {
-    const [activities, setActivities] = useState<ActivityItem[]>([]);
+    const { data: shifts = [] } = useSWR<Shift[]>('/api/shifts');
+    const { data: doctors = [] } = useSWR<Doctor[]>('/api/doctors');
+    const { data: broadcasts = [] } = useSWR<BroadcastRule[]>('/api/automation');
 
-    useEffect(() => {
-        const fetchActivities = async () => {
-            try {
-                const [sRes, dRes, bRes] = await Promise.all([
-                    fetch('/api/shifts'),
-                    fetch('/api/doctors'),
-                    fetch('/api/automation')
-                ]);
-                const shifts = await sRes.json();
-                const doctors = await dRes.json();
-                const broadcasts = await bRes.json();
+    const activities = useMemo(() => {
+        const items: { id: string; title: string; desc: string; time: string; type: 'shift' | 'broadcast' | 'doctor' | 'system' }[] = [];
 
-                const items: ActivityItem[] = [];
+        shifts.slice(-3).reverse().forEach((s: Shift, i: number) => {
+            items.push({
+                id: `shift-${s.id}`,
+                title: `Shift Schedule: ${s.doctor}`,
+                desc: `${s.title} — Day ${s.dayIdx + 1}, ${s.formattedTime || 'N/A'}`,
+                time: i === 0 ? 'Recent' : `${i + 1}h ago`,
+                type: 'shift'
+            });
+        });
 
-                shifts.slice(-3).reverse().forEach((s: any, i: number) => {
-                    items.push({
-                        id: `shift-${s.id}`,
-                        title: `Shift Schedule: ${s.doctor}`,
-                        desc: `${s.title} — Day ${s.dayIdx + 1}, ${s.formattedTime || 'N/A'}`,
-                        time: i === 0 ? 'Recent' : `${i + 1}h ago`,
-                        type: 'shift'
-                    });
-                });
+        broadcasts.slice(-2).reverse().forEach((b: BroadcastRule) => {
+            items.push({
+                id: `broadcast-${b.id}`,
+                title: `Broadcast: ${b.alertLevel}`,
+                desc: b.message?.slice(0, 60) + (b.message?.length > 60 ? '...' : ''),
+                time: b.active ? 'Airing Now' : 'Completed',
+                type: 'broadcast'
+            });
+        });
 
-                broadcasts.slice(-2).reverse().forEach((b: any) => {
-                    items.push({
-                        id: `broadcast-${b.id}`,
-                        title: `Broadcast: ${b.alertLevel}`,
-                        desc: b.message?.slice(0, 60) + (b.message?.length > 60 ? '...' : ''),
-                        time: b.active ? 'Airing Now' : 'Completed',
-                        type: 'broadcast'
-                    });
-                });
+        items.push({
+            id: 'doctor-count',
+            title: `${doctors.length} Doctors Registered`,
+            desc: 'System database successfully synchronized.',
+            time: 'Verified',
+            type: 'doctor'
+        });
 
-                items.push({
-                    id: 'doctor-count',
-                    title: `${doctors.length} Doctors Registered`,
-                    desc: 'System database successfully synchronized.',
-                    time: 'Verified',
-                    type: 'doctor'
-                });
+        items.push({
+            id: 'sys-health',
+            title: 'System Diagnostics OK',
+            desc: 'All processes and stores synchronized.',
+            time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+            type: 'system'
+        });
 
-                items.push({
-                    id: 'sys-health',
-                    title: 'System Diagnostics OK',
-                    desc: 'All processes and stores synchronized.',
-                    time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
-                    type: 'system'
-                });
-
-                setActivities(items);
-            } catch { /* silent */ }
-        };
-
-        fetchActivities();
-        const iv = setInterval(fetchActivities, 15000);
-        return () => clearInterval(iv);
-    }, []);
+        return items;
+    }, [shifts, doctors, broadcasts]);
 
     return (
         <div className="relative rounded-3xl border border-slate-200 bg-white p-6 h-full flex flex-col group overflow-hidden shadow-lg shadow-slate-200/60 transition-all duration-500 hover:border-slate-300 hover:shadow-xl">

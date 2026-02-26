@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import useSWR from "swr";
+import dynamic from "next/dynamic";
 import {
     BarChart3,
     TrendingUp,
@@ -9,43 +10,29 @@ import {
     Clock,
     Activity,
     Download,
-    Calendar,
-    ChevronRight
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import type { Doctor, LeaveRequest, Shift } from "@/lib/data-service";
-import {
-    AreaChart,
-    Area,
-    XAxis,
-    YAxis,
-    CartesianGrid,
-    Tooltip,
-    ResponsiveContainer,
-    BarChart,
-    Bar,
-    Legend
-} from "recharts";
+import type { Doctor, Shift } from "@/lib/data-service";
 
-// Mock Data for Charts (since we don't have historical data in the API yet)
-const visitData = [
-    { name: 'Senin', visits: 120, target: 100 },
-    { name: 'Selasa', visits: 145, target: 110 },
-    { name: 'Rabu', visits: 130, target: 110 },
-    { name: 'Kamis', visits: 170, target: 120 },
-    { name: 'Jumat', visits: 190, target: 130 },
-    { name: 'Sabtu', visits: 210, target: 150 },
-    { name: 'Minggu', visits: 150, target: 140 },
-];
+// Lazy-load the heavy recharts charts — defers ~200KB from initial bundle
+const AnalyticsCharts = dynamic(
+    () => import("@/components/analytics/AnalyticsCharts").then(mod => ({ default: mod.AnalyticsCharts })),
+    {
+        ssr: false,
+        loading: () => (
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+                <div className="xl:col-span-2 super-glass-card p-6 rounded-[32px] shadow-sm border border-white/50 h-[400px] flex items-center justify-center">
+                    <div className="text-sm font-bold text-slate-300 animate-pulse">Loading charts...</div>
+                </div>
+                <div className="super-glass-card p-6 rounded-[32px] shadow-sm border border-white/50 h-[400px] flex items-center justify-center">
+                    <div className="text-sm font-bold text-slate-300 animate-pulse">Loading charts...</div>
+                </div>
+            </div>
+        )
+    }
+);
 
-const workloadData = [
-    { name: 'Poli Umum', load: 85, ideal: 75 },
-    { name: 'Gigi', load: 60, ideal: 70 },
-    { name: 'Anak', load: 90, ideal: 80 },
-    { name: 'Kandungan', load: 75, ideal: 65 },
-    { name: 'Mata', load: 45, ideal: 50 },
-];
 
 export default function AnalyticsPage() {
     const { data: doctors = [] } = useSWR<Doctor[]>('/api/doctors');
@@ -53,9 +40,13 @@ export default function AnalyticsPage() {
     const [timeRange, setTimeRange] = useState("7 Hari Terakhir");
 
     // Calculate some real stats from current data
-    const totalDoctors = doctors.length;
-    const activeDoctors = doctors.filter(d => d.status === 'BUKA' || d.status === 'PENUH').length;
-    const utilizationRate = totalDoctors > 0 ? Math.round((activeDoctors / totalDoctors) * 100) : 0;
+    const { totalDoctors, activeDoctors, utilizationRate, activeDoctorsList } = useMemo(() => {
+        const totalDoctors = doctors.length;
+        const activeDoctorsList = doctors.filter(d => d.status === 'BUKA' || d.status === 'PENUH');
+        const activeDoctors = activeDoctorsList.length;
+        const utilizationRate = totalDoctors > 0 ? Math.round((activeDoctors / totalDoctors) * 100) : 0;
+        return { totalDoctors, activeDoctors, utilizationRate, activeDoctorsList };
+    }, [doctors]);
 
     return (
         <div className="w-full h-full px-2 lg:px-6 flex flex-col overflow-hidden">
@@ -182,122 +173,11 @@ export default function AnalyticsPage() {
                     </div>
                 </div>
 
-                {/* Charts Container */}
-                <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-
-                    {/* Main Area Chart */}
-                    <div className="xl:col-span-2 super-glass-card p-6 rounded-[32px] shadow-sm border border-white/50">
-                        <div className="flex items-center justify-between mb-8">
-                            <div>
-                                <h2 className="text-lg font-black text-slate-800 tracking-tight">Tren Kunjungan Pasien</h2>
-                                <p className="text-xs font-medium text-slate-400">Berdasarkan data operasional mingguan</p>
-                            </div>
-                            <div className="flex items-center gap-2 text-xs font-bold">
-                                <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]"></div> Aktual</div>
-                                <div className="flex items-center gap-1.5 ml-3"><div className="w-3 h-3 rounded-full bg-slate-300"></div> Target</div>
-                            </div>
-                        </div>
-
-                        <div className="h-[300px] w-full">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <AreaChart data={visitData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                                    <defs>
-                                        <linearGradient id="colorVisits" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
-                                            <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
-                                        </linearGradient>
-                                    </defs>
-                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                                    <XAxis
-                                        dataKey="name"
-                                        axisLine={false}
-                                        tickLine={false}
-                                        tick={{ fontSize: 12, fill: '#64748b', fontWeight: 600 }}
-                                        dy={10}
-                                    />
-                                    <YAxis
-                                        axisLine={false}
-                                        tickLine={false}
-                                        tick={{ fontSize: 12, fill: '#64748b', fontWeight: 600 }}
-                                    />
-                                    <Tooltip
-                                        contentStyle={{
-                                            backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                                            backdropFilter: 'blur(10px)',
-                                            borderRadius: '16px',
-                                            border: '1px solid rgba(255,255,255,0.5)',
-                                            boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)'
-                                        }}
-                                        itemStyle={{ fontWeight: 'bold' }}
-                                    />
-                                    <Area
-                                        type="monotone"
-                                        dataKey="visits"
-                                        stroke="#3b82f6"
-                                        strokeWidth={4}
-                                        fillOpacity={1}
-                                        fill="url(#colorVisits)"
-                                        activeDot={{ r: 6, strokeWidth: 0, fill: '#2563eb', style: { filter: 'drop-shadow(0px 0px 5px rgba(37,99,235,0.8))' } }}
-                                    />
-                                    <Area
-                                        type="monotone"
-                                        dataKey="target"
-                                        stroke="#cbd5e1"
-                                        strokeWidth={3}
-                                        strokeDasharray="5 5"
-                                        fill="none"
-                                    />
-                                </AreaChart>
-                            </ResponsiveContainer>
-                        </div>
-                    </div>
-
-                    {/* Workload Bar Chart */}
-                    <div className="super-glass-card p-6 rounded-[32px] shadow-sm border border-white/50 flex flex-col">
-                        <div className="mb-6">
-                            <h2 className="text-lg font-black text-slate-800 tracking-tight">Utilisasi Poliklinik</h2>
-                            <p className="text-xs font-medium text-slate-400">Persentase beban kerja optimal</p>
-                        </div>
-
-                        <div className="flex-1 min-h-[250px] w-full">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <BarChart data={workloadData} layout="vertical" margin={{ top: 0, right: 30, left: 20, bottom: 0 }}>
-                                    <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e2e8f0" />
-                                    <XAxis type="number" hide />
-                                    <YAxis
-                                        dataKey="name"
-                                        type="category"
-                                        axisLine={false}
-                                        tickLine={false}
-                                        tick={{ fontSize: 11, fill: '#475569', fontWeight: 700 }}
-                                    />
-                                    <Tooltip
-                                        cursor={{ fill: 'rgba(241, 245, 249, 0.5)' }}
-                                        contentStyle={{
-                                            borderRadius: '12px',
-                                            border: 'none',
-                                            boxShadow: '0 4px 15px rgba(0,0,0,0.1)'
-                                        }}
-                                    />
-                                    <Bar
-                                        dataKey="load"
-                                        fill="#8b5cf6"
-                                        radius={[0, 8, 8, 0]}
-                                        barSize={20}
-                                    />
-                                </BarChart>
-                            </ResponsiveContainer>
-                        </div>
-
-                        <button className="mt-4 w-full py-3 bg-white/50 hover:bg-white text-blue-600 rounded-2xl text-xs font-bold transition-colors border border-white shadow-sm flex items-center justify-center gap-2 group">
-                            <span>Lihat Rincian Dokter</span>
-                            <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
-                        </button>
-                    </div>
-                </div>
+                {/* Charts Container — lazy-loaded to defer ~200KB recharts bundle */}
+                <AnalyticsCharts />
 
                 {/* Live Patient Pipeline */}
-                <div className="super-glass-card p-6 rounded-[32px] shadow-sm border border-white/50 relative overflow-hidden mt-6">
+                <div className="offscreen-section super-glass-card p-6 rounded-[32px] shadow-sm border border-white/50 relative overflow-hidden mt-6">
                     <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl -mr-20 -mt-20"></div>
 
                     <div className="flex items-center justify-between mb-6 relative z-10">
@@ -317,7 +197,7 @@ export default function AnalyticsPage() {
                     </div>
 
                     <div className="space-y-3 relative z-10">
-                        {activeDoctors > 0 ? doctors.filter(d => d.status === 'BUKA' || d.status === 'PENUH').slice(0, 4).map((doc, i) => (
+                        {activeDoctorsList.length > 0 ? activeDoctorsList.slice(0, 4).map((doc, i) => (
                             <div key={doc.id} className="group flex items-center justify-between p-4 bg-white/40 hover:bg-white/80 rounded-2xl border border-white/50 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8)] hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
                                 <div className="flex items-center gap-4">
                                     <Avatar className="h-10 w-10 border-2 border-white shadow-sm">

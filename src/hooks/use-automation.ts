@@ -25,7 +25,6 @@ export function useAutomation() {
             const currentHour = now.getHours();
             const currentMinute = now.getMinutes();
             const currentTimeMinutes = currentHour * 60 + currentMinute;
-            const currentTs = now.getTime();
 
             // Format today's date as YYYY-MM-DD for leave comparison
             const todayStr = formatDateYMD(now);

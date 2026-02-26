@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import useSWR, { mutate } from "swr";
+import { useDebounce } from "@/hooks/use-debounce";
 import { LeaveCalendar } from "@/components/leaves/LeaveCalendar";
 import { Search, CalendarDays, UserCheck, Clock3 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -10,6 +11,7 @@ import type { LeaveRequest } from "@/lib/data-service";
 export default function LeavesPage() {
     const { data: leaves = [] } = useSWR<LeaveRequest[]>('/api/leaves');
     const [searchQuery, setSearchQuery] = useState("");
+    const debouncedSearch = useDebounce(searchQuery, 200);
 
     const totalLeaves = leaves.length;
 
@@ -30,45 +32,33 @@ export default function LeavesPage() {
         } catch { return false; }
     }
 
-    const now = new Date();
-    const onLeaveToday = leaves.filter(l => isDateInLeave(now, l.dates)).length;
+    const { onLeaveToday, cutiBuilanIni, stats } = useMemo(() => {
+        const now = new Date();
+        const onLeaveToday = leaves.filter(l => isDateInLeave(now, l.dates)).length;
+        const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+        const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+        const cutiBuilanIni = leaves.filter(l => {
+            for (let d = new Date(monthStart); d <= monthEnd; d.setDate(d.getDate() + 1)) {
+                if (isDateInLeave(new Date(d), l.dates)) return true;
+            }
+            return false;
+        }).length;
 
-    // Cuti bulan ini
-    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-    const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-    const cutiBuilanIni = leaves.filter(l => {
-        for (let d = new Date(monthStart); d <= monthEnd; d.setDate(d.getDate() + 1)) {
-            if (isDateInLeave(new Date(d), l.dates)) return true;
-        }
-        return false;
-    }).length;
+        const stats = [
+            { label: "Total Data Cuti", value: totalLeaves, icon: CalendarDays, color: "text-blue-600", bg: "bg-blue-50", iconBg: "bg-blue-100" },
+            { label: "Cuti Hari Ini", value: onLeaveToday, icon: UserCheck, color: "text-amber-600", bg: "bg-amber-50", iconBg: "bg-amber-100" },
+            { label: "Cuti Bulan Ini", value: cutiBuilanIni, icon: Clock3, color: "text-emerald-600", bg: "bg-emerald-50", iconBg: "bg-emerald-100" },
+        ];
 
-    const stats = [
-        {
-            label: "Total Data Cuti",
-            value: totalLeaves,
-            icon: CalendarDays,
-            color: "text-blue-600",
-            bg: "bg-blue-50",
-            iconBg: "bg-blue-100",
-        },
-        {
-            label: "Cuti Hari Ini",
-            value: onLeaveToday,
-            icon: UserCheck,
-            color: "text-amber-600",
-            bg: "bg-amber-50",
-            iconBg: "bg-amber-100",
-        },
-        {
-            label: "Cuti Bulan Ini",
-            value: cutiBuilanIni,
-            icon: Clock3,
-            color: "text-emerald-600",
-            bg: "bg-emerald-50",
-            iconBg: "bg-emerald-100",
-        },
-    ];
+        return { onLeaveToday, cutiBuilanIni, stats };
+    }, [leaves, totalLeaves]);
+
+    const filteredLeaves = useMemo(() =>
+        debouncedSearch === ""
+            ? leaves
+            : leaves.filter(l => l.doctor.toLowerCase().includes(debouncedSearch.toLowerCase())),
+        [leaves, debouncedSearch]
+    );
 
     return (
         <div className="w-full h-full flex flex-col px-2 lg:px-4">
@@ -124,10 +114,7 @@ export default function LeavesPage() {
             {/* ═══ CALENDAR CONTENT ═══ */}
             <div className="flex-1 min-h-0">
                 <LeaveCalendar
-                    leaves={leaves.filter(l =>
-                        searchQuery === "" ||
-                        l.doctor.toLowerCase().includes(searchQuery.toLowerCase())
-                    )}
+                    leaves={filteredLeaves}
                     onRefresh={() => mutate('/api/leaves')}
                 />
             </div>
