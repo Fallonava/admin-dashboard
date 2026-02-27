@@ -1,5 +1,33 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { z } from 'zod';
+import { requireAdmin } from '@/lib/api-utils';
+
+// Validation schemas
+const DoctorStatusEnum = z.enum(['BUKA', 'PENUH', 'OPERASI', 'CUTI', 'SELESAI', 'TIDAK PRAKTEK']);
+
+const BulkUpdateSchema = z.array(
+    z.object({
+        id: z.union([z.string(), z.number()]).transform(String),
+        status: DoctorStatusEnum.optional(),
+    }).strict()
+);
+
+const CreateDoctorSchema = z.object({
+    name: z.string().min(1).max(255),
+    specialty: z.string().min(1).max(255),
+    status: DoctorStatusEnum,
+    category: z.enum(['Bedah', 'NonBedah']),
+    startTime: z.string().regex(/^\d{2}:\d{2}$/, 'Format HH:MM'),
+    endTime: z.string().regex(/^\d{2}:\d{2}$/, 'Format HH:MM'),
+    queueCode: z.string().optional(),
+    lastCall: z.string().nullable().optional(),
+    registrationTime: z.string().nullable().optional(),
+});
+
+const UpdateDoctorSchema = CreateDoctorSchema.partial().extend({
+    id: z.string(),
+});
 
 export async function GET() {
     const doctors = await prisma.doctor.findMany();
@@ -22,6 +50,10 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
+    // admin only
+    const authErr = requireAdmin(req);
+    if (authErr) return authErr;
+
     const { searchParams } = new URL(req.url);
     const action = searchParams.get('action');
 
@@ -38,45 +70,71 @@ export async function POST(req: Request) {
         return NextResponse.json({ success: true, message: "All doctors reset." });
     }
 
-    const body = await req.json();
-    // Exclude computed or unneeded fields before inserting
-    const { currentRegistrationTime, id, ...dataToInsert } = body;
-
-    // Convert lastManualOverride to BigInt if provided
-    if (dataToInsert.lastManualOverride) {
-        dataToInsert.lastManualOverride = BigInt(dataToInsert.lastManualOverride);
+    if (action === 'bulk') {
+        try {
+            const body = await req.json();
+            const validated = BulkUpdateSchema.parse(body);
+            
+            const results = await prisma.$transaction(
+                validated.map((update) => {
+                    const { id, ...data } = update;
+                    return prisma.doctor.update({
+                        where: { id },
+                        data: data as any
+                    });
+                })
+            );
+            return NextResponse.json({ success: true, count: results.length });
+        } catch (err) {
+            if (err instanceof z.ZodError) {
+                return NextResponse.json({ error: 'Validation failed', details: err.flatten() }, { status: 400 });
+            }
+            return NextResponse.json({ error: String(err) }, { status: 500 });
+        }
     }
 
-    // Provide explicit ID if it exists and is not auto-generated (Prisma schema uses cuid by default, but we migrated old IDs)
-    if (id) {
-        dataToInsert.id = String(id);
+    // Create new doctor
+    try {
+        const body = await req.json();
+        const validated = CreateDoctorSchema.parse(body);
+        
+        const newDoctor = await prisma.doctor.create({ data: validated as any });
+        return NextResponse.json({
+            ...newDoctor,
+            lastManualOverride: newDoctor.lastManualOverride ? Number(newDoctor.lastManualOverride) : undefined
+        });
+    } catch (err) {
+        if (err instanceof z.ZodError) {
+            return NextResponse.json({ error: 'Validation failed', details: err.flatten() }, { status: 400 });
+        }
+        return NextResponse.json({ error: String(err) }, { status: 500 });
     }
-
-    const newDoctor = await prisma.doctor.create({ data: dataToInsert });
-
-    return NextResponse.json({
-        ...newDoctor,
-        lastManualOverride: newDoctor.lastManualOverride ? Number(newDoctor.lastManualOverride) : undefined
-    });
 }
 
 export async function PUT(req: Request) {
-    const body = await req.json();
-    const { id, currentRegistrationTime, isAuto, ...updates } = body;
+    const authErr = requireAdmin(req);
+    if (authErr) return authErr;
 
-    if (updates.lastManualOverride !== undefined && updates.lastManualOverride !== null) {
-        updates.lastManualOverride = BigInt(updates.lastManualOverride);
+    try {
+        const body = await req.json();
+        const validated = UpdateDoctorSchema.parse(body);
+        const { id, ...data } = validated;
+        
+        const updated = await prisma.doctor.update({
+            where: { id },
+            data: data as any
+        });
+
+        return NextResponse.json({
+            ...updated,
+            lastManualOverride: updated.lastManualOverride ? Number(updated.lastManualOverride) : undefined
+        });
+    } catch (err) {
+        if (err instanceof z.ZodError) {
+            return NextResponse.json({ error: 'Validation failed', details: err.flatten() }, { status: 400 });
+        }
+        return NextResponse.json({ error: String(err) }, { status: 500 });
     }
-
-    const updated = await prisma.doctor.update({
-        where: { id: String(id) },
-        data: updates
-    });
-
-    return NextResponse.json({
-        ...updated,
-        lastManualOverride: updated.lastManualOverride ? Number(updated.lastManualOverride) : undefined
-    });
 }
 
 export async function DELETE(req: Request) {

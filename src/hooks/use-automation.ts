@@ -1,134 +1,66 @@
 
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import useSWR, { mutate } from "swr";
-import type { Doctor, Shift, Settings, LeaveRequest } from "@/lib/data-service";
+import type { Doctor, Settings } from "@/lib/data-service";
 
 export function useAutomation() {
-    const { data: doctors = [] } = useSWR<Doctor[]>('/api/doctors');
-    const { data: shifts = [] } = useSWR<Shift[]>('/api/shifts');
-    const { data: leaves = [] } = useSWR<LeaveRequest[]>('/api/leaves');
+    const { data: doctors } = useSWR<Doctor[]>('/api/doctors');
     const { data: settings } = useSWR<Settings>('/api/settings');
 
-    const automationEnabled = settings?.automationEnabled || false;
-    const lastRunRef = useRef<number>(0);
-
+    // revalidate doctors periodically as a fallback
     useEffect(() => {
-        if (!automationEnabled || doctors.length === 0 || shifts.length === 0) return;
+        const iv = setInterval(() => mutate('/api/doctors'), 5000);
+        return () => clearInterval(iv);
+    }, []);
 
-        const checkAutomation = () => {
-            const now = new Date();
-            // Throttle: run at most every 5 seconds
-            if (now.getTime() - lastRunRef.current < 5000) return;
-            lastRunRef.current = now.getTime();
-
-            const currentDayIdx = now.getDay() === 0 ? 6 : now.getDay() - 1; // 0=Mon
-            const currentHour = now.getHours();
-            const currentMinute = now.getMinutes();
-            const currentTimeMinutes = currentHour * 60 + currentMinute;
-
-            // Format today's date as YYYY-MM-DD for leave comparison
-            const todayStr = formatDateYMD(now);
-
-            doctors.forEach(async (doc) => {
-                // Skip OPERASI — always manual
-                if (doc.status === 'OPERASI') return;
-
-                // === CHECK LEAVE (CUTI) ===
-                const isOnLeaveToday = leaves.some(leave =>
-                    matchDoctorName(leave.doctor, doc.name) &&
-                    isDateInRange(todayStr, leave.dates)
-                );
-
-                if (isOnLeaveToday) {
-                    if (doc.status !== 'CUTI') {
-                        await autoUpdateStatus(doc.id, 'CUTI');
-                    }
-                    return;
+    // listen for server-sent events to refresh immediately
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+        const es = new EventSource('/api/stream/doctors');
+        es.onmessage = (evt) => {
+            try {
+                const msg = JSON.parse(evt.data);
+                if (msg.type === 'doctors') {
+                    mutate('/api/doctors');
                 }
-
-                // If doctor WAS on CUTI but leave ended, bring them back
-                if (doc.status === 'CUTI' && !isOnLeaveToday) {
-                    await autoUpdateStatus(doc.id, 'TIDAK PRAKTEK');
-                    return;
-                }
-
-                // === SHIFT-BASED STATUS ===
-                // Get ALL active shifts for this doctor today (skip shifts disabled for today)
-                const todayShifts = shifts.filter(s =>
-                    s.doctor === doc.name && s.dayIdx === currentDayIdx && s.formattedTime &&
-                    !(s.disabledDates || []).includes(todayStr)
-                );
-
-                if (todayShifts.length === 0) {
-                    // No shift today → should be TIDAK PRAKTEK
-                    if (doc.status === 'BUKA' || doc.status === 'SELESAI') {
-                        await autoUpdateStatus(doc.id, 'TIDAK PRAKTEK');
-                    }
-                    return;
-                }
-
-                // Check if currently within ANY of the doctor's shifts
-                let isWithinAnyShift = false;
-                let isAfterAllShifts = true;
-                let latestEndMinutes = 0;
-
-                for (const shift of todayShifts) {
-                    const [startStr, endStr] = shift.formattedTime!.split('-');
-                    const startMinutes = parseTimeToMinutes(startStr);
-                    const endMinutes = parseTimeToMinutes(endStr);
-
-                    if (startMinutes === null || endMinutes === null) continue;
-
-                    if (currentTimeMinutes >= startMinutes && currentTimeMinutes < endMinutes) {
-                        isWithinAnyShift = true;
-                    }
-
-                    if (currentTimeMinutes < endMinutes) {
-                        isAfterAllShifts = false; // There is still a shift that hasn't ended
-                    }
-
-                    if (endMinutes > latestEndMinutes) {
-                        latestEndMinutes = endMinutes;
-                    }
-                }
-
-                if (isWithinAnyShift) {
-                    // During shift today → BUKA (unless PENUH — manual states)
-                    if (doc.status === 'TIDAK PRAKTEK' || doc.status === 'SELESAI') {
-                        await autoUpdateStatus(doc.id, 'BUKA');
-                    }
-                } else if (isAfterAllShifts && latestEndMinutes > 0) {
-                    // After ALL shifts end → SELESAI
-                    if (doc.status === 'BUKA' || doc.status === 'PENUH' || doc.status === 'TIDAK PRAKTEK') {
-                        await autoUpdateStatus(doc.id, 'SELESAI');
-                    }
-                } else if (!isWithinAnyShift && !isAfterAllShifts) {
-                    // e.g. Gap between shifts, currently we keep it BUKA or whatever it was, 
-                    // or maybe we switch to TIDAK PRAKTEK in between shifts? 
-                    // Usually we stay BUKA until the very end, or change to TIDAK PRAKTEK.
-                    // Let's just not touch it, or ensure it's not SELESAI.
-                    if (doc.status === 'SELESAI') {
-                        await autoUpdateStatus(doc.id, 'BUKA');
-                    }
-                }
-            });
+            } catch (e) {
+                console.warn('invalid SSE message', e);
+            }
         };
-
-        const autoInterval = setInterval(checkAutomation, 5000);
-        checkAutomation(); // initial run
-        return () => clearInterval(autoInterval);
-    }, [automationEnabled, doctors, shifts, leaves]);
+        es.onerror = () => {
+            // attempt reconnect after delay
+            es.close();
+            setTimeout(() => {
+                // just create a new EventSource
+                const newEs = new EventSource('/api/stream/doctors');
+                newEs.onmessage = es.onmessage;
+                newEs.onerror = es.onerror;
+            }, 5000);
+        };
+        return () => es.close();
+    }, []);
 }
 
 // === HELPERS ===
 
 function parseTimeToMinutes(timeStr: string | undefined): number | null {
     if (!timeStr) return null;
-    const parts = timeStr.trim().split(':');
+    const t = timeStr.trim().toLowerCase();
+    // Remove am/pm if present (assume 24h preferred)
+    const ampm = t.match(/(am|pm)$/);
+    let cleaned = t.replace(/\s*(am|pm)$/, '');
+    // Accept separators ':' or '.'
+    cleaned = cleaned.replace('.', ':');
+    const parts = cleaned.split(':');
     if (parts.length < 2) return null;
-    const h = parseInt(parts[0]);
-    const m = parseInt(parts[1]);
+    let h = parseInt(parts[0]);
+    let m = parseInt(parts[1]);
     if (isNaN(h) || isNaN(m)) return null;
+    if (ampm) {
+        const ap = ampm[1];
+        if (ap === 'pm' && h < 12) h += 12;
+        if (ap === 'am' && h === 12) h = 0;
+    }
     return h * 60 + m;
 }
 
@@ -141,22 +73,36 @@ function formatDateYMD(date: Date): string {
 
 function isDateInRange(todayStr: string, dateRange: string): boolean {
     if (!dateRange) return false;
-
+    // YYYY-MM-DD - YYYY-MM-DD
     const standardMatch = dateRange.match(/(\d{4}-\d{2}-\d{2})\s*-\s*(\d{4}-\d{2}-\d{2})/);
     if (standardMatch) {
         return todayStr >= standardMatch[1] && todayStr <= standardMatch[2];
     }
 
-    const legacyMatch = dateRange.match(/([A-Za-z]+)\s+(\d{1,2})\s*-\s*(\d{1,2})/);
+    // Single ISO date
+    const singleISO = dateRange.match(/^(\d{4}-\d{2}-\d{2})$/);
+    if (singleISO) return todayStr === singleISO[1];
+
+    // Month name formats, support English short/full and Indonesian full names
+    const legacyMatch = dateRange.match(/([A-Za-zçéÉ]+)\s+(\d{1,2})\s*-\s*(\d{1,2})/i);
+    const monthMap: Record<string, string> = {
+        'jan': '01', 'january': '01', 'janvier': '01',
+        'feb': '02', 'february': '02', 'februari': '02',
+        'mar': '03', 'march': '03', 'maret': '03',
+        'apr': '04', 'april': '04',
+        'may': '05', 'mei': '05',
+        'jun': '06', 'june': '06', 'juni': '06',
+        'jul': '07', 'july': '07', 'juli': '07',
+        'aug': '08', 'august': '08', 'agustus': '08',
+        'sep': '09', 'september': '09',
+        'oct': '10', 'october': '10', 'oktober': '10',
+        'nov': '11', 'november': '11',
+        'dec': '12', 'december': '12', 'desember': '12'
+    };
     if (legacyMatch) {
-        const monthStr = legacyMatch[1];
+        const monthStr = legacyMatch[1].toLowerCase();
         const startDay = parseInt(legacyMatch[2]);
         const endDay = parseInt(legacyMatch[3]);
-        const monthMap: Record<string, string> = {
-            'Jan': '01', 'Feb': '02', 'Mar': '03', 'Apr': '04',
-            'May': '05', 'Jun': '06', 'Jul': '07', 'Aug': '08',
-            'Sep': '09', 'Oct': '10', 'Nov': '11', 'Dec': '12'
-        };
         const mm = monthMap[monthStr];
         if (!mm) return false;
         const year = todayStr.substring(0, 4);
@@ -165,6 +111,17 @@ function isDateInRange(todayStr: string, dateRange: string): boolean {
         return todayStr >= rangeStart && todayStr <= rangeEnd;
     }
 
+    // Fallback: if the string can be parsed to a single date, compare
+    try {
+        const parsed = new Date(dateRange);
+        if (!isNaN(parsed.getTime())) {
+            const y = parsed.getFullYear();
+            const m = String(parsed.getMonth() + 1).padStart(2, '0');
+            const d = String(parsed.getDate()).padStart(2, '0');
+            return todayStr === `${y}-${m}-${d}`;
+        }
+    } catch { }
+
     return false;
 }
 
@@ -172,8 +129,14 @@ function matchDoctorName(leaveName: string, doctorName: string): boolean {
     const normalize = (s: string) => s.toLowerCase()
         .replace(/^dr\.?\s*/i, '')
         .replace(/,?\s*sp\.?\s*\w+/gi, '')
+        .replace(/[^a-z0-9\s]/gi, '')
+        .replace(/\s+/g, ' ')
         .trim();
-    return normalize(leaveName) === normalize(doctorName);
+    const a = normalize(leaveName);
+    const b = normalize(doctorName);
+    if (a === b) return true;
+    // fallback: partial match (e.g., leave record may be shorter)
+    return a.includes(b) || b.includes(a);
 }
 
 async function autoUpdateStatus(id: string | number, status: Doctor['status']) {

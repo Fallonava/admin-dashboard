@@ -1,5 +1,11 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google"; // Using Inter as requested for modern look
+import { initAutomationScheduler } from "@/lib/automation-scheduler";
+
+// scheduler should start on server-side only
+if (typeof window === 'undefined') {
+    initAutomationScheduler();
+}
 import "./globals.css";
 import { Sidebar } from "@/components/Sidebar";
 
