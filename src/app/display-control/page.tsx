@@ -200,6 +200,7 @@ export default function DisplayControl() {
                         <a
                             href="/tv.html"
                             target="_blank"
+                            rel="noopener noreferrer"
                             className="w-full group/action flex items-center gap-4 p-4 bg-emerald-50 hover:bg-emerald-100/80 border border-emerald-100 rounded-2xl transition-all duration-200 active:scale-[0.98]"
                         >
                             <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-200/60 text-emerald-700 group-hover/action:scale-110 transition-transform">

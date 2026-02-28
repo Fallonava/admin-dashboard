@@ -59,8 +59,7 @@ export default function SchedulesPage() {
                             <p className="text-[11px] text-primary font-semibold">Super Admin</p>
                         </div>
                         <Avatar className="h-10 w-10 shadow-sm hover:scale-105 transition-transform duration-300">
-                            <AvatarImage src="/avatars/admin.png" />
-                            <AvatarFallback className="bg-gradient-to-tr from-blue-500 to-cyan-400 text-xs font-bold text-white shadow-inner" />
+                            <AvatarFallback className="bg-gradient-to-tr from-blue-500 to-cyan-400 text-xs font-bold text-white shadow-inner">AD</AvatarFallback>
                         </Avatar>
                     </div>
                 </div>

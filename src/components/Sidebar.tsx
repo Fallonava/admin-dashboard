@@ -32,7 +32,6 @@ const systems = [
   { name: "Otomatisasi", href: "/automation", icon: Bot },
   { name: "Monitor Queue", href: "/automation/queue-monitor", icon: Zap },
   { name: "Kontrol Layar", href: "/display-control", icon: Settings },
-  { name: "Infrastruktur", href: "/infrastructure", icon: Server },
   { name: "Layar Langsung", href: "/tv.html", icon: Tv, external: true },
 ];
 
@@ -95,19 +94,36 @@ export function Sidebar() {
         <nav className="space-y-1">
           {systems.map((item) => {
             const isActive = pathname === item.href;
+            const linkClassName = cn(
+              "flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold transition-all duration-300",
+              isActive
+                ? "btn-gradient text-white shadow-[0_4px_14px_0_rgba(0,92,255,0.39)]"
+                : "hover:bg-black/[0.03] hover:text-foreground text-muted-foreground"
+            );
+            const iconClassName = cn("h-5 w-5", isActive ? "text-white" : "text-muted-foreground");
+
+            if (item.external) {
+              return (
+                <a
+                  key={item.name}
+                  href={item.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={linkClassName}
+                >
+                  <item.icon className={iconClassName} />
+                  {item.name}
+                </a>
+              );
+            }
+
             return (
               <Link
                 key={item.name}
                 href={item.href}
-                target={item.external ? "_blank" : undefined}
-                className={cn(
-                  "flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold transition-all duration-300",
-                  isActive
-                    ? "btn-gradient text-white shadow-[0_4px_14px_0_rgba(0,92,255,0.39)]"
-                    : "hover:bg-black/[0.03] hover:text-foreground text-muted-foreground"
-                )}
+                className={linkClassName}
               >
-                <item.icon className={cn("h-5 w-5", isActive ? "text-white" : "text-muted-foreground")} />
+                <item.icon className={iconClassName} />
                 {item.name}
               </Link>
             );
