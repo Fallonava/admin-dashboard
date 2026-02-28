@@ -174,7 +174,7 @@ export default function AnalyticsPage() {
                 </div>
 
                 {/* Charts Container — lazy-loaded to defer ~200KB recharts bundle */}
-                <AnalyticsCharts />
+                <AnalyticsCharts shifts={shifts} />
 
                 {/* Live Patient Pipeline */}
                 <div className="offscreen-section super-glass-card p-6 rounded-[32px] shadow-sm border border-white/50 relative overflow-hidden mt-6">

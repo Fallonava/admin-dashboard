@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import useSWR from "swr";
 import { Plus, Edit2, Trash2, Save, X } from "lucide-react";
-import { Dialog, DialogContent, DialogTrigger, DialogClose } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTrigger, DialogClose, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 
 interface AutomationRule {
@@ -100,7 +100,7 @@ export default function AutomationRulesPage() {
             <Dialog open={open} onOpenChange={setOpen}>
                 <DialogContent className="max-w-lg">
                     <div className="flex justify-between items-center mb-4">
-                        <h2 className="text-xl font-bold">{editing?.id ? 'Edit Rule' : 'New Rule'}</h2>
+                        <DialogTitle className="text-xl font-bold">{editing?.id ? 'Edit Rule' : 'New Rule'}</DialogTitle>
                         <DialogClose asChild>
                             <button className="text-slate-500 hover:text-slate-800"><X /></button>
                         </DialogClose>
@@ -125,7 +125,7 @@ export default function AutomationRulesPage() {
                                     try {
                                         const obj = JSON.parse(e.target.value);
                                         setEditing(editing ? { ...editing, condition: obj } : null);
-                                    } catch {}
+                                    } catch { }
                                 }}
                             />
                         </div>
@@ -139,7 +139,7 @@ export default function AutomationRulesPage() {
                                     try {
                                         const obj = JSON.parse(e.target.value);
                                         setEditing(editing ? { ...editing, action: obj } : null);
-                                    } catch {}
+                                    } catch { }
                                 }}
                             />
                         </div>

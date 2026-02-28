@@ -13,26 +13,36 @@ import {
 } from "recharts";
 import { ChevronRight } from "lucide-react";
 
-// Mock Data for Charts (since we don't have historical data in the API yet)
-const visitData = [
-    { name: 'Senin', visits: 120, target: 100 },
-    { name: 'Selasa', visits: 145, target: 110 },
-    { name: 'Rabu', visits: 130, target: 110 },
-    { name: 'Kamis', visits: 170, target: 120 },
-    { name: 'Jumat', visits: 190, target: 130 },
-    { name: 'Sabtu', visits: 210, target: 150 },
-    { name: 'Minggu', visits: 150, target: 140 },
-];
+// Pre-define days mapping for correct ordering
+const WEEK_DAYS = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
 
-const workloadData = [
-    { name: 'Poli Umum', load: 85, ideal: 75 },
-    { name: 'Gigi', load: 60, ideal: 70 },
-    { name: 'Anak', load: 90, ideal: 80 },
-    { name: 'Kandungan', load: 75, ideal: 65 },
-    { name: 'Mata', load: 45, ideal: 50 },
-];
+interface Shift {
+    dayIdx: number;
+    // ... other shift properties aren't strictly needed for just count
+}
 
-export function AnalyticsCharts() {
+export function AnalyticsCharts({ shifts = [] }: { shifts?: Shift[] }) {
+    // Dynamically calculate shift density per day
+    const dynamicVisitData = WEEK_DAYS.map((dayName, idx) => {
+        // dayIdx in Shift maps 1: Senin, 2: Selasa, ... 7: Minggu
+        const count = shifts.filter(s => s.dayIdx === idx + 1).length;
+
+        return {
+            name: dayName,
+            visits: count,
+            // A mock target to show difference (could be an average or set goal)
+            target: Math.max(10, Math.round(count * 0.8))
+        };
+    });
+
+    const workloadData = [
+        { name: 'Poli Umum', load: 85, ideal: 75 },
+        { name: 'Gigi', load: 60, ideal: 70 },
+        { name: 'Anak', load: 90, ideal: 80 },
+        { name: 'Kandungan', load: 75, ideal: 65 },
+        { name: 'Mata', load: 45, ideal: 50 },
+    ];
+
     return (
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
 
@@ -40,18 +50,18 @@ export function AnalyticsCharts() {
             <div className="xl:col-span-2 super-glass-card p-6 rounded-[32px] shadow-sm border border-white/50">
                 <div className="flex items-center justify-between mb-8">
                     <div>
-                        <h2 className="text-lg font-black text-slate-800 tracking-tight">Tren Kunjungan Pasien</h2>
-                        <p className="text-xs font-medium text-slate-400">Berdasarkan data operasional mingguan</p>
+                        <h2 className="text-lg font-black text-slate-800 tracking-tight">Kepadatan Jadwal Mingguan</h2>
+                        <p className="text-xs font-medium text-slate-400">Total sesi praktik berjalan per hari</p>
                     </div>
                     <div className="flex items-center gap-2 text-xs font-bold">
                         <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]"></div> Aktual</div>
-                        <div className="flex items-center gap-1.5 ml-3"><div className="w-3 h-3 rounded-full bg-slate-300"></div> Target</div>
+                        <div className="flex items-center gap-1.5 ml-3"><div className="w-3 h-3 rounded-full bg-slate-300"></div> Target Minimal</div>
                     </div>
                 </div>
 
                 <div className="h-[300px] w-full">
                     <ResponsiveContainer width="100%" height="100%">
-                        <AreaChart data={visitData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                        <AreaChart data={dynamicVisitData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                             <defs>
                                 <linearGradient id="colorVisits" x1="0" y1="0" x2="0" y2="1">
                                     <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
@@ -70,8 +80,10 @@ export function AnalyticsCharts() {
                                 axisLine={false}
                                 tickLine={false}
                                 tick={{ fontSize: 12, fill: '#64748b', fontWeight: 600 }}
+                                allowDecimals={false}
                             />
                             <Tooltip
+                                formatter={(value: number | string | Array<number | string> | undefined) => [value, 'Sesi Praktik']}
                                 contentStyle={{
                                     backgroundColor: 'rgba(255, 255, 255, 0.9)',
                                     backdropFilter: 'blur(10px)',
@@ -84,6 +96,7 @@ export function AnalyticsCharts() {
                             <Area
                                 type="monotone"
                                 dataKey="visits"
+                                name="Aktual"
                                 stroke="#3b82f6"
                                 strokeWidth={4}
                                 fillOpacity={1}
@@ -93,6 +106,7 @@ export function AnalyticsCharts() {
                             <Area
                                 type="monotone"
                                 dataKey="target"
+                                name="Target Minimal"
                                 stroke="#cbd5e1"
                                 strokeWidth={3}
                                 strokeDasharray="5 5"
@@ -144,7 +158,7 @@ export function AnalyticsCharts() {
                     <span>Lihat Rincian Dokter</span>
                     <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
                 </button>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 }

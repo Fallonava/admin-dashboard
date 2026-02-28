@@ -81,8 +81,10 @@ export default function DoctorsPage() {
         return matchesSearch && matchesFilter;
     }), [doctors, debouncedSearch, activeFilter]);
 
-    const { totalAktif, totalBedah, totalNonBedah } = useMemo(() => ({
-        totalAktif: doctors.filter(d => d.status === 'BUKA' || d.status === 'OPERASI').length,
+    const { totalPraktik, totalOperasi, totalCuti, totalBedah, totalNonBedah } = useMemo(() => ({
+        totalPraktik: doctors.filter(d => d.status === 'BUKA' || d.status === 'PENUH').length,
+        totalOperasi: doctors.filter(d => d.status === 'OPERASI').length,
+        totalCuti: doctors.filter(d => d.status === 'CUTI').length,
         totalBedah: doctors.filter(d => d.category === 'Bedah').length,
         totalNonBedah: doctors.filter(d => d.category === 'NonBedah').length,
     }), [doctors]);
@@ -95,67 +97,87 @@ export default function DoctorsPage() {
     return (
         <div className="w-full h-full flex flex-col px-2 lg:px-4">
             {/* ═══════════════════ HEADER ═══════════════════ */}
-            <header className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 lg:mb-6 gap-3 flex-shrink-0 pl-12 lg:pl-0">
-                <div className="flex items-center gap-3">
-                    <div className="p-2.5 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl shadow-[0_4px_14px_0_rgba(0,92,255,0.3)] text-white flex-shrink-0">
-                        <Users size={22} />
+            <header className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 lg:mb-8 gap-4 flex-shrink-0 pl-12 lg:pl-0 relative z-10 w-full rounded-[32px] p-1">
+                {/* Subtle animated background layer */}
+                <div className="absolute top-1/2 left-0 -translate-y-1/2 w-[300px] h-[150px] bg-blue-500/10 rounded-full blur-[60px] animate-pulse pointer-events-none" />
+
+                <div className="flex items-center gap-4 relative z-10">
+                    <div className="p-3.5 bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-600 rounded-[22px] shadow-[0_12px_24px_-8px_rgba(79,70,229,0.7)] text-white flex-shrink-0 relative overflow-hidden group">
+                        <div className="absolute -inset-[100%] bg-gradient-to-r from-transparent via-white/30 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-in-out" />
+                        <Users size={26} className="relative z-10 drop-shadow-md" />
                     </div>
                     <div>
-                        <h1 className="text-2xl lg:text-3xl font-black tracking-tight text-slate-900">
-                            Direktori <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Dokter</span>
+                        <h1 className="text-3xl lg:text-4xl font-black tracking-tight flex items-center gap-2">
+                            <span className="text-slate-900 drop-shadow-sm">Direktori</span>
+                            <span className="bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600 bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient">
+                                Dokter
+                            </span>
                         </h1>
-                        <p className="text-xs lg:text-sm text-slate-400 font-medium mt-0.5">Kelola profil dan jadwal tayang dokter</p>
+                        <p className="text-sm lg:text-base text-slate-500/90 font-medium mt-1">
+                            Kelola profil dan jadwal tayang dokter secara real-time
+                        </p>
                     </div>
                 </div>
 
-                <div className="flex items-center gap-2 lg:gap-4 flex-wrap">
-                    {/* Stats Mini */}
-                    <div className="hidden lg:flex items-center gap-4 text-center">
-                        <div>
-                            <p className="text-2xl font-black text-slate-800">{doctors.length}</p>
-                            <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Total</p>
+                <div className="flex items-center gap-3 lg:gap-5 flex-wrap relative z-10">
+                    {/* Stats Mini - Ultra Premium Level */}
+                    <div className="hidden lg:flex items-center gap-6 bg-white/70 backdrop-blur-2xl px-6 py-3 rounded-[24px] shadow-[inset_0_2px_4px_rgba(255,255,255,0.9),0_4px_24px_-8px_rgba(0,0,0,0.06)] border border-white/60">
+                        <div className="text-center group cursor-default">
+                            <p className="text-2xl font-black text-slate-800 leading-none group-hover:scale-110 transition-transform duration-300 shadow-blue-500/10">{doctors.length}</p>
+                            <p className="text-[10px] font-extrabold text-slate-500 uppercase tracking-widest mt-1.5 border-b border-transparent group-hover:border-slate-300 transition-colors">Total</p>
                         </div>
-                        <div className="w-px h-8 bg-slate-200/60" />
-                        <div>
-                            <p className="text-2xl font-black text-blue-600">{totalAktif}</p>
-                            <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Aktif</p>
+                        <div className="w-px h-10 bg-gradient-to-b from-transparent via-slate-200 to-transparent" />
+                        <div className="text-center group cursor-default">
+                            <p className="text-2xl font-black text-rose-500 leading-none group-hover:scale-110 transition-transform duration-300 drop-shadow-sm">{totalBedah}</p>
+                            <p className="text-[10px] font-extrabold text-rose-400 uppercase tracking-widest mt-1.5 border-b border-transparent group-hover:border-rose-200 transition-colors">Bedah</p>
                         </div>
-                        <div className="w-px h-8 bg-slate-200/60" />
-                        <div>
-                            <p className="text-2xl font-black text-rose-500">{totalBedah}</p>
-                            <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Bedah</p>
+                        <div className="w-px h-10 bg-gradient-to-b from-transparent via-slate-200 to-transparent" />
+                        <div className="text-center group cursor-default">
+                            <p className="text-2xl font-black text-emerald-500 leading-none group-hover:scale-110 transition-transform duration-300 drop-shadow-sm">{totalNonBedah}</p>
+                            <p className="text-[10px] font-extrabold text-emerald-400 uppercase tracking-widest mt-1.5 border-b border-transparent group-hover:border-emerald-200 transition-colors">Non Bedah</p>
                         </div>
                     </div>
 
                     <button
                         onClick={() => { setEditingDoctor(undefined); setIsFormOpen(true); }}
-                        className="bg-slate-900 text-white px-5 py-3 rounded-2xl flex items-center gap-2.5 font-bold text-sm shadow-lg shadow-slate-900/20 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 active:scale-[0.98]"
+                        className="bg-slate-900 text-white px-6 py-3.5 rounded-[24px] flex items-center gap-2.5 font-bold text-sm shadow-[0_8px_20px_-6px_rgba(15,23,42,0.6)] hover:shadow-[0_12px_28px_-6px_rgba(15,23,42,0.8)] hover:bg-slate-800 hover:-translate-y-1 transition-all duration-400 active:scale-95 group relative overflow-hidden ring-1 ring-slate-900/5"
                     >
-                        <Plus size={16} />
-                        <span>Tambah Dokter</span>
+                        <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                        <div className="absolute -inset-[100%] bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-in-out" />
+                        <Plus size={18} className="relative z-10 group-hover:rotate-90 transition-transform duration-500" />
+                        <span className="relative z-10 tracking-wide">Tambah Dokter</span>
                     </button>
                 </div>
             </header>
 
             {/* ═══════════════════ TOOLBAR PENCARIAN & FILTER ═══════════════════ */}
-            <div className="flex flex-col md:flex-row items-center gap-4 mb-8">
-                {/* Kolom Pencarian */}
+            <div className="flex flex-col md:flex-row items-center gap-4 mb-8 relative z-10 w-full max-w-4xl">
+                {/* Kolom Pencarian Premium */}
                 <div className="relative flex-1 w-full group">
-                    <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-[24px] blur opacity-0 group-focus-within:opacity-100 transition duration-500"></div>
+                    <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500/20 to-indigo-500/20 rounded-[24px] blur opacity-0 group-focus-within:opacity-100 transition duration-500"></div>
                     <div className="relative">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 h-5 w-5" />
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 h-5 w-5 group-focus-within:text-blue-500 transition-colors" />
                         <input
                             type="text"
                             placeholder="Cari nama dokter atau spesialisasi..."
-                            className="w-full bg-white/60 backdrop-blur-xl rounded-[24px] pl-12 pr-4 py-3.5 text-sm font-semibold text-slate-800 outline-none shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),0_2px_10px_-3px_rgba(0,0,0,0.02)] focus:bg-white/90 focus:ring-2 focus:ring-blue-500/20 transition-all placeholder:text-slate-400"
+                            className="w-full bg-white/70 backdrop-blur-xl rounded-[24px] pl-12 pr-4 py-3.5 text-sm font-semibold text-slate-800 outline-none shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),0_2px_12px_-4px_rgba(0,0,0,0.05)] focus:bg-white/95 focus:ring-2 focus:ring-blue-500/30 transition-all placeholder:text-slate-400 border border-white"
                             value={searchTerm}
                             onChange={e => setSearchTerm(e.target.value)}
                         />
                     </div>
                 </div>
 
-                {/* Filter Kategori */}
-                <div className="flex items-center gap-1.5 bg-white/60 backdrop-blur-xl rounded-[24px] p-1.5 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),0_2px_10px_-3px_rgba(0,0,0,0.02)] w-full md:w-auto">
+                {/* Filter Kategori - Premium Segmented Control */}
+                <div className="flex items-center bg-white/60 backdrop-blur-xl rounded-[24px] p-1 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),0_2px_12px_-4px_rgba(0,0,0,0.05)] w-full md:w-auto relative border border-white overflow-hidden">
+                    {/* Animated Glider Background */}
+                    <div
+                        className="absolute top-1 bottom-1 rounded-[20px] bg-slate-900 shadow-md transition-all duration-300 ease-[cubic-bezier(0.25,1,0.5,1)]"
+                        style={{
+                            width: activeFilter === 'Semua' ? '33.33%' : activeFilter === 'Bedah' ? '33.33%' : '33.33%',
+                            left: activeFilter === 'Semua' ? '4px' : activeFilter === 'Bedah' ? 'calc(33.33% + 4px)' : 'calc(66.66% + 4px)'
+                        }}
+                    />
+
                     {([
                         { key: "Semua" as const, label: "Semua", count: doctors.length },
                         { key: "Bedah" as const, label: "Bedah", count: totalBedah },
@@ -165,21 +187,13 @@ export default function DoctorsPage() {
                             key={filter.key}
                             onClick={() => setActiveFilter(filter.key)}
                             className={cn(
-                                "px-5 py-2.5 flex-shrink-0 rounded-[20px] text-xs font-bold transition-all duration-300 whitespace-nowrap flex items-center gap-2",
+                                "relative z-10 flex-1 min-w-[100px] px-4 py-3 rounded-[20px] text-xs font-bold transition-all duration-300 flex items-center justify-center gap-2",
                                 activeFilter === filter.key
-                                    ? "bg-slate-900 text-white shadow-md shadow-slate-900/10"
-                                    : "text-slate-500 hover:text-slate-800 hover:bg-white/80"
+                                    ? "text-white"
+                                    : "text-slate-500 hover:text-slate-800"
                             )}
                         >
                             <span>{filter.label}</span>
-                            <span className={cn(
-                                "text-[10px] font-black px-1.5 py-0.5 rounded-lg min-w-[20px] text-center transition-colors",
-                                activeFilter === filter.key
-                                    ? "bg-white/20 text-white"
-                                    : "bg-slate-200/50 text-slate-500"
-                            )}>
-                                {filter.count}
-                            </span>
                         </button>
                     ))}
                 </div>
@@ -187,13 +201,13 @@ export default function DoctorsPage() {
 
             {/* ═══════════════════ GRID KARTU DOKTER ═══════════════════ */}
             {filteredDoctors.length === 0 ? (
-                <div className="flex-1 flex flex-col items-center justify-center text-center py-24">
-                    <div className="h-28 w-28 bg-white/60 backdrop-blur-xl rounded-[32px] flex items-center justify-center mb-8 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),0_20px_40px_-8px_rgba(0,0,0,0.05)]">
-                        <UserRound size={44} className="text-slate-300" />
+                <div className="flex-1 flex flex-col items-center justify-center text-center py-24 animate-in fade-in zoom-in-95 duration-500">
+                    <div className="h-28 w-28 bg-gradient-to-br from-blue-50 to-indigo-50/30 rounded-[32px] flex items-center justify-center mb-8 shadow-[inset_0_2px_4px_rgba(255,255,255,0.8),0_12px_24px_-8px_rgba(99,102,241,0.15)] ring-1 ring-white">
+                        <UserRound size={44} className="text-blue-400/80 drop-shadow-sm" />
                     </div>
-                    <h3 className="text-2xl font-black text-slate-800 mb-3">Tidak Ada Dokter</h3>
-                    <p className="text-slate-400 font-medium max-w-sm leading-relaxed">
-                        Coba sesuaikan kata kunci pencarian atau ubah filter kategori yang aktif.
+                    <h3 className="text-2xl font-black text-slate-800 mb-2 tracking-tight">Tidak Ada Dokter</h3>
+                    <p className="text-sm text-slate-400 font-medium max-w-sm leading-relaxed">
+                        Kami tidak dapat menemukan nama dokter dengan pencarian tersebut. Coba ubah kata kunci Anda.
                     </p>
                 </div>
             ) : (
@@ -205,17 +219,17 @@ export default function DoctorsPage() {
                         return (
                             <div
                                 key={doc.id}
-                                className="super-glass-card group p-6 rounded-[32px] flex flex-col min-h-[180px]"
+                                className="group bg-white/70 backdrop-blur-2xl p-6 rounded-[32px] flex flex-col min-h-[190px] shadow-[inset_0_1px_1px_rgba(255,255,255,0.9),0_4px_16px_-4px_rgba(0,0,0,0.03)] border border-white hover:shadow-[0_20px_40px_-12px_rgba(0,0,0,0.08)] hover:-translate-y-1 transition-all duration-400 relative overflow-hidden"
                             >
-                                {/* Gradient accent bar di atas */}
-                                <div className={cn("absolute top-0 left-8 right-8 h-1.5 rounded-b-full bg-gradient-to-r opacity-60 group-hover:opacity-100 transition-opacity duration-500", gradientClass)} />
+                                {/* Glowing ambient light inside card */}
+                                <div className={cn("absolute -top-12 -right-12 w-28 h-28 bg-gradient-to-br rounded-full opacity-[0.08] blur-2xl group-hover:opacity-[0.15] transition-opacity duration-500", gradientClass)} />
 
                                 {/* ── Baris Atas: Avatar + Info ── */}
                                 <div className="flex items-center gap-4 mb-6 relative z-10">
                                     {/* Avatar */}
                                     <div className="relative flex-shrink-0">
                                         <div className={cn(
-                                            "h-16 w-16 rounded-[20px] bg-gradient-to-br flex items-center justify-center text-white font-black text-2xl shadow-lg shadow-blue-500/10 group-hover:scale-105 transition-transform duration-500",
+                                            "h-16 w-16 rounded-[22px] bg-gradient-to-br flex items-center justify-center text-white font-black text-2xl shadow-lg ring-1 ring-white/20 group-hover:scale-[1.03] group-hover:shadow-[0_8px_16px_-4px_rgba(0,0,0,0.2)] transition-all duration-400",
                                             gradientClass
                                         )}>
                                             {doc.queueCode || doc.name.charAt(0)}
@@ -230,11 +244,11 @@ export default function DoctorsPage() {
                                     </div>
 
                                     {/* Nama & Spesialisasi */}
-                                    <div className="flex-1 min-w-0">
-                                        <h3 className="font-black text-slate-800 text-lg tracking-tight leading-tight truncate group-hover:text-blue-600 transition-colors">
+                                    <div className="flex-1 min-w-0 pr-8">
+                                        <h3 className="font-extrabold text-slate-800 text-lg tracking-tight leading-tight truncate group-hover:text-blue-600 transition-colors">
                                             {doc.name}
                                         </h3>
-                                        <p className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.1em] truncate mt-1">
+                                        <p className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.12em] truncate mt-1">
                                             {doc.specialty}
                                         </p>
                                     </div>
@@ -243,40 +257,39 @@ export default function DoctorsPage() {
                                 {/* ── Badges Kategori & Status ── */}
                                 <div className="mt-auto flex items-center justify-between gap-3 relative z-10">
                                     <span className={cn(
-                                        "inline-flex items-center gap-1.5 text-[10px] px-3 py-1.5 rounded-xl font-black uppercase tracking-wider backdrop-blur-sm shadow-sm",
+                                        "inline-flex items-center gap-1.5 text-[10px] px-3.5 py-1.5 rounded-xl font-bold uppercase tracking-wider backdrop-blur-sm border shadow-[inset_0_1px_1px_rgba(255,255,255,0.5)]",
                                         doc.category === 'Bedah'
-                                            ? "text-rose-600 bg-rose-50 border border-rose-100/50"
-                                            : "text-emerald-600 bg-emerald-50 border border-emerald-100/50"
+                                            ? "text-rose-600 bg-rose-50/80 border-rose-100/50"
+                                            : "text-emerald-600 bg-emerald-50/80 border-emerald-100/50"
                                     )}>
-                                        <Activity size={10} />
+                                        <Activity size={10} strokeWidth={2.5} />
                                         {doc.category === 'NonBedah' ? 'Non Bedah' : doc.category}
                                     </span>
 
                                     <span className={cn(
-                                        "inline-flex items-center gap-1.5 text-[10px] px-3 py-1.5 rounded-xl font-black uppercase tracking-wider backdrop-blur-sm shadow-sm border border-transparent",
-                                        status.color, status.bg,
+                                        "inline-flex items-center gap-1.5 text-[10px] px-3.5 py-1.5 rounded-xl font-black uppercase tracking-wider backdrop-blur-sm border shadow-[inset_0_1px_1px_rgba(255,255,255,0.5)]",
+                                        status.color, status.bg, "border-transparent text-opacity-90",
                                         status.pulse && "animate-pulse"
                                     )}>
-                                        {status.dot && <span className={cn("w-1.5 h-1.5 rounded-full shadow-sm", status.dot)} />}
                                         {status.label}
                                     </span>
                                 </div>
 
                                 {/* ── Tombol Aksi Hover ── */}
-                                <div className="absolute top-4 right-4 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 translate-y-1 group-hover:translate-y-0 transition-all duration-400 z-20">
+                                <div className="absolute top-4 right-4 flex flex-col items-center gap-1.5 opacity-0 group-hover:opacity-100 translate-x-2 group-hover:translate-x-0 transition-all duration-300 z-20">
                                     <button
                                         onClick={() => handleEdit(doc)}
-                                        className="p-2.5 rounded-[14px] bg-white/80 backdrop-blur-md text-slate-400 hover:text-blue-600 hover:bg-blue-50 shadow-sm hover:shadow-md border border-slate-100 transition-all duration-300 active:scale-95"
+                                        className="h-9 w-9 flex items-center justify-center rounded-[14px] bg-white/90 backdrop-blur-md text-slate-400 hover:text-blue-600 hover:bg-blue-50 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.1)] border border-slate-100 transition-all duration-200 hover:scale-105 active:scale-95"
                                         title="Edit Dokter"
                                     >
-                                        <Edit2 size={16} />
+                                        <Edit2 size={14} strokeWidth={2.5} />
                                     </button>
                                     <button
                                         onClick={() => handleDeleteClick(doc.id)}
-                                        className="p-2.5 rounded-[14px] bg-white/80 backdrop-blur-md text-slate-400 hover:text-red-600 hover:bg-red-50 shadow-sm hover:shadow-md border border-slate-100 transition-all duration-300 active:scale-95"
+                                        className="h-9 w-9 flex items-center justify-center rounded-[14px] bg-white/90 backdrop-blur-md text-slate-400 hover:text-rose-600 hover:bg-rose-50 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.1)] border border-slate-100 transition-all duration-200 hover:scale-105 active:scale-95"
                                         title="Hapus Dokter"
                                     >
-                                        <Trash2 size={16} />
+                                        <Trash2 size={14} strokeWidth={2.5} />
                                     </button>
                                 </div>
                             </div>
