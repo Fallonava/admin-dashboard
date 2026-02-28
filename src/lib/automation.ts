@@ -1,6 +1,7 @@
 import type { Doctor, Shift, LeaveRequest, Settings } from "@/lib/data-service";
 import { prisma } from "@/lib/prisma";
 import { notifyDoctorUpdates } from "./automation-broadcaster";
+import { revalidatePath } from "next/cache";
 
 // utility functions (copy from hook)
 function parseTimeToMinutes(timeStr: string | undefined): number | null {
@@ -317,6 +318,13 @@ export async function runAutomation(): Promise<{ applied: number, failed: number
         if (applied > 0) {
             // notify any listeners about which doctors changed
             notifyDoctorUpdates(updates.map(u => ({ id: u.id })));
+
+            try {
+                // Force Vercel to purge the static Edge Cache for the TV display
+                revalidatePath('/api/display');
+            } catch (cacheErr) {
+                console.error('[automation] Failed to revalidate display cache:', cacheErr);
+            }
         }
     } catch (err) {
         const errMsg = (err as any)?.message ?? String(err);

@@ -1853,6 +1853,39 @@
                 box-shadow: 0 0 30px 4px rgba(255, 69, 58, 0.25);
             }
         }
+
+        /* Closing Animations */
+        .broadcast-overlay.closing .broadcast-backdrop {
+            animation: broadcastFadeOut 0.4s ease forwards;
+        }
+
+        .broadcast-overlay.closing .broadcast-panel {
+            animation: broadcastSlideOut 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+            animation-iteration-count: 1;
+            /* Override infinite pulse */
+        }
+
+        @keyframes broadcastFadeOut {
+            from {
+                opacity: 1;
+            }
+
+            to {
+                opacity: 0;
+            }
+        }
+
+        @keyframes broadcastSlideOut {
+            from {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+
+            to {
+                opacity: 0;
+                transform: scale(0.85) translateY(30px);
+            }
+        }
     </style>
 </head>
 
@@ -2697,8 +2730,11 @@
             async checkBroadcast() {
                 try {
                     const res = await fetch('/api/automation');
+                    if (!res.ok) return; // Silent guard
                     const rules = await res.json();
-                    const active = rules.find(r => r.active);
+
+                    // Filter rules that are active (assuming the backend returns true boolean)
+                    const active = rules.find(r => r.active === true || r.active === 1 || r.active === 'true');
                     const overlay = $('broadcastOverlay');
                     if (!overlay) return;
 
@@ -2706,6 +2742,9 @@
                         // Only update DOM if broadcast changed
                         if (this._lastBroadcastId !== active.id) {
                             this._lastBroadcastId = active.id;
+
+                            // Stop any closing animation if it was happening
+                            overlay.classList.remove('closing');
 
                             // Set level class on overlay
                             overlay.className = `broadcast-overlay active broadcast-level-${active.alertLevel}`;
@@ -2725,19 +2764,29 @@
 
                             // Zone
                             const zoneEl = $('broadcastZone');
-                            if (zoneEl) zoneEl.textContent = active.targetZone + ' • ' + active.duration + ' menit';
+                            if (zoneEl) zoneEl.textContent = active.targetZone.replace('_', ' ') + ' • ' + active.duration + ' menit';
 
-                            // Also show on Dynamic Island
+                            // Also show on Dynamic Island (debounce/protect multiple calls)
                             Island.show('EMERGENCY BROADCAST', active.message, active.alertLevel === 'Critical' ? 'error' : 'warn', 'campaign', 10000);
                         }
                     } else {
-                        // No active broadcast — hide overlay
-                        if (overlay.classList.contains('active')) {
-                            overlay.classList.remove('active');
+                        // No active broadcast — hide overlay with animation
+                        if (overlay.classList.contains('active') && !overlay.classList.contains('closing')) {
                             this._lastBroadcastId = null;
+                            overlay.classList.add('closing');
+
+                            // Wait for CSS animation to finish before removing 'active' class (display:none)
+                            setTimeout(() => {
+                                // Double check if it wasn't re-activated during the closing animation
+                                if (overlay.classList.contains('closing')) {
+                                    overlay.classList.remove('active', 'closing');
+                                    // Reset class back to base to purge level colors
+                                    overlay.className = 'broadcast-overlay';
+                                }
+                            }, 450); // Slightly larger than the 0.4s animation duration
                         }
                     }
-                } catch { /* silent — display must not break */ }
+                } catch (e) { console.error('Broadcast check failed:', e); }
             },
 
             updateInfoBox() {

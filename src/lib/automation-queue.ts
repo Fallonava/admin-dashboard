@@ -45,10 +45,22 @@ class AutomationQueueManager {
         if (this.isInitialized) return;
 
         try {
+            // In Vercel or production environments, avoid attempting local Redis connections if no URL
+            if (!process.env.REDIS_URL && (process.env.VERCEL || process.env.VERCEL_ENV || process.env.NODE_ENV === 'production')) {
+                console.log('[AutomationQueue] Skipped initialization (no REDIS_URL in production/vercel). Using direct API fallback.');
+                this.isInitialized = true;
+                return;
+            }
+
             // Create Redis connection
             const redisUrl = process.env.REDIS_URL || `redis://localhost:6379`;
             this.redis = createClient({
                 url: redisUrl
+            });
+
+            // Prevent unhandled node errors if Redis disconnects or fails
+            this.redis.on('error', (err) => {
+                // Suppress background connection error logs
             });
 
             await this.redis.connect();

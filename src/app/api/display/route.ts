@@ -1,6 +1,11 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { Doctor } from '@/lib/data-service'; // Only using for type if needed
+import { revalidatePath } from 'next/cache';
+
+// Enable Time-based Revalidation (Vercel Edge Cache) for 10 seconds.
+// TV polling setiap 3s hanya akan mengenai DB 1 kali per 10 detik.
+export const revalidate = 10;
 
 export async function GET() {
     const allDoctors = await prisma.doctor.findMany();
@@ -72,7 +77,6 @@ export async function GET() {
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
             'Access-Control-Allow-Headers': 'Content-Type',
-            'Cache-Control': 'no-store'
         },
     });
 }
@@ -117,6 +121,9 @@ export async function POST(request: Request) {
                 await (prisma.settings as any).create({ data: { ...updates, id: "1" } });
             }
         }
+
+        // On-Demand Revalidation: Segera hapus cache 10-detik jika admin/sistem mengubah data via POST
+        revalidatePath('/api/display');
 
         return NextResponse.json({ success: true }, {
             headers: {
