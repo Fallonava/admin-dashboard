@@ -1535,6 +1535,10 @@
                 padding-top: 6px;
             }
 
+            .platter.active .meta-col .jam-box {
+                display: flex !important;
+            }
+
             .platter.active .doc-name {
                 font-size: 14px !important;
             }
@@ -2614,8 +2618,8 @@
                                 Spesialis: d.specialty,
                                 Status: d.status,
                                 // Combine jam for legacy checkTime 
-                                Jam: shift.formattedTime || d.currentRegistrationTime || d.registrationTime || d.startTime || '-',
-                                JamPraktek: shift.formattedTime || '-',
+                                Jam: shift.time || shift.formattedTime || '-',
+                                JamPraktek: shift.time || shift.formattedTime || '-',
                                 JamDaftar: shift.registrationTime || d.currentRegistrationTime || d.registrationTime || '-',
                                 Jenis: d.category,
                                 'Code Antrian': d.queueCode,
@@ -2841,8 +2845,7 @@
                         // Unique ID: Name + Shift Time so duplicate doctors don't overwrite each other
                         const shiftJam = d.Jam && d.Jam !== '-' ? d.Jam : 'no-time';
                         const id = `${d.Dokter}_${shiftJam}`;
-                        // Hash: Change detection key (Status + Jam + Active + Code)
-                        const hash = `${d.Status}|${d.Jam}|${d._isActive}|${d['Code Antrian'] || ''}`;
+                        const hash = `${d.Status}|${d.Jam}|${d._isActive}|${d['Code Antrian'] || ''}|${d.JamDaftar}`;
 
                         // Helpers for styles
                         const st = d.Status.toUpperCase();
@@ -2874,10 +2877,10 @@
                                     <div class="status-pill" style="background:var(--status-bg); color:var(--status-color)">
                                         <span class="material-icons-round" style="font-size:12px">${i}</span>${l}
                                     </div>
-                                    ${(d.JamPraktek && d.JamPraktek != '-' && !d._isActive) ? `
+                                    ${(d.JamPraktek && d.JamPraktek != '-') ? `
                                     <div class="jam-box">
-                                        <span class="jam-label">PRAKTEK</span>
-                                        <span class="jam-val text-xs text-slate-300">${esc(d.JamPraktek)}</span>
+                                        <span class="jam-label">DAFTAR</span>
+                                        <span class="jam-val jam-val-daftar" style="color:#30D158">${d.JamDaftar !== '-' ? esc(d.JamDaftar) : formatJam(d.JamPraktek.split('-')[0])}</span>
                                     </div>` : ''}
                                 </div>
                             </div>
@@ -2914,8 +2917,11 @@
                                     stPill.innerHTML = `<span class="material-icons-round" style="font-size:12px">${i}</span>${l}`;
                                 }
 
-                                const jVal = el.querySelector('.jam-val');
-                                if (jVal && !d._isActive && d.JamPraktek) jVal.textContent = d.JamPraktek;
+                                const jValDaftar = el.querySelector('.jam-val-daftar');
+                                if (jValDaftar) jValDaftar.textContent = d.JamDaftar !== '-' ? d.JamDaftar : formatJam(d.JamPraktek.split('-')[0]);
+
+                                const jValPraktek = el.querySelector('.jam-val-praktek');
+                                if (jValPraktek && d.JamPraktek) jValPraktek.textContent = d.JamPraktek;
 
                                 const dtTime = el.querySelector('.detail-time');
                                 if (dtTime) dtTime.textContent = d.JamDaftar !== '-' ? d.JamDaftar : formatJam(d.JamPraktek.split('-')[0]);
@@ -3019,7 +3025,7 @@
                     // Unique ID: Name + Shift Time
                     const shiftJam = d.Jam && d.Jam !== '-' ? d.Jam : 'no-time';
                     const id = `${d.Dokter}_${shiftJam}`;
-                    const hash = `${d.Status}|${d.Jam}|${d._isActive}|${d['Code Antrian'] || ''}`;
+                    const hash = `${d.Status}|${d.Jam}|${d._isActive}|${d['Code Antrian'] || ''}|${d.JamDaftar}`;
                     const st = d.Status.toUpperCase();
                     let c = 'st-nopoli', i = 'block', l = d.Status;
                     if (st.includes('BUKA')) { c = 'st-buka'; i = 'check_circle'; l = 'BUKA'; }
@@ -3040,10 +3046,10 @@
                                 <div class="status-pill" style="background:var(--status-bg); color:var(--status-color)">
                                     <span class="material-icons-round" style="font-size:12px">${i}</span>${l}
                                 </div>
-                                ${(d.JamPraktek && d.JamPraktek != '-' && !d._isActive) ? `
+                                ${(d.JamPraktek && d.JamPraktek != '-') ? `
                                 <div class="jam-box">
-                                    <span class="jam-label">PRAKTEK</span>
-                                    <span class="jam-val text-xs text-slate-300">${esc(d.JamPraktek)}</span>
+                                    <span class="jam-label">DAFTAR</span>
+                                    <span class="jam-val jam-val-daftar" style="color:#30D158">${d.JamDaftar !== '-' ? esc(d.JamDaftar) : formatJam(d.JamPraktek.split('-')[0])}</span>
                                 </div>` : ''}
                             </div>
                         </div>
@@ -3078,8 +3084,11 @@
                                 stPill.innerHTML = `<span class="material-icons-round" style="font-size:12px">${i}</span>${l}`;
                             }
 
-                            const jVal = el.querySelector('.jam-val');
-                            if (jVal && !d._isActive && d.JamPraktek) jVal.textContent = d.JamPraktek;
+                            const jValDaftar = el.querySelector('.jam-val-daftar');
+                            if (jValDaftar) jValDaftar.textContent = d.JamDaftar !== '-' ? d.JamDaftar : formatJam(d.JamPraktek.split('-')[0]);
+
+                            const jValPraktek = el.querySelector('.jam-val-praktek');
+                            if (jValPraktek && d.JamPraktek) jValPraktek.textContent = d.JamPraktek;
 
                             const dtTime = el.querySelector('.detail-time');
                             if (dtTime) dtTime.textContent = d.JamDaftar !== '-' ? d.JamDaftar : formatJam(d.JamPraktek.split('-')[0]);

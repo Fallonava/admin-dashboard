@@ -25,6 +25,7 @@ const CreateDoctorSchema = z.object({
     queueCode: z.string().optional(),
     lastCall: z.string().nullable().optional(),
     registrationTime: z.string().nullable().optional(),
+    lastManualOverride: z.number().optional(),
 });
 
 const UpdateDoctorSchema = CreateDoctorSchema.partial().extend({
