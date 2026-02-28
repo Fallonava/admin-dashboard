@@ -86,7 +86,7 @@ export function ScheduleModal({ doctor, shifts, isOpen, onClose, onUpdate }: Sch
     };
 
     const dup = (s: Shift) => {
-        setForm({ title: s.title, formattedTime: s.formattedTime, registrationTime: s.registrationTime || "", color: s.color });
+        setForm({ title: s.title, formattedTime: s.formattedTime, registrationTime: s.registrationTime || "", color: s.color, statusOverride: s.statusOverride });
         setAdding(true); setEditId(null);
     };
 
@@ -190,7 +190,7 @@ export function ScheduleModal({ doctor, shifts, isOpen, onClose, onUpdate }: Sch
                             <input autoFocus className="w-full bg-white rounded-xl px-4 py-3 text-sm font-medium text-slate-700 outline-none focus:ring-2 focus:ring-emerald-300 border border-emerald-100 placeholder:text-slate-300"
                                 value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} placeholder="Nama shift, cth: Praktek Pagi"
                             />
-                            <div className="grid grid-cols-2 gap-3">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                                 <div>
                                     <label className="text-xs text-slate-500 font-semibold block mb-1.5">Jam Praktek</label>
                                     <input className="w-full bg-white rounded-xl px-4 py-2.5 text-sm font-medium text-slate-700 outline-none focus:ring-2 focus:ring-emerald-300 border border-emerald-100"
@@ -202,6 +202,17 @@ export function ScheduleModal({ doctor, shifts, isOpen, onClose, onUpdate }: Sch
                                     <input className="w-full bg-white rounded-xl px-4 py-2.5 text-sm font-medium text-slate-700 outline-none focus:ring-2 focus:ring-emerald-300 border border-emerald-100"
                                         value={form.registrationTime} onChange={e => setForm({ ...form, registrationTime: e.target.value })} placeholder="07:30"
                                     />
+                                </div>
+                                <div>
+                                    <label className="text-xs text-slate-500 font-semibold block mb-1.5">Status Bawaan</label>
+                                    <select className="w-full bg-white rounded-xl px-4 py-2 text-sm font-medium text-slate-700 outline-none focus:ring-2 focus:ring-emerald-300 border border-emerald-100"
+                                        value={form.statusOverride || ''} onChange={e => setForm({ ...form, statusOverride: (e.target.value as Doctor['status']) || null })}
+                                    >
+                                        <option value="">Standar (Buka)</option>
+                                        <option value="AKAN_BUKA">Akan Buka</option>
+                                        <option value="OPERASI">Operasi</option>
+                                        <option value="PENUH">Penuh</option>
+                                    </select>
                                 </div>
                             </div>
                             <div className="flex items-center gap-3">
@@ -239,7 +250,7 @@ export function ScheduleModal({ doctor, shifts, isOpen, onClose, onUpdate }: Sch
                                     <input autoFocus className="w-full bg-white rounded-xl px-4 py-3 text-sm font-medium text-slate-700 outline-none focus:ring-2 focus:ring-blue-300 border border-blue-100"
                                         value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} placeholder="Nama shift"
                                     />
-                                    <div className="grid grid-cols-2 gap-3">
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                                         <div>
                                             <label className="text-xs text-slate-500 font-semibold block mb-1.5">Jam Praktek</label>
                                             <input className="w-full bg-white rounded-xl px-4 py-2.5 text-sm font-medium text-slate-700 outline-none focus:ring-2 focus:ring-blue-300 border border-blue-100"
@@ -251,6 +262,17 @@ export function ScheduleModal({ doctor, shifts, isOpen, onClose, onUpdate }: Sch
                                             <input className="w-full bg-white rounded-xl px-4 py-2.5 text-sm font-medium text-slate-700 outline-none focus:ring-2 focus:ring-blue-300 border border-blue-100"
                                                 value={form.registrationTime} onChange={e => setForm({ ...form, registrationTime: e.target.value })} placeholder="07:30"
                                             />
+                                        </div>
+                                        <div>
+                                            <label className="text-xs text-slate-500 font-semibold block mb-1.5">Status Bawaan</label>
+                                            <select className="w-full bg-white rounded-xl px-4 py-2 text-sm font-medium text-slate-700 outline-none focus:ring-2 focus:ring-blue-300 border border-blue-100"
+                                                value={form.statusOverride || ''} onChange={e => setForm({ ...form, statusOverride: (e.target.value as Doctor['status']) || null })}
+                                            >
+                                                <option value="">Standar (Buka)</option>
+                                                <option value="AKAN_BUKA">Akan Buka</option>
+                                                <option value="OPERASI">Operasi</option>
+                                                <option value="PENUH">Penuh</option>
+                                            </select>
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-3">
@@ -296,6 +318,7 @@ export function ScheduleModal({ doctor, shifts, isOpen, onClose, onUpdate }: Sch
                                                 <Clock size={12} />
                                                 <span className="font-medium">{s.formattedTime}</span>
                                                 {s.registrationTime && <span className="text-slate-300">· Daftar {s.registrationTime}</span>}
+                                                {s.statusOverride && <span className="px-1.5 py-0.5 rounded-md bg-rose-50 text-rose-600 font-bold ml-1 border border-rose-100 uppercase text-[9px] translate-y-[-1px]">Auto: {s.statusOverride}</span>}
                                             </div>
                                         </div>
 
@@ -314,7 +337,7 @@ export function ScheduleModal({ doctor, shifts, isOpen, onClose, onUpdate }: Sch
                                             <button onClick={() => dup(s)} className="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors" title="Duplikat">
                                                 <Copy size={14} />
                                             </button>
-                                            <button onClick={() => { setForm({ title: s.title, formattedTime: s.formattedTime, registrationTime: s.registrationTime || "", color: s.color }); setEditId(s.id); setAdding(false); }}
+                                            <button onClick={() => { setForm({ title: s.title, formattedTime: s.formattedTime, registrationTime: s.registrationTime || "", color: s.color, statusOverride: s.statusOverride }); setEditId(s.id); setAdding(false); }}
                                                 className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors" title="Edit">
                                                 <Edit3 size={14} />
                                             </button>

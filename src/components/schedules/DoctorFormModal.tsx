@@ -14,7 +14,7 @@ interface DoctorFormModalProps {
 }
 
 const STATUS_OPTIONS = [
-    { value: 'TIDAK PRAKTEK', label: 'Tidak Praktek', color: 'text-slate-500', bg: 'bg-slate-100', activeBg: 'bg-slate-800', activeText: 'text-white' },
+    { value: 'TIDAK_PRAKTEK', label: 'Tidak Praktek', color: 'text-slate-500', bg: 'bg-slate-100', activeBg: 'bg-slate-800', activeText: 'text-white' },
     { value: 'BUKA', label: 'Buka', color: 'text-blue-600', bg: 'bg-blue-50', activeBg: 'bg-blue-600', activeText: 'text-white' },
     { value: 'PENUH', label: 'Penuh', color: 'text-amber-600', bg: 'bg-amber-50', activeBg: 'bg-amber-500', activeText: 'text-white' },
     { value: 'OPERASI', label: 'Operasi', color: 'text-red-600', bg: 'bg-red-50', activeBg: 'bg-red-600', activeText: 'text-white' },
@@ -33,7 +33,7 @@ export function DoctorFormModal({ isOpen, onClose, doctor, onSuccess }: DoctorFo
         name: "",
         specialty: "",
         category: "NonBedah" as "NonBedah" | "Bedah",
-        status: "TIDAK PRAKTEK" as string,
+        status: "TIDAK_PRAKTEK" as string,
         queueCode: "",
         startTime: "",
         endTime: "",
@@ -47,7 +47,7 @@ export function DoctorFormModal({ isOpen, onClose, doctor, onSuccess }: DoctorFo
                     name: doctor.name ?? "",
                     specialty: doctor.specialty ?? "",
                     category: doctor.category ?? "NonBedah",
-                    status: doctor.status ?? "TIDAK PRAKTEK",
+                    status: doctor.status ?? "TIDAK_PRAKTEK",
                     queueCode: doctor.queueCode ?? "",
                     startTime: doctor.startTime ?? "",
                     endTime: doctor.endTime ?? "",
@@ -56,7 +56,7 @@ export function DoctorFormModal({ isOpen, onClose, doctor, onSuccess }: DoctorFo
             } else {
                 setFormData({
                     name: "", specialty: "", category: "NonBedah",
-                    status: "TIDAK PRAKTEK", queueCode: "",
+                    status: "TIDAK_PRAKTEK", queueCode: "",
                     startTime: "", endTime: "", lastCall: "",
                 });
             }

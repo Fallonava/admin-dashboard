@@ -5,8 +5,8 @@ import { requireAdmin } from '@/lib/api-utils';
 import { notifyDoctorUpdates } from '@/lib/automation-broadcaster';
 
 // Validation schemas
-const DoctorStatusEnum = z.enum(['BUKA', 'PENUH', 'OPERASI', 'CUTI', 'SELESAI', 'TIDAK PRAKTEK', 'TIDAK_PRAKTEK'])
-    .transform(val => val === 'TIDAK PRAKTEK' ? 'TIDAK_PRAKTEK' : val);
+const DoctorStatusEnum = z.enum(['BUKA', 'PENUH', 'OPERASI', 'AKAN_BUKA', 'CUTI', 'SELESAI', 'TIDAK_PRAKTEK', 'TIDAK PRAKTEK'])
+    .transform(val => (val === 'TIDAK PRAKTEK' || val === 'TIDAK_PRAKTEK') ? 'TIDAK_PRAKTEK' : val as any);
 
 const BulkUpdateSchema = z.array(
     z.object({
@@ -18,7 +18,7 @@ const BulkUpdateSchema = z.array(
 const CreateDoctorSchema = z.object({
     name: z.string().min(1).max(255),
     specialty: z.string().min(1).max(255),
-    status: DoctorStatusEnum,
+    status: z.any(),
     category: z.enum(['Bedah', 'NonBedah']),
     startTime: z.string().regex(/^\d{2}:\d{2}$/, 'Format HH:MM'),
     endTime: z.string().regex(/^\d{2}:\d{2}$/, 'Format HH:MM'),

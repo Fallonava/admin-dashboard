@@ -14,6 +14,7 @@ export interface Shift {
     registrationTime?: string;
     extra?: string;
     disabledDates?: string[];
+    statusOverride?: Doctor['status'] | null;
 }
 
 export interface LeaveRequest {
@@ -35,7 +36,7 @@ export interface Doctor {
     id: string; // Changed to simple string everywhere (cuid)
     name: string;
     specialty: string;
-    status: 'BUKA' | 'PENUH' | 'OPERASI' | 'CUTI' | 'SELESAI' | 'TIDAK PRAKTEK';
+    status: 'BUKA' | 'PENUH' | 'OPERASI' | 'CUTI' | 'SELESAI' | 'AKAN_BUKA' | 'TIDAK PRAKTEK' | 'TIDAK_PRAKTEK';
     image?: string;
     category: 'Bedah' | 'NonBedah';
     startTime: string; // e.g., "08:00"

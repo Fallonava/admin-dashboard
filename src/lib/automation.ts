@@ -197,7 +197,7 @@ export async function runAutomation(): Promise<{ applied: number, failed: number
                 continue;
             }
             if (doc.status === 'CUTI' && !isOnLeaveToday) {
-                updates.push({ id: doc.id, status: 'TIDAK PRAKTEK' });
+                updates.push({ id: doc.id, status: 'TIDAK_PRAKTEK' });
                 continue;
             }
             const todayShifts = shifts.filter(s =>
@@ -207,8 +207,9 @@ export async function runAutomation(): Promise<{ applied: number, failed: number
 
             // Sweep immediately if no shifts today
             if (todayShifts.length === 0) {
-                if (doc.status === 'BUKA' || doc.status === 'SELESAI') {
-                    updates.push({ id: doc.id, status: 'TIDAK PRAKTEK' });
+                if (doc.status === 'BUKA' || doc.status === 'SELESAI' || doc.status === 'PENUH' || doc.status === 'AKAN_BUKA') {
+                    console.log(`[automation DEBUG] ${doc.name} (id ${doc.id}) has NO SHIFT TODAY. Setting to TIDAK_PRAKTEK from ${doc.status}`);
+                    updates.push({ id: doc.id, status: 'TIDAK_PRAKTEK' });
                 }
                 continue;
             }
@@ -216,6 +217,7 @@ export async function runAutomation(): Promise<{ applied: number, failed: number
             let isWithinAnyShift = false;
             let isAfterAllShifts = true;
             let latestEndMinutes = 0;
+            let activeShiftStatusOverride: Doctor['status'] | null = null;
             for (const shift of todayShifts) {
                 const [startStr, endStr] = shift.formattedTime!.split('-');
                 const startMinutes = parseTimeToMinutes(startStr);
@@ -223,6 +225,9 @@ export async function runAutomation(): Promise<{ applied: number, failed: number
                 if (startMinutes === null || endMinutes === null) continue;
                 if (currentTimeMinutes >= startMinutes && currentTimeMinutes < endMinutes) {
                     isWithinAnyShift = true;
+                    if (shift.statusOverride) {
+                        activeShiftStatusOverride = shift.statusOverride as Doctor['status'];
+                    }
                 }
                 if (currentTimeMinutes < endMinutes) {
                     isAfterAllShifts = false;
@@ -234,18 +239,23 @@ export async function runAutomation(): Promise<{ applied: number, failed: number
 
             // Cooldown Logic Application
             if (isWithinAnyShift) {
-                // If admin manually changed status (e.g to TIDAK PRAKTEK / SELESAI), respect the cooldown!
-                if (!isCooldownActive && doc.status !== 'PENUH' && (doc.status === 'TIDAK PRAKTEK' || doc.status === 'SELESAI')) {
-                    updates.push({ id: doc.id, status: 'BUKA' });
+                // If admin manually changed status (e.g to TIDAK_PRAKTEK / SELESAI / AKAN_BUKA), respect the cooldown!
+                if (!isCooldownActive && doc.status !== 'PENUH' && (doc.status === 'TIDAK_PRAKTEK' || doc.status === 'SELESAI' || doc.status === 'AKAN_BUKA' || doc.status === 'TIDAK PRAKTEK' as any)) {
+                    const targetStatus = activeShiftStatusOverride || 'BUKA';
+                    console.log(`[automation DEBUG] ${doc.name} (id ${doc.id}) is WITHIN SHIFT. No cooldown active. Updating to ${targetStatus} from ${doc.status}`);
+                    updates.push({ id: doc.id, status: targetStatus });
                 }
             } else if (isAfterAllShifts && latestEndMinutes > 0) {
                 // End of Day Sweep: Ignores Cooldown to ensure nobody is left stuck "BUKA" over night
-                if (doc.status === 'BUKA' || doc.status === 'PENUH' || doc.status === 'TIDAK PRAKTEK') {
+                if (doc.status === 'BUKA' || doc.status === 'PENUH' || doc.status === 'TIDAK_PRAKTEK' || doc.status === 'AKAN_BUKA' || doc.status === 'TIDAK PRAKTEK' as any) {
+                    console.log(`[automation DEBUG] ${doc.name} (id ${doc.id}) is AFTER ALL SHIFTS. Current is ${doc.status}. Sweeping to SELESAI.`);
                     updates.push({ id: doc.id, status: 'SELESAI' });
                 }
             } else if (!isWithinAnyShift && !isAfterAllShifts) {
-                if (!isCooldownActive && doc.status === 'SELESAI') {
-                    updates.push({ id: doc.id, status: 'BUKA' });
+                // Before shifts begin OR during a break between shifts
+                if (!isCooldownActive && (doc.status === 'SELESAI' || doc.status === 'BUKA' || doc.status === 'PENUH' || doc.status === 'TIDAK_PRAKTEK' || doc.status === 'TIDAK PRAKTEK' as any)) {
+                    console.log(`[automation DEBUG] ${doc.name} (id ${doc.id}) is BEFORE or BETWEEN shifts. Updating to AKAN_BUKA from ${doc.status}`);
+                    updates.push({ id: doc.id, status: 'AKAN_BUKA' });
                 }
             }
         }
@@ -267,19 +277,26 @@ export async function runAutomation(): Promise<{ applied: number, failed: number
                             throw new Error('Queue not ready');
                         }
                     } catch (queueErr) {
-                        console.debug('[automation] queue unavailable, using bulk API:', queueErr instanceof Error ? queueErr.message : String(queueErr));
+                        // Suppress logs if we are in dev/local and explicitly lacking redis 
+                        const isNoQueueError = queueErr instanceof Error && queueErr.message === 'Queue not ready';
+                        if (!isNoQueueError) {
+                            console.debug('[automation] queue unavailable, using bulk API:', queueErr instanceof Error ? queueErr.message : String(queueErr));
+                        }
+
                         // Fallback to bulk API endpoint
-                        await fetch('http://localhost:3000/api/doctors?action=bulk', {
+                        const fallbackRes = await fetch('http://localhost:3000/api/doctors?action=bulk', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
-                                'x-admin-key': process.env.ADMIN_KEY || ''
+                                'Cookie': `medcore_session=${process.env.ADMIN_KEY}`
                             },
                             body: JSON.stringify(updates)
                         });
+                        if (!fallbackRes.ok) throw new Error(`Bulk API failed: ${fallbackRes.status}`);
                         applied = updates.length;
                     }
-                } catch {
+                } catch (fallbackErr) {
+                    console.debug('[automation] bulk API failed, falling back to direct db update:', fallbackErr instanceof Error ? fallbackErr.message : String(fallbackErr));
                     // fallback to individual updates with concurrency limit
                     const concurrency = 5;
                     for (let i = 0; i < updates.length; i += concurrency) {

@@ -15,6 +15,7 @@ enum DoctorStatus {
   OPERASI
   CUTI
   SELESAI
+  AKAN_BUKA
   TIDAK_PRAKTEK @map("TIDAK PRAKTEK")
 }
 
@@ -63,9 +64,10 @@ model Shift {
   title            String
   color            String
   formattedTime    String?
-  registrationTime String?
-  extra            String?
-  disabledDates    String[]
+  registrationTime     String?
+  extra                String?
+  disabledDates        String[]
+  statusOverride       DoctorStatus?
 
   doctorId String
   doctor   Doctor @relation(fields: [doctorId], references: [id], onDelete: Cascade)

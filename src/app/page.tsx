@@ -122,7 +122,7 @@ export default function Home() {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          id,
+          id: String(id),
           status,
           lastCall: (status === 'BUKA' || status === 'PENUH') ? timeString : undefined,
           lastManualOverride: timestamp
@@ -379,7 +379,6 @@ export default function Home() {
                   <div className="absolute inset-0 bg-violet-500/3 pointer-events-none" />
                 )}
 
-                {/* LED Status Indicator */}
                 <div className={cn(
                   "absolute top-4 right-4 w-3 h-3 rounded-full z-20 shadow-sm",
                   doc.status === 'BUKA' ? "bg-blue-500 shadow-[0_0_12px_rgba(59,130,246,0.6)]" :
@@ -387,7 +386,8 @@ export default function Home() {
                       doc.status === 'CUTI' ? "bg-pink-500 shadow-[0_0_12px_rgba(236,72,153,0.6)]" :
                         doc.status === 'OPERASI' ? "bg-red-500 shadow-[0_0_12px_rgba(239,68,68,0.6)]" :
                           doc.status === 'SELESAI' ? "bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.6)]" :
-                            "bg-slate-300"
+                            doc.status === 'AKAN_BUKA' ? "bg-indigo-400 shadow-[0_0_12px_rgba(129,140,248,0.6)]" :
+                              "bg-slate-300"
                 )} />
 
                 <div className="flex items-start gap-3 mb-3 relative z-10">
@@ -398,7 +398,8 @@ export default function Home() {
                         doc.status === 'PENUH' ? "bg-gradient-to-br from-orange-500 to-amber-500" :
                           doc.status === 'CUTI' ? "bg-gradient-to-br from-pink-500 to-rose-500" :
                             doc.status === 'OPERASI' ? "bg-gradient-to-br from-red-500 to-rose-600" :
-                              "bg-gradient-to-br from-slate-400 to-slate-500"
+                              doc.status === 'AKAN_BUKA' ? "bg-gradient-to-br from-indigo-400 to-purple-500" :
+                                "bg-gradient-to-br from-slate-400 to-slate-500"
                     )}>
                       {doc.queueCode || doc.name.charAt(4)}
                     </AvatarFallback>
@@ -433,7 +434,8 @@ export default function Home() {
                         doc.status === 'CUTI' ? "bg-pink-50 text-pink-600 border border-pink-100" :
                           doc.status === 'OPERASI' ? "bg-red-50 text-red-600 border border-red-100" :
                             doc.status === 'SELESAI' ? "bg-emerald-50 text-emerald-600 border border-emerald-100" :
-                              "bg-slate-50 text-slate-500 border border-slate-100"
+                              doc.status === 'AKAN_BUKA' ? "bg-indigo-50 text-indigo-600 border border-indigo-100" :
+                                "bg-slate-50 text-slate-500 border border-slate-100"
                   )}>
                     {doc.status || 'Offline'}
                   </div>
@@ -477,9 +479,10 @@ export default function Home() {
                   );
                 })()}
 
-                <div className="grid grid-cols-6 gap-1.5 relative z-10">
+                <div className="grid grid-cols-7 gap-1.5 relative z-10">
                   {[
-                    { id: 'TIDAK PRAKTEK', label: 'Off', bg: 'bg-slate-500', hover: 'hover:bg-slate-600' },
+                    { id: 'TIDAK_PRAKTEK', label: 'Off', bg: 'bg-slate-500', hover: 'hover:bg-slate-600' },
+                    { id: 'AKAN_BUKA', label: 'Akan Buka', bg: 'bg-indigo-500', hover: 'hover:bg-indigo-600' },
                     { id: 'BUKA', label: 'Buka', bg: 'bg-blue-500', hover: 'hover:bg-blue-600' },
                     { id: 'PENUH', label: 'Penuh', bg: 'bg-orange-500', hover: 'hover:bg-orange-600' },
                     { id: 'OPERASI', label: 'Ops', bg: 'bg-red-500', hover: 'hover:bg-red-600' },
