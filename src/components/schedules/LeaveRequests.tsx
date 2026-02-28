@@ -39,32 +39,24 @@ export function LeaveRequests() {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const isDateInLeave = (checkDate: Date, leaveDates: string) => {
+    const isDateInLeave = (checkDate: Date, leave: LeaveRequest) => {
         const target = new Date(checkDate);
         target.setHours(0, 0, 0, 0);
-        try {
-            if (leaveDates.includes(' - ')) {
-                const [startStr, endStr] = leaveDates.split(' - ');
-                const start = new Date(startStr);
-                const end = new Date(endStr);
-                start.setHours(0, 0, 0, 0);
-                end.setHours(0, 0, 0, 0);
-                return target >= start && target <= end;
-            }
-            const d = new Date(leaveDates);
-            if (!isNaN(d.getTime())) {
-                d.setHours(0, 0, 0, 0);
-                return d.getTime() === target.getTime();
-            }
-        } catch { return false; }
-        return false;
+
+        const start = leave.startDate ? new Date(leave.startDate) : new Date();
+        const end = leave.endDate ? new Date(leave.endDate) : new Date();
+
+        start.setHours(0, 0, 0, 0);
+        end.setHours(0, 0, 0, 0);
+
+        return target >= start && target <= end;
     };
 
-    const todayLeaves = leaves.filter(l => isDateInLeave(today, l.dates));
+    const todayLeaves = leaves.filter(l => isDateInLeave(today, l));
     const upcomingLeaves = leaves
         .filter(l => {
-            const dateStr = l.dates.includes(' - ') ? l.dates.split(' - ')[0] : l.dates;
-            const d = new Date(dateStr);
+            if (!l.startDate) return false;
+            const d = new Date(l.startDate);
             return !isNaN(d.getTime()) && d > today;
         })
         .slice(0, 5);
@@ -102,11 +94,11 @@ export function LeaveRequests() {
                                     <Avatar className="h-8 w-8 rounded-xl flex-shrink-0">
                                         <AvatarImage src={l.avatar} />
                                         <AvatarFallback className="bg-gradient-to-br from-slate-600 to-slate-800 text-[10px] text-white font-black rounded-xl">
-                                            {l.doctor[0]}
+                                            {l.doctor?.[0] || 'D'}
                                         </AvatarFallback>
                                     </Avatar>
                                     <div className="min-w-0">
-                                        <p className="text-xs font-bold text-slate-700 truncate">{l.doctor}</p>
+                                        <p className="text-xs font-bold text-slate-700 truncate">{l.doctor || 'Unknown Doctor'}</p>
                                         <p className="text-[10px] text-slate-400">{conf.emoji} {l.type}</p>
                                     </div>
                                 </div>
@@ -128,12 +120,14 @@ export function LeaveRequests() {
                                     <Avatar className="h-8 w-8 rounded-xl flex-shrink-0">
                                         <AvatarImage src={l.avatar} />
                                         <AvatarFallback className="bg-gradient-to-br from-slate-500 to-slate-700 text-[10px] text-white font-black rounded-xl">
-                                            {l.doctor[0]}
+                                            {l.doctor?.[0] || 'D'}
                                         </AvatarFallback>
                                     </Avatar>
                                     <div className="min-w-0 flex-1">
-                                        <p className="text-xs font-bold text-slate-700 truncate">{l.doctor}</p>
-                                        <p className="text-[10px] text-slate-400">{l.dates}</p>
+                                        <p className="text-xs font-bold text-slate-700 truncate">{l.doctor || 'Unknown Doctor'}</p>
+                                        <p className="text-[10px] text-slate-400">
+                                            {new Date(l.startDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
+                                        </p>
                                     </div>
                                     <span className={`text-[9px] font-black px-1.5 py-0.5 rounded-md flex-shrink-0 ${conf.color} ${conf.bg}`}>
                                         {conf.emoji}

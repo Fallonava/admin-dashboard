@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { X, CalendarDays } from "lucide-react";
 import useSWR from "swr";
 import type { Doctor } from "@/lib/data-service";
@@ -27,8 +28,11 @@ export function LeaveRequestModal({ isOpen, onClose, onSubmit }: Props) {
         reason: "",
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [mounted, setMounted] = useState(false);
 
-    if (!isOpen) return null;
+    useEffect(() => { setMounted(true); }, []);
+
+    if (!isOpen || !mounted) return null;
 
     const isValid = form.doctor && form.startDate && form.endDate;
     const isEndBeforeStart = form.endDate && form.startDate && new Date(form.endDate) < new Date(form.startDate);
@@ -51,9 +55,9 @@ export function LeaveRequestModal({ isOpen, onClose, onSubmit }: Props) {
         }
     };
 
-    return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-white rounded-[28px] p-6 w-full max-w-sm shadow-2xl animate-in zoom-in-95 duration-200">
+    return createPortal(
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200" onClick={onClose}>
+            <div className="bg-white rounded-[28px] p-6 w-full max-w-sm shadow-2xl animate-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
                 {/* Header */}
                 <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-3">
@@ -97,12 +101,13 @@ export function LeaveRequestModal({ isOpen, onClose, onSubmit }: Props) {
                             Jenis Cuti
                         </label>
                         <div className="grid grid-cols-2 gap-2">
-                            {TIPE_CUTI.map(t => (
+                            {TIPE_CUTI.map((t, i) => (
                                 <button
                                     key={t.value}
                                     type="button"
                                     onClick={() => setForm({ ...form, type: t.value })}
-                                    className={`px-3 py-2.5 rounded-xl text-xs font-bold text-left transition-all ${form.type === t.value
+                                    className={`px-3 py-2.5 rounded-xl text-xs font-bold text-left transition-all ${i === TIPE_CUTI.length - 1 && TIPE_CUTI.length % 2 !== 0 ? "col-span-2 text-center" : ""
+                                        } ${form.type === t.value
                                             ? "bg-slate-900 text-white shadow-md"
                                             : "bg-slate-50 text-slate-500 hover:bg-slate-100"
                                         }`}
@@ -167,6 +172,7 @@ export function LeaveRequestModal({ isOpen, onClose, onSubmit }: Props) {
                     </button>
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 }

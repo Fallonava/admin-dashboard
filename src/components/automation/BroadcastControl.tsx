@@ -58,7 +58,7 @@ export function BroadcastControl() {
         mutate('/api/automation');
     };
 
-    const handleDelete = async (id: number) => {
+    const handleDelete = async (id: string) => {
         if (!confirm("Hapus broadcast rule ini?")) return;
         await fetch(`/api/automation?id=${id}`, { method: 'DELETE' });
         mutate('/api/automation');
@@ -195,7 +195,7 @@ export function BroadcastControl() {
                                     <p className="text-[11px] text-slate-700 leading-relaxed font-medium line-clamp-2">
                                         {activePreview.message}
                                     </p>
-                                    <div className="text-[8px] text-slate-400 font-mono mt-2">{activePreview.targetZone} • {activePreview.duration}m</div>
+                                    <div className="text-[8px] text-slate-400 font-mono mt-2">{activePreview.targetZone.replace('_', ' ')} • {activePreview.duration}m</div>
                                 </div>
                             </div>
                         </>
@@ -251,7 +251,7 @@ export function BroadcastControl() {
                                             </span>
                                         )}
                                         <span className="text-[10px] text-slate-500 font-bold bg-white px-2 py-0.5 rounded-md border border-slate-200">
-                                            {rule.targetZone}
+                                            {rule.targetZone.replace('_', ' ')}
                                         </span>
                                         <span className="text-[10px] text-slate-400 font-mono">
                                             {rule.duration}m
@@ -283,7 +283,7 @@ export function BroadcastControl() {
                                         <Edit3 size={14} />
                                     </button>
                                     <button
-                                        onClick={() => handleDelete(rule.id)}
+                                        onClick={() => handleDelete(String(rule.id))}
                                         className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-100 rounded-lg transition-colors"
                                     >
                                         <Trash2 size={14} />
@@ -349,9 +349,9 @@ export function BroadcastControl() {
                                         value={editingRule.targetZone}
                                         onChange={e => setEditingRule({ ...editingRule, targetZone: e.target.value as any })}
                                     >
-                                        <option value="All Zones">All Zones</option>
-                                        <option value="Lobby Only">Lobby Only</option>
-                                        <option value="ER & Wards">ER & Wards</option>
+                                        <option value="All_Zones">All Zones</option>
+                                        <option value="Lobby_Only">Lobby Only</option>
+                                        <option value="ER_Wards">ER & Wards</option>
                                     </select>
                                 </div>
                             </div>

@@ -4,7 +4,9 @@ import { initAutomationScheduler } from "@/lib/automation-scheduler";
 
 // scheduler should start on server-side only
 if (typeof window === 'undefined') {
-    initAutomationScheduler();
+  initAutomationScheduler().catch(err => {
+    console.error('Failed to initialize automation scheduler:', err);
+  });
 }
 import "./globals.css";
 import { Sidebar } from "@/components/Sidebar";
@@ -43,7 +45,7 @@ export default function RootLayout({
           })();
         `}} />
       </head>
-      <body className={inter.className}>
+      <body className={inter.className} suppressHydrationWarning>
         <SWRProvider>
           <AutomationRunner />
           <div className="flex h-screen bg-background overflow-hidden relative">

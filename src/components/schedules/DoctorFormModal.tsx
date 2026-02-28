@@ -155,8 +155,8 @@ export function DoctorFormModal({ isOpen, onClose, doctor, onSuccess }: DoctorFo
                         <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-2">Kategori</label>
                         <div className="grid grid-cols-2 gap-2">
                             {[
-                                { value: 'NonBedah', label: '🩺 Non-Bedah', selColor: 'bg-emerald-600' },
-                                { value: 'Bedah', label: '🔪 Bedah', selColor: 'bg-red-600' },
+                                { value: 'NonBedah', label: '🩺 Non-Bedah', selColor: 'bg-emerald-600', selShadow: 'shadow-emerald-500/20' },
+                                { value: 'Bedah', label: '🔪 Bedah', selColor: 'bg-red-600', selShadow: 'shadow-red-500/20' },
                             ].map(opt => (
                                 <button
                                     key={opt.value}
@@ -165,7 +165,7 @@ export function DoctorFormModal({ isOpen, onClose, doctor, onSuccess }: DoctorFo
                                     className={cn(
                                         "py-3 rounded-2xl text-xs font-bold transition-all shadow-sm",
                                         formData.category === opt.value
-                                            ? `${opt.selColor} text-white shadow-md shadow-${opt.selColor.split('-')[1]}-500/20`
+                                            ? `${opt.selColor} text-white shadow-md ${opt.selShadow}`
                                             : "bg-white/60 text-slate-500 hover:bg-white hover:text-slate-800 border border-slate-100"
                                     )}
                                 >
@@ -258,7 +258,7 @@ export function DoctorFormModal({ isOpen, onClose, doctor, onSuccess }: DoctorFo
                     >
                         {(!loading && formData.name && formData.specialty) && <div className="absolute inset-0 w-full h-full bg-white/20 -translate-x-full group-hover:animate-shimmer" />}
                         {loading ? (
-                            <span className="animate-pulse">Menyimpan...</span>
+                            <span className="relative z-10 animate-pulse">Menyimpan...</span>
                         ) : (
                             <>
                                 {isEditing ? <Save size={16} className="relative z-10" /> : <Plus size={16} className="relative z-10" />}

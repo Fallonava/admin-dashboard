@@ -2,9 +2,11 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 import { requireAdmin } from '@/lib/api-utils';
+import { notifyDoctorUpdates } from '@/lib/automation-broadcaster';
 
 // Validation schemas
-const DoctorStatusEnum = z.enum(['BUKA', 'PENUH', 'OPERASI', 'CUTI', 'SELESAI', 'TIDAK PRAKTEK']);
+const DoctorStatusEnum = z.enum(['BUKA', 'PENUH', 'OPERASI', 'CUTI', 'SELESAI', 'TIDAK PRAKTEK', 'TIDAK_PRAKTEK'])
+    .transform(val => val === 'TIDAK PRAKTEK' ? 'TIDAK_PRAKTEK' : val);
 
 const BulkUpdateSchema = z.array(
     z.object({
@@ -31,14 +33,14 @@ const UpdateDoctorSchema = CreateDoctorSchema.partial().extend({
 
 export async function GET() {
     const doctors = await prisma.doctor.findMany();
-    const shifts = await prisma.shift.findMany();
+    const shifts = await (prisma.shift as any).findMany();
 
     // Calculate Today's Index (0=Senin, ..., 6=Minggu)
     const jsDay = new Date().getDay();
     const todayIdx = (jsDay + 6) % 7;
 
     const enhancedDoctors = doctors.map(doc => {
-        const todayShift = shifts.find(s => s.doctor === doc.name && s.dayIdx === todayIdx);
+        const todayShift = (shifts as any[]).find(s => s.doctorId === doc.id && s.dayIdx === todayIdx);
         return {
             ...doc,
             lastManualOverride: doc.lastManualOverride ? Number(doc.lastManualOverride) : undefined,
@@ -51,7 +53,7 @@ export async function GET() {
 
 export async function POST(req: Request) {
     // admin only
-    const authErr = requireAdmin(req);
+    const authErr = await requireAdmin(req);
     if (authErr) return authErr;
 
     const { searchParams } = new URL(req.url);
@@ -60,13 +62,15 @@ export async function POST(req: Request) {
     if (action === 'reset') {
         await prisma.doctor.updateMany({
             data: {
-                status: 'TIDAK PRAKTEK',
+                status: 'TIDAK_PRAKTEK',
                 queueCode: '',
                 lastCall: null,
                 registrationTime: null,
                 lastManualOverride: null
             }
         });
+        const docs = await prisma.doctor.findMany({ select: { id: true } });
+        notifyDoctorUpdates(docs.map(d => ({ id: String(d.id) })));
         return NextResponse.json({ success: true, message: "All doctors reset." });
     }
 
@@ -74,7 +78,7 @@ export async function POST(req: Request) {
         try {
             const body = await req.json();
             const validated = BulkUpdateSchema.parse(body);
-            
+
             const results = await prisma.$transaction(
                 validated.map((update) => {
                     const { id, ...data } = update;
@@ -84,6 +88,7 @@ export async function POST(req: Request) {
                     });
                 })
             );
+            notifyDoctorUpdates(validated.map(u => ({ id: u.id })));
             return NextResponse.json({ success: true, count: results.length });
         } catch (err) {
             if (err instanceof z.ZodError) {
@@ -97,7 +102,7 @@ export async function POST(req: Request) {
     try {
         const body = await req.json();
         const validated = CreateDoctorSchema.parse(body);
-        
+
         const newDoctor = await prisma.doctor.create({ data: validated as any });
         return NextResponse.json({
             ...newDoctor,
@@ -112,18 +117,20 @@ export async function POST(req: Request) {
 }
 
 export async function PUT(req: Request) {
-    const authErr = requireAdmin(req);
+    const authErr = await requireAdmin(req);
     if (authErr) return authErr;
 
     try {
         const body = await req.json();
         const validated = UpdateDoctorSchema.parse(body);
         const { id, ...data } = validated;
-        
+
         const updated = await prisma.doctor.update({
             where: { id },
             data: data as any
         });
+
+        notifyDoctorUpdates([{ id: String(updated.id) }]);
 
         return NextResponse.json({
             ...updated,

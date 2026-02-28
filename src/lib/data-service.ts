@@ -2,31 +2,37 @@ import { JSONStore } from './crud-factory';
 
 // --- Schedules Types ---
 export interface Shift {
-    id: number;
-    dayIdx: number; // 0-6 (Mon-Sun)
-    timeIdx: number; // Keep for legacy compatibility/sorting
+    id: string; // Changed: cuid
+    dayIdx: number;
+    timeIdx: number;
     title: string;
-    doctor: string;
+    doctorId: string; // Changed: foreign key
+    doctor?: string;  // name mapped for UI simplicity
+    doctorRel?: Doctor;  // Optional populated relation
     color: string;
-    formattedTime?: string; // e.g. "09:00-14:00"
-    registrationTime?: string; // e.g. "07:30"
+    formattedTime?: string;
+    registrationTime?: string;
     extra?: string;
-    disabledDates?: string[]; // Dates when this shift is disabled (YYYY-MM-DD)
+    disabledDates?: string[];
 }
 
 export interface LeaveRequest {
-    id: number;
-    doctor: string;
+    id: string; // Changed: cuid
+    doctorId: string; // Changed: foreign key
+    doctor?: string; // name mapped for UI simplicity
+    doctorRel?: Doctor; // Optional populated relation
     specialty?: string;
     type: 'Sakit' | 'Liburan' | 'Pribadi' | 'Konferensi' | 'Lainnya';
-    dates: string;
+    startDate: Date; // Changed
+    endDate: Date; // Changed
     reason?: string;
+    status: string; // Changed: Added missing field
     avatar?: string;
 }
 
 // --- Doctor Types ---
 export interface Doctor {
-    id: string | number; // Allow both for compatibility
+    id: string; // Changed to simple string everywhere (cuid)
     name: string;
     specialty: string;
     status: 'BUKA' | 'PENUH' | 'OPERASI' | 'CUTI' | 'SELESAI' | 'TIDAK PRAKTEK';
@@ -42,7 +48,7 @@ export interface Doctor {
 
 // --- Automation Types ---
 export interface BroadcastRule {
-    id: number;
+    id: string; // Changed: cuid
     message: string;
     alertLevel: 'Information' | 'Warning' | 'Critical';
     targetZone: 'All Zones' | 'Lobby Only' | 'ER & Wards';
@@ -51,7 +57,8 @@ export interface BroadcastRule {
 }
 
 export interface Settings {
-    id: number;
+    id: string; // Changed: cuid
+
     automationEnabled: boolean;
     runTextMessage?: string;
     emergencyMode?: boolean;
@@ -60,28 +67,32 @@ export interface Settings {
 
 // --- Initial Data ---
 const INITIAL_SHIFTS: Shift[] = [
-    { id: 1, dayIdx: 0, timeIdx: 0, title: "Surgery", doctor: "Dr. Sarah", color: "blue" },
-    { id: 2, dayIdx: 2, timeIdx: 0, title: "Consultation", doctor: "Dr. James", color: "emerald" },
-    { id: 3, dayIdx: 5, timeIdx: 0, title: "ER Duty", doctor: "Dr. Chen", color: "purple" },
+    { id: "s-1", dayIdx: 0, timeIdx: 0, title: "Surgery", doctorId: "dr-1", color: "blue" },
+    { id: "s-2", dayIdx: 2, timeIdx: 0, title: "Consultation", doctorId: "dr-2", color: "emerald" },
+    { id: "s-3", dayIdx: 5, timeIdx: 0, title: "ER Duty", doctorId: "dr-3", color: "purple" },
 ];
 
 const INITIAL_LEAVE: LeaveRequest[] = [
     {
-        id: 1,
-        doctor: "Dr. Sarah Johnson",
+        id: "l-1",
+        doctorId: "dr-1",
         specialty: "Sp. Bedah",
         type: "Liburan",
-        dates: "Oct 24 - 28",
+        startDate: new Date("2024-10-24"),
+        endDate: new Date("2024-10-28"),
         reason: "Annual family vacation",
+        status: "APPROVED",
         avatar: "/avatars/dr-sarah.png"
     },
     {
-        id: 2,
-        doctor: "Dr. Michael Chen",
+        id: "l-2",
+        doctorId: "dr-3",
         specialty: "Sp. Anak",
         type: "Konferensi",
-        dates: "Nov 05 - 07",
+        startDate: new Date("2024-11-05"),
+        endDate: new Date("2024-11-07"),
         reason: "International Pediatrics Conference",
+        status: "APPROVED",
         avatar: "/avatars/dr-mike.png"
     },
 ];
@@ -121,12 +132,12 @@ const INITIAL_DOCTORS: Doctor[] = [
 ];
 
 const INITIAL_BROADCAST: BroadcastRule[] = [
-    { id: 1, message: "Welcome to RSU Siaga Medika", alertLevel: "Information", targetZone: "All Zones", duration: 60, active: true }
+    { id: "b-1", message: "Welcome to RSU Siaga Medika", alertLevel: "Information", targetZone: "All Zones", duration: 60, active: true }
 ];
 
 const INITIAL_SETTINGS: Settings[] = [
     {
-        id: 1,
+        id: "1",
         automationEnabled: false,
         runTextMessage: "Selamat Datang di RSU Siaga Medika - Melayani dengan Sepenuh Hati",
         emergencyMode: false,

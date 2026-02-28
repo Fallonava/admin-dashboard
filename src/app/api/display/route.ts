@@ -10,8 +10,8 @@ export async function GET() {
     const todayIdx = (jsDay + 6) % 7;
     const todayStr = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
 
-    const doctors = allDoctors.map(doc => {
-        const todayShifts = shifts.filter(s => s.doctor === doc.name && s.dayIdx === todayIdx);
+    const doctors = allDoctors.map((doc: any) => {
+        const todayShifts = (shifts as any[]).filter(s => s.doctorId === doc.id && s.dayIdx === todayIdx);
         const shiftPills = todayShifts.map(s => ({
             time: s.formattedTime || '',
             disabled: s.disabledDates.includes(todayStr),
@@ -29,7 +29,7 @@ export async function GET() {
 
     const allSettings = await prisma.settings.findMany();
     let settings = allSettings.length > 0 ? allSettings[0] : {
-        id: BigInt(1),
+        id: "1",
         automationEnabled: false,
         runTextMessage: "Selamat Datang di RSU Siaga Medika",
         emergencyMode: false,
@@ -45,16 +45,16 @@ export async function GET() {
         ];
 
         // Ensure settings exist in DB with default if missing
-        const existing = await prisma.settings.findUnique({ where: { id: 1 } });
+        const existing = await (prisma.settings as any).findUnique({ where: { id: "1" } });
         if (existing) {
-            await prisma.settings.update({
-                where: { id: 1 },
+            await (prisma.settings as any).update({
+                where: { id: "1" },
                 data: { customMessages: settings.customMessages }
             });
         } else {
-            await prisma.settings.create({
+            await (prisma.settings as any).create({
                 data: {
-                    id: 1,
+                    id: "1",
                     automationEnabled: settings.automationEnabled,
                     runTextMessage: settings.runTextMessage,
                     emergencyMode: settings.emergencyMode,
@@ -66,7 +66,7 @@ export async function GET() {
 
     return NextResponse.json({
         doctors,
-        settings: { ...settings, id: Number(settings.id) }
+        settings: { ...settings, id: String(settings.id) }
     }, {
         headers: {
             'Access-Control-Allow-Origin': '*',
@@ -89,36 +89,32 @@ export async function POST(request: Request) {
 
             for (const inc of incomingDocs) {
                 const dataToSave = { ...inc };
-                // properly parse BigInts
-                if (dataToSave.lastManualOverride !== undefined && dataToSave.lastManualOverride !== null) {
-                    dataToSave.lastManualOverride = BigInt(dataToSave.lastManualOverride);
-                }
 
-                const exists = currentDocs.find(d => d.id === inc.id);
+                const exists = currentDocs.find((d: any) => d.id === inc.id);
                 if (exists) {
-                    await prisma.doctor.update({ where: { id: inc.id }, data: dataToSave });
+                    await (prisma.doctor as any).update({ where: { id: inc.id }, data: dataToSave });
                 } else {
-                    await prisma.doctor.create({ data: dataToSave });
+                    await (prisma.doctor as any).create({ data: dataToSave });
                 }
             }
 
             for (const doc of currentDocs) {
-                if (!incomingIds.has(doc.id)) {
-                    await prisma.doctor.delete({ where: { id: doc.id } });
+                if (!incomingIds.has(doc.id as string)) {
+                    await (prisma.doctor as any).delete({ where: { id: doc.id } });
                 }
             }
         }
 
         if (body.settings) {
-            const currentSettings = await prisma.settings.findMany();
+            const currentSettings = await (prisma.settings as any).findMany();
             const existing = currentSettings[0];
             const updates = { ...body.settings };
             delete updates.id;
 
             if (existing) {
-                await prisma.settings.update({ where: { id: existing.id }, data: updates });
+                await (prisma.settings as any).update({ where: { id: existing.id }, data: updates });
             } else {
-                await prisma.settings.create({ data: { ...updates, id: 1 } });
+                await (prisma.settings as any).create({ data: { ...updates, id: "1" } });
             }
         }
 

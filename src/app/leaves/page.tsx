@@ -6,40 +6,40 @@ import { useDebounce } from "@/hooks/use-debounce";
 import { LeaveCalendar } from "@/components/leaves/LeaveCalendar";
 import { Search, CalendarDays, UserCheck, Clock3 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { LeaveRequest } from "@/lib/data-service";
+import type { LeaveRequest, Doctor } from "@/lib/data-service";
 
 export default function LeavesPage() {
-    const { data: leaves = [] } = useSWR<LeaveRequest[]>('/api/leaves');
+    const { data: session } = useSWR('/api/auth/session');
+    const { data: rawLeaves, mutate: mutateLeaves } = useSWR<LeaveRequest[]>('/api/leaves');
+    const { data: rawDoctors } = useSWR<Doctor[]>('/api/doctors');
+
+    const leaves = Array.isArray(rawLeaves) ? rawLeaves : [];
+    const doctors = Array.isArray(rawDoctors) ? rawDoctors : [];
     const [searchQuery, setSearchQuery] = useState("");
     const debouncedSearch = useDebounce(searchQuery, 200);
 
     const totalLeaves = leaves.length;
 
-    function isDateInLeave(checkDate: Date, leaveDates: string) {
+    function isDateInLeave(checkDate: Date, leave: LeaveRequest) {
         const target = new Date(checkDate);
         target.setHours(0, 0, 0, 0);
-        try {
-            if (leaveDates.includes(' - ')) {
-                const [startStr, endStr] = leaveDates.split(' - ');
-                const start = new Date(startStr);
-                const end = new Date(endStr);
-                start.setHours(0, 0, 0, 0);
-                end.setHours(0, 0, 0, 0);
-                return target >= start && target <= end;
-            }
-            const d = new Date(leaveDates);
-            return !isNaN(d.getTime()) && d.setHours(0, 0, 0, 0) === target.getTime();
-        } catch { return false; }
+
+        const start = new Date(leave.startDate);
+        const end = new Date(leave.endDate);
+        start.setHours(0, 0, 0, 0);
+        end.setHours(0, 0, 0, 0);
+
+        return target >= start && target <= end;
     }
 
     const { onLeaveToday, cutiBuilanIni, stats } = useMemo(() => {
         const now = new Date();
-        const onLeaveToday = leaves.filter(l => isDateInLeave(now, l.dates)).length;
+        const onLeaveToday = leaves.filter(l => isDateInLeave(now, l)).length;
         const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
         const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
         const cutiBuilanIni = leaves.filter(l => {
             for (let d = new Date(monthStart); d <= monthEnd; d.setDate(d.getDate() + 1)) {
-                if (isDateInLeave(new Date(d), l.dates)) return true;
+                if (isDateInLeave(new Date(d), l)) return true;
             }
             return false;
         }).length;
@@ -56,7 +56,7 @@ export default function LeavesPage() {
     const filteredLeaves = useMemo(() =>
         debouncedSearch === ""
             ? leaves
-            : leaves.filter(l => l.doctor.toLowerCase().includes(debouncedSearch.toLowerCase())),
+            : leaves.filter(l => (l.doctor || "").toLowerCase().includes(debouncedSearch.toLowerCase())),
         [leaves, debouncedSearch]
     );
 

@@ -40,7 +40,8 @@ export function CalendarGrid() {
     const [newShift, setNewShift] = useState<Partial<Shift>>({
         dayIdx: 0,
         timeIdx: 0,
-        color: 'blue'
+        color: 'blue',
+        doctorId: ''
     });
 
     useEffect(() => {
@@ -63,11 +64,11 @@ export function CalendarGrid() {
         });
 
         setShowModal(false);
-        setNewShift({ dayIdx: 0, timeIdx: 0, color: 'blue', title: '', doctor: '' });
+        setNewShift({ dayIdx: 0, timeIdx: 0, color: 'blue', title: '', doctor: '', doctorId: '' });
         fetchShifts();
     };
 
-    const handleDeleteShift = async (e: React.MouseEvent, id: number) => {
+    const handleDeleteShift = async (e: React.MouseEvent, id: string) => {
         e.stopPropagation();
         if (!confirm("Delete this shift?")) return;
 
@@ -144,7 +145,7 @@ export function CalendarGrid() {
                                             </div>
                                             <div className="flex items-center gap-1.5 opacity-90">
                                                 <div className="h-4 w-4 rounded-full bg-white/20" />
-                                                <span>{shift.doctor}</span>
+                                                <span>{shift.doctor || 'Unknown'}</span>
                                             </div>
                                             {shift.extra && (
                                                 <p className="mt-2 text-[10px] opacity-70 bg-black/20 px-1.5 py-0.5 rounded w-fit">{shift.extra}</p>

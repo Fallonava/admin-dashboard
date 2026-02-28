@@ -7,7 +7,7 @@ import { requireAdmin } from '@/lib/api-utils';
 // Accepts a rule (or defaults to all active rules) and optional sample data.  
 // Returns predicted updates without modifying any records.
 export async function POST(req: Request) {
-    const authErr = requireAdmin(req);
+    const authErr = await requireAdmin(req);
     if (authErr) return authErr;
 
     const body = await req.json();

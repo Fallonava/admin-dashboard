@@ -43,6 +43,7 @@ export function RealtimeCalendar({ selectedDate, onDateChange }: RealtimeCalenda
     const [showAddModal, setShowAddModal] = useState(false);
     const [newShift, setNewShift] = useState({
         doctor: "",
+        doctorId: "",
         dayIdx: 0,
         start: "08:00",
         end: "12:00",
@@ -87,6 +88,7 @@ export function RealtimeCalendar({ selectedDate, onDateChange }: RealtimeCalenda
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 doctor: newShift.doctor,
+                doctorId: newShift.doctorId,
                 title: newShift.title,
                 dayIdx: newShift.dayIdx,
                 timeIdx: 0,
@@ -96,11 +98,11 @@ export function RealtimeCalendar({ selectedDate, onDateChange }: RealtimeCalenda
             })
         });
         setShowAddModal(false);
-        setNewShift({ doctor: "", dayIdx: 0, start: "08:00", end: "12:00", title: "Praktek", registrationTime: "07:30" });
+        setNewShift({ doctor: "", doctorId: "", dayIdx: 0, start: "08:00", end: "12:00", title: "Praktek", registrationTime: "07:30" });
         fetchData();
     };
 
-    const handleDelete = async (id: number) => {
+    const handleDelete = async (id: string) => {
         if (!confirm("Delete this shift?")) return;
         await fetch(`/api/shifts?id=${id}`, { method: 'DELETE' });
         fetchData();
@@ -155,7 +157,7 @@ export function RealtimeCalendar({ selectedDate, onDateChange }: RealtimeCalenda
 
                                         <div className="flex flex-wrap gap-2.5 relative z-10">
                                             {cellShifts.map((shift, sIdx) => {
-                                                const color = getColor(shift.doctor);
+                                                const color = getColor(shift.doctor || 'Unknown');
                                                 return (
                                                     <div
                                                         key={shift.id}
@@ -167,7 +169,7 @@ export function RealtimeCalendar({ selectedDate, onDateChange }: RealtimeCalenda
                                                         <div className="flex items-start justify-between gap-2 mb-2">
                                                             <div className="flex items-center gap-2.5 min-w-0">
                                                                 <div className={cn("w-2 h-2 rounded-full flex-shrink-0 shadow-sm", color.dot)} />
-                                                                <p className={cn("text-xs font-bold truncate tracking-tight", color.text)}>{shift.doctor}</p>
+                                                                <p className={cn("text-xs font-bold truncate tracking-tight", color.text)}>{shift.doctor || 'Unknown'}</p>
                                                             </div>
                                                             <button
                                                                 onClick={() => handleDelete(shift.id)}
@@ -228,12 +230,16 @@ export function RealtimeCalendar({ selectedDate, onDateChange }: RealtimeCalenda
                                 <label className="text-[11px] text-muted-foreground font-bold uppercase tracking-wider block mb-1.5">Doctor</label>
                                 <select
                                     className="w-full bg-white/50 backdrop-blur-md rounded-2xl p-3 text-sm text-foreground focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none transition-all shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),0_2px_10px_-3px_rgba(0,0,0,0.02)] appearance-none focus:bg-white/70"
-                                    value={newShift.doctor}
-                                    onChange={e => setNewShift({ ...newShift, doctor: e.target.value })}
+                                    value={newShift.doctorId}
+                                    onChange={e => {
+                                        const docId = e.target.value;
+                                        const docName = doctors.find(d => d.id === docId)?.name || "";
+                                        setNewShift({ ...newShift, doctorId: docId, doctor: docName });
+                                    }}
                                 >
                                     <option value="" disabled>Select Doctor</option>
                                     {doctors.map(d => (
-                                        <option key={d.id} value={d.name}>{d.name} ({d.specialty})</option>
+                                        <option key={d.id} value={d.id}>{d.name} ({d.specialty})</option>
                                     ))}
                                 </select>
                             </div>

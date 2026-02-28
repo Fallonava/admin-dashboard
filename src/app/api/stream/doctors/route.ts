@@ -22,9 +22,20 @@ export async function GET(request: Request) {
                 send({ type: 'doctors', updates });
             };
             automationBroadcaster.on('doctors', listener);
+            let isClosed = false;
             // keep-alive ping
-            const iv = setInterval(() => controller.enqueue('event: ping\ndata: {}\n\n'), 25000);
+            const iv = setInterval(() => {
+                if (!isClosed) {
+                    try {
+                        controller.enqueue('event: ping\ndata: {}\n\n')
+                    } catch (e) {
+                        isClosed = true;
+                        clearInterval(iv);
+                    }
+                }
+            }, 25000);
             (controller as any).oncancel = () => {
+                isClosed = true;
                 clearInterval(iv);
                 automationBroadcaster.off('doctors', listener);
             };

@@ -164,25 +164,87 @@ npm run start   # Start production server
 
 ---
 
-## ❌ NOT YET IMPLEMENTED (Optional Enhancements)
+## ✅ ADVANCED FEATURES IMPLEMENTED
 
-### Step 7: Retry Logic & Rate Limiting
-- Requires message queue (Redis/BullMQ)
-- Implements exponential backoff, circuit breaker pattern
-- Not blocking for v1 launch
+### Step 7: Retry Logic & Rate Limiting ✅
+- ✅ BullMQ queue system with Redis integration
+- ✅ Exponential backoff retry (up to 5 attempts, 2s → 32s)
+- ✅ Circuit breaker pattern for graceful degradation
+- ✅ Max 5 concurrent workers (rate limiting)
+- ✅ Failed job tracking and inspection
+- ✅ Dashboard: `/automation/queue-monitor`
+- ✅ Metrics API: `GET /api/queue-metrics`
 
-### Step 8: Advanced Dry-run Simulator
-- Current: Basic preview in `/api/automation-rules/test`
-- Future: Batch testing, rule conflict detection
-- Not blocking for v1 launch
+### Step 8: Dry-run Simulator ✅
+- ✅ Batch rule simulation with conflict detection
+- ✅ Priority-based conflict resolution suggestions
+- ✅ Rule impact forecasting
+- ✅ Dashboard: `/automation/simulate`
+- ✅ Simulation runs logged to `AutomationLog`
+- ✅ API: `POST /api/automation-rules/simulate`
 
-### Step 9: ML Heuristics
-- Auto-suggest rules based on patterns
-- Optional enhancement, can skip
+### Step 9: ML Heuristics ✅
+- ✅ Rule suggestion engine based on data patterns
+- ✅ Detects doctors with no shifts → suggests `TIDAK PRAKTEK` rule
+- ✅ Detects leave requests → suggests `CUTI` rule
+- ✅ Detects manual overrides → suggests respect rule
+- ✅ Dashboard: `/automation/heuristics`
+- ✅ API: `GET /api/automation-heuristics/suggest`
 
-### Step 10: E2E Tests & CI/CD
-- Requires Jest setup, GitHub Actions
-- Can add post-launch
+### Step 10: E2E Tests & CI/CD ✅
+- ✅ Jest test suite configured
+- ✅ 3 test modules, 18 tests passing:
+  - `circuit-breaker.test.ts` (8 tests) — state transitions, fail-fast, recovery
+  - `automation-simulator.test.ts` (5 tests) — rule matching, conflict detection
+  - `automation.test.ts` (5 tests) — rule evaluation, immutability, error handling
+- ✅ GitHub Actions CI pipeline (`.github/workflows/ci.yml`)
+- ✅ Automated testing on every push/PR (Node 18 & 20)
+- ✅ npm audit security scanning
+- ✅ TypeScript type checking
+- ✅ Test coverage reporting
+
+---
+
+## 🧪 TESTING GUIDE
+
+### Local Testing
+```bash
+# Run all tests
+npm test
+
+# Watch mode
+npm test:watch
+
+# Coverage report
+npm test -- --coverage
+
+# Specific suite
+npm test circuit-breaker.test.ts
+```
+
+### CI Pipeline (GitHub Actions)
+Automatically runs on:
+- Push to `main` or `develop`
+- Pull requests to `main` or `develop`
+
+**Jobs:**
+1. **Test** (Node 18 & 20) — Jest suite + ESLint + build
+2. **Security** — npm audit critical check
+3. **Type Check** — TypeScript validation
+
+See `TESTING.md` for detailed testing documentation.
+
+---
+
+## ❌ OPTIONAL ENHANCEMENTS (Not Blocking v1)
+
+These features can be added post-launch:
+
+- **Advanced E2E Tests** — Cypress/Playwright integration tests
+- **Performance Benchmarks** — Automated speed regression detection
+- **Code Coverage Reports** — Codecov integration for PR comments
+- **Code Quality Scans** — Sonarqube, CodeClimate integration
+- **API Testing** — Postman/Newman automated API test suites
 
 ---
 
@@ -193,9 +255,13 @@ Before going live:
 - [ ] Database schema synced (via `npx prisma db push`)
 - [ ] `automationEnabled = true` in Settings
 - [ ] `npm run build` completes with zero errors
+- [ ] `npm test` passes all test suites (18/18 passing)
 - [ ] Test run: curl `POST /api/doctors?action=bulk` returns 200
 - [ ] Test logs: Visit `/automation/logs`, see run entries in past 2 minutes
 - [ ] Test rules: Visit `/automation/rules`, create a rule, hit "Preview"
+- [ ] Test simulator: Visit `/automation/simulate`, run a simulation
+- [ ] Test queue: Visit `/automation/queue-monitor`, check metrics
+- [ ] Test heuristics: Visit `/automation/heuristics`, see suggestions
 - [ ] Monitor for 5 minutes: Confirm runs logging every 30 seconds
 - [ ] Check error logs: No persistent database or auth errors
 

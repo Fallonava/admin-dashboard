@@ -28,7 +28,7 @@ const UpdateRuleSchema = CreateRuleSchema.extend({
 });
 
 export async function GET(req: Request) {
-    const authErr = requireAdmin(req);
+    const authErr = await requireAdmin(req);
     if (authErr) return authErr;
 
     if (!(prisma as any).automationRule) return NextResponse.json([]);
@@ -37,7 +37,7 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
-    const authErr = requireAdmin(req);
+    const authErr = await requireAdmin(req);
     if (authErr) return authErr;
 
     try {
@@ -59,7 +59,7 @@ export async function POST(req: Request) {
 }
 
 export async function PUT(req: Request) {
-    const authErr = requireAdmin(req);
+    const authErr = await requireAdmin(req);
     if (authErr) return authErr;
 
     try {
@@ -85,7 +85,7 @@ export async function PUT(req: Request) {
 }
 
 export async function DELETE(req: Request) {
-    const authErr = requireAdmin(req);
+    const authErr = await requireAdmin(req);
     if (authErr) return authErr;
 
     const { searchParams } = new URL(req.url);

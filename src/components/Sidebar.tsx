@@ -15,7 +15,8 @@ import {
   Activity,
   Tv,
   Menu,
-  X
+  X,
+  Zap
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -29,6 +30,7 @@ const navigation = [
 
 const systems = [
   { name: "Otomatisasi", href: "/automation", icon: Bot },
+  { name: "Monitor Queue", href: "/automation/queue-monitor", icon: Zap },
   { name: "Kontrol Layar", href: "/display-control", icon: Settings },
   { name: "Infrastruktur", href: "/infrastructure", icon: Server },
   { name: "Layar Langsung", href: "/tv.html", icon: Tv, external: true },

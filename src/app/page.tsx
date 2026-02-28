@@ -8,12 +8,18 @@ import type { Doctor, LeaveRequest, Shift, Settings } from "@/lib/data-service";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { LiveClock } from "@/components/LiveClock";
 import { useDebounce } from "@/hooks/use-debounce";
+import { useRouter } from "next/navigation";
 
 
 export default function Home() {
-  const { data: doctors = [], mutate: mutateDoctors } = useSWR<Doctor[]>('/api/doctors');
-  const { data: leaves = [] } = useSWR<LeaveRequest[]>('/api/leaves');
-  const { data: shifts = [], mutate: mutateShifts } = useSWR<Shift[]>('/api/shifts');
+  const router = useRouter();
+  const { data: rawDoctors, mutate: mutateDoctors } = useSWR<Doctor[]>('/api/doctors');
+  const { data: rawLeaves } = useSWR<LeaveRequest[]>('/api/leaves');
+  const { data: rawShifts, mutate: mutateShifts } = useSWR<Shift[]>('/api/shifts');
+
+  const doctors = Array.isArray(rawDoctors) ? rawDoctors : [];
+  const leaves = Array.isArray(rawLeaves) ? rawLeaves : [];
+  const shifts = Array.isArray(rawShifts) ? rawShifts : [];
   const { data: settings, mutate: mutateSettings } = useSWR<Settings>('/api/settings');
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -37,48 +43,69 @@ export default function Home() {
   const toggleAutomation = async () => {
     if (!settings) return;
     const newState = !settings.automationEnabled;
+
+    // Store previous state for rollback
+    const previousSettings = { ...settings };
+
+    // Optimistic update
     mutateSettings({ ...settings, automationEnabled: newState }, false);
+
     try {
-      await fetch('/api/settings', {
+      const res = await fetch('/api/settings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ automationEnabled: newState })
       });
-      mutateSettings();
+      if (!res.ok) throw new Error('API Error');
+      mutateSettings(); // Revalidate from true server state
     } catch (e) {
       console.error("Failed to save settings", e);
-      mutateSettings();
+      // Rollback on failure
+      mutateSettings(previousSettings, false);
+      mutateSettings(); // Re-fetch to be absolutely sure
     }
   };
 
   // Toggle shift disabled for today
-  const toggleShiftDisabled = async (shiftId: number, shift: Shift) => {
+  const toggleShiftDisabled = async (shiftId: string, shift: Shift) => {
     const dates = shift.disabledDates || [];
     const isDisabledToday = dates.includes(todayStr);
     const newDates = isDisabledToday
       ? dates.filter(d => d !== todayStr)
       : [...dates, todayStr];
 
+    // Store previous state for rollback
+    const previousShifts = shifts;
+
+    // Optimistic update
     mutateShifts(curr => curr?.map(s => s.id === shiftId ? { ...s, disabledDates: newDates } : s), false);
+
     try {
-      await fetch('/api/shifts', {
+      const res = await fetch('/api/shifts', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: shiftId, disabledDates: newDates })
       });
-      mutateShifts();
+      if (!res.ok) throw new Error('API Error');
+      mutateShifts(); // Revalidate
     } catch (e) {
       console.error('Failed to toggle shift', e);
+      // Rollback on failure
+      mutateShifts(previousShifts, false);
       mutateShifts();
     }
   };
 
   // Manual Status Update (SETS manual override flag)
   const manualUpdateStatus = async (id: string | number, status: Doctor['status']) => {
-    const now = new Date();
-    const timeString = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false }).replace('.', ':');
-    const timestamp = now.getTime();
+    const nowLocal = new Date();
+    const timeString = nowLocal.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false }).replace('.', ':');
+    const timestamp = nowLocal.getTime();
 
+    // Store previous state for rollback
+    const previousDoctors = doctors;
+
+    // Optimistic update
     mutateDoctors(docs => docs?.map(d =>
       d.id === id ? {
         ...d,
@@ -88,17 +115,27 @@ export default function Home() {
       } : d
     ), false);
 
-    await fetch('/api/doctors', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        id,
-        status,
-        lastCall: (status === 'BUKA' || status === 'PENUH') ? timeString : undefined,
-        lastManualOverride: timestamp
-      })
-    });
-    mutateDoctors();
+    try {
+      const res = await fetch('/api/doctors', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          id,
+          status,
+          lastCall: (status === 'BUKA' || status === 'PENUH') ? timeString : undefined,
+          lastManualOverride: timestamp
+        })
+      });
+      if (!res.ok) throw new Error('API Error');
+      mutateDoctors(); // Revalidate
+    } catch (e) {
+      console.error('Failed to update doctor status', e);
+      // Rollback on failure
+      mutateDoctors(previousDoctors, false);
+      mutateDoctors();
+    }
   };
 
   const activeDocs = useMemo(() => todayDoctors.filter(d => d.status === 'BUKA' || d.status === 'PENUH'), [todayDoctors]);
@@ -119,6 +156,12 @@ export default function Home() {
     );
   }, [todayDoctors, debouncedSearch]);
 
+  const handleLogout = async () => {
+    await fetch('/api/auth/logout', { method: 'POST' });
+    router.push('/login');
+    router.refresh();
+  };
+
   // Dynamic greeting
   const hour = new Date().getHours();
   const greeting = hour < 11 ? "Selamat Pagi" : hour < 15 ? "Selamat Siang" : hour < 18 ? "Selamat Sore" : "Selamat Malam";
@@ -131,10 +174,19 @@ export default function Home() {
           <div className="p-2.5 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl shadow-[0_4px_14px_0_rgba(0,92,255,0.3)] text-white flex-shrink-0">
             <Activity size={20} />
           </div>
-          <div>
-            <h1 className="text-2xl font-black tracking-tight text-slate-900 leading-tight">
-              {greeting}, <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Admin</span>
-            </h1>
+          <div className="flex flex-col">
+            <div className="flex items-center gap-2">
+              <h1 className="text-2xl font-black tracking-tight text-slate-900 leading-tight">
+                {greeting}, <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Admin</span>
+              </h1>
+              <button
+                onClick={handleLogout}
+                className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                title="Keluar / Logout"
+              >
+                <Power size={16} strokeWidth={2.5} />
+              </button>
+            </div>
             <p className="text-xs text-slate-400 font-medium mt-0.5">Berikut update terbaru klinik Anda hari ini.</p>
           </div>
         </div>

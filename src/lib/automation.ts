@@ -29,50 +29,25 @@ function formatDateYMD(date: Date): string {
     return `${y}-${m}-${d}`;
 }
 
-function isDateInRange(todayStr: string, dateRange: string): boolean {
-    if (!dateRange) return false;
-    const standardMatch = dateRange.match(/(\d{4}-\d{2}-\d{2})\s*-\s*(\d{4}-\d{2}-\d{2})/);
-    if (standardMatch) {
-        return todayStr >= standardMatch[1] && todayStr <= standardMatch[2];
-    }
-    const singleISO = dateRange.match(/^(\d{4}-\d{2}-\d{2})$/);
-    if (singleISO) return todayStr === singleISO[1];
-    const legacyMatch = dateRange.match(/([A-Za-zçéÉ]+)\s+(\d{1,2})\s*-\s*(\d{1,2})/i);
-    const monthMap: Record<string, string> = {
-        'jan': '01', 'january': '01', 'janvier': '01',
-        'feb': '02', 'february': '02', 'februari': '02',
-        'mar': '03', 'march': '03', 'maret': '03',
-        'apr': '04', 'april': '04',
-        'may': '05', 'mei': '05',
-        'jun': '06', 'june': '06', 'juni': '06',
-        'jul': '07', 'july': '07', 'juli': '07',
-        'aug': '08', 'august': '08', 'agustus': '08',
-        'sep': '09', 'september': '09',
-        'oct': '10', 'october': '10', 'oktober': '10',
-        'nov': '11', 'november': '11',
-        'dec': '12', 'december': '12', 'desember': '12'
-    };
-    if (legacyMatch) {
-        const monthStr = legacyMatch[1].toLowerCase();
-        const startDay = parseInt(legacyMatch[2]);
-        const endDay = parseInt(legacyMatch[3]);
-        const mm = monthMap[monthStr];
-        if (!mm) return false;
-        const year = todayStr.substring(0, 4);
-        const rangeStart = `${year}-${mm}-${String(startDay).padStart(2, '0')}`;
-        const rangeEnd = `${year}-${mm}-${String(endDay).padStart(2, '0')}`;
-        return todayStr >= rangeStart && todayStr <= rangeEnd;
-    }
-    try {
-        const parsed = new Date(dateRange);
-        if (!isNaN(parsed.getTime())) {
-            const y = parsed.getFullYear();
-            const m = String(parsed.getMonth() + 1).padStart(2, '0');
-            const d = String(parsed.getDate()).padStart(2, '0');
-            return todayStr === `${y}-${m}-${d}`;
-        }
-    } catch { }
-    return false;
+function isDateInLeavePeriod(todayStr: string, startDate: Date | string | null, endDate: Date | string | null): boolean {
+    if (!startDate || !endDate) return false;
+
+    // Normalize todayStr (YYYY-MM-DD) into components
+    const todayMatch = todayStr.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (!todayMatch) return false;
+
+    // To avoid timezone shift issues, parse strictly to midnight local time for comparison
+    const target = new Date(Number(todayMatch[1]), Number(todayMatch[2]) - 1, Number(todayMatch[3]));
+    target.setHours(0, 0, 0, 0);
+
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    // We only care about YMD boundaries
+    start.setHours(0, 0, 0, 0);
+    end.setHours(0, 0, 0, 0);
+
+    return target.getTime() >= start.getTime() && target.getTime() <= end.getTime();
 }
 
 function matchDoctorName(leaveName: string, doctorName: string): boolean {
@@ -115,7 +90,8 @@ export function evaluateRules(
                 }
                 if (cond.status && cond.status !== doc.status) match = false;
                 if (cond.dateRange) {
-                    if (!isDateInRange(todayStr, cond.dateRange)) match = false;
+                    // Deprecated: dateRange as condition checking removed in automated leave implementation
+                    // if (!isDateInRange(todayStr, cond.dateRange)) match = false;
                 }
                 if (cond.timeRange) {
                     const parts = String(cond.timeRange).split('-');
@@ -154,16 +130,22 @@ export async function runAutomation(): Promise<{ applied: number, failed: number
             lastManualOverride: d.lastManualOverride !== null ? Number(d.lastManualOverride) : undefined
         })) as unknown as Doctor[];
 
-        const rawShifts = await prisma.shift.findMany();
-        const shifts = rawShifts.map(s => ({ ...s, id: Number(s.id) })) as unknown as Shift[];
+        const rawShifts = await (prisma.shift as any).findMany();
+        const shifts = rawShifts.map((s: any) => {
+            const docRef = rawDoctors.find(d => d.id === s.doctorId);
+            return { ...s, id: Number(s.id), doctor: docRef?.name || '' };
+        }) as unknown as Shift[];
 
-        const rawLeaves = await prisma.leaveRequest.findMany();
-        const leaves = rawLeaves.map(l => ({ ...l, id: Number(l.id) })) as unknown as LeaveRequest[];
+        const rawLeaves = await (prisma.leaveRequest as any).findMany();
+        const leaves = rawLeaves.map((l: any) => {
+            const docRef = rawDoctors.find(d => d.id === l.doctorId);
+            return { ...l, id: String(l.id), doctor: docRef?.name || '' };
+        }) as unknown as LeaveRequest[];
 
         const settingsRow = await prisma.settings.findFirst();
         const settings: Settings | null = settingsRow ? {
             ...settingsRow,
-            id: Number(settingsRow.id),
+            id: String(settingsRow.id),
             runTextMessage: settingsRow.runTextMessage ?? undefined,
             emergencyMode: settingsRow.emergencyMode ?? undefined,
             customMessages: (settingsRow as any).customMessages ?? undefined,
@@ -195,11 +177,20 @@ export async function runAutomation(): Promise<{ applied: number, failed: number
 
         // (time context already computed above)
 
+        // Override cooldown: 4 hours
+        const OVERRIDE_COOLDOWN_MS = 4 * 60 * 60 * 1000;
+
         for (const doc of doctors) {
             if (doc.status === 'OPERASI') continue;
+
+            // Check if there is an active manual override cooldown
+            const isCooldownActive = doc.lastManualOverride
+                ? (now.getTime() - doc.lastManualOverride) < OVERRIDE_COOLDOWN_MS
+                : false;
+
             const isOnLeaveToday = leaves.some(leave =>
-                matchDoctorName(leave.doctor, doc.name) &&
-                isDateInRange(todayStr, leave.dates)
+                matchDoctorName(leave.doctor || (leaves.find(x => x.doctorId === leave.doctorId)?.doctor || ''), doc.name) &&
+                isDateInLeavePeriod(todayStr, leave.startDate, leave.endDate)
             );
             if (isOnLeaveToday) {
                 if (doc.status !== 'CUTI') updates.push({ id: doc.id, status: 'CUTI' });
@@ -213,12 +204,15 @@ export async function runAutomation(): Promise<{ applied: number, failed: number
                 s.doctor === doc.name && s.dayIdx === currentDayIdx && s.formattedTime &&
                 !(s.disabledDates || []).includes(todayStr)
             );
+
+            // Sweep immediately if no shifts today
             if (todayShifts.length === 0) {
                 if (doc.status === 'BUKA' || doc.status === 'SELESAI') {
                     updates.push({ id: doc.id, status: 'TIDAK PRAKTEK' });
                 }
                 continue;
             }
+
             let isWithinAnyShift = false;
             let isAfterAllShifts = true;
             let latestEndMinutes = 0;
@@ -237,16 +231,20 @@ export async function runAutomation(): Promise<{ applied: number, failed: number
                     latestEndMinutes = endMinutes;
                 }
             }
+
+            // Cooldown Logic Application
             if (isWithinAnyShift) {
-                if (doc.status !== 'PENUH' && (doc.status === 'TIDAK PRAKTEK' || doc.status === 'SELESAI')) {
+                // If admin manually changed status (e.g to TIDAK PRAKTEK / SELESAI), respect the cooldown!
+                if (!isCooldownActive && doc.status !== 'PENUH' && (doc.status === 'TIDAK PRAKTEK' || doc.status === 'SELESAI')) {
                     updates.push({ id: doc.id, status: 'BUKA' });
                 }
             } else if (isAfterAllShifts && latestEndMinutes > 0) {
+                // End of Day Sweep: Ignores Cooldown to ensure nobody is left stuck "BUKA" over night
                 if (doc.status === 'BUKA' || doc.status === 'PENUH' || doc.status === 'TIDAK PRAKTEK') {
                     updates.push({ id: doc.id, status: 'SELESAI' });
                 }
             } else if (!isWithinAnyShift && !isAfterAllShifts) {
-                if (doc.status === 'SELESAI') {
+                if (!isCooldownActive && doc.status === 'SELESAI') {
                     updates.push({ id: doc.id, status: 'BUKA' });
                 }
             }
@@ -255,19 +253,39 @@ export async function runAutomation(): Promise<{ applied: number, failed: number
         try {
             if (updates.length > 0) {
                 try {
-                    await fetch('http://localhost:3000/api/doctors?action=bulk', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(updates)
-                    });
-                    applied = updates.length;
+                    // Try queue-based approach first (with retry/backoff)
+                    try {
+                        const { getAutomationQueue } = await import('./automation-queue');
+                        const queue = getAutomationQueue();
+                        // ONLY add to queue if it's explicitly initialized and connected
+                        // otherwise we fallback to the bulk API
+                        if (queue.isReady()) {
+                            await queue.addBatch(updates);
+                            applied = updates.length;
+                            console.debug('[automation] queued', updates.length, 'jobs');
+                        } else {
+                            throw new Error('Queue not ready');
+                        }
+                    } catch (queueErr) {
+                        console.debug('[automation] queue unavailable, using bulk API:', queueErr instanceof Error ? queueErr.message : String(queueErr));
+                        // Fallback to bulk API endpoint
+                        await fetch('http://localhost:3000/api/doctors?action=bulk', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'x-admin-key': process.env.ADMIN_KEY || ''
+                            },
+                            body: JSON.stringify(updates)
+                        });
+                        applied = updates.length;
+                    }
                 } catch {
-                    // fallback to individual
+                    // fallback to individual updates with concurrency limit
                     const concurrency = 5;
                     for (let i = 0; i < updates.length; i += concurrency) {
                         const chunk = updates.slice(i, i + concurrency);
                         const promises = chunk.map(u =>
-                            prisma.doctor.update({ where: { id: String(u.id) }, data: { status: u.status } })
+                            prisma.doctor.update({ where: { id: String(u.id) }, data: { status: u.status as any } })
                         );
                         const results = await Promise.allSettled(promises);
                         results.forEach(r => r.status === 'fulfilled' ? applied++ : failed++);

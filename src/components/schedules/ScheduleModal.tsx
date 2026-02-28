@@ -52,9 +52,9 @@ const INIT: Partial<Shift> = { title: "Praktek", formattedTime: "08:00-12:00", r
 
 export function ScheduleModal({ doctor, shifts, isOpen, onClose, onUpdate }: ScheduleModalProps) {
     const [activeDay, setActiveDay] = useState(todayIdx());
-    const [editId, setEditId] = useState<number | null>(null);
+    const [editId, setEditId] = useState<string | null>(null);
     const [adding, setAdding] = useState(false);
-    const [expandId, setExpandId] = useState<number | null>(null);
+    const [expandId, setExpandId] = useState<string | null>(null);
     const [form, setForm] = useState<Partial<Shift>>(INIT);
     const [mounted, setMounted] = useState(false);
 
@@ -74,12 +74,12 @@ export function ScheduleModal({ doctor, shifts, isOpen, onClose, onUpdate }: Sch
         await fetch('/api/shifts', {
             method: editId ? 'PUT' : 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ ...form, id: editId, doctor: doctor.name, dayIdx: activeDay })
+            body: JSON.stringify({ ...form, id: editId, doctorId: doctor.id, doctor: doctor.name, dayIdx: activeDay })
         });
         onUpdate?.(); reset();
     };
 
-    const del = async (id: number) => {
+    const del = async (id: string) => {
         if (!confirm("Hapus shift ini?")) return;
         await fetch(`/api/shifts?id=${id}`, { method: 'DELETE' });
         onUpdate?.();
@@ -144,18 +144,20 @@ export function ScheduleModal({ doctor, shifts, isOpen, onClose, onUpdate }: Sch
                         return (
                             <button key={day} onClick={() => { setActiveDay(idx); reset(); }}
                                 className={cn(
-                                    "flex-1 py-2.5 rounded-xl text-xs font-bold transition-all relative",
+                                    "flex-1 py-2.5 rounded-xl text-xs font-bold transition-all relative flex flex-col items-center justify-center",
                                     isActive
                                         ? "bg-white text-slate-800 shadow-md border border-slate-200"
                                         : "text-slate-400 hover:text-slate-600 hover:bg-white/60"
                                 )}
                             >
-                                <span>{day}</span>
-                                {count > 0 && (
-                                    <span className={cn("absolute -top-1 -right-1 w-4 h-4 rounded-full text-[8px] font-black flex items-center justify-center",
-                                        isActive ? "bg-blue-500 text-white" : "bg-slate-200 text-slate-500"
-                                    )}>{count}</span>
-                                )}
+                                <span className="relative">
+                                    {day}
+                                    {count > 0 && (
+                                        <span className={cn("absolute -top-2 -right-4 w-4 h-4 rounded-full text-[8px] font-black flex items-center justify-center shadow-sm",
+                                            isActive ? "bg-blue-500 text-white" : "bg-slate-200 text-slate-500"
+                                        )}>{count}</span>
+                                    )}
+                                </span>
                                 {isToday && <div className={cn("w-1 h-1 rounded-full mx-auto mt-0.5", isActive ? "bg-blue-500" : "bg-slate-300")} />}
                             </button>
                         );
@@ -299,15 +301,16 @@ export function ScheduleModal({ doctor, shifts, isOpen, onClose, onUpdate }: Sch
 
                                         {/* Actions */}
                                         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity bg-white/80 backdrop-blur rounded-xl p-1 border border-slate-100 shadow-sm">
-                                            {(s.disabledDates || []).length > 0 && (
+                                            {(s.disabledDates || []).length > 0 ? (
                                                 <button onClick={() => setExpandId(exp ? null : s.id)}
-                                                    className="px-2 py-1.5 rounded-lg flex items-center gap-1 text-amber-600 bg-amber-50 text-[10px] font-bold hover:bg-amber-100">
+                                                    className="px-2 py-1.5 rounded-lg flex items-center gap-1 text-amber-600 bg-amber-50 text-[10px] font-bold hover:bg-amber-100 transition-colors" title="Lihat tanggal nonaktif">
                                                     <CalendarOff size={12} /> {(s.disabledDates || []).length}
                                                 </button>
+                                            ) : (
+                                                <button onClick={() => setExpandId(exp ? null : s.id)} className="p-1.5 rounded-lg text-slate-400 hover:text-amber-600 hover:bg-amber-50 transition-colors" title="Set tanggal nonaktif">
+                                                    <CalendarOff size={14} />
+                                                </button>
                                             )}
-                                            <button onClick={() => setExpandId(exp ? null : s.id)} className="p-1.5 rounded-lg text-slate-400 hover:text-amber-600 hover:bg-amber-50 transition-colors" title="Tanggal nonaktif">
-                                                <CalendarOff size={14} />
-                                            </button>
                                             <button onClick={() => dup(s)} className="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors" title="Duplikat">
                                                 <Copy size={14} />
                                             </button>

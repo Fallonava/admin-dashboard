@@ -37,25 +37,17 @@ export function LeaveCalendar({ leaves, onRefresh }: LeaveCalendarProps) {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const isDateInLeave = (checkDate: Date, leaveDates: string) => {
+    const isDateInLeave = (checkDate: Date, leave: LeaveRequest) => {
         const target = new Date(checkDate);
         target.setHours(0, 0, 0, 0);
-        try {
-            if (leaveDates.includes(' - ')) {
-                const [startStr, endStr] = leaveDates.split(' - ');
-                const start = new Date(startStr);
-                const end = new Date(endStr);
-                start.setHours(0, 0, 0, 0);
-                end.setHours(0, 0, 0, 0);
-                return target >= start && target <= end;
-            }
-            const d = new Date(leaveDates);
-            if (!isNaN(d.getTime())) {
-                d.setHours(0, 0, 0, 0);
-                return d.getTime() === target.getTime();
-            }
-        } catch { return false; }
-        return false;
+
+        const start = leave.startDate ? new Date(leave.startDate) : new Date();
+        const end = leave.endDate ? new Date(leave.endDate) : new Date();
+
+        start.setHours(0, 0, 0, 0);
+        end.setHours(0, 0, 0, 0);
+
+        return target >= start && target <= end;
     };
 
     const getDaysInMonth = (date: Date) => {
@@ -83,7 +75,7 @@ export function LeaveCalendar({ leaves, onRefresh }: LeaveCalendarProps) {
         onRefresh();
     };
 
-    const handleDelete = async (id: number) => {
+    const handleDelete = async (id: string) => {
         if (!confirm("Hapus data cuti ini?")) return;
         await fetch(`/api/leaves?id=${id}`, { method: 'DELETE' });
         onRefresh();
@@ -132,7 +124,7 @@ export function LeaveCalendar({ leaves, onRefresh }: LeaveCalendarProps) {
         document.body.removeChild(link);
     };
 
-    const activeLeaves = leaves.filter(l => isDateInLeave(selectedDate, l.dates));
+    const activeLeaves = leaves.filter(l => isDateInLeave(selectedDate, l));
 
     const selectedDateLabel = selectedDate.toLocaleDateString('id-ID', {
         weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
@@ -187,7 +179,7 @@ export function LeaveCalendar({ leaves, onRefresh }: LeaveCalendarProps) {
 
                             const isSelected = date.toDateString() === selectedDate.toDateString();
                             const isToday = date.toDateString() === new Date().toDateString();
-                            const hasLeave = leaves.some(l => isDateInLeave(date, l.dates));
+                            const hasLeave = leaves.some(l => isDateInLeave(date, l));
 
                             return (
                                 <button
@@ -267,7 +259,7 @@ export function LeaveCalendar({ leaves, onRefresh }: LeaveCalendarProps) {
                         const monthStart = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
                         const monthEnd = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
                         for (let d = new Date(monthStart); d <= monthEnd; d.setDate(d.getDate() + 1)) {
-                            if (isDateInLeave(new Date(d), l.dates)) return true;
+                            if (isDateInLeave(new Date(d), l)) return true;
                         }
                         return false;
                     }) ? (
@@ -277,7 +269,7 @@ export function LeaveCalendar({ leaves, onRefresh }: LeaveCalendarProps) {
                                     const monthStart = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
                                     const monthEnd = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
                                     for (let d = new Date(monthStart); d <= monthEnd; d.setDate(d.getDate() + 1)) {
-                                        if (isDateInLeave(new Date(d), l.dates)) return true;
+                                        if (isDateInLeave(new Date(d), l)) return true;
                                     }
                                     return false;
                                 })
@@ -341,7 +333,7 @@ export function LeaveCalendar({ leaves, onRefresh }: LeaveCalendarProps) {
                                         <Avatar className="h-11 w-11 rounded-2xl flex-shrink-0">
                                             <AvatarImage src={leave.avatar} />
                                             <AvatarFallback className="bg-gradient-to-br from-slate-600 to-slate-800 text-[11px] text-white font-black rounded-2xl">
-                                                {leave.doctor[0]}
+                                                {leave.doctor?.[0] || 'D'}
                                             </AvatarFallback>
                                         </Avatar>
 
@@ -355,7 +347,7 @@ export function LeaveCalendar({ leaves, onRefresh }: LeaveCalendarProps) {
                                                     {conf.emoji} {leave.type}
                                                 </span>
                                             </div>
-                                            <p className="text-[11px] text-slate-400 font-medium">{leave.dates}</p>
+                                            <p className="text-[11px] text-slate-400 font-medium">{new Date(leave.startDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })} - {new Date(leave.endDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}</p>
                                             {leave.reason && (
                                                 <p className="text-[11px] text-slate-400 mt-0.5 italic">"{leave.reason}"</p>
                                             )}
@@ -393,7 +385,7 @@ export function LeaveCalendar({ leaves, onRefresh }: LeaveCalendarProps) {
                                             </span>
                                         </div>
                                         <div className="flex items-center gap-2 flex-shrink-0 ml-2">
-                                            <span className="text-slate-400">{leave.dates}</span>
+                                            <span className="text-slate-400">{new Date(leave.startDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })} - {new Date(leave.endDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}</span>
                                             <button
                                                 onClick={() => handleDelete(leave.id)}
                                                 className="opacity-0 group-hover:opacity-100 p-1 text-slate-300 hover:text-red-500 rounded-lg transition-all"
