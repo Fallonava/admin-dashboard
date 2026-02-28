@@ -19,19 +19,32 @@ export async function POST(req: Request) {
 
     if (Array.isArray(data)) {
         const newLeaves = await Promise.all(
-            data.map(item => prisma.leaveRequest.create({
-                data: {
-                    ...item,
-                    startDate: new Date(item.startDate),
-                    endDate: new Date(item.endDate)
-                }
-            }))
+            data.map(async (item) => {
+                const { dates, doctor, ...rest } = item;
+                const doc = await prisma.doctor.findFirst({ where: { name: doctor } });
+                if (!doc) return;
+                return prisma.leaveRequest.create({
+                    data: {
+                        ...rest,
+                        doctorId: doc.id,
+                        status: 'Approved',
+                        startDate: new Date(item.startDate),
+                        endDate: new Date(item.endDate)
+                    }
+                });
+            })
         );
         return NextResponse.json(newLeaves);
     } else {
+        const { dates, doctor, ...rest } = data;
+        const doc = await prisma.doctor.findFirst({ where: { name: doctor } });
+        if (!doc) return NextResponse.json({ error: 'Doctor not found' }, { status: 404 });
+
         const newLeave = await prisma.leaveRequest.create({
             data: {
-                ...data,
+                ...rest,
+                doctorId: doc.id,
+                status: 'Approved',
                 startDate: new Date(data.startDate),
                 endDate: new Date(data.endDate)
             }

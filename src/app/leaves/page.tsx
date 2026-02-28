@@ -9,7 +9,6 @@ import { cn } from "@/lib/utils";
 import type { LeaveRequest, Doctor } from "@/lib/data-service";
 
 export default function LeavesPage() {
-    const { data: session } = useSWR('/api/auth/session');
     const { data: rawLeaves, mutate: mutateLeaves } = useSWR<LeaveRequest[]>('/api/leaves');
     const { data: rawDoctors } = useSWR<Doctor[]>('/api/doctors');
 

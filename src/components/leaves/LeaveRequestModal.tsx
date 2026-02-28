@@ -45,6 +45,8 @@ export function LeaveRequestModal({ isOpen, onClose, onSubmit }: Props) {
                 doctor: form.doctor,
                 type: form.type,
                 dates: `${form.startDate} - ${form.endDate}`,
+                startDate: form.startDate,
+                endDate: form.endDate,
                 reason: form.reason,
                 avatar: "/avatars/default.png",
             });

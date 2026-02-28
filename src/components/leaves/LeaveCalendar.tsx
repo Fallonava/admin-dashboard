@@ -95,6 +95,8 @@ export function LeaveCalendar({ leaves, onRefresh }: LeaveCalendarProps) {
                     doctor,
                     type: type || 'Lainnya',
                     dates: end ? `${start} - ${end}` : start,
+                    startDate: start,
+                    endDate: end || start,
                     avatar: "/avatars/default.png"
                 };
             }).filter(Boolean);

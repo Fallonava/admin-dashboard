@@ -5,7 +5,13 @@ export function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
 
     // We do not protect the login route itself, nor the auth API endpoints
-    const isPublicRoute = pathname.startsWith('/login') || pathname.startsWith('/api/auth') || pathname.startsWith('/_next') || pathname.startsWith('/favicon.ico');
+    const isPublicRoute =
+        pathname.startsWith('/login') ||
+        pathname.startsWith('/api/auth') ||
+        pathname.startsWith('/_next') ||
+        pathname.startsWith('/favicon.ico') ||
+        pathname === '/tv.html' ||
+        pathname.startsWith('/api/display');
 
     if (isPublicRoute) {
         return NextResponse.next();
