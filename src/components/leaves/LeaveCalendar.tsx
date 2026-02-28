@@ -133,11 +133,11 @@ export function LeaveCalendar({ leaves, onRefresh }: LeaveCalendarProps) {
     });
 
     return (
-        <div className="flex flex-col lg:flex-row gap-6 h-full">
+        <div className="flex flex-col lg:flex-row gap-6 h-full overflow-y-auto lg:overflow-hidden pb-6 lg:pb-0 custom-scrollbar pr-1 lg:pr-0">
 
             {/* ══════════ KIRI: KALENDER ══════════ */}
-            <div className="w-full lg:w-[360px] flex-shrink-0 flex flex-col gap-5">
-                <div className="super-glass-card rounded-[32px] p-6 shadow-sm">
+            <div className="w-full lg:w-[360px] flex-shrink-0 flex flex-col gap-5 lg:overflow-y-auto lg:custom-scrollbar lg:pb-4 lg:pr-2">
+                <div className="super-glass-card rounded-[32px] p-6 shadow-sm flex-shrink-0">
                     {/* Month Nav */}
                     <div className="flex items-center justify-between mb-4">
                         <h2 className="text-sm font-black text-slate-800">
@@ -253,7 +253,7 @@ export function LeaveCalendar({ leaves, onRefresh }: LeaveCalendarProps) {
                 </div>
 
                 {/* Ringkasan bulan ini */}
-                <div className="super-glass-card rounded-[32px] p-6 shadow-sm">
+                <div className="super-glass-card rounded-[32px] p-6 shadow-sm flex-shrink-0">
                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">
                         Bulan Ini — {MONTHS_ID[currentDate.getMonth()]}
                     </p>
@@ -296,7 +296,7 @@ export function LeaveCalendar({ leaves, onRefresh }: LeaveCalendarProps) {
             </div>
 
             {/* ══════════ KANAN: DAFTAR CUTI TANGGAL TERPILIH ══════════ */}
-            <div className="flex-1 super-glass-card rounded-[32px] p-8 shadow-sm flex flex-col min-h-0 relative z-10">
+            <div className="flex-1 super-glass-card rounded-[32px] p-6 lg:p-8 shadow-sm flex flex-col min-h-[500px] lg:min-h-0 relative z-10 mb-8 lg:mb-0">
                 {/* Header Panel Kanan */}
                 <div className="flex items-center justify-between mb-5 pb-4 border-b border-slate-50">
                     <div>
@@ -317,41 +317,61 @@ export function LeaveCalendar({ leaves, onRefresh }: LeaveCalendarProps) {
                     {activeLeaves.length > 0 ? (
                         activeLeaves.map(leave => {
                             const conf = TYPE_CONFIG[leave.type] || { color: "text-slate-600", bg: "bg-slate-100", emoji: "📋" };
+                            const ringColor = conf.color.replace('text-', 'ring-').replace('-600', '-600/20');
+                            const bgColor = conf.color.replace('text-', 'bg-').replace('-600', '-100/60');
+
+                            const startDt = new Date(leave.startDate);
+                            const endDt = leave.endDate ? new Date(leave.endDate) : null;
+                            let dateStr = startDt.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+                            if (endDt && endDt > startDt) {
+                                dateStr += ` - ${endDt.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}`;
+                            }
+
                             return (
                                 <div
                                     key={leave.id}
-                                    className="group relative bg-white/60 hover:bg-white border border-transparent hover:border-slate-100 rounded-2xl p-4 transition-all duration-300 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8)] hover:shadow-[0_8px_30px_-10px_rgba(0,0,0,0.08)] hover:-translate-y-0.5"
+                                    className="group relative flex items-center gap-4 p-3.5 rounded-2xl bg-white hover:bg-slate-50/80 transition-all duration-300 border border-slate-100 hover:border-slate-200/60 shadow-sm hover:shadow-md"
                                 >
                                     {/* Hapus */}
                                     <button
                                         onClick={() => handleDelete(leave.id)}
-                                        className="absolute right-3 top-3 opacity-0 group-hover:opacity-100 p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all"
+                                        className="absolute right-3 top-3 opacity-0 group-hover:opacity-100 p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all z-20"
                                         title="Hapus"
                                     >
                                         <Trash2 size={13} />
                                     </button>
 
-                                    <div className="flex items-center gap-3.5">
-                                        <Avatar className="h-11 w-11 rounded-2xl flex-shrink-0">
-                                            <AvatarImage src={leave.avatar} />
-                                            <AvatarFallback className="bg-gradient-to-br from-slate-600 to-slate-800 text-[11px] text-white font-black rounded-2xl">
-                                                {leave.doctor?.[0] || 'D'}
-                                            </AvatarFallback>
-                                        </Avatar>
+                                    <div className="relative shrink-0 flex items-center justify-center h-12 w-12 rounded-2xl overflow-hidden shadow-inner ring-1 ring-black/5 bg-gradient-to-br from-slate-700 to-slate-900 group-hover:scale-105 transition-transform duration-300 ease-out z-10">
+                                        {leave.avatar && leave.avatar !== "/avatars/default.png" ? (
+                                            <img src={leave.avatar} alt="" className="absolute inset-0 h-full w-full object-cover opacity-90" />
+                                        ) : null}
+                                        <span className="text-xs font-black text-white/90 uppercase tracking-wider relative z-10">
+                                            {leave.doctor?.[0] || 'D'}
+                                        </span>
+                                        <div className="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                    </div>
 
-                                        <div className="min-w-0 flex-1">
-                                            <div className="flex items-center gap-2 mb-1.5">
-                                                <h4 className="font-black text-sm text-slate-800 truncate">{leave.doctor}</h4>
-                                                <span className={cn(
-                                                    "text-[9px] px-2 py-0.5 rounded-lg font-black flex-shrink-0",
-                                                    conf.color, conf.bg
-                                                )}>
-                                                    {conf.emoji} {leave.type}
-                                                </span>
+                                    <div className="min-w-0 flex-1 flex flex-col justify-center pr-8 relative z-10">
+                                        <div className="flex items-center gap-2.5 mb-1.5 w-full flex-wrap">
+                                            <h4 className="font-extrabold text-[13px] md:text-sm text-slate-800 truncate tracking-tight max-w-[80%]">
+                                                {leave.doctor}
+                                            </h4>
+                                            <span className={`inline-flex items-center gap-1 text-[10px] px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wide shrink-0 ${bgColor} ${conf.color} ring-1 ${ringColor} backdrop-blur-sm`}>
+                                                <span>{conf.emoji}</span> {leave.type}
+                                            </span>
+                                        </div>
+
+                                        <div className="flex flex-col gap-0.5">
+                                            <div className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-500">
+                                                <svg className="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                </svg>
+                                                <span>{dateStr}</span>
                                             </div>
-                                            <p className="text-[11px] text-slate-400 font-medium">{new Date(leave.startDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })} - {new Date(leave.endDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}</p>
                                             {leave.reason && (
-                                                <p className="text-[11px] text-slate-400 mt-0.5 italic">"{leave.reason}"</p>
+                                                <p className="text-[11px] text-slate-400 font-medium italic mt-0.5 truncate max-w-[90%]">
+                                                    "{leave.reason}"
+                                                </p>
                                             )}
                                         </div>
                                     </div>

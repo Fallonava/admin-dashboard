@@ -66,8 +66,8 @@ export default function SchedulesPage() {
             </header>
 
             {/* Main Content */}
-            <div className="flex flex-col lg:flex-row flex-1 min-h-0 gap-4 lg:gap-6">
-                <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
+            <div className="flex flex-col lg:flex-row flex-1 min-h-0 gap-4 lg:gap-6 overflow-y-auto lg:overflow-visible pb-10 lg:pb-0 custom-scrollbar pr-1 lg:pr-0">
+                <div className="flex-none lg:flex-1 w-full flex flex-col min-h-[600px] lg:min-h-0 lg:overflow-hidden">
 
                     {/* Calendar Strip (Premium Glass) */}
                     <div className="mb-4 lg:mb-8 super-glass-card rounded-[20px] lg:rounded-[32px] p-1.5 lg:p-3 flex items-center gap-1 lg:gap-3 shadow-sm border border-white/40">

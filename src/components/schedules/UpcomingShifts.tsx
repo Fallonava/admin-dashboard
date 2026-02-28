@@ -67,7 +67,7 @@ export function UpcomingShifts() {
     };
 
     return (
-        <div className="w-[380px] super-glass-card rounded-[32px] h-full ml-0 hidden xl:flex flex-col z-10 p-2 shadow-sm min-h-0">
+        <div className="w-full xl:w-[380px] super-glass-card rounded-[32px] h-[600px] xl:h-full ml-0 flex flex-col z-10 p-2 shadow-sm min-h-0 flex-shrink-0">
 
             {/* ── All Doctors List (Full Sidebar) ───────────── */}
             <div className="p-6 flex-1 flex flex-col min-h-0 bg-white/40 rounded-[24px]">

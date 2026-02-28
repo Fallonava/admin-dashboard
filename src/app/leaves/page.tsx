@@ -90,20 +90,20 @@ export default function LeavesPage() {
             </header>
 
             {/* ═══ STATS CARDS ═══ */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div className="flex overflow-x-auto md:grid md:grid-cols-3 gap-4 md:gap-6 mb-6 md:mb-8 pb-3 md:pb-0 custom-scrollbar snap-x snap-mandatory pr-1 md:pr-0 -mx-2 px-2 md:px-0 md:mx-0">
                 {stats.map((stat, idx) => {
                     const Icon = stat.icon;
                     return (
                         <div
                             key={stat.label}
-                            className="super-glass-card p-6 rounded-[32px] flex items-center gap-5 transition-all duration-500 hover:-translate-y-1"
+                            className="super-glass-card p-5 md:p-6 rounded-[28px] md:rounded-[32px] flex items-center gap-4 md:gap-5 transition-all duration-500 hover:-translate-y-1 min-w-[260px] md:min-w-0 flex-shrink-0 snap-center md:snap-align-none"
                         >
-                            <div className={cn("flex-shrink-0 w-16 h-16 rounded-[24px] flex items-center justify-center shadow-inner", stat.iconBg)}>
-                                <Icon className={cn("h-8 w-8", stat.color)} />
+                            <div className={cn("flex-shrink-0 w-14 h-14 md:w-16 md:h-16 rounded-[20px] md:rounded-[24px] flex items-center justify-center shadow-inner", stat.iconBg)}>
+                                <Icon className={cn("h-6 w-6 md:h-8 md:w-8", stat.color)} />
                             </div>
                             <div>
-                                <p className="text-3xl font-black text-slate-800 tracking-tight">{stat.value}</p>
-                                <p className="text-xs font-bold text-slate-400 mt-1 uppercase tracking-wider">{stat.label}</p>
+                                <p className="text-2xl md:text-3xl font-black text-slate-800 tracking-tight">{stat.value}</p>
+                                <p className="text-[10px] md:text-xs font-bold text-slate-400 mt-1 uppercase tracking-wider">{stat.label}</p>
                             </div>
                         </div>
                     );

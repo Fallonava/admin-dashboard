@@ -79,27 +79,48 @@ export function LeaveRequests() {
 
             {/* Cuti hari ini */}
             <div>
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Cuti Hari Ini</p>
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Cuti Hari Ini</p>
                 {todayLeaves.length === 0 ? (
                     <div className="flex items-center gap-2 py-3 px-3 bg-emerald-50 rounded-xl">
                         <CalendarDays className="h-4 w-4 text-emerald-400" />
                         <p className="text-xs text-emerald-600 font-semibold">Semua dokter tersedia</p>
                     </div>
                 ) : (
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                         {todayLeaves.map(l => {
                             const conf = TYPE_CONFIG[l.type] || { color: "text-slate-500", bg: "bg-slate-50", emoji: "📋" };
+
+                            // Map generic text colors to background variant
+                            const ringColor = conf.color.replace('text-', 'ring-').replace('-600', '-600/20');
+                            const bgColor = conf.color.replace('text-', 'bg-').replace('-600', '-100/60');
+
                             return (
-                                <div key={l.id} className="flex items-center gap-3 p-3 bg-amber-50 rounded-xl">
-                                    <Avatar className="h-8 w-8 rounded-xl flex-shrink-0">
-                                        <AvatarImage src={l.avatar} />
-                                        <AvatarFallback className="bg-gradient-to-br from-slate-600 to-slate-800 text-[10px] text-white font-black rounded-xl">
+                                <div key={l.id} className="group relative flex items-center gap-4 p-3 rounded-2xl bg-white hover:bg-slate-50/80 transition-all duration-300 border border-slate-100 hover:border-slate-200/60 shadow-sm hover:shadow-md">
+                                    <div className="relative shrink-0 flex items-center justify-center h-12 w-12 rounded-2xl overflow-hidden shadow-inner ring-1 ring-black/5 bg-gradient-to-br from-slate-700 to-slate-900 group-hover:scale-105 transition-transform duration-300 ease-out">
+                                        {l.avatar ? (
+                                            <img src={l.avatar} alt="" className="absolute inset-0 h-full w-full object-cover opacity-90" />
+                                        ) : null}
+                                        <span className="text-xs font-black text-white/90 uppercase tracking-wider relative z-10">
                                             {l.doctor?.[0] || 'D'}
-                                        </AvatarFallback>
-                                    </Avatar>
-                                    <div className="min-w-0">
-                                        <p className="text-xs font-bold text-slate-700 truncate">{l.doctor || 'Unknown Doctor'}</p>
-                                        <p className="text-[10px] text-slate-400">{conf.emoji} {l.type}</p>
+                                        </span>
+                                        <div className="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                    </div>
+
+                                    <div className="min-w-0 flex-1 flex flex-col justify-center">
+                                        <div className="flex items-center gap-2.5 mb-1">
+                                            <h4 className="font-extrabold text-[13px] text-slate-800 truncate tracking-tight">
+                                                {l.doctor || 'Unknown Doctor'}
+                                            </h4>
+                                            <span className={`inline-flex items-center gap-1 text-[10px] px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wide shrink-0 ${bgColor} ${conf.color} ring-1 ${ringColor} backdrop-blur-sm`}>
+                                                <span>{conf.emoji}</span> {l.type}
+                                            </span>
+                                        </div>
+
+                                        <div className="flex items-center gap-2">
+                                            <p className="text-[11px] text-slate-400 font-medium italic truncate max-w-[120px]">
+                                                {l.reason ? `"${l.reason}"` : "Cuti Hari Ini"}
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
                             );
@@ -111,27 +132,51 @@ export function LeaveRequests() {
             {/* Cuti mendatang */}
             {upcomingLeaves.length > 0 && (
                 <div>
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Akan Datang</p>
-                    <div className="space-y-2">
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 mt-4">Akan Datang</p>
+                    <div className="space-y-3">
                         {upcomingLeaves.map(l => {
                             const conf = TYPE_CONFIG[l.type] || { color: "text-slate-500", bg: "bg-slate-50", emoji: "📋" };
+
+                            const ringColor = conf.color.replace('text-', 'ring-').replace('-600', '-600/20');
+                            const bgColor = conf.color.replace('text-', 'bg-').replace('-600', '-100/60');
+
+                            const startDt = new Date(l.startDate);
+                            const endDt = l.endDate ? new Date(l.endDate) : null;
+                            let dateStr = startDt.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+                            if (endDt && endDt > startDt) {
+                                dateStr += ` — ${endDt.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}`;
+                            }
+
                             return (
-                                <div key={l.id} className="flex items-center gap-3 p-3 hover:bg-slate-50 rounded-xl transition-colors">
-                                    <Avatar className="h-8 w-8 rounded-xl flex-shrink-0">
-                                        <AvatarImage src={l.avatar} />
-                                        <AvatarFallback className="bg-gradient-to-br from-slate-500 to-slate-700 text-[10px] text-white font-black rounded-xl">
+                                <div key={l.id} className="group relative flex items-center gap-4 p-3 rounded-2xl bg-white hover:bg-slate-50/80 transition-all duration-300 border border-slate-100/60 hover:border-slate-200/60 shadow-sm hover:shadow-md">
+                                    <div className="relative shrink-0 flex items-center justify-center h-10 w-10 rounded-xl overflow-hidden shadow-inner ring-1 ring-black/5 bg-gradient-to-br from-slate-600 to-slate-800 group-hover:scale-105 transition-transform duration-300 ease-out">
+                                        {l.avatar ? (
+                                            <img src={l.avatar} alt="" className="absolute inset-0 h-full w-full object-cover opacity-90" />
+                                        ) : null}
+                                        <span className="text-[10px] font-black text-white/90 uppercase tracking-wider relative z-10">
                                             {l.doctor?.[0] || 'D'}
-                                        </AvatarFallback>
-                                    </Avatar>
-                                    <div className="min-w-0 flex-1">
-                                        <p className="text-xs font-bold text-slate-700 truncate">{l.doctor || 'Unknown Doctor'}</p>
-                                        <p className="text-[10px] text-slate-400">
-                                            {new Date(l.startDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
-                                        </p>
+                                        </span>
                                     </div>
-                                    <span className={`text-[9px] font-black px-1.5 py-0.5 rounded-md flex-shrink-0 ${conf.color} ${conf.bg}`}>
-                                        {conf.emoji}
-                                    </span>
+
+                                    <div className="min-w-0 flex-1 flex flex-col justify-center">
+                                        <div className="flex items-center gap-2.5 mb-1">
+                                            <h4 className="font-bold text-xs text-slate-800 truncate tracking-tight">
+                                                {l.doctor || 'Unknown Doctor'}
+                                            </h4>
+                                            <span className={`inline-flex items-center gap-1 text-[9px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wide shrink-0 ${bgColor} ${conf.color} ring-1 ${ringColor} backdrop-blur-sm`}>
+                                                <span>{conf.emoji}</span> {l.type}
+                                            </span>
+                                        </div>
+
+                                        <div className="flex items-center gap-2">
+                                            <div className="flex items-center gap-1.5 text-[10px] font-semibold text-slate-500">
+                                                <svg className="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                </svg>
+                                                <span>{dateStr}</span>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             );
                         })}
