@@ -6,8 +6,18 @@ export async function GET() {
     return NextResponse.json(rules);
 }
 
+// Helpers for Prisma Enum mappings
+const parseTargetZone = (zone: string) => {
+    if (!zone) return 'All_Zones';
+    if (zone.includes('All')) return 'All_Zones';
+    if (zone.includes('Lobby')) return 'Lobby_Only';
+    if (zone.includes('ER')) return 'ER_Wards';
+    return 'All_Zones';
+};
+
 export async function POST(req: Request) {
     const body = await req.json();
+    if (body.targetZone) body.targetZone = parseTargetZone(body.targetZone);
     const newItem = await prisma.broadcastRule.create({ data: body });
     return NextResponse.json(newItem);
 }
@@ -15,6 +25,8 @@ export async function POST(req: Request) {
 export async function PUT(req: Request) {
     const body = await req.json();
     const { id, ...updates } = body;
+    if (updates.targetZone) updates.targetZone = parseTargetZone(updates.targetZone);
+
     const updated = await prisma.broadcastRule.update({
         where: { id: String(id) },
         data: updates
