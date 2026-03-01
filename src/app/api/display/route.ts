@@ -8,7 +8,12 @@ import { revalidatePath } from 'next/cache';
 export const revalidate = 10;
 
 export async function GET() {
-    const allDoctors = await prisma.doctor.findMany();
+    const allDoctors = await prisma.doctor.findMany({
+        orderBy: [
+            { specialty: 'asc' },
+            { name: 'asc' }
+        ]
+    });
     const shifts = await prisma.shift.findMany();
 
     const jsDay = new Date().getDay();

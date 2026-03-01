@@ -35,7 +35,12 @@ const UpdateDoctorSchema = CreateDoctorSchema.partial().extend({
 });
 
 export async function GET() {
-    const doctors = await prisma.doctor.findMany();
+    const doctors = await prisma.doctor.findMany({
+        orderBy: [
+            { specialty: 'asc' },
+            { name: 'asc' }
+        ]
+    });
     const shifts = await (prisma.shift as any).findMany();
 
     // Calculate Today's Index (0=Senin, ..., 6=Minggu)

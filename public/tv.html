@@ -2863,7 +2863,15 @@
                     if (a._isActive && !b._isActive) return -1;
                     if (!a._isActive && b._isActive) return 1;
                     // Priority 2: Status Score
-                    return score(b.Status) - score(a.Status);
+                    const diff = score(b.Status) - score(a.Status);
+                    if (diff !== 0) return diff;
+                    // Priority 3: Specialty (Poliklinik)
+                    if (a.Spesialis < b.Spesialis) return -1;
+                    if (a.Spesialis > b.Spesialis) return 1;
+                    // Priority 4: Doctor Name
+                    if (a.Dokter < b.Dokter) return -1;
+                    if (a.Dokter > b.Dokter) return 1;
+                    return 0;
                 };
 
                 mainData.sort(sortFn);
