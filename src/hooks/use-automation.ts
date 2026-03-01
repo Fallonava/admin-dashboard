@@ -6,6 +6,25 @@ export function useAutomation() {
     const { data: doctors } = useSWR<Doctor[]>('/api/doctors');
     const { data: settings } = useSWR<Settings>('/api/settings');
 
+    // Heartbeat: Trigger automation every 30 seconds to ensure it stays "alive"
+    useEffect(() => {
+        const triggerAutomation = async () => {
+            try {
+                // We use a internal-only or protected route. 
+                // Since this runs in the browser, it needs the session cookie which is already there.
+                await fetch('/api/automation/run', { method: 'GET' });
+            } catch (e) {
+                console.error('[heartbeat] Failed to trigger automation:', e);
+            }
+        };
+
+        // Initial trigger
+        triggerAutomation();
+
+        const interval = setInterval(triggerAutomation, 30000); // 30 seconds
+        return () => clearInterval(interval);
+    }, []);
+
     // listen for server-sent events to refresh immediately
     useEffect(() => {
         if (typeof window === 'undefined') return;

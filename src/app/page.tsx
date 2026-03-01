@@ -13,9 +13,9 @@ import { useRouter } from "next/navigation";
 
 export default function Home() {
   const router = useRouter();
-  const { data: rawDoctors, mutate: mutateDoctors } = useSWR<Doctor[]>('/api/doctors');
-  const { data: rawLeaves } = useSWR<LeaveRequest[]>('/api/leaves');
-  const { data: rawShifts, mutate: mutateShifts } = useSWR<Shift[]>('/api/shifts');
+  const { data: rawDoctors, mutate: mutateDoctors } = useSWR<Doctor[]>('/api/doctors', { refreshInterval: 10000 });
+  const { data: rawLeaves } = useSWR<LeaveRequest[]>('/api/leaves', { refreshInterval: 30000 });
+  const { data: rawShifts, mutate: mutateShifts } = useSWR<Shift[]>('/api/shifts', { refreshInterval: 10000 });
 
   const doctors = Array.isArray(rawDoctors) ? rawDoctors : [];
   const leaves = Array.isArray(rawLeaves) ? rawLeaves : [];

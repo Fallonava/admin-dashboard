@@ -2,11 +2,20 @@ import cron from 'node-cron';
 import { runAutomation } from './automation';
 import { initializeAutomationQueue } from './automation-queue';
 
-let initialized = false;
+/**
+ * Singleton to prevent multiple cron jobs during Fast Refresh/HMR
+ */
+const GLOBAL_CRON_KEY = Symbol.for('automation.scheduler.initialized');
 
 export async function initAutomationScheduler() {
-    if (initialized) return;
-    initialized = true;
+    // @ts-ignore
+    if (globalThis[GLOBAL_CRON_KEY]) {
+        return;
+    }
+    // @ts-ignore
+    globalThis[GLOBAL_CRON_KEY] = true;
+
+    console.log('[automation scheduler] Initializing for the first time...');
 
     try {
         // Initialize queue system (with Redis)
@@ -16,16 +25,18 @@ export async function initAutomationScheduler() {
         // Continue without queue - fallback to direct Prisma updates
     }
 
-    // run every 30 seconds (or adjust as needed)
-    cron.schedule('*/30 * * * * *', async () => {
+    // run every 30 seconds
+    const schedule = '*/30 * * * * *';
+    cron.schedule(schedule, async () => {
         try {
             const { applied, failed } = await runAutomation();
             if (applied || failed) {
-                console.log(`[automation scheduler] applied=${applied} failed=${failed}`);
+                console.log(`[automation scheduler] cron run: applied=${applied} failed=${failed}`);
             }
         } catch (err) {
-            console.error('[automation scheduler] error', err);
+            console.error('[automation scheduler] cron execution error:', err);
         }
     });
-    console.log('[automation scheduler] initialized');
+
+    console.log(`[automation scheduler] Registered cron job: ${schedule}`);
 }

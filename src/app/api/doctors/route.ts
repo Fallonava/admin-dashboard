@@ -4,6 +4,8 @@ import { z } from 'zod';
 import { requireAdmin } from '@/lib/api-utils';
 import { notifyDoctorUpdates } from '@/lib/automation-broadcaster';
 
+export const dynamic = 'force-dynamic';
+
 // Validation schemas
 const DoctorStatusEnum = z.enum(['BUKA', 'PENUH', 'OPERASI', 'AKAN_BUKA', 'CUTI', 'SELESAI', 'TIDAK_PRAKTEK', 'TIDAK PRAKTEK'])
     .transform(val => (val === 'TIDAK PRAKTEK' || val === 'TIDAK_PRAKTEK') ? 'TIDAK_PRAKTEK' : val as any);

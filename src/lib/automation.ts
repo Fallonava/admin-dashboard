@@ -74,11 +74,14 @@ export function evaluateRules(
 ): Array<{ id: string | number; status: Doctor['status'] }> {
     const updates: Array<{ id: string | number; status: Doctor['status'] }> = [];
     const ts = now || new Date();
-    const currentDayIdx = ts.getDay() === 0 ? 6 : ts.getDay() - 1;
-    const currentHour = ts.getHours();
-    const currentMinute = ts.getMinutes();
+    // Shift the date to WIB (UTC+7) so that our UTC methods get the actual Jakarta time
+    const wibTime = new Date(ts.getTime() + (7 * 60 * 60 * 1000));
+
+    const currentDayIdx = wibTime.getUTCDay() === 0 ? 6 : wibTime.getUTCDay() - 1;
+    const currentHour = wibTime.getUTCHours();
+    const currentMinute = wibTime.getUTCMinutes();
     const currentTimeMinutes = currentHour * 60 + currentMinute;
-    const todayStr = formatDateYMD(ts);
+    const todayStr = `${wibTime.getUTCFullYear()}-${String(wibTime.getUTCMonth() + 1).padStart(2, '0')}-${String(wibTime.getUTCDate()).padStart(2, '0')}`;
 
     for (const rule of rules) {
         try {
@@ -158,11 +161,13 @@ export async function runAutomation(): Promise<{ applied: number, failed: number
 
         // compute current time/day context for rule evaluation
         const now = new Date();
-        const currentDayIdx = now.getDay() === 0 ? 6 : now.getDay() - 1;
-        const currentHour = now.getHours();
-        const currentMinute = now.getMinutes();
+        const wibTime = new Date(now.getTime() + (7 * 60 * 60 * 1000));
+
+        const currentDayIdx = wibTime.getUTCDay() === 0 ? 6 : wibTime.getUTCDay() - 1;
+        const currentHour = wibTime.getUTCHours();
+        const currentMinute = wibTime.getUTCMinutes();
         const currentTimeMinutes = currentHour * 60 + currentMinute;
-        const todayStr = formatDateYMD(now);
+        const todayStr = `${wibTime.getUTCFullYear()}-${String(wibTime.getUTCMonth() + 1).padStart(2, '0')}-${String(wibTime.getUTCDate()).padStart(2, '0')}`;
 
         // load active rules if model exists in Prisma schema (optional)
         const rules: any[] = (prisma as any).automationRule ? await (prisma as any).automationRule.findMany({ where: { active: true } }) : [];
@@ -224,12 +229,14 @@ export async function runAutomation(): Promise<{ applied: number, failed: number
                 const startMinutes = parseTimeToMinutes(startStr);
                 const endMinutes = parseTimeToMinutes(endStr);
                 if (startMinutes === null || endMinutes === null) continue;
+
                 if (currentTimeMinutes >= startMinutes && currentTimeMinutes < endMinutes) {
                     isWithinAnyShift = true;
                     if (shift.statusOverride) {
                         activeShiftStatusOverride = shift.statusOverride as Doctor['status'];
                     }
                 }
+
                 if (currentTimeMinutes < endMinutes) {
                     isAfterAllShifts = false;
                 }
@@ -254,9 +261,24 @@ export async function runAutomation(): Promise<{ applied: number, failed: number
                 }
             } else if (!isWithinAnyShift && !isAfterAllShifts) {
                 // Before shifts begin OR during a break between shifts
-                if (!isCooldownActive && (doc.status === 'SELESAI' || doc.status === 'BUKA' || doc.status === 'PENUH' || doc.status === 'TIDAK_PRAKTEK' || doc.status === 'TIDAK PRAKTEK' as any)) {
-                    console.log(`[automation DEBUG] ${doc.name} (id ${doc.id}) is BEFORE or BETWEEN shifts. Updating to AKAN_BUKA from ${doc.status}`);
-                    updates.push({ id: doc.id, status: 'AKAN_BUKA' });
+                if (!isCooldownActive && (doc.status === 'SELESAI' || doc.status === 'BUKA' || doc.status === 'PENUH' || doc.status === 'TIDAK_PRAKTEK' || doc.status === 'AKAN_BUKA' || doc.status === 'TIDAK PRAKTEK' as any)) {
+                    // Find the next upcoming shift to see if it has a special override (PENUH/OPERASI)
+                    const nextShift = todayShifts
+                        .filter(s => {
+                            const start = parseTimeToMinutes(s.formattedTime?.split('-')[0]);
+                            return start !== null && start > currentTimeMinutes;
+                        })
+                        .sort((a, b) => {
+                            const startA = parseTimeToMinutes(a.formattedTime?.split('-')[0]) || 0;
+                            const startB = parseTimeToMinutes(b.formattedTime?.split('-')[0]) || 0;
+                            return startA - startB;
+                        })[0];
+
+                    const override = nextShift?.statusOverride;
+                    const targetStatus = (override === 'PENUH' || override === 'OPERASI') ? override : 'AKAN_BUKA';
+
+                    console.log(`[automation DEBUG] ${doc.name} (id ${doc.id}) is BEFORE or BETWEEN shifts. Updating to ${targetStatus} from ${doc.status}`);
+                    updates.push({ id: doc.id, status: targetStatus as any });
                 }
             }
         }

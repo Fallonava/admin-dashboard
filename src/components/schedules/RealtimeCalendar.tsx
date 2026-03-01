@@ -38,8 +38,8 @@ interface RealtimeCalendarProps {
 }
 
 export function RealtimeCalendar({ selectedDate, onDateChange }: RealtimeCalendarProps) {
-    const { data: shifts = [] } = useSWR<Shift[]>('/api/shifts');
-    const { data: doctors = [] } = useSWR<Doctor[]>('/api/doctors');
+    const { data: shifts = [] } = useSWR<Shift[]>('/api/shifts', { refreshInterval: 10000 });
+    const { data: doctors = [] } = useSWR<Doctor[]>('/api/doctors', { refreshInterval: 10000 });
     const [showAddModal, setShowAddModal] = useState(false);
     const [newShift, setNewShift] = useState({
         doctor: "",

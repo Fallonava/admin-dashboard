@@ -11,7 +11,8 @@ export function middleware(request: NextRequest) {
         pathname.startsWith('/_next') ||
         pathname.startsWith('/favicon.ico') ||
         pathname === '/tv.html' ||
-        pathname.startsWith('/api/display');
+        pathname.startsWith('/api/display') ||
+        pathname === '/api/automation/run';
 
     if (isPublicRoute) {
         return NextResponse.next();
