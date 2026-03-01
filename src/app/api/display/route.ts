@@ -16,9 +16,11 @@ export async function GET() {
     });
     const shifts = await prisma.shift.findMany();
 
-    const jsDay = new Date().getDay();
+    const now = new Date();
+    const wibNow = new Date(now.getTime() + (7 * 60 * 60 * 1000));
+    const jsDay = wibNow.getUTCDay();
     const todayIdx = (jsDay + 6) % 7;
-    const todayStr = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+    const todayStr = wibNow.toISOString().slice(0, 10); // YYYY-MM-DD (WIB)
 
     const doctors = allDoctors.map((doc: any) => {
         const todayShifts = (shifts as any[]).filter(s => s.doctorId === doc.id && s.dayIdx === todayIdx);

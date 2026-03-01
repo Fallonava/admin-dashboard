@@ -43,8 +43,10 @@ export async function GET() {
     });
     const shifts = await (prisma.shift as any).findMany();
 
-    // Calculate Today's Index (0=Senin, ..., 6=Minggu)
-    const jsDay = new Date().getDay();
+    // Calculate Today's Index (0=Senin, ..., 6=Minggu) using WIB timezone
+    const now = new Date();
+    const wibNow = new Date(now.getTime() + (7 * 60 * 60 * 1000));
+    const jsDay = wibNow.getUTCDay();
     const todayIdx = (jsDay + 6) % 7;
 
     const enhancedDoctors = doctors.map(doc => {
