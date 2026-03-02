@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 
 <head>
@@ -2061,7 +2061,6 @@
         const initials = n => n ? n.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() : 'DR';
 
         // Helper: Check if current time is within schedule
-        // Helper: Check if current time is within schedule
         const checkTime = (jamStr) => {
             if (!jamStr || typeof jamStr !== 'string' || jamStr === '-') return false;
 
@@ -2113,6 +2112,54 @@
             }
 
             return false;
+        };
+
+        // Helper: Get time position relative to now: 'past' | 'present' | 'future' | 'unknown'
+        const getTimeState = (jamStr) => {
+            if (!jamStr || typeof jamStr !== 'string' || jamStr === '-') return 'unknown';
+
+            const clean = jamStr.replace(/\s/g, '').replace(/\./g, ':').toLowerCase();
+            const rangeMatch = clean.match(/(\d{1,2}:\d{2}).*?(\d{1,2}:\d{2})/);
+
+            const now = new Date();
+            const curH = now.getHours();
+            const curM = now.getMinutes();
+            const currentMins = (curH * 60) + curM;
+
+            const parseMins = (t) => {
+                const [h, m] = t.split(':').map(Number);
+                return (h * 60) + m;
+            };
+
+            if (rangeMatch) {
+                const start = parseMins(rangeMatch[1]);
+                const end = parseMins(rangeMatch[2]);
+
+                // Handle overnight shifts (e.g. 22:00-02:00)
+                if (end < start) {
+                    // Present if inside the wrapped interval
+                    if (currentMins >= start || currentMins <= end) return 'present';
+                    // Between end and start we treat as "future" (belum masuk shift malam berikutnya)
+                    if (currentMins < start && currentMins > end) return 'future';
+                    return 'unknown';
+                }
+
+                if (currentMins < start) return 'future';
+                if (currentMins > end) return 'past';
+                return 'present';
+            }
+
+            const singleMatch = clean.match(/(\d{1,2}:\d{2})/);
+            if (singleMatch) {
+                const start = parseMins(singleMatch[1]);
+                const end = start + (4 * 60); // default 4 jam
+
+                if (currentMins < start) return 'future';
+                if (currentMins > end) return 'past';
+                return 'present';
+            }
+
+            return 'unknown';
         };
 
         // #6: Format Jam Konsisten
@@ -2643,17 +2690,27 @@
                     scheduledDoctors.forEach(d => {
                         const activeShifts = d.shiftPills ? d.shiftPills.filter(shift => !shift.disabled) : [];
                         activeShifts.forEach((shift, index) => {
+                            const jamStr = shift.time || shift.formattedTime || '-';
+                            const timeState = getTimeState(jamStr);
+
+                            // Turunkan status per shift: jika status global BUKA tetapi jam sudah lewat, tandai sebagai SELESAI
+                            let status = (d.status || '').toUpperCase();
+                            if (status.includes('BUKA') && timeState === 'past') {
+                                status = 'SELESAI';
+                            }
+
                             mappedData.push({
                                 Dokter: d.name,
                                 Spesialis: d.specialty,
-                                Status: d.status,
+                                Status: status,
                                 // Combine jam for legacy checkTime 
-                                Jam: shift.time || shift.formattedTime || '-',
-                                JamPraktek: shift.time || shift.formattedTime || '-',
+                                Jam: jamStr,
+                                JamPraktek: jamStr,
                                 JamDaftar: shift.registrationTime || d.currentRegistrationTime || d.registrationTime || '-',
                                 Jenis: d.category,
                                 'Code Antrian': d.queueCode,
-                                _shiftId: shift.id || index // Keep a unique identifier for the shift
+                                _shiftId: shift.id || index, // Keep a unique identifier for the shift
+                                _timeState: timeState
                             });
                         });
                     });
@@ -2680,16 +2737,18 @@
                 data.forEach(d => {
                     const name = (d.Dokter || '').trim();
                     const st = (d.Status || '').toUpperCase();
+                    // Gunakan kombinasi nama + shift sebagai key agar dokter multi-shift dilacak terpisah
+                    const key = `${name}_${d._shiftId || d.Jam || ''}`;
                     // Active logic: Inside time AND (BUKA or PENUH)
                     const isNowActive = checkTime(d.Jam) && (st.includes('BUKA') || st.includes('PENUH'));
 
                     // Daftarkan ke list Ruang Operasi jika cocok
                     if (st.includes('OPERASI')) ops.push(name);
 
-                    const prev = this._prevDoctors[name]; // { status, active } or undefined
+                    const prev = this._prevDoctors[key]; // { status, active } or undefined
 
                     // Store current state
-                    now[name] = { status: st, active: isNowActive };
+                    now[key] = { status: st, active: isNowActive };
 
                     // Only fire if we have previous state (not first load)
                     if (prev) {
