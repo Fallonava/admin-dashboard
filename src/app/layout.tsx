@@ -3,7 +3,8 @@ import { Inter } from "next/font/google"; // Using Inter as requested for modern
 import { initAutomationScheduler } from "@/lib/automation-scheduler";
 
 // scheduler should start on server-side only
-if (typeof window === 'undefined') {
+// In Vercel/Production, we use Vercel Crons instead of in-memory node-cron
+if (typeof window === 'undefined' && !process.env.VERCEL) {
   initAutomationScheduler().catch(err => {
     console.error('Failed to initialize automation scheduler:', err);
   });

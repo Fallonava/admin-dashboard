@@ -8,6 +8,12 @@ import { initializeAutomationQueue } from './automation-queue';
 const GLOBAL_CRON_KEY = Symbol.for('automation.scheduler.initialized');
 
 export async function initAutomationScheduler() {
+    // Skip if running in Vercel or production environment
+    // (Vercel uses its own Cron Service for /api/automation/run)
+    if (process.env.VERCEL || process.env.NODE_ENV === 'production') {
+        return;
+    }
+
     // @ts-ignore
     if (globalThis[GLOBAL_CRON_KEY]) {
         return;
