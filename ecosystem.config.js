@@ -52,6 +52,8 @@ module.exports = {
       script: 'server-cron.js',
       cwd: '/home/fallonava/admin-dashboard',
       instances: 1,
+      exec_mode: 'fork',
+      env_file: '.env',
       autorestart: true,
       watch: false,
       max_memory_restart: '150M',
