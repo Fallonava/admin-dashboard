@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "tsx server.ts",
-    "build": "next build && tsc server.ts --outDir . --module commonjs --esModuleInterop --skipLibCheck",
+    "build": "next build && tsc server.ts --outDir . --module commonjs --esModuleInterop --skipLibCheck && tsc src/scripts/cron-daemon.ts --outDir . --module commonjs --esModuleInterop --skipLibCheck && node -e \"require('fs').renameSync('scripts/cron-daemon.js', 'server-cron.js')\"",
     "start": "NODE_ENV=production node server.js",
     "lint": "eslint",
     "test": "jest",

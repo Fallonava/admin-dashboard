@@ -1,8 +1,8 @@
-import type { Doctor, Shift, LeaveRequest, Settings } from "@/lib/data-service";
-import { prisma } from "@/lib/prisma";
+import type { Doctor, Shift, LeaveRequest, Settings } from "./data-service";
+import { prisma } from "./prisma";
 import { notifyDoctorUpdates } from "./automation-broadcaster";
 import { revalidatePath } from "next/cache";
-import { logger } from '@/lib/logger';
+import { logger } from './logger';
 
 // Fungsi Utilitas Internal
 
