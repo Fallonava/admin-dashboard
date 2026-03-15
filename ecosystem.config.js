@@ -51,6 +51,7 @@ module.exports = {
       name: 'medcore-cron-worker',
       script: 'server-cron.js',
       cwd: '/home/fallonava/admin-dashboard',
+      node_args: '--env-file=/home/fallonava/admin-dashboard/.env',
       instances: 1,
       exec_mode: 'fork',
       env_file: '.env',
