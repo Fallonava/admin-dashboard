@@ -14,7 +14,9 @@ export const useSocket = (room?: string) => {
       socket = io({
         path: '/socket.io',
         autoConnect: true,
-        transports: ['websocket'],
+        // Biarkan Socket.IO negotiate transport sendiri:
+        // polling dulu → upgrade ke WebSocket jika tersedia.
+        // Tanpa ini, jika WS upgrade gagal (nginx config etc), koneksi putus total.
       });
     }
 

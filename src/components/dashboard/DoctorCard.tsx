@@ -15,6 +15,16 @@ const STATUS_BUTTONS = [
   { id: 'CUTI', label: 'Cuti', bg: 'bg-pink-500', hover: 'hover:bg-pink-600' },
 ] as const;
 
+const STATUS_LABELS: Record<string, string> = {
+  BUKA: 'Buka',
+  PENUH: 'Penuh',
+  OPERASI: 'Operasi',
+  CUTI: 'Cuti',
+  SELESAI: 'Selesai',
+  AKAN_BUKA: 'Akan Buka',
+  TIDAK_PRAKTEK: 'Tidak Praktek',
+};
+
 function getStatusDotColor(status: Doctor['status']) {
   switch (status) {
     case 'BUKA': return "bg-blue-500 shadow-[0_0_12px_rgba(59,130,246,0.6)]";
@@ -65,8 +75,15 @@ export function DoctorCard({
   doc, shifts, todayDayIdx, todayStr, now,
   automationEnabled, onStatusChange, onToggleShift
 }: DoctorCardProps) {
-  const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
-  const docShiftsToday = shifts.filter(s => s.doctorId === doc.id && s.dayIdx === todayDayIdx);
+  // Gunakan WIB (UTC+7) agar konsisten dengan server automation
+  const wibNow = new Date(now.getTime() + (7 * 60 * 60 * 1000));
+  const currentTimeMinutes = wibNow.getUTCHours() * 60 + wibNow.getUTCMinutes();
+  // Hanya tampilkan shift yang tidak di-disable hari ini
+  const docShiftsToday = shifts.filter(s =>
+    s.doctorId === doc.id &&
+    s.dayIdx === todayDayIdx &&
+    !(s.disabledDates || []).includes(todayStr)
+  );
 
   // Find active shift with registration time
   const activeShift = shifts.find(s =>
@@ -111,7 +128,7 @@ export function DoctorCard({
       {/* Status badge */}
       <div className="mb-3 relative z-10">
         <div className={cn("inline-flex px-2.5 py-1 rounded-xl text-[10px] font-bold uppercase tracking-wider", getStatusBadgeStyle(doc.status))}>
-          {doc.status || 'Offline'}
+          {STATUS_LABELS[doc.status] || doc.status}
         </div>
       </div>
 

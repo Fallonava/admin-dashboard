@@ -70,6 +70,9 @@ export const SWRProvider = ({ children }: { children: React.ReactNode }) => {
                 revalidateOnReconnect: true,
                 // Deduplicate request yang sama dalam 5 detik
                 dedupingInterval: 5000,
+                // Safety net: polling setiap 30 detik jika Socket.IO event miss
+                // (misal: koneksi flaky, Redis adapter lag, dll)
+                refreshInterval: 30000,
                 // Retry 3x dengan backoff, skip 4xx errors (client error, jangan retry)
                 onErrorRetry: (error, _key, _config, revalidate, { retryCount }) => {
                     if (error?.message?.includes('401') || error?.message?.includes('403')) return;

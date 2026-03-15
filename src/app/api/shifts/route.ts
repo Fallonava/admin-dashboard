@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requirePermission, withMutationRateLimit } from '@/lib/api-utils';
 import { z } from 'zod';
+import { notifyViaSocket } from '@/lib/automation-broadcaster';
 
 export const dynamic = 'force-dynamic';
 
@@ -83,6 +84,7 @@ export async function POST(req: Request) {
         const validated = ShiftCreateSchema.parse(body);
 
         const newShift = await prisma.shift.create({ data: validated });
+        notifyViaSocket('shift_updated', { id: newShift.id });
         return NextResponse.json(newShift);
     } catch (e) {
         if (e instanceof z.ZodError) {
@@ -109,6 +111,7 @@ export async function PUT(req: Request) {
             where: { id },
             data: updates
         });
+        notifyViaSocket('shift_updated', { id });
         return NextResponse.json(updated);
     } catch (e) {
         if (e instanceof z.ZodError) {
@@ -133,5 +136,6 @@ export async function DELETE(req: Request) {
     await (prisma.shift as any).delete({
         where: { id: String(id) }
     });
+    notifyViaSocket('shift_updated', { id });
     return NextResponse.json({ success: true });
 }

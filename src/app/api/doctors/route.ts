@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 import { requireAdmin, requirePermission, withMutationRateLimit } from '@/lib/api-utils';
-import { notifyDoctorUpdates } from '@/lib/automation-broadcaster';
+import { notifyDoctorUpdates, notifyViaSocket } from '@/lib/automation-broadcaster';
 
 export const dynamic = 'force-dynamic';
 
@@ -110,7 +110,9 @@ export async function POST(req: Request) {
             }
         });
         const docs = await prisma.doctor.findMany({ select: { id: true } });
-        notifyDoctorUpdates(docs.map(d => ({ id: String(d.id) })));
+        const ids = docs.map(d => String(d.id));
+        notifyDoctorUpdates(ids.map(id => ({ id })));
+        notifyViaSocket('doctor_updated', { ids });
         return NextResponse.json({ success: true, message: "All doctors reset." });
     }
 
@@ -128,7 +130,9 @@ export async function POST(req: Request) {
                     });
                 })
             );
-            notifyDoctorUpdates(validated.map(u => ({ id: u.id })));
+            const ids = validated.map(u => String(u.id));
+            notifyDoctorUpdates(ids.map(id => ({ id })));
+            notifyViaSocket('doctor_updated', { ids });
             return NextResponse.json({ success: true, count: results.length });
         } catch (err) {
             if (err instanceof z.ZodError) {
@@ -196,6 +200,7 @@ export async function PUT(req: Request) {
         });
 
         notifyDoctorUpdates([{ id: String(updated.id) }]);
+        notifyViaSocket('doctor_updated', { ids: [String(updated.id)] });
 
         return NextResponse.json({
             ...updated,

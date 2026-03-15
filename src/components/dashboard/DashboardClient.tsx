@@ -19,6 +19,9 @@ export function DashboardClient() {
   useEffect(() => {
     setMounted(true);
     setNow(new Date());
+    // Update `now` setiap menit agar filter shift aktif tidak beku sepanjang hari
+    const timer = setInterval(() => setNow(new Date()), 60_000);
+    return () => clearInterval(timer);
   }, []);
 
   const [doctors, setDoctors] = useState<Doctor[]>([]);
@@ -41,13 +44,20 @@ export function DashboardClient() {
   const debouncedSearch = useDebounce(searchQuery, 400);
   const isSearching = searchQuery !== debouncedSearch;
 
-  // Calculate today's day index (0=Mon, 6=Sun)
-  const todayDayIdx = now.getDay() === 0 ? 6 : now.getDay() - 1;
-  const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+  // Hitung todayDayIdx dan todayStr menggunakan WIB (UTC+7) agar konsisten
+  // dengan server automation yang juga pakai WIB. Browser bisa di timezone berbeda.
+  const wibNow = useMemo(() => new Date(now.getTime() + (7 * 60 * 60 * 1000)), [now]);
+  const todayDayIdx = wibNow.getUTCDay() === 0 ? 6 : wibNow.getUTCDay() - 1; // 0=Sen, 6=Min
+  const todayStr = `${wibNow.getUTCFullYear()}-${String(wibNow.getUTCMonth() + 1).padStart(2, '0')}-${String(wibNow.getUTCDate()).padStart(2, '0')}`;
 
-  // Filter: Only show doctors who have an active shift TODAY
+  // Filter: hanya tampilkan dokter yang punya minimal 1 shift aktif hari ini
+  // (shift tidak di-disable hari ini)
   const todayDoctors = useMemo(() => doctors.filter(doc =>
-    shifts.some(s => s.doctorId === doc.id && s.dayIdx === todayDayIdx && !(s.disabledDates || []).includes(todayStr))
+    shifts.some(s =>
+      s.doctorId === doc.id &&
+      s.dayIdx === todayDayIdx &&
+      !(s.disabledDates || []).includes(todayStr)
+    )
   ), [doctors, shifts, todayDayIdx, todayStr]);
 
   const automationEnabled = settings?.automationEnabled || false;

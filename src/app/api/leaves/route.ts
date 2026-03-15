@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requirePermission, withMutationRateLimit } from '@/lib/api-utils';
 import { z } from 'zod';
+import { notifyViaSocket } from '@/lib/automation-broadcaster';
 
 export const dynamic = 'force-dynamic';
 
@@ -72,7 +73,7 @@ export async function POST(req: Request) {
                 });
             })
         );
-        return NextResponse.json(newLeaves);
+        return NextResponse.json(newLeaves.filter(Boolean));
     } else {
         const { dates, doctor, ...rest } = data;
         const doc = await prisma.doctor.findFirst({ where: { name: doctor } });
@@ -88,6 +89,8 @@ export async function POST(req: Request) {
                 endDate: new Date(data.endDate)
             }
         });
+        notifyViaSocket('leave_updated', { id: newLeave.id });
+        notifyViaSocket('doctor_updated', { ids: [doc.id] }); // cuti mempengaruhi status dokter
         return NextResponse.json(newLeave);
     }
     } catch (error) {
@@ -116,6 +119,7 @@ export async function PUT(req: Request) {
             where: { id: String(id) },
             data: updates
         });
+        notifyViaSocket('leave_updated', { id });
         return NextResponse.json(updatedLeave);
     } catch (error) {
         if (error instanceof z.ZodError) {
@@ -139,6 +143,7 @@ export async function DELETE(req: Request) {
         await (prisma.leaveRequest as any).delete({
             where: { id: String(id) }
         });
+        notifyViaSocket('leave_updated', { id });
         return NextResponse.json({ success: true });
     }
     return NextResponse.json({ error: 'ID required' }, { status: 400 });
