@@ -28,7 +28,13 @@ jobs:
 
       - name: Verify PM2 is running
         if: success()
-        run: pm2 show medcore-admin
+        run: |
+          # Membangunkan NVM agar perintah pm2 dikenali oleh GitHub Actions
+          export NVM_DIR="$HOME/.nvm"
+          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+          # Eksekusi PM2
+          pm2 show medcore-admin
 
       - name: Notify on failure
         if: failure()
