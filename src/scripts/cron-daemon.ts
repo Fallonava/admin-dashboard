@@ -1,13 +1,4 @@
-import fs from 'fs';
-import path from 'path';
-
-// [FIX] Ensure env is loaded natively BEFORE any other local modules (like Zod) are imported.
-// This completely bypasses PM2's `--env-file` bug in fork mode.
-const envPath = path.resolve(process.cwd(), '.env');
-if (fs.existsSync(envPath) && typeof process.loadEnvFile === 'function') {
-  process.loadEnvFile(envPath);
-}
-
+// Native env loading is handled by esbuild --banner:js in package.json
 import { runAutomation } from '../lib/automation';
 import connectToDatabase from '../lib/mongodb';
 
