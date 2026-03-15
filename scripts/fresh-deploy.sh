@@ -38,6 +38,12 @@ if [ -d ".git" ]; then
     git fetch origin master
     git reset --hard origin/master
     git clean -fd  # <--- Tambahan ini untuk hapus file "sampah" yang tidak ada di GitHub
+    
+    # [FIX] Restore .env dari backup setelah git clean menghapusnya
+    if [ -f "/home/fallonava/admin-dashboard.env.bak" ]; then
+        echo "♻️ Me-restore file .env..."
+        cp /home/fallonava/admin-dashboard.env.bak .env
+    fi
 else
     echo "❌ Folder .git tidak ditemukan! Pastikan sudah dijalankan di folder repo."
     exit 1
