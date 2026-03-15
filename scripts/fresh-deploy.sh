@@ -25,9 +25,12 @@ if [ -f ".env" ]; then
     cp .env /home/fallonava/admin-dashboard.env.bak
 fi
 
-# 2. Hentikan PM2 (jika sedang jalan)
-echo "🛑 Menghentikan proses PM2 medcore-admin..."
-pm2 delete medcore-admin 2>/dev/null || true
+# 2. Hentikan SEMUA proses PM2 (medcore-admin + medcore-cron-worker)
+# Penting: harus delete ALL agar tidak ada collision saat pm2 start ecosystem nanti.
+# Jika hanya delete medcore-admin, cron-worker (proses terpisah) tetap jalan dan
+# menyebabkan PM2 TypeError saat start ulang ecosystem.
+echo "🛑 Menghentikan semua proses PM2..."
+pm2 delete all 2>/dev/null || true
 
 # 3. Pull kode terbaru dari GitHub (Master)
 if [ -d ".git" ]; then
