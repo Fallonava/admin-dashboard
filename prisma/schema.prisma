@@ -1,0 +1,205 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum DoctorStatus {
+  BUKA
+  PENUH
+  OPERASI
+  CUTI
+  SELESAI
+  AKAN_BUKA
+  TIDAK_PRAKTEK @map("TIDAK PRAKTEK")
+}
+
+enum LeaveType {
+  Sakit
+  Liburan
+  Pribadi
+  Konferensi
+  Lainnya
+}
+
+enum AlertLevel {
+  Information
+  Warning
+  Critical
+}
+
+enum TargetZone {
+  All_Zones  @map("All Zones")
+  Lobby_Only @map("Lobby Only")
+  ER_Wards   @map("ER & Wards")
+}
+
+model Doctor {
+  id                 String       @id @default(cuid())
+  name               String
+  specialty          String
+  status             DoctorStatus @default(BUKA)
+  image              String?
+  category           String
+  startTime          String // Format: HH:MM
+  endTime            String // Format: HH:MM
+  queueCode          String
+  order              Int          @default(0) // Used for drag-and-drop manual reordering
+  lastCall           String? // Format: HH:MM
+  registrationTime   String? // Format: HH:MM
+  lastManualOverride BigInt? // UNIX timestamp
+  deletedAt          DateTime?
+
+  shifts        Shift[]
+  leaveRequests LeaveRequest[]
+
+  @@index([deletedAt])
+}
+
+model Shift {
+  id               String   @id @default(cuid())
+  dayIdx           Int
+  timeIdx          Int
+  title            String
+  color            String
+  formattedTime    String?
+  registrationTime     String?
+  extra                String?
+  disabledDates        String[]
+  statusOverride       DoctorStatus?
+
+  doctorId String
+  doctor   Doctor @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  deletedAt DateTime?
+
+  @@index([doctorId])
+  @@index([dayIdx, doctorId])
+}
+
+model LeaveRequest {
+  id        String    @id @default(cuid())
+  specialty String?
+  type      LeaveType
+  startDate DateTime
+  endDate   DateTime
+  reason    String?
+  status    String
+  avatar    String?
+
+  doctorId String
+  doctor   Doctor @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+
+  @@index([doctorId])
+  @@index([startDate, endDate])
+}
+
+model BroadcastRule {
+  id         String     @id @default(cuid())
+  message    String
+  alertLevel AlertLevel
+  targetZone TargetZone
+  duration   Int
+  active     Boolean
+}
+
+model AutomationRule {
+  id        String   @id @default(cuid())
+  name      String
+  condition Json // arbitrary condition object
+  action    Json // arbitrary action object
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AutomationLog {
+  id        String   @id @default(cuid())
+  type      String
+  details   Json?
+  createdAt DateTime @default(now())
+}
+
+model Settings {
+  id                String   @id @default("1")
+  automationEnabled Boolean  @default(false)
+  runTextMessage    String?
+  emergencyMode     Boolean? @default(false)
+  customMessages    Json?
+}
+
+// ==================== RBAC ====================
+
+model User {
+  id        String   @id @default(cuid())
+  username  String   @unique
+  password  String   // bcrypt hashed
+  name      String
+  isActive  Boolean  @default(true)
+
+  roleId    String?
+  role      Role?    @relation(fields: [roleId], references: [id], onDelete: SetNull)
+
+  refreshTokens RefreshToken[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+  lastLogin DateTime?
+}
+
+model Role {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  isSystem    Boolean  @default(false)
+
+  users       User[]
+  permissions RolePermission[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model RolePermission {
+  id       String @id @default(cuid())
+  resource String // e.g. "doctors", "shifts", "analytics", "users"
+  action   String // "read" or "write"
+
+  roleId String
+  role   Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, resource, action])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?  // The user who performed the action (nullable for system)
+  action    String
+  resource  String?
+  details   Json?
+  ipAddress String?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  token     String   @unique  // hashed token stored, raw token sent to client
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  revokedAt DateTime?          // null = active, set = revoked
+  userAgent String?
+  ipAddress String?
+
+  @@index([userId])
+  @@index([token])
+}
