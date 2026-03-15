@@ -2,7 +2,7 @@
 
 import React, { useState, useCallback, useMemo } from "react";
 import { UploadCloud, FileSpreadsheet, CheckCircle2, Loader2, Search, AlertCircle, Users, X, Save, Trophy } from "lucide-react";
-import * as XLSX from "xlsx";
+import type ExcelJSType from "exceljs";
 import { cn } from "@/lib/utils";
 import * as Dialog from '@radix-ui/react-dialog';
 
@@ -54,60 +54,79 @@ export default function DailyRecapUploader() {
     setParsedData([]);
 
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       try {
         setProgressMsg("Mengekstrak baris data...");
-        const data = e.target?.result;
-        const workbook = XLSX.read(data, { type: "binary" });
-        
-        const firstSheetName = workbook.SheetNames[0];
-        const worksheet = workbook.Sheets[firstSheetName];
-        
-        const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
-        
-        setProgressMsg("Menganalisis anomali SEP & Data Petugas...");
-        
-        // Exact column mapping based on Phase 3 requirement
-        const processed: RowData[] = jsonData.map((row: any, index) => {
-          const namaPasien = row["Nama Rekam Medis"];
-          const nomorRm = row["No. Rekam Medis"];
-          const nomorSep = row["No SEP"];
-          const jenisPasien = row["Asuransi"];
-          const petugas = row["Nama Petugas"];
+        const buffer = e.target?.result as ArrayBuffer;
 
-          // Phase 3 Data Logic: missingSEPList: Filter array where "Asuransi" contains "BPJS" (case-insensitive) AND "No SEP" is undefined, null, "", or "-".
-          // Updated constraint: only standard BPJS / JKN, ignore BPJS Ketenagakerjaan.
-          const asuransiStr = jenisPasien ? String(jenisPasien).toLowerCase() : '';
+        // Dynamic import agar bundle awal tetap kecil
+        const ExcelJSModule = await import('exceljs');
+        const ExcelJSClass = (ExcelJSModule.default ?? ExcelJSModule) as any;
+        const workbook = new ExcelJSClass.Workbook();
+        await workbook.xlsx.load(buffer);
+
+        const worksheet = workbook.worksheets[0];
+        if (!worksheet) throw new Error("Sheet tidak ditemukan dalam file.");
+
+        // Bangun peta kolom dari baris header (baris 1)
+        const colMap: Record<string, number> = {};
+        const headerRow = worksheet.getRow(1);
+        headerRow.eachCell((cell: ExcelJSType.Cell, colNumber: number) => {
+          const header = String(cell.value ?? '').trim();
+          if (header) colMap[header] = colNumber;
+        });
+
+        setProgressMsg("Menganalisis anomali SEP & Data Petugas...");
+
+        const getCellText = (row: ExcelJSType.Row, header: string): string => {
+          const colNum = colMap[header];
+          if (!colNum) return '';
+          const val = row.getCell(colNum).value;
+          if (val === null || val === undefined) return '';
+          if (typeof val === 'object' && val !== null && 'text' in (val as any)) return String((val as any).text);
+          return String(val);
+        };
+
+        const processed: RowData[] = [];
+        worksheet.eachRow((row: ExcelJSType.Row, rowNumber: number) => {
+          if (rowNumber === 1) return; // lewati baris header
+
+          const namaPasien  = getCellText(row, 'Nama Rekam Medis');
+          const nomorRm     = getCellText(row, 'No. Rekam Medis');
+          const nomorSep    = getCellText(row, 'No SEP');
+          const jenisPasien = getCellText(row, 'Asuransi');
+          const petugas     = getCellText(row, 'Nama Petugas');
+
+          // Hanya BPJS / JKN standar, abaikan BPJS Ketenagakerjaan
+          const asuransiStr = jenisPasien.toLowerCase();
           const isBpjs = (asuransiStr.includes('bpjs') || asuransiStr.includes('jkn')) && !asuransiStr.includes('ketenagakerjaan');
-          const isMissingSep = !nomorSep || String(nomorSep).trim() === '' || String(nomorSep).trim() === '-';
-          
+          const isMissingSep = !nomorSep || nomorSep.trim() === '' || nomorSep.trim() === '-';
+
           let status: 'valid' | 'anomaly' | 'unknown' = 'unknown';
           if (isBpjs) {
-             status = isMissingSep ? 'anomaly' : 'valid';
+            status = isMissingSep ? 'anomaly' : 'valid';
           } else {
-             // For general/non-BPJS, maybe we consider them valid if they don't explicitly need SEP
-             status = 'valid';
+            status = 'valid';
           }
 
-          return {
-            id: `row-${index}`,
-            original: row,
-            nomorSep: nomorSep ? String(nomorSep) : '-',
-            namaPasien: namaPasien ? String(namaPasien) : 'TIDAK DIKETAHUI',
-            nomorRm: nomorRm ? String(nomorRm) : '-',
-            poli: '-', // Not strictly in requirement headers, default to '-'
-            jenisPasien: jenisPasien ? String(jenisPasien) : 'UMUM',
-            petugas: petugas ? String(petugas) : 'Sistem',
+          processed.push({
+            id: `row-${rowNumber}`,
+            original: {},
+            nomorSep: nomorSep || '-',
+            namaPasien: namaPasien || 'TIDAK DIKETAHUI',
+            nomorRm: nomorRm || '-',
+            poli: '-',
+            jenisPasien: jenisPasien || 'UMUM',
+            petugas: petugas || 'Sistem',
             status,
-            visitCount: 1
-          };
+            visitCount: 1,
+          });
         });
 
         // Phase 7: Smart Deduplication (Group by RM)
         const deduplicatedMap = new Map<string, RowData>();
-        
+
         processed.forEach(row => {
-           // If RM is missing/invalid, just keep as is with unique ID
            if (!row.nomorRm || row.nomorRm === '-') {
               deduplicatedMap.set(row.id, row);
               return;
@@ -115,17 +134,11 @@ export default function DailyRecapUploader() {
 
            const existing = deduplicatedMap.get(row.nomorRm);
            if (existing) {
-              // Same patient RM found
               existing.visitCount = (existing.visitCount || 1) + 1;
-              
-              // Smart resolution: if the existing one is an anomaly but the new one is valid (has SEP),
-              // we upgrade the existing record to valid.
               if (existing.status === 'anomaly' && row.status === 'valid') {
                  existing.status = 'valid';
                  existing.nomorSep = row.nomorSep;
               }
-              // If both are anomalies, we just increment count. If both valid, do nothing.
-              
               deduplicatedMap.set(row.nomorRm, existing);
            } else {
               deduplicatedMap.set(row.nomorRm, { ...row });
@@ -136,10 +149,7 @@ export default function DailyRecapUploader() {
 
         setTimeout(() => {
           setParsedData(finalProcessed);
-          setFileData({
-            name: file.name,
-            rows: finalProcessed.length
-          });
+          setFileData({ name: file.name, rows: finalProcessed.length });
           setIsLoading(false);
         }, 800);
 
@@ -149,13 +159,13 @@ export default function DailyRecapUploader() {
         setIsLoading(false);
       }
     };
-    
+
     reader.onerror = () => {
       setIsLoading(false);
       alert("Gagal membaca file.");
     };
 
-    reader.readAsBinaryString(file);
+    reader.readAsArrayBuffer(file);
   };
 
   const onDrop = useCallback((e: React.DragEvent) => {
