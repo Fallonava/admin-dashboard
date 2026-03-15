@@ -85,6 +85,7 @@ export async function POST(req: Request) {
 
         const newShift = await prisma.shift.create({ data: validated });
         notifyViaSocket('shift_updated', { id: newShift.id });
+        notifyViaSocket('doctor_updated', { ids: [newShift.doctorId] });
         return NextResponse.json(newShift);
     } catch (e) {
         if (e instanceof z.ZodError) {
@@ -112,6 +113,9 @@ export async function PUT(req: Request) {
             data: updates
         });
         notifyViaSocket('shift_updated', { id });
+        if (updated.doctorId) {
+            notifyViaSocket('doctor_updated', { ids: [updated.doctorId] });
+        }
         return NextResponse.json(updated);
     } catch (e) {
         if (e instanceof z.ZodError) {
@@ -133,9 +137,12 @@ export async function DELETE(req: Request) {
     const id = searchParams.get('id');
     if (!id) return NextResponse.json({ error: 'ID required' }, { status: 400 });
 
-    await (prisma.shift as any).delete({
+    const deleted = await (prisma.shift as any).delete({
         where: { id: String(id) }
     });
     notifyViaSocket('shift_updated', { id });
+    if (deleted && deleted.doctorId) {
+        notifyViaSocket('doctor_updated', { ids: [deleted.doctorId] });
+    }
     return NextResponse.json({ success: true });
 }
