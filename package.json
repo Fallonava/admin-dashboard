@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "tsx server.ts",
     "build": "next build && tsc server.ts --outDir . --module commonjs --esModuleInterop --skipLibCheck && npm run build:cron",
-    "build:cron": "esbuild src/scripts/cron-daemon.ts --bundle --platform=node --outfile=server-cron.js",
+    "build:cron": "esbuild src/scripts/cron-daemon.ts --bundle --platform=node --outfile=server-cron.js --banner:js=\"const fs=require('fs'); const path=require('path'); const envPath=path.resolve(process.cwd(), '.env'); if(fs.existsSync(envPath) && typeof process.loadEnvFile === 'function') process.loadEnvFile(envPath);\"",
     "start": "NODE_ENV=production node server.js",
     "lint": "eslint",
     "test": "jest",
