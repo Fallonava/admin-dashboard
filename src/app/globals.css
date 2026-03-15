@@ -1,0 +1,257 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+}
+
+@layer base {
+  :root {
+    /* Apple Modern 2026 Aesthetic Variables */
+    --background: 240 10% 97%; /* #f5f5f7 - Apple classic light gray */
+    --foreground: 240 10% 12%; /* #1c1c1e - Dark text, highly readable */
+
+    --card: 0 0% 100%; /* Pure white */
+    --card-foreground: 240 10% 12%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 12%;
+
+    --primary: 219 100% 50%; /* #005cff - Apple vivid blue */
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 240 5% 90%; /* #e5e5ea */
+    --secondary-foreground: 240 10% 12%;
+
+    --muted: 240 5% 94%; /* #f2f2f7 */
+    --muted-foreground: 240 5% 45%; /* #8e8e93 */
+
+    --accent: 219 100% 95%; /* Soft blue background for active */
+    --accent-foreground: 219 100% 40%;
+
+    --destructive: 348 100% 54%; /* #ff2d55 - Apple vivid pink/red */
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 240 5% 96%; /* Extremely soft border, like Apple's thin lines */
+    --input: 240 5% 96%;
+    --ring: 219 100% 50%;
+    --radius: 1.25rem; /* Smooth Apple-like squircle radius */
+  }
+}
+
+@layer base {
+  body {
+    /* Base background color + Elegant Soft Mesh Gradient Overlay */
+    /* background-attachment: scroll — mencegah repaint saat scroll di mobile/mid-range */
+    background-color: hsl(var(--background));
+    background-image:
+      radial-gradient(
+        at 10% 0%,
+        hsla(219, 100%, 75%, 0.15) 0px,
+        transparent 50%
+      ),
+      /* Soft Blue */
+        radial-gradient(
+          at 90% 10%,
+          hsla(320, 100%, 80%, 0.12) 0px,
+          transparent 50%
+        ),
+      /* Soft Pink */
+        radial-gradient(
+          at 50% 100%,
+          hsla(260, 100%, 80%, 0.1) 0px,
+          transparent 50%
+        ); /* Soft Purple */
+    background-attachment: scroll;
+    color: hsl(var(--foreground));
+    font-family:
+      -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+/* Base UI Components — Blur dikurangi untuk 60fps di mid-range */
+.glass-panel {
+  @apply bg-white/60 backdrop-blur-[24px] saturate-150 shadow-[4px_0_24px_-8px_rgba(0,0,0,0.05)];
+  will-change: auto;
+}
+
+.super-glass-card {
+  @apply relative overflow-hidden bg-white/55 backdrop-blur-[16px] saturate-[1.15] shadow-[0_8px_32px_-8px_rgba(0,0,0,0.08),inset_0_1px_1px_rgba(255,255,255,0.8)] hover:shadow-[0_16px_48px_-12px_rgba(0,0,0,0.12),inset_0_1px_1px_rgba(255,255,255,0.9)] transition-shadow duration-300 ease-out z-10;
+  contain: layout paint;
+  will-change: auto;
+}
+
+.super-glass-card::before {
+  content: "";
+  @apply absolute inset-0 bg-gradient-to-br from-blue-500/[0.03] via-purple-500/[0.03] to-pink-500/[0.03] opacity-0 hover:opacity-100 transition-opacity duration-300 ease-out -z-10;
+  pointer-events: none;
+}
+
+.super-glass {
+  @apply bg-white/40 backdrop-blur-[30px] saturate-150 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),0_8px_32px_rgba(0,0,0,0.06)];
+  will-change: auto;
+}
+
+/* Skip rendering for off-screen sections until scrolled into view */
+.offscreen-section {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 400px;
+}
+
+/* Apple-like gradients for buttons/accents */
+.btn-gradient {
+  @apply bg-gradient-to-br from-indigo-500/90 via-blue-500/90 to-cyan-500/90 backdrop-blur-md text-white shadow-[inset_0_1px_1px_rgba(255,255,255,0.3),0_4px_14px_0_rgba(59,130,246,0.39)] hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.4),0_6px_20px_rgba(59,130,246,0.23)] hover:-translate-y-0.5 transition-all duration-300;
+}
+
+.text-gradient {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-500;
+}
+
+/* ─── Otomatis turunkan blur di mobile — mencegah GPU overload ─── */
+@media screen and (max-width: 768px) {
+  .glass-panel {
+    backdrop-filter: blur(8px) saturate(1.2) !important;
+    -webkit-backdrop-filter: blur(8px) saturate(1.2) !important;
+  }
+  .super-glass-card {
+    backdrop-filter: blur(6px) !important;
+    -webkit-backdrop-filter: blur(6px) !important;
+  }
+}
+
+/* ─── Tablet & Small Desktop (1024px to 1366px) Optimization ─── */
+@media screen and (min-width: 769px) and (max-width: 1366px) {
+  .super-glass-card {
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   PERFORMANCE FALLBACKS — Low-End Devices & Reduced Motion
+   Triggered by:
+   1. OS setting: prefers-reduced-motion: reduce
+   2. JS class: .reduce-effects on <html> (for Smart TV / weak GPU)
+   Desktop users are NOT affected.
+   ═══════════════════════════════════════════════════════════════════ */
+
+@media (prefers-reduced-motion: reduce) {
+  body {
+    background-image: none !important;
+  }
+
+  .glass-panel {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background-color: rgba(255, 255, 255, 0.95) !important;
+  }
+
+  .super-glass-card {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background-color: rgba(255, 255, 255, 0.95) !important;
+    transition: none !important;
+  }
+
+  .super-glass-card::before {
+    display: none !important;
+  }
+
+  .super-glass {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background-color: rgba(255, 255, 255, 0.95) !important;
+  }
+
+  .btn-gradient {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    transition-duration: 0ms !important;
+  }
+
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.05s !important;
+    animation-duration: 0.05s !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+/* JS-driven class — perangkat low-mid terdeteksi otomatis */
+html.reduce-effects body {
+  background-image: none !important;
+  background-color: hsl(var(--background)) !important;
+}
+
+html.reduce-effects .glass-panel,
+html.reduce-effects .super-glass-card,
+html.reduce-effects .super-glass {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background-color: rgba(255, 255, 255, 0.97) !important;
+}
+
+html.reduce-effects .super-glass-card::before,
+html.reduce-effects .super-glass-card::after {
+  display: none !important;
+}
+
+html.reduce-effects .super-glass-card {
+  transition: box-shadow 0.15s ease !important;
+  will-change: auto !important;
+  contain: strict !important;
+}
+
+html.reduce-effects .btn-gradient {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  transition-duration: 0.15s !important;
+}
+
+/* Matikan semua animasi berjalan terus (ping, pulse, shimmer) */
+html.reduce-effects *,
+html.reduce-effects *::before,
+html.reduce-effects *::after {
+  animation-play-state: paused !important;
+  transition-duration: 0.1s !important;
+}
+
+/* Izinkan spinner loading — animasi yang dipicu aksi user */
+html.reduce-effects .animate-spin {
+  animation-play-state: running !important;
+  animation-duration: 1s !important;
+}
+
+/* Scrollbar for custom-scrollbar class (lightweight) */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 9999px;
+}
