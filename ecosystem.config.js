@@ -49,8 +49,8 @@ module.exports = {
     },
     {
       name: 'medcore-cron-worker',
-      script: 'npx',
-      args: 'tsx ./src/scripts/cron-daemon.ts',
+      script: 'node_modules/.bin/tsx',
+      args: './src/scripts/cron-daemon.ts',
       cwd: '/home/fallonava/admin-dashboard',
       instances: 1,
       autorestart: true,
