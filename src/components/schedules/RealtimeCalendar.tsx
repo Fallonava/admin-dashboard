@@ -145,8 +145,9 @@ export function RealtimeCalendar({ selectedDate, onDateChange }: RealtimeCalenda
     };
 
     // Since we are showing daily view, weekDays and weekly navigation are no longer needed
-    // We only need info for the single selectedDate
     const currentDayIdx = selectedDate.getDay() === 0 ? 6 : selectedDate.getDay() - 1;
+    // Calculate week of the month (1-5) for the selected date
+    const weekOfMonth = Math.ceil(selectedDate.getDate() / 7);
 
     // Date formatter for header
     const formatDateObj = (d: Date) => {
@@ -226,6 +227,11 @@ export function RealtimeCalendar({ selectedDate, onDateChange }: RealtimeCalenda
                         {HOURS.map((slot, hIdx) => {
                             // Filter shifts that fall on this day and hour, AND are not disabled for this specific date
                             const cellShifts = shifts.filter(s => {
+                                // Pastikan shift punya waktu valid (fallback getShiftHour tidak boleh menjebak jika '-')
+                                if (!s.formattedTime || s.formattedTime === '-' || !s.formattedTime.includes(':')) {
+                                    return false; // Jangan tampilkan shift tanpa waktu di grid harian
+                                }
+
                                 // 1. Dasar: hari dan jam cocok
                                 const isSameTime = s.dayIdx === currentDayIdx && getShiftHour(s) === slot.hour;
                                 if (!isSameTime) return false;
@@ -234,7 +240,11 @@ export function RealtimeCalendar({ selectedDate, onDateChange }: RealtimeCalenda
                                 const isDisabled = (s.disabledDates || []).includes(todayStr);
                                 if (isDisabled) return false;
 
-                                // 3. Cek apakah dokter sedang cuti (Approved) pada tanggal terpilih
+                                // 3. Cek pola ganjil/genap dari field `extra`
+                                if (s.extra === 'odd_weeks' && weekOfMonth % 2 === 0) return false; // Sembunyikan jika genap
+                                if (s.extra === 'even_weeks' && weekOfMonth % 2 !== 0) return false; // Sembunyikan jika ganjil
+
+                                // 4. Cek apakah dokter sedang cuti (Approved) pada tanggal terpilih
                                 const doctor = (s as any).doctorRel;
                                 if (doctor && doctor.leaveRequests) {
                                     const isOnLeave = doctor.leaveRequests.some((lr: any) => {

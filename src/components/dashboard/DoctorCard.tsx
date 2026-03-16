@@ -78,12 +78,22 @@ export function DoctorCard({
   // Gunakan WIB (UTC+7) agar konsisten dengan server automation
   const wibNow = new Date(now.getTime() + (7 * 60 * 60 * 1000));
   const currentTimeMinutes = wibNow.getUTCHours() * 60 + wibNow.getUTCMinutes();
+  const weekOfMonth = Math.ceil(wibNow.getUTCDate() / 7);
+
   // Hanya tampilkan shift yang tidak di-disable hari ini
-  const docShiftsToday = shifts.filter(s =>
-    s.doctorId === doc.id &&
-    s.dayIdx === todayDayIdx &&
-    !(s.disabledDates || []).includes(todayStr)
-  );
+  const docShiftsToday = shifts.filter(s => {
+    if (s.doctorId !== doc.id || s.dayIdx !== todayDayIdx) return false;
+    if ((s.disabledDates || []).includes(todayStr)) return false;
+    
+    // Abaikan shift tanpa format waktu yang valid (contoh kasus jadwal kosong)
+    if (!s.formattedTime || s.formattedTime === '-' || !s.formattedTime.includes(':')) return false;
+
+    // Filter pola ganjil/genap
+    if (s.extra === 'odd_weeks' && weekOfMonth % 2 === 0) return false;
+    if (s.extra === 'even_weeks' && weekOfMonth % 2 !== 0) return false;
+
+    return true;
+  });
 
   // Find active shift with registration time
   const activeShift = shifts.find(s =>

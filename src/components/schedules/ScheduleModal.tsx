@@ -192,7 +192,8 @@ export function ScheduleModal({ doctor, shifts, isOpen, onClose, onUpdate }: Sch
             doctorId: doctor.id, 
             doctor: doctor.name, 
             dayIdx: activeDay,
-            statusOverride: form.statusOverride || null // Convert "" to null
+            statusOverride: form.statusOverride || null, // Convert "" to null
+            extra: form.extra || null
         };
         
         await fetch('/api/shifts', {
@@ -244,7 +245,7 @@ export function ScheduleModal({ doctor, shifts, isOpen, onClose, onUpdate }: Sch
         await fetch('/api/shifts', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ title, doctorId: s.doctorId, doctor: s.doctor, dayIdx: s.dayIdx, formattedTime: s.formattedTime, color: s.color })
+            body: JSON.stringify({ title, doctorId: s.doctorId, doctor: s.doctor, dayIdx: s.dayIdx, formattedTime: s.formattedTime, color: s.color, extra: s.extra })
         });
         socket.socket?.emit('schedule_updated', { action: 'duplicate_shift' });
         onUpdate?.();
@@ -403,6 +404,18 @@ export function ScheduleModal({ doctor, shifts, isOpen, onClose, onUpdate }: Sch
                                     ]}
                                 />
                             </div>
+                            <div className="grid grid-cols-1 gap-4">
+                                <CustomDropdown 
+                                    label="Pola Rutinitas"
+                                    value={form.extra || ''}
+                                    onChange={(v: any) => setForm({ ...form, extra: v || null })}
+                                    options={[
+                                        { value: '', label: 'Setiap Minggu (Standar)' },
+                                        { value: 'odd_weeks', label: 'Hanya Minggu Ganjil (Minggu 1,3,5)' },
+                                        { value: 'even_weeks', label: 'Hanya Minggu Genap (Minggu 2,4)' },
+                                    ]}
+                                />
+                            </div>
                             <div className="flex items-center gap-3">
                                 <span className="text-xs font-semibold text-slate-500">Warna</span>
                                 <div className="flex gap-2">
@@ -504,6 +517,18 @@ export function ScheduleModal({ doctor, shifts, isOpen, onClose, onUpdate }: Sch
                                         ]}
                                     />
                                 </div>
+                                <div className="grid grid-cols-1 gap-4">
+                                    <CustomDropdown 
+                                        label="Pola Rutinitas"
+                                        value={form.extra || ''}
+                                        onChange={(v: any) => setForm({ ...form, extra: v || null })}
+                                        options={[
+                                            { value: '', label: 'Setiap Minggu (Standar)' },
+                                            { value: 'odd_weeks', label: 'Hanya Minggu Ganjil (Minggu 1,3,5)' },
+                                            { value: 'even_weeks', label: 'Hanya Minggu Genap (Minggu 2,4)' },
+                                        ]}
+                                    />
+                                </div>
                                 <div className="flex items-center gap-3">
                                     <span className="text-xs font-semibold text-slate-500">Warna</span>
                                     <div className="flex gap-2">
@@ -535,7 +560,7 @@ export function ScheduleModal({ doctor, shifts, isOpen, onClose, onUpdate }: Sch
                                 setEditId(null);
                             }}
                             onShiftClick={(s) => {
-                                setForm({ title: s.title, formattedTime: s.formattedTime, registrationTime: s.registrationTime || "", color: s.color, statusOverride: s.statusOverride });
+                                setForm({ title: s.title, formattedTime: s.formattedTime, registrationTime: s.registrationTime || "", color: s.color, statusOverride: s.statusOverride, extra: s.extra });
                                 setEditId(s.id);
                                 setAdding(false);
                             }}

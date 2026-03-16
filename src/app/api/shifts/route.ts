@@ -14,6 +14,7 @@ const ShiftCreateSchema = z.object({
     color: z.string().min(1),
     formattedTime: z.string().min(1),
     registrationTime: z.string().nullable().optional(),
+    extra: z.string().nullable().optional(),
     disabledDates: z.array(z.string()).optional(),
     statusOverride: z.enum(['BUKA', 'PENUH', 'OPERASI', 'CUTI', 'SELESAI', 'AKAN_BUKA', 'TIDAK_PRAKTEK']).nullable().optional(),
 });
