@@ -221,7 +221,7 @@ html.reduce-effects .super-glass-card::after {
 html.reduce-effects .super-glass-card {
   transition: box-shadow 0.15s ease !important;
   will-change: auto !important;
-  contain: strict !important;
+  contain: content !important;
 }
 
 html.reduce-effects .btn-gradient {
