@@ -18,6 +18,8 @@ interface RowData {
   petugas?: string;
   status: 'valid' | 'anomaly' | 'unknown';
   visitCount?: number;
+  poliList?: string[];
+  anomalyReason?: 'rawat_bersama' | 'terapi_gabung' | null;
 }
 
 export default function DailyRecapUploader() {
@@ -87,6 +89,10 @@ export default function DailyRecapUploader() {
           return String(val);
         };
 
+        // Smart Poli header detection — coba beberapa kemungkinan nama kolom
+        const poliHeaderCandidates = ['Poli', 'Nama Poli', 'Unit Pelayanan', 'Poli Klinik', 'Klinik'];
+        const poliHeader = poliHeaderCandidates.find(h => colMap[h]) || '';
+
         const processed: RowData[] = [];
         worksheet.eachRow((row: ExcelJSType.Row, rowNumber: number) => {
           if (rowNumber === 1) return; // lewati baris header
@@ -96,6 +102,7 @@ export default function DailyRecapUploader() {
           const nomorSep    = getCellText(row, 'No SEP');
           const jenisPasien = getCellText(row, 'Asuransi');
           const petugas     = getCellText(row, 'Nama Petugas');
+          const poli        = poliHeader ? getCellText(row, poliHeader) : '';
 
           // Hanya BPJS / JKN standar, abaikan BPJS Ketenagakerjaan
           const asuransiStr = jenisPasien.toLowerCase();
@@ -115,15 +122,17 @@ export default function DailyRecapUploader() {
             nomorSep: nomorSep || '-',
             namaPasien: namaPasien || 'TIDAK DIKETAHUI',
             nomorRm: nomorRm || '-',
-            poli: '-',
+            poli: poli || '-',
             jenisPasien: jenisPasien || 'UMUM',
             petugas: petugas || 'Sistem',
             status,
             visitCount: 1,
+            poliList: poli ? [poli] : [],
+            anomalyReason: null,
           });
         });
 
-        // Phase 7: Smart Deduplication (Group by RM)
+        // Phase 7: Smart Deduplication (Group by RM) + Deteksi Rawat Bersama & Terapi Gabung
         const deduplicatedMap = new Map<string, RowData>();
 
         processed.forEach(row => {
@@ -135,10 +144,35 @@ export default function DailyRecapUploader() {
            const existing = deduplicatedMap.get(row.nomorRm);
            if (existing) {
               existing.visitCount = (existing.visitCount || 1) + 1;
+
+              // Kumpulkan semua poli yang dikunjungi
+              if (!existing.poliList) existing.poliList = existing.poli && existing.poli !== '-' ? [existing.poli] : [];
+              if (row.poli && row.poli !== '-' && !existing.poliList.includes(row.poli)) {
+                existing.poliList.push(row.poli);
+              }
+
+              // Jika salah satu row punya SEP, pasien valid
               if (existing.status === 'anomaly' && row.status === 'valid') {
                  existing.status = 'valid';
                  existing.nomorSep = row.nomorSep;
               }
+
+              // --- Deteksi Pola Khusus ---
+              const poliLower = (existing.poliList || []).map(p => p.toLowerCase());
+
+              // Kondisi 2: Terapi Gabung — Rehab Medik + Fisioterapi/Terapi Wicara
+              const hasRehab = poliLower.some(p => p.includes('rehab'));
+              const hasFisio = poliLower.some(p => 
+                p.includes('fisioterapi') || p.includes('terapi wicara') || p.includes('fisio')
+              );
+              if (hasRehab && hasFisio) {
+                existing.anomalyReason = 'terapi_gabung';
+              }
+              // Kondisi 1: Rawat Bersama — 2+ poli berbeda (bukan terapi gabung)
+              else if (poliLower.length >= 2) {
+                existing.anomalyReason = 'rawat_bersama';
+              }
+
               deduplicatedMap.set(row.nomorRm, existing);
            } else {
               deduplicatedMap.set(row.nomorRm, { ...row });
@@ -211,7 +245,9 @@ export default function DailyRecapUploader() {
           missing_sep_details: missingSepData.map(d => ({
             no_rm: d.nomorRm || '-',
             nama: d.namaPasien || 'Unknown',
-            asuransi: d.jenisPasien || '-'
+            asuransi: d.jenisPasien || '-',
+            poli: (d.poliList || []).join(', ') || '-',
+            anomaly_reason: d.anomalyReason || null,
           }))
        };
 
@@ -502,6 +538,12 @@ export default function DailyRecapUploader() {
                                         {isAnomaly && <AlertCircle size={14} className="text-amber-500 animate-pulse" />}
                                       </p>
                                       <p className="text-xs font-mono text-slate-500 mt-0.5">{row.nomorRm}</p>
+                                      {/* Tampilkan daftar poli jika multi-visit */}
+                                      {row.poliList && row.poliList.length > 0 && (
+                                        <p className="text-[10px] text-slate-400 mt-0.5 truncate max-w-[200px]" title={row.poliList.join(' · ')}>
+                                          {row.poliList.join(' · ')}
+                                        </p>
+                                      )}
                                    </div>
                                  </div>
                                  
@@ -517,6 +559,18 @@ export default function DailyRecapUploader() {
                                     {row.visitCount && row.visitCount > 1 && (
                                        <span className="text-[10px] font-bold text-indigo-600 bg-indigo-50 border border-indigo-200 px-2 py-0.5 rounded shadow-sm">
                                          {row.visitCount}x Kunjungan
+                                       </span>
+                                    )}
+                                    {/* Badge Rawat Bersama */}
+                                    {row.anomalyReason === 'rawat_bersama' && (
+                                       <span className="text-[10px] font-bold text-blue-600 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded shadow-sm flex items-center gap-1">
+                                         <Users size={10} /> Rawat Bersama
+                                       </span>
+                                    )}
+                                    {/* Badge Terapi Gabung */}
+                                    {row.anomalyReason === 'terapi_gabung' && (
+                                       <span className="text-[10px] font-bold text-purple-600 bg-purple-50 border border-purple-200 px-2 py-0.5 rounded shadow-sm flex items-center gap-1">
+                                         <Users size={10} /> Terapi Gabung
                                        </span>
                                     )}
                                     {isAnomaly && <span className="text-[10px] font-bold text-amber-600 uppercase tracking-wide flex items-center gap-1"><AlertCircle size={10} /> Butuh SEP</span>}

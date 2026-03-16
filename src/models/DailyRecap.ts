@@ -16,6 +16,8 @@ export interface IMissingSepDetail {
   no_rm: string;
   nama: string;
   asuransi: string;
+  poli?: string;
+  anomaly_reason?: string | null;
   status: 'OPEN' | 'RESOLVED' | 'PENDING_DOCTOR' | 'PENDING_SYSTEM' | 'REJECTED' | 'IGNORED';
   audit_logs: IAuditLog[];
   resolvedAt?: Date;
@@ -47,6 +49,8 @@ const MissingSepDetailSchema = new Schema<IMissingSepDetail>({
   no_rm: { type: String, required: true },
   nama: { type: String, required: true },
   asuransi: { type: String, required: true },
+  poli: { type: String, default: '-' },
+  anomaly_reason: { type: String, default: null },
   status: { type: String, enum: ['OPEN', 'RESOLVED', 'PENDING_DOCTOR', 'PENDING_SYSTEM', 'REJECTED', 'IGNORED'], default: 'OPEN' },
   audit_logs: { type: [AuditLogSchema], default: [] },
   resolvedAt: { type: Date },

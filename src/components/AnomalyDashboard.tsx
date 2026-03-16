@@ -19,6 +19,8 @@ interface AnomalyData {
   no_rm: string;
   nama: string;
   asuransi: string;
+  poli?: string;
+  anomaly_reason?: string | null;
   status: 'OPEN' | 'RESOLVED' | 'PENDING_DOCTOR' | 'PENDING_SYSTEM' | 'REJECTED' | 'IGNORED';
   audit_logs: AuditLog[];
   resolvedAt?: string;
@@ -407,10 +409,23 @@ export default function AnomalyDashboard({ data, onRefresh }: AnomalyDashboardPr
                   <td className="px-5 py-3.5">
                     <div className="flex flex-col">
                       <p className={cn("text-sm font-bold", ['OPEN', 'PENDING_DOCTOR', 'PENDING_SYSTEM'].includes(row.status) ? "text-slate-800" : "text-slate-600")}>{row.nama}</p>
-                      <div className="flex items-center gap-2 mt-0.5">
+                      <div className="flex items-center gap-2 mt-0.5 flex-wrap">
                         <span className="text-[11px] font-mono text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">{row.no_rm}</span>
                         <span className="text-[11px] font-medium text-slate-400 capitalize">{row.asuransi}</span>
+                        {row.poli && row.poli !== '-' && (
+                          <span className="text-[10px] font-medium text-slate-400" title={row.poli}>📍 {row.poli}</span>
+                        )}
                       </div>
+                      {row.anomaly_reason && (
+                        <div className="mt-1">
+                          {row.anomaly_reason === 'rawat_bersama' && (
+                            <span className="text-[9px] font-bold text-blue-600 bg-blue-50 border border-blue-200 px-1.5 py-0.5 rounded">Rawat Bersama</span>
+                          )}
+                          {row.anomaly_reason === 'terapi_gabung' && (
+                            <span className="text-[9px] font-bold text-purple-600 bg-purple-50 border border-purple-200 px-1.5 py-0.5 rounded">Terapi Gabung</span>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </td>
                   <td className="px-5 py-3.5 whitespace-nowrap">
