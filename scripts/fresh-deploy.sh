@@ -65,7 +65,7 @@ fi
 
 # 5. Install dependencies secara bersih
 echo "📦 Menginstall dependencies (npm ci)..."
-npm ci
+npm ci --no-audit --no-fund --maxsockets=3 --loglevel=info
 
 # 6. Jalankan Migrasi Prisma (hanya jika ada folder migrations)
 echo "🗄️ Sinkronisasi database..."
