@@ -31,6 +31,7 @@ export default function DailyRecapUploader() {
   
   // Data state
   const [parsedData, setParsedData] = useState<RowData[]>([]);
+  const [rawRows, setRawRows] = useState<RowData[]>([]); // New state for raw data
   const [searchQuery, setSearchQuery] = useState("");
   const [isSaving, setIsSaving] = useState(false);
 
@@ -182,8 +183,9 @@ export default function DailyRecapUploader() {
         const finalProcessed = Array.from(deduplicatedMap.values());
 
         setTimeout(() => {
+          setRawRows(processed);
           setParsedData(finalProcessed);
-          setFileData({ name: file.name, rows: finalProcessed.length });
+          setFileData({ name: file.name, rows: processed.length }); // Use actual row count for display
           setIsLoading(false);
         }, 800);
 
@@ -228,9 +230,9 @@ export default function DailyRecapUploader() {
        const missingSepData = parsedData.filter(d => d.status === 'anomaly');
        
        const staffCounts: Record<string, number> = {};
-       parsedData.forEach(row => {
+       rawRows.forEach(row => {
           if (row.petugas && row.petugas !== 'Sistem') {
-            staffCounts[row.petugas] = (staffCounts[row.petugas] || 0) + (row.visitCount || 1);
+            staffCounts[row.petugas] = (staffCounts[row.petugas] || 0) + 1;
           }
        });
        const staffPerformance = Object.entries(staffCounts)
@@ -284,8 +286,8 @@ export default function DailyRecapUploader() {
 
   // Calculate Total Kunjungan (Raw Excel Rows)
   const totalKunjungan = useMemo(() => {
-    return parsedData.reduce((acc, row) => acc + (row.visitCount || 1), 0);
-  }, [parsedData]);
+    return rawRows.length;
+  }, [rawRows]);
   
   // Ratio BPJS vs Umum
   const bpjsCount = parsedData.filter(d => {
@@ -297,9 +299,9 @@ export default function DailyRecapUploader() {
   // Leaderboard Calculation
   const leaderboard = useMemo(() => {
     const counts: Record<string, number> = {};
-    parsedData.forEach(row => {
+    rawRows.forEach(row => {
       const user = row.petugas || 'Sistem';
-      counts[user] = (counts[user] || 0) + (row.visitCount || 1);
+      counts[user] = (counts[user] || 0) + 1;
     });
     return Object.entries(counts)
       .sort((a, b) => b[1] - a[1]) // Sort desc
@@ -327,6 +329,7 @@ export default function DailyRecapUploader() {
   const resetData = () => {
     setFileData(null);
     setParsedData([]);
+    setRawRows([]);
     setSearchQuery("");
   };
 
