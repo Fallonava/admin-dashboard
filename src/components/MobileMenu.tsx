@@ -67,7 +67,7 @@ export function MobileMenu() {
       : pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href));
       
     const linkClassName = cn(
-      "flex items-center justify-between gap-3 rounded-[20px] px-5 py-4 text-[13px] font-bold transition-all duration-300 w-full active:scale-[0.98]",
+      "flex items-center justify-between gap-3 rounded-[20px] px-5 py-4 text-[13px] font-bold transition-all duration-300 w-full active:scale-[0.98] min-h-[44px]",
       isActive
         ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/20"
         : "bg-slate-50 text-slate-700 border border-slate-100/60 hover:bg-slate-100"

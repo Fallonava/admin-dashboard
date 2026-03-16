@@ -56,7 +56,7 @@ export function BottomNav() {
                 <Link
                   key={item.name}
                   href={item.href}
-                  className="relative -top-8 flex flex-col items-center justify-center transition-transform duration-300 active:scale-90"
+                  className="relative -top-8 flex flex-col items-center justify-center transition-transform duration-300 active:scale-90 min-h-[44px]"
                 >
                   <div className={cn(
                     "h-16 w-16 rounded-full flex items-center justify-center transition-all duration-500 shadow-xl",
@@ -98,7 +98,7 @@ export function BottomNav() {
                 <button
                   key={item.name}
                   onClick={handleMenuClick}
-                  className="flex flex-col items-center justify-center flex-1 transition-all active:scale-90 outline-none mt-1"
+                  className="flex flex-col items-center justify-center flex-1 transition-all active:scale-90 outline-none mt-1 min-h-[44px]"
                 >
                   {content}
                 </button>
@@ -109,7 +109,7 @@ export function BottomNav() {
               <Link
                 key={item.name}
                 href={item.href}
-                className="flex flex-col items-center justify-center flex-1 transition-all active:scale-90 mt-1"
+                className="flex flex-col items-center justify-center flex-1 transition-all active:scale-90 mt-1 min-h-[44px]"
               >
                 {content}
               </Link>

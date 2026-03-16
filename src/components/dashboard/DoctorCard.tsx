@@ -176,21 +176,56 @@ export function DoctorCard({
       )}
 
       {/* Status change buttons */}
-      <div className="flex flex-wrap gap-1 relative z-10 w-full">
-        {STATUS_BUTTONS.map((action) => (
-          <button
-            key={action.id}
-            onClick={() => onStatusChange(doc.id, action.id as Doctor['status'])}
-            className={cn(
-              "py-1 px-1 flex-1 min-w-[32px] rounded-md text-[9px] font-bold transition-all disabled:opacity-50 line-clamp-1 truncate text-center",
-              doc.status === action.id
-                ? `${action.bg} text-white shadow-sm ${action.hover}`
-                : "bg-slate-50 hover:bg-slate-100 text-slate-500 border border-slate-100 shadow-none",
-            )}
-          >
-            {action.label}
-          </button>
-        ))}
+      <div className="relative z-10 w-full">
+        {/* Mobile: 2 rows × 4 buttons grid */}
+        <div className="lg:hidden grid grid-cols-4 gap-1">
+          {STATUS_BUTTONS.slice(0, 4).map((action) => (
+            <button
+              key={action.id}
+              onClick={() => onStatusChange(doc.id, action.id as Doctor['status'])}
+              className={cn(
+                "py-2 px-1 rounded-lg text-[9px] font-bold transition-all disabled:opacity-50 text-center min-h-[44px] flex items-center justify-center",
+                doc.status === action.id
+                  ? `${action.bg} text-white shadow-sm ${action.hover}`
+                  : "bg-slate-50 hover:bg-slate-100 text-slate-500 border border-slate-100 shadow-none",
+              )}
+            >
+              {action.label}
+            </button>
+          ))}
+          {STATUS_BUTTONS.slice(4).map((action) => (
+            <button
+              key={action.id}
+              onClick={() => onStatusChange(doc.id, action.id as Doctor['status'])}
+              className={cn(
+                "py-2 px-1 rounded-lg text-[9px] font-bold transition-all disabled:opacity-50 text-center min-h-[44px] flex items-center justify-center",
+                doc.status === action.id
+                  ? `${action.bg} text-white shadow-sm ${action.hover}`
+                  : "bg-slate-50 hover:bg-slate-100 text-slate-500 border border-slate-100 shadow-none",
+              )}
+            >
+              {action.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Desktop: Original flex-wrap layout */}
+        <div className="hidden lg:flex lg:flex-wrap gap-1 w-full">
+          {STATUS_BUTTONS.map((action) => (
+            <button
+              key={action.id}
+              onClick={() => onStatusChange(doc.id, action.id as Doctor['status'])}
+              className={cn(
+                "py-1 px-1 flex-1 min-w-[32px] rounded-md text-[9px] font-bold transition-all disabled:opacity-50 line-clamp-1 truncate text-center",
+                doc.status === action.id
+                  ? `${action.bg} text-white shadow-sm ${action.hover}`
+                  : "bg-slate-50 hover:bg-slate-100 text-slate-500 border border-slate-100 shadow-none",
+              )}
+            >
+              {action.label}
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );

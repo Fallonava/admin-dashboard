@@ -10,6 +10,7 @@ import { useSSE } from "@/hooks/use-sse";
 import { useAuth } from "@/lib/auth-context";
 import { DashboardStats } from "./DashboardStats";
 import { DoctorCard } from "./DoctorCard";
+import { MobileSearchSheet } from "@/components/ui/MobileSearchSheet";
 
 export function DashboardClient() {
   const { logout } = useAuth();
@@ -43,6 +44,8 @@ export function DashboardClient() {
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedSearch = useDebounce(searchQuery, 400);
   const isSearching = searchQuery !== debouncedSearch;
+
+  const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
 
   // Hitung todayDayIdx dan todayStr menggunakan WIB (UTC+7) agar konsisten
   // dengan server automation yang juga pakai WIB. Browser bisa di timezone berbeda.
@@ -293,21 +296,15 @@ export function DashboardClient() {
             </h3>
 
             <div className="flex items-center gap-3">
-              {/* Mobile Search */}
-              <div className="relative group lg:hidden">
-                {isSearching ? (
-                  <Loader2 className="absolute left-3 top-1/2 -translate-y-1/2 text-blue-500 h-4 w-4 animate-spin" />
-                ) : (
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 h-4 w-4" />
-                )}
-                <input
-                  type="text"
-                  placeholder="Cari..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-9 pr-3 py-2 rounded-xl bg-white/60 text-sm w-40 outline-none border border-white/50 shadow-sm"
-                />
-              </div>
+              {/* Mobile Search Button */}
+              <button
+                onClick={() => setIsMobileSearchOpen(true)}
+                className="lg:hidden flex items-center gap-2 p-2.5 min-h-[44px] bg-white/80 hover:bg-white border border-white/50 rounded-xl shadow-sm transition-all active:scale-95"
+                title="Cari Dokter"
+              >
+                <Search size={18} className="text-slate-600" />
+                <span className="text-sm font-semibold text-slate-700">Cari</span>
+              </button>
 
               <div className={cn(
                 "px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-2 transition-all shadow-sm border",
@@ -330,7 +327,7 @@ export function DashboardClient() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3 lg:gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3 lg:gap-4">
             {filteredDoctors.map(doc => (
               <DoctorCard
                 key={doc.id}
@@ -348,6 +345,15 @@ export function DashboardClient() {
         </div>
 
       </div>
+
+      {/* Mobile Search Sheet */}
+      <MobileSearchSheet
+        isOpen={isMobileSearchOpen}
+        onClose={() => setIsMobileSearchOpen(false)}
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        isSearching={isSearching}
+      />
     </div>
   );
 }
