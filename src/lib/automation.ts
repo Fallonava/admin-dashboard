@@ -112,10 +112,7 @@ export function determineIdealStatus(
     // 2. No Shifts Today Check
     if (todayShifts.length === 0) return 'TIDAK_PRAKTEK';
 
-    // 3. Manual Override Check (respect admin changes during active shifts/breaks)
-    if (isCooldownActive) return doc.status;
-
-    // 4. Time-based State Calculation
+    // 3. Time-based State Calculation
     let isWithinAnyShift = false;
     let isAfterAllShifts = true;
     let activeShiftStatusOverride: Doctor['status'] | null = null;
@@ -139,14 +136,15 @@ export function determineIdealStatus(
         }
     }
 
-    // Inside Shift -> BUKA (or override)
-    if (isWithinAnyShift) {
-        return activeShiftStatusOverride || 'BUKA';
-    }
-
-    // End of Day Sweep -> SELESAI
+    // Sweep check: If the day is completely over, force SELESAI (ignores cooldown)
     if (isAfterAllShifts && latestEndMinutes > 0) {
         return 'SELESAI';
+    }
+
+    // Inside Shift -> BUKA (or override)
+    if (isWithinAnyShift) {
+        if (isCooldownActive) return doc.status;
+        return activeShiftStatusOverride || 'BUKA';
     }
 
     // Before or Between Shifts -> AKAN_BUKA (or target shift override like OPERASI)
@@ -163,7 +161,10 @@ export function determineIdealStatus(
         })[0];
 
     const override = nextShift?.statusOverride;
-    return (override === 'PENUH' || override === 'OPERASI') ? override : 'AKAN_BUKA';
+    const targetStatus = (override === 'PENUH' || override === 'OPERASI') ? override : 'AKAN_BUKA';
+
+    if (isCooldownActive) return doc.status;
+    return targetStatus;
 }
 
 /**
@@ -288,11 +289,6 @@ export async function runAutomation(): Promise<{ applied: number, failed: number
         // prepare updates collector early so rules can push into it
         const updates: Array<{ id: string | number; status: Doctor['status'] }> = [];
 
-        // load active rules
-        const rules: any[] = (prisma as any).automationRule ? await (prisma as any).automationRule.findMany({ where: { active: true } }) : [];
-        if (rules.length > 0) logger.debug('[automation] loaded', rules.length, 'active rules');
-        updates.push(...evaluateRules(rules, doctors, shifts, leaves, now));
-
         const automationEnabled = settings?.automationEnabled || false;
         if (!automationEnabled || doctors.length === 0) {
             return { applied: 0, failed: 0 };
@@ -301,10 +297,15 @@ export async function runAutomation(): Promise<{ applied: number, failed: number
         // Override cooldown: 4 hours
         const OVERRIDE_COOLDOWN_MS = 4 * 60 * 60 * 1000;
 
-        // Deterministic State Evaluation
+        // load active rules and evaluate them first
+        const rules: any[] = (prisma as any).automationRule ? await (prisma as any).automationRule.findMany({ where: { active: true } }) : [];
+        if (rules.length > 0) logger.debug('[automation] loaded', rules.length, 'active rules');
+        const ruleUpdates = evaluateRules(rules, doctors, shifts, leaves, now);
+
+        // Deterministic State Evaluation combined with rules
         for (const doc of doctors) {
             const isCooldownActive = doc.lastManualOverride
-                ? (now.getTime() - doc.lastManualOverride) < OVERRIDE_COOLDOWN_MS
+                ? (now.getTime() - Number(doc.lastManualOverride)) < OVERRIDE_COOLDOWN_MS
                 : false;
 
             const todayShifts = shifts.filter(s =>
@@ -312,14 +313,30 @@ export async function runAutomation(): Promise<{ applied: number, failed: number
                 !(s.disabledDates || []).includes(todayStr)
             );
 
-            // Using the pure Deterministic State Machine
+            // 1. Check if there's a custom rule for this doctor
+            const ruleUpdate = ruleUpdates.find(u => String(u.id) === String(doc.id));
+            
+            // 2. Use Deterministic State Machine
             const idealStatus = determineIdealStatus(doc, todayShifts, leaves, currentTimeMinutes, todayStr, isCooldownActive);
 
+            // 3. Resolve final target status (Rules override Time-based, but Manual Cooldown overrides ALL)
+            let targetStatus = doc.status;
+            
+            if (isCooldownActive) {
+                // If cooldown is active, we freeze the status.
+                targetStatus = doc.status;
+            } else if (ruleUpdate) {
+                // Custom rule takes precedence over normal schedule if no manual override
+                targetStatus = ruleUpdate.status;
+            } else if (doc.status !== idealStatus) {
+                // Otherwise fallback to schedule machine
+                targetStatus = idealStatus;
+            }
+
             // Apply ideal status
-            if (doc.status !== idealStatus) {
-                // If it's a cooldown forcing doc.status to stay, idealStatus will be === doc.status, so it won't push update.
-                logger.info(`[automation DEBUG] ${doc.name} (id ${doc.id}) state changed: ${doc.status} -> ${idealStatus}`);
-                updates.push({ id: doc.id, status: idealStatus });
+            if (doc.status !== targetStatus) {
+                logger.info(`[automation DEBUG] ${doc.name} (id ${doc.id}) state changed: ${doc.status} -> ${targetStatus}`);
+                updates.push({ id: doc.id, status: targetStatus });
             }
         }
 

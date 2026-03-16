@@ -55,7 +55,7 @@ module.exports = {
       instances: 1,
       exec_mode: 'fork',
       env_file: '.env',
-      autorestart: false,
+      autorestart: true,
       watch: false,
       max_memory_restart: '150M',
 
