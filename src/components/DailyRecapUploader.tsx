@@ -230,7 +230,7 @@ export default function DailyRecapUploader() {
        const staffCounts: Record<string, number> = {};
        parsedData.forEach(row => {
           if (row.petugas && row.petugas !== 'Sistem') {
-            staffCounts[row.petugas] = (staffCounts[row.petugas] || 0) + 1;
+            staffCounts[row.petugas] = (staffCounts[row.petugas] || 0) + (row.visitCount || 1);
           }
        });
        const staffPerformance = Object.entries(staffCounts)
@@ -281,6 +281,11 @@ export default function DailyRecapUploader() {
   // Metrics
   const validCount = parsedData.filter(d => d.status === 'valid').length;
   const anomalyCount = parsedData.filter(d => d.status === 'anomaly').length;
+
+  // Calculate Total Kunjungan (Raw Excel Rows)
+  const totalKunjungan = useMemo(() => {
+    return parsedData.reduce((acc, row) => acc + (row.visitCount || 1), 0);
+  }, [parsedData]);
   
   // Ratio BPJS vs Umum
   const bpjsCount = parsedData.filter(d => {
@@ -294,7 +299,7 @@ export default function DailyRecapUploader() {
     const counts: Record<string, number> = {};
     parsedData.forEach(row => {
       const user = row.petugas || 'Sistem';
-      counts[user] = (counts[user] || 0) + 1;
+      counts[user] = (counts[user] || 0) + (row.visitCount || 1);
     });
     return Object.entries(counts)
       .sort((a, b) => b[1] - a[1]) // Sort desc
@@ -454,9 +459,15 @@ export default function DailyRecapUploader() {
                     <div className="flex flex-col z-10 relative w-full">
                        <div className="flex items-center gap-2 mb-2">
                           <div className="p-1.5 bg-blue-50 text-blue-600 rounded-lg"><Users size={16} /></div>
-                          <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Total Pasien</p>
+                          <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Pasien Unik</p>
                        </div>
-                       <p className="text-3xl font-black text-slate-800 mb-1">{parsedData.length}</p>
+                       <div className="flex items-end justify-between">
+                         <p className="text-3xl font-black text-slate-800 mb-0">{parsedData.length}</p>
+                         <div className="text-right">
+                           <p className="text-[10px] text-slate-400 font-medium">Total Kunjungan Poli</p>
+                           <p className="text-sm font-bold text-indigo-600">{totalKunjungan} <span className="text-[10px] font-medium text-slate-500">Baris</span></p>
+                         </div>
+                       </div>
                     </div>
                   </div>
                   
@@ -596,7 +607,7 @@ export default function DailyRecapUploader() {
                     <div className="p-4 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
                        <h3 className="font-bold text-sm text-slate-800 flex items-center gap-2">
                          <Trophy size={16} className="text-amber-500" />
-                         Kinerja Petugas (Total Pasien)
+                         Kinerja Petugas (Total Antrean Raw)
                        </h3>
                     </div>
                     
