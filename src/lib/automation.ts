@@ -1,7 +1,8 @@
 import type { Doctor, Shift, LeaveRequest, Settings } from "./data-service";
 import { prisma } from "./prisma";
 import { notifyDoctorUpdates } from "./automation-broadcaster";
-import { revalidatePath } from "next/cache";
+// NOTE: revalidatePath is loaded dynamically because this module runs
+// inside the custom server.ts context where next/cache is unavailable.
 import { logger } from './logger';
 
 // Fungsi Utilitas Internal
@@ -340,59 +341,17 @@ export async function runAutomation(): Promise<{ applied: number, failed: number
             }
         }
 
-        try {
-            if (updates.length > 0) {
-                try {
-                    // Try queue-based approach first (with retry/backoff)
-                    try {
-                        const { getAutomationQueue } = await import('./automation-queue');
-                        const queue = getAutomationQueue();
-                        // ONLY add to queue if it's explicitly initialized and connected
-                        // otherwise we fallback to the bulk API
-                        if (queue.isReady()) {
-                            await queue.addBatch(updates);
-                            applied = updates.length;
-                            logger.debug('[automation] queued', updates.length, 'jobs');
-                        } else {
-                            throw new Error('Queue not ready');
-                        }
-                    } catch (queueErr) {
-                        // Suppress logs if we are in dev/local and explicitly lacking redis 
-                        const isNoQueueError = queueErr instanceof Error && queueErr.message === 'Queue not ready';
-                        if (!isNoQueueError) {
-                            logger.debug('[automation] queue unavailable, using bulk API:', queueErr instanceof Error ? queueErr.message : String(queueErr));
-                        }
-
-                        // Fallback to bulk API endpoint
-                        const appUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXTAUTH_URL || 'http://localhost:3000';
-                        const fallbackRes = await fetch(`${appUrl}/api/doctors?action=bulk`, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Authorization': `Bearer ${process.env.ADMIN_KEY}`
-                            },
-                            body: JSON.stringify(updates)
-                        });
-                        if (!fallbackRes.ok) throw new Error(`Bulk API failed: ${fallbackRes.status}`);
-                        applied = updates.length;
-                    }
-                } catch (fallbackErr) {
-                    logger.debug('[automation] bulk API failed, falling back to direct db update:', fallbackErr instanceof Error ? fallbackErr.message : String(fallbackErr));
-                    // fallback to individual updates with concurrency limit
-                    const concurrency = 5;
-                    for (let i = 0; i < updates.length; i += concurrency) {
-                        const chunk = updates.slice(i, i + concurrency);
-                        const promises = chunk.map(u =>
-                            prisma.doctor.update({ where: { id: String(u.id) }, data: { status: u.status as any } })
-                        );
-                        const results = await Promise.allSettled(promises);
-                        results.forEach(r => r.status === 'fulfilled' ? applied++ : failed++);
-                    }
-                }
+        // Direct Prisma DB writes — most reliable path
+        if (updates.length > 0) {
+            const concurrency = 5;
+            for (let i = 0; i < updates.length; i += concurrency) {
+                const chunk = updates.slice(i, i + concurrency);
+                const promises = chunk.map(u =>
+                    prisma.doctor.update({ where: { id: String(u.id) }, data: { status: u.status as any } })
+                );
+                const results = await Promise.allSettled(promises);
+                results.forEach(r => r.status === 'fulfilled' ? applied++ : failed++);
             }
-        } catch (err) {
-            error = (err as any)?.message ?? String(err);
-            throw err;
         }
 
         if (applied > 0) {
@@ -400,10 +359,12 @@ export async function runAutomation(): Promise<{ applied: number, failed: number
             notifyDoctorUpdates(updates.map(u => ({ id: u.id })));
 
             try {
-                // Force Vercel to purge the static Edge Cache for the TV display
+                // Force Next.js to purge the static Edge Cache for the TV display
+                // Dynamic import because next/cache is unavailable in custom server context
+                const { revalidatePath } = await import('next/cache');
                 revalidatePath('/api/display');
-            } catch (cacheErr) {
-                logger.error('[automation] Failed to revalidate display cache:', cacheErr);
+            } catch {
+                // Expected to fail in custom server context — safe to ignore
             }
         }
     } catch (err: any) {

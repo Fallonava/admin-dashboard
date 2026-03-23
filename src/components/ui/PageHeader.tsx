@@ -25,9 +25,9 @@ interface PageHeaderProps {
 }
 
 /**
- * Standardized page header used across all admin dashboard pages.
- * Provides a consistent look: gradient icon badge, bold title w/ accent,
- * subtitle, optional actions, and a gradient stripe at the bottom.
+ * Premium enterprise page header — consistent across all admin pages.
+ * Features: gradient icon badge with glow, bold title w/ accent,
+ * subtle glass background, animated gradient accent bar, and action slots.
  */
 export function PageHeader({
   icon,
@@ -48,37 +48,59 @@ export function PageHeader({
     return (
       <>
         {parts[0]}
-        <span className={cn("font-bold", accentColor)}>{accentWord}</span>
+        <span className={cn("font-black", accentColor)}>{accentWord}</span>
         {parts[1]}
       </>
     );
   };
 
   return (
-    <header className={cn("sticky top-[-0.5rem] lg:top-[-1.5rem] z-40 bg-white/90 backdrop-blur-md border-b border-slate-200/50 shadow-[0_2px_12px_rgba(0,0,0,0.04)]", className)}>
-      <div className="px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between gap-4">
+    <header
+      className={cn(
+        "sticky top-[-0.5rem] lg:top-[-1.5rem] z-40",
+        "bg-white/85 backdrop-blur-xl",
+        "border-b border-white/60",
+        "shadow-[0_1px_0_0_rgba(0,0,0,0.04),0_4px_20px_-4px_rgba(0,0,0,0.06)]",
+        className
+      )}
+    >
+      <div className="px-4 sm:px-6 lg:px-8 py-3.5 lg:py-4 flex items-center justify-between gap-4">
 
         {/* Left: Icon + Title + Subtitle */}
-        <div className="flex items-center gap-4 min-w-0">
-          {/* Icon Badge */}
-          <div
-            className={cn(
-              "shrink-0 w-10 h-10 rounded-2xl flex items-center justify-center bg-gradient-to-br shadow-[0_4px_12px_rgba(99,102,241,0.30)]",
-              iconGradient
-            )}
-          >
-            {icon}
+        <div className="flex items-center gap-3.5 lg:gap-4 min-w-0">
+
+          {/* Icon Badge with glow */}
+          <div className="relative shrink-0">
+            {/* Glow */}
+            <div
+              className={cn(
+                "absolute inset-0 rounded-2xl blur-md opacity-50 scale-110 bg-gradient-to-br",
+                iconGradient
+              )}
+            />
+            {/* Badge */}
+            <div
+              className={cn(
+                "relative w-10 h-10 lg:w-11 lg:h-11 rounded-2xl flex items-center justify-center bg-gradient-to-br shadow-[0_4px_16px_rgba(0,0,0,0.15)]",
+                iconGradient
+              )}
+            >
+              {icon}
+            </div>
           </div>
 
+          {/* Title block */}
           <div className="min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <h1 className="text-xl font-black text-slate-900 tracking-tight leading-tight truncate">
+              <h1 className="text-lg lg:text-xl font-black text-slate-900 tracking-tight leading-tight truncate">
                 {renderTitle()}
               </h1>
               {badge}
             </div>
             {subtitle && (
-              <p className="text-xs text-slate-500 font-medium mt-0.5 truncate">{subtitle}</p>
+              <p className="text-[11px] lg:text-xs text-slate-500 font-medium mt-0.5 truncate">
+                {subtitle}
+              </p>
             )}
           </div>
         </div>
@@ -91,8 +113,17 @@ export function PageHeader({
         )}
       </div>
 
-      {/* Gradient accent stripe */}
-      <div className={cn("h-[2px] bg-gradient-to-r opacity-60", accentBarGradient)} />
+      {/* Animated gradient accent stripe */}
+      <div
+        className={cn(
+          "h-[2.5px] bg-gradient-to-r opacity-70",
+          accentBarGradient
+        )}
+        style={{
+          backgroundSize: "200% 100%",
+          animation: "shimmer-bar 4s ease infinite",
+        }}
+      />
     </header>
   );
 }

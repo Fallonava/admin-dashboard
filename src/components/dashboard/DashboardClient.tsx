@@ -11,6 +11,7 @@ import { useAuth } from "@/lib/auth-context";
 import { DashboardStats } from "./DashboardStats";
 import { DoctorCard } from "./DoctorCard";
 import { MobileSearchSheet } from "@/components/ui/MobileSearchSheet";
+import { PageHeader } from "@/components/ui/PageHeader";
 
 export function DashboardClient() {
   const { logout } = useAuth();
@@ -161,66 +162,46 @@ export function DashboardClient() {
   const todayLabel = now.toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
 
   return (
-    <div className="w-full h-full flex flex-col -mx-4 lg:-mx-6 -mt-2 lg:-mt-6 overflow-hidden">
+    <div className="w-full h-full flex flex-col overflow-hidden">
 
-      {/* ═══════════════════ PREMIUM STICKY HEADER ═══════════════════ */}
-      <header className="sticky top-[-0.5rem] lg:top-[-1.5rem] z-40 bg-white/92 backdrop-blur-md border-b border-slate-200/50 shadow-[0_2px_12px_rgba(0,0,0,0.04)] shrink-0">
-        <div className="px-4 sm:px-6 lg:px-8 py-3.5 flex items-center gap-4">
-
-          {/* Left — Icon + Title + Subtitle */}
-          <div className="flex items-center gap-3.5 min-w-0 flex-1">
-            {/* Gradient Icon Badge */}
-            <div className="shrink-0 w-10 h-10 rounded-2xl bg-gradient-to-br from-violet-500 to-blue-600 flex items-center justify-center shadow-[0_4px_12px_rgba(124,58,237,0.30)]">
-              <LayoutDashboard size={20} className="text-white" />
-            </div>
-
-            <div className="min-w-0 flex-1">
-              {/* Row 1: Greeting + Efficiency Pill */}
-              <div className="flex items-center gap-2 flex-wrap">
-                <h1 className="text-xl font-black text-slate-900 tracking-tight leading-tight truncate">
-                  {greeting},{" "}
-                  <span className="bg-gradient-to-r from-violet-600 to-blue-600 bg-clip-text text-transparent">
-                    Admin
-                  </span>
-                </h1>
-
-                {/* Efficiency Pill */}
-                {efficiency > 0 && (
-                  <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-violet-50 border border-violet-200 rounded-full text-[10px] font-bold text-violet-700 shrink-0">
-                    <Activity size={10} className="shrink-0" />
-                    {efficiency}% Efisiensi
-                  </span>
-                )}
-
-                {/* SSE Status Pill */}
-                <span className={cn(
-                  "hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold border shrink-0",
-                  sseStatus === 'connected' ? "bg-emerald-50 text-emerald-600 border-emerald-200"
-                  : sseStatus === 'reconnecting' ? "bg-amber-50 text-amber-600 border-amber-200 animate-pulse"
-                  : "bg-slate-100 text-slate-500 border-slate-200"
-                )}>
-                  {sseStatus === 'connected'
-                    ? <><Wifi size={10} strokeWidth={2.5} className="shrink-0" /> Live</>
-                    : sseStatus === 'reconnecting'
-                      ? <><WifiOff size={10} strokeWidth={2.5} className="shrink-0" /> Recon...</>
-                      : <><WifiOff size={10} strokeWidth={2.5} className="shrink-0" /> Offline</>
-                  }
-                </span>
-              </div>
-
-              {/* Row 2: Subtitle + Date */}
-              <p className="text-xs text-slate-500 font-medium mt-0.5 truncate">{todayLabel}</p>
-            </div>
-          </div>
-
-          {/* Right — Actions */}
+      {/* ═══════════════════ UNIFIED PAGE HEADER ═══════════════════ */}
+      <PageHeader
+        icon={<LayoutDashboard size={20} className="text-white" />}
+        title={`${greeting}, Admin`}
+        subtitle={todayLabel}
+        iconGradient="from-violet-500 to-blue-600"
+        accentBarGradient="from-violet-500 via-blue-500 to-indigo-500"
+        badge={
+          <>
+            {/* Efficiency Pill */}
+            {efficiency > 0 && (
+              <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-violet-50 border border-violet-200 rounded-full text-[10px] font-bold text-violet-700 shrink-0">
+                <Activity size={10} className="shrink-0" />
+                {efficiency}% Efisiensi
+              </span>
+            )}
+            {/* SSE Status Pill */}
+            <span className={cn(
+              "hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold border shrink-0",
+              sseStatus === 'connected' ? "bg-emerald-50 text-emerald-600 border-emerald-200"
+              : sseStatus === 'reconnecting' ? "bg-amber-50 text-amber-600 border-amber-200 animate-pulse"
+              : "bg-slate-100 text-slate-500 border-slate-200"
+            )}>
+              {sseStatus === 'connected'
+                ? <><Wifi size={10} strokeWidth={2.5} className="shrink-0" /> Live</>
+                : sseStatus === 'reconnecting'
+                  ? <><WifiOff size={10} strokeWidth={2.5} className="shrink-0" /> Recon...</>
+                  : <><WifiOff size={10} strokeWidth={2.5} className="shrink-0" /> Offline</>
+              }
+            </span>
+          </>
+        }
+        actions={
           <div className="flex items-center gap-2 shrink-0">
             {/* Live Clock */}
             <div className="hidden lg:flex shrink-0">
               <LiveClock />
             </div>
-
-            {/* Divider */}
             <div className="hidden lg:block h-6 w-px bg-slate-200 mx-1" />
 
             {/* Automation Toggle */}
@@ -243,7 +224,7 @@ export function DashboardClient() {
               )}
             </button>
 
-            {/* Search */}
+            {/* Search (desktop) */}
             <div className="relative group hidden lg:block shrink-0">
               <div className="absolute -inset-0.5 bg-gradient-to-r from-violet-500/20 to-blue-500/20 rounded-[14px] blur opacity-0 group-focus-within:opacity-100 transition duration-500" />
               <div className="relative flex items-center">
@@ -270,11 +251,8 @@ export function DashboardClient() {
               <Power size={17} strokeWidth={2.5} />
             </button>
           </div>
-        </div>
-
-        {/* Gradient accent bar */}
-        <div className="h-[2px] bg-gradient-to-r from-violet-500 via-blue-500 to-indigo-500 opacity-60" />
-      </header>
+        }
+      />
 
       {/* ═══════════ SCROLLABLE CONTENT ═══════════ */}
       <div className="flex-1 overflow-y-auto custom-scrollbar px-4 sm:px-6 lg:px-8 pb-6 space-y-5 pt-5">

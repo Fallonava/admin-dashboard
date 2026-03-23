@@ -10,6 +10,11 @@ import { Server } from 'socket.io';
 import { createAdapter } from '@socket.io/redis-adapter';
 import { createClient } from 'redis';
 import { scheduleToday } from './src/lib/scheduler';
+import { runAutomation } from './src/lib/automation';
+
+// Expose internal scheduling engine to isolated API routes
+(global as any).triggerScheduler = scheduleToday;
+(global as any).runAutomationNow = runAutomation;
 
 const dev = process.env.NODE_ENV !== 'production';
 const hostname = 'localhost';
@@ -49,6 +54,19 @@ app.prepare().then(() => {
     Promise.all([pubClient.connect(), subClient.connect()]).then(() => {
       io.adapter(createAdapter(pubClient, subClient));
       console.log("[Socket.IO] Redis adapter connected and ready!");
+
+      // Listen for inter-process triggers from Next.js API routes
+      subClient.subscribe('medcore:scheduler_sync', (message) => {
+        try {
+          if (message === 'sync') {
+            console.log('[scheduler] Received sync event via Redis Pub/Sub, resyncing...');
+            scheduleToday().catch(err => console.error('Redis triggered scheduleToday error:', err));
+          }
+        } catch (e) {
+          console.error('[scheduler] Sync event error', e);
+        }
+      });
+
     }).catch((err) => {
       console.error("[Socket.IO] Redis connection error:", err);
     });

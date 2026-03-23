@@ -225,8 +225,13 @@ export async function DELETE(req: Request) {
     const id = searchParams.get('id');
     if (!id) return NextResponse.json({ error: 'ID required' }, { status: 400 });
 
-    await prisma.doctor.delete({
-        where: { id: String(id) }
-    });
-    return NextResponse.json({ success: true });
+    try {
+        await prisma.doctor.delete({
+            where: { id: String(id) }
+        });
+        return NextResponse.json({ success: true });
+    } catch (err) {
+        console.error("Doctor DELETE Error:", err);
+        return NextResponse.json({ error: "Gagal menghapus dokter. Pastikan tidak ada data terkait atau hubungi admin." }, { status: 500 });
+    }
 }

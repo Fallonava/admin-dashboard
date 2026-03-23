@@ -112,15 +112,22 @@ export function DoctorFormModal({ isOpen, onClose, doctor, onSuccess }: DoctorFo
         try {
             const method = isEditing ? 'PUT' : 'POST';
             const body = isEditing ? { ...formData, id: doctor!.id } : formData;
-            await fetch('/api/doctors', {
+            const res = await fetch('/api/doctors', {
                 method,
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(body)
             });
+            
+            if (!res.ok) {
+                const errData = await res.json().catch(() => ({}));
+                throw new Error(errData.error || 'Terjadi kesalahan pada server');
+            }
+
             onSuccess();
             onClose();
-        } catch (err) {
+        } catch (err: any) {
             console.error("Failed to save doctor", err);
+            alert(err.message || "Gagal menyimpan data dokter");
         } finally {
             setLoading(false);
         }

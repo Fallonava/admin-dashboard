@@ -220,7 +220,7 @@ export function RealtimeCalendar({ selectedDate, onDateChange }: RealtimeCalenda
 
             {/* ── Daily Grid ──────────────────────────────────── */}
             <div className="flex-1 min-h-0 super-glass-card rounded-[32px] shadow-sm overflow-hidden flex flex-col">
-                <div className="flex-1 overflow-y-auto w-full custom-scrollbar pr-1 pb-4">
+                <div className="flex-1 overflow-y-auto w-full custom-scrollbar pb-4">
                     <div className="min-w-full">
 
                         {/* Hour Rows for single day */}

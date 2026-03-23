@@ -69,16 +69,20 @@ export function Sidebar() {
       : pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href));
       
     const linkClassName = cn(
-      "flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold transition-all duration-300",
+      "relative flex items-center gap-3 rounded-2xl px-4 py-2.5 text-sm font-semibold transition-all duration-200 group/link",
       isActive
-        ? "btn-gradient text-white shadow-[0_4px_14px_0_rgba(0,92,255,0.39)]"
-        : "hover:bg-black/[0.03] hover:text-foreground text-muted-foreground"
+        ? "bg-gradient-to-r from-blue-600/10 to-indigo-600/5 text-blue-700 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_1px_4px_rgba(59,130,246,0.08)]"
+        : "hover:bg-black/[0.04] hover:text-foreground text-muted-foreground"
     );
-    const iconClassName = cn("h-5 w-5", isActive ? "text-white" : "text-muted-foreground");
+    const iconClassName = cn(
+      "h-4.5 w-4.5 transition-colors",
+      isActive ? "text-blue-600" : "text-muted-foreground group-hover/link:text-slate-700"
+    );
 
     if (item.external) {
       return (
         <a key={item.name} href={item.href} target="_blank" rel="noopener noreferrer" className={linkClassName}>
+          {isActive && <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 rounded-r-full bg-blue-500" />}
           <item.icon className={iconClassName} />
           {item.name}
         </a>
@@ -87,6 +91,7 @@ export function Sidebar() {
 
     return (
       <Link key={item.name} href={item.href} className={linkClassName}>
+        {isActive && <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 rounded-r-full bg-blue-500" />}
         <item.icon className={iconClassName} />
         {item.name}
       </Link>
@@ -102,7 +107,7 @@ export function Sidebar() {
       <div className="flex-1 overflow-y-auto no-scrollbar">
         <div className="flex items-center gap-3 px-2 mb-8">
           <div className="h-10 w-10 flex items-center justify-center">
-            <svg width="40" height="40" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" className="drop-shadow-md">
+            <svg width="40" height="40" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" className="drop-shadow-md logo-glow">
               <defs>
                 <linearGradient id="sidebar-bg-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
                   <stop offset="0%" stopColor="#0E4B82" />

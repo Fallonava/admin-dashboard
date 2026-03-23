@@ -13,7 +13,7 @@ export default function RekapHarianPage() {
   });
 
   return (
-    <div className="flex flex-col w-full min-h-full bg-slate-50 relative -mx-4 lg:-mx-6 -mt-2 lg:-mt-6">
+    <div className="flex flex-col w-full min-h-full bg-slate-50 relative">
 
       <PageHeader
         icon={<BarChart2 size={20} className="text-white" />}

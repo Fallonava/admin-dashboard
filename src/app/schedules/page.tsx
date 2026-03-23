@@ -20,7 +20,7 @@ export default function SchedulesPage() {
     }, [selectedDate]);
 
     return (
-        <div className="w-full h-full flex flex-col overflow-hidden -mx-4 lg:-mx-6 -mt-2 lg:-mt-6">
+        <div className="flex-1 w-full flex flex-col overflow-hidden">
             <PageHeader
               icon={<CalendarDays size={20} className="text-white" />}
               title="Jadwal Dokter"
@@ -32,7 +32,7 @@ export default function SchedulesPage() {
             />
 
             {/* Main Content */}
-            <div className="flex flex-col lg:flex-row flex-1 min-h-0 gap-4 lg:gap-6 overflow-y-auto lg:overflow-hidden pb-6 lg:pb-0 custom-scrollbar pr-1 lg:pr-0">
+            <div className="flex flex-col lg:flex-row flex-1 min-h-0 gap-4 lg:gap-6 overflow-y-auto lg:overflow-hidden pb-6 lg:pb-0 custom-scrollbar lg:pr-0">
                 <div className="flex-none lg:flex-1 w-full flex flex-col min-h-[400px] md:min-h-[500px] lg:min-h-0 lg:overflow-hidden">
 
                     {/* Calendar Strip (Premium Glass) */}

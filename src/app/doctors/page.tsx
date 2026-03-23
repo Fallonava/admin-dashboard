@@ -106,6 +106,7 @@ export default function DoctorsPage() {
 
     // Delete State
     const [deleteId, setDeleteId] = useState<string | null>(null);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
 
     // DND States
@@ -155,17 +156,27 @@ export default function DoctorsPage() {
         try {
             if (deleteId) {
                 // Delete single
-                await fetch(`/api/doctors?id=${deleteId}`, { method: 'DELETE' });
+                const res = await fetch(`/api/doctors?id=${deleteId}`, { method: 'DELETE' });
+                if (!res.ok) {
+                    const errData = await res.json().catch(() => ({}));
+                    throw new Error(errData.error || 'Gagal menghapus dokter');
+                }
             } else if (selectedIds.size > 0) {
                 for (const id of Array.from(selectedIds)) {
-                    await fetch(`/api/doctors?id=${id}`, { method: 'DELETE' });
+                    const res = await fetch(`/api/doctors?id=${id}`, { method: 'DELETE' });
+                    if (!res.ok) {
+                        const errData = await res.json().catch(() => ({}));
+                        throw new Error(errData.error || `Gagal menghapus dokter dengan ID ${id}`);
+                    }
                 }
             }
             mutate('/api/doctors');
             setDeleteId(null);
+            setIsDeleteModalOpen(false);
             setSelectedIds(new Set());
-        } catch (error) {
+        } catch (error: any) {
             console.error("Gagal menghapus dokter", error);
+            alert(error.message || "Terjadi kesalahan saat menghapus data.");
         } finally {
             setIsDeleting(false);
         }
@@ -175,15 +186,20 @@ export default function DoctorsPage() {
         if (selectedIds.size === 0) return;
         try {
             const updates = Array.from(selectedIds).map(id => ({ id, status: newStatus }));
-            await fetch('/api/doctors?action=bulk', {
+            const res = await fetch('/api/doctors?action=bulk', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(updates)
             });
+            if (!res.ok) {
+                const errData = await res.json().catch(() => ({}));
+                throw new Error(errData.error || 'Gagal update massal');
+            }
             mutate('/api/doctors');
             setSelectedIds(new Set());
-        } catch (error) {
+        } catch (error: any) {
             console.error("Gagal update massal", error);
+            alert(error.message || "Gagal mengubah status secara massal.");
         }
     };
 
@@ -224,20 +240,26 @@ export default function DoctorsPage() {
             const payload = reordered.map((doc, idx) => ({ id: doc.id, order: idx }));
             
             try {
-                await fetch('/api/doctors?action=reorder', {
+                const res = await fetch('/api/doctors?action=reorder', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
+                if (!res.ok) {
+                    const errData = await res.json().catch(() => ({}));
+                    throw new Error(errData.error || 'Gagal mengurutkan');
+                }
                 mutate('/api/doctors'); // Revalidate
-            } catch (err) {
+            } catch (err: any) {
                 console.error("Failed to reorder", err);
+                alert(err.message || "Gagal menyimpan urutan dokter.");
+                mutate('/api/doctors'); // Revert pessimistic update
             }
         }
     };
 
     return (
-        <div className="w-full h-full flex flex-col relative -mx-4 lg:-mx-6 -mt-2 lg:-mt-6">
+        <div className="w-full h-full flex flex-col relative">
             <PageHeader
               icon={<Users size={20} className="text-white" />}
               title="Direktori Dokter"
@@ -383,7 +405,7 @@ export default function DoctorsPage() {
                                             isSelected={selectedIds.has(doc.id)}
                                             onToggleSelect={handleToggleSelect}
                                             onEdit={handleEdit}
-                                            onDelete={(id) => { setDeleteId(id); setIsDeleting(true); }}
+                                            onDelete={(id) => { setDeleteId(id); setIsDeleteModalOpen(true); }}
                                         />
                                     ))}
                                 </SortableContext>
@@ -437,7 +459,7 @@ export default function DoctorsPage() {
                     <div className="h-6 w-px bg-slate-200 flex-shrink-0" />
 
                     <button 
-                        onClick={() => setIsDeleting(true)}
+                        onClick={() => setIsDeleteModalOpen(true)}
                         className="flex-shrink-0 flex items-center justify-center h-8 w-8 sm:h-9 sm:w-9 rounded-full bg-rose-50 hover:bg-rose-100 text-rose-500 font-bold transition-colors border border-rose-100"
                         title="Hapus Massal"
                     >
@@ -459,8 +481,8 @@ export default function DoctorsPage() {
             />
 
             <ConfirmDialog
-                isOpen={isDeleting}
-                onClose={() => { setIsDeleting(false); setDeleteId(null); }}
+                isOpen={isDeleteModalOpen}
+                onClose={() => { setIsDeleteModalOpen(false); setDeleteId(null); }}
                 onConfirm={confirmDelete}
                 title={deleteId ? "Hapus Dokter" : "Hapus Massal"}
                 description={`Apakah Anda yakin ingin menghapus ${deleteId ? 'dokter ini' : `${selectedIds.size} dokter yang dipilih`}? Tindakan ini tidak dapat dibatalkan.`}

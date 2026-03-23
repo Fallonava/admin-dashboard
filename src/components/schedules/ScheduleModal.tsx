@@ -196,13 +196,23 @@ export function ScheduleModal({ doctor, shifts, isOpen, onClose, onUpdate }: Sch
             extra: form.extra || null
         };
         
-        await fetch('/api/shifts', {
-            method: editId ? 'PUT' : 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
-        socket.socket?.emit('schedule_updated', { action: 'save_shift' });
-        onUpdate?.(); reset();
+        try {
+            const res = await fetch('/api/shifts', {
+                method: editId ? 'PUT' : 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if (!res.ok) {
+                const errData = await res.json().catch(() => ({}));
+                throw new Error(errData.error || 'Gagal menyimpan shift');
+            }
+            socket.socket?.emit('schedule_updated', { action: 'save_shift' });
+            onUpdate?.(); 
+            reset();
+        } catch (err: any) {
+            console.error(err);
+            alert(err.message || 'Gagal menyimpan shift');
+        }
     };
 
     const updateShiftTime = async (id: string, newStartMatch: string) => {
@@ -223,32 +233,59 @@ export function ScheduleModal({ doctor, shifts, isOpen, onClose, onUpdate }: Sch
 
         const newFormattedTime = `${newStartHStr.padStart(2,'0')}:00-${String(newEndH).padStart(2,'0')}:00`;
 
-        await fetch('/api/shifts', {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id: shiftToMove.id, formattedTime: newFormattedTime })
-        });
-        socket.socket?.emit('schedule_updated', { action: 'update_time' });
-        onUpdate?.();
+        try {
+            const res = await fetch('/api/shifts', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: shiftToMove.id, formattedTime: newFormattedTime })
+            });
+            if (!res.ok) {
+                const errData = await res.json().catch(() => ({}));
+                throw new Error(errData.error || 'Gagal mengubah waktu shift');
+            }
+            socket.socket?.emit('schedule_updated', { action: 'update_time' });
+            onUpdate?.();
+        } catch (err: any) {
+            console.error(err);
+            alert(err.message || 'Gagal mengubah waktu shift');
+        }
     };
 
     const del = async (id: string) => {
         if (!confirm("Hapus shift ini?")) return;
-        await fetch(`/api/shifts?id=${id}`, { method: 'DELETE' });
-        socket.socket?.emit('schedule_updated', { action: 'delete_shift' });
-        onUpdate?.(); setExpandId(null);
+        try {
+            const res = await fetch(`/api/shifts?id=${id}`, { method: 'DELETE' });
+            if (!res.ok) {
+                const errData = await res.json().catch(() => ({}));
+                throw new Error(errData.error || 'Gagal menghapus shift');
+            }
+            socket.socket?.emit('schedule_updated', { action: 'delete_shift' });
+            onUpdate?.(); setExpandId(null);
+        } catch (err: any) {
+            console.error(err);
+            alert(err.message || 'Gagal menghapus shift');
+        }
     };
 
     const dup = async (s: Shift) => {
         const title = prompt("Salin shift ke nama apa?", s.title + " Copy");
         if (!title) return;
-        await fetch('/api/shifts', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ title, doctorId: s.doctorId, doctor: s.doctor, dayIdx: s.dayIdx, formattedTime: s.formattedTime, color: s.color, extra: s.extra })
-        });
-        socket.socket?.emit('schedule_updated', { action: 'duplicate_shift' });
-        onUpdate?.();
+        try {
+            const res = await fetch('/api/shifts', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title, doctorId: s.doctorId, doctor: s.doctor, dayIdx: s.dayIdx, formattedTime: s.formattedTime, color: s.color, extra: s.extra })
+            });
+            if (!res.ok) {
+                const errData = await res.json().catch(() => ({}));
+                throw new Error(errData.error || 'Gagal menggandakan shift');
+            }
+            socket.socket?.emit('schedule_updated', { action: 'duplicate_shift' });
+            onUpdate?.();
+        } catch (err: any) {
+            console.error(err);
+            alert(err.message || 'Gagal menggandakan shift');
+        }
     };
 
     const toggle = async (s: Shift) => {
@@ -257,17 +294,22 @@ export function ScheduleModal({ doctor, shifts, isOpen, onClose, onUpdate }: Sch
         const isOff = off.includes(today);
         const newVal = isOff ? off.filter(d => d !== today) : [...off, today];
         try {
-            await fetch('/api/shifts', {
+            const res = await fetch('/api/shifts', {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ id: s.id, disabledDates: newVal })
             });
+            if (!res.ok) {
+                const errData = await res.json().catch(() => ({}));
+                throw new Error(errData.error || 'Gagal mengubah status');
+            }
             socket.socket?.emit('schedule_updated', { action: 'toggle_shift' });
             onUpdate?.();
             setSuccessMsg(isOff ? "Shift diaktifkan kembali" : "Shift dinonaktifkan untuk hari ini");
             setTimeout(() => setSuccessMsg(null), 3000);
-        } catch (err) {
+        } catch (err: any) {
             console.error(err);
+            alert(err.message || 'Gagal mengubah status shift');
         } finally {
             setIsToggling(false);
         }
@@ -276,20 +318,32 @@ export function ScheduleModal({ doctor, shifts, isOpen, onClose, onUpdate }: Sch
     const addDis = async (s: Shift, d: string) => {
         if (!d || (s.disabledDates || []).includes(d)) return;
         const newVal = [...(s.disabledDates || []), d];
-        await fetch('/api/shifts', {
-            method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: s.id, disabledDates: newVal })
-        });
-        socket.socket?.emit('schedule_updated', { action: 'add_disabled_date' });
-        onUpdate?.();
+        try {
+            const res = await fetch('/api/shifts', {
+                method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: s.id, disabledDates: newVal })
+            });
+            if (!res.ok) throw new Error('Gagal menambah nonaktif');
+            socket.socket?.emit('schedule_updated', { action: 'add_disabled_date' });
+            onUpdate?.();
+        } catch (err: any) {
+            console.error(err);
+            alert(err.message);
+        }
     };
 
     const rmDis = async (s: Shift, d: string) => {
         const newVal = (s.disabledDates || []).filter(x => x !== d);
-        await fetch('/api/shifts', {
-            method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: s.id, disabledDates: newVal })
-        });
-        socket.socket?.emit('schedule_updated', { action: 'rm_disabled_date' });
-        onUpdate?.();
+        try {
+            const res = await fetch('/api/shifts', {
+                method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: s.id, disabledDates: newVal })
+            });
+            if (!res.ok) throw new Error('Gagal mencabut nonaktif');
+            socket.socket?.emit('schedule_updated', { action: 'rm_disabled_date' });
+            onUpdate?.();
+        } catch (err: any) {
+            console.error(err);
+            alert(err.message);
+        }
     };
 
     return createPortal(

@@ -70,18 +70,36 @@ export function LeaveCalendar({ leaves, onRefresh, onOpenAll, totalLeaves = 0 }:
     const prevMonth = () => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
 
     const handleAddLeave = async (data: any) => {
-        await fetch('/api/leaves', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        });
-        onRefresh();
+        try {
+            const res = await fetch('/api/leaves', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            if (!res.ok) {
+                const errData = await res.json().catch(() => ({}));
+                throw new Error(errData.error || 'Gagal menyimpan cuti');
+            }
+            onRefresh();
+        } catch (err: any) {
+            console.error(err);
+            throw err; // Re-throw to be caught by LeaveRequestModal
+        }
     };
 
     const handleDelete = async (id: string) => {
         if (!confirm("Hapus data cuti ini?")) return;
-        await fetch(`/api/leaves?id=${id}`, { method: 'DELETE' });
-        onRefresh();
+        try {
+            const res = await fetch(`/api/leaves?id=${id}`, { method: 'DELETE' });
+            if (!res.ok) {
+                 const errData = await res.json().catch(() => ({}));
+                 throw new Error(errData.error || 'Gagal menghapus cuti');
+            }
+            onRefresh();
+        } catch (err: any) {
+            console.error(err);
+            alert(err.message || "Gagal menghapus cuti");
+        }
     };
 
     const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -104,12 +122,22 @@ export function LeaveCalendar({ leaves, onRefresh, onOpenAll, totalLeaves = 0 }:
                 };
             }).filter(Boolean);
             if (parsedLeaves.length > 0) {
-                await fetch('/api/leaves', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(parsedLeaves)
-                });
-                onRefresh();
+                try {
+                    const res = await fetch('/api/leaves', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(parsedLeaves)
+                    });
+                    if (!res.ok) {
+                        const errData = await res.json().catch(() => ({}));
+                        throw new Error(errData.error || 'Gagal mengimpor data cuti');
+                    }
+                    onRefresh();
+                    alert(`Berhasil mengimpor ${parsedLeaves.length} data cuti.`);
+                } catch (err: any) {
+                    console.error(err);
+                    alert(err.message || 'Gagal mengimpor data cuti');
+                }
             }
         };
         reader.readAsText(file);

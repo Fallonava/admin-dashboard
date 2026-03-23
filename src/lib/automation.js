@@ -85,7 +85,8 @@ exports.evaluateRules = evaluateRules;
 exports.runAutomation = runAutomation;
 var prisma_1 = require("./prisma");
 var automation_broadcaster_1 = require("./automation-broadcaster");
-var cache_1 = require("next/cache");
+// NOTE: revalidatePath is loaded dynamically because this module runs
+// inside the custom server.ts context where next/cache is unavailable.
 var logger_1 = require("./logger");
 // Fungsi Utilitas Internal
 /**
@@ -316,8 +317,8 @@ function evaluateRules(rules, doctors, shifts, leaves, now) {
  */
 function runAutomation() {
     return __awaiter(this, void 0, void 0, function () {
-        var runStartTime, applied, failed, error, now, wibTime, currentDayIdx_1, currentHour, currentMinute, currentTimeMinutes, todayStr_1, rawDoctors_1, doctors, rawShifts, shifts, recentDateLimit, rawLeaves, leaves, settingsRow, settings, updates, automationEnabled, OVERRIDE_COOLDOWN_MS, rules, _a, ruleUpdates, _loop_2, _i, doctors_2, doc, getAutomationQueue, queue, queueErr_1, isNoQueueError, appUrl, fallbackRes, fallbackErr_1, concurrency, i, chunk, promises, results, err_1, err_2, errMsg, duration, _b;
-        var _c, _d, _e, _f;
+        var runStartTime, applied, failed, error, now, wibTime, currentDayIdx_1, currentHour, currentMinute, currentTimeMinutes, todayStr_1, rawDoctors_1, doctors, rawShifts, shifts, recentDateLimit, rawLeaves, leaves, settingsRow, settings, updates, automationEnabled, OVERRIDE_COOLDOWN_MS, rules, _a, ruleUpdates, _loop_2, _i, doctors_2, doc, concurrency, i, chunk, promises, results, revalidatePath, _b, err_1, errMsg, duration, _c;
+        var _d, _e, _f;
         return __generator(this, function (_g) {
             switch (_g.label) {
                 case 0:
@@ -326,7 +327,7 @@ function runAutomation() {
                     error = null;
                     _g.label = 1;
                 case 1:
-                    _g.trys.push([1, 27, 28, 33]);
+                    _g.trys.push([1, 17, 18, 23]);
                     now = new Date();
                     wibTime = new Date(now.getTime() + (7 * 60 * 60 * 1000));
                     currentDayIdx_1 = wibTime.getUTCDay() === 0 ? 6 : wibTime.getUTCDay() - 1;
@@ -360,7 +361,7 @@ function runAutomation() {
                     return [4 /*yield*/, prisma_1.prisma.settings.findFirst()];
                 case 5:
                     settingsRow = _g.sent();
-                    settings = settingsRow ? __assign(__assign({}, settingsRow), { id: String(settingsRow.id), runTextMessage: (_c = settingsRow.runTextMessage) !== null && _c !== void 0 ? _c : undefined, emergencyMode: (_d = settingsRow.emergencyMode) !== null && _d !== void 0 ? _d : undefined, customMessages: (_e = settingsRow.customMessages) !== null && _e !== void 0 ? _e : undefined }) : null;
+                    settings = settingsRow ? __assign(__assign({}, settingsRow), { id: String(settingsRow.id), runTextMessage: (_d = settingsRow.runTextMessage) !== null && _d !== void 0 ? _d : undefined, emergencyMode: (_e = settingsRow.emergencyMode) !== null && _e !== void 0 ? _e : undefined, customMessages: (_f = settingsRow.customMessages) !== null && _f !== void 0 ? _f : undefined }) : null;
                     updates = [];
                     automationEnabled = (settings === null || settings === void 0 ? void 0 : settings.automationEnabled) || false;
                     if (!automationEnabled || doctors.length === 0) {
@@ -417,102 +418,52 @@ function runAutomation() {
                         doc = doctors_2[_i];
                         _loop_2(doc);
                     }
-                    _g.label = 9;
-                case 9:
-                    _g.trys.push([9, 25, , 26]);
-                    if (!(updates.length > 0)) return [3 /*break*/, 24];
-                    _g.label = 10;
-                case 10:
-                    _g.trys.push([10, 19, , 24]);
-                    _g.label = 11;
-                case 11:
-                    _g.trys.push([11, 16, , 18]);
-                    return [4 /*yield*/, Promise.resolve().then(function () { return __importStar(require('./automation-queue')); })];
-                case 12:
-                    getAutomationQueue = (_g.sent()).getAutomationQueue;
-                    queue = getAutomationQueue();
-                    if (!queue.isReady()) return [3 /*break*/, 14];
-                    return [4 /*yield*/, queue.addBatch(updates)];
-                case 13:
-                    _g.sent();
-                    applied = updates.length;
-                    logger_1.logger.debug('[automation] queued', updates.length, 'jobs');
-                    return [3 /*break*/, 15];
-                case 14: throw new Error('Queue not ready');
-                case 15: return [3 /*break*/, 18];
-                case 16:
-                    queueErr_1 = _g.sent();
-                    isNoQueueError = queueErr_1 instanceof Error && queueErr_1.message === 'Queue not ready';
-                    if (!isNoQueueError) {
-                        logger_1.logger.debug('[automation] queue unavailable, using bulk API:', queueErr_1 instanceof Error ? queueErr_1.message : String(queueErr_1));
-                    }
-                    appUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXTAUTH_URL || 'http://localhost:3000';
-                    return [4 /*yield*/, fetch("".concat(appUrl, "/api/doctors?action=bulk"), {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Authorization': "Bearer ".concat(process.env.ADMIN_KEY)
-                            },
-                            body: JSON.stringify(updates)
-                        })];
-                case 17:
-                    fallbackRes = _g.sent();
-                    if (!fallbackRes.ok)
-                        throw new Error("Bulk API failed: ".concat(fallbackRes.status));
-                    applied = updates.length;
-                    return [3 /*break*/, 18];
-                case 18: return [3 /*break*/, 24];
-                case 19:
-                    fallbackErr_1 = _g.sent();
-                    logger_1.logger.debug('[automation] bulk API failed, falling back to direct db update:', fallbackErr_1 instanceof Error ? fallbackErr_1.message : String(fallbackErr_1));
+                    if (!(updates.length > 0)) return [3 /*break*/, 12];
                     concurrency = 5;
                     i = 0;
-                    _g.label = 20;
-                case 20:
-                    if (!(i < updates.length)) return [3 /*break*/, 23];
+                    _g.label = 9;
+                case 9:
+                    if (!(i < updates.length)) return [3 /*break*/, 12];
                     chunk = updates.slice(i, i + concurrency);
                     promises = chunk.map(function (u) {
                         return prisma_1.prisma.doctor.update({ where: { id: String(u.id) }, data: { status: u.status } });
                     });
                     return [4 /*yield*/, Promise.allSettled(promises)];
-                case 21:
+                case 10:
                     results = _g.sent();
                     results.forEach(function (r) { return r.status === 'fulfilled' ? applied++ : failed++; });
-                    _g.label = 22;
-                case 22:
+                    _g.label = 11;
+                case 11:
                     i += concurrency;
-                    return [3 /*break*/, 20];
-                case 23: return [3 /*break*/, 24];
-                case 24: return [3 /*break*/, 26];
-                case 25:
+                    return [3 /*break*/, 9];
+                case 12:
+                    if (!(applied > 0)) return [3 /*break*/, 16];
+                    // notify any listeners about which doctors changed
+                    (0, automation_broadcaster_1.notifyDoctorUpdates)(updates.map(function (u) { return ({ id: u.id }); }));
+                    _g.label = 13;
+                case 13:
+                    _g.trys.push([13, 15, , 16]);
+                    return [4 /*yield*/, Promise.resolve().then(function () { return __importStar(require('next/cache')); })];
+                case 14:
+                    revalidatePath = (_g.sent()).revalidatePath;
+                    revalidatePath('/api/display');
+                    return [3 /*break*/, 16];
+                case 15:
+                    _b = _g.sent();
+                    return [3 /*break*/, 16];
+                case 16: return [3 /*break*/, 23];
+                case 17:
                     err_1 = _g.sent();
-                    error = (_f = err_1 === null || err_1 === void 0 ? void 0 : err_1.message) !== null && _f !== void 0 ? _f : String(err_1);
-                    throw err_1;
-                case 26:
-                    if (applied > 0) {
-                        // notify any listeners about which doctors changed
-                        (0, automation_broadcaster_1.notifyDoctorUpdates)(updates.map(function (u) { return ({ id: u.id }); }));
-                        try {
-                            // Force Vercel to purge the static Edge Cache for the TV display
-                            (0, cache_1.revalidatePath)('/api/display');
-                        }
-                        catch (cacheErr) {
-                            logger_1.logger.error('[automation] Failed to revalidate display cache:', cacheErr);
-                        }
-                    }
-                    return [3 /*break*/, 33];
-                case 27:
-                    err_2 = _g.sent();
-                    errMsg = err_2 instanceof Error ? err_2.stack || err_2.message : String(err_2);
+                    errMsg = err_1 instanceof Error ? err_1.stack || err_1.message : String(err_1);
                     logger_1.logger.error("[automation] run failed: ".concat(errMsg));
                     error = errMsg;
-                    return [3 /*break*/, 33];
-                case 28:
+                    return [3 /*break*/, 23];
+                case 18:
                     duration = Date.now() - runStartTime;
-                    if (!prisma_1.prisma.automationLog) return [3 /*break*/, 32];
-                    _g.label = 29;
-                case 29:
-                    _g.trys.push([29, 31, , 32]);
+                    if (!prisma_1.prisma.automationLog) return [3 /*break*/, 22];
+                    _g.label = 19;
+                case 19:
+                    _g.trys.push([19, 21, , 22]);
                     return [4 /*yield*/, prisma_1.prisma.automationLog.create({
                             data: {
                                 type: error ? 'error' : 'run',
@@ -527,14 +478,14 @@ function runAutomation() {
                         }).catch(function (writeErr) {
                             logger_1.logger.error('failed writing automationLog', writeErr);
                         })];
-                case 30:
+                case 20:
                     _g.sent();
-                    return [3 /*break*/, 32];
-                case 31:
-                    _b = _g.sent();
-                    return [3 /*break*/, 32];
-                case 32: return [7 /*endfinally*/];
-                case 33: return [2 /*return*/, { applied: applied, failed: failed }];
+                    return [3 /*break*/, 22];
+                case 21:
+                    _c = _g.sent();
+                    return [3 /*break*/, 22];
+                case 22: return [7 /*endfinally*/];
+                case 23: return [2 /*return*/, { applied: applied, failed: failed }];
             }
         });
     });

@@ -1,0 +1,9 @@
+Connected
+Uploaded: server.ts
+Uploaded: src/lib/automation-broadcaster.ts
+Uploaded: src/app/api/leaves/route.ts
+Uploaded: src/app/api/shifts/route.ts
+Rebuilding server.js...
+TSC Build:   
+Restarting PM2...
+Use --update-env to update environment variables

@@ -3,7 +3,6 @@ import { prisma } from '@/lib/prisma';
 import { requirePermission, withMutationRateLimit } from '@/lib/api-utils';
 import { z } from 'zod';
 import { notifyViaSocket } from '@/lib/automation-broadcaster';
-
 export const dynamic = 'force-dynamic';
 
 const LeaveCreateSchema = z.object({
@@ -140,11 +139,16 @@ export async function DELETE(req: Request) {
     const id = searchParams.get('id');
 
     if (id) {
-        await (prisma.leaveRequest as any).delete({
-            where: { id: String(id) }
-        });
-        notifyViaSocket('leave_updated', { id });
-        return NextResponse.json({ success: true });
+        try {
+            await (prisma.leaveRequest as any).delete({
+                where: { id: String(id) }
+            });
+            notifyViaSocket('leave_updated', { id });
+            return NextResponse.json({ success: true });
+        } catch (err) {
+            console.error("Leave DELETE Error:", err);
+            return NextResponse.json({ error: "Gagal menghapus data cuti." }, { status: 500 });
+        }
     }
     return NextResponse.json({ error: 'ID required' }, { status: 400 });
 }

@@ -3,7 +3,6 @@ import { prisma } from '@/lib/prisma';
 import { requirePermission, withMutationRateLimit } from '@/lib/api-utils';
 import { z } from 'zod';
 import { notifyViaSocket } from '@/lib/automation-broadcaster';
-
 export const dynamic = 'force-dynamic';
 
 const ShiftCreateSchema = z.object({
@@ -138,12 +137,17 @@ export async function DELETE(req: Request) {
     const id = searchParams.get('id');
     if (!id) return NextResponse.json({ error: 'ID required' }, { status: 400 });
 
-    const deleted = await (prisma.shift as any).delete({
-        where: { id: String(id) }
-    });
-    notifyViaSocket('shift_updated', { id });
-    if (deleted && deleted.doctorId) {
-        notifyViaSocket('doctor_updated', { ids: [deleted.doctorId] });
+    try {
+        const deleted = await (prisma.shift as any).delete({
+            where: { id: String(id) }
+        });
+        notifyViaSocket('shift_updated', { id });
+        if (deleted && deleted.doctorId) {
+            notifyViaSocket('doctor_updated', { ids: [deleted.doctorId] });
+        }
+        return NextResponse.json({ success: true });
+    } catch (err) {
+        console.error("Shift DELETE Error:", err);
+        return NextResponse.json({ error: "Gagal menghapus shift." }, { status: 500 });
     }
-    return NextResponse.json({ success: true });
 }

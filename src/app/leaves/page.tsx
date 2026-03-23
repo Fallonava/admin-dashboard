@@ -58,7 +58,7 @@ export default function LeavesPage() {
     );
 
     return (
-        <div className="w-full h-full flex flex-col -mx-4 lg:-mx-6 -mt-2 lg:-mt-6">
+        <div className="w-full h-full flex flex-col">
             <PageHeader
               icon={<CalendarDays size={20} className="text-white" />}
               title="Jadwal Cuti"
@@ -93,8 +93,17 @@ export default function LeavesPage() {
                 onClose={() => setIsAllLeavesOpen(false)}
                 leaves={leaves}
                 onDelete={async (id: string) => {
-                    await fetch(`/api/leaves?id=${id}`, { method: 'DELETE' });
-                    mutate('/api/leaves');
+                    try {
+                        const res = await fetch(`/api/leaves?id=${id}`, { method: 'DELETE' });
+                        if (!res.ok) {
+                            const errData = await res.json().catch(() => ({}));
+                            throw new Error(errData.error || 'Gagal menghapus cuti');
+                        }
+                        mutate('/api/leaves');
+                    } catch (err: any) {
+                        console.error("Gagal menghapus:", err);
+                        alert(err.message || "Gagal menghapus data cuti.");
+                    }
                 }}
             />
 
