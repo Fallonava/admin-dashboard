@@ -130,7 +130,7 @@ export async function scheduleToday() {
   }
 
   let scheduled = 0;
-  for (const minutes of triggerMinutes) {
+  for (const minutes of Array.from(triggerMinutes)) {
     const ms = msUntilMinute(minutes);
     if (ms === null) continue; // already passed, skip
 
