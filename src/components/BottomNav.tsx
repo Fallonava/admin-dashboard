@@ -56,19 +56,22 @@ export function BottomNav() {
                 <Link
                   key={item.name}
                   href={item.href}
-                  className="relative -top-8 flex flex-col items-center justify-center transition-transform duration-300 active:scale-90 min-h-[44px]"
+                  className="relative flex flex-col items-center justify-center flex-1 transition-all active:scale-90 mt-1 min-h-[44px]"
                 >
-                  <div className={cn(
-                    "h-16 w-16 rounded-full flex items-center justify-center transition-all duration-500 shadow-xl",
-                    isActive 
-                      ? "btn-gradient text-white shadow-blue-500/40" 
-                      : "bg-slate-900 text-white shadow-slate-900/30"
-                  )}>
-                    <Icon size={28} className={cn(isActive && "animate-pulse")} />
+                  {/* Invisible placeholder to reserve space equivalent to normal icons */}
+                  <div className="h-[40px] w-[40px] flex items-center justify-center">
+                    <div className={cn(
+                      "absolute -top-6 h-16 w-16 rounded-full flex items-center justify-center transition-all duration-500 shadow-xl",
+                      isActive 
+                        ? "btn-gradient text-white shadow-blue-500/40" 
+                        : "bg-slate-900 text-white shadow-slate-900/30"
+                    )}>
+                      <Icon size={28} className={cn(isActive && "animate-pulse")} />
+                    </div>
                   </div>
                   <span className={cn(
-                    "absolute -bottom-6 text-[10px] font-black uppercase tracking-widest transition-colors duration-300",
-                    isActive ? "text-blue-600" : "text-slate-400"
+                    "text-[10px] font-black mt-1 uppercase tracking-tighter transition-all duration-300",
+                    isActive ? "text-blue-600 opacity-100" : "text-slate-400 opacity-70"
                   )}>
                     {item.name}
                   </span>

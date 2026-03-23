@@ -98,6 +98,7 @@ async function deploy() {
       set -a && source .env && set +a
 
       npm install --prefer-offline 2>&1 | tail -5
+      npx prisma db push --accept-data-loss
       npm run build 2>&1
 
       # Copy static output so standalone server can find them
