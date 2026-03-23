@@ -4,6 +4,7 @@ import next from 'next';
 import { Server } from 'socket.io';
 import { createAdapter } from '@socket.io/redis-adapter';
 import { createClient } from 'redis';
+import { scheduleToday } from './src/lib/scheduler';
 
 const dev = process.env.NODE_ENV !== 'production';
 const hostname = 'localhost';
@@ -82,5 +83,14 @@ app.prepare().then(() => {
       if (process.send) {
         process.send('ready');
       }
+
+      // ── Real-time Event-Driven Scheduler ──────────────────────────────────
+      // Replaces the separate cron daemon (medcore-cron-worker PM2 process).
+      // Schedules setTimeout triggers for each shift start/end event today
+      // and recalculates at midnight. Much more precise than per-minute polling.
+      scheduleToday().catch((err) => {
+        console.error('[scheduler] Failed to start:', err);
+      });
     });
 });
+

@@ -47,36 +47,8 @@ module.exports = {
       // Exponential backoff: don't hammer the process if it's crash-looping
       exp_backoff_restart_delay: 100,
     },
-    {
-      name: 'medcore-cron-worker',
-      script: 'server-cron.js',
-      cwd: '/home/fallonava/admin-dashboard',
-      node_args: '--env-file=/home/fallonava/admin-dashboard/.env',
-      instances: 1,
-      exec_mode: 'fork',
-      env_file: '.env',
-      autorestart: true,
-      watch: false,
-      max_memory_restart: '150M',
-
-      // ── Environment Variables ──────────────────────────────────────────────
-      env: {
-        NODE_ENV: 'production',
-      },
-
-      // env_production mirrors env — needed to suppress PM2 warning
-      env_production: {
-        NODE_ENV: 'production',
-      },
-
-      // ── Production log config ──────────────────────────────────────────────
-      error_file: '/home/fallonava/logs/medcore-cron-error.log',
-      out_file: '/home/fallonava/logs/medcore-cron-out.log',
-      log_date_format: 'YYYY-MM-DD HH:mm:ss',
-      merge_logs: true,
-
-      // ── Restart policy ────────────────────────────────────────────────────
-      exp_backoff_restart_delay: 100,
-    },
+    // ── medcore-cron-worker has been removed ──────────────────────────────────
+    // Automation is now handled by the real-time scheduler embedded inside
+    // server.ts (src/lib/scheduler.ts). No separate PM2 process needed.
   ],
 };
