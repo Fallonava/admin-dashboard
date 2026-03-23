@@ -21,7 +21,7 @@ const nextConfig: NextConfig = {
   // Kompresi gzip/brotli untuk semua response
   compress: true,
   // Package native Node.js: jangan dibundle oleh webpack
-  serverExternalPackages: ['redis', 'bullmq', 'bcryptjs', 'pg', 'node-cron'],
+  serverExternalPackages: ['redis', 'bullmq', 'bcryptjs', 'pg'],
   // Optimasi icon library: hanya import yang dipakai, bukan seluruh bundle
   experimental: {
     optimizePackageImports: ['lucide-react', '@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu'],

@@ -2,7 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import { Pool } from 'pg';
 import { PrismaPg } from '@prisma/adapter-pg';
 // Validate all required env vars on first import (throws if missing)
-import '@/lib/env';
+import './env';
 
 // PrismaClient is attached to the `global` object in development to prevent
 // exhausting your database connection limit.

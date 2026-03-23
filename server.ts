@@ -1,3 +1,8 @@
+import 'dotenv/config';
+import { AsyncLocalStorage } from 'async_hooks';
+// Next.js 16 internal checks expect this to be global in some environments
+(globalThis as any).AsyncLocalStorage = AsyncLocalStorage;
+
 import { createServer } from 'http';
 import { parse } from 'url';
 import next from 'next';
