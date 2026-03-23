@@ -42,27 +42,27 @@ async function deploy() {
     });
     console.log('✅ Connected.\n');
 
-    const remoteArchivePath = `/tmp/${ARCHIVE_NAME}`;
-
-    // ── 2. Upload archive ────────────────────────────────────────────────────
-    const localArchivePath = path.join(LOCAL_ROOT, ARCHIVE_NAME);
-    if (!fs.existsSync(localArchivePath)) {
-      throw new Error(`Archive not found: ${localArchivePath}\nBuat archive dulu dengan perintah:\n  npm run build && tar -czf admin-dashboard.tar.gz --exclude='.git' --exclude='node_modules' .`);
+    // ── 2. Clone atau Pull dari GitHub ───────────────────────────────────────
+    console.log('[2/7] Mengambil source code dari GitHub...');
+    const gitCmd = `
+      if [ -d "${REMOTE_BASE}/.git" ]; then
+        echo "Repository sudah ada, melakukan git pull..."
+        cd ${REMOTE_BASE}
+        git reset --hard
+        git pull origin main
+      else
+        echo "Repository tidak ditemukan, melakukan git clone..."
+        rm -rf ${REMOTE_BASE}
+        git clone https://github.com/Fallonava/admin-dashboard.git ${REMOTE_BASE}
+      fi
+    `;
+    const gitResult = await ssh.execCommand(gitCmd, { cwd: '/home/fallonava' });
+    if (gitResult.code !== 0) {
+      throw new Error(`Git pull/clone failed:\n${gitResult.stderr}`);
     }
-    console.log(`[2/7] Uploading archive (${(fs.statSync(localArchivePath).size / 1024 / 1024).toFixed(1)} MB)...`);
-    await ssh.putFile(localArchivePath, remoteArchivePath);
-    console.log('✅ Uploaded.\n');
+    console.log('✅ Source code up to date.\n');
 
-    // ── 3. Clean & extract ───────────────────────────────────────────────────
-    console.log('[3/7] Extracting archive (fresh deploy)...');
-    const extractResult = await ssh.execCommand(
-      `rm -rf ${REMOTE_BASE} && mkdir -p ${REMOTE_BASE} && tar -xzf ${remoteArchivePath} -C ${REMOTE_BASE}`,
-      { cwd: '/home/fallonava' }
-    );
-    if (extractResult.code !== 0) {
-      throw new Error(`Extract failed:\n${extractResult.stderr}`);
-    }
-    console.log('✅ Extracted.\n');
+    // ── 3. (Skipped) Extract archive ─────────────────────────────────────────
 
     // ── 4. Upload .env (as a file — avoids heredoc issues with special chars) ─
     console.log('[4/7] Uploading .env...');
@@ -145,8 +145,6 @@ async function deploy() {
       onStderr:  (chunk) => process.stderr.write(chunk.toString('utf8')),
     });
 
-    // ── Cleanup temp archive ─────────────────────────────────────────────────
-    await ssh.execCommand(`rm -f ${remoteArchivePath}`);
     ssh.dispose();
 
     console.log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
