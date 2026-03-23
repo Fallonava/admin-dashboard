@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { cn } from "@/lib/utils";
 
@@ -57,10 +59,11 @@ export function PageHeader({
   return (
     <header
       className={cn(
-        "sticky top-[-0.5rem] lg:top-[-1.5rem] z-40",
-        "bg-white/85 backdrop-blur-xl",
-        "border-b border-white/60",
-        "shadow-[0_1px_0_0_rgba(0,0,0,0.04),0_4px_20px_-4px_rgba(0,0,0,0.06)]",
+        "animate-in fade-in slide-in-from-top-4 duration-500 ease-out",
+        "sticky top-[-0.5rem] lg:top-[-1.5rem] z-50",
+        "bg-white/80 backdrop-blur-2xl",
+        "border-b border-white/80",
+        "shadow-[0_8px_30px_rgb(0,0,0,0.06)]",
         className
       )}
     >

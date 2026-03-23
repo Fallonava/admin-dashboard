@@ -32,7 +32,7 @@ const LeaveUpdateSchema = z.object({
 
 export async function GET() {
     const leaves = await (prisma.leaveRequest as any).findMany({
-        where: { doctor: { isNot: null } },
+        where: { doctorId: { not: "" } },
         include: { doctor: true }
     });
 

@@ -58,7 +58,7 @@ export default function LeavesPage() {
     );
 
     return (
-        <div className="w-full h-full flex flex-col">
+        <div className="flex-1 w-full flex flex-col h-[calc(100vh-1rem)] overflow-hidden bg-slate-50/50">
             <PageHeader
               icon={<CalendarDays size={20} className="text-white" />}
               title="Jadwal Cuti"

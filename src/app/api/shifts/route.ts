@@ -29,8 +29,8 @@ export async function GET(req: Request) {
     const dayIdx = dayIdxParam !== null ? parseInt(dayIdxParam, 10) : null;
 
     const whereClause: any = {
-        // Exclude shifts whose doctor has been deleted (cascade leaves doctor null in some edge cases)
-        doctor: { isNot: null }
+        // Exclude shifts without a doctor
+        doctorId: { not: "" }
     };
     // Filter per hari jika ada query param dayIdx (lebih efisien untuk kalender harian)
     if (dayIdx !== null && !isNaN(dayIdx)) {

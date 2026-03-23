@@ -229,6 +229,11 @@ export async function DELETE(req: Request) {
         await prisma.doctor.delete({
             where: { id: String(id) }
         });
+        
+        notifyDoctorUpdates([{ id: String(id) }]);
+        notifyViaSocket('doctor_updated', { ids: [String(id)] });
+        notifyViaSocket('schedule_changed', { reason: 'doctor_deleted', ts: Date.now() });
+        
         return NextResponse.json({ success: true });
     } catch (err) {
         console.error("Doctor DELETE Error:", err);

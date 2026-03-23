@@ -13,7 +13,7 @@ export default function RekapHarianPage() {
   });
 
   return (
-    <div className="flex flex-col w-full min-h-full bg-slate-50 relative">
+    <div className="flex-1 w-full flex flex-col h-[calc(100vh-1rem)] overflow-hidden bg-slate-50/50">
 
       <PageHeader
         icon={<BarChart2 size={20} className="text-white" />}
@@ -41,7 +41,7 @@ export default function RekapHarianPage() {
       />
 
       {/* Main Content Area */}
-      <div className="flex-1 w-full flex flex-col p-4 sm:p-6 lg:p-8 gap-6 max-w-[1600px] mx-auto">
+      <div className="flex-1 w-full flex flex-col p-4 sm:p-6 lg:p-8 gap-6 max-w-[1600px] mx-auto overflow-y-auto custom-scrollbar">
         <HistoryDashboard />
       </div>
 

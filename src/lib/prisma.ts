@@ -25,9 +25,26 @@ const addSoftDelete = (client: PrismaClient) =>
         findFirstOrThrow:  ({ args, query }) => query({ ...args, where: { deletedAt: null, ...args.where } }),
         count:             ({ args, query }) => query({ ...args, where: { deletedAt: null, ...args.where } }),
         async delete({ args }) {
-          return client.doctor.update({ ...args, data: { deletedAt: new Date() } });
+          const updatedDoctor = await client.doctor.update({ ...args, data: { deletedAt: new Date() } });
+          if (updatedDoctor && updatedDoctor.id) {
+            await client.shift.updateMany({
+              where: { doctorId: updatedDoctor.id },
+              data: { deletedAt: new Date() }
+            });
+            // Update leaves if any, though prisma doesn't track deletedAt for leaves yet, so perhaps physically delete or ignore. The schema doesn't have deletedAt on LeaveRequest.
+            // Oh wait, LeaveRequest has onDelete: Cascade, so normally it deletes. Since we soft delete, to keep data integrity we shouldn't touch LeaveRequest if it doesn't have deletedAt, OR we hard delete it. The user only asked for "jadwal" (shifts).
+          }
+          return updatedDoctor;
         },
         async deleteMany({ args }) {
+          const doctorsToDelete = await client.doctor.findMany({ where: args.where, select: { id: true } });
+          const doctorIds = doctorsToDelete.map(d => d.id);
+          if (doctorIds.length > 0) {
+            await client.shift.updateMany({
+              where: { doctorId: { in: doctorIds } },
+              data: { deletedAt: new Date() }
+            });
+          }
           return client.doctor.updateMany({ ...args, data: { deletedAt: new Date() } });
         },
       },

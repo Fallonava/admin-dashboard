@@ -201,27 +201,28 @@ export function RealtimeCalendar({ selectedDate, onDateChange }: RealtimeCalenda
     const todayStr = selectedDate.getFullYear() + '-' + String(selectedDate.getMonth() + 1).padStart(2, '0') + '-' + String(selectedDate.getDate()).padStart(2, '0');
 
     return (
-        <div className="flex-1 flex flex-col min-h-0 relative h-full">
+        <div className="flex-1 w-full flex flex-col min-h-0 overflow-hidden relative space-y-4">
             {/* ── Header Controls ──────────────────────────────── */}
-            <div className="flex items-center justify-between mb-4 px-1 flex-shrink-0">
+            <div className="flex-none bg-white/80 backdrop-blur-xl border border-white/50 px-4 py-3 sm:py-4 sm:rounded-2xl shadow-sm flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                    <h2 className="text-xl font-extrabold text-foreground capitalize tracking-tight">{formatDateObj(selectedDate)}</h2>
+                    <h2 className="text-lg lg:text-xl font-extrabold text-foreground capitalize tracking-tight bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">{formatDateObj(selectedDate)}</h2>
                 </div>
 
                 <button
                     onClick={() => setShowAddModal(true)}
-                    className="btn-gradient px-4 py-2.5 rounded-[14px] flex items-center gap-2 text-sm font-black shadow-[0_4px_14px_0_rgba(0,92,255,0.39)] transition-all active:scale-95 group overflow-hidden relative text-white"
+                    className="btn-gradient px-4 py-2 sm:px-5 sm:py-2.5 rounded-full flex items-center gap-2 text-sm font-black shadow-[0_8px_20px_-6px_rgba(0,92,255,0.4)] hover:shadow-[0_12px_25px_-8px_rgba(0,92,255,0.6)] hover:scale-[1.03] active:scale-95 transition-all duration-300 overflow-hidden relative text-white"
                 >
-                    <div className="absolute inset-0 w-full h-full bg-white/20 -translate-x-full group-hover:animate-shimmer" />
-                    <Plus size={16} className="relative z-10" />
-                    <span className="relative z-10">Add Shift</span>
+                    <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-white/0 via-white/20 to-white/0 -translate-x-full hover:animate-[shimmer_1.5s_infinite] z-0" />
+                    <Plus size={18} className="relative z-10 drop-shadow-sm" />
+                    <span className="relative z-10 drop-shadow-sm hidden sm:block">Add Shift</span>
+                    <span className="relative z-10 drop-shadow-sm sm:hidden">Add</span>
                 </button>
             </div>
 
-            {/* ── Daily Grid ──────────────────────────────────── */}
-            <div className="flex-1 min-h-0 super-glass-card rounded-[32px] shadow-sm overflow-hidden flex flex-col">
-                <div className="flex-1 overflow-y-auto w-full custom-scrollbar pb-4">
-                    <div className="min-w-full">
+            {/* ── Daily Grid ── scrolls internally ───────────────── */}
+            <div className="flex-1 min-h-0 super-glass-card rounded-[24px] shadow-sm overflow-hidden flex flex-col border border-white/60">
+                <div className="flex-1 overflow-y-auto w-full custom-scrollbar">
+                    <div className="min-w-full divide-y divide-slate-100/60 pb-8">
 
                         {/* Hour Rows for single day */}
                         {HOURS.map((slot, hIdx) => {
@@ -277,43 +278,47 @@ export function RealtimeCalendar({ selectedDate, onDateChange }: RealtimeCalenda
                                         <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 border-t border-slate-200/50 pointer-events-none" />
 
                                         <div className="flex flex-wrap gap-2.5 relative z-10">
-                                            {cellShifts.map((shift: any) => {
+                                            {cellShifts.map((shift: any, index: number) => {
                                                 const doctorDisplayName = shift.doctorName || 'Unknown';
                                                 const color = getColor(doctorDisplayName);
                                                 return (
                                                     <div
                                                         key={shift.id}
                                                         className={cn(
-                                                            "group/card flex-1 min-w-[220px] max-w-[300px] p-3 rounded-2xl cursor-default transition-all duration-300 hover:-translate-y-0.5 shadow-[inset_0_1px_1px_rgba(255,255,255,0.4)] hover:shadow-[0_12px_30px_-8px_rgba(0,0,0,0.15)]",
+                                                            "group/card flex-1 min-w-[200px] max-w-[300px] p-3 sm:p-4 rounded-3xl cursor-default border shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)] hover:shadow-[0_16px_40px_-10px_rgba(0,0,0,0.1),0_0_20px_0_rgba(255,255,255,0.5)] relative overflow-hidden animate-in fade-in zoom-in-95 slide-in-from-bottom-2 duration-300 hover:-translate-y-1 hover:scale-[1.02] transition-all",
                                                             color.bg, color.border
                                                         )}
+                                                        style={{ animationDelay: `${index * 50}ms`, animationFillMode: 'both' }}
                                                     >
-                                                        <div className="flex items-start justify-between gap-2 mb-2">
+                                                        {/* Animated ambient glow inside card */}
+                                                        <div className="absolute -inset-4 bg-gradient-to-br from-white/40 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-500 rounded-full blur-2xl pointer-events-none" />
+
+                                                        <div className="flex items-start justify-between gap-2 mb-2 relative z-10">
                                                             <div className="flex items-center gap-2.5 min-w-0">
-                                                                <div className={cn("w-2 h-2 rounded-full flex-shrink-0 shadow-sm", color.dot)} />
-                                                                <p className={cn("text-xs font-bold truncate tracking-tight", color.text)}>{doctorDisplayName}</p>
+                                                                <div className={cn("w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full flex-shrink-0 animate-pulse shadow-sm", color.dot)} />
+                                                                <p className={cn("text-[11px] sm:text-xs font-black truncate tracking-tight", color.text)}>{doctorDisplayName}</p>
                                                             </div>
                                                             <button
                                                                 onClick={() => handleDelete(shift.id)}
-                                                                className="opacity-0 group-hover/card:opacity-100 p-1.5 bg-white/60 rounded-lg text-slate-400 hover:text-destructive hover:bg-white shadow-sm transition-all flex-shrink-0"
+                                                                className="opacity-0 group-hover/card:opacity-100 p-1.5 sm:p-2 bg-white/50 backdrop-blur-md rounded-xl text-slate-400 hover:text-white hover:bg-red-500 shadow-sm transition-all duration-300 flex-shrink-0 active:scale-90"
                                                                 title="Hapus Jadwal"
                                                             >
-                                                                <X size={14} />
+                                                                <X size={14} className="stroke-[3]" />
                                                             </button>
                                                         </div>
 
-                                                        <div className={cn("flex flex-col gap-2 pl-2 border-l-2 ml-1", color.border)}>
-                                                            <p className={cn("text-[10px] font-extrabold uppercase tracking-widest", color.text)}>{shift.title}</p>
+                                                        <div className={cn("flex flex-col gap-2 pl-2 sm:pl-3 border-l-2 ml-1 sm:ml-1.5 relative z-10", color.border)}>
+                                                            <p className={cn("text-[9px] sm:text-[10px] font-black uppercase tracking-widest opacity-80", color.text)}>{shift.title}</p>
 
                                                             <div className="flex items-center justify-between mt-0.5">
-                                                                <div className={cn("flex items-center gap-1.5 px-2 py-1 rounded-lg text-xs font-semibold shadow-sm", color.innerBg, color.timeText)}>
+                                                                <div className={cn("flex items-center gap-1.5 px-2 py-1 rounded-lg text-[10px] sm:text-xs font-black shadow-sm", color.innerBg, color.timeText)}>
                                                                     <Clock size={12} className={color.dotIcon} />
                                                                     {shift.formattedTime}
                                                                 </div>
 
                                                                 {shift.registrationTime && (
-                                                                    <div className={cn("text-[10px] font-bold px-2 py-1 rounded-lg shadow-sm uppercase tracking-wider", color.innerBg, color.timeText)}>
-                                                                        Reg: {shift.registrationTime}
+                                                                    <div className={cn("text-[9px] sm:text-[10px] font-black px-2 py-1 rounded-lg shadow-sm uppercase tracking-wider opacity-90", color.innerBg, color.timeText)}>
+                                                                        <span className="hidden sm:inline">Reg: </span>{shift.registrationTime}
                                                                     </div>
                                                                 )}
                                                             </div>
@@ -337,16 +342,23 @@ export function RealtimeCalendar({ selectedDate, onDateChange }: RealtimeCalenda
             </div>
 
             {showAddModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-foreground/20 backdrop-blur-sm">
-                    <div className="bg-white/70 backdrop-blur-[50px] saturate-200 rounded-3xl p-6 w-full max-w-md shadow-[0_16px_60px_-15px_rgba(0,0,0,0.2)] relative">
-                        <div className="flex justify-between items-center mb-6">
-                            <h3 className="text-lg font-extrabold text-foreground tracking-tight">Add New Shift</h3>
-                            <button onClick={() => setShowAddModal(false)} className="text-muted-foreground hover:text-foreground bg-slate-100 hover:bg-slate-200 p-2 rounded-xl transition-colors">
-                                <X size={16} />
+                <div 
+                    className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md animate-in fade-in duration-200"
+                >
+                    <div 
+                        className="bg-white/80 backdrop-blur-3xl saturate-200 rounded-[32px] p-6 lg:p-8 w-full max-w-md shadow-[0_32px_80px_-20px_rgba(0,0,0,0.3)] border border-white relative overflow-hidden animate-in zoom-in-95 slide-in-from-bottom-4 duration-300"
+                    >
+                        {/* Ambient glow in modal */}
+                        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-500/20 rounded-full blur-3xl pointer-events-none" />
+                        
+                        <div className="flex justify-between items-center mb-8 relative z-10">
+                            <h3 className="text-xl lg:text-2xl font-black text-slate-800 tracking-tight">Add New Shift</h3>
+                            <button onClick={() => setShowAddModal(false)} className="text-slate-400 hover:text-slate-800 bg-white shadow-sm hover:shadow-md border p-2 lg:p-2.5 rounded-2xl transition-all active:scale-90">
+                                <X size={18} className="stroke-[3]" />
                             </button>
                         </div>
 
-                        <div className="space-y-4">
+                        <div className="space-y-5 relative z-10">
                             <SearchableSelect
                                 label="Dokter"
                                 placeholder="Pilih Dokter..."
