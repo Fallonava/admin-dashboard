@@ -1,0 +1,2 @@
+--- RESTARTING PM2 APP ---
+Use --update-env to update environment variables

@@ -1,0 +1,32 @@
+--- DOCKER INSPECT MEDCORE-MONGO ---
+Image: mongo:7
+Env: [
+  'MONGO_INITDB_ROOT_USERNAME=root',
+  'MONGO_INITDB_ROOT_PASSWORD=medcore_mongo_password',
+  'MONGO_INITDB_DATABASE=rekap-harian',
+  'PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
+  'GOSU_VERSION=1.19',
+  'JSYAML_VERSION=3.13.1',
+  'JSYAML_CHECKSUM=662e32319bdd378e91f67578e56a34954b0a2e33aca11d70ab9f4826af24b941',
+  'MONGO_PACKAGE=mongodb-org',
+  'MONGO_REPO=repo.mongodb.org',
+  'MONGO_MAJOR=7.0',
+  'MONGO_VERSION=7.0.31',
+  'HOME=/data/db'
+]
+Binds: [ '/mnt/AppData/medcore-mongo-data:/data/db:rw' ]
+PortBindings: { '27017/tcp': [ { HostIp: '', HostPort: '27017' } ] }
+Labels: {
+  'com.docker.compose.config-hash': '99005b82eeb217b321cfd88ca84b2e7e1474d238156e0ad46d7c2f012a5ee002',
+  'com.docker.compose.container-number': '1',
+  'com.docker.compose.depends_on': '',
+  'com.docker.compose.image': 'sha256:f2b40853c0f796b105e672e04045d2b3e127bd54782dfe7e9b08aebbd9f602ce',
+  'com.docker.compose.oneoff': 'False',
+  'com.docker.compose.project': 'fallonava',
+  'com.docker.compose.project.config_files': '/home/fallonava/docker-compose.infra.yml',
+  'com.docker.compose.project.working_dir': '/home/fallonava',
+  'com.docker.compose.service': 'mongodb',
+  'com.docker.compose.version': '5.0.1',
+  'org.opencontainers.image.ref.name': 'ubuntu',
+  'org.opencontainers.image.version': '22.04'
+}

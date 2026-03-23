@@ -1,0 +1,155 @@
+--- FETCHING ERROR LOG ---
+at async l (.next/server/chunks/[root-of-the-server]__fd9a77d4._.js:2:14252)
+    at async Module.D (.next/server/chunks/[root-of-the-server]__fd9a77d4._.js:2:15330) {
+  errorLabelSet: Set(0) {},
+  reason: [TopologyDescription],
+  code: undefined,
+  [cause]: [TopologyDescription]
+}
+2026-03-23 15:35:22: MongoDB connection error: MongooseServerSelectionError: connect ECONNREFUSED 127.0.0.1:27017
+    at <unknown> (MongooseServerSelectionError: connect ECONNREFUSED 127.0.0.1:27017)
+    at async n (.next/server/chunks/[root-of-the-server]__1ec70261._.js:2:6511)
+    at async _ (.next/server/chunks/[root-of-the-server]__fd9a77d4._.js:2:7935)
+    at async u (.next/server/chunks/[root-of-the-server]__fd9a77d4._.js:2:13211)
+    at async l (.next/server/chunks/[root-of-the-server]__fd9a77d4._.js:2:14252)
+    at async Module.D (.next/server/chunks/[root-of-the-server]__fd9a77d4._.js:2:15330) {
+  errorLabelSet: Set(0) {},
+  reason: [TopologyDescription],
+  code: undefined,
+  [cause]: [TopologyDescription]
+}
+2026-03-23 15:35:22: Error fetching recaps: MongooseServerSelectionError: connect ECONNREFUSED 127.0.0.1:27017
+    at <unknown> (MongooseServerSelectionError: connect ECONNREFUSED 127.0.0.1:27017)
+    at async n (.next/server/chunks/[root-of-the-server]__1ec70261._.js:2:6511)
+    at async _ (.next/server/chunks/[root-of-the-server]__fd9a77d4._.js:2:7935)
+    at async u (.next/server/chunks/[root-of-the-server]__fd9a77d4._.js:2:13211)
+    at async l (.next/server/chunks/[root-of-the-server]__fd9a77d4._.js:2:14252)
+    at async Module.D (.next/server/chunks/[root-of-the-server]__fd9a77d4._.js:2:15330) {
+  errorLabelSet: Set(0) {},
+  reason: [TopologyDescription],
+  code: undefined,
+  [cause]: [TopologyDescription]
+}
+2026-03-23 15:35:30: MongoDB connection error: MongooseServerSelectionError: connect ECONNREFUSED 127.0.0.1:27017
+    at <unknown> (MongooseServerSelectionError: connect ECONNREFUSED 127.0.0.1:27017)
+    at async n (.next/server/chunks/[root-of-the-server]__1ec70261._.js:2:6511)
+    at async E (.next/server/chunks/[root-of-the-server]__fd9a77d4._.js:2:8336)
+    at async u (.next/server/chunks/[root-of-the-server]__fd9a77d4._.js:2:13211)
+    at async l (.next/server/chunks/[root-of-the-server]__fd9a77d4._.js:2:14252)
+    at async Module.D (.next/server/chunks/[root-of-the-server]__fd9a77d4._.js:2:15330) {
+  errorLabelSet: Set(0) {},
+  reason: [TopologyDescription],
+  code: undefined,
+  [cause]: [TopologyDescription]
+}
+2026-03-23 15:35:30: Error saving recap: MongooseServerSelectionError: connect ECONNREFUSED 127.0.0.1:27017
+    at <unknown> (MongooseServerSelectionError: connect ECONNREFUSED 127.0.0.1:27017)
+    at async n (.next/server/chunks/[root-of-the-server]__1ec70261._.js:2:6511)
+    at async E (.next/server/chunks/[root-of-the-server]__fd9a77d4._.js:2:8336)
+    at async u (.next/server/chunks/[root-of-the-server]__fd9a77d4._.js:2:13211)
+    at async l (.next/server/chunks/[root-of-the-server]__fd9a77d4._.js:2:14252)
+    at async Module.D (.next/server/chunks/[root-of-the-server]__fd9a77d4._.js:2:15330) {
+  errorLabelSet: Set(0) {},
+  reason: [TopologyDescription],
+  code: undefined,
+  [cause]: [TopologyDescription]
+}
+2026-03-23 15:35:57: MongoDB connection error: MongooseServerSelectionError: connect ECONNREFUSED 127.0.0.1:27017
+    at <unknown> (MongooseServerSelectionError: connect ECONNREFUSED 127.0.0.1:27017) {
+  errorLabelSet: Set(0) {},
+  reason: [TopologyDescription],
+  code: undefined,
+  [cause]: [TopologyDescription]
+}
+2026-03-23 15:35:57: Error fetching recaps: MongooseServerSelectionError: connect ECONNREFUSED 127.0.0.1:27017
+    at <unknown> (MongooseServerSelectionError: connect ECONNREFUSED 127.0.0.1:27017) {
+  errorLabelSet: Set(0) {},
+  reason: [TopologyDescription],
+  code: undefined,
+  [cause]: [TopologyDescription]
+}
+2026-03-23 15:35:57: Error fetching recaps: MongooseServerSelectionError: connect ECONNREFUSED 127.0.0.1:27017
+    at <unknown> (MongooseServerSelectionError: connect ECONNREFUSED 127.0.0.1:27017) {
+  errorLabelSet: Set(0) {},
+  reason: [TopologyDescription],
+  code: undefined,
+  [cause]: [TopologyDescription]
+}
+2026-03-23 15:36:30: MongoDB connection error: MongooseServerSelectionError: connect ECONNREFUSED 127.0.0.1:27017
+    at <unknown> (MongooseServerSelectionError: connect ECONNREFUSED 127.0.0.1:27017)
+    at async n (.next/server/chunks/[root-of-the-server]__1ec70261._.js:2:6511)
+    at async _ (.next/server/chunks/[root-of-the-server]__fd9a77d4._.js:2:7935)
+    at async u (.next/server/chunks/[root-of-the-server]__fd9a77d4._.js:2:13211)
+    at async l (.next/server/chunks/[root-of-the-server]__fd9a77d4._.js:2:14252)
+    at async Module.D (.next/server/chunks/[root-of-the-server]__fd9a77d4._.js:2:15330) {
+  errorLabelSet: Set(0) {},
+  reason: [TopologyDescription],
+  code: undefined,
+  [cause]: [TopologyDescription]
+}
+2026-03-23 15:36:30: Error fetching recaps: MongooseServerSelectionError: connect ECONNREFUSED 127.0.0.1:27017
+    at <unknown> (MongooseServerSelectionError: connect ECONNREFUSED 127.0.0.1:27017)
+    at async n (.next/server/chunks/[root-of-the-server]__1ec70261._.js:2:6511)
+    at async _ (.next/server/chunks/[root-of-the-server]__fd9a77d4._.js:2:7935)
+    at async u (.next/server/chunks/[root-of-the-server]__fd9a77d4._.js:2:13211)
+    at async l (.next/server/chunks/[root-of-the-server]__fd9a77d4._.js:2:14252)
+    at async Module.D (.next/server/chunks/[root-of-the-server]__fd9a77d4._.js:2:15330) {
+  errorLabelSet: Set(0) {},
+  reason: [TopologyDescription],
+  code: undefined,
+  [cause]: [TopologyDescription]
+}
+
+--- FETCHING OUT LOG ---
+2026-03-23 15:46:58: [SSE] New connection established. UA: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36
+2026-03-23 15:46:58: [SSE] Sending initial snapshot: 0 doctors
+2026-03-23 15:53:08: [SSE] New connection established. UA: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36
+2026-03-23 15:53:08: [SSE] Sending initial snapshot: 0 doctors
+2026-03-23 15:53:09: [Socket.IO] Client disconnected: 0YCf50eCdEAVDH3AAAAN
+2026-03-23 15:53:10: [SSE] New connection established. UA: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36
+2026-03-23 15:53:10: [SSE] Sending initial snapshot: 0 doctors
+2026-03-23 15:53:10: [Socket.IO] Client connected: Q-sCQEqyzlO9km90AAAP
+2026-03-23 15:53:14: [Socket.IO] Client connected: s77h6Yw57eVKYTIlAAAR
+2026-03-23 15:53:43: [Socket.IO] Client connected: c3QQxim_6_uUoVcUAAAV
+2026-03-23 15:53:55: [Socket.IO] Client disconnected: Q-sCQEqyzlO9km90AAAP
+2026-03-23 15:53:59: [Socket.IO] Client disconnected: s77h6Yw57eVKYTIlAAAR
+2026-03-23 15:54:10: [Socket.IO] Client connected: XwMrFq6P3k7Zz-xXAAAQ
+2026-03-23 15:54:10: [Socket.IO] Client disconnected: XwMrFq6P3k7Zz-xXAAAQ
+2026-03-23 15:54:11: [Socket.IO] Client connected: va8FQyVkTPtFOUVIAAAS
+2026-03-23 15:54:11: [Socket.IO] Client disconnected: va8FQyVkTPtFOUVIAAAS
+2026-03-23 15:54:13: [Socket.IO] Client connected: LZvX9lib-yOfu7dqAAAU
+2026-03-23 15:54:14: [Socket.IO] Client connected: YwDt8aHWTm-n_Id2AAAX
+2026-03-23 15:54:53: [Socket.IO] Client disconnected: c3QQxim_6_uUoVcUAAAV
+2026-03-23 15:54:58: [Socket.IO] Client disconnected: LZvX9lib-yOfu7dqAAAU
+2026-03-23 15:56:22: [Socket.IO] Client connected: e3B6qwsbWlT3YG0-AAAT
+2026-03-23 15:56:39: [Socket.IO] Client disconnected: YwDt8aHWTm-n_Id2AAAX
+2026-03-23 16:00:11: [Socket.IO] Client connected: zOwpMl6cAukuBXx9AAAW
+2026-03-23 16:00:38: [Socket.IO] Client connected: RgsCrHKWr8A-HSybAAAV
+2026-03-23 16:00:38: [Socket.IO] Client disconnected: RgsCrHKWr8A-HSybAAAV
+2026-03-23 16:00:39: [Socket.IO] Client connected: BUdSsuPl3lTN5QV7AAAX
+2026-03-23 16:00:40: [Socket.IO] Client connected: AF3UcfxQP2gJBkgJAAAY
+2026-03-23 16:00:54: [Socket.IO] Client disconnected: e3B6qwsbWlT3YG0-AAAT
+2026-03-23 16:01:21: [Socket.IO] Client disconnected: zOwpMl6cAukuBXx9AAAW
+2026-03-23 16:01:24: [Socket.IO] Client disconnected: BUdSsuPl3lTN5QV7AAAX
+2026-03-23 16:01:32: [Socket.IO] Client connected: JvPu50k2p7tOQnjaAAAZ
+2026-03-23 16:01:34: [Socket.IO] Client connected: RJ6PD7LDXwOv0eO_AAAZ
+2026-03-23 16:01:37: [Socket.IO] Client connected: 9jnVg4tkT1zfUgYQAAAb
+2026-03-23 16:01:50: [Socket.IO] Client disconnected: AF3UcfxQP2gJBkgJAAAY
+2026-03-23 16:02:02: [Socket.IO] Client disconnected: 9jnVg4tkT1zfUgYQAAAb
+2026-03-23 16:02:04: [Socket.IO] Client connected: -IytACEuVR0oyKlFAAAd
+2026-03-23 16:02:04: [Socket.IO] Client disconnected: -IytACEuVR0oyKlFAAAd
+2026-03-23 16:02:06: [Socket.IO] Client connected: gdys4ccA5KDCGxCfAAAf
+2026-03-23 16:02:06: [Socket.IO] Client disconnected: gdys4ccA5KDCGxCfAAAf
+2026-03-23 16:02:07: [Socket.IO] Client connected: QsFPjjvLANGNOCotAAAh
+2026-03-23 16:02:07: [Socket.IO] Client disconnected: QsFPjjvLANGNOCotAAAh
+2026-03-23 16:02:08: [Socket.IO] Client connected: KT6Xce6TbC3IAfobAAAj
+2026-03-23 16:02:08: [Socket.IO] Client disconnected: KT6Xce6TbC3IAfobAAAj
+2026-03-23 16:02:10: [Socket.IO] Client connected: cbiPvMtAo9J9_AN8AAAl
+2026-03-23 16:02:10: [Socket.IO] Client disconnected: cbiPvMtAo9J9_AN8AAAl
+2026-03-23 16:02:12: [Socket.IO] Client connected: GuS099ESF7EGr0xrAAAn
+2026-03-23 16:02:12: [Socket.IO] Client disconnected: GuS099ESF7EGr0xrAAAn
+2026-03-23 16:02:13: [Socket.IO] Client connected: nt1Ax_VuqmxJBwchAAAp
+2026-03-23 16:02:17: [Socket.IO] Client disconnected: JvPu50k2p7tOQnjaAAAZ
+2026-03-23 16:02:19: [Socket.IO] Client disconnected: RJ6PD7LDXwOv0eO_AAAZ
+
+--- CHECKING PM2 PROCESS ---
