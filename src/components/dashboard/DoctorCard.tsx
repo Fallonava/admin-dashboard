@@ -104,11 +104,13 @@ export function DoctorCard({
 
   return (
     <div className={cn(
-      "super-glass-card p-3.5 rounded-[20px] group relative overflow-hidden border border-white/30 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300",
+      "super-glass-card p-3.5 rounded-[20px] group relative overflow-hidden border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgba(99,102,241,0.1)] hover:-translate-y-1 transition-all duration-500",
       automationEnabled && "hover:opacity-100"
     )}>
+      {/* Inner glass highlight */}
+      <div className="absolute inset-0 bg-gradient-to-br from-white/60 to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-0" />
       {automationEnabled && (
-        <div className="absolute inset-0 bg-violet-500/3 pointer-events-none" />
+        <div className="absolute inset-0 bg-violet-500/5 pointer-events-none z-0" />
       )}
 
       {/* Status dot */}

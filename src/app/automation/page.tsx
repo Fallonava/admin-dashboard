@@ -1,6 +1,7 @@
 import { NeuralCore } from "@/components/automation/NeuralCore";
 import { BroadcastControl } from "@/components/automation/BroadcastControl";
 import { ActivityStream } from "@/components/automation/ActivityStream";
+import { DynamicIslandSettings } from "@/components/automation/DynamicIslandSettings";
 import { Bell, Sparkles } from "lucide-react";
 import Link from "next/link";
 
@@ -21,7 +22,7 @@ export default function AutomationPage() {
                     </div>
                     <div className="flex flex-col min-w-0">
                         <h1 className="text-base sm:text-2xl lg:text-3xl font-black tracking-tight text-slate-900 leading-tight truncate">
-                            Automasi <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">& Siaran</span>
+                            Automasi <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">&amp; Siaran</span>
                         </h1>
                         <p className="hidden sm:block text-[11px] sm:text-xs lg:text-sm text-slate-500 font-medium mt-0.5 truncate bg-white/60 backdrop-blur-sm self-start px-1.5 -ml-1.5 rounded-md">Pusat kontrol jadwal real-time dan TV</p>
                     </div>
@@ -69,6 +70,11 @@ export default function AutomationPage() {
                 {/* Right Column — Broadcast Control */}
                 <div className="lg:col-span-7 h-max">
                     <BroadcastControl />
+                </div>
+
+                {/* Full Width — Dynamic Island Settings */}
+                <div className="lg:col-span-12">
+                    <DynamicIslandSettings />
                 </div>
             </div>
         </div>

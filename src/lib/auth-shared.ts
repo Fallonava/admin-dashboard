@@ -6,7 +6,6 @@ export const RESOURCES = [
   { key: 'doctors', label: 'Dokter', icon: 'Users' },
   { key: 'leaves', label: 'Jadwal Cuti', icon: 'Calendar' },
   { key: 'automation', label: 'Otomatisasi', icon: 'Bot' },
-  { key: 'display-control', label: 'Kontrol Layar', icon: 'Settings' },
   { key: 'users', label: 'Manajemen Pengguna', icon: 'UserSquare2' },
   { key: 'access', label: 'Manajemen Akses', icon: 'Shield' },
 ] as const;

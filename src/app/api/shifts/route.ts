@@ -28,7 +28,10 @@ export async function GET(req: Request) {
     const dayIdxParam = searchParams.get('dayIdx');
     const dayIdx = dayIdxParam !== null ? parseInt(dayIdxParam, 10) : null;
 
-    const whereClause: any = {};
+    const whereClause: any = {
+        // Exclude shifts whose doctor has been deleted (cascade leaves doctor null in some edge cases)
+        doctor: { isNot: null }
+    };
     // Filter per hari jika ada query param dayIdx (lebih efisien untuk kalender harian)
     if (dayIdx !== null && !isNaN(dayIdx)) {
         whereClause.dayIdx = dayIdx;
@@ -47,7 +50,10 @@ export async function GET(req: Request) {
         orderBy: [{ dayIdx: 'asc' }, { timeIdx: 'asc' }]
     });
 
-    const mappedShifts = shifts.map((s: any) => {
+    // Extra safety: filter out any shifts where doctor is null (shouldn't happen but defensive)
+    const validShifts = shifts.filter((s: any) => s.doctor !== null);
+
+    const mappedShifts = validShifts.map((s: any) => {
         const doctorRel = s.doctor ? { ...s.doctor } : null;
         if (doctorRel && typeof doctorRel.lastManualOverride === 'bigint') {
             doctorRel.lastManualOverride = Number(doctorRel.lastManualOverride);

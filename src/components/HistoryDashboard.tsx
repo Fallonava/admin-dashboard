@@ -434,12 +434,13 @@ export default function HistoryDashboard() {
             {/* Score View */}
             {leaderboardView === 'score' && (
               activeLeaderboard.length > 0 ? activeLeaderboard.map((staff, idx) => (
-                <div key={staff.name} className={cn("flex flex-col gap-2 p-3.5 rounded-2xl border transition-all",
-                  idx === 0 ? 'bg-gradient-to-r from-amber-50 to-yellow-50/50 border-amber-200' :
-                  idx === 1 ? 'bg-gradient-to-r from-slate-50 to-slate-50/50 border-slate-200' :
-                  idx === 2 ? 'bg-gradient-to-r from-orange-50/50 to-amber-50/50 border-orange-200' :
-                  'bg-white border-slate-100 hover:border-slate-200 hover:bg-slate-50/50'
+                <div key={staff.name} className={cn("flex flex-col gap-2 p-3.5 rounded-2xl border transition-all duration-300 relative group/row hover:z-10 hover:shadow-lg hover:scale-[1.02]",
+                  idx === 0 ? 'bg-gradient-to-r from-amber-50 to-yellow-50/50 border-amber-200 hover:border-amber-300' :
+                  idx === 1 ? 'bg-gradient-to-r from-slate-50 to-slate-50/50 border-slate-200 hover:border-slate-300' :
+                  idx === 2 ? 'bg-gradient-to-r from-orange-50/50 to-amber-50/50 border-orange-200 hover:border-orange-300' :
+                  'bg-white border-slate-100 hover:border-indigo-200 hover:bg-indigo-50/30'
                 )}>
+                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-0 bg-indigo-500 rounded-r-md transition-all duration-300 group-hover/row:h-1/2 opacity-0 group-hover/row:opacity-100" />
                   <div className="flex items-center gap-3">
                     {/* Rank */}
                     <div className={cn("w-6 h-6 rounded-full flex items-center justify-center font-black text-[11px] shrink-0",

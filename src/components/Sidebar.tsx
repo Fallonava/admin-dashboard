@@ -7,16 +7,13 @@ import {
   LayoutDashboard,
   Calendar,
   Users,
-  UserSquare2,
   BarChart3,
   Bot,
   Server,
-  Settings,
   Activity,
   Tv,
   Menu,
   X,
-  Zap,
   Shield,
   LogOut,
   FileSpreadsheet
@@ -34,8 +31,6 @@ export const navigation = [
 
 export const systems = [
   { name: "Otomatisasi", href: "/automation", icon: Bot, resource: "automation" },
-  { name: "Monitor Queue", href: "/automation/queue-monitor", icon: Zap, resource: "automation" },
-  { name: "Kontrol Layar", href: "/display-control", icon: Settings, resource: "display-control" },
   { name: "Layar Langsung", href: "/tv.html", icon: Tv, external: true, resource: null },
 ];
 

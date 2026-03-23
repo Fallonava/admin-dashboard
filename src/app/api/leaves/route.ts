@@ -32,13 +32,16 @@ const LeaveUpdateSchema = z.object({
 
 export async function GET() {
     const leaves = await (prisma.leaveRequest as any).findMany({
+        where: { doctor: { isNot: null } },
         include: { doctor: true }
     });
 
-    const mappedLeaves = leaves.map((l: any) => ({
-        ...l,
-        doctor: l.doctor?.name || 'Unknown'
-    }));
+    const mappedLeaves = leaves
+        .filter((l: any) => l.doctor !== null)
+        .map((l: any) => ({
+            ...l,
+            doctor: l.doctor?.name || 'Unknown'
+        }));
 
     return NextResponse.json(mappedLeaves);
 }

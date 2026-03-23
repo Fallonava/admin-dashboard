@@ -9,6 +9,8 @@ import type { Doctor } from "@/lib/data-service";
 import { DoctorFormModal } from "@/components/schedules/DoctorFormModal";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { PageHeader } from "@/components/ui/PageHeader";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { DoctorCardSkeleton } from "@/components/ui/Skeleton";
 import { DoctorCard } from "@/components/doctors/DoctorCard";
 
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragOverlay, defaultDropAnimationSideEffects } from "@dnd-kit/core";
@@ -74,7 +76,7 @@ const CustomDropdown = ({ value, options, onChange, icon }: any) => {
 };
 
 export default function DoctorsPage() {
-    const { data } = useSWR<Doctor[]>('/api/doctors');
+    const { data, isLoading } = useSWR<Doctor[]>('/api/doctors');
     const doctors = data || [];
 
     // Local state for doctors to handle optimistic UI during drag-and-drop
@@ -376,16 +378,20 @@ export default function DoctorsPage() {
             )}
 
             {/* ═══════════════════ GRID KARTU DOKTER ═══════════════════ */}
-            {filteredDoctors.length === 0 ? (
-                <div className="flex-1 flex flex-col items-center justify-center text-center py-24 animate-in fade-in zoom-in-95 duration-500">
-                    <div className="h-28 w-28 bg-gradient-to-br from-blue-50 to-indigo-50/30 rounded-[32px] flex items-center justify-center mb-8 shadow-[inset_0_2px_4px_rgba(255,255,255,0.8),0_12px_24px_-8px_rgba(99,102,241,0.15)] ring-1 ring-white">
-                        <UserRound size={44} className="text-blue-400/80 drop-shadow-sm" />
+            {isLoading ? (
+                <div className="flex-1 w-full min-h-0 mb-2">
+                    <div className="h-full overflow-y-auto custom-scrollbar px-1 min-h-full pb-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 3xl:grid-cols-5 4xl:grid-cols-6 gap-6">
+                            {[1, 2, 3, 4, 5, 6].map(i => <DoctorCardSkeleton key={i} />)}
+                        </div>
                     </div>
-                    <h3 className="text-2xl font-black text-slate-800 mb-2 tracking-tight">Tidak Ada Dokter</h3>
-                    <p className="text-sm text-slate-400 font-medium max-w-sm leading-relaxed">
-                        Kami tidak dapat menemukan nama dokter dengan pencarian tersebut. Coba ubah kata kunci Anda.
-                    </p>
                 </div>
+            ) : filteredDoctors.length === 0 ? (
+                <EmptyState 
+                    icon={<UserRound size={40} className="text-blue-500" />}
+                    title="Tidak Ada Dokter"
+                    description="Kami tidak dapat menemukan nama dokter dengan pencarian tersebut. Coba ubah kata kunci Anda."
+                />
             ) : (
                 <DndContext 
                     sensors={sensors} 

@@ -32,11 +32,12 @@ export default function SchedulesPage() {
             />
 
             {/* Main Content */}
-            <div className="flex flex-col lg:flex-row flex-1 min-h-0 gap-4 lg:gap-6 overflow-y-auto lg:overflow-hidden pb-6 lg:pb-0 custom-scrollbar lg:pr-0">
-                <div className="flex-none lg:flex-1 w-full flex flex-col min-h-[400px] md:min-h-[500px] lg:min-h-0 lg:overflow-hidden">
+            <div className="flex flex-col lg:flex-row flex-1 min-h-0 gap-4 lg:gap-6 overflow-hidden px-4 sm:px-6 lg:px-8 pb-6">
+                <div className="flex-none lg:flex-1 w-full flex flex-col min-h-0 overflow-hidden">
 
-                    {/* Calendar Strip (Premium Glass) */}
-                    <div className="mb-4 lg:mb-6 super-glass-card rounded-[20px] lg:rounded-[24px] p-1 lg:p-2 flex items-center gap-1 lg:gap-2 shadow-sm border border-white/40">
+                    {/* Calendar Strip (Premium Glass) — sticky, no scroll */}
+                    <div className="mb-4 lg:mb-6 shrink-0 super-glass-card rounded-[20px] lg:rounded-[24px] p-1 lg:p-2 flex items-center gap-1 lg:gap-2 shadow-sm border border-white/40">
+
                         {/* Month Indicator — compact on mobile */}
                         <div className="hidden sm:flex flex-col items-center justify-center px-4 lg:px-4 py-3 lg:py-3 bg-gradient-to-b from-white/90 to-white/50 text-blue-600 rounded-[16px] lg:rounded-[20px] mr-0.5 lg:mr-0.5 shadow-[inset_0_1px_1px_rgba(255,255,255,1),0_8px_20px_-6px_rgba(0,92,255,0.1)] backdrop-blur-xl border border-white transition-all flex-shrink-0">
                             <CalendarDays size={20} className="mb-1 opacity-90 lg:hidden" strokeWidth={2.5} />

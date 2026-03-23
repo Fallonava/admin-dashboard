@@ -56,6 +56,13 @@
     --input: 240 5% 96%;
     --ring: 219 100% 50%;
     --radius: 1.25rem; /* Smooth Apple-like squircle radius */
+
+    /* Domain Colors */
+    --color-domain-dashboard: 219 100% 50%; /* Blue */
+    --color-domain-schedules: 260 100% 60%; /* Violet */
+    --color-domain-leaves: 160 100% 40%;    /* Emerald */
+    --color-domain-doctors: 200 100% 45%;   /* Sky */
+    --color-domain-recaps: 320 100% 60%;    /* Pink/Fuchsia */
   }
 }
 

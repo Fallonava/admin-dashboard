@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import type { Doctor, Shift } from "@/lib/data-service";
 import { ShiftCalendarGrid } from "./ShiftCalendarGrid";
 import { useSocket } from "@/hooks/use-socket";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 interface ScheduleModalProps {
     doctor: Doctor | null;
@@ -492,6 +493,16 @@ export function ScheduleModal({ doctor, shifts, isOpen, onClose, onUpdate }: Sch
 
                     {/* Shift Calendar Grid */}
                     <div className="space-y-3">
+                        {dayShifts.length === 0 && !adding && !editId && (
+                            <div className="py-8 bg-slate-50/50 rounded-[24px] border border-dashed border-slate-200 mb-4 animate-in fade-in zoom-in-95 duration-500">
+                                <EmptyState 
+                                    icon={<CalendarOff size={32} className="text-slate-300" />}
+                                    title="Belum Ada Jadwal"
+                                    description="Klik 'Tambah Shift' atau pilih jam di bawah untuk mengatur jadwal dokter pada hari ini."
+                                />
+                            </div>
+                        )}
+                        
                         {editId && (
                            <div className="bg-blue-50 border border-blue-200 rounded-2xl p-5 space-y-4 mb-4">
                                 <div className="flex items-center justify-between">
