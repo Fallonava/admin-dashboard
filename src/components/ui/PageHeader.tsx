@@ -60,14 +60,16 @@ export function PageHeader({
     <header
       className={cn(
         "animate-in fade-in slide-in-from-top-4 duration-500 ease-out",
-        "sticky top-[-0.5rem] lg:top-[-1.5rem] z-50",
-        "bg-white/80 backdrop-blur-2xl",
-        "border-b border-white/80",
-        "shadow-[0_8px_30px_rgb(0,0,0,0.06)]",
+        "flex-none z-50",
+        "m-3 sm:m-4 lg:m-6 lg:mb-2",
+        "rounded-[24px] lg:rounded-[32px]",
+        "bg-white/80 backdrop-blur-2xl saturate-150",
+        "border border-white/60",
+        "shadow-[0_8px_30px_rgb(0,0,0,0.04),inset_0_1px_1px_rgba(255,255,255,0.9)]",
         className
       )}
     >
-      <div className="px-4 sm:px-6 lg:px-8 py-3.5 lg:py-4 flex items-center justify-between gap-4">
+      <div className="px-4 py-3 sm:px-5 sm:py-4 lg:px-6 lg:py-4 flex flex-col gap-3 sm:flex-row sm:items-center justify-between relative z-10">
 
         {/* Left: Icon + Title + Subtitle */}
         <div className="flex items-center gap-3.5 lg:gap-4 min-w-0">
@@ -115,18 +117,6 @@ export function PageHeader({
           </div>
         )}
       </div>
-
-      {/* Animated gradient accent stripe */}
-      <div
-        className={cn(
-          "h-[2.5px] bg-gradient-to-r opacity-70",
-          accentBarGradient
-        )}
-        style={{
-          backgroundSize: "200% 100%",
-          animation: "shimmer-bar 4s ease infinite",
-        }}
-      />
     </header>
   );
 }

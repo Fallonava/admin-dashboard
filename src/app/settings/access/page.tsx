@@ -8,6 +8,7 @@ import {
   UserPlus, Key, Eye, Pencil, AlertCircle, Loader2, ChevronDown
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { PageHeader } from "@/components/ui/PageHeader";
 
 interface Permission { resource: string; action: string; }
 interface Role {
@@ -180,16 +181,18 @@ export default function AccessManagementPage() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-black text-slate-800 tracking-tight flex items-center gap-2">
-            <Shield className="text-blue-600" /> Manajemen Akses
-          </h1>
-          <p className="text-sm text-slate-500 mt-1">Kelola role, izin akses, dan pengguna sistem</p>
-        </div>
-      </div>
+    <div className="flex-1 w-full flex flex-col h-[calc(100vh-1rem)] overflow-hidden relative">
+      <PageHeader
+        icon={<Shield size={20} className="text-white" />}
+        title="Manajemen "
+        accentWord="Akses"
+        accentColor="text-blue-600"
+        subtitle="Kelola role, izin akses, dan pengguna sistem"
+        iconGradient="from-blue-500 to-indigo-600"
+        accentBarGradient="from-blue-500 via-indigo-500 to-violet-500"
+      />
+
+      <div className="flex-1 overflow-y-auto custom-scrollbar px-4 sm:px-6 lg:px-8 pb-8 space-y-6">
 
       {/* Feedback Messages */}
       {(error || success) && (
@@ -200,12 +203,12 @@ export default function AccessManagementPage() {
       )}
 
       {/* Tabs */}
-      <div className="flex gap-2 bg-slate-100 p-1 rounded-2xl w-fit">
-        <button onClick={() => setTab("roles")} className={cn("px-5 py-2.5 rounded-xl text-sm font-bold transition-all", tab === "roles" ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-700")}>
-          <Shield size={16} className="inline mr-2" />Roles & Izin
+      <div className="flex gap-2 bg-slate-100/50 backdrop-blur-md p-1.5 rounded-[20px] w-fit border border-slate-200/50 shadow-sm ml-0">
+        <button onClick={() => setTab("roles")} className={cn("px-6 py-2.5 rounded-[16px] text-sm font-black transition-all flex items-center gap-2", tab === "roles" ? "bg-white text-blue-600 shadow-md ring-1 ring-slate-200/50" : "text-slate-500 hover:text-slate-700 hover:bg-white/40")}>
+          <Shield size={16} />Roles & Izin
         </button>
-        <button onClick={() => setTab("users")} className={cn("px-5 py-2.5 rounded-xl text-sm font-bold transition-all", tab === "users" ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-700")}>
-          <Users size={16} className="inline mr-2" />Pengguna
+        <button onClick={() => setTab("users")} className={cn("px-6 py-2.5 rounded-[16px] text-sm font-black transition-all flex items-center gap-2", tab === "users" ? "bg-white text-blue-600 shadow-md ring-1 ring-slate-200/50" : "text-slate-500 hover:text-slate-700 hover:bg-white/40")}>
+          <Users size={16} />Pengguna
         </button>
       </div>
 
@@ -216,16 +219,19 @@ export default function AccessManagementPage() {
       ) : tab === "roles" ? (
         /* ═══════════════ ROLES TAB ═══════════════ */
         <div className="space-y-4">
-          <button onClick={openNewRole} className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-700 transition-all shadow-sm">
-            <Plus size={16} /> Tambah Role Baru
+          <button 
+            onClick={openNewRole} 
+            className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-full text-sm font-black hover:bg-blue-700 transition-all shadow-[0_8px_20px_-6px_rgba(59,130,246,0.4)] active:scale-95"
+          >
+            <Plus size={18} /> Tambah Role Baru
           </button>
 
           {/* Role Cards */}
           {roles.map((role) => (
-            <div key={role.id} className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+            <div key={role.id} className="bg-white border border-slate-200 rounded-[28px] p-6 shadow-sm hover:shadow-md transition-all">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-3">
-                  <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-sm", role.isSystem ? "bg-gradient-to-br from-amber-500 to-orange-500" : "bg-gradient-to-br from-blue-500 to-indigo-500")}>
+                  <div className={cn("w-10 h-10 rounded-[14px] lg:rounded-[15px] flex items-center justify-center text-white font-black text-sm shadow-md", role.isSystem ? "bg-gradient-to-br from-amber-500 to-orange-500" : "bg-gradient-to-br from-blue-500 to-indigo-500")}>
                     {role.name.charAt(0)}
                   </div>
                   <div>
@@ -334,8 +340,11 @@ export default function AccessManagementPage() {
       ) : (
         /* ═══════════════ USERS TAB ═══════════════ */
         <div className="space-y-4">
-          <button onClick={() => setShowNewUser(true)} className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-700 transition-all shadow-sm">
-            <UserPlus size={16} /> Tambah Pengguna
+          <button 
+            onClick={() => setShowNewUser(true)} 
+            className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-full text-sm font-black hover:bg-blue-700 transition-all shadow-[0_8px_20px_-6px_rgba(59,130,246,0.4)] active:scale-95"
+          >
+            <UserPlus size={18} /> Tambah Pengguna
           </button>
 
           {/* New User Form */}
@@ -361,7 +370,7 @@ export default function AccessManagementPage() {
           )}
 
           {/* User Cards */}
-          <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden">
+          <div className="bg-white border border-slate-200 rounded-[28px] overflow-hidden shadow-sm">
             <table className="w-full text-sm">
               <thead>
                 <tr className="bg-slate-50 border-b border-slate-200">
@@ -422,6 +431,7 @@ export default function AccessManagementPage() {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 }

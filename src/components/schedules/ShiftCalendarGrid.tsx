@@ -47,7 +47,7 @@ export function ShiftCalendarGrid({ shifts, activeDay, onUpdateShiftTime, onSlot
 
     return (
         <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-            <div className="relative border-t border-l border-slate-100 mt-4 rounded-tl-xl overflow-hidden bg-slate-50/30">
+            <div className="relative border-t border-l border-white/40 mt-4 rounded-tl-[20px] overflow-hidden bg-white/20 backdrop-blur-md">
                 {HOURS.map(hour => {
                     const hourStr = `${hour.toString().padStart(2, '0')}:00`;
                     // Determine which shifts start at this hour
@@ -60,11 +60,11 @@ export function ShiftCalendarGrid({ shifts, activeDay, onUpdateShiftTime, onSlot
                     });
 
                     return (
-                        <div key={hour} className="flex min-h-[80px] border-b border-slate-100 group relative">
+                        <div key={hour} className="flex min-h-[80px] border-b border-white/30 group relative">
                             {/* Time Label */}
-                            <div className="w-16 flex flex-col items-center justify-start py-2 border-r border-slate-100 bg-white/50 shrink-0 text-slate-400 font-bold text-xs relative z-10">
+                            <div className="w-16 flex flex-col items-center justify-start py-2 border-r border-white/30 bg-white/30 backdrop-blur-sm shrink-0 text-slate-500 font-black text-[11px] relative z-10">
                                 {hourStr}
-                                <div className="absolute right-0 top-1/2 w-2 h-px bg-slate-200" />
+                                <div className="absolute right-0 top-1/2 w-2 h-px bg-slate-200/60" />
                             </div>
 
                             {/* Drop Zone */}
@@ -96,16 +96,15 @@ function DroppableSlot({ id, children, onClick }: { id: string; children: React.
         <div
             ref={setNodeRef}
             onClick={(e) => {
-                // Determine if we clicked directly on the slot vs a child shift
                 if (e.target === e.currentTarget) onClick();
             }}
             className={cn(
-                "flex-1 p-2 flex gap-2 overflow-x-auto relative transition-colors cursor-pointer",
-                isOver ? "bg-blue-50/80" : "hover:bg-slate-50"
+                "flex-1 p-2 flex gap-2 overflow-x-auto relative transition-all duration-300 cursor-pointer",
+                isOver ? "bg-indigo-50/60" : "hover:bg-white/30"
             )}
         >
             {children}
-            {isOver && <div className="absolute inset-0 border-2 border-dashed border-blue-400 rounded-xl m-1 pointer-events-none" />}
+            {isOver && <div className="absolute inset-0 border-2 border-dashed border-indigo-400/70 rounded-[16px] m-1 pointer-events-none backdrop-blur-sm" />}
         </div>
     );
 }
@@ -139,9 +138,9 @@ function ShiftCard({ shift, dragHandleProps, isOverlay }: { shift: Shift; dragHa
 
     return (
         <div className={cn(
-            "h-full min-h-[64px] rounded-xl flex overflow-hidden border border-transparent shadow-sm group",
-            light,
-            isOverlay && "shadow-2xl scale-105 rotate-2 cursor-grabbing ring-2 ring-blue-400"
+            "h-full min-h-[64px] rounded-[16px] flex overflow-hidden border shadow-sm group transition-all duration-300",
+            "bg-white/60 backdrop-blur-xl border-white/80 hover:shadow-[0_8px_24px_-8px_rgba(0,0,0,0.1)] hover:bg-white/80",
+            isOverlay && "shadow-2xl scale-[1.04] rotate-2 cursor-grabbing ring-2 ring-indigo-400/60 border-white"
         )}>
             {/* Drag Handle */}
             <div

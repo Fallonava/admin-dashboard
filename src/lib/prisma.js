@@ -87,17 +87,46 @@ var addSoftDelete = function (client) {
                 },
                 delete: function (_a) {
                     return __awaiter(this, arguments, void 0, function (_b) {
+                        var updatedDoctor;
                         var args = _b.args;
                         return __generator(this, function (_c) {
-                            return [2 /*return*/, client.doctor.update(__assign(__assign({}, args), { data: { deletedAt: new Date() } }))];
+                            switch (_c.label) {
+                                case 0: return [4 /*yield*/, client.doctor.update(__assign(__assign({}, args), { data: { deletedAt: new Date() } }))];
+                                case 1:
+                                    updatedDoctor = _c.sent();
+                                    if (!(updatedDoctor && updatedDoctor.id)) return [3 /*break*/, 3];
+                                    return [4 /*yield*/, client.shift.updateMany({
+                                            where: { doctorId: updatedDoctor.id },
+                                            data: { deletedAt: new Date() }
+                                        })];
+                                case 2:
+                                    _c.sent();
+                                    _c.label = 3;
+                                case 3: return [2 /*return*/, updatedDoctor];
+                            }
                         });
                     });
                 },
                 deleteMany: function (_a) {
                     return __awaiter(this, arguments, void 0, function (_b) {
+                        var doctorsToDelete, doctorIds;
                         var args = _b.args;
                         return __generator(this, function (_c) {
-                            return [2 /*return*/, client.doctor.updateMany(__assign(__assign({}, args), { data: { deletedAt: new Date() } }))];
+                            switch (_c.label) {
+                                case 0: return [4 /*yield*/, client.doctor.findMany({ where: args.where, select: { id: true } })];
+                                case 1:
+                                    doctorsToDelete = _c.sent();
+                                    doctorIds = doctorsToDelete.map(function (d) { return d.id; });
+                                    if (!(doctorIds.length > 0)) return [3 /*break*/, 3];
+                                    return [4 /*yield*/, client.shift.updateMany({
+                                            where: { doctorId: { in: doctorIds } },
+                                            data: { deletedAt: new Date() }
+                                        })];
+                                case 2:
+                                    _c.sent();
+                                    _c.label = 3;
+                                case 3: return [2 /*return*/, client.doctor.updateMany(__assign(__assign({}, args), { data: { deletedAt: new Date() } }))];
+                            }
                         });
                     });
                 },

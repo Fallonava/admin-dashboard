@@ -104,7 +104,7 @@ export function DoctorCard({
 
   return (
     <div className={cn(
-      "super-glass-card p-3.5 rounded-[20px] group relative overflow-hidden border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgba(99,102,241,0.1)] hover:-translate-y-1 transition-all duration-500",
+      "super-glass-card bg-white/40 backdrop-blur-3xl p-4 sm:p-5 rounded-[28px] group relative overflow-hidden border border-white/60 shadow-[0_8px_32px_rgba(0,0,0,0.04)] hover:shadow-[0_20px_60px_-15px_rgba(99,102,241,0.15)] hover:border-white/80 hover:bg-white/60 hover:-translate-y-1 transition-all duration-500",
       automationEnabled && "hover:opacity-100"
     )}>
       {/* Inner glass highlight */}
@@ -117,20 +117,20 @@ export function DoctorCard({
       <div className={cn("absolute top-4 right-4 w-3 h-3 rounded-full z-20 shadow-sm", getStatusDotColor(doc.status))} />
 
       {/* Doctor info */}
-      <div className="flex items-start gap-3 mb-3 relative z-10">
-        <Avatar className="h-12 w-12 shadow-sm border-2 border-white/50">
-          <AvatarFallback className={cn("text-sm font-bold text-white", getAvatarGradient(doc.status))}>
+      <div className="flex items-start gap-3 mb-4 relative z-10">
+        <Avatar className="h-12 w-12 shadow-sm border-[3px] border-white/80 ring-1 ring-black/5 group-hover:scale-105 transition-transform duration-300">
+          <AvatarFallback className={cn("text-sm font-black text-white", getAvatarGradient(doc.status))}>
             {doc.queueCode || doc.name.charAt(4)}
           </AvatarFallback>
         </Avatar>
         <div className="min-w-0 flex-1">
-          <h4 className="font-bold text-sm text-slate-800 leading-tight group-hover:text-blue-600 transition-colors line-clamp-2">{doc.name}</h4>
-          <div className="flex items-center gap-2 mt-1 flex-wrap">
-            <p className="text-[11px] text-slate-400 font-medium line-clamp-2">{doc.specialty}</p>
+          <h4 className="font-black text-[15px] sm:text-[16px] tracking-tight text-slate-800 leading-tight group-hover:text-blue-600 transition-colors line-clamp-1">{doc.name}</h4>
+          <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+            <p className="text-[11.5px] tracking-wide text-slate-500 font-bold line-clamp-1">{doc.specialty}</p>
             {activeShift?.registrationTime && (
-              <div className="flex items-center gap-1 bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded-md border border-blue-100">
-                <Clock size={9} />
-                <span className="text-[9px] font-bold">{activeShift.registrationTime}</span>
+              <div className="flex items-center gap-1 bg-white/60 backdrop-blur-md text-blue-600 px-2 py-0.5 rounded-[10px] border border-white/80 shadow-sm">
+                <Clock size={10} strokeWidth={2.5} />
+                <span className="text-[10px] font-black">{activeShift.registrationTime}</span>
               </div>
             )}
           </div>
@@ -138,8 +138,10 @@ export function DoctorCard({
       </div>
 
       {/* Status badge */}
-      <div className="mb-3 relative z-10">
-        <div className={cn("inline-flex px-2.5 py-1 rounded-xl text-[10px] font-bold uppercase tracking-wider", getStatusBadgeStyle(doc.status))}>
+      <div className="mb-4 relative z-10">
+        <div className={cn("inline-flex px-3 py-1.5 rounded-[12px] text-[10px] font-black uppercase tracking-widest shadow-sm backdrop-blur-md", 
+          getStatusBadgeStyle(doc.status).replace('bg-', 'bg-white/60 border border-white/80 '))}
+        >
           {STATUS_LABELS[doc.status] || doc.status}
         </div>
       </div>
@@ -186,10 +188,10 @@ export function DoctorCard({
               key={action.id}
               onClick={() => onStatusChange(doc.id, action.id as Doctor['status'])}
               className={cn(
-                "py-2 px-1 rounded-lg text-[9px] font-bold transition-all disabled:opacity-50 text-center min-h-[44px] flex items-center justify-center",
+                "py-2.5 px-1 rounded-[14px] text-[10px] font-black transition-all disabled:opacity-50 text-center min-h-[44px] flex items-center justify-center tracking-wide",
                 doc.status === action.id
-                  ? `${action.bg} text-white shadow-sm ${action.hover}`
-                  : "bg-slate-50 hover:bg-slate-100 text-slate-500 border border-slate-100 shadow-none",
+                  ? `${action.bg} text-white shadow-md ${action.hover}`
+                  : "bg-white/60 hover:bg-white backdrop-blur-md text-slate-500 border border-white/80 hover:border-white shadow-sm",
               )}
             >
               {action.label}
@@ -200,10 +202,10 @@ export function DoctorCard({
               key={action.id}
               onClick={() => onStatusChange(doc.id, action.id as Doctor['status'])}
               className={cn(
-                "py-2 px-1 rounded-lg text-[9px] font-bold transition-all disabled:opacity-50 text-center min-h-[44px] flex items-center justify-center",
+                "py-2.5 px-1 rounded-[14px] text-[10px] font-black transition-all disabled:opacity-50 text-center min-h-[44px] flex items-center justify-center tracking-wide",
                 doc.status === action.id
-                  ? `${action.bg} text-white shadow-sm ${action.hover}`
-                  : "bg-slate-50 hover:bg-slate-100 text-slate-500 border border-slate-100 shadow-none",
+                  ? `${action.bg} text-white shadow-md ${action.hover}`
+                  : "bg-white/60 hover:bg-white backdrop-blur-md text-slate-500 border border-white/80 hover:border-white shadow-sm",
               )}
             >
               {action.label}
@@ -218,10 +220,10 @@ export function DoctorCard({
               key={action.id}
               onClick={() => onStatusChange(doc.id, action.id as Doctor['status'])}
               className={cn(
-                "py-1 px-1 flex-1 min-w-[32px] rounded-md text-[9px] font-bold transition-all disabled:opacity-50 line-clamp-1 truncate text-center",
+                "py-2 px-1 flex-1 min-w-[32px] rounded-[12px] text-[10px] tracking-wide font-black transition-all disabled:opacity-50 line-clamp-1 truncate text-center",
                 doc.status === action.id
-                  ? `${action.bg} text-white shadow-sm ${action.hover}`
-                  : "bg-slate-50 hover:bg-slate-100 text-slate-500 border border-slate-100 shadow-none",
+                  ? `${action.bg} text-white shadow-md ${action.hover}`
+                  : "bg-white/60 hover:bg-white backdrop-blur-md text-slate-600 border border-white/80 hover:border-white shadow-sm scale-95 hover:scale-100",
               )}
             >
               {action.label}

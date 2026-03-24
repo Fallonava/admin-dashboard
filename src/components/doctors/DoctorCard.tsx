@@ -98,11 +98,11 @@ export function DoctorCard({ doctor, index, isSelected, onToggleSelect, onEdit, 
 
     const cardContent = (
         <div className={cn(
-            "group bg-white p-5 rounded-[24px] flex flex-col min-h-[170px] cursor-grab active:cursor-grabbing border transition-all duration-300 relative overflow-hidden",
+            "group bg-white/40 backdrop-blur-2xl p-5 sm:p-6 rounded-[32px] flex flex-col min-h-[180px] cursor-grab active:cursor-grabbing border transition-all duration-500 relative overflow-hidden",
             isSelected 
-                ? "border-blue-500 shadow-[0_4px_20px_rgba(59,130,246,0.1)] scale-[1.02]" 
-                : "border-slate-100 shadow-[0_2px_8px_rgba(0,0,0,0.02)] hover:border-slate-200 hover:shadow-[0_12px_24px_rgba(0,0,0,0.05)] hover:-translate-y-1",
-            isOverlay && "rotate-1 shadow-xl scale-105 bg-white/90 backdrop-blur-md"
+                ? "border-blue-400/80 shadow-[0_12px_40px_-12px_rgba(59,130,246,0.25)] ring-1 ring-blue-400/50 scale-[1.02] bg-white/60" 
+                : "border-white/60 shadow-[0_8px_32px_rgba(0,0,0,0.04)] hover:border-white/80 hover:bg-white/60 hover:shadow-[0_16px_48px_rgba(0,0,0,0.08)] hover:-translate-y-1",
+            isOverlay && "rotate-2 shadow-2xl scale-105 bg-white/80 backdrop-blur-[40px] border-white ring-1 ring-black/5"
         )}
             {...attributes} {...listeners}
         >
@@ -112,10 +112,10 @@ export function DoctorCard({ doctor, index, isSelected, onToggleSelect, onEdit, 
                 onClick={(e) => { e.stopPropagation(); onToggleSelect(doctor.id); }}
                 onPointerDown={(e) => e.stopPropagation()}
                 className={cn(
-                    "absolute top-4 right-4 h-5 w-5 rounded-full border flex items-center justify-center transition-all z-30 cursor-pointer",
+                    "absolute top-5 right-5 h-6 w-6 rounded-full border flex items-center justify-center transition-all duration-300 z-30 cursor-pointer shadow-sm",
                     isSelected 
-                        ? "bg-blue-600 border-blue-600 text-white" 
-                        : "border-slate-200 bg-white opacity-100 lg:opacity-0 lg:group-hover:opacity-100 hover:border-blue-400 shadow-sm"
+                        ? "bg-gradient-to-br from-blue-500 to-indigo-600 border-transparent text-white scale-110" 
+                        : "border-white/80 bg-white/40 backdrop-blur-md opacity-100 lg:opacity-0 lg:group-hover:opacity-100 hover:border-blue-400 hover:bg-white"
                 )}
             >
                 {isSelected && <Check size={12} strokeWidth={3} />}
@@ -132,34 +132,34 @@ export function DoctorCard({ doctor, index, isSelected, onToggleSelect, onEdit, 
                     </div>
                 </div>
 
-                <div className="flex-1 min-w-0 pr-2">
-                    <h3 className="font-bold text-slate-800 text-[15px] sm:text-base tracking-tight leading-tight line-clamp-1">
+                <div className="flex-1 min-w-0 pr-6">
+                    <h3 className="font-black text-slate-800 text-[16px] sm:text-[17px] tracking-tight leading-tight line-clamp-1 group-hover:text-slate-900 transition-colors">
                         {doctor.name}
                     </h3>
-                    <p className="text-[11px] font-semibold text-slate-400 mt-0.5 line-clamp-1">
+                    <p className="text-[11.5px] font-bold text-slate-400/90 mt-1 line-clamp-1 tracking-wide">
                         {doctor.specialty}
                     </p>
                     {timeRemaining && (
-                        <div className="flex items-center gap-1.5 mt-2 bg-blue-50/50 self-start px-2 py-0.5 rounded-md border border-blue-100/30">
-                            <Clock size={11} className="text-blue-500" />
-                            <span className="text-[10px] font-bold text-blue-600/80">{timeRemaining}</span>
+                        <div className="flex items-center gap-1.5 mt-2.5 bg-white/60 backdrop-blur-md self-start px-2.5 py-1 rounded-[12px] border border-white/80 shadow-sm">
+                            <Clock size={12} className="text-blue-500" strokeWidth={2.5} />
+                            <span className="text-[10px] font-black text-blue-600/90 tracking-wide">{timeRemaining}</span>
                         </div>
                     )}
                 </div>
             </div>
 
             {/* Bottom Section: Category & Status */}
-            <div className="mt-auto flex items-center justify-between gap-2 pt-3 border-t border-slate-50">
+            <div className="mt-auto flex items-center justify-between gap-2 pt-4 border-t border-slate-200/30">
                 <div className={cn(
-                    "flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-bold tracking-tight",
-                    doctor.category === 'Bedah' ? "text-rose-600 bg-rose-50" : "text-emerald-600 bg-emerald-50"
+                    "flex items-center gap-1.5 px-3 py-1.5 rounded-[12px] text-[10px] font-black tracking-wider uppercase border shadow-sm backdrop-blur-md",
+                    doctor.category === 'Bedah' ? "text-rose-600 bg-white/60 border-white/80" : "text-emerald-600 bg-white/60 border-white/80"
                 )}>
-                    <Activity size={12} />
+                    <Activity size={12} strokeWidth={2.5} />
                     {doctor.category === 'NonBedah' ? 'Non Bedah' : doctor.category}
                 </div>
 
                 <div className={cn(
-                    "flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-bold bg-white border border-slate-100 shadow-sm",
+                    "flex items-center gap-1.5 px-3 py-1.5 rounded-[12px] text-[10px] font-black tracking-wider uppercase bg-white/60 border border-white/80 shadow-sm backdrop-blur-md",
                     status.color
                 )}>
                     {status.dot && (
@@ -173,22 +173,22 @@ export function DoctorCard({ doctor, index, isSelected, onToggleSelect, onEdit, 
             </div>
 
             {/* Action Buttons (Appears on Hover or Mobile) - Clean & Minimalist */}
-            <div className="absolute top-4 left-4 flex gap-1.5 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-200 z-20 pointer-events-auto">
+            <div className="absolute top-5 left-5 flex gap-2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300 z-20 pointer-events-auto">
                 <button
                     onClick={(e) => { e.stopPropagation(); onEdit(doctor); }}
                     onPointerDown={(e) => e.stopPropagation()}
-                    className="h-8 w-8 flex items-center justify-center rounded-lg bg-white shadow-md border border-slate-100 text-slate-400 hover:text-blue-600 hover:border-blue-100 transition-all active:scale-95"
+                    className="h-9 w-9 flex items-center justify-center rounded-[12px] bg-white/80 backdrop-blur-md shadow-sm border border-white/80 text-slate-400 hover:text-blue-600 hover:border-blue-200 hover:bg-white transition-all active:scale-95"
                     title="Edit"
                 >
-                    <Edit2 size={13} />
+                    <Edit2 size={14} strokeWidth={2.5} />
                 </button>
                 <button
                     onClick={(e) => { e.stopPropagation(); onDelete(doctor.id); }}
                     onPointerDown={(e) => e.stopPropagation()}
-                    className="h-8 w-8 flex items-center justify-center rounded-lg bg-white shadow-md border border-slate-100 text-slate-400 hover:text-rose-600 hover:border-rose-100 transition-all active:scale-95"
+                    className="h-9 w-9 flex items-center justify-center rounded-[12px] bg-white/80 backdrop-blur-md shadow-sm border border-white/80 text-slate-400 hover:text-rose-600 hover:border-rose-200 hover:bg-white transition-all active:scale-95"
                     title="Hapus"
                 >
-                    <Trash2 size={13} />
+                    <Trash2 size={14} strokeWidth={2.5} />
                 </button>
             </div>
         </div>

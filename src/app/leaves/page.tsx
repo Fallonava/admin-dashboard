@@ -58,35 +58,40 @@ export default function LeavesPage() {
     );
 
     return (
-        <div className="flex-1 w-full flex flex-col h-[calc(100vh-1rem)] overflow-hidden bg-slate-50/50">
-            <PageHeader
-              icon={<CalendarDays size={20} className="text-white" />}
-              title="Jadwal Cuti"
-              accentWord="Cuti"
-              accentColor="text-emerald-600"
-              subtitle="Kelola jadwal cuti dokter"
-              iconGradient="from-emerald-500 to-teal-600"
-              accentBarGradient="from-emerald-500 via-teal-500 to-cyan-500"
-              actions={
-                <div className="relative group">
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-indigo-500/10 rounded-2xl blur-md opacity-0 group-focus-within:opacity-100 transition duration-500" />
-                  <div className="relative flex items-center w-full sm:w-[260px]">
-                    {isSearching ? (
-                      <Loader2 className="absolute left-4 text-blue-500 h-4 w-4 animate-spin shrink-0" />
-                    ) : (
-                      <Search className="absolute left-4 text-slate-400 h-4 w-4 shrink-0" />
-                    )}
-                    <input
-                      type="text"
-                      placeholder="Cari nama dokter..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full bg-white border border-slate-200 placeholder:text-slate-400 text-sm font-semibold text-slate-700 outline-none rounded-xl pl-11 pr-4 py-2 focus:border-emerald-300 focus:ring-2 focus:ring-emerald-500/10 transition-all"
-                    />
-                  </div>
-                </div>
-              }
-            />
+        <div className="flex-1 w-full flex flex-col h-[calc(100vh-1rem)] overflow-hidden relative">
+            {/* Ambient Animated Background (2026 Aesthetic) */}
+            <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-gradient-to-br from-emerald-400/20 via-teal-400/10 to-transparent blur-[120px] rounded-full mix-blend-multiply animate-blob pointer-events-none" />
+            <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-gradient-to-tl from-cyan-400/20 via-blue-400/10 to-transparent blur-[120px] rounded-full mix-blend-multiply animate-blob animation-delay-2000 pointer-events-none" />
+            
+            <div className="relative z-10 flex flex-col h-full w-full animate-in fade-in duration-700">
+                <PageHeader
+                  icon={<CalendarDays size={20} className="text-white" />}
+                  title="Jadwal Cuti"
+                  accentWord="Cuti"
+                  accentColor="text-emerald-600"
+                  subtitle="Kelola jadwal cuti dokter"
+                  iconGradient="from-emerald-500 to-teal-600"
+                  accentBarGradient="from-emerald-500 via-teal-500 to-cyan-500"
+                  actions={
+                    <div className="relative group">
+                      <div className="absolute inset-0 bg-gradient-to-r from-emerald-400/20 to-teal-400/20 rounded-full blur-md opacity-0 group-focus-within:opacity-100 transition duration-500" />
+                      <div className="relative flex items-center w-full sm:w-[280px]">
+                        {isSearching ? (
+                          <Loader2 className="absolute left-4 text-emerald-500 h-4 w-4 animate-spin shrink-0" />
+                        ) : (
+                          <Search className="absolute left-4 text-slate-400 group-focus-within:text-emerald-500 h-4 w-4 shrink-0 transition-colors" />
+                        )}
+                        <input
+                          type="text"
+                          placeholder="Cari nama dokter..."
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          className="w-full bg-white/50 backdrop-blur-xl border border-white/80 placeholder:text-slate-400 text-sm font-bold text-slate-700 outline-none rounded-full pl-11 pr-4 py-2.5 focus:border-emerald-400 focus:bg-white/90 focus:ring-4 focus:ring-emerald-500/20 transition-all shadow-[0_2px_10px_-2px_rgba(0,0,0,0.02)] hover:bg-white/70 hover:shadow-md"
+                        />
+                      </div>
+                    </div>
+                  }
+                />
 
             <AllLeavesModal
                 isOpen={isAllLeavesOpen}
@@ -116,6 +121,7 @@ export default function LeavesPage() {
                     totalLeaves={totalLeaves}
                 />
             </div>
+          </div>
         </div>
     );
 }

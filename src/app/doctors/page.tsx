@@ -38,8 +38,8 @@ const CustomDropdown = ({ value, options, onChange, icon }: any) => {
                 type="button"
                 onClick={() => setOpen(!open)}
                 className={cn(
-                    "w-full sm:w-auto flex items-center justify-between gap-1.5 sm:gap-2.5 bg-white rounded-[16px] px-3 sm:px-4 py-2 sm:py-2.5 text-[11px] sm:text-xs font-bold text-slate-600 outline-none shadow-sm hover:text-slate-900 border border-slate-200 transition-all whitespace-nowrap",
-                    open && "ring-2 ring-slate-200 border-slate-300 bg-slate-50 shadow-md text-slate-900"
+                    "w-full sm:w-auto flex items-center justify-between gap-1.5 sm:gap-2.5 bg-white/40 backdrop-blur-xl rounded-[20px] px-4 py-2.5 text-xs font-bold text-slate-700 outline-none shadow-sm hover:text-slate-900 border border-white/60 hover:border-white/80 hover:bg-white/60 transition-all duration-300 whitespace-nowrap",
+                    open && "ring-4 ring-indigo-500/10 border-indigo-200 bg-white/80 shadow-[0_8px_24px_-8px_rgba(79,70,229,0.15)] text-slate-900"
                 )}
                 aria-haspopup="listbox"
                 aria-expanded={open}
@@ -49,7 +49,7 @@ const CustomDropdown = ({ value, options, onChange, icon }: any) => {
             </button>
             
             <div className={cn(
-                "absolute top-[calc(100%+8px)] left-0 w-full min-w-[180px] bg-white/95 backdrop-blur-xl rounded-[16px] shadow-[0_10px_30px_-10px_rgba(0,0,0,0.1)] border border-slate-100 p-1.5 transition-all duration-200 origin-top-left z-50 overflow-y-auto max-h-[250px] custom-scrollbar",
+                "absolute top-[calc(100%+12px)] left-0 w-full min-w-[200px] bg-white/80 backdrop-blur-[30px] rounded-[24px] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.15)] border border-white/80 p-2 border-t-white/100 transition-all duration-300 origin-top-left z-50 overflow-y-auto max-h-[300px] custom-scrollbar ring-1 ring-black/5",
                 open ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-95 -translate-y-2 pointer-events-none"
             )}>
                 {options.map((opt: any) => (
@@ -58,10 +58,10 @@ const CustomDropdown = ({ value, options, onChange, icon }: any) => {
                         type="button"
                         onClick={() => { onChange(opt.value); setOpen(false); }}
                         className={cn(
-                            "w-full text-left px-3 py-2 rounded-[10px] text-xs font-semibold transition-all flex items-center justify-between group/item",
+                            "w-full text-left px-3.5 py-2.5 rounded-[16px] text-xs font-bold transition-all duration-300 flex items-center justify-between group/item",
                             value === opt.value 
-                                ? "bg-blue-600 text-white shadow-md shadow-blue-500/20" 
-                                : "text-slate-600 hover:bg-blue-50 hover:text-blue-600"
+                                ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-[0_4px_12px_-4px_rgba(79,70,229,0.4)] scale-[0.98]" 
+                                : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 scale-100"
                         )}
                     >
                         <span>{opt.label}</span>
@@ -261,7 +261,15 @@ export default function DoctorsPage() {
     };
 
     return (
-        <div className="flex-1 w-full flex flex-col h-[calc(100vh-1rem)] overflow-hidden bg-slate-50/50">
+        <div className="flex-1 w-full flex flex-col h-[calc(100vh-1rem)] overflow-hidden relative">
+            {/* Ambient Animated Glowing Background */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+                <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-300/30 rounded-full mix-blend-multiply filter blur-[80px] opacity-70 animate-blob" />
+                <div className="absolute top-[20%] right-[-10%] w-[40%] h-[40%] bg-indigo-300/30 rounded-full mix-blend-multiply filter blur-[80px] opacity-70 animate-blob animation-delay-2000" />
+                <div className="absolute bottom-[-10%] left-[20%] w-[50%] h-[50%] bg-emerald-300/20 rounded-full mix-blend-multiply filter blur-[80px] opacity-70 animate-blob animation-delay-4000" />
+            </div>
+
+            <div className="relative z-10 w-full flex-none">
             <PageHeader
               icon={<Users size={20} className="text-white" />}
               title="Direktori Dokter"
@@ -280,7 +288,7 @@ export default function DoctorsPage() {
                   </button>
                   <button
                     onClick={() => { setEditingDoctor(undefined); setIsFormOpen(true); }}
-                    className="flex items-center gap-1.5 bg-blue-600 text-white px-4 py-2.5 rounded-xl font-bold text-sm shadow-sm hover:bg-blue-700 transition-all active:scale-95"
+                    className="flex items-center gap-1.5 bg-blue-600 text-white px-5 py-2.5 rounded-[18px] font-bold text-sm shadow-[0_8px_20px_-6px_rgba(0,92,255,0.4)] hover:bg-blue-700 transition-all active:scale-95"
                   >
                     <Plus size={16} />
                     <span>Tambah Dokter</span>
@@ -288,18 +296,19 @@ export default function DoctorsPage() {
                 </>
               }
             />
+            </div>
 
-            <div className="flex-1 flex flex-col px-4 sm:px-6 lg:px-8 pt-5 overflow-hidden">
+            <div className="flex-1 flex flex-col px-4 sm:px-6 lg:px-8 pt-5 overflow-hidden relative z-10 animate-in fade-in zoom-in-95 duration-700 ease-out fill-mode-both">
 
-            <div className="flex flex-col xl:flex-row gap-3 xl:gap-4 mb-6 xl:mb-8 relative z-10 w-full items-center">
+            <div className="flex flex-col xl:flex-row gap-3 xl:gap-4 mb-6 xl:mb-8 relative z-20 w-full items-center">
                 {/* Search Input */}
                 <div className="relative group w-full xl:w-[320px] shrink-0">
-                    <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-indigo-500/10 rounded-[20px] blur-md opacity-0 group-focus-within:opacity-100 transition duration-500"></div>
-                    <div className="relative flex items-center w-full shadow-sm rounded-[20px] bg-white border border-slate-200 hover:border-blue-200 transition-all focus-within:border-blue-300 focus-within:ring-4 focus-within:ring-blue-500/10 group-focus-within:shadow-[0_4px_20px_rgba(59,130,246,0.08)]">
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-indigo-500/20 rounded-[24px] blur-xl opacity-0 group-focus-within:opacity-100 transition duration-500 pointer-events-none"></div>
+                    <div className="relative flex items-center w-full shadow-sm rounded-[24px] bg-white/40 backdrop-blur-xl border border-white/60 hover:bg-white/60 hover:border-white/80 transition-all duration-300 focus-within:border-blue-300 focus-within:ring-4 focus-within:bg-white focus-within:ring-blue-500/20 overflow-hidden group-focus-within:shadow-[0_8px_30px_rgba(59,130,246,0.15)]">
                         {isSearching ? (
                             <Loader2 className="absolute left-4 text-blue-500 h-4 w-4 animate-spin" />
                         ) : (
-                            <Search className="absolute left-4 text-slate-400 h-4 w-4" />
+                            <Search className="absolute left-4 text-slate-400 h-4 w-4 group-focus-within:text-blue-500 transition-colors" />
                         )}
                         <input
                             type="search"
@@ -311,9 +320,9 @@ export default function DoctorsPage() {
                         {searchTerm && (
                             <button 
                                 onClick={() => setSearchTerm("")}
-                                className="absolute right-3 text-slate-300 hover:text-slate-500 transition-colors bg-slate-100 hover:bg-slate-200 rounded-full p-0.5"
+                                className="absolute right-3 text-slate-400 hover:text-slate-600 transition-colors bg-white/60 hover:bg-white rounded-full p-1 border border-black/5"
                             >
-                                <X size={14} />
+                                <X size={14} strokeWidth={2.5} />
                             </button>
                         )}
                     </div>
@@ -363,9 +372,9 @@ export default function DoctorsPage() {
                     <button
                         onClick={toggleSelectAll}
                         title={selectedIds.size === filteredDoctors.length && filteredDoctors.length > 0 ? "Batal Pilih Semua" : "Pilih Semua"}
-                        className="hidden xl:flex items-center justify-center w-[40px] h-[40px] bg-white rounded-[16px] shadow-sm border border-slate-200 text-slate-500 hover:text-slate-800 hover:bg-slate-50 transition-all active:scale-95 ml-auto focus:outline-none focus:ring-2 focus:ring-slate-200"
+                        className="hidden xl:flex items-center justify-center w-11 h-11 bg-white/40 backdrop-blur-xl rounded-[20px] border border-white/60 shadow-sm text-slate-500 hover:text-slate-800 hover:bg-white/60 hover:border-white/80 transition-all duration-300 active:scale-95 ml-auto focus:outline-none focus:ring-4 focus:ring-slate-300/20"
                     >
-                        <CheckSquare className="w-4 h-4" />
+                        <CheckSquare className="w-5 h-5" strokeWidth={2.5} />
                     </button>
                 </div>
             </div>
@@ -445,35 +454,35 @@ export default function DoctorsPage() {
 
             {/* ═══════════════════ FLOATING ACTION BAR (BULK) ═══════════════════ */}
             <div className={cn(
-                "fixed bottom-8 left-1/2 -translate-x-1/2 max-w-[95vw] sm:max-w-none bg-white/90 backdrop-blur-xl border border-slate-200/60 rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.08)] p-2 sm:p-2.5 flex items-center transition-all duration-500 z-50 overflow-hidden",
-                selectedIds.size > 0 ? "translate-y-0 opacity-100 scale-100" : "translate-y-20 opacity-0 scale-95 pointer-events-none"
+                "fixed bottom-8 left-1/2 -translate-x-1/2 max-w-[95vw] sm:max-w-none bg-white/40 backdrop-blur-[40px] border border-white/80 rounded-[32px] shadow-[0_24px_60px_-12px_rgba(0,0,0,0.15)] ring-1 ring-white/60 p-2.5 sm:p-3 flex items-center transition-all duration-700 z-[100] overflow-hidden ease-[cubic-bezier(0.23,1,0.32,1)]",
+                selectedIds.size > 0 ? "translate-y-0 opacity-100 scale-100" : "translate-y-24 opacity-0 scale-90 pointer-events-none"
             )}>
                 <div className="flex items-center gap-2 sm:gap-3 overflow-x-auto custom-scrollbar-hide px-1">
-                    <div className="bg-blue-600 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-bold flex items-center gap-2 text-white shadow-sm shadow-blue-500/20 whitespace-nowrap flex-shrink-0">
-                        <CheckSquare size={14} />
+                    <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-2 sm:py-2.5 rounded-[20px] text-xs sm:text-sm font-bold flex items-center gap-2 text-white shadow-lg shadow-blue-500/30 whitespace-nowrap flex-shrink-0">
+                        <CheckSquare size={16} strokeWidth={2.5} />
                         <span>{selectedIds.size} dipilih</span>
                     </div>
                     
-                    <div className="h-6 w-px bg-slate-200 flex-shrink-0" />
+                    <div className="h-8 w-px bg-slate-200/60 flex-shrink-0" />
                     
-                    <div className="flex items-center gap-1 sm:gap-1.5 flex-shrink-0">
-                        <button onClick={() => handleBulkStatusChange('CUTI')} className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-[11px] sm:text-xs font-bold bg-white text-slate-600 hover:bg-slate-50 border border-slate-200 transition-all shadow-[0_1px_2px_rgba(0,0,0,0.02)] whitespace-nowrap">Cuti</button>
-                        <button onClick={() => handleBulkStatusChange('TIDAK_PRAKTEK')} className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-[11px] sm:text-xs font-bold bg-white text-slate-600 hover:bg-slate-50 border border-slate-200 transition-all shadow-[0_1px_2px_rgba(0,0,0,0.02)] whitespace-nowrap">Nonaktif</button>
-                        <button onClick={() => handleBulkStatusChange('BUKA')} className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-[11px] sm:text-xs font-bold bg-blue-50 text-blue-600 hover:bg-blue-100 border border-blue-100 transition-all shadow-[0_1px_2px_rgba(0,0,0,0.02)] whitespace-nowrap">Buka</button>
+                    <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
+                        <button onClick={() => handleBulkStatusChange('CUTI')} className="px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-[16px] text-xs font-bold bg-white/60 hover:bg-white text-slate-600 border border-white/60 transition-all shadow-sm whitespace-nowrap">Cuti</button>
+                        <button onClick={() => handleBulkStatusChange('TIDAK_PRAKTEK')} className="px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-[16px] text-xs font-bold bg-white/60 hover:bg-white text-slate-600 border border-white/60 transition-all shadow-sm whitespace-nowrap">Nonaktif</button>
+                        <button onClick={() => handleBulkStatusChange('BUKA')} className="px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-[16px] text-xs font-bold bg-emerald-50 text-emerald-600 hover:bg-emerald-100 border border-emerald-100 transition-all shadow-sm whitespace-nowrap">Buka</button>
                     </div>
 
-                    <div className="h-6 w-px bg-slate-200 flex-shrink-0" />
+                    <div className="h-8 w-px bg-slate-200/60 flex-shrink-0" />
 
                     <button 
                         onClick={() => setIsDeleteModalOpen(true)}
-                        className="flex-shrink-0 flex items-center justify-center h-8 w-8 sm:h-9 sm:w-9 rounded-full bg-rose-50 hover:bg-rose-100 text-rose-500 font-bold transition-colors border border-rose-100"
+                        className="flex-shrink-0 flex items-center justify-center h-9 w-9 sm:h-10 sm:w-10 rounded-[16px] bg-rose-50 hover:bg-rose-100 text-rose-500 font-bold transition-all border border-rose-100 hover:shadow-sm"
                         title="Hapus Massal"
                     >
-                        <Trash2 size={16} />
+                        <Trash2 size={16} strokeWidth={2.5} />
                     </button>
 
-                    <button onClick={() => setSelectedIds(new Set())} className="flex-shrink-0 flex items-center justify-center h-8 w-8 sm:h-9 sm:w-9 ml-0 sm:ml-1 rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors">
-                        <X size={18} />
+                    <button onClick={() => setSelectedIds(new Set())} className="flex-shrink-0 flex items-center justify-center h-9 w-9 sm:h-10 sm:w-10 ml-0 sm:ml-1 rounded-[16px] text-slate-400 hover:bg-white/80 hover:text-slate-700 transition-all border border-transparent hover:border-white hover:shadow-sm">
+                        <X size={20} strokeWidth={2.5} />
                     </button>
                 </div>
             </div>

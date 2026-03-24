@@ -162,8 +162,15 @@ export function DashboardClient() {
   const todayLabel = now.toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
 
   return (
-    <div className="w-full h-full flex flex-col overflow-hidden">
+    <div className="w-full h-full flex flex-col overflow-hidden relative bg-slate-50/50">
+      {/* Ambient Animated Glowing Background */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-300/30 rounded-full mix-blend-multiply filter blur-[80px] opacity-70 animate-blob" />
+        <div className="absolute top-[20%] right-[-10%] w-[40%] h-[40%] bg-indigo-300/30 rounded-full mix-blend-multiply filter blur-[80px] opacity-70 animate-blob animation-delay-2000" />
+        <div className="absolute bottom-[-10%] left-[20%] w-[50%] h-[50%] bg-emerald-300/20 rounded-full mix-blend-multiply filter blur-[80px] opacity-70 animate-blob animation-delay-4000" />
+      </div>
 
+      <div className="relative z-10 w-full flex-none">
       {/* ═══════════════════ UNIFIED PAGE HEADER ═══════════════════ */}
       <PageHeader
         icon={<LayoutDashboard size={20} className="text-white" />}
@@ -208,17 +215,17 @@ export function DashboardClient() {
             <button
               onClick={toggleAutomation}
               className={cn(
-                "flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all active:scale-[0.97] relative overflow-hidden border shrink-0",
+                "flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-black transition-all active:scale-[0.97] relative overflow-hidden border shrink-0",
                 automationEnabled
-                  ? "bg-gradient-to-r from-violet-500 to-indigo-600 text-white shadow-[0_3px_10px_rgba(99,102,241,0.3)] border-violet-400/50"
+                  ? "bg-gradient-to-r from-violet-600 to-indigo-700 text-white shadow-[0_8px_20px_-6px_rgba(99,102,241,0.5)] border-violet-400/50"
                   : "bg-white text-slate-600 hover:bg-slate-50 border-slate-200 shadow-sm"
               )}
             >
-              <Zap size={13} className={cn("shrink-0 transition-all", automationEnabled ? "fill-white text-white drop-shadow-[0_0_4px_rgba(167,139,250,0.8)]" : "text-slate-400")} />
+              <Zap size={14} className={cn("shrink-0 transition-all", automationEnabled ? "fill-white text-white drop-shadow-[0_0_4px_rgba(167,139,250,0.8)]" : "text-slate-400")} />
               <span>{automationEnabled ? "AI Aktif" : "AI Pasif"}</span>
               {automationEnabled && (
-                <span className="flex h-1.5 w-1.5 shrink-0">
-                  <span className="animate-ping absolute inline-flex h-1.5 w-1.5 top-1.5 right-1.5 rounded-full bg-emerald-400 opacity-75" />
+                <span className="flex h-1.5 w-1.5 shrink-0 ml-0.5">
+                  <span className="animate-ping absolute inline-flex h-1.5 w-1.5 top-2 right-2 rounded-full bg-emerald-400 opacity-75" />
                   <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500" />
                 </span>
               )}
@@ -226,18 +233,18 @@ export function DashboardClient() {
 
             {/* Search (desktop) */}
             <div className="relative group hidden lg:block shrink-0">
-              <div className="absolute -inset-0.5 bg-gradient-to-r from-violet-500/20 to-blue-500/20 rounded-[14px] blur opacity-0 group-focus-within:opacity-100 transition duration-500" />
+              <div className="absolute -inset-0.5 bg-gradient-to-r from-violet-500/20 to-blue-500/20 rounded-full blur opacity-0 group-focus-within:opacity-100 transition duration-500" />
               <div className="relative flex items-center">
                 {isSearching
-                  ? <Loader2 className="absolute left-3 top-1/2 -translate-y-1/2 text-violet-500 h-4 w-4 animate-spin shrink-0" />
-                  : <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 h-4 w-4 shrink-0" />
+                  ? <Loader2 className="absolute left-3.5 top-1/2 -translate-y-1/2 text-violet-500 h-4 w-4 animate-spin shrink-0" />
+                  : <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 h-4 w-4 shrink-0" />
                 }
                 <input
                   type="text"
                   placeholder="Cari dokter..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-9 pr-4 py-2 rounded-xl bg-white text-sm w-44 xl:w-52 outline-none border border-slate-200 focus:border-violet-300 focus:ring-2 focus:ring-violet-500/10 transition-all font-semibold text-slate-700 placeholder:text-slate-400 shadow-sm"
+                  className="pl-10 pr-4 py-2.5 rounded-full bg-white/40 backdrop-blur-xl hover:bg-white/60 focus:bg-white text-sm w-44 xl:w-52 outline-none border border-white/60 hover:border-white/80 focus:border-violet-300 focus:ring-4 focus:ring-violet-500/10 transition-all duration-300 font-black text-slate-700 placeholder:text-slate-400 shadow-[0_2px_10px_-2px_rgba(0,0,0,0.05)] focus:shadow-[0_8px_30px_rgba(139,92,246,0.15)]"
                 />
               </div>
             </div>
@@ -253,9 +260,10 @@ export function DashboardClient() {
           </div>
         }
       />
+      </div>{/* End Header Wrapper */}
 
       {/* ═══════════ SCROLLABLE CONTENT ═══════════ */}
-      <div className="flex-1 overflow-y-auto custom-scrollbar px-4 sm:px-6 lg:px-8 pb-6 space-y-5 pt-5">
+      <div className="flex-1 overflow-y-auto custom-scrollbar px-4 sm:px-6 lg:px-8 pb-6 space-y-6 pt-5 relative z-10 animate-in fade-in duration-700 ease-out">
 
         {/* Stats Cards */}
         <DashboardStats
@@ -273,22 +281,23 @@ export function DashboardClient() {
               Kontrol Status Langsung
             </h3>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3">
               {/* Mobile Search Button */}
               <button
                 onClick={() => setIsMobileSearchOpen(true)}
-                className="lg:hidden flex items-center gap-2 p-2.5 min-h-[44px] bg-white/80 hover:bg-white border border-white/50 rounded-xl shadow-sm transition-all active:scale-95"
+                className="lg:hidden flex items-center gap-2 px-3 py-2 min-h-[40px] bg-white/40 backdrop-blur-xl hover:bg-white border border-white/60 hover:border-white/80 rounded-[14px] shadow-sm transition-all duration-300 active:scale-95 text-slate-600 hover:text-indigo-600"
                 title="Cari Dokter"
               >
-                <Search size={18} className="text-slate-600" />
-                <span className="text-sm font-semibold text-slate-700">Cari</span>
+                <Search size={16} strokeWidth={2.5} />
+                <span className="text-[13px] font-black tracking-wide">Cari</span>
               </button>
 
+              {/* Status Indicator */}
               <div className={cn(
-                "px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-2 transition-all shadow-sm border",
+                "px-3.5 py-2 rounded-[14px] text-[11px] font-black tracking-widest uppercase flex items-center gap-2 transition-all shadow-[0_4px_12px_-4px_rgba(0,0,0,0.1)] border backdrop-blur-md",
                 automationEnabled
-                  ? "bg-violet-50 text-violet-600 border-violet-100"
-                  : "bg-emerald-50 text-emerald-600 border-emerald-100"
+                  ? "bg-violet-50/80 text-violet-700 border-violet-200"
+                  : "bg-emerald-50/80 text-emerald-700 border-emerald-200"
               )}>
                 <span className="relative flex h-2 w-2">
                   <span className={cn(
@@ -300,7 +309,7 @@ export function DashboardClient() {
                     automationEnabled ? "bg-violet-500" : "bg-emerald-500"
                   )} />
                 </span>
-                {automationEnabled ? "AI Mengelola Sistem" : "Sistem Online"}
+                {automationEnabled ? "AI Active" : "Online"}
               </div>
             </div>
           </div>

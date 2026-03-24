@@ -173,7 +173,7 @@ export function LeaveCalendar({ leaves, onRefresh, onOpenAll, totalLeaves = 0 }:
 
             {/* ══════════ KIRI: KALENDER ══════════ */}
             <div className="w-full lg:w-[40%] flex-shrink-0 flex flex-col gap-5 lg:overflow-y-auto lg:custom-scrollbar lg:pb-4 lg:pr-2">
-                <div className="super-glass-card rounded-[32px] p-5 sm:p-6 lg:p-7 shadow-sm flex-shrink-0 border border-slate-100/60 bg-white/40">
+                <div className="rounded-[40px] p-5 sm:p-6 lg:p-7 shadow-[0_8px_40px_rgba(0,0,0,0.04)] flex-shrink-0 border border-white/60 bg-white/40 backdrop-blur-2xl transition-all duration-500 hover:shadow-[0_8px_50px_rgba(0,0,0,0.06)] hover:bg-white/50">
                     {/* Month Nav */}
                     <div className="flex items-center justify-between mb-5 sm:mb-6">
                         <h2 className="text-base sm:text-lg lg:text-xl font-bold text-slate-700 tracking-tight">
@@ -224,12 +224,12 @@ export function LeaveCalendar({ leaves, onRefresh, onOpenAll, totalLeaves = 0 }:
                                     key={`d-${i}`}
                                     onClick={() => setSelectedDate(date)}
                                     className={cn(
-                                        "aspect-square rounded-[14px] sm:rounded-2xl flex flex-col items-center justify-center relative transition-all duration-300 text-xs sm:text-sm lg:text-base font-semibold overflow-hidden group",
+                                        "aspect-square rounded-[16px] sm:rounded-[20px] flex flex-col items-center justify-center relative transition-all duration-300 text-xs sm:text-sm lg:text-base font-bold overflow-hidden group",
                                         isSelected
-                                            ? "bg-slate-700 text-white shadow-[0_4px_12px_rgba(51,65,85,0.25)] ring-2 ring-slate-700/80 ring-offset-2 scale-[1.05]"
+                                            ? "bg-slate-800 text-white shadow-[0_8px_20px_rgba(15,23,42,0.3)] ring-2 ring-slate-800/20 ring-offset-2 scale-[1.05]"
                                             : isToday
-                                                ? "bg-blue-50 text-blue-600 ring-1 ring-blue-200 shadow-inner"
-                                                : "text-slate-500 bg-white/40 hover:bg-slate-50/80 hover:text-slate-700 shadow-[0_1px_2px_rgba(0,0,0,0.02)] border border-slate-100/50"
+                                                ? "bg-gradient-to-br from-emerald-50 to-teal-50 text-emerald-600 ring-1 ring-emerald-200 shadow-inner"
+                                                : "text-slate-600 bg-white/40 hover:bg-white/80 hover:text-slate-900 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)] border border-white/60 hover:shadow-md hover:-translate-y-0.5"
                                     )}
                                 >
                                     <span className="relative z-10">{date.getDate()}</span>
@@ -261,23 +261,23 @@ export function LeaveCalendar({ leaves, onRefresh, onOpenAll, totalLeaves = 0 }:
                 <div className="flex flex-col gap-3 relative z-10 px-1 mt-2 lg:mt-4">
                     <button
                         onClick={() => setIsAddModalOpen(true)}
-                        className="w-full h-12 sm:h-14 rounded-[20px] bg-slate-700 hover:bg-slate-600 text-white text-xs sm:text-sm font-semibold transition-all shadow-[0_4px_14px_0_rgba(51,65,85,0.39)] flex items-center justify-center gap-2.5 active:scale-95 group relative overflow-hidden"
+                        className="w-full h-12 sm:h-14 rounded-[24px] bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white text-xs sm:text-sm font-black transition-all shadow-[0_8px_20px_-6px_rgba(16,185,129,0.5)] hover:shadow-[0_8px_25px_-6px_rgba(16,185,129,0.6)] hover:-translate-y-0.5 flex items-center justify-center gap-2.5 active:scale-95 group relative overflow-hidden"
                     >
                         <div className="absolute inset-0 w-full h-full bg-white/10 -translate-x-full group-hover:animate-shimmer" />
-                        <Plus size={16} className="relative z-10" />
+                        <Plus size={18} className="relative z-10" />
                         <span className="relative z-10">Tambah Cuti</span>
                     </button>
 
                     <button
                         onClick={onOpenAll}
-                        className="w-full h-12 sm:h-14 rounded-[20px] bg-gradient-to-br from-blue-400 to-blue-500 hover:from-blue-500 hover:to-blue-600 text-white text-xs sm:text-sm font-semibold transition-all shadow-[0_4px_14px_0_rgba(96,165,250,0.39)] flex items-center justify-between px-5 sm:px-6 active:scale-95 group relative overflow-hidden border border-blue-400/30"
+                        className="w-full h-12 sm:h-14 rounded-[24px] bg-white/60 backdrop-blur-xl hover:bg-white text-slate-700 text-xs sm:text-sm font-black transition-all shadow-[0_4px_14px_-4px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_25px_-4px_rgba(0,0,0,0.1)] hover:-translate-y-0.5 flex items-center justify-between px-5 sm:px-6 active:scale-95 group relative overflow-hidden border border-white/80"
                     >
-                        <div className="absolute inset-0 w-full h-full bg-white/20 -translate-x-full group-hover:animate-shimmer" />
+                        <div className="absolute inset-0 w-full h-full bg-slate-50/50 -translate-x-full group-hover:animate-shimmer" />
                         <div className="flex items-center gap-2.5 relative z-10">
-                            <CalendarIcon size={18} className="text-blue-50" />
+                            <CalendarIcon size={18} className="text-emerald-500" />
                             <span>Lihat Semua Data Cuti</span>
                         </div>
-                        <div className="bg-white/20 backdrop-blur-md text-white rounded-xl px-2.5 py-1 text-[11px] sm:text-xs font-bold relative z-10 select-none border border-white/10">
+                        <div className="bg-emerald-50 text-emerald-700 rounded-[12px] px-2.5 py-1 text-[11px] sm:text-xs font-black relative z-10 select-none border border-emerald-100/50">
                             {totalLeaves} Data
                         </div>
                     </button>
@@ -303,7 +303,7 @@ export function LeaveCalendar({ leaves, onRefresh, onOpenAll, totalLeaves = 0 }:
             </div>
 
             {/* ══════════ KANAN: DAFTAR CUTI TANGGAL TERPILIH ══════════ */}
-            <div className="flex-1 lg:w-[60%] super-glass-card rounded-[32px] p-6 lg:p-8 shadow-sm flex flex-col min-h-[500px] lg:min-h-0 relative z-10 mb-8 lg:mb-0">
+            <div className="flex-1 lg:w-[60%] rounded-[40px] p-6 lg:p-8 shadow-[0_8px_40px_rgba(0,0,0,0.04)] border border-white/60 bg-white/40 backdrop-blur-2xl flex flex-col min-h-[500px] lg:min-h-0 relative z-10 mb-8 lg:mb-0 transition-all duration-500 hover:shadow-[0_8px_50px_rgba(0,0,0,0.06)] hover:bg-white/50">
                 {/* Header Panel Kanan */}
                 <div className="flex items-center justify-between mb-4 pb-4 border-b border-slate-100">
                     <div>
@@ -437,17 +437,18 @@ export function LeaveCalendar({ leaves, onRefresh, onOpenAll, totalLeaves = 0 }:
                         })
                     ) : (
                         <div className="flex flex-col items-center justify-center h-full text-center pt-10 pb-0">
-                            <div className="w-24 h-24 mb-6 relative">
-                                <div className="absolute inset-0 bg-blue-100 rounded-full blur-2xl opacity-50 animate-pulse"></div>
-                                <div className="w-full h-full bg-gradient-to-tr from-white to-blue-50/50 border border-white rounded-full flex items-center justify-center shadow-[0_8px_30px_rgb(0,0,0,0.04)] backdrop-blur-xl relative z-10 transform transition-transform hover:scale-105">
-                                    <span className="text-4xl drop-shadow-sm">🌞</span>
+                            <div className="w-28 h-28 mb-8 relative">
+                                <div className="absolute inset-0 bg-emerald-400/20 rounded-full blur-[40px] animate-pulse"></div>
+                                <div className="absolute inset-0 bg-teal-400/20 rounded-full blur-[40px] animate-pulse animation-delay-2000"></div>
+                                <div className="w-full h-full bg-white/60 border border-white/80 rounded-[32px] flex items-center justify-center shadow-[0_20px_40px_-10px_rgba(0,0,0,0.1)] backdrop-blur-2xl relative z-10 transform transition-transform hover:scale-105 hover:-rotate-3 duration-500">
+                                    <span className="text-5xl drop-shadow-md">🏖️</span>
                                 </div>
-                                <div className="absolute -right-2 top-0 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-sm border border-slate-50 z-20 animate-bounce" style={{ animationDuration: '3s' }}>
-                                    <span className="text-sm">☕️</span>
+                                <div className="absolute -right-3 -top-3 w-10 h-10 bg-gradient-to-br from-emerald-100 to-teal-50 rounded-2xl flex items-center justify-center shadow-lg border border-white/90 z-20 animate-bounce" style={{ animationDuration: '3s' }}>
+                                    <span className="text-lg">✨</span>
                                 </div>
                             </div>
-                            <h3 className="text-lg font-bold text-slate-800 tracking-tight mb-2">Semua Dokter Tersedia</h3>
-                            <p className="text-[13px] font-medium text-slate-500 max-w-[250px] leading-relaxed">
+                            <h3 className="text-xl font-black text-slate-800 tracking-tight mb-2">Semua Dokter Tersedia</h3>
+                            <p className="text-[13px] font-bold text-slate-500 max-w-[250px] leading-relaxed">
                                 Klinik beroperasi dengan kapasitas penuh hari ini. Tidak ada dokter yang mengambil cuti.
                             </p>
                         </div>
