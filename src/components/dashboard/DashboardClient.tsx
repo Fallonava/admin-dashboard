@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { Activity, Search, Zap, Power, Wifi, WifiOff, Loader2, LayoutDashboard } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Doctor, LeaveRequest, Shift, Settings } from "@/lib/data-service";
@@ -12,6 +12,7 @@ import { DashboardStats } from "./DashboardStats";
 import { DoctorCard } from "./DoctorCard";
 import { MobileSearchSheet } from "@/components/ui/MobileSearchSheet";
 import { PageHeader } from "@/components/ui/PageHeader";
+import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 
 export function DashboardClient() {
   const { logout } = useAuth();
@@ -48,11 +49,18 @@ export function DashboardClient() {
 
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
 
-  // Hitung todayDayIdx dan todayStr menggunakan WIB (UTC+7) agar konsisten
-  // dengan server automation yang juga pakai WIB. Browser bisa di timezone berbeda.
-  const wibNow = useMemo(() => new Date(now.getTime() + (7 * 60 * 60 * 1000)), [now]);
-  const todayDayIdx = wibNow.getUTCDay() === 0 ? 6 : wibNow.getUTCDay() - 1; // 0=Sen, 6=Min
-  const todayStr = `${wibNow.getUTCFullYear()}-${String(wibNow.getUTCMonth() + 1).padStart(2, '0')}-${String(wibNow.getUTCDate()).padStart(2, '0')}`;
+  // Centralized Time Calculations (WIB UTC+7)
+  const timeContext = useMemo(() => {
+    const wibNow = new Date(now.getTime() + (7 * 60 * 60 * 1000));
+    return {
+      todayDayIdx: wibNow.getUTCDay() === 0 ? 6 : wibNow.getUTCDay() - 1, // 0=Sen, 6=Min
+      todayStr: `${wibNow.getUTCFullYear()}-${String(wibNow.getUTCMonth() + 1).padStart(2, '0')}-${String(wibNow.getUTCDate()).padStart(2, '0')}`,
+      currentTimeMinutes: wibNow.getUTCHours() * 60 + wibNow.getUTCMinutes(),
+      weekOfMonth: Math.ceil(wibNow.getUTCDate() / 7)
+    };
+  }, [now]);
+
+  const { todayDayIdx, todayStr, currentTimeMinutes, weekOfMonth } = timeContext;
 
   // Filter: hanya tampilkan dokter yang punya minimal 1 shift aktif hari ini
   // (shift tidak di-disable hari ini)
@@ -67,11 +75,11 @@ export function DashboardClient() {
   const automationEnabled = settings?.automationEnabled || false;
 
   // ── Automation Toggle ──
-  const toggleAutomation = async () => {
+  const toggleAutomation = useCallback(async () => {
     if (!settings) return;
     const newState = !settings.automationEnabled;
     const previousSettings = { ...settings };
-    setSettings({ ...settings, automationEnabled: newState });
+    setSettings(prev => prev ? { ...prev, automationEnabled: newState } : null);
     try {
       const res = await fetch('/api/settings', {
         method: 'POST',
@@ -83,10 +91,10 @@ export function DashboardClient() {
       console.error("Failed to save settings", e);
       setSettings(previousSettings);
     }
-  };
+  }, [settings]);
 
   // ── Toggle Shift Disabled ──
-  const toggleShiftDisabled = async (shiftId: string, shift: Shift) => {
+  const toggleShiftDisabled = useCallback(async (shiftId: string, shift: Shift) => {
     const dates = shift.disabledDates || [];
     const isDisabledToday = dates.includes(todayStr);
     const newDates = isDisabledToday ? dates.filter(d => d !== todayStr) : [...dates, todayStr];
@@ -103,10 +111,10 @@ export function DashboardClient() {
       console.error('Failed to toggle shift', e);
       setShifts(previousShifts);
     }
-  };
+  }, [todayStr, shifts]);
 
   // ── Manual Status Update ──
-  const manualUpdateStatus = async (id: string | number, status: Doctor['status']) => {
+  const manualUpdateStatus = useCallback(async (id: string, status: Doctor['status']) => {
     const nowLocal = new Date();
     const timeString = nowLocal.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false }).replace('.', ':');
     const timestamp = nowLocal.getTime();
@@ -135,7 +143,7 @@ export function DashboardClient() {
       console.error('Failed to update doctor status', e);
       setDoctors(previousDoctors);
     }
-  };
+  }, [doctors]);
 
   const activeDocs = useMemo(() => todayDoctors.filter(d => d.status === 'BUKA' || d.status === 'PENUH'), [todayDoctors]);
   const [efficiency, setEfficiency] = useState(0);
@@ -314,21 +322,24 @@ export function DashboardClient() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3 lg:gap-4">
-            {filteredDoctors.map(doc => (
-              <DoctorCard
-                key={doc.id}
-                doc={doc}
-                shifts={shifts}
-                todayDayIdx={todayDayIdx}
-                todayStr={todayStr}
-                now={now}
-                automationEnabled={automationEnabled}
-                onStatusChange={manualUpdateStatus}
-                onToggleShift={toggleShiftDisabled}
-              />
-            ))}
-          </div>
+          <ErrorBoundary name="Doctor Grid" className="min-h-[400px]">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3 lg:gap-4">
+              {filteredDoctors.map(doc => (
+                <DoctorCard
+                  key={doc.id}
+                  doc={doc}
+                  shifts={shifts}
+                  todayDayIdx={todayDayIdx}
+                  todayStr={todayStr}
+                  currentTimeMinutes={currentTimeMinutes}
+                  weekOfMonth={weekOfMonth}
+                  automationEnabled={automationEnabled}
+                  onStatusChange={manualUpdateStatus}
+                  onToggleShift={toggleShiftDisabled}
+                />
+              ))}
+            </div>
+          </ErrorBoundary>
         </div>
 
       </div>

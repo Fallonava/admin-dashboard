@@ -1,5 +1,6 @@
 "use client";
 
+import { memo, useMemo } from "react";
 import { Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Doctor, Shift } from "@/lib/data-service";
@@ -65,27 +66,31 @@ interface DoctorCardProps {
   shifts: Shift[];
   todayDayIdx: number;
   todayStr: string;
-  now: Date;
+  // Performance optimizations: pass pre-calculated values
+  currentTimeMinutes: number;
+  weekOfMonth: number;
   automationEnabled: boolean;
-  onStatusChange: (id: string | number, status: Doctor['status']) => void;
+  onStatusChange: (id: string, status: Doctor['status']) => void;
   onToggleShift: (shiftId: string, shift: Shift) => void;
 }
 
-export function DoctorCard({
-  doc, shifts, todayDayIdx, todayStr, now,
+/**
+ * DoctorCard — Memoized for performance.
+ * Refrains from re-rendering unless core data changes.
+ * Logic calculations moved to props to reduce per-item overhead.
+ */
+export const DoctorCard = memo(function DoctorCard({
+  doc, shifts, todayDayIdx, todayStr,
+  currentTimeMinutes, weekOfMonth,
   automationEnabled, onStatusChange, onToggleShift
 }: DoctorCardProps) {
-  // Gunakan WIB (UTC+7) agar konsisten dengan server automation
-  const wibNow = new Date(now.getTime() + (7 * 60 * 60 * 1000));
-  const currentTimeMinutes = wibNow.getUTCHours() * 60 + wibNow.getUTCMinutes();
-  const weekOfMonth = Math.ceil(wibNow.getUTCDate() / 7);
 
   // Hanya tampilkan shift yang tidak di-disable hari ini
-  const docShiftsToday = shifts.filter(s => {
+  const docShiftsToday = useMemo(() => shifts.filter(s => {
     if (s.doctorId !== doc.id || s.dayIdx !== todayDayIdx) return false;
     if ((s.disabledDates || []).includes(todayStr)) return false;
     
-    // Abaikan shift tanpa format waktu yang valid (contoh kasus jadwal kosong)
+    // Abaikan shift tanpa format waktu yang valid
     if (!s.formattedTime || s.formattedTime === '-' || !s.formattedTime.includes(':')) return false;
 
     // Filter pola ganjil/genap
@@ -93,14 +98,14 @@ export function DoctorCard({
     if (s.extra === 'even_weeks' && weekOfMonth % 2 !== 0) return false;
 
     return true;
-  });
+  }), [shifts, doc.id, todayDayIdx, todayStr, weekOfMonth]);
 
   // Find active shift with registration time
-  const activeShift = shifts.find(s =>
+  const activeShift = useMemo(() => shifts.find(s =>
     s.doctorId === doc.id && s.dayIdx === todayDayIdx &&
     !(s.disabledDates || []).includes(todayStr) &&
     s.registrationTime
-  );
+  ), [shifts, doc.id, todayDayIdx, todayStr]);
 
   return (
     <div className={cn(
@@ -149,7 +154,7 @@ export function DoctorCard({
       {/* Shift pills */}
       {docShiftsToday.length > 0 && (
         <div className="flex flex-wrap gap-1 mb-3 relative z-10">
-          {docShiftsToday.map(shift => {
+          {docShiftsToday.map((shift: Shift) => {
             const [startStr, endStr] = (shift.formattedTime || '').split('-');
             const startM = parseInt(startStr?.split(':')[0] || '0') * 60 + parseInt(startStr?.split(':')[1] || '0');
             const endM = parseInt(endStr?.split(':')[0] || '0') * 60 + parseInt(endStr?.split(':')[1] || '0');
@@ -233,4 +238,4 @@ export function DoctorCard({
       </div>
     </div>
   );
-}
+});

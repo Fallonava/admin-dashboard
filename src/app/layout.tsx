@@ -7,6 +7,7 @@ import { OfflineSyncer } from "@/components/OfflineSyncer";
 import { SWRProvider } from "@/components/swr-provider";
 import { AuthProvider } from "@/lib/auth-context";
 import { AppShell } from "@/components/AppShell";
+import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -67,11 +68,13 @@ export default function RootLayout({
       </head>
       <body className={inter.className} suppressHydrationWarning>
         <OfflineSyncer />
-        <SWRProvider>
-          <AuthProvider>
-            <AppShell>{children}</AppShell>
-          </AuthProvider>
-        </SWRProvider>
+        <ErrorBoundary name="Global Application Shell">
+          <SWRProvider>
+            <AuthProvider>
+              <AppShell>{children}</AppShell>
+            </AuthProvider>
+          </SWRProvider>
+        </ErrorBoundary>
       </body>
     </html>
   );
