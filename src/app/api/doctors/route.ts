@@ -55,7 +55,7 @@ export async function GET(req: Request) {
         prisma.doctor.count()
     ]);
 
-    const shifts = await (prisma.shift as any).findMany();
+    const shifts = await prisma.shift.findMany();
 
     // Calculate Today's Index (0=Senin, ..., 6=Minggu) using WIB timezone
     const now = new Date();
@@ -64,7 +64,7 @@ export async function GET(req: Request) {
     const todayIdx = (jsDay + 6) % 7;
 
     const enhancedDoctors = doctors.map(doc => {
-        const todayShift = (shifts as any[]).find(s => s.doctorId === doc.id && s.dayIdx === todayIdx);
+        const todayShift = shifts.find(s => s.doctorId === doc.id && s.dayIdx === todayIdx);
         return {
             ...doc,
             lastManualOverride: doc.lastManualOverride ? Number(doc.lastManualOverride) : undefined,
@@ -73,7 +73,6 @@ export async function GET(req: Request) {
     });
 
     if (!pageParam && !limitParam) {
-        // backward-compatible with clients that don't send pagination params
         return NextResponse.json(enhancedDoctors);
     }
 
@@ -92,7 +91,6 @@ export async function POST(req: Request) {
     const rateLimitErr = await withMutationRateLimit(req, 'doctors');
     if (rateLimitErr) return rateLimitErr;
 
-    // doctors:write permission required for all mutations
     const authErr = await requirePermission(req, 'doctors', 'write');
     if (authErr) return authErr;
 
@@ -134,9 +132,12 @@ export async function POST(req: Request) {
             notifyDoctorUpdates(ids.map(id => ({ id })));
             notifyViaSocket('doctor_updated', { ids });
             return NextResponse.json({ success: true, count: results.length });
-        } catch (err) {
+        } catch (err: any) {
             if (err instanceof z.ZodError) {
                 return NextResponse.json({ error: 'Validation failed', details: err.flatten() }, { status: 400 });
+            }
+            if (err.code === 'P2025') {
+                return NextResponse.json({ error: 'P2025: One or more records not found' }, { status: 404 });
             }
             return NextResponse.json({ error: String(err) }, { status: 500 });
         }
@@ -156,9 +157,12 @@ export async function POST(req: Request) {
                 )
             );
             return NextResponse.json({ success: true });
-        } catch (err) {
+        } catch (err: any) {
             if (err instanceof z.ZodError) {
                 return NextResponse.json({ error: 'Validation failed', details: err.flatten() }, { status: 400 });
+            }
+            if (err.code === 'P2025') {
+                return NextResponse.json({ error: 'P2025: Record not found' }, { status: 404 });
             }
             return NextResponse.json({ error: String(err) }, { status: 500 });
         }
@@ -206,9 +210,12 @@ export async function PUT(req: Request) {
             ...updated,
             lastManualOverride: updated.lastManualOverride ? Number(updated.lastManualOverride) : undefined
         });
-    } catch (err) {
+    } catch (err: any) {
         if (err instanceof z.ZodError) {
             return NextResponse.json({ error: 'Validation failed', details: err.flatten() }, { status: 400 });
+        }
+        if (err.code === 'P2025') {
+            return NextResponse.json({ error: 'P2025: Record not found' }, { status: 404 });
         }
         return NextResponse.json({ error: String(err) }, { status: 500 });
     }
@@ -235,7 +242,10 @@ export async function DELETE(req: Request) {
         notifyViaSocket('schedule_changed', { reason: 'doctor_deleted', ts: Date.now() });
         
         return NextResponse.json({ success: true });
-    } catch (err) {
+    } catch (err: any) {
+        if (err.code === 'P2025') {
+            return NextResponse.json({ success: true, message: 'Already deleted' });
+        }
         console.error("Doctor DELETE Error:", err);
         return NextResponse.json({ error: "Gagal menghapus dokter. Pastikan tidak ada data terkait atau hubungi admin." }, { status: 500 });
     }

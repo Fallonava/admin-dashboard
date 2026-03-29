@@ -228,7 +228,7 @@ html.reduce-effects .super-glass-card::after {
 html.reduce-effects .super-glass-card {
   transition: box-shadow 0.15s ease !important;
   will-change: auto !important;
-  contain: content !important;
+  contain: layout paint !important;
 }
 
 html.reduce-effects .btn-gradient {
@@ -237,11 +237,11 @@ html.reduce-effects .btn-gradient {
   transition-duration: 0.15s !important;
 }
 
-/* Matikan semua animasi berjalan terus (ping, pulse, shimmer) */
+/* Matikan semua animasi berjalan terus (ping, pulse, shimmer) tapi izinkan fade-in masuk */
 html.reduce-effects *,
 html.reduce-effects *::before,
 html.reduce-effects *::after {
-  animation-play-state: paused !important;
+  animation-iteration-count: 1 !important;
   transition-duration: 0.1s !important;
 }
 
@@ -297,3 +297,47 @@ html.reduce-effects .animate-spin {
   animation: logo-pulse 4s ease-in-out infinite;
 }
 
+/* ─── AI Insight Ticker (Scrolling Marquee) ─── */
+@keyframes ticker {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-ticker {
+  animation: ticker 30s linear infinite;
+  will-change: transform;
+}
+
+.animate-ticker:hover {
+  animation-play-state: paused;
+}
+
+/* ─── Touch Ripple Visual Feedback ─── */
+.touch-ripple {
+  position: relative;
+  overflow: hidden;
+}
+
+.touch-ripple:active::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+  animation: ripple-burst 0.4s ease-out forwards;
+  border-radius: inherit;
+}
+
+@keyframes ripple-burst {
+  from { opacity: 1; transform: scale(0.2); }
+  to   { opacity: 0; transform: scale(2); }
+}
+
+/* Orbiting ring slow spin */
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* ─── custom-scrollbar-hide ─── */
+.custom-scrollbar-hide::-webkit-scrollbar { display: none; }
+.custom-scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }

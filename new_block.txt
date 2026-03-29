@@ -1,0 +1,34 @@
+<ErrorBoundary name="Poli Accordion List" className="min-h-[400px]">
+             {wingsWithStatus.length > 0 ? (
+                <div className="space-y-3 pb-6">
+                  {wingsWithStatus.map(wing => {
+                    // Admin heatmap dim still applies
+                    const isDimmed = wingFilter !== 'ALL' && wing.status !== wingFilter;
+
+                    return (
+                      <div
+                        key={wing.specialty}
+                        id={`wing-${wing.specialty.replace(/\s+/g, '-').toLowerCase()}`}
+                        className={cn("transition-all duration-500 rounded-[28px]", isDimmed && "opacity-30 grayscale pointer-events-none")}
+                      >
+                        <PoliAccordion
+                          specialty={wing.specialty}
+                          doctors={wing.doctors}
+                          wingStatus={wing.status as 'EMERGENCY' | 'BUSY' | 'NORMAL' | 'OFFLINE'}
+                          currentTimeMinutes={currentTimeMinutes}
+                          nowMs={now.getTime()}
+                          defaultOpen={wing.status === 'EMERGENCY' || wing.status === 'BUSY'}
+                          patientFilter={patientFilter}
+                          onOpenDetail={() => setSelectedWing(wing.specialty)}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+             ) : (
+                <div className="w-full p-12 text-center text-slate-400 font-medium bg-white/40 backdrop-blur-xl rounded-[32px] border border-white/60">
+                    <LayoutGrid size={40} className="mx-auto mb-4 opacity-50" />
+                    <p>Tidak ada data poliklinik aktif untuk hari ini.</p>
+                </div>
+             )}
+          </ErrorBoundary>

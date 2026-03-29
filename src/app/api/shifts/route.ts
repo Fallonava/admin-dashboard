@@ -29,20 +29,17 @@ export async function GET(req: Request) {
     const dayIdx = dayIdxParam !== null ? parseInt(dayIdxParam, 10) : null;
 
     const whereClause: any = {
-        // Exclude shifts without a doctor
         doctorId: { not: "" }
     };
-    // Filter per hari jika ada query param dayIdx (lebih efisien untuk kalender harian)
     if (dayIdx !== null && !isNaN(dayIdx)) {
         whereClause.dayIdx = dayIdx;
     }
 
-    const shifts = await (prisma.shift as any).findMany({
+    const shifts = await prisma.shift.findMany({
         where: whereClause,
         include: { 
             doctor: {
                 include: {
-                    // leaveRequests hanya di-load jika diminta — lazy load
                     ...(includeLeaves ? { leaveRequests: true } : {})
                 }
             } 
@@ -50,10 +47,7 @@ export async function GET(req: Request) {
         orderBy: [{ dayIdx: 'asc' }, { timeIdx: 'asc' }]
     });
 
-    // Extra safety: filter out any shifts where doctor is null (shouldn't happen but defensive)
-    const validShifts = shifts.filter((s: any) => s.doctor !== null);
-
-    const mappedShifts = validShifts.map((s: any) => {
+    const mappedShifts = shifts.filter(s => s.doctor !== null).map((s: any) => {
         const doctorRel = s.doctor ? { ...s.doctor } : null;
         if (doctorRel && typeof doctorRel.lastManualOverride === 'bigint') {
             doctorRel.lastManualOverride = Number(doctorRel.lastManualOverride);
@@ -66,7 +60,6 @@ export async function GET(req: Request) {
         };
     });
 
-    // Cache: private (per-user), fresh 30s, stale-while-revalidate 60s
     return NextResponse.json(mappedShifts, {
         headers: {
             'Cache-Control': 'private, max-age=30, stale-while-revalidate=60'
@@ -83,10 +76,7 @@ export async function POST(req: Request) {
 
     try {
         const body = await req.json();
-        
-        // Ensure id is not passed as null to create (handle incoming data before validation if needed)
         if (body.id === null) delete body.id;
-
         const validated = ShiftCreateSchema.parse(body);
 
         const newShift = await prisma.shift.create({ data: validated });
@@ -114,18 +104,21 @@ export async function PUT(req: Request) {
         const validated = ShiftUpdateSchema.parse(body);
         const { id, ...updates } = validated;
 
-        const updated = await (prisma.shift as any).update({
+        const updated = await prisma.shift.update({
             where: { id },
-            data: updates
+            data: updates as any // Zod-to-Prisma overlap can be tricky
         });
         notifyViaSocket('shift_updated', { id });
         if (updated.doctorId) {
             notifyViaSocket('doctor_updated', { ids: [updated.doctorId] });
         }
         return NextResponse.json(updated);
-    } catch (e) {
+    } catch (e: any) {
         if (e instanceof z.ZodError) {
             return NextResponse.json({ error: 'Validation failed', details: e.flatten() }, { status: 400 });
+        }
+        if (e.code === 'P2025') {
+            return NextResponse.json({ error: 'P2025: Record not found' }, { status: 404 });
         }
         console.error("Shift PUT Error:", e);
         return NextResponse.json({ error: String(e) }, { status: 500 });
@@ -144,7 +137,7 @@ export async function DELETE(req: Request) {
     if (!id) return NextResponse.json({ error: 'ID required' }, { status: 400 });
 
     try {
-        const deleted = await (prisma.shift as any).delete({
+        const deleted = await prisma.shift.delete({
             where: { id: String(id) }
         });
         notifyViaSocket('shift_updated', { id });
@@ -152,7 +145,11 @@ export async function DELETE(req: Request) {
             notifyViaSocket('doctor_updated', { ids: [deleted.doctorId] });
         }
         return NextResponse.json({ success: true });
-    } catch (err) {
+    } catch (err: any) {
+        if (err.code === 'P2025') {
+            // If already deleted, consider it a success (idempotency)
+            return NextResponse.json({ success: true, message: 'Already deleted' });
+        }
         console.error("Shift DELETE Error:", err);
         return NextResponse.json({ error: "Gagal menghapus shift." }, { status: 500 });
     }

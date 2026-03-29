@@ -1,18 +1,14 @@
 import { Suspense } from "react";
 import { Skeleton, DoctorCardSkeleton, StatsSkeleton } from "@/components/ui/Skeleton";
-import { DashboardClient } from "@/components/dashboard/DashboardClient";
+import { WingDashboardClient } from "@/components/dashboard/WingDashboardClient";
 
 /**
- * Dashboard Page — Server Component
- *
- * This is a React Server Component that streams the shell instantly,
- * then hydrates the interactive DashboardClient on the client.
- * Suspense boundary provides a skeleton while JS loads.
+ * Dashboard Page — Server Component (Live-Wing View)
  */
 export default function DashboardPage() {
   return (
     <Suspense fallback={<DashboardSkeleton />}>
-      <DashboardClient />
+      <WingDashboardClient />
     </Suspense>
   );
 }

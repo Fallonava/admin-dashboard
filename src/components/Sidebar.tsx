@@ -16,22 +16,24 @@ import {
   X,
   Shield,
   LogOut,
-  FileSpreadsheet
+  FileSpreadsheet,
+  Zap
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/auth-context";
 
 export const navigation = [
-  { name: "Dashboard", href: "/", icon: LayoutDashboard, resource: "dashboard" },
+  { name: "Denah Live", href: "/", icon: LayoutDashboard, resource: "denah_live" },
+  { name: "Kontrol Status", href: "/control", icon: Zap, resource: "kontrol_status" },
   { name: "Jadwal", href: "/schedules", icon: Calendar, resource: "schedules" },
   { name: "Dokter", href: "/doctors", icon: Users, resource: "doctors" },
   { name: "Jadwal Cuti", href: "/leaves", icon: Calendar, resource: "leaves" },
-  { name: "Rekap Harian", href: "/rekap-harian", icon: FileSpreadsheet, resource: null },
+  { name: "Rekap Harian", href: "/rekap-harian", icon: FileSpreadsheet, resource: "rekap_harian" },
 ];
 
 export const systems = [
   { name: "Otomatisasi", href: "/automation", icon: Bot, resource: "automation" },
-  { name: "Layar Langsung", href: "/tv.html", icon: Tv, external: true, resource: null },
+  { name: "Layar Langsung", href: "/tv.html", icon: Tv, external: true, resource: "display_tv" },
 ];
 
 export const admin = [
