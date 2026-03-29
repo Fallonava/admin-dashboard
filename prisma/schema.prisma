@@ -53,12 +53,10 @@ model Doctor {
   lastCall           String? // Format: HH:MM
   registrationTime   String? // Format: HH:MM
   lastManualOverride BigInt? // UNIX timestamp
-  deletedAt          DateTime?
 
   shifts        Shift[]
   leaveRequests LeaveRequest[]
 
-  @@index([deletedAt])
 }
 
 model Shift {
@@ -75,7 +73,6 @@ model Shift {
 
   doctorId String
   doctor   Doctor @relation(fields: [doctorId], references: [id], onDelete: Cascade)
-  deletedAt DateTime?
 
   @@index([doctorId])
   @@index([dayIdx, doctorId])
@@ -148,7 +145,6 @@ model User {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  deletedAt DateTime?
   lastLogin DateTime?
 }
 

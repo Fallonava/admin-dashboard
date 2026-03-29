@@ -108,7 +108,7 @@ export async function scheduleToday() {
   let shifts: any[] = [];
   try {
     shifts = await (prisma as any).shift.findMany({
-      where: { dayIdx, deletedAt: null },
+      where: { dayIdx },
     });
   } catch (err: any) {
     logger.error('[scheduler] Failed to load shifts:', err.message);
