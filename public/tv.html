@@ -379,7 +379,7 @@
         /* Reduced padding */
         border-radius: 14px;
         transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-        color: #333;
+        color: var(--text-primary);
         gap: 10px;
         /* Reduced gap */
       }
@@ -596,19 +596,22 @@
       /* ===== PLATTER CARD ===== */
       .platter {
         display: flex;
-        align-items: center;
+        flex-direction: column;
+        align-items: stretch;
         gap: 10px;
         padding: 8px 12px;
         background: var(--card-bg);
         border-radius: 14px;
         border: 1px solid var(--platter-border);
-        /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); */
-        transition:
-          opacity 0.4s ease,
-          border-color 0.4s ease;
         position: relative;
         overflow: hidden;
-        transform: translateZ(0);
+        transform: translateZ(0) scale(1);
+        opacity: 0.85;
+        transition:
+          opacity 0.5s cubic-bezier(0.2, 0.8, 0.2, 1),
+          border-color 0.4s ease,
+          transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1),
+          box-shadow 0.5s ease;
       }
 
       /* Light Sweep Effect — DIMATIKAN untuk performa Smart TV */
@@ -748,21 +751,15 @@
       [data-theme="light"] .platter.st-pendaftaran { background: rgba(255, 204, 0, 0.06); }
       
       .platter.st-praktek .jam-val, .platter.st-pendaftaran .jam-val { color: var(--status-color); font-size: 14px; }
+
+      /* st-buka: Digunakan oleh panel Bedah & NonBedah untuk semua status aktif (PRAKTEK/PENDAFTARAN/TERJADWAL) */
+      .st-buka { --status-color: #30d158; --status-bg: rgba(48, 209, 88, 0.2); }
+      .st-buka .initials { background: rgba(48, 209, 88, 0.15); color: #30d158; }
+      .platter.st-buka { border-color: rgba(48, 209, 88, 0.2); }
+      .platter.st-buka.active { background: rgba(48, 209, 88, 0.12) !important; border-color: rgba(48, 209, 88, 0.5) !important; }
+      [data-theme="light"] .platter.st-buka { background: rgba(48, 209, 88, 0.04); border-color: rgba(48, 209, 88, 0.15); }
       
       /* ===== ACTIVE CALL HIGHLIGHT (NEW) ===== */
-      .platter {
-        display: flex;
-        flex-direction: column;
-        align-items: stretch;
-        transition:
-          opacity 0.5s cubic-bezier(0.2, 0.8, 0.2, 1),
-          border-color 0.4s ease,
-          transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1),
-          box-shadow 0.5s ease;
-        transform: translateZ(0) scale(1);
-        opacity: 0.85;
-        /* Inactive contrast fade */
-      }
 
       .platter-main {
         display: flex;
@@ -1199,6 +1196,10 @@
         color: rgba(0, 0, 0, 0.4);
       }
 
+      [data-theme="dark"] .sidebar-section-label {
+        color: rgba(255, 255, 255, 0.45);
+      }
+
       .sidebar-section-line {
         flex: 1;
         height: 1px;
@@ -1216,6 +1217,11 @@
         background: rgba(0, 0, 0, 0.04);
         padding: 1px 6px;
         border-radius: 4px;
+      }
+
+      [data-theme="dark"] .sidebar-section-count {
+        color: rgba(255, 255, 255, 0.35);
+        background: rgba(255, 255, 255, 0.06);
       }
 
       /* ===== ANIMASI SLIDE-IN (Item Baru) ===== */
@@ -1914,12 +1920,6 @@
   </head>
 
   <body>
-    <div class="app-bg">
-      <div class="bg-orb orb1"></div>
-      <div class="bg-orb orb2"></div>
-      <div class="bg-grid"></div>
-    </div>
-
     <!-- DYNAMIC ISLAND PRE-MOUNT -->
     <div id="dynamicIsland" class="dynamic-island">
       <div class="di-content">
@@ -2298,63 +2298,10 @@
               .toUpperCase()
           : "DR";
 
-      // Helper: Check if current time is within schedule
-      const checkTime = (jamStr) => {
-        if (!jamStr || typeof jamStr !== "string" || jamStr === "-")
-          return false;
-
-        // Normalize: remove all spaces, change . to :
-        const clean = jamStr
-          .replace(/\s/g, "")
-          .replace(/\./g, ":")
-          .toLowerCase();
-
-        // 1. Try Range: "08:00-12:00" or "08:00s/d12:00"
-        const rangeMatch = clean.match(/(\d{1,2}:\d{2}).*?(\d{1,2}:\d{2})/);
-
-        if (rangeMatch) {
-          const now = new Date();
-          const curH = now.getHours();
-          const curM = now.getMinutes();
-          const currentMins = curH * 60 + curM;
-
-          const parseMins = (t) => {
-            const [h, m] = t.split(":").map(Number);
-            return h * 60 + m;
-          };
-
-          const start = parseMins(rangeMatch[1]);
-          const end = parseMins(rangeMatch[2]);
-
-          // Handle overnight shifts
-          if (end < start) {
-            return currentMins >= start || currentMins <= end;
-          }
-          return currentMins >= start && currentMins <= end;
-        }
-
-        // 2. Try Single Time: "08:00"
-        const singleMatch = clean.match(/(\d{1,2}:\d{2})/);
-        if (singleMatch) {
-          const now = new Date();
-          const curH = now.getHours();
-          const curM = now.getMinutes();
-          const currentMins = curH * 60 + curM;
-
-          const parseMins = (t) => {
-            const [h, m] = t.split(":").map(Number);
-            return h * 60 + m;
-          };
-
-          const start = parseMins(singleMatch[1]);
-          // Assume 4 hour shift if only start time is known
-          const end = start + 4 * 60;
-
-          return currentMins >= start && currentMins <= end;
-        }
-
-        return false;
-      };
+      // Helper: Tentukan apakah dokter dalam status "aktif" (sedang melayani/bisa daftar)
+      // Satu definisi tunggal dipakai di _detectChanges DAN render()
+      const isActive = (st) =>
+        ["PRAKTEK", "PENDAFTARAN"].includes(st) || st.includes("PENUH");
 
       // Helper: Get time position relative to now: 'past' | 'present' | 'future' | 'unknown'
       const getTimeState = (jamStr) => {
@@ -2416,6 +2363,42 @@
           .replace(/\s*[-–]\s*/g, " — ")
           .replace(/\s*s\/d\s*/gi, " — ");
       };
+
+      // ===== CARD HTML BUILDER (Satu Fungsi untuk render() & _renderSidebar()) =====
+      const buildCardHTML = (d, avatarText, statusIcon, statusLabel, labelJam, labelLive) => {
+        const jamTampil = d.JamDaftar !== "-"
+          ? esc(d.JamDaftar)
+          : formatJam((d.JamPraktek || "").split("-")[0]);
+        return `
+          <div class="platter-main">
+            <div class="initials">${avatarText}</div>
+            <div class="info-col">
+              <div class="doc-name" style="text-transform:uppercase">${esc(d.Spesialis)}</div>
+              <div class="doc-spec">${esc(d.Dokter)}</div>
+            </div>
+            <div class="meta-col">
+              <div class="status-pill" style="background:var(--status-bg);color:var(--status-color)">
+                <span class="material-icons-round" style="font-size:12px">${statusIcon}</span>${statusLabel}
+              </div>
+              ${d.JamPraktek && d.JamPraktek !== "-" ? `
+              <div class="jam-box">
+                <span class="jam-label">DAFTAR</span>
+                <span class="jam-val jam-val-daftar" style="color:#30D158">${jamTampil}</span>
+              </div>` : ""}
+            </div>
+          </div>
+          <div class="platter-detail">
+            <div class="detail-info">
+              <span class="detail-label">${labelJam}</span>
+              <span class="detail-time" style="font-size:15px">${jamTampil}</span>
+            </div>
+            <div class="live-status">
+              <div class="pulse-dot"></div>
+              <span class="live-text">${labelLive}</span>
+            </div>
+          </div>`;
+      };
+
 
       // ===== PROFESSIONAL SCROLLER (Item-by-Item with Easing) =====
       // Pola: Scroll satu item → pause → scroll item berikutnya → ... → sampai bawah → pause lama → fade reset ke atas → ulangi
@@ -2986,11 +2969,6 @@
           }
         },
 
-        // Siklus Menampilkan Pengumuman Dokter yang sedang Operasi via Island
-        startOpCycle() {
-          // Diambil alih oleh Master Clock di App.init()
-        },
-
         updateTheme() {
           const h = new Date().getHours();
           const isLight = h >= 6 && h < 16;
@@ -3132,8 +3110,7 @@
             // Gunakan kombinasi nama + shift sebagai key agar dokter multi-shift dilacak terpisah
             const key = `${name}_${d._shiftId || d.Jam || ""}`;
             // Active logic: Inside time AND (BUKA or PENUH)
-            const isNowActive =
-              (st === "PRAKTEK" || st === "PENDAFTARAN" || st === "TERJADWAL" || st.includes("PENUH"));
+            const isNowActive = isActive(st);
 
             // Daftarkan ke list Ruang Operasi jika cocok
             if (st.includes("OPERASI")) ops.push(name);
@@ -3324,13 +3301,9 @@
             );
           });
 
-          // Pre-calculate Active State for Sorting
           [...mainData, ...sidebarData].forEach((d) => {
             const s = (d.Status || "").toUpperCase();
-            d._isActive =
-              (s === "PRAKTEK" || s === "PENDAFTARAN" ||
-                s.includes("PENUH") ||
-                s.includes("OPERASI"));
+            d._isActive = isActive(s);
           });
 
           // Sorting: AKTIF (Top) -> PRAKTEK/PNDF (4) -> PENUH (3) -> TERJADWAL (2.5) -> OPERASI (2) -> CUTI (1)
@@ -3426,48 +3399,22 @@
                 initials(d.Dokter);
               if (d._isActive) c += " active";
 
-              // Redesign Operasi Active Text
               let labelJam = "REGISTRASI DIBUKA";
               let labelLive = "SEDANG MELAYANI";
               if (st.includes("OPERASI")) {
                 labelJam = "TINDAKAN MEDIS";
                 labelLive = "SEDANG OPERASI";
+              } else if (st.includes("PENUH")) {
+                labelJam = "STATUS KUOTA";
+                labelLive = "TELAH PENUH";
+              } else if (st.includes("CUTI")) {
+                labelJam = "JADWAL CUTI";
+                labelLive = "TIDAK MELAYANI";
+              } else if (st === "TERJADWAL") {
+                labelJam = "MENUNGGU SHIFT";
+                labelLive = "BELUM MULAI";
               }
 
-              // Inner HTML Generator
-              const getInner = () => `
-                            <div class="platter-main">
-                                <div class="initials">${avatarText}</div>
-                                <div class="info-col">
-                                    <div class="doc-name" style="text-transform: uppercase;">${esc(d.Spesialis)}</div>
-                                    <div class="doc-spec">${esc(d.Dokter)}</div>
-                                </div>
-                                <div class="meta-col">
-                                    <div class="status-pill" style="background:var(--status-bg); color:var(--status-color)">
-                                        <span class="material-icons-round" style="font-size:12px">${i}</span>${l}
-                                    </div>
-                                    ${
-                                      d.JamPraktek && d.JamPraktek != "-"
-                                        ? `
-                                    <div class="jam-box">
-                                        <span class="jam-label">DAFTAR</span>
-                                        <span class="jam-val jam-val-daftar" style="color:#30D158">${d.JamDaftar !== "-" ? esc(d.JamDaftar) : formatJam(d.JamPraktek.split("-")[0])}</span>
-                                    </div>`
-                                        : ""
-                                    }
-                                </div>
-                            </div>
-                                <div class="platter-detail">
-                                    <div class="detail-info">
-                                        <!-- #3: Label & Format Jam Baru -->
-                                        <span class="detail-label">${labelJam}</span>
-                                        <span class="detail-time text-slate-200" style="font-size: 15px;">${d.JamDaftar !== "-" ? esc(d.JamDaftar) : formatJam(d.JamPraktek.split("-")[0])}</span>
-                                    </div>
-                                <div class="live-status">
-                                     <div class="pulse-dot"></div>
-                                     <span class="live-text">${labelLive}</span>
-                                </div>
-                            </div>`;
 
               let el = oldMap.get(id);
 
@@ -3525,7 +3472,8 @@
                 el.className = `platter ${c} platter-new`;
                 el.dataset.id = id;
                 el.dataset.hash = hash;
-                el.innerHTML = getInner();
+                el.innerHTML = buildCardHTML(d, avatarText, i, l, labelJam, labelLive);
+
                 hasLayoutChange = true;
                 // Hapus class animasi setelah selesai
                 el.addEventListener(
@@ -3645,41 +3593,24 @@
               initials(d.Dokter);
             if (d._isActive) c += " active";
 
-            const getInner = () => `
-                        <div class="platter-main">
-                            <div class="initials">${avatarText}</div>
-                            <div class="info-col">
-                                <div class="doc-name" style="text-transform: uppercase;">${esc(d.Spesialis)}</div>
-                                <div class="doc-spec">${esc(d.Dokter)}</div>
-                            </div>
-                            <div class="meta-col">
-                                <div class="status-pill" style="background:var(--status-bg); color:var(--status-color)">
-                                    <span class="material-icons-round" style="font-size:12px">${i}</span>${l}
-                                </div>
-                                ${
-                                  d.JamPraktek && d.JamPraktek != "-"
-                                    ? `
-                                <div class="jam-box">
-                                    <span class="jam-label">DAFTAR</span>
-                                    <span class="jam-val jam-val-daftar" style="color:#30D158">${d.JamDaftar !== "-" ? esc(d.JamDaftar) : formatJam(d.JamPraktek.split("-")[0])}</span>
-                                </div>`
-                                    : ""
-                                }
-                            </div>
-                        </div>
-                        <div class="platter-detail">
-                            <div class="detail-info">
-                                <!-- #3: Label & Format Jam Baru -->
-                                <span class="detail-label">REGISTRASI DIBUKA</span>
-                                <span class="detail-time text-slate-200" style="font-size: 15px;">${d.JamDaftar !== "-" ? esc(d.JamDaftar) : formatJam(d.JamPraktek.split("-")[0])}</span>
-                            </div>
-                            <div class="live-status">
-                                 <div class="pulse-dot"></div>
-                                 <span class="live-text">SEDANG MELAYANI</span>
-                            </div>
-                        </div>`;
+            let labelJam = "REGISTRASI DIBUKA";
+            let labelLive = "SEDANG MELAYANI";
+            if (st.includes("OPERASI")) {
+              labelJam = "TINDAKAN MEDIS";
+              labelLive = "SEDANG OPERASI";
+            } else if (st.includes("PENUH")) {
+              labelJam = "STATUS KUOTA";
+              labelLive = "TELAH PENUH";
+            } else if (st.includes("CUTI")) {
+              labelJam = "JADWAL CUTI";
+              labelLive = "TIDAK MELAYANI";
+            } else if (st === "TERJADWAL") {
+              labelJam = "MENUNGGU SHIFT";
+              labelLive = "BELUM MULAI";
+            }
 
             let el = oldMap.get(id);
+
             if (el) {
               if (el.dataset.hash !== hash) {
                 el.className = `platter ${c}`;
@@ -3716,6 +3647,12 @@
                       ? d.JamDaftar
                       : formatJam(d.JamPraktek.split("-")[0]);
 
+                const dtLabel = el.querySelector(".detail-label");
+                if (dtLabel) dtLabel.textContent = labelJam;
+
+                const lText = el.querySelector(".live-text");
+                if (lText) lText.textContent = labelLive;
+
                 el.dataset.hash = hash;
               }
               el.classList.remove("platter-new");
@@ -3725,7 +3662,7 @@
               el.className = `platter ${c} platter-new`;
               el.dataset.id = id;
               el.dataset.hash = hash;
-              el.innerHTML = getInner();
+              el.innerHTML = buildCardHTML(d, avatarText, i, l, labelJam, labelLive);
               hasLayoutChange = true;
               el.addEventListener(
                 "animationend",
