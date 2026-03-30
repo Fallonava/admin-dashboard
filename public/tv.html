@@ -721,76 +721,34 @@
         line-height: 1;
       }
 
-      /* Status Styles */
-      .st-buka {
-        --status-color: #30d158;
-        --status-bg: rgba(48, 209, 88, 0.2);
-      }
+      /* Status Styles - Synced with AI Automation */
+      .st-praktek { --status-color: #30d158; --status-bg: rgba(48, 209, 88, 0.2); }
+      .st-pendaftaran { --status-color: #ffcc00; --status-bg: rgba(255, 204, 0, 0.2); }
+      .st-terjadwal { --status-color: #64d2ff; --status-bg: rgba(100, 210, 255, 0.2); opacity: 0.8; }
+      .st-selesai { --status-color: #0a84ff; --status-bg: rgba(10, 132, 255, 0.2); opacity: 0.6; }
+      .st-penuh { --status-color: #ff9f0a; --status-bg: rgba(255, 159, 10, 0.2); }
+      .st-operasi { --status-color: #bf5af2; --status-bg: rgba(191, 90, 242, 0.2); }
+      .st-cuti { --status-color: #ff453a; --status-bg: rgba(255, 69, 58, 0.2); opacity: 0.65; }
+      .st-libur { --status-color: #8e8e93; --status-bg: rgba(142, 142, 147, 0.2); display: none; }
 
-      .st-penuh {
-        --status-color: #ff9f0a;
-        --status-bg: rgba(255, 159, 10, 0.2);
-      }
+      .st-praktek .initials { background: rgba(48, 209, 88, 0.15); color: #30d158; }
+      .st-pendaftaran .initials { background: rgba(255, 204, 0, 0.15); color: #ffcc00; }
+      .st-terjadwal .initials { background: rgba(100, 210, 255, 0.15); color: #64d2ff; }
+      .st-selesai .initials { background: rgba(10, 132, 255, 0.15); color: #0a84ff; }
+      .st-penuh .initials { background: rgba(255, 159, 10, 0.15); color: #ff9f0a; }
+      .st-cuti .initials { background: rgba(255, 69, 58, 0.12); color: #ff453a; }
+      .st-operasi .initials { background: rgba(191, 90, 242, 0.15); color: #bf5af2; }
 
-      .st-selesai {
-        --status-color: #0a84ff;
-        --status-bg: rgba(10, 132, 255, 0.2);
-        opacity: 0.75;
-      }
-
-      .st-cuti {
-        --status-color: #ff453a;
-        --status-bg: rgba(255, 69, 58, 0.2);
-        opacity: 0.65;
-      }
-
-      .st-operasi {
-        --status-color: #bf5af2;
-        /* Purple */
-        --status-bg: rgba(191, 90, 242, 0.2);
-      }
-
-      /* #5: Avatar berwarna per status — identifikasi visual dari jauh */
-      .st-penuh .initials {
-        background: rgba(255, 159, 10, 0.15);
-        color: #ff9f0a;
-      }
-
-      .st-cuti .initials {
-        background: rgba(255, 69, 58, 0.12);
-        color: #ff453a;
-      }
-
-      .st-operasi .initials {
-        background: rgba(191, 90, 242, 0.15);
-        color: #bf5af2;
-      }
-
-      /* #6: Card BUKA lebih kontras — terlihat "menyala" dari jarak 3-5m */
-      .platter.st-buka {
-        background: rgba(48, 209, 88, 0.1);
-        border-color: rgba(48, 209, 88, 0.35);
-        /* box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); */
-        z-index: 5;
-      }
-
-      [data-theme="light"] .platter.st-buka {
-        background: rgba(48, 209, 88, 0.06);
-        border-color: rgba(48, 209, 88, 0.2);
-        /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); */
-      }
-
-      .platter.st-buka .initials {
-        background: rgba(48, 209, 88, 0.2);
-        color: #30d158;
-        border: 1px solid rgba(48, 209, 88, 0.2);
-      }
-
-      .platter.st-buka .jam-val {
-        color: #30d158;
-        font-size: 14px;
-      }
-
+      .platter.st-praktek, .platter.st-pendaftaran { z-index: 5; }
+      .platter.st-praktek { background: rgba(48, 209, 88, 0.1); border-color: rgba(48, 209, 88, 0.35); }
+      .platter.st-pendaftaran { background: rgba(255, 204, 0, 0.1); border-color: rgba(255, 204, 0, 0.35); animation: pendaftaran-pulse 2s infinite; }
+      @keyframes pendaftaran-pulse { 0% { border-color: rgba(255,204,0,0.2) } 50% { border-color: rgba(255,204,0,0.6) } 100% { border-color: rgba(255,204,0,0.2) } }
+      
+      [data-theme="light"] .platter.st-praktek { background: rgba(48, 209, 88, 0.06); border-color: rgba(48, 209, 88, 0.2); }
+      [data-theme="light"] .platter.st-pendaftaran { background: rgba(255, 204, 0, 0.06); }
+      
+      .platter.st-praktek .jam-val, .platter.st-pendaftaran .jam-val { color: var(--status-color); font-size: 14px; }
+      
       /* ===== ACTIVE CALL HIGHLIGHT (NEW) ===== */
       .platter {
         display: flex;
@@ -3128,9 +3086,6 @@
 
               // Status logic
               let status = (doc.status || "").toUpperCase();
-              if (status.includes("BUKA") && timeState === "past") {
-                status = "SELESAI";
-              }
 
               mappedData.push({
                 Dokter: doc.name,
@@ -3178,7 +3133,7 @@
             const key = `${name}_${d._shiftId || d.Jam || ""}`;
             // Active logic: Inside time AND (BUKA or PENUH)
             const isNowActive =
-              checkTime(d.Jam) && (st.includes("BUKA") || st.includes("PENUH"));
+              (st === "PRAKTEK" || st === "PENDAFTARAN" || st === "TERJADWAL" || st.includes("PENUH"));
 
             // Daftarkan ke list Ruang Operasi jika cocok
             if (st.includes("OPERASI")) ops.push(name);
@@ -3188,71 +3143,17 @@
             // Store current state
             now[key] = { status: st, active: isNowActive };
 
-            // Only fire if we have previous state (not first load)
-            if (prev) {
-              // 1. Time-based Start (Status same/diff, but became active by time)
-              if (!prev.active && isNowActive) {
-                Island.show(
-                  "Praktek Dimulai",
-                  `${name} Mulai Melayani Pasien`,
-                  "success",
-                  "door_front",
-                  8000,
-                );
-                return; // Prioritize start notification
-              }
-
-              // 2. Status String Change Detection
-              if (prev.status !== st) {
-                if (st.includes("PENUH")) {
-                  Island.show(
-                    "Kuota Penuh",
-                    `Pendaftaran ${name} Ditutup`,
-                    "warn",
-                    "groups",
-                    8000,
-                  );
-                } else if (st.includes("SELESAI")) {
-                  Island.show(
-                    "Praktek Selesai",
-                    `${name} Telah Selesai Praktek`,
-                    "info",
-                    "check_circle",
-                    8000,
-                  );
-                } else if (st.includes("CUTI")) {
-                  Island.show(
-                    "Jadwal Cuti",
-                    `${name} Sedang Tidak Praktek`,
-                    "error",
-                    "flight",
-                    8000,
-                  );
-                } else if (st.includes("OPERASI")) {
-                  Island.show(
-                    "Status Dokter",
-                    `${name} Sedang Tindakan Operasi`,
-                    "info",
-                    "medical_services",
-                    8000,
-                  );
-                } else if (st.includes("ISTIRAHAT")) {
-                  Island.show(
-                    "Istirahat",
-                    `${name} Sedang Istirahat`,
-                    "warn",
-                    "coffee",
-                    8000,
-                  );
-                } else if (st.includes("BUKA")) {
-                  Island.show(
-                    "Praktek Dibuka",
-                    `${name} Mulai Melayani Pasien`,
-                    "success",
-                    "door_front",
-                    8000,
-                  );
-                }
+            if (prev && prev.status !== st) {
+              if (st === "PENDAFTARAN") {
+                Island.show("Loket Dibuka", `Pendaftaran poli ${name} telah dimulai`, "info", "assignment", 8000);
+              } else if (st === "PRAKTEK") {
+                Island.show("Praktek Dimulai", `${name} Mulai Melayani Pasien`, "success", "door_front", 8000);
+              } else if (st === "PENUH") {
+                 Island.show("Kuota Penuh", `Poli ${name} telah memenuhi kuota maksimal`, "warn", "front_hand", 10000);
+              } else if (st === "SELESAI") {
+                 Island.show("Praktek Selesai", `Pelayanan ${name} telah purna`, "info", "check_circle", 8000);
+              } else if (st === "OPERASI") {
+                 Island.show("Tindakan Operasi", `${name} sedang dalam tindakan operasi`, "warn", "local_hospital", 10000);
               }
             }
           });
@@ -3380,8 +3281,8 @@
             countCuti = 0;
           data.forEach((d) => {
             const s = (d.Status || "").toUpperCase();
-            if (s.includes("BUKA")) countBuka++;
-            else if (s.includes("PENUH")) countPenuh++;
+            if (["PRAKTEK", "PENDAFTARAN", "TERJADWAL"].includes(s)) countBuka++;
+              else if (s === "PENUH") countPenuh++;
             else if (s.includes("CUTI")) countCuti++;
           });
           $("statBuka").textContent = countBuka;
@@ -3427,17 +3328,17 @@
           [...mainData, ...sidebarData].forEach((d) => {
             const s = (d.Status || "").toUpperCase();
             d._isActive =
-              checkTime(d.Jam) &&
-              (s.includes("BUKA") ||
+              (s === "PRAKTEK" || s === "PENDAFTARAN" ||
                 s.includes("PENUH") ||
                 s.includes("OPERASI"));
           });
 
-          // Sorting: ACTIVE (Top) -> BUKA (4) -> PENUH (3) -> HANYA OPERASI (2) -> CUTI (1)
+          // Sorting: AKTIF (Top) -> PRAKTEK/PNDF (4) -> PENUH (3) -> TERJADWAL (2.5) -> OPERASI (2) -> CUTI (1)
           const score = (s) => {
             const u = s.toUpperCase();
-            if (u.includes("BUKA")) return 4;
+            if (["PRAKTEK", "PENDAFTARAN"].includes(u)) return 4;
             if (u.includes("PENUH")) return 3;
+            if (u === "TERJADWAL") return 2.5;
             if (u.includes("OPERASI")) return 2;
             if (u.includes("CUTI")) return 1;
             return 0;
@@ -3500,7 +3401,7 @@
               let c = "st-nopoli",
                 i = "block",
                 l = d.Status;
-              if (st.includes("BUKA")) {
+              if (st === "PRAKTEK" || st === "PENDAFTARAN" || st === "TERJADWAL") {
                 c = "st-buka";
                 i = "check_circle";
                 l = "BUKA";
@@ -3727,26 +3628,15 @@
             const id = `${d.Dokter}_${shiftJam}`;
             const hash = `${d.Status}|${d.Jam}|${d._isActive}|${d["Code Antrian"] || ""}|${d.JamDaftar}`;
             const st = d.Status.toUpperCase();
-            let c = "st-nopoli",
-              i = "block",
-              l = d.Status;
-            if (st.includes("BUKA")) {
-              c = "st-buka";
-              i = "check_circle";
-              l = "BUKA";
-            } else if (st.includes("PENUH")) {
-              c = "st-penuh";
-              i = "groups";
-              l = "PENUH";
-            } else if (st.includes("OPERASI")) {
-              c = "st-operasi";
-              i = "local_hospital";
-              l = "OPERASI";
-            } else if (st.includes("CUTI")) {
-              c = "st-cuti";
-              i = "flight";
-              l = "CUTI";
-            }
+            let c = "st-nopoli", i = "block", l = d.Status;
+            if (st === "PRAKTEK") { c = "st-praktek"; i = "check_circle"; l = "PRAKTEK"; }
+            else if (st === "PENDAFTARAN") { c = "st-pendaftaran"; i = "assignment"; l = "PENDAFTARAN"; }
+            else if (st === "TERJADWAL") { c = "st-terjadwal"; i = "schedule"; l = "TERJADWAL"; }
+            else if (st === "SELESAI") { c = "st-selesai"; i = "done_all"; l = "SELESAI"; }
+            else if (st === "PENUH") { c = "st-penuh"; i = "groups"; l = "PENUH"; }
+            else if (st === "OPERASI") { c = "st-operasi"; i = "local_hospital"; l = "OPERASI"; }
+            else if (st === "CUTI") { c = "st-cuti"; i = "flight"; l = "CUTI"; }
+            else if (st === "LIBUR") { c = "st-libur"; i = "block"; l = "LIBUR"; }
             const avatarText =
               d["Code Antrian"] ||
               d.CodeAntrian ||
