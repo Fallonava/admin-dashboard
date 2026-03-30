@@ -758,6 +758,12 @@
       .platter.st-buka { border-color: rgba(48, 209, 88, 0.2); }
       .platter.st-buka.active { background: rgba(48, 209, 88, 0.12) !important; border-color: rgba(48, 209, 88, 0.5) !important; }
       [data-theme="light"] .platter.st-buka { background: rgba(48, 209, 88, 0.04); border-color: rgba(48, 209, 88, 0.15); }
+
+      /* st-buka--terjadwal: Override untuk status TERJADWAL (belum mulai) — pakai warna biru */
+      .st-buka.st-terjadwal { --status-color: #64d2ff; --status-bg: rgba(100, 210, 255, 0.2); opacity: 0.82; }
+      .st-buka.st-terjadwal .initials { background: rgba(100, 210, 255, 0.15); color: #64d2ff; }
+      .platter.st-buka.st-terjadwal { border-color: rgba(100, 210, 255, 0.2); }
+      [data-theme="light"] .platter.st-buka.st-terjadwal { background: rgba(100, 210, 255, 0.04); border-color: rgba(100, 210, 255, 0.15); }
       
       /* ===== ACTIVE CALL HIGHLIGHT (NEW) ===== */
 
@@ -1024,20 +1030,11 @@
         color: #ff453a;
       }
 
-      .di-icon[textContent="check_circle"] {
-        color: #30d158;
-      }
-
-      /* Or simply use a class if we want to be more explicit, but the JS uses material icons text */
       .material-icons-round.di-icon {
         color: #fff;
       }
 
-      .material-icons-round.di-icon:contains("check_circle") {
-        color: #30d158;
-      }
-
-      /* Since CSS doesn't have :contains, let's just add a success class in JS or use a reliable selector */
+      /* Use a success class added via JS instead of invalid pseudo-selectors */
       .di-success .di-icon {
         color: #30d158;
       }
@@ -2158,10 +2155,10 @@
                   width: 6px;
                   height: 6px;
                   border-radius: 50%;
-                  background: var(--accent-orange);
+                  background: #64d2ff;
                 "
               ></div>
-              Penuh
+              Terjadwal
             </div>
             <div
               style="
@@ -2179,10 +2176,10 @@
                   width: 6px;
                   height: 6px;
                   border-radius: 50%;
-                  background: var(--accent-blue);
+                  background: var(--accent-orange);
                 "
               ></div>
-              Selesai
+              Penuh
             </div>
             <div
               style="
@@ -2303,58 +2300,6 @@
       const isActive = (st) =>
         ["PRAKTEK", "PENDAFTARAN"].includes(st) || st.includes("PENUH");
 
-      // Helper: Get time position relative to now: 'past' | 'present' | 'future' | 'unknown'
-      const getTimeState = (jamStr) => {
-        if (!jamStr || typeof jamStr !== "string" || jamStr === "-")
-          return "unknown";
-
-        const clean = jamStr
-          .replace(/\s/g, "")
-          .replace(/\./g, ":")
-          .toLowerCase();
-        const rangeMatch = clean.match(/(\d{1,2}:\d{2}).*?(\d{1,2}:\d{2})/);
-
-        const now = new Date();
-        const curH = now.getHours();
-        const curM = now.getMinutes();
-        const currentMins = curH * 60 + curM;
-
-        const parseMins = (t) => {
-          const [h, m] = t.split(":").map(Number);
-          return h * 60 + m;
-        };
-
-        if (rangeMatch) {
-          const start = parseMins(rangeMatch[1]);
-          const end = parseMins(rangeMatch[2]);
-
-          // Handle overnight shifts (e.g. 22:00-02:00)
-          if (end < start) {
-            // Present if inside the wrapped interval
-            if (currentMins >= start || currentMins <= end) return "present";
-            // Between end and start we treat as "future" (belum masuk shift malam berikutnya)
-            if (currentMins < start && currentMins > end) return "future";
-            return "unknown";
-          }
-
-          if (currentMins < start) return "future";
-          if (currentMins > end) return "past";
-          return "present";
-        }
-
-        const singleMatch = clean.match(/(\d{1,2}:\d{2})/);
-        if (singleMatch) {
-          const start = parseMins(singleMatch[1]);
-          const end = start + 4 * 60; // default 4 jam
-
-          if (currentMins < start) return "future";
-          if (currentMins > end) return "past";
-          return "present";
-        }
-
-        return "unknown";
-      };
-
       // #6: Format Jam Konsisten
       const formatJam = (j) => {
         if (!j || j === "-") return "-";
@@ -2383,7 +2328,7 @@
               ${d.JamPraktek && d.JamPraktek !== "-" ? `
               <div class="jam-box">
                 <span class="jam-label">DAFTAR</span>
-                <span class="jam-val jam-val-daftar" style="color:#30D158">${jamTampil}</span>
+                <span class="jam-val jam-val-daftar" style="color:var(--status-color)">${jamTampil}</span>
               </div>` : ""}
             </div>
           </div>
@@ -3060,7 +3005,6 @@
               if (!doc) return;
 
               const jamStr = shift.formattedTime || shift.title || "-";
-              const timeState = getTimeState(jamStr);
 
               // Status logic
               let status = (doc.status || "").toUpperCase();
@@ -3076,8 +3020,6 @@
                 Jenis: doc.category,
                 "Code Antrian": doc.queueCode,
                 _shiftId: shift.id || index,
-                _timeState: timeState,
-                _isActive: timeState === "active",
               });
             });
 
@@ -3374,10 +3316,14 @@
               let c = "st-nopoli",
                 i = "block",
                 l = d.Status;
-              if (st === "PRAKTEK" || st === "PENDAFTARAN" || st === "TERJADWAL") {
+              if (st === "PRAKTEK" || st === "PENDAFTARAN") {
                 c = "st-buka";
                 i = "check_circle";
                 l = "BUKA";
+              } else if (st === "TERJADWAL") {
+                c = "st-buka st-terjadwal";
+                i = "schedule";
+                l = "TERJADWAL";
               } else if (st.includes("PENUH")) {
                 c = "st-penuh";
                 i = "groups";
