@@ -54,3 +54,14 @@ function notifyViaSocket(event, data) {
         // Graceful no-op if io is not yet available
     }
 }
+
+/**
+ * Specialized sync for Admin Dashboard (Full Socket.io mode).
+ * Call this to send the entire state snapshot to all connected admins.
+ * @param {object} snapshot - { doctors, shifts, leaves, settings }
+ */
+function syncAdminData(snapshot) {
+    notifyViaSocket('admin_sync_all', snapshot);
+}
+
+exports.syncAdminData = syncAdminData;

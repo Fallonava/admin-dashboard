@@ -2,7 +2,8 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requirePermission, withMutationRateLimit } from '@/lib/api-utils';
 import { z } from 'zod';
-import { notifyViaSocket } from '@/lib/automation-broadcaster';
+import { notifyViaSocket, syncAdminData } from '@/lib/automation-broadcaster';
+import { getFullSnapshot } from '@/lib/data-fetchers';
 export const dynamic = 'force-dynamic';
 
 const ShiftCreateSchema = z.object({
@@ -15,7 +16,7 @@ const ShiftCreateSchema = z.object({
     registrationTime: z.string().nullable().optional(),
     extra: z.string().nullable().optional(),
     disabledDates: z.array(z.string()).optional(),
-    statusOverride: z.enum(['BUKA', 'PENUH', 'OPERASI', 'CUTI', 'SELESAI', 'AKAN_BUKA', 'TIDAK_PRAKTEK']).nullable().optional(),
+    statusOverride: z.enum(['TERJADWAL', 'PENDAFTARAN', 'PRAKTEK', 'PENUH', 'OPERASI', 'CUTI', 'SELESAI', 'LIBUR']).nullable().optional(),
 });
 
 const ShiftUpdateSchema = ShiftCreateSchema.partial().extend({
@@ -79,9 +80,13 @@ export async function POST(req: Request) {
         if (body.id === null) delete body.id;
         const validated = ShiftCreateSchema.parse(body);
 
-        const newShift = await prisma.shift.create({ data: validated });
+        const newShift = await prisma.shift.create({ data: validated as any });
         notifyViaSocket('shift_updated', { id: newShift.id });
         notifyViaSocket('doctor_updated', { ids: [newShift.doctorId] });
+
+        // Trigger full sync for Admin Dashboard
+        getFullSnapshot().then(syncAdminData).catch(console.error);
+
         return NextResponse.json(newShift);
     } catch (e) {
         if (e instanceof z.ZodError) {
@@ -112,6 +117,10 @@ export async function PUT(req: Request) {
         if (updated.doctorId) {
             notifyViaSocket('doctor_updated', { ids: [updated.doctorId] });
         }
+
+        // Trigger full sync for Admin Dashboard
+        getFullSnapshot().then(syncAdminData).catch(console.error);
+
         return NextResponse.json(updated);
     } catch (e: any) {
         if (e instanceof z.ZodError) {
@@ -144,6 +153,10 @@ export async function DELETE(req: Request) {
         if (deleted && deleted.doctorId) {
             notifyViaSocket('doctor_updated', { ids: [deleted.doctorId] });
         }
+
+        // Trigger full sync for Admin Dashboard
+        getFullSnapshot().then(syncAdminData).catch(console.error);
+
         return NextResponse.json({ success: true });
     } catch (err: any) {
         if (err.code === 'P2025') {

@@ -77,29 +77,31 @@ const WING_LIGHT_CONFIG = {
 
 function getAvatarGradient(status: Doctor['status']) {
   switch (status) {
-    case 'BUKA':     return "from-blue-500 to-indigo-500";
+    case 'PRAKTEK':     return "from-blue-500 to-indigo-500";
     case 'PENUH':    return "from-orange-500 to-amber-500";
     case 'CUTI':     return "from-pink-500 to-rose-500";
     case 'OPERASI':  return "from-red-500 to-rose-600";
-    case 'AKAN_BUKA':return "from-indigo-400 to-purple-500";
+    case 'PENDAFTARAN':return "from-indigo-400 to-purple-500";
+    case 'TERJADWAL':return "from-sky-300 to-blue-400";
     default:         return "from-slate-300 to-slate-400";
   }
 }
 
 function StatusBadge({ status }: { status: Doctor['status'] }) {
   const map: Record<Doctor['status'], string> = {
-    BUKA:         "bg-blue-100 text-blue-700 border-blue-200",
+    PRAKTEK:      "bg-blue-100 text-blue-700 border-blue-200",
     PENUH:        "bg-orange-100 text-orange-700 border-orange-200",
     OPERASI:      "bg-red-100 text-red-700 border-red-200",
-    AKAN_BUKA:    "bg-indigo-100 text-indigo-600 border-indigo-200",
+    PENDAFTARAN:  "bg-indigo-100 text-indigo-600 border-indigo-200",
     CUTI:         "bg-pink-100 text-pink-700 border-pink-200",
     SELESAI:      "bg-emerald-100 text-emerald-700 border-emerald-200",
-    TIDAK_PRAKTEK:"bg-slate-100 text-slate-500 border-slate-200",
+    TERJADWAL:    "bg-sky-100 text-sky-600 border-sky-200",
+    LIBUR:        "bg-slate-100 text-slate-500 border-slate-200",
   };
   const label: Record<Doctor['status'], string> = {
-    BUKA: "BUKA", PENUH: "PENUH", OPERASI: "OPERASI",
-    AKAN_BUKA: "AKAN BUKA", CUTI: "CUTI", SELESAI: "SELESAI",
-    TIDAK_PRAKTEK: "TUTUP",
+    PRAKTEK: "PRAKTEK", PENUH: "PENUH", OPERASI: "OPERASI",
+    PENDAFTARAN: "PENDAFTARAN", CUTI: "CUTI", SELESAI: "SELESAI",
+    TERJADWAL: "TERJADWAL", LIBUR: "LIBUR",
   };
   return (
     <span className={cn("px-2.5 py-1 rounded-xl text-[11px] font-black border tracking-wider shrink-0", map[status])}>
@@ -114,8 +116,8 @@ export function WingDetailModal({
   const overlayRef = useRef<HTMLDivElement>(null);
   const cfg = WING_LIGHT_CONFIG[wingStatus];
 
-  const activeDoctors = doctors.filter(d => ['BUKA', 'PENUH', 'OPERASI'].includes(d.status));
-  const offlineDoctors = doctors.filter(d => !['BUKA', 'PENUH', 'OPERASI'].includes(d.status));
+  const activeDoctors = doctors.filter(d => ['PRAKTEK', 'PENUH', 'OPERASI', 'PENDAFTARAN'].includes(d.status));
+  const offlineDoctors = doctors.filter(d => !['PRAKTEK', 'PENUH', 'OPERASI', 'PENDAFTARAN'].includes(d.status));
 
   const shiftProgress = useMemo(() => {
     if (activeDoctors.length === 0) return 0;
@@ -282,9 +284,9 @@ export function WingDetailModal({
                           {/* Pulse dot */}
                           <span className={cn(
                             "absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full border-2 border-white flex items-center justify-center",
-                            doc.status === 'BUKA' ? "bg-blue-500" : doc.status === 'PENUH' ? "bg-orange-500" : doc.status === 'OPERASI' ? "bg-red-500" : "bg-slate-300"
+                            doc.status === 'PRAKTEK' ? "bg-blue-500" : doc.status === 'PENUH' ? "bg-orange-500" : doc.status === 'OPERASI' ? "bg-red-500" : "bg-slate-300"
                           )}>
-                            <span className={cn("absolute inset-0 rounded-full animate-ping opacity-50", doc.status === 'BUKA' ? "bg-blue-500" : doc.status === 'PENUH' ? "bg-orange-500" : "bg-red-400")} />
+                            <span className={cn("absolute inset-0 rounded-full animate-ping opacity-50", doc.status === 'PRAKTEK' ? "bg-blue-500" : doc.status === 'PENUH' ? "bg-orange-500" : "bg-red-400")} />
                           </span>
                         </div>
 

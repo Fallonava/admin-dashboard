@@ -18,7 +18,8 @@
 
 import { prisma } from './prisma';
 import { runAutomation } from './automation';
-import { notifyViaSocket } from './automation-broadcaster';
+import { notifyViaSocket, syncAdminData } from './automation-broadcaster';
+import { getFullSnapshot } from './data-fetchers';
 import { logger } from './logger';
 
 // Kumpulan semua timer aktif agar bisa dibersihkan saat reschedule
@@ -75,6 +76,17 @@ async function triggerAndBroadcast(reason: string) {
   try {
     const { applied, failed } = await runAutomation();
     logger.info(`[scheduler] Done. Applied: ${applied}, Failed: ${failed}`);
+    
+    // Always broadcast fresh state to all admin tabs, regardless of changes
+    // This ensures dashboard always shows correct state after every shift event
+    try {
+      const snapshot = await getFullSnapshot();
+      syncAdminData(snapshot);
+      logger.info(`[scheduler] Broadcast admin_sync_all: ${snapshot.doctors.length} doctors`);
+    } catch (snapErr: any) {
+      logger.error('[scheduler] Failed to broadcast snapshot:', snapErr.message);
+    }
+
     if (applied > 0) {
       notifyViaSocket('schedule_changed', { reason, applied, ts: Date.now() });
     }
@@ -125,7 +137,16 @@ export async function scheduleToday() {
     const [startStr, endStr] = shift.formattedTime.split('-');
     const start = parseToMinutes(startStr);
     const end = parseToMinutes(endStr);
-    if (start !== null) triggerMinutes.add(start);
+    if (start !== null) {
+      triggerMinutes.add(start);
+      // Tambahkan trigger untuk window registrasi (PENDAFTARAN)
+      let regStart = start - 30; // default 30 menit
+      if (shift.registrationTime) {
+        const customReg = parseToMinutes(shift.registrationTime);
+        if (customReg !== null) regStart = customReg;
+      }
+      triggerMinutes.add(regStart);
+    }
     if (end !== null) triggerMinutes.add(end);
   }
 

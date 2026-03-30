@@ -187,7 +187,7 @@ function determineIdealStatus(doc, todayShifts, leaves, currentTimeMinutes, toda
         return 'CUTI';
     // 2. No Shifts Today Check
     if (todayShifts.length === 0)
-        return 'TIDAK_PRAKTEK';
+        return 'LIBUR';
     // 3. Time-based State Calculation
     var isWithinAnyShift = false;
     var isAfterAllShifts = true;
@@ -217,13 +217,13 @@ function determineIdealStatus(doc, todayShifts, leaves, currentTimeMinutes, toda
     if (isAfterAllShifts && latestEndMinutes > 0) {
         return 'SELESAI';
     }
-    // Inside Shift -> BUKA (or override)
+    // Inside Shift -> PRAKTEK (or override)
     if (isWithinAnyShift) {
         if (isCooldownActive)
             return doc.status;
-        return activeShiftStatusOverride || 'BUKA';
+        return activeShiftStatusOverride || 'PRAKTEK';
     }
-    // Before or Between Shifts -> AKAN_BUKA (or target shift override like OPERASI)
+    // Before or Between Shifts -> TERJADWAL (or target shift override like OPERASI)
     var nextShift = todayShifts
         .filter(function (s) {
         var _a;
@@ -238,7 +238,7 @@ function determineIdealStatus(doc, todayShifts, leaves, currentTimeMinutes, toda
         return startA - startB;
     })[0];
     var override = nextShift === null || nextShift === void 0 ? void 0 : nextShift.statusOverride;
-    var targetStatus = (override === 'PENUH' || override === 'OPERASI') ? override : 'AKAN_BUKA';
+    var targetStatus = (override === 'PENUH' || override === 'OPERASI') ? override : 'TERJADWAL';
     if (isCooldownActive)
         return doc.status;
     return targetStatus;

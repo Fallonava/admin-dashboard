@@ -2,8 +2,8 @@ import { evaluateRules } from '@/lib/automation';
 import type { Doctor, Shift, LeaveRequest } from '@/lib/data-service';
 describe('Automation Helpers', () => {
   const mockDoctors: Doctor[] = [
-    { id: '1', name: 'Dr. Alice', status: 'TIDAK PRAKTEK', specialty: 'Bedah', category: 'Bedah' as const, startTime: '08:00', endTime: '14:00', queueCode: 'A1', lastManualOverride: undefined },
-    { id: '2', name: 'Dr. Bob', status: 'BUKA', specialty: 'Anak', category: 'NonBedah' as const, startTime: '09:00', endTime: '15:00', queueCode: 'B1', lastManualOverride: undefined },
+    { id: '1', name: 'Dr. Alice', status: 'LIBUR', specialty: 'Bedah', category: 'Bedah' as const, startTime: '08:00', endTime: '14:00', queueCode: 'A1', lastManualOverride: undefined },
+    { id: '2', name: 'Dr. Bob', status: 'PRAKTEK', specialty: 'Anak', category: 'NonBedah' as const, startTime: '09:00', endTime: '15:00', queueCode: 'B1', lastManualOverride: undefined },
     { id: '3', name: 'Dr. Charlie', status: 'CUTI', specialty: 'PD', category: 'NonBedah' as const, startTime: '10:00', endTime: '16:00', queueCode: 'C1', lastManualOverride: undefined }
   ] as Doctor[];
 
@@ -25,7 +25,7 @@ describe('Automation Helpers', () => {
         id: 1,
         name: 'Test Rule',
         condition: {},
-        action: { status: 'BUKA' }
+        action: { status: 'PRAKTEK' }
       }
     ];
 
@@ -38,14 +38,14 @@ describe('Automation Helpers', () => {
       {
         id: 1,
         name: 'Status Match',
-        condition: { status: 'TIDAK PRAKTEK' },
-        action: { status: 'BUKA' }
+        condition: { status: 'LIBUR' },
+        action: { status: 'PRAKTEK' }
       }
     ];
 
     const result = evaluateRules(rules, mockDoctors, mockShifts, mockLeaves);
-    // Should have updates for doctors with TIDAK PRAKTEK status
-    const updates = result.filter(u => u.status === 'BUKA');
+    // Should have updates for doctors with LIBUR status
+    const updates = result.filter(u => u.status === 'PRAKTEK');
     expect(updates.length).toBeGreaterThanOrEqual(0);
   });
 
@@ -55,7 +55,7 @@ describe('Automation Helpers', () => {
         id: 1,
         name: 'Time-based',
         condition: { timeRange: '09:00-17:00' },
-        action: { status: 'BUKA' }
+        action: { status: 'PRAKTEK' }
       }
     ];
 
@@ -84,8 +84,8 @@ describe('Automation Helpers', () => {
       {
         id: 1,
         name: 'Immutable Test',
-        condition: { status: 'TIDAK PRAKTEK' },
-        action: { status: 'BUKA' }
+        condition: { status: 'LIBUR' },
+        action: { status: 'PRAKTEK' }
       }
     ];
 
@@ -104,7 +104,7 @@ describe('Automation Helpers', () => {
       {
         id: 2,
         name: 'Good Rule',
-        condition: { status: 'BUKA' },
+        condition: { status: 'PRAKTEK' },
         action: { status: 'CUTI' }
       }
     ];

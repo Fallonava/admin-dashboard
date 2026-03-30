@@ -15,16 +15,16 @@ export async function suggestRules(prisma: any): Promise<HeuristicRule[]> {
   const suggestions: HeuristicRule[] = [];
 
   try {
-    // Suggestion A: If doctor has no shift for today => set TIDAK_PRAKTEK
+    // Suggestion A: If doctor has no shift for today => set LIBUR
     suggestions.push({
-      name: 'No-shift-becomes-TIDAK_PRAKTEK',
-      rationale: 'Doctors without a shift on a day should be marked TIDAK_PRAKTEK',
+      name: 'No-shift-becomes-LIBUR',
+      rationale: 'Doctors without a shift on a day should be marked LIBUR',
       suggestion: {
-        name: 'Auto: No shift → TIDAK_PRAKTEK',
+        name: 'Auto: No shift → LIBUR',
         condition: {
           // empty condition means rule will run per doctor/shift logic
         },
-        action: { status: 'TIDAK_PRAKTEK' },
+        action: { status: 'LIBUR' },
         active: false
       }
     });

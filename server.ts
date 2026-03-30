@@ -11,6 +11,8 @@ import { createAdapter } from '@socket.io/redis-adapter';
 import { createClient } from 'redis';
 import { scheduleToday } from './src/lib/scheduler';
 import { runAutomation } from './src/lib/automation';
+import { getFullSnapshot } from './src/lib/data-fetchers';
+import { logger } from './src/lib/logger';
 
 // Expose internal scheduling engine to isolated API routes
 (global as any).triggerScheduler = scheduleToday;
@@ -40,11 +42,17 @@ app.prepare().then(() => {
 
   const io = new Server(httpServer, {
     cors: {
-      origin: allowedOrigins.length > 0 ? allowedOrigins : false,
+      origin: allowedOrigins.length > 0 ? allowedOrigins : '*',
       methods: ["GET", "POST"],
-      credentials: true,
-    }
+      credentials: allowedOrigins.length > 0,
+    },
+    pingTimeout: 30000,
+    pingInterval: 10000,
   });
+
+  // CRITICAL: Expose io globally BEFORE any async operations
+  // so that automation-broadcaster.js can immediately use it
+  (global as any).io = io;
 
   // Setup Redis Adapter if URL is provided
   if (REDIS_URL) {
@@ -72,8 +80,30 @@ app.prepare().then(() => {
     });
   }
 
-  io.on('connection', (socket) => {
+  io.on('connection', async (socket) => {
     console.log(`[Socket.IO] Client connected: ${socket.id}`);
+
+    // Send initial snapshot to Admin clients immediately
+    try {
+      console.log(`[Socket.IO] Generating initial snapshot for ${socket.id}...`);
+      const snapshot = await getFullSnapshot();
+      console.log(`[Socket.IO] Snapshot ready: ${snapshot.doctors.length} doctors. Sending...`);
+      socket.emit('admin_sync_all', snapshot);
+    } catch (err: any) {
+      console.error(`[Socket.IO] Snapshot error for ${socket.id}:`, err.message);
+    }
+
+    // Explicit data sync request from Admin Dashboard
+    socket.on('request_admin_sync', async () => {
+      console.log(`[Socket.IO] Manual sync requested by ${socket.id}`);
+      try {
+        const snapshot = await getFullSnapshot();
+        console.log(`[Socket.IO] Sending manual sync: ${snapshot.doctors.length} doctors`);
+        socket.emit('admin_sync_all', snapshot);
+      } catch (err: any) {
+        console.error(`[Socket.IO] Manual sync error for ${socket.id}:`, err.message);
+      }
+    });
 
     // Join specific rooms for granular subscriptions
     socket.on('join_room', (room) => {
@@ -92,9 +122,7 @@ app.prepare().then(() => {
     });
   });
 
-  // Make IO globally available to API routes if needed, 
-  // though it's better to keep websocket logic strictly in client or emitting from client
-  (global as any).io = io;
+  // io is already set globally above — remove duplicate assignment
 
   httpServer
     .once('error', (err) => {

@@ -9,7 +9,7 @@ import { CircuitBreaker } from './circuit-breaker';
 
 export interface DoctorUpdateJob {
     id: string | number;
-    status: 'BUKA' | 'PENUH' | 'OPERASI' | 'CUTI' | 'TIDAK_PRAKTEK' | 'SELESAI' | string;
+    status: 'TERJADWAL' | 'PENDAFTARAN' | 'PRAKTEK' | 'PENUH' | 'OPERASI' | 'CUTI' | 'SELESAI' | 'LIBUR' | string;
     attemptNumber?: number;
 }
 

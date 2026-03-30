@@ -4,11 +4,14 @@
  */
 
 export const DOCTOR_STATUS = {
-    BUKA: 'BUKA',
+    TERJADWAL: 'TERJADWAL',
+    PENDAFTARAN: 'PENDAFTARAN',
+    PRAKTEK: 'PRAKTEK',
     PENUH: 'PENUH',
-    TUTUP: 'TUTUP',
+    OPERASI: 'OPERASI',
     CUTI: 'CUTI',
-    TIDAK_PRAKTEK: 'TIDAK_PRAKTEK',
+    SELESAI: 'SELESAI',
+    LIBUR: 'LIBUR',
 } as const;
 
 export type DoctorStatusType = typeof DOCTOR_STATUS[keyof typeof DOCTOR_STATUS];

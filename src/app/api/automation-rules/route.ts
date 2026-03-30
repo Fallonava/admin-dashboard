@@ -14,7 +14,7 @@ const ConditionSchema = z.object({
 }).strict();
 
 const ActionSchema = z.object({
-    status: z.enum(['BUKA', 'PENUH', 'OPERASI', 'CUTI', 'SELESAI', 'AKAN_BUKA', 'TIDAK_PRAKTEK']).optional(),
+    status: z.enum(['TERJADWAL', 'PENDAFTARAN', 'PRAKTEK', 'PENUH', 'OPERASI', 'CUTI', 'SELESAI', 'LIBUR']).optional(),
     message: z.string().optional(),
 }).strict();
 

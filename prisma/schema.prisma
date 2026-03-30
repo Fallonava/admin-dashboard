@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -9,70 +6,37 @@ datasource db {
   provider = "postgresql"
 }
 
-enum DoctorStatus {
-  BUKA
-  PENUH
-  OPERASI
-  CUTI
-  SELESAI
-  AKAN_BUKA
-  TIDAK_PRAKTEK @map("TIDAK PRAKTEK")
-}
-
-enum LeaveType {
-  Sakit
-  Liburan
-  Pribadi
-  Konferensi
-  Lainnya
-}
-
-enum AlertLevel {
-  Information
-  Warning
-  Critical
-}
-
-enum TargetZone {
-  All_Zones  @map("All Zones")
-  Lobby_Only @map("Lobby Only")
-  ER_Wards   @map("ER & Wards")
-}
-
 model Doctor {
-  id                 String       @id @default(cuid())
+  id                 String         @id @default(cuid())
   name               String
   specialty          String
-  status             DoctorStatus @default(BUKA)
+  status             DoctorStatus   @default(LIBUR)
   image              String?
   category           String
-  startTime          String // Format: HH:MM
-  endTime            String // Format: HH:MM
+  startTime          String
+  endTime            String
   queueCode          String
-  order              Int          @default(0) // Used for drag-and-drop manual reordering
-  lastCall           String? // Format: HH:MM
-  registrationTime   String? // Format: HH:MM
-  lastManualOverride BigInt? // UNIX timestamp
-
-  shifts        Shift[]
-  leaveRequests LeaveRequest[]
-
+  order              Int            @default(0)
+  lastCall           String?
+  registrationTime   String?
+  lastManualOverride BigInt?
+  leaveRequests      LeaveRequest[]
+  shifts             Shift[]
 }
 
 model Shift {
-  id               String   @id @default(cuid())
+  id               String        @id @default(cuid())
   dayIdx           Int
   timeIdx          Int
   title            String
   color            String
   formattedTime    String?
-  registrationTime     String?
-  extra                String?
-  disabledDates        String[]
-  statusOverride       DoctorStatus?
-
-  doctorId String
-  doctor   Doctor @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  registrationTime String?
+  extra            String?
+  disabledDates    String[]
+  statusOverride   DoctorStatus?
+  doctorId         String
+  doctor           Doctor        @relation(fields: [doctorId], references: [id], onDelete: Cascade)
 
   @@index([doctorId])
   @@index([dayIdx, doctorId])
@@ -87,9 +51,8 @@ model LeaveRequest {
   reason    String?
   status    String
   avatar    String?
-
-  doctorId String
-  doctor   Doctor @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  doctorId  String
+  doctor    Doctor    @relation(fields: [doctorId], references: [id], onDelete: Cascade)
 
   @@index([doctorId])
   @@index([startDate, endDate])
@@ -107,8 +70,8 @@ model BroadcastRule {
 model AutomationRule {
   id        String   @id @default(cuid())
   name      String
-  condition Json // arbitrary condition object
-  action    Json // arbitrary action object
+  condition Json
+  action    Json
   active    Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -129,52 +92,44 @@ model Settings {
   customMessages    Json?
 }
 
-// ==================== RBAC ====================
-
 model User {
-  id        String   @id @default(cuid())
-  username  String   @unique
-  password  String   // bcrypt hashed
-  name      String
-  isActive  Boolean  @default(true)
-
-  roleId    String?
-  role      Role?    @relation(fields: [roleId], references: [id], onDelete: SetNull)
-
+  id            String         @id @default(cuid())
+  username      String         @unique
+  password      String
+  name          String
+  isActive      Boolean        @default(true)
+  roleId        String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  lastLogin     DateTime?
   refreshTokens RefreshToken[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  lastLogin DateTime?
+  role          Role?          @relation(fields: [roleId], references: [id])
 }
 
 model Role {
-  id          String   @id @default(cuid())
-  name        String   @unique
+  id          String           @id @default(cuid())
+  name        String           @unique
   description String?
-  isSystem    Boolean  @default(false)
-
-  users       User[]
+  isSystem    Boolean          @default(false)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
   permissions RolePermission[]
-
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  users       User[]
 }
 
 model RolePermission {
   id       String @id @default(cuid())
-  resource String // e.g. "doctors", "shifts", "analytics", "users"
-  action   String // "read" or "write"
-
-  roleId String
-  role   Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  resource String
+  action   String
+  roleId   String
+  role     Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
 
   @@unique([roleId, resource, action])
 }
 
 model AuditLog {
   id        String   @id @default(cuid())
-  userId    String?  // The user who performed the action (nullable for system)
+  userId    String?
   action    String
   resource  String?
   details   Json?
@@ -186,16 +141,47 @@ model AuditLog {
 }
 
 model RefreshToken {
-  id        String   @id @default(cuid())
-  token     String   @unique  // hashed token stored, raw token sent to client
+  id        String    @id @default(cuid())
+  token     String    @unique
   userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   expiresAt DateTime
-  createdAt DateTime @default(now())
-  revokedAt DateTime?          // null = active, set = revoked
+  createdAt DateTime  @default(now())
+  revokedAt DateTime?
   userAgent String?
   ipAddress String?
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([token])
+}
+
+enum DoctorStatus {
+  TERJADWAL
+  PENDAFTARAN
+  PRAKTEK
+  PENUH
+  OPERASI
+  CUTI
+  SELESAI
+  LIBUR
+}
+
+enum LeaveType {
+  Sakit
+  Liburan
+  Pribadi
+  Konferensi
+  Lainnya
+}
+
+enum AlertLevel {
+  Information
+  Warning
+  Critical
+}
+
+enum TargetZone {
+  All_Zones  @map("All Zones")
+  Lobby_Only @map("Lobby Only")
+  ER_Wards   @map("ER & Wards")
 }

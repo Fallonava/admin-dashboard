@@ -460,6 +460,18 @@ async function main() {
   await prisma.shift.deleteMany({});
   await prisma.leaveRequest.deleteMany({});
   await prisma.doctor.deleteMany({});
+  await prisma.settings.deleteMany({});
+  
+  console.log('--- INJECTING SETTINGS ---');
+  await prisma.settings.create({
+    data: {
+      id: "1",
+      automationEnabled: true,
+      runTextMessage: "Selamat Datang di RSU Siaga Medika",
+      emergencyMode: false,
+      customMessages: [] as any
+    }
+  });
 
   console.log('--- INJECTING DOCTORS AND SHIFTS ---');
   let doctorCount = 0;
@@ -479,7 +491,7 @@ async function main() {
         name: docName,
         specialty: specialty,
         category: category,
-        status: DoctorStatus.BUKA,
+        status: DoctorStatus.LIBUR,
         startTime: startTime,
         endTime: endTime,
         queueCode: `${getQueueCodePrefix(docName)}P`,

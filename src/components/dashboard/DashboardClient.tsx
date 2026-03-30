@@ -123,7 +123,7 @@ export function DashboardClient() {
       d.id === id ? {
         ...d,
         status,
-        lastCall: (status === 'BUKA' || status === 'PENUH') ? timeString : d.lastCall,
+        lastCall: (status === 'PRAKTEK' || status === 'PENUH') ? timeString : d.lastCall,
         lastManualOverride: timestamp
       } : d
     ));
@@ -134,7 +134,7 @@ export function DashboardClient() {
         body: JSON.stringify({
           id: String(id),
           status,
-          lastCall: (status === 'BUKA' || status === 'PENUH') ? timeString : undefined,
+          lastCall: (status === 'PRAKTEK' || status === 'PENUH') ? timeString : undefined,
           lastManualOverride: timestamp
         })
       });
@@ -144,8 +144,8 @@ export function DashboardClient() {
       setDoctors(previousDoctors);
     }
   }, [doctors]);
-
-  const activeDocs = useMemo(() => todayDoctors.filter(d => d.status === 'BUKA' || d.status === 'PENUH'), [todayDoctors]);
+  
+  const activeDocs = useMemo(() => todayDoctors.filter(d => d.status === 'PRAKTEK' || d.status === 'PENUH'), [todayDoctors]);
   const [efficiency, setEfficiency] = useState(0);
   useEffect(() => {
     if (todayDoctors.length > 0) {

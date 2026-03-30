@@ -16,11 +16,12 @@ interface WingCardProps {
 
 function getAvatarGradient(status: Doctor['status']) {
   switch (status) {
-    case 'BUKA': return "bg-gradient-to-br from-blue-500 to-indigo-500";
+    case 'PRAKTEK': return "bg-gradient-to-br from-blue-500 to-indigo-500";
     case 'PENUH': return "bg-gradient-to-br from-orange-500 to-amber-500";
     case 'CUTI': return "bg-gradient-to-br from-pink-500 to-rose-500";
     case 'OPERASI': return "bg-gradient-to-br from-red-500 to-rose-600";
-    case 'AKAN_BUKA': return "bg-gradient-to-br from-indigo-400 to-purple-500";
+    case 'PENDAFTARAN': return "bg-gradient-to-br from-indigo-400 to-purple-500";
+    case 'TERJADWAL': return "bg-gradient-to-br from-sky-300 to-blue-400";
     default: return "bg-gradient-to-br from-slate-400 to-slate-500";
   }
 }
@@ -45,9 +46,9 @@ export const WingCard = memo(function WingCard({
     let bukaCount = 0;
 
     for (const doc of doctors) {
-      if (doc.status === 'OPERASI') hasOperasi = true;
+    if (doc.status === 'OPERASI') hasOperasi = true;
       else if (doc.status === 'PENUH') penuhCount++;
-      else if (doc.status === 'BUKA') bukaCount++;
+      else if (doc.status === 'PRAKTEK') bukaCount++;
     }
 
     const totalActive = penuhCount + bukaCount + (hasOperasi ? 1 : 0);
@@ -84,7 +85,7 @@ export const WingCard = memo(function WingCard({
     }
   }, [wingStatus]);
 
-  const activeDocs = doctors.filter(d => ['BUKA', 'PENUH', 'OPERASI'].includes(d.status));
+  const activeDocs = doctors.filter(d => ['PRAKTEK', 'PENUH', 'OPERASI', 'PENDAFTARAN'].includes(d.status));
   const activeCount = activeDocs.length;
 
   // Next-Active Prediction logic for OFFLINE wing
@@ -226,7 +227,7 @@ export const WingCard = memo(function WingCard({
                 {doctors.slice(0, 4).map(doc => {
                     // Trend 2026 Calculations
                     const endMins = parseTimeToMinutes(doc.endTime);
-                    const isOvertime = ['BUKA', 'PENUH', 'OPERASI'].includes(doc.status) && (currentTimeMinutes > endMins);
+                    const isOvertime = ['PRAKTEK', 'PENUH', 'OPERASI', 'PENDAFTARAN'].includes(doc.status) && (currentTimeMinutes > endMins);
                     
                     // Surge Indicator: Status penuh & diubah dalam 15 menit terakhir
                     const isSurge = doc.status === 'PENUH' && doc.lastManualOverride && (nowMs - doc.lastManualOverride) < (15 * 60 * 1000);
@@ -235,7 +236,7 @@ export const WingCard = memo(function WingCard({
                         <div key={doc.id} className="flex items-center gap-2.5 min-w-0">
                             <Avatar className={cn(
                                 "h-8 w-8 shadow-sm flex-shrink-0 transition-transform",
-                                ['BUKA', 'PENUH', 'OPERASI'].includes(doc.status) ? "ring-2 ring-white" : "opacity-60 grayscale group-hover:grayscale-0",
+                                ['PRAKTEK', 'PENUH', 'OPERASI', 'PENDAFTARAN'].includes(doc.status) ? "ring-2 ring-white" : "opacity-60 grayscale group-hover:grayscale-0",
                                 isOvertime && "ring-2 ring-purple-400 animate-pulse"
                             )}>
                                 <AvatarFallback className={cn("text-[10px] font-black text-white", getAvatarGradient(doc.status))}>
@@ -247,7 +248,7 @@ export const WingCard = memo(function WingCard({
                                 <div className="flex items-center gap-1.5 min-w-0 mr-2">
                                     <p className={cn(
                                         "text-[13px] font-bold truncate transition-colors",
-                                        ['BUKA', 'PENUH', 'OPERASI'].includes(doc.status) ? "text-slate-800" : "text-slate-500",
+                                        ['PRAKTEK', 'PENUH', 'OPERASI', 'PENDAFTARAN'].includes(doc.status) ? "text-slate-800" : "text-slate-500",
                                         isOvertime && "text-purple-700"
                                     )}>
                                         {doc.name.replace(/dr\.?\s*/i, '').trim()}
@@ -270,12 +271,15 @@ export const WingCard = memo(function WingCard({
                                     ) : (
                                         <span className={cn(
                                             "text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md border",
-                                            doc.status === 'BUKA' ? "bg-blue-50 text-blue-600 border-blue-100" :
+                                            doc.status === 'PRAKTEK' ? "bg-blue-50 text-blue-600 border-blue-100" :
                                             doc.status === 'PENUH' ? "bg-orange-50 text-orange-600 border-orange-100" :
                                             doc.status === 'OPERASI' ? "bg-red-50 text-red-600 border-red-100" :
-                                            doc.status === 'AKAN_BUKA' ? "bg-indigo-50 text-indigo-500 border-indigo-100" :
+                                            doc.status === 'PENDAFTARAN' ? "bg-indigo-50 text-indigo-500 border-indigo-100" :
+                                            doc.status === 'TERJADWAL' ? "bg-sky-50 text-sky-500 border-sky-100" :
+                                            doc.status === 'SELESAI' ? "bg-emerald-50 text-emerald-600 border-emerald-100" :
+                                            doc.status === 'CUTI' ? "bg-pink-50 text-pink-500 border-pink-100" :
                                             "bg-slate-50/50 text-slate-400 border-slate-100/50"
-                                        )}>{doc.status === 'TIDAK_PRAKTEK' ? 'OFF' : doc.status}</span>
+                                        )}>{doc.status === 'LIBUR' ? 'LIBUR' : doc.status}</span>
                                     )}
                                 </div>
                             </div>

@@ -30,11 +30,11 @@ function formatDateId(date: Date | string) {
 
 function getAvatarStyle(status: Doctor['status']) {
   switch (status) {
-    case 'BUKA':     return "from-blue-500 to-indigo-500 shadow-blue-500/30";
+    case 'PRAKTEK':  return "from-blue-500 to-indigo-500 shadow-blue-500/30";
     case 'PENUH':    return "from-orange-500 to-amber-500 shadow-orange-500/30";
     case 'CUTI':     return "from-pink-500 to-rose-500 shadow-pink-500/30";
     case 'OPERASI':  return "from-red-500 to-rose-600 shadow-red-500/30";
-    case 'AKAN_BUKA':return "from-indigo-400 to-purple-500 shadow-indigo-500/30";
+    case 'PENDAFTARAN':return "from-indigo-400 to-purple-500 shadow-indigo-500/30";
     default:         return "from-slate-300 to-slate-400 shadow-slate-300/30";
   }
 }
@@ -57,8 +57,8 @@ export function DoctorDetailModal({
     return () => { document.body.style.overflow = ''; };
   }, []);
 
-  const isActive = ['BUKA', 'PENUH', 'OPERASI'].includes(doctor.status);
-  const isAkanBuka = doctor.status === 'AKAN_BUKA';
+  const isActive = ['PRAKTEK', 'PENUH', 'OPERASI'].includes(doctor.status);
+  const isPendaftaran = doctor.status === 'PENDAFTARAN';
   const endMins = parseTimeToMinutes(doctor.endTime);
   const startMins = parseTimeToMinutes(doctor.startTime);
   const isOvertime = isActive && currentTimeMinutes > endMins && endMins > 0;
@@ -68,7 +68,7 @@ export function DoctorDetailModal({
     ? Math.max(0, Math.min(100, Math.round(((currentTimeMinutes - startMins) / (endMins - startMins)) * 100)))
     : (isActive ? 50 : 0);
 
-  const minsUntilOpen = isAkanBuka ? Math.max(0, startMins - currentTimeMinutes) : 0;
+  const minsUntilOpen = isPendaftaran ? Math.max(0, startMins - currentTimeMinutes) : 0;
 
   // Leaves
   const activeLeavesToday = doctor.leaveRequests?.filter(lr => {
@@ -87,23 +87,26 @@ export function DoctorDetailModal({
 
   const getStatusBadge = () => {
     const map: Record<Doctor['status'], string> = {
-      BUKA: "bg-blue-100 text-blue-700 border-blue-200",
+      PRAKTEK: "bg-blue-100 text-blue-700 border-blue-200",
       PENUH: "bg-orange-100 text-orange-700 border-orange-200",
       OPERASI: "bg-red-100 text-red-700 border-red-200",
-      AKAN_BUKA: "bg-indigo-100 text-indigo-700 border-indigo-200",
+      PENDAFTARAN: "bg-indigo-100 text-indigo-700 border-indigo-200",
       CUTI: "bg-pink-100 text-pink-700 border-pink-200",
       SELESAI: "bg-emerald-100 text-emerald-700 border-emerald-200",
-      TIDAK_PRAKTEK: "bg-slate-100 text-slate-500 border-slate-200",
+      LIBUR: "bg-slate-100 text-slate-500 border-slate-200",
+      TERJADWAL: "bg-sky-100 text-sky-600 border-sky-200",
     };
     const label: Record<Doctor['status'], string> = {
-      BUKA: "Tersedia", PENUH: "Antrean Penuh", OPERASI: "Sedang Operasi",
-      AKAN_BUKA: "Segera Buka", CUTI: "Cuti / Izin", SELESAI: "Selesai",
-      TIDAK_PRAKTEK: "Tidak Praktek",
+      PRAKTEK: "Tersedia", PENUH: "Antrean Penuh", OPERASI: "Sedang Operasi",
+      PENDAFTARAN: "Segera Buka", CUTI: "Cuti / Izin", SELESAI: "Selesai",
+      LIBUR: "Libur/Tidak Praktek",
+      TERJADWAL: "Terjadwal",
     };
     const dotMap: Record<Doctor['status'], string> = {
-      BUKA: "bg-blue-500 animate-pulse", PENUH: "bg-orange-500", OPERASI: "bg-red-500",
-      AKAN_BUKA: "bg-indigo-500", CUTI: "bg-pink-500", SELESAI: "bg-emerald-500",
-      TIDAK_PRAKTEK: "bg-slate-400",
+      PRAKTEK: "bg-blue-500 animate-pulse", PENUH: "bg-orange-500", OPERASI: "bg-red-500",
+      PENDAFTARAN: "bg-indigo-500", CUTI: "bg-pink-500", SELESAI: "bg-emerald-500",
+      LIBUR: "bg-slate-400",
+      TERJADWAL: "bg-sky-400",
     };
 
     return (
@@ -143,7 +146,7 @@ export function DoctorDetailModal({
             <div className={cn(
               "w-24 h-24 sm:w-28 sm:h-28 rounded-[28px] sm:rounded-[32px] flex items-center justify-center font-black text-white text-3xl sm:text-4xl shadow-xl",
               `bg-gradient-to-br ${getAvatarStyle(doctor.status)}`,
-              !isActive && doctor.status !== 'AKAN_BUKA' && "grayscale opacity-80"
+              !isActive && doctor.status !== 'PENDAFTARAN' && "grayscale opacity-80"
             )}>
               {doctor.queueCode?.charAt(0) || doctor.name.charAt(0)}
             </div>
@@ -152,8 +155,8 @@ export function DoctorDetailModal({
             {doctor.status === 'OPERASI' && (
               <div className="absolute inset-[-6px] rounded-[34px] sm:rounded-[38px] border-[3px] border-dashed border-red-500/60 animate-spin" style={{ animationDuration: '4s' }} />
             )}
-            {/* Pulsing ring for BUKA */}
-            {doctor.status === 'BUKA' && (
+            {/* Pulsing ring for PRAKTEK */}
+            {doctor.status === 'PRAKTEK' && (
               <div className="absolute inset-[-6px] rounded-[34px] sm:rounded-[38px] border-[2px] border-blue-400/40" />
             )}
             {/* Surge warning */}
@@ -198,7 +201,7 @@ export function DoctorDetailModal({
               </div>
 
               {/* Progress Shift atau Countdown */}
-              {isAkanBuka && minsUntilOpen > 0 ? (
+              {isPendaftaran && minsUntilOpen > 0 ? (
                 <div className="mt-4 flex items-center gap-2 text-[13px] font-black text-indigo-600 bg-indigo-50 px-4 py-2.5 rounded-[14px] border border-indigo-100">
                   <Timer size={14} className="animate-pulse" />
                   Buka dalam {minsUntilOpen >= 60 ? `${Math.floor(minsUntilOpen/60)}j ${minsUntilOpen % 60}m` : `${minsUntilOpen} menit`}

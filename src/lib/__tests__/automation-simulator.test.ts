@@ -3,8 +3,8 @@ import type { Doctor, Shift, LeaveRequest } from '@/lib/data-service';
 
 describe('Automation Simulator', () => {
   const mockDoctors: Doctor[] = [
-    { id: '1', name: 'Dr. Alice', status: 'TIDAK PRAKTEK' as const, specialty: 'Bedah', category: 'Bedah' as const, startTime: '08:00', endTime: '14:00', queueCode: 'A1' },
-    { id: '2', name: 'Dr. Bob', status: 'BUKA' as const, specialty: 'Anak', category: 'NonBedah' as const, startTime: '09:00', endTime: '15:00', queueCode: 'B1' },
+    { id: '1', name: 'Dr. Alice', status: 'LIBUR' as const, specialty: 'Bedah', category: 'Bedah' as const, startTime: '08:00', endTime: '14:00', queueCode: 'A1' },
+    { id: '2', name: 'Dr. Bob', status: 'PRAKTEK' as const, specialty: 'Anak', category: 'NonBedah' as const, startTime: '09:00', endTime: '15:00', queueCode: 'B1' },
     { id: '3', name: 'Dr. Charlie', status: 'CUTI' as const, specialty: 'PD', category: 'NonBedah' as const, startTime: '10:00', endTime: '16:00', queueCode: 'C1' }
   ] as Doctor[];
 
@@ -24,8 +24,8 @@ describe('Automation Simulator', () => {
       {
         id: 1,
         name: 'Rule 1',
-        condition: { status: 'TIDAK PRAKTEK' },
-        action: { status: 'BUKA' }
+        condition: { status: 'LIBUR' },
+        action: { status: 'PRAKTEK' }
       }
     ];
 
@@ -39,13 +39,13 @@ describe('Automation Simulator', () => {
       {
         id: 1,
         name: 'Rule 1',
-        condition: { status: 'BUKA' },
+        condition: { status: 'PRAKTEK' },
         action: { status: 'CUTI' }
       },
       {
         id: 2,
         name: 'Rule 2',
-        condition: { status: 'BUKA' },
+        condition: { status: 'PRAKTEK' },
         action: { status: 'SELESAI' }
       }
     ];
@@ -63,13 +63,13 @@ describe('Automation Simulator', () => {
       {
         id: 1,
         name: 'Rule 1',
-        condition: { status: 'BUKA' },
+        condition: { status: 'PRAKTEK' },
         action: { status: 'CUTI' }
       },
       {
         id: 2,
         name: 'Rule 2',
-        condition: { status: 'BUKA' },
+        condition: { status: 'PRAKTEK' },
         action: { status: 'SELESAI' }
       }
     ];
@@ -91,7 +91,7 @@ describe('Automation Simulator', () => {
         id: 1,
         name: 'Rule 1',
         condition: {},
-        action: { status: 'BUKA' }
+        action: { status: 'PRAKTEK' }
       }
     ];
 

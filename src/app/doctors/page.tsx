@@ -131,7 +131,7 @@ export default function DoctorsPage() {
             result = result.filter(d => d.category === catFilter);
         }
         if (statusFilter !== "Semua") {
-            result = result.filter(d => statusFilter === "Aktif" ? (d.status === "BUKA" || d.status === "PENUH" || d.status === "OPERASI") : d.status === statusFilter.toUpperCase());
+            result = result.filter(d => statusFilter === "Aktif" ? (d.status === "PRAKTEK" || d.status === "PENUH" || d.status === "OPERASI") : d.status === statusFilter.toUpperCase());
         }
 
         if (sortMode === "A-Z") result.sort((a,b) => a.name.localeCompare(b.name));
@@ -351,7 +351,7 @@ export default function DoctorsPage() {
                                 { value: "Aktif", label: "Aktif (Tayang)" },
                                 { value: "Cuti", label: "Cuti" },
                                 { value: "Selesai", label: "Selesai" },
-                                { value: "TIDAK_PRAKTEK", label: "Tidak Praktek" },
+                                { value: "LIBUR", label: "Libur/Tidak Praktek" },
                             ]}
                         />
                     </div>
@@ -467,8 +467,8 @@ export default function DoctorsPage() {
                     
                     <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
                         <button onClick={() => handleBulkStatusChange('CUTI')} className="px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-[16px] text-xs font-bold bg-white/60 hover:bg-white text-slate-600 border border-white/60 transition-all shadow-sm whitespace-nowrap">Cuti</button>
-                        <button onClick={() => handleBulkStatusChange('TIDAK_PRAKTEK')} className="px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-[16px] text-xs font-bold bg-white/60 hover:bg-white text-slate-600 border border-white/60 transition-all shadow-sm whitespace-nowrap">Nonaktif</button>
-                        <button onClick={() => handleBulkStatusChange('BUKA')} className="px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-[16px] text-xs font-bold bg-emerald-50 text-emerald-600 hover:bg-emerald-100 border border-emerald-100 transition-all shadow-sm whitespace-nowrap">Buka</button>
+                        <button onClick={() => handleBulkStatusChange('LIBUR')} className="px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-[16px] text-xs font-bold bg-white/60 hover:bg-white text-slate-600 border border-white/60 transition-all shadow-sm whitespace-nowrap">Nonaktif</button>
+                        <button onClick={() => handleBulkStatusChange('PRAKTEK')} className="px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-[16px] text-xs font-bold bg-emerald-50 text-emerald-600 hover:bg-emerald-100 border border-emerald-100 transition-all shadow-sm whitespace-nowrap">Buka</button>
                     </div>
 
                     <div className="h-8 w-px bg-slate-200/60 flex-shrink-0" />

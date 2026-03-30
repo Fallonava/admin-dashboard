@@ -2,12 +2,13 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 import { requireAdmin, requirePermission, withMutationRateLimit } from '@/lib/api-utils';
-import { notifyDoctorUpdates, notifyViaSocket } from '@/lib/automation-broadcaster';
+import { notifyDoctorUpdates, notifyViaSocket, syncAdminData } from '@/lib/automation-broadcaster';
+import { getFullSnapshot } from '@/lib/data-fetchers';
 
 export const dynamic = 'force-dynamic';
 
 // Validation schemas
-const DoctorStatusEnum = z.enum(['BUKA', 'PENUH', 'OPERASI', 'AKAN_BUKA', 'CUTI', 'SELESAI', 'TIDAK_PRAKTEK']);
+const DoctorStatusEnum = z.enum(['TERJADWAL', 'PENDAFTARAN', 'PRAKTEK', 'PENUH', 'OPERASI', 'CUTI', 'SELESAI', 'LIBUR']);
 
 const BulkUpdateSchema = z.array(
     z.object({
@@ -100,7 +101,7 @@ export async function POST(req: Request) {
     if (action === 'reset') {
         await prisma.doctor.updateMany({
             data: {
-                status: 'TIDAK_PRAKTEK',
+                status: 'LIBUR',
                 queueCode: '',
                 lastCall: null,
                 registrationTime: null,
@@ -111,6 +112,10 @@ export async function POST(req: Request) {
         const ids = docs.map(d => String(d.id));
         notifyDoctorUpdates(ids.map(id => ({ id })));
         notifyViaSocket('doctor_updated', { ids });
+
+        // Trigger full sync for Admin Dashboard
+        getFullSnapshot().then(syncAdminData).catch(console.error);
+
         return NextResponse.json({ success: true, message: "All doctors reset." });
     }
 
@@ -131,6 +136,10 @@ export async function POST(req: Request) {
             const ids = validated.map(u => String(u.id));
             notifyDoctorUpdates(ids.map(id => ({ id })));
             notifyViaSocket('doctor_updated', { ids });
+
+            // Trigger full sync for Admin Dashboard
+            getFullSnapshot().then(syncAdminData).catch(console.error);
+
             return NextResponse.json({ success: true, count: results.length });
         } catch (err: any) {
             if (err instanceof z.ZodError) {
@@ -198,6 +207,11 @@ export async function PUT(req: Request) {
         const validated = UpdateDoctorSchema.parse(body);
         const { id, ...data } = validated;
 
+        // Ensure lastManualOverride is updated when status is manually changed
+        if (data.status && typeof data.lastManualOverride === 'undefined') {
+            (data as any).lastManualOverride = Date.now();
+        }
+
         const updated = await prisma.doctor.update({
             where: { id },
             data: data as any
@@ -205,6 +219,9 @@ export async function PUT(req: Request) {
 
         notifyDoctorUpdates([{ id: String(updated.id) }]);
         notifyViaSocket('doctor_updated', { ids: [String(updated.id)] });
+
+        // Trigger full sync for Admin Dashboard
+        getFullSnapshot().then(syncAdminData).catch(console.error);
 
         return NextResponse.json({
             ...updated,
@@ -240,6 +257,9 @@ export async function DELETE(req: Request) {
         notifyDoctorUpdates([{ id: String(id) }]);
         notifyViaSocket('doctor_updated', { ids: [String(id)] });
         notifyViaSocket('schedule_changed', { reason: 'doctor_deleted', ts: Date.now() });
+
+        // Trigger full sync for Admin Dashboard
+        getFullSnapshot().then(syncAdminData).catch(console.error);
         
         return NextResponse.json({ success: true });
     } catch (err: any) {

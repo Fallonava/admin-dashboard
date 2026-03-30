@@ -5,28 +5,13 @@ import { automationBroadcaster } from '@/lib/automation-broadcaster';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-// ─── Data fetchers per domain ────────────────────────────────────────────────
-
-async function fetchDoctors() {
-    const doctors = await prisma.doctor.findMany({ orderBy: { name: 'asc' } });
-    return doctors.map(d => ({
-        ...d,
-        lastManualOverride: d.lastManualOverride ? d.lastManualOverride.toString() : null,
-    }));
-}
-
-async function fetchShifts() {
-    return prisma.shift.findMany();
-}
-
-async function fetchLeaves() {
-    return prisma.leaveRequest.findMany();
-}
-
-async function fetchSettings() {
-    const s = await prisma.settings.findFirst();
-    return s || { automationEnabled: false };
-}
+import { 
+    fetchDoctors, 
+    fetchShifts, 
+    fetchLeaves, 
+    fetchSettings,
+    getFullSnapshot 
+} from '@/lib/data-fetchers';
 
 // Helper: format a named SSE event
 // `event: <name>\ndata: <json>\n\n`
@@ -65,12 +50,7 @@ export async function GET(req: Request) {
 
             // ── 1. Initial snapshot: send all domains as named events ──
             try {
-                const [doctors, shifts, leaves, settings] = await Promise.all([
-                    fetchDoctors(),
-                    fetchShifts(),
-                    fetchLeaves(),
-                    fetchSettings(),
-                ]);
+                const { doctors, shifts, leaves, settings } = await getFullSnapshot();
                 console.log(`[SSE] Sending initial snapshot: ${doctors.length} doctors`);
                 send(formatEvent('doctors', doctors));
                 send(formatEvent('shifts', shifts));
@@ -79,7 +59,7 @@ export async function GET(req: Request) {
                 
                 // ── 1.1 Legacy snapshot for tv.html (unnamed event) ──
                 const snapshot = { doctors, shifts, leaves, settings };
-                send(`data: ${JSON.stringify(snapshot, (_, v) => typeof v === 'bigint' ? v.toString() : v)}\n\n`);
+                send(`data: ${JSON.stringify(snapshot)}\n\n`);
             } catch (err) {
                 console.error('[SSE] initial fetch error:', err);
             }

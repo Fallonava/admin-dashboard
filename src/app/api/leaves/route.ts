@@ -2,7 +2,8 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requirePermission, withMutationRateLimit } from '@/lib/api-utils';
 import { z } from 'zod';
-import { notifyViaSocket } from '@/lib/automation-broadcaster';
+import { notifyViaSocket, syncAdminData } from '@/lib/automation-broadcaster';
+import { getFullSnapshot } from '@/lib/data-fetchers';
 export const dynamic = 'force-dynamic';
 
 const LeaveCreateSchema = z.object({
@@ -75,6 +76,10 @@ export async function POST(req: Request) {
                 });
             })
         );
+        
+        // Trigger full sync for Admin Dashboard
+        getFullSnapshot().then(syncAdminData).catch(console.error);
+
         return NextResponse.json(newLeaves.filter(Boolean));
     } else {
         const { dates, doctor, ...rest } = data;
@@ -93,6 +98,10 @@ export async function POST(req: Request) {
         });
         notifyViaSocket('leave_updated', { id: newLeave.id });
         notifyViaSocket('doctor_updated', { ids: [doc.id] }); // cuti mempengaruhi status dokter
+        
+        // Trigger full sync for Admin Dashboard
+        getFullSnapshot().then(syncAdminData).catch(console.error);
+
         return NextResponse.json(newLeave);
     }
     } catch (error) {
@@ -122,6 +131,10 @@ export async function PUT(req: Request) {
             data: updates
         });
         notifyViaSocket('leave_updated', { id });
+
+        // Trigger full sync for Admin Dashboard
+        getFullSnapshot().then(syncAdminData).catch(console.error);
+
         return NextResponse.json(updatedLeave);
     } catch (error) {
         if (error instanceof z.ZodError) {
@@ -147,6 +160,10 @@ export async function DELETE(req: Request) {
                 where: { id: String(id) }
             });
             notifyViaSocket('leave_updated', { id });
+
+            // Trigger full sync for Admin Dashboard
+            getFullSnapshot().then(syncAdminData).catch(console.error);
+
             return NextResponse.json({ success: true });
         } catch (err) {
             console.error("Leave DELETE Error:", err);

@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import type { Doctor, LeaveRequest, Shift, Settings } from "@/lib/data-service";
 import { LiveClock } from "@/components/LiveClock";
 import { useDebounce } from "@/hooks/use-debounce";
-import { useSSE } from "@/hooks/use-sse";
+import { useSocket } from "@/hooks/use-socket";
 import { useAuth } from "@/lib/auth-context";
 import { PoliAccordion } from "./PoliAccordion";
 import { DoctorDetailModal } from "./DoctorDetailModal";
@@ -29,20 +29,18 @@ export function WingDashboardClient() {
     return () => clearInterval(timer);
   }, []);
 
-  const [doctors, setDoctors] = useState<Doctor[]>([]);
-  const [leaves, setLeaves] = useState<LeaveRequest[]>([]);
-  const [shifts, setShifts] = useState<Shift[]>([]);
-  const [settings, setSettings] = useState<Settings | null>(null);
+  // Full Socket.io Mode for Admin Dashboard
+  const { 
+    doctors, 
+    shifts, 
+    leaves, 
+    settings, 
+    isConnected,
+    lastUpdate
+  } = useSocket();
 
-  const sseStatus = useSSE({
-    url: '/api/stream/live',
-    handlers: {
-      doctors: (data: Doctor[]) => Array.isArray(data) && setDoctors(data),
-      shifts: (data: Shift[]) => Array.isArray(data) && setShifts(data),
-      leaves: (data: LeaveRequest[]) => Array.isArray(data) && setLeaves(data),
-      settings: (data: Settings) => data && setSettings(data),
-    },
-  });
+  const sseStatus = isConnected ? 'connected' : 'reconnecting';
+
 
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedSearch = useDebounce(searchQuery, 400);
@@ -64,17 +62,25 @@ export function WingDashboardClient() {
 
   const { todayDayIdx, todayStr, currentTimeMinutes } = timeContext;
 
-  const todayDoctors = useMemo(() => doctors.filter(doc =>
-    shifts.some(s =>
-      s.doctorId === doc.id &&
-      s.dayIdx === todayDayIdx &&
-      !(s.disabledDates || []).includes(todayStr)
-    )
-  ), [doctors, shifts, todayDayIdx, todayStr]);
+  const todayDoctors = useMemo(() => {
+    if (!doctors.length || !shifts.length) {
+      console.log(`[Wing] No data yet — doctors: ${doctors.length}, shifts: ${shifts.length}`);
+      return [];
+    }
+    const result = doctors.filter(doc =>
+      shifts.some(s =>
+        String(s.doctorId) === String(doc.id) &&
+        Number(s.dayIdx) === Number(todayDayIdx) &&
+        !(s.disabledDates || []).includes(todayStr)
+      )
+    );
+    console.log(`[Wing] todayDayIdx=${todayDayIdx}, todayStr=${todayStr}, todayDoctors=${result.length}/${doctors.length}`);
+    return result;
+  }, [doctors, shifts, todayDayIdx, todayStr]);
 
   const automationEnabled = settings?.automationEnabled || false;
 
-  const activeDocs = useMemo(() => todayDoctors.filter(d => d.status === 'BUKA' || d.status === 'PENUH'), [todayDoctors]);
+  const activeDocs = useMemo(() => todayDoctors.filter(d => d.status === 'PRAKTEK' || d.status === 'PENUH' || d.status === 'PENDAFTARAN'), [todayDoctors]);
   const [efficiency, setEfficiency] = useState(0);
   useEffect(() => {
     if (todayDoctors.length > 0) {
@@ -104,7 +110,7 @@ export function WingDashboardClient() {
       for (const doc of docs) {
         if (doc.status === 'OPERASI') hasOperasi = true;
         else if (doc.status === 'PENUH') penuhCount++;
-        else if (doc.status === 'BUKA') bukaCount++;
+        else if (doc.status === 'PRAKTEK') bukaCount++;
       }
       const totalActive = penuhCount + bukaCount + (hasOperasi ? 1 : 0);
       let status = 'NORMAL';

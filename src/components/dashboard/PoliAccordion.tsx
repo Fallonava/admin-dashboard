@@ -29,29 +29,34 @@ function parseTimeToMinutes(t: string | undefined | null) {
 
 function getPatientLabel(status: Doctor['status'], endTime?: string, currentTimeMinutes?: number) {
   switch (status) {
-    case 'BUKA':     return { text: 'Tersedia', color: 'bg-emerald-100 text-emerald-700 border-emerald-200', dot: 'bg-emerald-500', icon: CheckCircle };
+    case 'PRAKTEK':     return { text: 'Sedang Praktek', color: 'bg-emerald-100 text-emerald-700 border-emerald-200', dot: 'bg-emerald-500', icon: CheckCircle };
     case 'PENUH':    return { text: 'Antrean Penuh', color: 'bg-red-100 text-red-700 border-red-200', dot: 'bg-red-500', icon: XCircle };
     case 'OPERASI':  return { text: 'Sedang Operasi', color: 'bg-rose-100 text-rose-700 border-rose-200', dot: 'bg-rose-600', icon: AlertCircle };
-    case 'AKAN_BUKA':return { text: 'Segera Buka', color: 'bg-indigo-100 text-indigo-700 border-indigo-200', dot: 'bg-indigo-400', icon: Timer };
+    case 'PENDAFTARAN':return { text: 'Buka Pendaftaran', color: 'bg-indigo-100 text-indigo-700 border-indigo-200', dot: 'bg-indigo-400', icon: Timer };
+    case 'TERJADWAL':return { text: 'Terjadwal Hari Ini', color: 'bg-sky-100 text-sky-600 border-sky-200', dot: 'bg-sky-400', icon: Timer };
     case 'CUTI':     return { text: 'Cuti Hari Ini', color: 'bg-pink-100 text-pink-600 border-pink-200', dot: 'bg-pink-400', icon: Pause };
-    case 'SELESAI':  return { text: 'Selesai Hari Ini', color: 'bg-slate-100 text-slate-500 border-slate-200', dot: 'bg-slate-400', icon: XCircle };
-    default:         return { text: 'Tidak Praktek', color: 'bg-slate-100 text-slate-400 border-slate-200', dot: 'bg-slate-300', icon: XCircle };
+    case 'SELESAI':  return { text: 'Selesai Hari Ini', color: 'bg-emerald-100 text-emerald-700 border-emerald-200', dot: 'bg-emerald-500', icon: CheckCircle };
+    case 'LIBUR':    return { text: 'Libur', color: 'bg-slate-100 text-slate-400 border-slate-200', dot: 'bg-slate-300', icon: XCircle };
+    default:         return { text: 'Libur', color: 'bg-slate-100 text-slate-400 border-slate-200', dot: 'bg-slate-300', icon: XCircle };
   }
 }
 
 function getAvatarGradient(status: Doctor['status']) {
   switch (status) {
-    case 'BUKA':     return "from-emerald-400 to-teal-500";
+    case 'PRAKTEK':     return "from-emerald-400 to-teal-500";
     case 'PENUH':    return "from-red-400 to-rose-500";
     case 'OPERASI':  return "from-rose-600 to-red-700";
-    case 'AKAN_BUKA':return "from-indigo-400 to-purple-500";
+    case 'PENDAFTARAN':return "from-indigo-400 to-purple-500";
+    case 'TERJADWAL':return "from-sky-300 to-blue-400";
     case 'CUTI':     return "from-pink-400 to-rose-500";
+    case 'SELESAI':  return "from-emerald-500 to-teal-600";
+    case 'LIBUR':    return "from-slate-300 to-slate-400";
     default:         return "from-slate-300 to-slate-400";
   }
 }
 
 function isActiveStatus(status: Doctor['status']) {
-  return ['BUKA', 'PENUH', 'OPERASI'].includes(status);
+  return ['PRAKTEK', 'PENUH', 'OPERASI', 'PENDAFTARAN'].includes(status);
 }
 
 const WING_STATUS_CONFIG = {
@@ -70,7 +75,7 @@ export function PoliAccordion({
 
   const activeDoctors = doctors.filter(d => isActiveStatus(d.status));
   const activeCount = activeDoctors.length;
-  const availableCount = doctors.filter(d => d.status === 'BUKA').length;
+  const availableCount = doctors.filter(d => d.status === 'PRAKTEK').length;
   const fullCount = doctors.filter(d => d.status === 'PENUH').length;
 
   // Next open time for OFFLINE wing
@@ -90,7 +95,7 @@ export function PoliAccordion({
   // Filter doctors for display
   const filteredDoctors = useMemo(() => {
     if (patientFilter === 'ALL') return doctors;
-    if (patientFilter === 'ACTIVE') return doctors.filter(d => d.status === 'BUKA');
+    if (patientFilter === 'ACTIVE') return doctors.filter(d => d.status === 'PRAKTEK' || d.status === 'PENDAFTARAN');
     if (patientFilter === 'FULL') return doctors.filter(d => d.status === 'PENUH');
     if (patientFilter === 'INACTIVE') return doctors.filter(d => !isActiveStatus(d.status));
     return doctors;
@@ -193,8 +198,8 @@ export function PoliAccordion({
                 const startMins = parseTimeToMinutes(doc.startTime);
                 const isOvertime = isActive && currentTimeMinutes > endMins && endMins > 0;
                 const isSurge = doc.status === 'PENUH' && doc.lastManualOverride && (nowMs - doc.lastManualOverride) < 15 * 60 * 1000;
-                const isAkanBuka = doc.status === 'AKAN_BUKA';
-                const minsUntilOpen = isAkanBuka ? parseTimeToMinutes(doc.startTime) - currentTimeMinutes : 0;
+                const isPendaftaran = doc.status === 'PENDAFTARAN';
+                const minsUntilOpen = isPendaftaran ? parseTimeToMinutes(doc.startTime) - currentTimeMinutes : 0;
                 const shiftProgress = (isActive && endMins > startMins)
                   ? Math.max(0, Math.min(100, Math.round(((currentTimeMinutes - startMins) / (endMins - startMins)) * 100)))
                   : 0;
@@ -222,8 +227,8 @@ export function PoliAccordion({
                       {doc.status === 'OPERASI' && (
                         <div className="absolute inset-[-4px] rounded-full border-2 border-dashed border-red-400/60 animate-spin" style={{ animationDuration: '3s' }} />
                       )}
-                      {/* Pulse for BUKA */}
-                      {doc.status === 'BUKA' && (
+                      {/* Pulse for PRAKTEK */}
+                      {doc.status === 'PRAKTEK' && (
                         <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-emerald-500 rounded-full border-2 border-white flex items-center justify-center">
                           <span className="absolute inset-0 rounded-full bg-emerald-500 animate-ping opacity-60" />
                         </span>
@@ -260,7 +265,7 @@ export function PoliAccordion({
                         {doc.queueCode && (
                           <span className="text-[10px] font-black text-slate-300 font-mono">Kode: {doc.queueCode}</span>
                         )}
-                        {isAkanBuka && minsUntilOpen > 0 && (
+                        {isPendaftaran && minsUntilOpen > 0 && (
                           <span className="text-[10px] font-black text-indigo-500 flex items-center gap-1">
                             <Timer size={9} className="animate-pulse" />
                             {minsUntilOpen >= 60 ? `${Math.floor(minsUntilOpen/60)}j ${minsUntilOpen % 60}m lagi` : `${minsUntilOpen} mnt`}
@@ -290,7 +295,7 @@ export function PoliAccordion({
                         lbl.color
                       )}>
                         <span className={cn("w-1.5 h-1.5 rounded-full shrink-0", lbl.dot,
-                          doc.status === 'BUKA' && "animate-pulse")} />
+                          doc.status === 'PRAKTEK' && "animate-pulse")} />
                         {lbl.text}
                       </span>
                     </div>

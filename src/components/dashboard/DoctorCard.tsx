@@ -7,56 +7,61 @@ import type { Doctor, Shift } from "@/lib/data-service";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 const STATUS_BUTTONS = [
-  { id: 'TIDAK_PRAKTEK', label: 'Off', bg: 'bg-slate-500', hover: 'hover:bg-slate-600' },
-  { id: 'AKAN_BUKA', label: 'Akan Buka', bg: 'bg-indigo-500', hover: 'hover:bg-indigo-600' },
-  { id: 'BUKA', label: 'Buka', bg: 'bg-blue-500', hover: 'hover:bg-blue-600' },
+  { id: 'TERJADWAL', label: 'Terjadwal', bg: 'bg-slate-500', hover: 'hover:bg-slate-600' },
+  { id: 'PENDAFTARAN', label: 'Daftar', bg: 'bg-indigo-500', hover: 'hover:bg-indigo-600' },
+  { id: 'PRAKTEK', label: 'Praktek', bg: 'bg-blue-500', hover: 'hover:bg-blue-600' },
   { id: 'PENUH', label: 'Penuh', bg: 'bg-orange-500', hover: 'hover:bg-orange-600' },
   { id: 'OPERASI', label: 'Ops', bg: 'bg-red-500', hover: 'hover:bg-red-600' },
-  { id: 'SELESAI', label: 'Slsai', bg: 'bg-emerald-500', hover: 'hover:bg-emerald-600' },
+  { id: 'SELESAI', label: 'Selesai', bg: 'bg-emerald-500', hover: 'hover:bg-emerald-600' },
   { id: 'CUTI', label: 'Cuti', bg: 'bg-pink-500', hover: 'hover:bg-pink-600' },
+  { id: 'LIBUR', label: 'Libur', bg: 'bg-gray-400', hover: 'hover:bg-gray-500' },
 ] as const;
 
 const STATUS_LABELS: Record<string, string> = {
-  BUKA: 'Buka',
+  TERJADWAL: 'Terjadwal',
+  PENDAFTARAN: 'Pendaftaran',
+  PRAKTEK: 'Praktek',
   PENUH: 'Penuh',
   OPERASI: 'Operasi',
   CUTI: 'Cuti',
   SELESAI: 'Selesai',
-  AKAN_BUKA: 'Akan Buka',
-  TIDAK_PRAKTEK: 'Tidak Praktek',
+  LIBUR: 'Libur',
 };
 
 function getStatusDotColor(status: Doctor['status']) {
   switch (status) {
-    case 'BUKA': return "bg-blue-500 shadow-[0_0_12px_rgba(59,130,246,0.6)]";
+    case 'PRAKTEK': return "bg-blue-500 shadow-[0_0_12px_rgba(59,130,246,0.6)]";
     case 'PENUH': return "bg-orange-500 shadow-[0_0_12px_rgba(249,115,22,0.6)]";
     case 'CUTI': return "bg-pink-500 shadow-[0_0_12px_rgba(236,72,153,0.6)]";
     case 'OPERASI': return "bg-red-500 shadow-[0_0_12px_rgba(239,68,68,0.6)]";
     case 'SELESAI': return "bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.6)]";
-    case 'AKAN_BUKA': return "bg-indigo-400 shadow-[0_0_12px_rgba(129,140,248,0.6)]";
+    case 'PENDAFTARAN': return "bg-indigo-400 shadow-[0_0_12px_rgba(129,140,248,0.6)]";
+    case 'TERJADWAL': return "bg-sky-300 shadow-[0_0_8px_rgba(125,211,252,0.4)]";
     default: return "bg-slate-300";
   }
 }
 
 function getAvatarGradient(status: Doctor['status']) {
   switch (status) {
-    case 'BUKA': return "bg-gradient-to-br from-blue-500 to-indigo-500";
+    case 'PRAKTEK': return "bg-gradient-to-br from-blue-500 to-indigo-500";
     case 'PENUH': return "bg-gradient-to-br from-orange-500 to-amber-500";
     case 'CUTI': return "bg-gradient-to-br from-pink-500 to-rose-500";
     case 'OPERASI': return "bg-gradient-to-br from-red-500 to-rose-600";
-    case 'AKAN_BUKA': return "bg-gradient-to-br from-indigo-400 to-purple-500";
+    case 'PENDAFTARAN': return "bg-gradient-to-br from-indigo-400 to-purple-500";
+    case 'TERJADWAL': return "bg-gradient-to-br from-sky-300 to-blue-400";
     default: return "bg-gradient-to-br from-slate-400 to-slate-500";
   }
 }
 
 function getStatusBadgeStyle(status: Doctor['status']) {
   switch (status) {
-    case 'BUKA': return "bg-blue-50 text-blue-600 border border-blue-100";
+    case 'PRAKTEK': return "bg-blue-50 text-blue-600 border border-blue-100";
     case 'PENUH': return "bg-orange-50 text-orange-600 border border-orange-100";
     case 'CUTI': return "bg-pink-50 text-pink-600 border border-pink-100";
     case 'OPERASI': return "bg-red-50 text-red-600 border border-red-100";
     case 'SELESAI': return "bg-emerald-50 text-emerald-600 border border-emerald-100";
-    case 'AKAN_BUKA': return "bg-indigo-50 text-indigo-600 border border-indigo-100";
+    case 'PENDAFTARAN': return "bg-indigo-50 text-indigo-600 border border-indigo-100";
+    case 'TERJADWAL': return "bg-sky-50 text-sky-600 border border-sky-100";
     default: return "bg-slate-50 text-slate-500 border border-slate-100";
   }
 }

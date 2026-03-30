@@ -3,7 +3,7 @@ export const newDoctorsData = [
         "id": "doc-1",
         "name": "dr. Pritasari Dewi Damayanti, Sp.OG",
         "specialty": "Kandungan & Kebidanan",
-        "status": "TIDAK PRAKTEK",
+        "status": "LIBUR",
         "category": "NonBedah",
         "queueCode": "OG1",
         "shiftsRaw": [
@@ -14,7 +14,7 @@ export const newDoctorsData = [
         "id": "doc-2",
         "name": "dr. Ardian Rahmasyah, Sp.OG",
         "specialty": "Kandungan & Kebidanan",
-        "status": "TIDAK PRAKTEK",
+        "status": "LIBUR",
         "category": "NonBedah",
         "queueCode": "OG2",
         "shiftsRaw": [
@@ -25,7 +25,7 @@ export const newDoctorsData = [
         "id": "doc-3",
         "name": "dr. Gatot Hananta Sholihin, Sp.OG",
         "specialty": "Kandungan & Kebidanan",
-        "status": "TIDAK PRAKTEK",
+        "status": "LIBUR",
         "category": "NonBedah",
         "queueCode": "OG3",
         "shiftsRaw": [
@@ -36,7 +36,7 @@ export const newDoctorsData = [
         "id": "doc-4",
         "name": "dr. Hepta Lidia, Sp.OG",
         "specialty": "Kandungan & Kebidanan",
-        "status": "TIDAK PRAKTEK",
+        "status": "LIBUR",
         "category": "NonBedah",
         "queueCode": "OG4",
         "shiftsRaw": [
@@ -47,7 +47,7 @@ export const newDoctorsData = [
         "id": "doc-5",
         "name": "dr. RR. Irma Rosyana Lestyowati, Sp.A",
         "specialty": "Anak",
-        "status": "TIDAK PRAKTEK",
+        "status": "LIBUR",
         "category": "NonBedah",
         "queueCode": "A1",
         "shiftsRaw": [
@@ -58,7 +58,7 @@ export const newDoctorsData = [
         "id": "doc-6",
         "name": "dr. Annisa Noor Anindyasari, Sp.A",
         "specialty": "Anak",
-        "status": "TIDAK PRAKTEK",
+        "status": "LIBUR",
         "category": "NonBedah",
         "queueCode": "A2",
         "shiftsRaw": [
@@ -69,7 +69,7 @@ export const newDoctorsData = [
         "id": "doc-7",
         "name": "dr. Endro RI Wibowo, Sp.B., Msi.Med",
         "specialty": "Bedah Umum",
-        "status": "TIDAK PRAKTEK",
+        "status": "LIBUR",
         "category": "Bedah",
         "queueCode": "BU1",
         "shiftsRaw": [
@@ -84,7 +84,7 @@ export const newDoctorsData = [
         "id": "doc-8",
         "name": "dr. Sigit Purnomohadi. Sp.PD",
         "specialty": "Penyakit Dalam",
-        "status": "TIDAK PRAKTEK",
+        "status": "LIBUR",
         "category": "NonBedah",
         "queueCode": "PD1",
         "shiftsRaw": [
@@ -96,7 +96,7 @@ export const newDoctorsData = [
         "id": "doc-9",
         "name": "dr. Leo Chandra Wisnu Pandu Winata, Sp.PD",
         "specialty": "Penyakit Dalam",
-        "status": "TIDAK PRAKTEK",
+        "status": "LIBUR",
         "category": "NonBedah",
         "queueCode": "PD2",
         "shiftsRaw": [
@@ -111,7 +111,7 @@ export const newDoctorsData = [
         "id": "doc-10",
         "name": "dr. Sasongko Hadipurnomo, Sp.PD",
         "specialty": "Penyakit Dalam",
-        "status": "TIDAK PRAKTEK",
+        "status": "LIBUR",
         "category": "NonBedah",
         "queueCode": "PD3",
         "remarks": "Jadwal kunjungan HD",
@@ -124,7 +124,7 @@ export const newDoctorsData = [
         "id": "doc-11",
         "name": "dr. Setyo Dirahayu, Sp.N., MD., CIPS",
         "specialty": "Saraf (Neurologi)",
-        "status": "TIDAK PRAKTEK",
+        "status": "LIBUR",
         "category": "NonBedah",
         "queueCode": "N1",
         "shiftsRaw": [
@@ -136,7 +136,7 @@ export const newDoctorsData = [
         "id": "doc-12",
         "name": "dr. Ajeng Putri Tunjungsari, Sp.N",
         "specialty": "Saraf (Neurologi)",
-        "status": "TIDAK PRAKTEK",
+        "status": "LIBUR",
         "category": "NonBedah",
         "queueCode": "N2",
         "shiftsRaw": [
@@ -149,7 +149,7 @@ export const newDoctorsData = [
         "id": "doc-13",
         "name": "dr. Ahmad Tanji, Sp.S",
         "specialty": "Saraf (Neurologi)",
-        "status": "TIDAK PRAKTEK",
+        "status": "LIBUR",
         "category": "NonBedah",
         "queueCode": "S1",
         "shiftsRaw": [
@@ -161,7 +161,7 @@ export const newDoctorsData = [
         "id": "doc-14",
         "name": "dr. Wahyu Dwi Kusdaryanto, Sp.THT-KL",
         "specialty": "THT-KL",
-        "status": "TIDAK PRAKTEK",
+        "status": "LIBUR",
         "category": "NonBedah",
         "queueCode": "THT1",
         "shiftsRaw": [
@@ -173,7 +173,7 @@ export const newDoctorsData = [
         "id": "doc-15",
         "name": "dr. Lirans Tia Kusuma, Sp.THT-KL",
         "specialty": "THT-KL",
-        "status": "TIDAK PRAKTEK",
+        "status": "LIBUR",
         "category": "NonBedah",
         "queueCode": "THT2",
         "shiftsRaw": [
@@ -186,7 +186,7 @@ export const newDoctorsData = [
         "id": "doc-16",
         "name": "dr. Eko Subekti, Sp.U",
         "specialty": "Urologi",
-        "status": "TIDAK PRAKTEK",
+        "status": "LIBUR",
         "category": "Bedah",
         "queueCode": "U1",
         "shiftsRaw": [
@@ -198,7 +198,7 @@ export const newDoctorsData = [
         "id": "doc-17",
         "name": "dr. Muhammad Luthfi Muammar, Sp.OT",
         "specialty": "Ortopedi",
-        "status": "TIDAK PRAKTEK",
+        "status": "LIBUR",
         "category": "Bedah",
         "queueCode": "OT1",
         "remarks": "Rabu: Khusus Operasi",
@@ -211,7 +211,7 @@ export const newDoctorsData = [
         "id": "doc-18",
         "name": "dr. Oke Viska, Sp.P",
         "specialty": "Paru",
-        "status": "TIDAK PRAKTEK",
+        "status": "LIBUR",
         "category": "NonBedah",
         "queueCode": "P1",
         "shiftsRaw": [
@@ -223,7 +223,7 @@ export const newDoctorsData = [
         "id": "doc-19",
         "name": "dr. Nanda Notario Besri, Sp.OT",
         "specialty": "Ortopedi",
-        "status": "TIDAK PRAKTEK",
+        "status": "LIBUR",
         "category": "Bedah",
         "queueCode": "OT2",
         "shiftsRaw": [
@@ -235,7 +235,7 @@ export const newDoctorsData = [
         "id": "doc-20",
         "name": "drg. Robby Ramadhonie Sundaragaza, Sp.BMM",
         "specialty": "Bedah Mulut & Maksilofasial",
-        "status": "TIDAK PRAKTEK",
+        "status": "LIBUR",
         "category": "Bedah",
         "queueCode": "BMM1",
         "shiftsRaw": [
@@ -248,7 +248,7 @@ export const newDoctorsData = [
         "id": "doc-21",
         "name": "dr. Lita Hati Dwi Purnami Effendi, Sp.JP",
         "specialty": "Jantung & Pembuluh Darah",
-        "status": "TIDAK PRAKTEK",
+        "status": "LIBUR",
         "category": "NonBedah",
         "queueCode": "JP1",
         "shiftsRaw": [
@@ -260,7 +260,7 @@ export const newDoctorsData = [
         "id": "doc-22",
         "name": "dr. Nova Kurniasari, Sp.KJ",
         "specialty": "Kedokteran Jiwa (Psikiatri)",
-        "status": "TIDAK PRAKTEK",
+        "status": "LIBUR",
         "category": "NonBedah",
         "queueCode": "KJ1",
         "shiftsRaw": [
@@ -271,7 +271,7 @@ export const newDoctorsData = [
         "id": "doc-23",
         "name": "dr. Taufik Hidayanto, Sp.KJ",
         "specialty": "Kedokteran Jiwa (Psikiatri)",
-        "status": "TIDAK PRAKTEK",
+        "status": "LIBUR",
         "category": "NonBedah",
         "queueCode": "KJ2",
         "shiftsRaw": [
@@ -283,7 +283,7 @@ export const newDoctorsData = [
         "id": "doc-24",
         "name": "drg. Dyah Tri Kusumawati, Sp.KG",
         "specialty": "Konservasi Gigi",
-        "status": "TIDAK PRAKTEK",
+        "status": "LIBUR",
         "category": "NonBedah",
         "queueCode": "KG1",
         "shiftsRaw": [
@@ -294,7 +294,7 @@ export const newDoctorsData = [
         "id": "doc-25",
         "name": "dr. Wahid Heru Widodo, Sp.M",
         "specialty": "Mata",
-        "status": "TIDAK PRAKTEK",
+        "status": "LIBUR",
         "category": "NonBedah",
         "queueCode": "M1",
         "remarks": "Senin: Khusus PACHO, Jumat: Khusus Operasi",
@@ -308,7 +308,7 @@ export const newDoctorsData = [
         "id": "doc-26",
         "name": "dr. Wati, Sp.KFR",
         "specialty": "Kedokteran Fisik & Rehabilitasi",
-        "status": "TIDAK PRAKTEK",
+        "status": "LIBUR",
         "category": "NonBedah",
         "queueCode": "KFR1",
         "shiftsRaw": [
@@ -320,7 +320,7 @@ export const newDoctorsData = [
         "id": "doc-27",
         "name": "dr. Wiharesi Putri Sukaesi, Sp.Rad",
         "specialty": "Radiologi",
-        "status": "TIDAK PRAKTEK",
+        "status": "LIBUR",
         "category": "NonBedah",
         "queueCode": "RAD1",
         "shiftsRaw": [
@@ -331,7 +331,7 @@ export const newDoctorsData = [
         "id": "doc-28",
         "name": "dr. Ali Ashari, Sp.Rad",
         "specialty": "Radiologi",
-        "status": "TIDAK PRAKTEK",
+        "status": "LIBUR",
         "category": "NonBedah",
         "queueCode": "RAD2",
         "shiftsRaw": [
@@ -342,7 +342,7 @@ export const newDoctorsData = [
         "id": "doc-29",
         "name": "dr. Ira Citra Ningrom, Sp.PA",
         "specialty": "Patologi Anatomi",
-        "status": "TIDAK PRAKTEK",
+        "status": "LIBUR",
         "category": "NonBedah",
         "queueCode": "PA1",
         "shiftsRaw": [
@@ -353,7 +353,7 @@ export const newDoctorsData = [
         "id": "doc-30",
         "name": "dr. Inge Kusumaningdiyah, Sp.PK",
         "specialty": "Patologi Klinik",
-        "status": "TIDAK PRAKTEK",
+        "status": "LIBUR",
         "category": "NonBedah",
         "queueCode": "PK1",
         "shiftsRaw": [

@@ -1,6 +1,7 @@
 import type { Doctor, Shift, LeaveRequest, Settings } from "./data-service";
 import { prisma } from "./prisma";
-import { notifyDoctorUpdates } from "./automation-broadcaster";
+import { notifyDoctorUpdates, syncAdminData } from "./automation-broadcaster";
+import { getFullSnapshot } from "./data-fetchers";
 // NOTE: revalidatePath is loaded dynamically because this module runs
 // inside the custom server.ts context where next/cache is unavailable.
 import { logger } from './logger';
@@ -111,7 +112,7 @@ export function determineIdealStatus(
     if (isOnLeaveToday) return 'CUTI';
 
     // 2. No Shifts Today Check
-    if (todayShifts.length === 0) return 'TIDAK_PRAKTEK';
+    if (todayShifts.length === 0) return 'LIBUR';
 
     // 3. Time-based State Calculation
     let isWithinAnyShift = false;
@@ -137,35 +138,48 @@ export function determineIdealStatus(
         }
     }
 
-    // Sweep check: If the day is completely over, force SELESAI (ignores cooldown)
+    // Sweep check: If the day is completely over, force SELESAI (respects cooldown)
     if (isAfterAllShifts && latestEndMinutes > 0) {
+        if (isCooldownActive) return doc.status;
         return 'SELESAI';
     }
 
-    // Inside Shift -> BUKA (or override)
+    // Inside Shift -> PRAKTEK (or override)
     if (isWithinAnyShift) {
         if (isCooldownActive) return doc.status;
-        return activeShiftStatusOverride || 'BUKA';
+        return activeShiftStatusOverride || 'PRAKTEK';
     }
 
-    // Before or Between Shifts -> AKAN_BUKA (or target shift override like OPERASI)
-    const nextShift = todayShifts
-        .filter(s => {
-            const startStr = s.formattedTime?.split('-')[0];
-            const start = parseTimeToMinutes(startStr);
-            return start !== null && start > currentTimeMinutes;
-        })
-        .sort((a, b) => {
-            const startA = parseTimeToMinutes(a.formattedTime?.split('-')[0]) || 0;
-            const startB = parseTimeToMinutes(b.formattedTime?.split('-')[0]) || 0;
-            return startA - startB;
-        })[0];
+    // Checks Registration Window for Upcoming Shifts
+    // Default lookahead if no registrationTime is provided: 30 minutes
+    const DEFAULT_LOOKAHEAD_MINS = 30;
 
-    const override = nextShift?.statusOverride;
-    const targetStatus = (override === 'PENUH' || override === 'OPERASI') ? override : 'AKAN_BUKA';
+    for (const shift of todayShifts) {
+        if (!shift.formattedTime) continue;
+        const [startStr, endStr] = shift.formattedTime.split('-');
+        const startMinutes = parseTimeToMinutes(startStr);
+        const endMinutes = parseTimeToMinutes(endStr);
+        if (startMinutes === null || endMinutes === null) continue;
 
+        if (currentTimeMinutes >= endMinutes) continue;
+
+        let registrationStart = startMinutes - DEFAULT_LOOKAHEAD_MINS;
+        if (shift.registrationTime) {
+            const regMin = parseTimeToMinutes(shift.registrationTime);
+            if (regMin !== null) registrationStart = regMin;
+        }
+
+        // Inside registration window (before shift starts)
+        if (currentTimeMinutes >= registrationStart && currentTimeMinutes < startMinutes) {
+            if (isCooldownActive) return doc.status;
+            const override = shift.statusOverride;
+            return (override === 'PENUH' || override === 'OPERASI') ? override as Doctor['status'] : 'PENDAFTARAN';
+        }
+    }
+
+    // Between shifts or before any registration begins
     if (isCooldownActive) return doc.status;
-    return targetStatus;
+    return 'TERJADWAL';
 }
 
 /**
@@ -278,7 +292,21 @@ export async function runAutomation(): Promise<{ applied: number, failed: number
             return { ...l, id: String(l.id), doctor: docRef?.name || '' };
         }) as unknown as LeaveRequest[];
 
-        const settingsRow = await prisma.settings.findFirst();
+        let settingsRow = await prisma.settings.findFirst();
+        if (!settingsRow) {
+            // Auto seed default settings jika belum ada
+            settingsRow = await (prisma.settings as any).create({
+                data: {
+                    id: "1",
+                    automationEnabled: true,
+                    runTextMessage: "Selamat Datang di RSU Siaga Medika",
+                    emergencyMode: false,
+                    customMessages: []
+                }
+            });
+            logger.info('[automation] Auto-seeded default Settings row with automationEnabled=true');
+        }
+
         const settings: Settings | null = settingsRow ? {
             ...settingsRow,
             id: String(settingsRow.id),
@@ -291,7 +319,20 @@ export async function runAutomation(): Promise<{ applied: number, failed: number
         const updates: Array<{ id: string | number; status: Doctor['status'] }> = [];
 
         const automationEnabled = settings?.automationEnabled || false;
-        if (!automationEnabled || doctors.length === 0) {
+        if (doctors.length === 0) {
+            logger.warn('[automation] No doctors found, skipping automation run.');
+            return { applied: 0, failed: 0 };
+        }
+
+        if (!automationEnabled) {
+            // Even when automation is disabled, broadcast current DB state to admins
+            // so the dashboard always populates on load
+            logger.info('[automation] Automation disabled. Broadcasting current state only.');
+            getFullSnapshot().then(snapshot => {
+                syncAdminData(snapshot);
+            }).catch(err => {
+                logger.error('[automation] Startup broadcast failed:', err.message);
+            });
             return { applied: 0, failed: 0 };
         }
 
@@ -355,8 +396,15 @@ export async function runAutomation(): Promise<{ applied: number, failed: number
         }
 
         if (applied > 0) {
-            // notify any listeners about which doctors changed
+            // notify any listeners about which doctors changed (SSE/Specific)
             notifyDoctorUpdates(updates.map(u => ({ id: u.id })));
+
+            // High Performance: Fetch updated state and push to all ADMINS via Socket.io
+            getFullSnapshot().then(snapshot => {
+                syncAdminData(snapshot);
+            }).catch(syncErr => {
+                logger.error('[automation] Sync snapshot failed:', syncErr.message);
+            });
 
             try {
                 // Force Next.js to purge the static Edge Cache for the TV display

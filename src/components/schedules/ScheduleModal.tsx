@@ -1,13 +1,14 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
-import { X, Clock, Plus, Trash2, Save, Copy, Power, CalendarOff, Edit3, ChevronDown } from "lucide-react";
+import {
+    X, Clock, Plus, Trash2, Save, Power, CalendarOff,
+    ChevronLeft, ChevronRight, Calendar, Check, AlertCircle
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Doctor, Shift } from "@/lib/data-service";
-import { ShiftCalendarGrid } from "./ShiftCalendarGrid";
 import { useSocket } from "@/hooks/use-socket";
-import { EmptyState } from "@/components/ui/EmptyState";
 
 interface ScheduleModalProps {
     doctor: Doctor | null;
@@ -17,275 +18,198 @@ interface ScheduleModalProps {
     onUpdate?: () => void;
 }
 
-const DAYS = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
+const DAYS = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'];
+const DAYS_FULL = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
 
 const COLORS = [
-    { value: 'blue', bg: 'bg-blue-500', ring: 'ring-blue-400' },
-    { value: 'emerald', bg: 'bg-emerald-500', ring: 'ring-emerald-400' },
-    { value: 'violet', bg: 'bg-violet-500', ring: 'ring-violet-400' },
-    { value: 'amber', bg: 'bg-amber-500', ring: 'ring-amber-400' },
-    { value: 'rose', bg: 'bg-rose-500', ring: 'ring-rose-400' },
-    { value: 'cyan', bg: 'bg-cyan-500', ring: 'ring-cyan-400' },
+    { value: 'blue',    bg: 'bg-blue-500',    ring: 'ring-blue-400',    light: 'bg-blue-50 border-blue-200 text-blue-700' },
+    { value: 'emerald', bg: 'bg-emerald-500',  ring: 'ring-emerald-400', light: 'bg-emerald-50 border-emerald-200 text-emerald-700' },
+    { value: 'violet',  bg: 'bg-violet-500',   ring: 'ring-violet-400',  light: 'bg-violet-50 border-violet-200 text-violet-700' },
+    { value: 'amber',   bg: 'bg-amber-500',    ring: 'ring-amber-400',   light: 'bg-amber-50 border-amber-200 text-amber-700' },
+    { value: 'rose',    bg: 'bg-rose-500',     ring: 'ring-rose-400',    light: 'bg-rose-50 border-rose-200 text-rose-700' },
+    { value: 'cyan',    bg: 'bg-cyan-500',     ring: 'ring-cyan-400',    light: 'bg-cyan-50 border-cyan-200 text-cyan-700' },
 ];
 
-const BAR: Record<string, string> = {
-    blue: 'bg-blue-500', emerald: 'bg-emerald-500', violet: 'bg-violet-500',
-    amber: 'bg-amber-500', rose: 'bg-rose-500', cyan: 'bg-cyan-500',
-    red: 'bg-red-500', green: 'bg-green-500', purple: 'bg-purple-500',
-    orange: 'bg-orange-500', pink: 'bg-pink-500', teal: 'bg-teal-500',
-};
-const LIGHT: Record<string, string> = {
-    blue: 'bg-blue-50', emerald: 'bg-emerald-50', violet: 'bg-violet-50',
-    amber: 'bg-amber-50', rose: 'bg-rose-50', cyan: 'bg-cyan-50',
-    red: 'bg-red-50', green: 'bg-green-50', purple: 'bg-purple-50',
-    orange: 'bg-orange-50', pink: 'bg-pink-50', teal: 'bg-teal-50',
+const COLOR_MAP: Record<string, { bar: string; light: string }> = {
+    blue:    { bar: 'bg-blue-500',    light: 'bg-blue-50 text-blue-700 border-blue-200' },
+    emerald: { bar: 'bg-emerald-500', light: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+    violet:  { bar: 'bg-violet-500',  light: 'bg-violet-50 text-violet-700 border-violet-200' },
+    amber:   { bar: 'bg-amber-500',   light: 'bg-amber-50 text-amber-700 border-amber-200' },
+    rose:    { bar: 'bg-rose-500',    light: 'bg-rose-50 text-rose-700 border-rose-200' },
+    cyan:    { bar: 'bg-cyan-500',    light: 'bg-cyan-50 text-cyan-700 border-cyan-200' },
+    red:     { bar: 'bg-red-500',     light: 'bg-red-50 text-red-700 border-red-200' },
+    green:   { bar: 'bg-green-500',   light: 'bg-green-50 text-green-700 border-green-200' },
 };
 
-const todayStr = () => { const t = new Date(); return `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, '0')}-${String(t.getDate()).padStart(2, '0')}`; };
-const todayIdx = () => (new Date().getDay() + 6) % 7;
+const getTodayWIB = () => {
+    const wib = new Date(Date.now() + 7 * 3600_000);
+    return `${wib.getUTCFullYear()}-${String(wib.getUTCMonth() + 1).padStart(2, '0')}-${String(wib.getUTCDate()).padStart(2, '0')}`;
+};
 
+const getTodayIdx = () => (new Date().getDay() + 6) % 7;
+
+const INIT_FORM: Partial<Shift> = {
+    title: "Praktek",
+    formattedTime: "08:00-12:00",
+    registrationTime: "07:30",
+    color: "blue",
+    statusOverride: undefined,
+    extra: undefined,
+};
+
+const STATUS_OVERRIDE_OPTIONS = [
+    { value: '',         label: 'Standar (Praktek)' },
+    { value: 'PENDAFTARAN',label: 'Pendaftaran' },
+    { value: 'OPERASI',  label: 'Operasi' },
+    { value: 'PENUH',    label: 'Penuh' },
+];
+
+const ROUTINE_OPTIONS = [
+    { value: '',           label: 'Setiap Minggu' },
+    { value: 'odd_weeks',  label: 'Minggu Ganjil (1,3,5)' },
+    { value: 'even_weeks', label: 'Minggu Genap (2,4)' },
+];
+
+// ── Time Picker ────────────────────────────────────────────────────────
+function TimePicker({ value, onChange, label }: { value: string; onChange: (v: string) => void; label: string }) {
+    const [h, m] = (value || "08:00").split(":");
+    return (
+        <div>
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">{label}</p>
+            <div className="flex items-center bg-slate-50 border border-slate-200 rounded-xl h-11 px-3 gap-1 focus-within:border-blue-400 focus-within:ring-2 focus-within:ring-blue-100 transition-all">
+                <select
+                    value={h || "08"}
+                    onChange={e => onChange(`${e.target.value}:${m || "00"}`)}
+                    className="bg-transparent text-sm font-bold text-slate-800 outline-none w-9 text-center appearance-none cursor-pointer"
+                >
+                    {Array.from({ length: 24 }).map((_, i) => (
+                        <option key={i} value={i.toString().padStart(2, '0')}>{i.toString().padStart(2, '0')}</option>
+                    ))}
+                </select>
+                <span className="text-slate-300 font-bold text-sm">:</span>
+                <select
+                    value={m || "00"}
+                    onChange={e => onChange(`${h || "08"}:${e.target.value}`)}
+                    className="bg-transparent text-sm font-bold text-slate-800 outline-none w-9 text-center appearance-none cursor-pointer"
+                >
+                    {["00", "15", "30", "45"].map(min => (
+                        <option key={min} value={min}>{min}</option>
+                    ))}
+                </select>
+            </div>
+        </div>
+    );
+}
+
+// ── Compact Select ──────────────────────────────────────────────────────
+function InlineSelect({ value, onChange, options, label }: { value: string; onChange: (v: string) => void; options: { value: string; label: string }[]; label: string }) {
+    return (
+        <div>
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">{label}</p>
+            <select
+                value={value}
+                onChange={e => onChange(e.target.value)}
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl h-11 px-3 text-sm font-semibold text-slate-700 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all appearance-none cursor-pointer"
+            >
+                {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+            </select>
+        </div>
+    );
+}
+
+// ── Gradient avatar util ──────────────────────────────────────────────
 const gradient = (name: string) => {
-    const g = ['from-blue-500 to-cyan-400', 'from-violet-500 to-purple-400', 'from-rose-500 to-pink-400',
-        'from-amber-500 to-orange-400', 'from-emerald-500 to-teal-400', 'from-indigo-500 to-blue-400'];
+    const g = ['from-blue-500 to-cyan-400','from-violet-500 to-purple-400','from-rose-500 to-pink-400','from-amber-500 to-orange-400','from-emerald-500 to-teal-400','from-indigo-500 to-blue-400'];
     let h = 0; for (let i = 0; i < name.length; i++) h = name.charCodeAt(i) + ((h << 5) - h);
     return g[Math.abs(h) % g.length];
 };
 
-const INIT: Partial<Shift> = { title: "Praktek", formattedTime: "08:00-12:00", registrationTime: "07:30", color: "blue" };
-
+// ── Main Component ────────────────────────────────────────────────────
 export function ScheduleModal({ doctor, shifts, isOpen, onClose, onUpdate }: ScheduleModalProps) {
-    const [activeDay, setActiveDay] = useState(todayIdx());
-    const [editId, setEditId] = useState<string | null>(null);
-    const [adding, setAdding] = useState(false);
-    const [expandId, setExpandId] = useState<string | null>(null);
-    const [form, setForm] = useState<Partial<Shift>>(INIT);
+    const [activeDay, setActiveDay] = useState(getTodayIdx());
+    const [form, setForm]           = useState<Partial<Shift>>(INIT_FORM);
+    const [editId, setEditId]       = useState<string | null>(null);
+    const [adding, setAdding]       = useState(false);
     const [isToggling, setIsToggling] = useState(false);
-    const [successMsg, setSuccessMsg] = useState<string | null>(null);
+    const [toast, setToast]         = useState<{ type: 'success' | 'error'; msg: string } | null>(null);
+    const [saving, setSaving]       = useState(false);
+    const [mounted, setMounted]     = useState(false);
+    const { socket }                = useSocket();
 
-    // Helpers for Time Conversion
-    const getTimes = (formatted: string) => {
+    useEffect(() => { setMounted(true); }, []);
+
+    const today = getTodayWIB();
+    const tIdx  = getTodayIdx();
+
+    const showToast = useCallback((type: 'success' | 'error', msg: string) => {
+        setToast({ type, msg });
+        setTimeout(() => setToast(null), 3000);
+    }, []);
+
+    useEffect(() => {
+        if (!isOpen) return;
+        const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') { if (adding || editId) reset(); else onClose(); } };
+        document.addEventListener('keydown', onKey);
+        return () => document.removeEventListener('keydown', onKey);
+    }, [isOpen, adding, editId, onClose]);
+
+    useEffect(() => {
+        if (isOpen) { setActiveDay(getTodayIdx()); reset(); }
+    }, [isOpen]);
+
+    if (!isOpen || !doctor || !mounted) return null;
+
+    const allShifts = shifts.filter(s => String(s.doctorId) === String(doctor.id));
+    const dayShifts = allShifts.filter(s => Number(s.dayIdx) === Number(activeDay));
+
+    const parseTimes = (formatted: string) => {
         const [s, e] = (formatted || "08:00-12:00").split("-").map(t => t.trim());
         return { start: s || "08:00", end: e || "12:00" };
     };
 
-    const updateTimes = (start: string, end: string) => {
-        setForm(f => ({ ...f, formattedTime: `${start}-${end}` }));
-    };
-
-    // Helper Custom Dropdown
-    const CustomDropdown = ({ value, options, onChange, label, placeholder, className }: any) => {
-        const [open, setOpen] = useState(false);
-        const dropdownRef = useRef<HTMLDivElement>(null);
-        const selectedLabel = options.find((o: any) => o.value === value)?.label || placeholder || "Select";
-
-        useEffect(() => {
-            const handleClickOutside = (event: MouseEvent) => {
-                if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-                    setOpen(false);
-                }
-            };
-            const handleEscape = (event: KeyboardEvent) => {
-                if (event.key === 'Escape') setOpen(false);
-            };
-
-            if (open) {
-                document.addEventListener('mousedown', handleClickOutside);
-                document.addEventListener('keydown', handleEscape);
-            }
-            return () => {
-                document.removeEventListener('mousedown', handleClickOutside);
-                document.removeEventListener('keydown', handleEscape);
-            };
-        }, [open]);
-
-        return (
-            <div className={cn("relative flex-1", className)} ref={dropdownRef}>
-                {label && <label className="text-[11px] text-muted-foreground font-bold uppercase tracking-wider block mb-1.5">{label}</label>}
-                <button 
-                    type="button"
-                    onClick={() => setOpen(!open)}
-                    className={cn(
-                        "flex justify-between items-center w-full bg-white rounded-2xl p-3 text-sm text-slate-700 outline-none transition-all border min-h-[46px] group",
-                        open ? "border-blue-400 ring-4 ring-blue-500/10 shadow-sm" : "border-slate-100 hover:border-slate-200 shadow-sm hover:shadow-md"
-                    )}
-                >
-                    <span className="truncate pr-2 font-semibold text-slate-600 group-hover:text-blue-600 transition-colors">{selectedLabel}</span>
-                    <ChevronDown size={14} className={cn("text-slate-400 transition-transform duration-300 flex-shrink-0", open && "rotate-180 text-blue-500")} />
-                </button>
-                
-                <div className={cn(
-                    "absolute top-[calc(100%+8px)] left-0 w-full bg-white/95 backdrop-blur-xl rounded-2xl shadow-[0_20px_50px_-12px_rgba(0,0,0,0.2)] border border-white/50 p-2 transition-all duration-300 origin-top z-[100] max-h-[240px] overflow-y-auto custom-scrollbar",
-                    open ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-95 -translate-y-2 pointer-events-none"
-                )}>
-                    {options.map((opt: any) => (
-                        <button
-                            type="button"
-                            key={opt.value}
-                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); onChange(opt.value); setOpen(false); }}
-                            className={cn(
-                                "w-full text-left px-3 py-2.5 rounded-xl text-sm font-semibold transition-all mb-1 last:mb-0 truncate flex items-center justify-between group/item",
-                                value === opt.value 
-                                    ? "bg-blue-600 text-white shadow-md shadow-blue-200" 
-                                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-                            )}
-                        >
-                            <span>{opt.label}</span>
-                            {value === opt.value && (
-                                <div className="w-1.5 h-1.5 rounded-full bg-white/80 animate-pulse" />
-                            )}
-                        </button>
-                    ))}
-                </div>
-            </div>
-        );
-    };
-
-    // Helper Custom Time Picker
-    const CustomTimeSelect = ({ value, onChange, label, className }: { value: string, onChange: (v: string) => void, label: string, className?: string }) => {
-        const [h, m] = (value || "08:00").split(":");
-        return (
-            <div className={className}>
-                {label && <label className="text-[11px] text-muted-foreground font-bold uppercase tracking-wider block mb-1.5">{label}</label>}
-                 <div className="flex items-center gap-1 bg-white rounded-2xl px-2 py-2.5 border border-slate-100 focus-within:ring-2 focus-within:ring-blue-500/30 transition-all h-[46px]">
-                    <select 
-                        value={h || "08"}
-                        onChange={e => onChange(`${e.target.value.padStart(2,'0')}:${m || "00"}`)}
-                        className="bg-transparent text-sm font-bold text-slate-800 outline-none w-10 text-center appearance-none cursor-pointer hover:text-blue-600 transition-colors"
-                    >
-                        {Array.from({length: 24}).map((_, i) => (
-                            <option key={i} value={i.toString().padStart(2, '0')}>{i.toString().padStart(2, '0')}</option>
-                        ))}
-                    </select>
-                    <span className="text-slate-400 font-bold">:</span>
-                    <select 
-                        value={m || "00"}
-                        onChange={e => onChange(`${h || "08"}:${e.target.value.padStart(2,'0')}`)}
-                        className="bg-transparent text-sm font-bold text-slate-800 outline-none w-10 text-center appearance-none cursor-pointer hover:text-blue-600 transition-colors"
-                    >
-                        {["00", "15", "30", "45"].map((min) => (
-                            <option key={min} value={min}>{min}</option>
-                        ))}
-                    </select>
-                </div>
-            </div>
-        );
-    };
-
-    const [mounted, setMounted] = useState(false);
-    const socket = useSocket();
-
-    useEffect(() => { setMounted(true); }, []);
-
-    if (!isOpen || !doctor || !mounted) return null;
-
-    const today = todayStr();
-    const tIdx = todayIdx();
-    const allShifts = shifts.filter(s => s.doctor === doctor.name);
-    const dayShifts = allShifts.filter(s => s.dayIdx === activeDay);
-
-    const reset = () => { setForm(INIT); setEditId(null); setAdding(false); };
+    const reset = () => { setForm(INIT_FORM); setEditId(null); setAdding(false); };
 
     const save = async () => {
-        if (!form.title || !form.formattedTime) return;
-        const payload = { 
-            ...form, 
-            id: editId, 
-            doctorId: doctor.id, 
-            doctor: doctor.name, 
-            dayIdx: activeDay,
-            statusOverride: form.statusOverride || null, // Convert "" to null
-            extra: form.extra || null
-        };
-        
+        if (!form.title?.trim() || !form.formattedTime) return;
+        setSaving(true);
         try {
+            const payload = {
+                ...form,
+                id: editId,
+                doctorId: doctor.id,
+                doctor: doctor.name,
+                dayIdx: activeDay,
+                statusOverride: form.statusOverride || null,
+                extra: form.extra || null,
+            };
             const res = await fetch('/api/shifts', {
                 method: editId ? 'PUT' : 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
+                body: JSON.stringify(payload),
             });
-            if (!res.ok) {
-                const errData = await res.json().catch(() => ({}));
-                throw new Error(errData.error || 'Gagal menyimpan shift');
-            }
-            socket.socket?.emit('schedule_updated', { action: 'save_shift' });
-            onUpdate?.(); 
-            reset();
-        } catch (err: any) {
-            console.error(err);
-            alert(err.message || 'Gagal menyimpan shift');
-        }
-    };
-
-    const updateShiftTime = async (id: string, newStartMatch: string) => {
-        const shiftToMove = shifts.find(s => s.id === id);
-        if (!shiftToMove) return;
-
-        const oldTimes = shiftToMove.formattedTime?.split('-').map(t => t.trim()) || ["08:00", "12:00"];
-        const oldStartStr = oldTimes[0] || "08:00";
-        const oldEndStr = oldTimes[1] || "12:00";
-
-        let oldStartH = parseInt(oldStartStr.split(':')[0] || '8');
-        let oldEndH = parseInt(oldEndStr.split(':')[0] || '12');
-        const duration = Math.max(1, oldEndH - oldStartH); // minimum 1 hour if parsed wrong
-
-        const newStartHStr = newStartMatch.split(':')[0];
-        const newStartH = parseInt(newStartHStr);
-        const newEndH = newStartH + duration;
-
-        const newFormattedTime = `${newStartHStr.padStart(2,'0')}:00-${String(newEndH).padStart(2,'0')}:00`;
-
-        try {
-            const res = await fetch('/api/shifts', {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id: shiftToMove.id, formattedTime: newFormattedTime })
-            });
-            if (!res.ok) {
-                const errData = await res.json().catch(() => ({}));
-                throw new Error(errData.error || 'Gagal mengubah waktu shift');
-            }
-            socket.socket?.emit('schedule_updated', { action: 'update_time' });
+            if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error || 'Gagal menyimpan');
+            socket?.emit('schedule_updated', { action: 'save_shift' });
             onUpdate?.();
+            reset();
+            showToast('success', editId ? 'Shift diperbarui' : 'Shift baru ditambahkan');
         } catch (err: any) {
-            console.error(err);
-            alert(err.message || 'Gagal mengubah waktu shift');
+            showToast('error', err.message || 'Gagal menyimpan shift');
+        } finally {
+            setSaving(false);
         }
     };
 
     const del = async (id: string) => {
-        if (!confirm("Hapus shift ini?")) return;
+        if (!confirm("Hapus shift ini secara permanen?")) return;
         try {
             const res = await fetch(`/api/shifts?id=${id}`, { method: 'DELETE' });
-            if (!res.ok) {
-                const errData = await res.json().catch(() => ({}));
-                throw new Error(errData.error || 'Gagal menghapus shift');
-            }
-            socket.socket?.emit('schedule_updated', { action: 'delete_shift' });
-            onUpdate?.(); setExpandId(null);
-        } catch (err: any) {
-            console.error(err);
-            alert(err.message || 'Gagal menghapus shift');
-        }
-    };
-
-    const dup = async (s: Shift) => {
-        const title = prompt("Salin shift ke nama apa?", s.title + " Copy");
-        if (!title) return;
-        try {
-            const res = await fetch('/api/shifts', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ title, doctorId: s.doctorId, doctor: s.doctor, dayIdx: s.dayIdx, formattedTime: s.formattedTime, color: s.color, extra: s.extra })
-            });
-            if (!res.ok) {
-                const errData = await res.json().catch(() => ({}));
-                throw new Error(errData.error || 'Gagal menggandakan shift');
-            }
-            socket.socket?.emit('schedule_updated', { action: 'duplicate_shift' });
+            if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error || 'Gagal menghapus');
+            socket?.emit('schedule_updated', { action: 'delete_shift' });
             onUpdate?.();
+            reset();
+            showToast('success', 'Shift dihapus');
         } catch (err: any) {
-            console.error(err);
-            alert(err.message || 'Gagal menggandakan shift');
+            showToast('error', err.message);
         }
     };
 
@@ -298,359 +222,364 @@ export function ScheduleModal({ doctor, shifts, isOpen, onClose, onUpdate }: Sch
             const res = await fetch('/api/shifts', {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id: s.id, disabledDates: newVal })
+                body: JSON.stringify({ id: s.id, disabledDates: newVal }),
             });
-            if (!res.ok) {
-                const errData = await res.json().catch(() => ({}));
-                throw new Error(errData.error || 'Gagal mengubah status');
-            }
-            socket.socket?.emit('schedule_updated', { action: 'toggle_shift' });
+            if (!res.ok) throw new Error('Gagal mengubah status');
+            socket?.emit('schedule_updated', { action: 'toggle_shift' });
             onUpdate?.();
-            setSuccessMsg(isOff ? "Shift diaktifkan kembali" : "Shift dinonaktifkan untuk hari ini");
-            setTimeout(() => setSuccessMsg(null), 3000);
+            showToast('success', isOff ? 'Shift diaktifkan hari ini' : 'Shift dinonaktifkan hari ini');
         } catch (err: any) {
-            console.error(err);
-            alert(err.message || 'Gagal mengubah status shift');
+            showToast('error', err.message);
         } finally {
             setIsToggling(false);
         }
     };
 
-    const addDis = async (s: Shift, d: string) => {
-        if (!d || (s.disabledDates || []).includes(d)) return;
-        const newVal = [...(s.disabledDates || []), d];
-        try {
-            const res = await fetch('/api/shifts', {
-                method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: s.id, disabledDates: newVal })
-            });
-            if (!res.ok) throw new Error('Gagal menambah nonaktif');
-            socket.socket?.emit('schedule_updated', { action: 'add_disabled_date' });
-            onUpdate?.();
-        } catch (err: any) {
-            console.error(err);
-            alert(err.message);
-        }
-    };
-
-    const rmDis = async (s: Shift, d: string) => {
-        const newVal = (s.disabledDates || []).filter(x => x !== d);
-        try {
-            const res = await fetch('/api/shifts', {
-                method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: s.id, disabledDates: newVal })
-            });
-            if (!res.ok) throw new Error('Gagal mencabut nonaktif');
-            socket.socket?.emit('schedule_updated', { action: 'rm_disabled_date' });
-            onUpdate?.();
-        } catch (err: any) {
-            console.error(err);
-            alert(err.message);
-        }
-    };
+    const isFormOpen = adding || !!editId;
 
     return createPortal(
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-6 lg:p-10 bg-black/40 backdrop-blur-md" onClick={onClose}>
-            <div className="bg-white w-full max-w-3xl max-h-[85vh] rounded-[28px] shadow-2xl flex flex-col overflow-hidden" onClick={e => e.stopPropagation()}>
-
+        <div
+            className="fixed inset-0 z-[9999] flex items-center justify-center p-4 lg:p-8"
+            style={{ background: 'rgba(15, 23, 42, 0.6)', backdropFilter: 'blur(10px)' }}
+            onClick={onClose}
+        >
+            <div
+                className="bg-white w-full max-w-2xl rounded-[20px] shadow-2xl flex flex-col overflow-hidden"
+                style={{ maxHeight: '88vh', animation: 'scaleIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)' }}
+                onClick={e => e.stopPropagation()}
+            >
                 {/* ══ HEADER ══ */}
-                <div className="flex items-center gap-4 px-7 py-5 border-b border-slate-100 shrink-0">
-                    <div className={cn("h-14 w-14 rounded-2xl bg-gradient-to-br flex items-center justify-center text-white text-lg font-black shadow-md shrink-0", gradient(doctor.name))}>
+                <div className="flex items-center gap-4 px-6 py-5 border-b border-slate-100 flex-shrink-0">
+                    <div className={cn("h-12 w-12 rounded-2xl bg-gradient-to-br flex items-center justify-center text-white text-base font-black shadow-md flex-shrink-0", gradient(doctor.name))}>
                         {doctor.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
                     </div>
                     <div className="flex-1 min-w-0">
-                        <h2 className="text-lg font-bold text-slate-800 truncate">{doctor.name}</h2>
-                        <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-                            <span className="text-sm text-slate-400">{doctor.specialty}</span>
-                            <span className={cn("text-[10px] font-bold px-2 py-0.5 rounded-lg",
-                                doctor.category === 'Bedah' ? "bg-red-50 text-red-600" : "bg-emerald-50 text-emerald-600"
-                            )}>{doctor.category}</span>
-                        </div>
+                        <h2 className="text-[15px] font-bold text-slate-800 truncate">{doctor.name}</h2>
+                        <p className="text-[12px] text-slate-400 truncate">{doctor.specialty} · {allShifts.length} total shift</p>
                     </div>
-                    <div className="text-right shrink-0 mr-2">
-                        <p className="text-2xl font-black text-slate-800">{allShifts.length}</p>
-                        <p className="text-[10px] text-slate-400 font-bold">Total Shift</p>
-                    </div>
-                    <button onClick={onClose} className="p-2.5 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors shrink-0">
+                    <button onClick={onClose} className="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors flex-shrink-0">
                         <X size={18} />
                     </button>
                 </div>
 
-                {/* ══ DAY TABS ══ */}
-                <div className="flex items-center gap-1.5 px-7 py-3 border-b border-slate-50 bg-slate-50/50 shrink-0">
+                {/* ══ DAY SELECTOR ══ */}
+                <div className="flex items-center gap-1 px-6 py-3 border-b border-slate-100 flex-shrink-0 overflow-x-auto">
                     {DAYS.map((day, idx) => {
-                        const count = allShifts.filter(s => s.dayIdx === idx).length;
+                        const count = allShifts.filter(s => Number(s.dayIdx) === idx).length;
                         const isToday = idx === tIdx;
                         const isActive = idx === activeDay;
                         return (
-                            <button key={day} onClick={() => { setActiveDay(idx); reset(); }}
+                            <button
+                                key={day}
+                                onClick={() => { setActiveDay(idx); reset(); }}
                                 className={cn(
-                                    "flex-1 py-2.5 rounded-xl text-xs font-bold transition-all relative flex flex-col items-center justify-center",
+                                    "flex-shrink-0 flex flex-col items-center justify-center min-w-[52px] py-2 px-2 rounded-xl text-[11px] font-bold transition-all relative",
                                     isActive
-                                        ? "bg-white text-slate-800 shadow-md border border-slate-200"
-                                        : "text-slate-400 hover:text-slate-600 hover:bg-white/60"
+                                        ? "bg-slate-900 text-white shadow-md"
+                                        : "text-slate-400 hover:text-slate-600 hover:bg-slate-50"
                                 )}
                             >
-                                <span className="relative">
-                                    {day}
-                                    {count > 0 && (
-                                        <span className={cn("absolute -top-2 -right-4 w-4 h-4 rounded-full text-[8px] font-black flex items-center justify-center shadow-sm",
-                                            isActive ? "bg-blue-500 text-white" : "bg-slate-200 text-slate-500"
-                                        )}>{count}</span>
-                                    )}
-                                </span>
-                                {isToday && <div className={cn("w-1 h-1 rounded-full mx-auto mt-0.5", isActive ? "bg-blue-500" : "bg-slate-300")} />}
+                                <span>{day}</span>
+                                {isToday && (
+                                    <div className={cn("w-1 h-1 rounded-full mt-0.5", isActive ? "bg-blue-400" : "bg-blue-300")} />
+                                )}
+                                {count > 0 && (
+                                    <span className={cn(
+                                        "absolute -top-1 -right-1 w-4 h-4 rounded-full text-[8px] font-black flex items-center justify-center",
+                                        isActive ? "bg-blue-500 text-white" : "bg-slate-200 text-slate-600"
+                                    )}>{count}</span>
+                                )}
                             </button>
                         );
                     })}
                 </div>
 
                 {/* ══ CONTENT ══ */}
-                <div className="flex-1 overflow-y-auto px-7 py-5">
-                    {/* Day title + add button */}
-                    <div className="flex items-center justify-between mb-4">
-                        <div>
-                            <h3 className="text-base font-bold text-slate-700">{DAYS[activeDay]}</h3>
-                            <p className="text-xs text-slate-400">
-                                {dayShifts.length} shift {activeDay === tIdx && "· Hari ini"}
-                            </p>
+                <div className="flex-1 overflow-y-auto">
+                    {/* Toast */}
+                    {toast && (
+                        <div className={cn(
+                            "mx-6 mt-4 flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold transition-all",
+                            toast.type === 'success' ? "bg-emerald-50 text-emerald-700 border border-emerald-200" : "bg-red-50 text-red-700 border border-red-200"
+                        )}>
+                            {toast.type === 'success' ? <Check size={14} /> : <AlertCircle size={14} />}
+                            {toast.msg}
                         </div>
-                        {!adding && !editId && (
-                            <button onClick={() => { setAdding(true); setForm(INIT); }}
-                                className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold rounded-xl transition-colors shadow-sm active:scale-95"
+                    )}
+
+                    {/* Day header */}
+                    <div className="flex items-center justify-between px-6 pt-5 pb-3">
+                        <div>
+                            <h3 className="text-[14px] font-bold text-slate-800">
+                                {DAYS_FULL[activeDay]}
+                                {activeDay === tIdx && <span className="ml-2 text-[10px] font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">HARI INI</span>}
+                            </h3>
+                            <p className="text-[11px] text-slate-400 mt-0.5">{dayShifts.length} shift terjadwal</p>
+                        </div>
+                        {!isFormOpen && (
+                            <button
+                                onClick={() => { setAdding(true); setForm(INIT_FORM); }}
+                                className="flex items-center gap-1.5 px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white text-[12px] font-bold rounded-xl transition-all active:scale-95 shadow-sm"
                             >
-                                <Plus size={16} /> Tambah Shift
+                                <Plus size={13} /> Tambah Shift
                             </button>
                         )}
                     </div>
 
-                    {/* Add Form */}
-                    {adding && !editId && (
-                        <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-5 mb-4 space-y-4">
-                            <p className="text-xs font-black text-emerald-600 uppercase tracking-widest">Shift Baru</p>
-                            <input autoFocus className="w-full bg-white rounded-xl px-4 py-3 text-sm font-medium text-slate-700 outline-none focus:ring-2 focus:ring-emerald-300 border border-emerald-100 placeholder:text-slate-300"
-                                value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} placeholder="Nama shift, cth: Praktek Pagi"
+                    {/* Shift List */}
+                    <div className="px-6 pb-4 space-y-2">
+                        {dayShifts.length === 0 && !isFormOpen && (
+                            <div className="py-10 rounded-2xl border-2 border-dashed border-slate-150 text-center">
+                                <CalendarOff size={28} className="text-slate-200 mx-auto mb-2" />
+                                <p className="text-[13px] font-semibold text-slate-400">Belum ada shift</p>
+                                <p className="text-[11px] text-slate-300 mt-0.5">Klik "Tambah Shift" untuk menambahkan jadwal</p>
+                            </div>
+                        )}
+
+                        {dayShifts.map(s => {
+                            const isDisabled = (s.disabledDates || []).includes(today);
+                            const isEditing  = editId === s.id;
+                            const col = COLOR_MAP[s.color || 'blue'] || COLOR_MAP.blue;
+
+                            return (
+                                <div key={s.id}>
+                                    {/* Shift Card */}
+                                    {!isEditing && (
+                                        <div className={cn(
+                                            "flex items-center gap-3 px-4 py-3.5 rounded-2xl border transition-all",
+                                            isDisabled
+                                                ? "bg-slate-50 border-slate-200 opacity-60"
+                                                : `${col.light} border`
+                                        )}>
+                                            <div className={cn("w-1 h-10 rounded-full flex-shrink-0", col.bar, isDisabled && "opacity-30")} />
+                                            <div className="flex-1 min-w-0">
+                                                <p className={cn("text-[13px] font-bold truncate", isDisabled && "line-through text-slate-400")}>
+                                                    {s.title}
+                                                </p>
+                                                <div className="flex items-center gap-3 mt-0.5">
+                                                    <span className="flex items-center gap-1 text-[11px] font-semibold opacity-70">
+                                                        <Clock size={10} /> {s.formattedTime}
+                                                    </span>
+                                                    {s.registrationTime && (
+                                                        <span className="text-[10px] opacity-50">Daftar: {s.registrationTime}</span>
+                                                    )}
+                                                    {s.statusOverride && (
+                                                        <span className="text-[10px] font-bold opacity-70 uppercase">{s.statusOverride}</span>
+                                                    )}
+                                                    {activeDay === tIdx && isDisabled && (
+                                                        <span className="text-[10px] font-bold text-red-500 bg-red-50 px-1.5 py-0.5 rounded-md">Nonaktif hari ini</span>
+                                                    )}
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center gap-1 flex-shrink-0">
+                                                {/* Toggle today */}
+                                                {activeDay === tIdx && (
+                                                    <button
+                                                        onClick={() => toggle(s)}
+                                                        disabled={isToggling}
+                                                        title={isDisabled ? "Aktifkan hari ini" : "Nonaktifkan hari ini"}
+                                                        className={cn(
+                                                            "p-2 rounded-xl border transition-all",
+                                                            isDisabled
+                                                                ? "bg-white border-slate-200 text-slate-400 hover:text-emerald-600 hover:border-emerald-200"
+                                                                : "bg-white/60 border-transparent text-slate-400 hover:text-red-500 hover:border-red-100"
+                                                        )}
+                                                    >
+                                                        <Power size={13} className={isToggling ? "animate-spin" : ""} />
+                                                    </button>
+                                                )}
+                                                {/* Edit */}
+                                                <button
+                                                    onClick={() => {
+                                                        setForm({ title: s.title, formattedTime: s.formattedTime, registrationTime: s.registrationTime || "", color: s.color, statusOverride: s.statusOverride, extra: s.extra });
+                                                        setEditId(s.id);
+                                                        setAdding(false);
+                                                    }}
+                                                    className="p-2 rounded-xl text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-all border border-transparent hover:border-blue-100"
+                                                >
+                                                    <Save size={13} />
+                                                </button>
+                                                {/* Delete */}
+                                                <button
+                                                    onClick={() => del(s.id)}
+                                                    className="p-2 rounded-xl text-slate-400 hover:text-red-600 hover:bg-red-50 transition-all border border-transparent hover:border-red-100"
+                                                >
+                                                    <Trash2 size={13} />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Inline Edit Form */}
+                                    {isEditing && (
+                                        <ShiftForm
+                                            form={form}
+                                            setForm={setForm}
+                                            parseTimes={parseTimes}
+                                            saving={saving}
+                                            onSave={save}
+                                            onCancel={reset}
+                                            mode="edit"
+                                        />
+                                    )}
+                                </div>
+                            );
+                        })}
+
+                        {/* Add Form */}
+                        {adding && !editId && (
+                            <ShiftForm
+                                form={form}
+                                setForm={setForm}
+                                parseTimes={parseTimes}
+                                saving={saving}
+                                onSave={save}
+                                onCancel={reset}
+                                mode="add"
                             />
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <CustomTimeSelect 
-                                    label="Jam Mulai"
-                                    value={getTimes(form.formattedTime || "").start}
-                                    onChange={(v) => updateTimes(v, getTimes(form.formattedTime || "").end)}
-                                />
-                                <CustomTimeSelect 
-                                    label="Jam Selesai"
-                                    value={getTimes(form.formattedTime || "").end}
-                                    onChange={(v) => updateTimes(getTimes(form.formattedTime || "").start, v)}
-                                />
-                            </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <CustomTimeSelect 
-                                    label="Jam Pendaftaran"
-                                    value={form.registrationTime || "07:30"}
-                                    onChange={(v) => setForm({ ...form, registrationTime: v })}
-                                />
-                                <CustomDropdown 
-                                    label="Status Bawaan"
-                                    value={form.statusOverride || ''}
-                                    onChange={(v: any) => setForm({ ...form, statusOverride: v || null })}
-                                    options={[
-                                        { value: '', label: 'Standar (Buka)' },
-                                        { value: 'AKAN_BUKA', label: 'Akan Buka' },
-                                        { value: 'OPERASI', label: 'Operasi' },
-                                        { value: 'PENUH', label: 'Penuh' },
-                                    ]}
-                                />
-                            </div>
-                            <div className="grid grid-cols-1 gap-4">
-                                <CustomDropdown 
-                                    label="Pola Rutinitas"
-                                    value={form.extra || ''}
-                                    onChange={(v: any) => setForm({ ...form, extra: v || null })}
-                                    options={[
-                                        { value: '', label: 'Setiap Minggu (Standar)' },
-                                        { value: 'odd_weeks', label: 'Hanya Minggu Ganjil (Minggu 1,3,5)' },
-                                        { value: 'even_weeks', label: 'Hanya Minggu Genap (Minggu 2,4)' },
-                                    ]}
-                                />
-                            </div>
-                            <div className="flex items-center gap-3">
-                                <span className="text-xs font-semibold text-slate-500">Warna</span>
-                                <div className="flex gap-2">
-                                    {COLORS.map(c => (
-                                        <button key={c.value} onClick={() => setForm({ ...form, color: c.value })}
-                                            className={cn("w-7 h-7 rounded-lg transition-all", c.bg,
-                                                form.color === c.value ? `ring-2 ring-offset-2 ${c.ring} scale-110` : "opacity-30 hover:opacity-60"
-                                            )} />
-                                    ))}
-                                </div>
-                            </div>
-                            <div className="flex gap-3 pt-1">
-                                <button onClick={reset} className="flex-1 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-500 text-sm font-semibold hover:bg-slate-50">Batal</button>
-                                <button onClick={save} disabled={!form.title} className="flex-[2] py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold flex items-center justify-center gap-2 disabled:opacity-40 active:scale-[0.98]">
-                                    <Save size={14} /> Buat Shift
-                                </button>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Shift Calendar Grid */}
-                    <div className="space-y-3">
-                        {dayShifts.length === 0 && !adding && !editId && (
-                            <div className="py-8 bg-slate-50/50 rounded-[24px] border border-dashed border-slate-200 mb-4 animate-in fade-in zoom-in-95 duration-500">
-                                <EmptyState 
-                                    icon={<CalendarOff size={32} className="text-slate-300" />}
-                                    title="Belum Ada Jadwal"
-                                    description="Klik 'Tambah Shift' atau pilih jam di bawah untuk mengatur jadwal dokter pada hari ini."
-                                />
-                            </div>
                         )}
-                        
-                        {editId && (
-                           <div className="bg-blue-50 border border-blue-200 rounded-2xl p-5 space-y-4 mb-4">
-                                <div className="flex items-center justify-between">
-                                    <div className="flex flex-col">
-                                        <p className="text-xs font-black text-blue-600 uppercase tracking-widest">Edit Shift</p>
-                                        {successMsg && (
-                                            <p className="text-[10px] text-emerald-600 font-bold animate-pulse mt-1">✓ {successMsg}</p>
-                                        )}
-                                    </div>
-                                    <div className="flex items-center gap-3">
-                                        {/* Professional Toggle Status */}
-                                        <button 
-                                            onClick={() => {
-                                                const s = shifts.find(x => x.id === editId);
-                                                if (s) toggle(s);
-                                            }} 
-                                            disabled={isToggling}
-                                            className={cn(
-                                                "group flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all active:scale-95 disabled:opacity-50",
-                                                (shifts.find(x => x.id === editId)?.disabledDates || []).includes(today)
-                                                    ? "bg-red-50 border-red-200 text-red-600 hover:bg-red-100"
-                                                    : "bg-emerald-50 border-emerald-200 text-emerald-600 hover:bg-emerald-100"
-                                            )}
-                                            title="Klik untuk mengubah status hari ini"
-                                            type="button"
-                                        >
-                                            <div className={cn(
-                                                "w-2 h-2 rounded-full animate-pulse",
-                                                (shifts.find(x => x.id === editId)?.disabledDates || []).includes(today) ? "bg-red-500" : "bg-emerald-500"
-                                            )} />
-                                            <span className="text-[11px] font-bold uppercase tracking-tight">
-                                                {(shifts.find(x => x.id === editId)?.disabledDates || []).includes(today) ? "Nonaktif" : "Aktif Hari Ini"}
-                                            </span>
-                                            <Power size={12} className={cn("transition-transform group-hover:rotate-12", isToggling && "animate-spin")} />
-                                        </button>
-
-                                        <button 
-                                            onClick={() => del(editId)} 
-                                            className="p-2 hover:bg-red-50 text-slate-400 hover:text-red-500 rounded-xl transition-colors border border-transparent hover:border-red-100" 
-                                            title="Hapus Shift Permanen" 
-                                            type="button"
-                                        >
-                                            <Trash2 size={16} />
-                                        </button>
-                                    </div>
-                                </div>
-                                <input autoFocus className="w-full bg-white rounded-xl px-4 py-3 text-sm font-medium text-slate-700 outline-none focus:ring-2 focus:ring-blue-300 border border-blue-100"
-                                    value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} placeholder="Nama shift"
-                                />
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <CustomTimeSelect 
-                                        label="Jam Mulai"
-                                        value={getTimes(form.formattedTime || "").start}
-                                        onChange={(v) => updateTimes(v, getTimes(form.formattedTime || "").end)}
-                                    />
-                                    <CustomTimeSelect 
-                                        label="Jam Selesai"
-                                        value={getTimes(form.formattedTime || "").end}
-                                        onChange={(v) => updateTimes(getTimes(form.formattedTime || "").start, v)}
-                                    />
-                                </div>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <CustomTimeSelect 
-                                        label="Jam Pendaftaran"
-                                        value={form.registrationTime || "07:30"}
-                                        onChange={(v) => setForm({ ...form, registrationTime: v })}
-                                    />
-                                    <CustomDropdown 
-                                        label="Status Bawaan"
-                                        value={form.statusOverride || ''}
-                                        onChange={(v: any) => setForm({ ...form, statusOverride: v || null })}
-                                        options={[
-                                            { value: '', label: 'Standar (Buka)' },
-                                            { value: 'AKAN_BUKA', label: 'Akan Buka' },
-                                            { value: 'OPERASI', label: 'Operasi' },
-                                            { value: 'PENUH', label: 'Penuh' },
-                                        ]}
-                                    />
-                                </div>
-                                <div className="grid grid-cols-1 gap-4">
-                                    <CustomDropdown 
-                                        label="Pola Rutinitas"
-                                        value={form.extra || ''}
-                                        onChange={(v: any) => setForm({ ...form, extra: v || null })}
-                                        options={[
-                                            { value: '', label: 'Setiap Minggu (Standar)' },
-                                            { value: 'odd_weeks', label: 'Hanya Minggu Ganjil (Minggu 1,3,5)' },
-                                            { value: 'even_weeks', label: 'Hanya Minggu Genap (Minggu 2,4)' },
-                                        ]}
-                                    />
-                                </div>
-                                <div className="flex items-center gap-3">
-                                    <span className="text-xs font-semibold text-slate-500">Warna</span>
-                                    <div className="flex gap-2">
-                                        {COLORS.map(c => (
-                                            <button key={c.value} onClick={() => setForm({ ...form, color: c.value })}
-                                                className={cn("w-7 h-7 rounded-lg transition-all", c.bg,
-                                                    form.color === c.value ? `ring-2 ring-offset-2 ${c.ring} scale-110` : "opacity-30 hover:opacity-60"
-                                                )} />
-                                        ))}
-                                    </div>
-                                </div>
-                                <div className="flex gap-3 pt-1">
-                                    <button onClick={reset} className="flex-1 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-500 text-sm font-semibold hover:bg-slate-50">Batal</button>
-                                    <button onClick={save} disabled={!form.title} className="flex-[2] py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold flex items-center justify-center gap-2 disabled:opacity-40 active:scale-[0.98]">
-                                        <Save size={14} /> Simpan
-                                    </button>
-                                </div>
-                            </div>
-                        )}
-
-                        <ShiftCalendarGrid
-                            shifts={dayShifts}
-                            activeDay={activeDay}
-                            onUpdateShiftTime={updateShiftTime}
-                            onSlotClick={(timeStr) => {
-                                const startH = parseInt(timeStr.split(':')[0]);
-                                setForm({ ...INIT, formattedTime: `${timeStr}-${String(startH+4).padStart(2,'0')}:00` });
-                                setAdding(true);
-                                setEditId(null);
-                            }}
-                            onShiftClick={(s) => {
-                                setForm({ title: s.title, formattedTime: s.formattedTime, registrationTime: s.registrationTime || "", color: s.color, statusOverride: s.statusOverride, extra: s.extra });
-                                setEditId(s.id);
-                                setAdding(false);
-                            }}
-                        />
                     </div>
                 </div>
 
                 {/* ══ FOOTER ══ */}
-                <div className="px-7 py-4 border-t border-slate-100 flex items-center justify-between shrink-0 bg-slate-50/50">
-                    <div className="flex items-center gap-5 text-xs text-slate-400 font-medium">
-                        <div className="flex items-center gap-1.5">
-                            <div className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
-                            Aktif
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                            <div className="w-2.5 h-2.5 rounded-full bg-red-300" />
-                            Nonaktif hari ini
-                        </div>
+                <div className="px-6 py-4 border-t border-slate-100 flex items-center justify-between flex-shrink-0 bg-slate-50/50">
+                    <div className="flex items-center gap-4 text-[11px] text-slate-400 font-medium">
+                        <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-emerald-400 inline-block" /> Aktif</span>
+                        <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-red-300 inline-block" /> Nonaktif hari ini</span>
                     </div>
-                    <button onClick={onClose} className="px-6 py-2.5 bg-slate-800 hover:bg-slate-700 text-white text-sm font-bold rounded-xl transition-colors">
+                    <button
+                        onClick={onClose}
+                        className="px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white text-[12px] font-bold rounded-xl transition-all"
+                    >
                         Tutup
                     </button>
                 </div>
             </div>
+
+            <style>{`
+                @keyframes scaleIn {
+                    from { transform: scale(0.96); opacity: 0; }
+                    to   { transform: scale(1); opacity: 1; }
+                }
+            `}</style>
         </div>,
         document.body
+    );
+}
+
+// ── Shift Form Sub-component ──────────────────────────────────────────
+function ShiftForm({
+    form, setForm, parseTimes, saving, onSave, onCancel, mode
+}: {
+    form: Partial<Shift>;
+    setForm: React.Dispatch<React.SetStateAction<Partial<Shift>>>;
+    parseTimes: (s: string) => { start: string; end: string };
+    saving: boolean;
+    onSave: () => void;
+    onCancel: () => void;
+    mode: 'add' | 'edit';
+}) {
+    const times = parseTimes(form.formattedTime || "08:00-12:00");
+    const isAdd = mode === 'add';
+
+    return (
+        <div className={cn(
+            "rounded-2xl border p-5 space-y-4",
+            isAdd ? "bg-slate-50 border-slate-200" : "bg-blue-50 border-blue-200"
+        )}>
+            <div className="flex items-center justify-between">
+                <span className={cn("text-[10px] font-black uppercase tracking-widest", isAdd ? "text-slate-500" : "text-blue-600")}>
+                    {isAdd ? "Shift Baru" : "Edit Shift"}
+                </span>
+            </div>
+
+            {/* Title */}
+            <input
+                autoFocus
+                placeholder="Nama shift (cth: Praktek Pagi)"
+                value={form.title || ""}
+                onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
+                className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm font-semibold text-slate-800 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all placeholder:text-slate-300"
+            />
+
+            {/* Times */}
+            <div className="grid grid-cols-3 gap-3">
+                <TimePicker
+                    label="Jam Mulai"
+                    value={times.start}
+                    onChange={v => setForm(f => ({ ...f, formattedTime: `${v}-${parseTimes(f.formattedTime || "").end}` }))}
+                />
+                <TimePicker
+                    label="Jam Selesai"
+                    value={times.end}
+                    onChange={v => setForm(f => ({ ...f, formattedTime: `${parseTimes(f.formattedTime || "").start}-${v}` }))}
+                />
+                <TimePicker
+                    label="Jam Daftar"
+                    value={form.registrationTime || "07:30"}
+                    onChange={v => setForm(f => ({ ...f, registrationTime: v }))}
+                />
+            </div>
+
+            {/* Dropdowns */}
+            <div className="grid grid-cols-2 gap-3">
+                <InlineSelect
+                    label="Status Bawaan"
+                    value={form.statusOverride || ""}
+                    onChange={v => setForm(f => ({ ...f, statusOverride: (v || undefined) as any }))}
+                    options={STATUS_OVERRIDE_OPTIONS}
+                />
+                <InlineSelect
+                    label="Pola Rutinitas"
+                    value={form.extra || ""}
+                    onChange={v => setForm(f => ({ ...f, extra: (v || undefined) as any }))}
+                    options={ROUTINE_OPTIONS}
+                />
+            </div>
+
+            {/* Color */}
+            <div className="flex items-center gap-3">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Warna</span>
+                <div className="flex gap-1.5">
+                    {COLORS.map(c => (
+                        <button
+                            key={c.value}
+                            type="button"
+                            onClick={() => setForm(f => ({ ...f, color: c.value }))}
+                            className={cn(
+                                "w-6 h-6 rounded-lg transition-all",
+                                c.bg,
+                                form.color === c.value ? `ring-2 ring-offset-1 ${c.ring} scale-110 shadow-md` : "opacity-40 hover:opacity-70"
+                            )}
+                        />
+                    ))}
+                </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex gap-2 pt-1">
+                <button
+                    onClick={onCancel}
+                    className="flex-1 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-500 text-[12px] font-bold hover:bg-slate-50 transition-all"
+                >
+                    Batal
+                </button>
+                <button
+                    onClick={onSave}
+                    disabled={!form.title?.trim() || saving}
+                    className={cn(
+                        "flex-[2] py-2.5 rounded-xl text-[12px] font-bold flex items-center justify-center gap-1.5 transition-all active:scale-[0.98]",
+                        form.title?.trim() && !saving
+                            ? isAdd
+                                ? "bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm"
+                                : "bg-blue-600 hover:bg-blue-500 text-white shadow-sm"
+                            : "bg-slate-100 text-slate-400 cursor-not-allowed"
+                    )}
+                >
+                    <Save size={13} />
+                    {saving ? "Menyimpan..." : isAdd ? "Buat Shift" : "Simpan"}
+                </button>
+            </div>
+        </div>
     );
 }

@@ -19,13 +19,14 @@ const avatarGradients = [
 ];
 
 const statusConfig: Record<string, { label: string; color: string; bg: string; dot?: string; pulse?: boolean }> = {
-    'BUKA': { label: 'Aktif', color: 'text-emerald-600', bg: 'bg-emerald-50', dot: 'bg-emerald-500' },
-    'OPERASI': { label: 'Operasi', color: 'text-rose-600', bg: 'bg-rose-50', dot: 'bg-rose-500', pulse: true },
-    'PENUH': { label: 'Penuh', color: 'text-amber-600', bg: 'bg-amber-50' },
-    'CUTI': { label: 'Cuti', color: 'text-slate-500', bg: 'bg-slate-100' },
-    'SELESAI': { label: 'Selesai', color: 'text-blue-600', bg: 'bg-blue-50' },
-    'TIDAK_PRAKTEK': { label: 'Tidak Aktif', color: 'text-slate-400', bg: 'bg-slate-50' },
-    'AKAN_BUKA': { label: 'Akan Buka', color: 'text-cyan-600', bg: 'bg-cyan-50' },
+    'PRAKTEK':     { label: 'Praktek', color: 'text-emerald-600', bg: 'bg-emerald-50', dot: 'bg-emerald-500' },
+    'OPERASI':     { label: 'Operasi', color: 'text-rose-600', bg: 'bg-rose-50', dot: 'bg-rose-500', pulse: true },
+    'PENUH':       { label: 'Penuh', color: 'text-amber-600', bg: 'bg-amber-50' },
+    'CUTI':        { label: 'Cuti', color: 'text-slate-500', bg: 'bg-slate-100' },
+    'SELESAI':     { label: 'Selesai', color: 'text-blue-600', bg: 'bg-blue-50' },
+    'TERJADWAL':   { label: 'Terjadwal', color: 'text-sky-600', bg: 'bg-sky-50', dot: 'bg-sky-400' },
+    'PENDAFTARAN': { label: 'Pendaftaran', color: 'text-indigo-600', bg: 'bg-indigo-50', dot: 'bg-indigo-400' },
+    'LIBUR':       { label: 'Libur', color: 'text-slate-400', bg: 'bg-slate-50' },
 };
 
 export function getStatusConfig(status?: string | null) {
@@ -69,7 +70,7 @@ export function DoctorCard({ doctor, index, isSelected, onToggleSelect, onEdit, 
     const [timeRemaining, setTimeRemaining] = useState<string>("Buka");
 
     useEffect(() => {
-        if (doctor.status === "TIDAK_PRAKTEK" || doctor.status === "SELESAI" || doctor.status === "CUTI") {
+        if (doctor.status === "LIBUR" || doctor.status === "SELESAI" || doctor.status === "CUTI") {
             setTimeRemaining("");
             return;
         }
