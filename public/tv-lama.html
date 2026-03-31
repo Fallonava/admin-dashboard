@@ -46,48 +46,74 @@
       }
 
       :root {
-        /* Semantic Base Colors (Clinical Dark) */
-        --bg-body: #0B1120;
-        --bg-ambient: linear-gradient(145deg, #0F172A 0%, #060B14 100%);
-        --text-primary: #F8FAFC;
-        --text-secondary: #94A3B8;
-        --glass-panel: rgba(15, 23, 42, 0.85); /* Slate 900 translucent */
-        --card-bg: rgba(30, 41, 59, 0.95); /* Slate 800 */
-        --header-bg: rgba(255, 255, 255, 0.02);
-        --border-light: rgba(255, 255, 255, 0.08); /* Tipis membatasi ruang */
-        --platter-border: rgba(255, 255, 255, 0.06); 
-        --footer-bg: rgba(15, 23, 42, 0.95);
-        --app-bg-overlay: transparent;
-        --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        --accent-blue: #0284C7; /* Medical Sky Blue */
-        --accent-purple: #7C3AED; /* Violet */
-        --accent-green: #10B981; /* Emerald / Safe */
-        --accent-orange: #F59E0B; /* Amber / Warning */
-        --accent-red: #E11D48; /* Rose / Critical */
+        /* Semantic Base Colors (Default Dark) */
+        --bg-body: #000000;
+        --bg-ambient:
+          radial-gradient(
+            circle at 10% 20%,
+            rgba(10, 132, 255, 0.4) 0%,
+            transparent 40%
+          ),
+          radial-gradient(
+            circle at 90% 80%,
+            rgba(191, 90, 242, 0.4) 0%,
+            transparent 40%
+          ),
+          radial-gradient(
+            circle at 50% 50%,
+            rgba(48, 209, 88, 0.15) 0%,
+            transparent 60%
+          );
+        --text-primary: #f5f5f7;
+        --text-secondary: rgba(235, 235, 245, 0.6);
+        /* Performance: Higher opacity to replace blur */
+        --glass-panel: rgba(30, 30, 35, 0.9);
+        --card-bg: rgba(44, 44, 46, 0.95);
+        --header-bg: rgba(255, 255, 255, 0.03);
+        --border-light: rgba(255, 255, 255, 0.08);
+        --platter-border: rgba(255, 255, 255, 0.05);
+        --footer-bg: rgba(20, 20, 22, 0.95);
+        --app-bg-overlay: rgba(20, 20, 22, 0.85);
+        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        --accent-blue: #0a84ff;
+        --accent-purple: #bf5af2;
+        --accent-green: #30d158;
+        --accent-orange: #ff9f0a;
+        --accent-red: #ff453a;
         --logo-text: #ffffff;
       }
 
-      /* Light Mode Theme (Clinical Light) */
+      /* Light Mode Theme */
       [data-theme="light"] {
-        --bg-body: #F8FAFC;
-        --bg-ambient: linear-gradient(145deg, #F1F5F9 0%, #FFFFFF 100%);
-        --text-primary: #0F172A;
-        --text-secondary: #64748B;
-        --glass-panel: rgba(255, 255, 255, 0.95);
-        --card-bg: rgba(255, 255, 255, 0.98);
-        --header-bg: rgba(0, 0, 0, 0.02);
+        --bg-body: #f5f5f7;
+        --bg-ambient:
+          radial-gradient(
+            circle at 10% 20%,
+            rgba(10, 132, 255, 0.25) 0%,
+            transparent 40%
+          ),
+          radial-gradient(
+            circle at 90% 80%,
+            rgba(191, 90, 242, 0.25) 0%,
+            transparent 40%
+          ),
+          radial-gradient(
+            circle at 50% 50%,
+            rgba(48, 209, 88, 0.1) 0%,
+            transparent 60%
+          );
+        --text-primary: #1d1d1f;
+        --text-secondary: rgba(60, 60, 67, 0.6);
+        --glass-panel: rgba(255, 255, 255, 0.9);
+        --card-bg: rgba(255, 255, 255, 0.95);
+        --header-bg: rgba(0, 0, 0, 0.03);
         --border-light: rgba(0, 0, 0, 0.08);
-        --platter-border: rgba(0, 0, 0, 0.06);
+        --platter-border: rgba(0, 0, 0, 0.05);
         --footer-bg: rgba(255, 255, 255, 0.95);
-        --app-bg-overlay: transparent;
-        --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-        --logo-text: #0F172A;
-        
-        --accent-blue: #0369A1; /* Darker Sky for contrast */
-        --accent-purple: #6D28D9;
-        --accent-green: #0D9488; /* Teal for high visibility */
-        --accent-orange: #D97706; /* Darker Amber */
-        --accent-red: #BE123C; /* Darker Rose */
+        --app-bg-overlay: rgba(255, 255, 255, 0.85);
+        --shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        /* Softer shadow */
+        --logo-text: #ffffff;
       }
 
       /* ===== RESET & BASE ===== */
@@ -120,13 +146,21 @@
         position: fixed;
         inset: 0;
         z-index: 0;
-        background: var(--bg-ambient);
+        /* Performance: Static background, no animation */
+        background: radial-gradient(
+          circle at 50% 50%,
+          rgba(10, 132, 255, 0.1) 0%,
+          transparent 60%
+        );
+        opacity: 0.5;
       }
 
       /* ===== HARDWARE SAFE MODE (TCL/Android TV Optimization) ===== */
       @media (prefers-reduced-motion: reduce) {
         .ambient-bg {
-          background: var(--bg-body) !important;
+          animation: none !important;
+          opacity: 1 !important;
+          background: #1c1c1e !important;
         }
 
         .app-container,
@@ -147,7 +181,9 @@
       }
 
       body.tv-optimized .ambient-bg {
-        background: var(--bg-body) !important;
+        animation: none !important;
+        opacity: 1 !important;
+        background: #1c1c1e !important;
       }
 
       body.tv-optimized .bg-orb,
@@ -197,8 +233,9 @@
         height: 100%;
         display: flex;
         flex-direction: column;
-        padding: 12px 16px; /* Added breathing room for professional signage */
-        gap: 20px; /* Increased gap */
+        padding: 4px 6px;
+        gap: 16px;
+        /* Performance: Removed backdrop-filter */
         background: var(--app-bg-overlay);
       }
 
@@ -304,9 +341,10 @@
         display: flex;
         flex-direction: column;
         background: var(--glass-panel);
-        border-radius: 20px; /* Modern slightly smaller bend */
+        border-radius: 24px;
         box-shadow: var(--shadow);
         border: 1px solid var(--border-light);
+        /* Subtle glass border */
         overflow: hidden;
         transition: background 0.5s ease;
       }
@@ -332,15 +370,18 @@
       }
 
       /* Sidebar Item Tweaks */
+      /* Sidebar Item Tweaks */
       .sidebar-panel .platter {
         background: transparent;
         border: 1px solid transparent;
         box-shadow: none;
-        padding: 10px 12px;
-        border-radius: 12px;
+        padding: 8px 10px;
+        /* Reduced padding */
+        border-radius: 14px;
         transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         color: var(--text-primary);
-        gap: 12px;
+        gap: 10px;
+        /* Reduced gap */
       }
 
       /* Stat Panel */
@@ -526,7 +567,7 @@
         flex: 1;
         overflow: hidden;
         position: relative;
-        /* Fade masks for scroll feel — bawah lebih tipis agar konten terakhir terlihat */
+        /* Fade masks for scroll feel ΓÇö bawah lebih tipis agar konten terakhir terlihat */
         mask-image: linear-gradient(
           to bottom,
           transparent,
@@ -558,21 +599,22 @@
         flex-direction: column;
         align-items: stretch;
         gap: 10px;
-        padding: 10px 14px; /* More breathing room */
+        padding: 8px 12px;
         background: var(--card-bg);
-        border-radius: 12px;
+        border-radius: 14px;
         border: 1px solid var(--platter-border);
         position: relative;
         overflow: hidden;
-        transform: translateZ(0); /* Static flat transform */
-        opacity: 0.95; 
+        transform: translateZ(0) scale(1);
+        opacity: 0.85;
         transition:
-          opacity 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),
+          opacity 0.5s cubic-bezier(0.2, 0.8, 0.2, 1),
           border-color 0.4s ease,
-          background-color 0.4s ease;
+          transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1),
+          box-shadow 0.5s ease;
       }
 
-      /* Light Sweep Effect — DIMATIKAN untuk performa Smart TV */
+      /* Light Sweep Effect ΓÇö DIMATIKAN untuk performa Smart TV */
       /* Efek visual tetap dijaga melalui border-color hijau pada .st-buka */
 
       /* Status Edge Accent */
@@ -615,22 +657,23 @@
       }
 
       .doc-name {
-        font-size: 15px; /* Doctor Name - Larger, high contrast */
-        font-weight: 700;
+        font-size: 13px;
+        font-weight: 600;
         color: var(--text-primary);
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        letter-spacing: -0.01em;
+        letter-spacing: -0.015em;
       }
 
+      /* Doctor Name Style */
       .doc-spec {
-        font-size: 11px; /* Specialty - Smaller, muted, spaced out */
-        font-weight: 600;
-        color: var(--text-secondary);
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-        margin-bottom: 2px;
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--text-primary);
+        opacity: 0.85;
+        letter-spacing: 0.02em;
+        margin-top: 2px;
       }
 
       /* Meta */
@@ -716,7 +759,7 @@
       .platter.st-buka.active { background: rgba(48, 209, 88, 0.12) !important; border-color: rgba(48, 209, 88, 0.5) !important; }
       [data-theme="light"] .platter.st-buka { background: rgba(48, 209, 88, 0.04); border-color: rgba(48, 209, 88, 0.15); }
 
-      /* st-buka--terjadwal: Override untuk status TERJADWAL (belum mulai) — pakai warna biru */
+      /* st-buka--terjadwal: Override untuk status TERJADWAL (belum mulai) ΓÇö pakai warna biru */
       .st-buka.st-terjadwal { --status-color: #64d2ff; --status-bg: rgba(100, 210, 255, 0.2); opacity: 0.82; }
       .st-buka.st-terjadwal .initials { background: rgba(100, 210, 255, 0.15); color: #64d2ff; }
       .platter.st-buka.st-terjadwal { border-color: rgba(100, 210, 255, 0.2); }
@@ -736,9 +779,11 @@
         /* Background disesuaikan menggunakan warna transparan dari status saat itu */
         background: var(--status-bg) !important;
         border: 1px solid var(--status-color) !important;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Elegant shadow */
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        /* Glow Effect Substituted by Flat Shadow */
         padding-bottom: 2px;
-        transform: translateZ(0); /* Disable completely jumpy scale pop-out */
+        transform: translateZ(0);
+        /* Disable scale pop-out */
         opacity: 1 !important;
         /* Full priority */
       }
@@ -765,15 +810,13 @@
       }
 
       .platter.active .doc-name {
-        font-size: 17px;
-        color: var(--text-primary) !important;
+        font-size: 16px;
+        /* Slightly larger */
+        /* Cleaner text */
+        color: #fff !important;
         font-weight: 800;
-        letter-spacing: -0.015em;
-      }
-      
-      .platter.active .doc-spec {
-        color: var(--status-color) !important;
-        font-weight: 800;
+        /* Bolder */
+        letter-spacing: -0.01em;
       }
 
       [data-theme="light"] .platter.active .doc-name {
@@ -1896,7 +1939,7 @@
         <div id="broadcastLevelLabel" class="broadcast-level-label">
           INFORMATION
         </div>
-        <div id="broadcastMessage" class="broadcast-message">—</div>
+        <div id="broadcastMessage" class="broadcast-message">ΓÇö</div>
         <div id="broadcastZone" class="broadcast-zone">All Zones</div>
       </div>
     </div>
@@ -2230,7 +2273,7 @@
         API_MAIN: "/api/display",
         POLL_MS: 3000, // Reduced for faster dev/test feedback, can be restored later
         // Scroll Profesional: Item-by-Item
-        SCROLL_ITEM_PAUSE: 3000, // Jeda antar item (ms) — waktu baca per kartu
+        SCROLL_ITEM_PAUSE: 3000, // Jeda antar item (ms) ΓÇö waktu baca per kartu
         SCROLL_EDGE_PAUSE: 6000, // Jeda di ujung atas/bawah (ms)
         SCROLL_DURATION: 800, // Durasi animasi geser per item (ms)
       };
@@ -2262,8 +2305,8 @@
         if (!j || j === "-") return "-";
         return j
           .replace(/\./g, ":")
-          .replace(/\s*[-–]\s*/g, " — ")
-          .replace(/\s*s\/d\s*/gi, " — ");
+          .replace(/\s*[-ΓÇô]\s*/g, " ΓÇö ")
+          .replace(/\s*s\/d\s*/gi, " ΓÇö ");
       };
 
       // ===== CARD HTML BUILDER (Satu Fungsi untuk render() & _renderSidebar()) =====
@@ -2275,8 +2318,8 @@
           <div class="platter-main">
             <div class="initials">${avatarText}</div>
             <div class="info-col">
-              <div class="doc-name">${esc(d.Dokter)}</div>
-              <div class="doc-spec" style="text-transform:uppercase">${esc(d.Spesialis)}</div>
+              <div class="doc-name" style="text-transform:uppercase">${esc(d.Spesialis)}</div>
+              <div class="doc-spec">${esc(d.Dokter)}</div>
             </div>
             <div class="meta-col">
               <div class="status-pill" style="background:var(--status-bg);color:var(--status-color)">
@@ -2303,7 +2346,7 @@
 
 
       // ===== PROFESSIONAL SCROLLER (Item-by-Item with Easing) =====
-      // Pola: Scroll satu item → pause → scroll item berikutnya → ... → sampai bawah → pause lama → fade reset ke atas → ulangi
+      // Pola: Scroll satu item ΓåÆ pause ΓåÆ scroll item berikutnya ΓåÆ ... ΓåÆ sampai bawah ΓåÆ pause lama ΓåÆ fade reset ke atas ΓåÆ ulangi
       class SmoothScroller {
         constructor(id) {
           this.el = $(id);
@@ -2343,7 +2386,7 @@
           }
         }
 
-        // Easing: Cubic ease-in-out — pelan di awal & akhir, cepat di tengah
+        // Easing: Cubic ease-in-out ΓÇö pelan di awal & akhir, cepat di tengah
         _ease(t) {
           return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
         }
@@ -2393,7 +2436,7 @@
           requestAnimationFrame(step);
         }
 
-        // Fade out → reset ke atas → fade in (loop seamless)
+        // Fade out ΓåÆ reset ke atas ΓåÆ fade in (loop seamless)
         _fadeResetToTop(callback) {
           // Fade out
           this.el.style.transition = "opacity 0.5s ease";
@@ -2434,7 +2477,7 @@
 
           // Pastikan ada item berikutnya
           if (nextItem < this.itemOffsets.length) {
-            // Scroll ke item berikutnya — clamp ke maxScroll agar tidak overshoot
+            // Scroll ke item berikutnya ΓÇö clamp ke maxScroll agar tidak overshoot
             this.currentItem = nextItem;
             // Jika item terakhir atau offset melebihi maxScroll, scroll ke maxScroll
             // agar konten paling bawah terlihat sepenuhnya
@@ -2460,7 +2503,7 @@
               );
             });
           } else {
-            // Sudah melewati semua item — scroll ke maxScroll jika belum
+            // Sudah melewati semua item ΓÇö scroll ke maxScroll jika belum
             if (this.y < maxScroll - 1) {
               this._animateTo(maxScroll, CFG.SCROLL_DURATION, () => {
                 this.timer = setTimeout(() => {
@@ -2473,7 +2516,7 @@
                 }, CFG.SCROLL_EDGE_PAUSE);
               });
             } else {
-              // Sudah di ujung bawah — pause lama, lalu fade reset
+              // Sudah di ujung bawah ΓÇö pause lama, lalu fade reset
               this.timer = setTimeout(() => {
                 this._fadeResetToTop(() => {
                   // Pause di atas, lalu mulai scroll lagi
@@ -2544,21 +2587,21 @@
         // #2: Sapaan Waktu Otomatis
         getGreeting() {
           const h = new Date().getHours();
-          if (h < 10) return "Selamat Pagi, Semangat Sehat! ☀️";
-          if (h < 15) return "Selamat Siang, Mohon Menunggu 🌤️";
-          if (h < 18) return "Selamat Sore 👋";
-          return "Selamat Malam 🌙";
+          if (h < 10) return "Selamat Pagi, Semangat Sehat! ΓÿÇ∩╕Å";
+          if (h < 15) return "Selamat Siang, Mohon Menunggu ≡ƒîñ∩╕Å";
+          if (h < 18) return "Selamat Sore ≡ƒæï";
+          return "Selamat Malam ≡ƒîÖ";
         },
 
         // #4: Rotasi Info Edukasi
         getIdleMessage() {
           const msgs = [
             this.getGreeting(),
-            "Dilarang Merokok di Area RS 🚭",
-            "Jagalah Kebersihan Ruang Tunggu 🗑️",
-            "Gunakan Masker Jika Batuk 😷",
-            "Antri Dengan Tertib 🚶‍♂️🚶‍♀️",
-            "Siapkan KTP & BPJS Anda 🆔",
+            "Dilarang Merokok di Area RS ≡ƒÜ¡",
+            "Jagalah Kebersihan Ruang Tunggu ≡ƒùæ∩╕Å",
+            "Gunakan Masker Jika Batuk ≡ƒÿ╖",
+            "Antri Dengan Tertib ≡ƒÜ╢ΓÇìΓÖé∩╕Å≡ƒÜ╢ΓÇìΓÖÇ∩╕Å",
+            "Siapkan KTP & BPJS Anda ≡ƒåö",
           ];
           return msgs[Math.floor(Math.random() * msgs.length)];
         },
@@ -2655,10 +2698,10 @@
 
         _customMsgIdx: 0,
         _customMsgs: [
-          { title: "Info", text: "Terimakasih sudah menunggu 🙏" },
-          { title: "Info", text: "Terimakasih sudah tertib 🌟" },
-          { title: "Antrian", text: "Belum online? Yo ambil antrian 🎫" },
-          { title: "Info", text: "Terimakasih sudah mengantri 😊" },
+          { title: "Info", text: "Terimakasih sudah menunggu ≡ƒÖÅ" },
+          { title: "Info", text: "Terimakasih sudah tertib ≡ƒîƒ" },
+          { title: "Antrian", text: "Belum online? Yo ambil antrian ≡ƒÄ½" },
+          { title: "Info", text: "Terimakasih sudah mengantri ≡ƒÿè" },
         ],
 
         _isFetching: false, // Network lock
@@ -2697,7 +2740,7 @@
                 : h < 18
                   ? "Selamat Sore"
                   : "Selamat Malam";
-          Island.show("PETUGAS PENDAFTARAN", greeting + " 👋", "success", 3000);
+          Island.show("PETUGAS PENDAFTARAN", greeting + " ≡ƒæï", "success", 3000);
 
           // --- MASTER CLOCK LOOP ---
           // Menyatukan semua interval aplikasi (Clock, Fetch, Idle Island, Operasi, Theme) ke dalam satu timer agar lebih sinkron dan ringan di memori
@@ -2791,13 +2834,6 @@
           const m = d.getMinutes();
           const s = d.getSeconds();
 
-          // --- AUTOMATIC CLINICAL DAY/NIGHT THEME ---
-          // Light Theme: 06:00 - 17:59 | Dark Theme: 18:00 - 05:59
-          const prefersTheme = (h >= 6 && h < 18) ? "light" : "dark";
-          if (document.documentElement.getAttribute('data-theme') !== prefersTheme) {
-              document.documentElement.setAttribute('data-theme', prefersTheme);
-          }
-
           // Custom Rotating Notification every 5 minutes (avoid clash with break time at 12:00)
           if (m % 5 === 0 && s === 0 && h !== 12) {
             const msg = this._customMsgs[this._customMsgIdx];
@@ -2821,7 +2857,7 @@
                 this._activePrayCountdown = p.id;
                 Island.show(
                   "Waktu Sholat",
-                  `${diffMins} Menit Menuju Waktu ${p.id} 🕌`,
+                  `${diffMins} Menit Menuju Waktu ${p.id} ≡ƒòî`,
                   "info",
                   "access_time",
                   6000,
@@ -2838,7 +2874,7 @@
                   ? "00"
                   : remainingSeconds.toString().padStart(2, "0");
               this.status(
-                `[${mm}:${ss}] MENUJU WAKTU ${p.id.toUpperCase()} 🕌`,
+                `[${mm}:${ss}] MENUJU WAKTU ${p.id.toUpperCase()} ≡ƒòî`,
                 true,
               );
               break;
@@ -2849,7 +2885,7 @@
               this.status("LIVE STREAM", false);
               Island.show(
                 "Waktu Sholat",
-                `Waktu ${p.id} Telah Tiba 🕌`,
+                `Waktu ${p.id} Telah Tiba ≡ƒòî`,
                 "success",
                 "access_time",
                 8000,
@@ -2869,11 +2905,11 @@
             const key = "greet_" + h;
             if (!this._greetSent[key]) {
               this._greetSent[key] = true;
-              if (h === 6) Island.show("Pagi", "Selamat Pagi 🌅", "info", 4000);
+              if (h === 6) Island.show("Pagi", "Selamat Pagi ≡ƒîà", "info", 4000);
               if (h === 12)
-                Island.show("Siang", "Selamat Siang ☀️", "info", 4000);
+                Island.show("Siang", "Selamat Siang ΓÿÇ∩╕Å", "info", 4000);
               if (h === 18)
-                Island.show("Sore", "Selamat Sore 🌇", "info", 4000);
+                Island.show("Sore", "Selamat Sore ≡ƒîç", "info", 4000);
             }
           }
         },
@@ -3143,7 +3179,7 @@
                 if (zoneEl)
                   zoneEl.textContent =
                     active.targetZone.replace("_", " ") +
-                    " • " +
+                    " ΓÇó " +
                     active.duration +
                     " menit";
 
@@ -3157,7 +3193,7 @@
                 );
               }
             } else {
-              // No active broadcast — hide overlay with animation
+              // No active broadcast ΓÇö hide overlay with animation
               if (
                 overlay.classList.contains("active") &&
                 !overlay.classList.contains("closing")
@@ -3294,7 +3330,7 @@
             if (group[g]) group[g].push(d);
           });
 
-          // Group Sidebar Data — terpisah per status
+          // Group Sidebar Data ΓÇö terpisah per status
           group.SidebarOperasi = sidebarData.filter((d) =>
             (d.Status || "").toUpperCase().includes("OPERASI"),
           );
@@ -3381,10 +3417,10 @@
 
                   // IN-PLACE DOM Update (Menghindari innerHTML untuk performa)
                   const dName = el.querySelector(".doc-name");
-                  if (dName) dName.textContent = d.Dokter;
+                  if (dName) dName.textContent = d.Spesialis.toUpperCase();
 
                   const dSpec = el.querySelector(".doc-spec");
-                  if (dSpec) dSpec.textContent = d.Spesialis.toUpperCase();
+                  if (dSpec) dSpec.textContent = d.Dokter;
 
                   const stPill = el.querySelector(".status-pill");
                   if (stPill) {
@@ -3573,10 +3609,10 @@
 
                 // IN-PLACE DOM Update Sidebar
                 const dName = el.querySelector(".doc-name");
-                if (dName) dName.textContent = d.Dokter;
+                if (dName) dName.textContent = d.Spesialis.toUpperCase();
 
                 const dSpec = el.querySelector(".doc-spec");
-                if (dSpec) dSpec.textContent = d.Spesialis.toUpperCase();
+                if (dSpec) dSpec.textContent = d.Dokter;
 
                 const stPill = el.querySelector(".status-pill");
                 if (stPill) {
