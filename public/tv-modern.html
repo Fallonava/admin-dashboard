@@ -48,20 +48,22 @@
       :root {
         /* Semantic Base Colors (Clinical Dark) */
         --bg-body: #0B1120;
-        --bg-ambient: radial-gradient(at 10% 0%, rgba(2, 132, 199, 0.15) 0px, transparent 50%),
-                      radial-gradient(at 90% 10%, rgba(124, 58, 237, 0.12) 0px, transparent 50%),
-                      radial-gradient(at 50% 100%, rgba(225, 29, 72, 0.1) 0px, transparent 50%),
-                      linear-gradient(145deg, #0F172A 0%, #060B14 100%);
+        --bg-ambient: var(--bg-body); /* Neomorphism solid background */
+        --neo-shadow-dark: rgba(0, 0, 0, 0.5);
+        --neo-shadow-light: rgba(255, 255, 255, 0.08);
+        --neo-inset-dark: inset 4px 4px 8px rgba(0, 0, 0, 0.5);
+        --neo-inset-light: inset -4px -4px 8px rgba(255, 255, 255, 0.08);
+        
         --text-primary: #F8FAFC;
         --text-secondary: #94A3B8;
-        --glass-panel: rgba(15, 23, 42, 0.85); /* Slate 900 translucent */
-        --card-bg: rgba(30, 41, 59, 1); /* Slate 800 Solid */
-        --header-bg: rgba(255, 255, 255, 0.02);
-        --border-light: rgba(255, 255, 255, 0.08); /* Tipis membatasi ruang */
-        --platter-border: rgba(255, 255, 255, 0.06); 
-        --footer-bg: rgba(15, 23, 42, 0.95);
+        --glass-panel: var(--bg-body); /* Solid for Neomorphism */
+        --card-bg: var(--bg-body); /* Solid for Neomorphism */
+        --header-bg: transparent;
+        --border-light: transparent;
+        --platter-border: transparent; 
+        --footer-bg: var(--bg-body);
         --app-bg-overlay: transparent;
-        --shadow: inset 0 1px 1px rgba(255,255,255,0.06), 0 8px 32px rgba(0,0,0,0.25);
+        --shadow: 8px 8px 16px var(--neo-shadow-dark), -8px -8px 16px var(--neo-shadow-light);
         --accent-blue: #0284C7; /* Medical Sky Blue */
         --accent-purple: #7C3AED; /* Violet */
         --accent-green: #10B981; /* Emerald / Safe */
@@ -72,21 +74,23 @@
 
       /* Light Mode Theme (Clinical Light) */
       [data-theme="light"] {
-        --bg-body: #F8FAFC; /* Slate 50 */
-        --bg-ambient: radial-gradient(at 10% 0%, rgba(3, 105, 161, 0.08) 0px, transparent 50%),
-                      radial-gradient(at 90% 10%, rgba(109, 40, 217, 0.05) 0px, transparent 50%),
-                      radial-gradient(at 50% 100%, rgba(190, 18, 60, 0.04) 0px, transparent 50%),
-                      linear-gradient(145deg, #F8FAFC 0%, #F1F5F9 100%);
+        --bg-body: #E0E5EC; /* Light Gray for Neomorphism */
+        --bg-ambient: var(--bg-body);
+        --neo-shadow-dark: #a3b1c6;
+        --neo-shadow-light: #ffffff;
+        --neo-inset-dark: inset 4px 4px 8px #a3b1c6;
+        --neo-inset-light: inset -4px -4px 8px #ffffff;
+
         --text-primary: #0F172A;
-        --text-secondary: #64748B;
-        --glass-panel: rgba(255, 255, 255, 1); /* Pure Solid White */
-        --card-bg: rgba(255, 255, 255, 1);
-        --header-bg: rgba(0, 0, 0, 0.02);
-        --border-light: rgba(0, 0, 0, 0.08);
-        --platter-border: rgba(0, 0, 0, 0.04);
-        --footer-bg: rgba(255, 255, 255, 1);
+        --text-secondary: #5f6f87;
+        --glass-panel: var(--bg-body);
+        --card-bg: var(--bg-body);
+        --header-bg: transparent;
+        --border-light: transparent;
+        --platter-border: transparent;
+        --footer-bg: var(--bg-body);
         --app-bg-overlay: transparent;
-        --shadow: inset 0 1px 1px rgba(255, 255, 255, 1), 0 8px 32px -4px rgba(0, 0, 0, 0.06);
+        --shadow: 8px 8px 16px var(--neo-shadow-dark), -8px -8px 16px var(--neo-shadow-light);
         --logo-text: #0F172A;
         
         --accent-blue: #0369A1; /* Darker Sky for contrast */
@@ -242,20 +246,21 @@
         width: 44px;
         height: 44px;
         border-radius: 12px;
-        background: linear-gradient(
-          135deg,
-          var(--accent-blue),
-          var(--accent-purple)
-        );
+        background: var(--bg-body);
         display: flex;
         align-items: center;
         justify-content: center;
-        /* box-shadow: 0 4px 16px rgba(10, 132, 255, 0.3); */
+        box-shadow: 
+          4px 4px 10px var(--neo-shadow-dark),
+          -4px -4px 10px var(--neo-shadow-light);
       }
 
       .logo-icon {
         font-size: 26px;
-        color: white;
+        background: linear-gradient(135deg, var(--accent-orange) 45%, var(--accent-green) 55%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.1));
       }
 
       .title-group h1 {
@@ -322,13 +327,14 @@
         min-width: 300px;
         display: flex;
         flex-direction: column;
-        background: var(--glass-panel);
+        background: var(--bg-body);
         border-right: none;
         border-radius: 24px;
         margin-right: 0;
         overflow: hidden;
         z-index: 10;
-        /* box-shadow: 4px 0 16px rgba(0, 0, 0, 0.08); */
+        /* Sidebar Neomorph Trough (Debossed) */
+        box-shadow: var(--neo-inset-dark), var(--neo-inset-light);
       }
 
       .sidebar-panel .island-header {
@@ -336,26 +342,79 @@
         border-bottom: 1px solid rgba(125, 125, 125, 0.06);
       }
 
-      /* Sidebar Item Tweaks */
+      /* Sidebar Item Tweaks - Mencegah konten bertumpuk pada layar 1080p */
       .sidebar-panel .platter {
-        background: transparent;
-        border: 1px solid transparent;
-        box-shadow: none;
+        background: var(--bg-body);
+        border: none;
+        box-shadow: 4px 4px 10px var(--neo-shadow-dark), -4px -4px 10px var(--neo-shadow-light);
         padding: 10px 12px;
         border-radius: 12px;
         transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         color: var(--text-primary);
         gap: 12px;
+        margin: 8px 16px;
+      }
+
+      .sidebar-panel .platter-main {
+        gap: 8px;
+        align-items: center;
+      }
+      
+      .sidebar-panel .platter::before {
+        width: 3px;
+        top: 8px;
+        bottom: 8px;
+      }
+
+      .sidebar-panel .initials {
+        width: 34px;
+        height: 34px;
+        font-size: 12px;
+        flex-shrink: 0;
+      }
+
+      .sidebar-panel .info-col {
+        flex: 1;
+        min-width: 0; /* Ensures truncation works */
+      }
+
+      .sidebar-panel .doc-spec {
+        font-size: 13px;
+        line-height: 1.2;
+        margin-bottom: 2px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .sidebar-panel .doc-name {
+        font-size: 11px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .sidebar-panel .meta-col {
+        flex-shrink: 0;
+        align-items: flex-end;
+      }
+
+      .sidebar-panel .status-pill {
+        padding: 4px 8px;
+        font-size: 8px;
+      }
+
+      .sidebar-panel .jam-val {
+        font-size: 13px;
       }
 
       /* Stat Panel */
       .stat-panel {
         display: flex;
         justify-content: space-around;
-        padding: 10px 16px;
-        background: rgba(0, 0, 0, 0.03);
-        border-bottom: 1px solid var(--border-light);
-        gap: 8px;
+        padding: 14px 16px;
+        background: transparent;
+        gap: 12px;
       }
 
       .stat-item {
@@ -363,6 +422,67 @@
         flex-direction: column;
         align-items: center;
         flex: 1;
+        background: var(--bg-body);
+        padding: 8px 0;
+        border-radius: 12px;
+        /* Extruded Neomorph Button inside Trough */
+        box-shadow: 4px 4px 8px var(--neo-shadow-dark), -4px -4px 8px var(--neo-shadow-light);
+      }
+
+      /* ===== 3D EMPTY STATE (NEO ORB) ===== */
+      .neo-empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        width: 100%;
+        opacity: 0.8;
+      }
+
+      .neo-orb {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: var(--bg-body);
+        box-shadow: 
+          12px 12px 24px var(--neo-shadow-dark), 
+          -12px -12px 24px var(--neo-shadow-light),
+          inset 0 0 0 rgba(0,0,0,0);
+        margin-bottom: 30px; /* Space for text */
+        margin-top: 50px;
+        animation: orb-float 4s ease-in-out infinite, orb-pulse 4s ease-in-out infinite;
+      }
+
+      .neo-empty-text {
+        font-size: 16px;
+        font-weight: 800;
+        letter-spacing: 0.2em;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        text-align: center;
+      }
+
+      @keyframes orb-float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+      }
+
+      @keyframes orb-pulse {
+        0%, 100% { 
+          box-shadow: 
+            12px 12px 24px var(--neo-shadow-dark), 
+            -12px -12px 24px var(--neo-shadow-light),
+            inset 2px 2px 5px var(--neo-shadow-light), 
+            inset -2px -2px 5px var(--neo-shadow-dark);
+        }
+        50% { 
+          box-shadow: 
+            6px 6px 12px var(--neo-shadow-dark), 
+            -6px -6px 12px var(--neo-shadow-light),
+            inset 6px 6px 12px var(--neo-shadow-dark), 
+            inset -6px -6px 12px var(--neo-shadow-light);
+        }
       }
 
       .stat-count {
@@ -406,11 +526,15 @@
       }
 
       .sidebar-panel .doc-name {
-        color: var(--text-primary) !important;
+        color: var(--text-primary);
       }
 
+      .sidebar-panel .platter.active .doc-name {
+        color: var(--status-color) !important;
+      }
+      
       .sidebar-panel .doc-spec {
-        color: var(--text-primary) !important;
+        color: var(--text-primary);
         opacity: 0.85;
         margin-top: 1px;
       }
@@ -459,19 +583,22 @@
       }
 
       .sidebar-panel .platter.active {
-        background: var(--status-bg) !important;
-        color: #fff !important;
-        /* Force readable contrast for active items */
+        background: var(--bg-body) !important;
+        color: var(--status-color) !important;
+        /* Neomorph Inset (Pressed) */
+        box-shadow: var(--neo-inset-dark), var(--neo-inset-light), 0 0 10px var(--status-bg) !important;
       }
 
       /* Active Accent Indicator for Sidebar */
       .sidebar-panel .platter.active::before {
         background: var(--status-color);
-        width: 3px;
-        border-radius: 3px;
-        left: 4px;
-        top: 4px;
-        bottom: 4px;
+        width: 4px;
+        border-radius: 4px;
+        left: 6px;
+        top: 10px;
+        bottom: 10px;
+        box-shadow: 0 0 8px var(--status-color);
+        display: block;
       }
 
       /* Remove Active Animations in Sidebar for Performance */
@@ -557,24 +684,25 @@
         /* Hint to browser compositor */
       }
 
-      /* ===== PLATTER CARD (Pseudo-3D Physical Emboss) ===== */
+      /* ===== PLATTER CARD (Neo-Bento Style) ===== */
       .platter {
         display: flex;
         flex-direction: column;
         align-items: stretch;
         gap: 10px;
-        padding: 10px 14px; 
-        background: var(--card-bg); /* Solid block ensures no memory leak */
-        border-radius: 12px;
-        border: 1px solid var(--platter-border);
-        box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.12), 0 4px 12px rgba(0, 0, 0, 0.15); /* Bevel Edge Trick */
+        padding: 14px 18px; 
+        background: var(--bg-body); /* Neomorphism needs match */
+        border-radius: 16px;
+        border: none;
+        box-shadow: 
+          8px 8px 16px var(--neo-shadow-dark),
+          -8px -8px 16px var(--neo-shadow-light);
         position: relative;
         overflow: hidden;
         transform: translateZ(0) translateY(0);
         opacity: 1; 
         transition:
           opacity 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),
-          border-color 0.4s ease,
           transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1),
           box-shadow 0.4s ease,
           background-color 0.4s ease;
@@ -582,21 +710,17 @@
 
       [data-theme="light"] .platter {
         opacity: 1;
-        background: #ffffff;
-        box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.8), 0 6px 16px -4px rgba(0, 0, 0, 0.05); /* Lighter shadow */
+        background: var(--bg-body);
       }
-
-      /* Light Sweep Effect — DIMATIKAN untuk performa Smart TV */
-      /* Efek visual tetap dijaga melalui border-color hijau pada .st-buka */
 
       /* Status Edge Accent */
       .platter::before {
         content: "";
         position: absolute;
         left: 0;
-        top: 12px;
-        bottom: 12px;
-        width: 3.5px;
+        top: 16px;
+        bottom: 16px;
+        width: 4px;
         background: var(--status-color);
         border-radius: 0 4px 4px 0;
         opacity: 0.8;
@@ -604,14 +728,15 @@
 
       /* Avatar */
       .initials {
-        width: 32px;
-        height: 32px;
+        width: 36px;
+        height: 36px;
         border-radius: 10px;
-        background: rgba(125, 125, 125, 0.1);
+        background: var(--bg-body);
+        box-shadow: var(--neo-inset-dark), var(--neo-inset-light);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 12px;
+        font-size: 14px;
         font-weight: 800;
         letter-spacing: -0.02em;
         color: var(--text-primary);
@@ -658,21 +783,20 @@
       }
 
       .status-pill {
-        padding: 3px 10px;
+        padding: 4px 12px;
         border-radius: 8px;
-        font-size: 9px;
+        font-size: 10px;
         font-weight: 800;
         text-transform: uppercase;
-        letter-spacing: 0.06em;
-        background: var(--status-bg);
+        letter-spacing: 0.08em;
+        background: var(--bg-body);
         color: var(--status-color);
         display: flex;
         align-items: center;
-        gap: 4.5px;
+        gap: 6px;
         position: relative; 
-        /* Enamel effect: Top specular highlight, bottom shadow */
-        box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.25), 0 2px 4px rgba(0, 0, 0, 0.15);
-        text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1); /* Deboss text slightly */
+        /* Debossed Neo */
+        box-shadow: var(--neo-inset-dark), var(--neo-inset-light);
       }
       
       /* The Pulse Dot next to active pills */
@@ -712,46 +836,49 @@
         line-height: 1;
       }
 
-      /* Status Styles - Synced with AI Automation */
-      .st-praktek { --status-color: #30d158; --status-bg: rgba(48, 209, 88, 0.2); }
-      .st-pendaftaran { --status-color: #ffcc00; --status-bg: rgba(255, 204, 0, 0.2); }
-      .st-terjadwal { --status-color: #64d2ff; --status-bg: rgba(100, 210, 255, 0.2); opacity: 0.8; }
-      .st-selesai { --status-color: #0a84ff; --status-bg: rgba(10, 132, 255, 0.2); opacity: 0.6; }
-      .st-penuh { --status-color: #ff9f0a; --status-bg: rgba(255, 159, 10, 0.2); }
-      .st-operasi { --status-color: #bf5af2; --status-bg: rgba(191, 90, 242, 0.2); }
-      .st-cuti { --status-color: #ff453a; --status-bg: rgba(255, 69, 58, 0.2); opacity: 0.65; }
+      /* Status Styles - Synced with AI Automation (Brand Signature Palette) */
+      .st-praktek { --status-color: #10B981; --status-bg: rgba(16, 185, 129, 0.2); }
+      .st-pendaftaran { --status-color: #F97316; --status-bg: rgba(249, 115, 22, 0.2); }
+      .st-terjadwal { --status-color: #0EA5E9; --status-bg: rgba(14, 165, 233, 0.2); opacity: 0.8; }
+      .st-selesai { --status-color: #64748B; --status-bg: rgba(100, 116, 139, 0.2); opacity: 0.6; }
+      .st-penuh { --status-color: #F43F5E; --status-bg: rgba(244, 63, 94, 0.2); }
+      .st-operasi { --status-color: #8B5CF6; --status-bg: rgba(139, 92, 246, 0.2); }
+      .st-cuti { --status-color: #EF4444; --status-bg: rgba(239, 68, 68, 0.2); opacity: 0.65; }
       .st-libur { --status-color: #8e8e93; --status-bg: rgba(142, 142, 147, 0.2); display: none; }
-
-      .st-praktek .initials { background: rgba(48, 209, 88, 0.15); color: #30d158; }
-      .st-pendaftaran .initials { background: rgba(255, 204, 0, 0.15); color: #ffcc00; }
-      .st-terjadwal .initials { background: rgba(100, 210, 255, 0.15); color: #64d2ff; }
-      .st-selesai .initials { background: rgba(10, 132, 255, 0.15); color: #0a84ff; }
-      .st-penuh .initials { background: rgba(255, 159, 10, 0.15); color: #ff9f0a; }
-      .st-cuti .initials { background: rgba(255, 69, 58, 0.12); color: #ff453a; }
-      .st-operasi .initials { background: rgba(191, 90, 242, 0.15); color: #bf5af2; }
+      .platter.st-praktek .initials { background: var(--bg-body); color: #10B981; box-shadow: var(--neo-inset-dark), var(--neo-inset-light); }
+      .platter.st-pendaftaran .initials { background: var(--bg-body); color: #F97316; box-shadow: var(--neo-inset-dark), var(--neo-inset-light); }
+      .platter.st-terjadwal .initials { background: var(--bg-body); color: #0EA5E9; box-shadow: var(--neo-inset-dark), var(--neo-inset-light); }
+      .platter.st-selesai .initials { background: var(--bg-body); color: #64748B; box-shadow: var(--neo-inset-dark), var(--neo-inset-light); }
+      .platter.st-penuh .initials { background: var(--bg-body); color: #F43F5E; box-shadow: var(--neo-inset-dark), var(--neo-inset-light); }
+      .platter.st-cuti .initials { background: var(--bg-body); color: #EF4444; box-shadow: var(--neo-inset-dark), var(--neo-inset-light); }
+      .platter.st-operasi .initials { background: var(--bg-body); color: #8B5CF6; box-shadow: var(--neo-inset-dark), var(--neo-inset-light); }
 
       .platter.st-praktek, .platter.st-pendaftaran { z-index: 5; }
-      .platter.st-praktek { background: rgba(48, 209, 88, 0.1); border-color: rgba(48, 209, 88, 0.35); }
-      .platter.st-pendaftaran { background: rgba(255, 204, 0, 0.1); border-color: rgba(255, 204, 0, 0.35); animation: pendaftaran-pulse 2s infinite; }
-      @keyframes pendaftaran-pulse { 0% { border-color: rgba(255,204,0,0.2) } 50% { border-color: rgba(255,204,0,0.6) } 100% { border-color: rgba(255,204,0,0.2) } }
+      .platter.st-praktek { background: var(--bg-body); box-shadow: 0 0 10px rgba(16, 185, 129, 0.2), 8px 8px 16px var(--neo-shadow-dark), -8px -8px 16px var(--neo-shadow-light); }
+      .platter.st-pendaftaran { background: var(--bg-body); animation: pendaftaran-pulse 2s infinite; }
+      @keyframes pendaftaran-pulse { 
+        0% { box-shadow: 0 0 5px rgba(249, 115, 22, 0.1), 8px 8px 16px var(--neo-shadow-dark), -8px -8px 16px var(--neo-shadow-light); } 
+        50% { box-shadow: 0 0 15px rgba(249, 115, 22, 0.4), 8px 8px 16px var(--neo-shadow-dark), -8px -8px 16px var(--neo-shadow-light); } 
+        100% { box-shadow: 0 0 5px rgba(249, 115, 22, 0.1), 8px 8px 16px var(--neo-shadow-dark), -8px -8px 16px var(--neo-shadow-light); } 
+      }
       
-      [data-theme="light"] .platter.st-praktek { background: rgba(48, 209, 88, 0.06); border-color: rgba(48, 209, 88, 0.2); }
-      [data-theme="light"] .platter.st-pendaftaran { background: rgba(255, 204, 0, 0.06); }
+      [data-theme="light"] .platter.st-praktek { background: var(--bg-body); box-shadow: 0 0 10px rgba(16, 185, 129, 0.15), 8px 8px 16px var(--neo-shadow-dark), -8px -8px 16px var(--neo-shadow-light); }
+      [data-theme="light"] .platter.st-pendaftaran { background: var(--bg-body); }
       
       .platter.st-praktek .jam-val, .platter.st-pendaftaran .jam-val { color: var(--status-color); font-size: 14px; }
 
       /* st-buka: Digunakan oleh panel Bedah & NonBedah untuk semua status aktif (PRAKTEK/PENDAFTARAN/TERJADWAL) */
-      .st-buka { --status-color: #30d158; --status-bg: rgba(48, 209, 88, 0.2); }
-      .st-buka .initials { background: rgba(48, 209, 88, 0.15); color: #30d158; }
-      .platter.st-buka { border-color: rgba(48, 209, 88, 0.2); }
-      .platter.st-buka.active { background: rgba(48, 209, 88, 0.12) !important; border-color: rgba(48, 209, 88, 0.5) !important; }
-      [data-theme="light"] .platter.st-buka { background: rgba(48, 209, 88, 0.04); border-color: rgba(48, 209, 88, 0.15); }
+      .st-buka { --status-color: #10B981; --status-bg: rgba(16, 185, 129, 0.2); }
+      .st-buka .initials { background: var(--bg-body); color: #10B981; box-shadow: var(--neo-inset-dark), var(--neo-inset-light); }
+      .platter.st-buka {  }
+      .platter.st-buka.active { background: var(--bg-body) !important; box-shadow: var(--neo-inset-dark), var(--neo-inset-light), 0 0 15px rgba(16, 185, 129, 0.3) !important; }
+      [data-theme="light"] .platter.st-buka {  }
 
       /* st-buka--terjadwal: Override untuk status TERJADWAL (belum mulai) — pakai warna biru */
-      .st-buka.st-terjadwal { --status-color: #64d2ff; --status-bg: rgba(100, 210, 255, 0.2); opacity: 0.82; }
-      .st-buka.st-terjadwal .initials { background: rgba(100, 210, 255, 0.15); color: #64d2ff; }
-      .platter.st-buka.st-terjadwal { border-color: rgba(100, 210, 255, 0.2); }
-      [data-theme="light"] .platter.st-buka.st-terjadwal { background: rgba(100, 210, 255, 0.04); border-color: rgba(100, 210, 255, 0.15); }
+      .st-buka.st-terjadwal { --status-color: #0EA5E9; --status-bg: rgba(14, 165, 233, 0.2); opacity: 0.82; }
+      .st-buka.st-terjadwal .initials { background: var(--bg-body); color: #0EA5E9; box-shadow: var(--neo-inset-dark), var(--neo-inset-light); }
+      .platter.st-buka.st-terjadwal {  }
+      [data-theme="light"] .platter.st-buka.st-terjadwal {  }
       
       /* ===== ACTIVE CALL HIGHLIGHT (NEW) ===== */
 
@@ -764,42 +891,38 @@
 
       .platter.active {
         z-index: 100;
-        /* Background disesuaikan menggunakan warna transparan dari status saat itu */
-        background: var(--status-bg) !important;
-        border: 1px solid var(--status-color) !important;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Elegant shadow */
-        padding-bottom: 2px;
-        transform: translateZ(0); /* Disable completely jumpy scale pop-out */
+        background: var(--bg-body) !important;
+        border: none !important;
+        /* Neomorph Inset (Pressed) + Neon Glow */
+        box-shadow: 
+          var(--neo-inset-dark), 
+          var(--neo-inset-light),
+          0 0 16px var(--status-bg) !important;
+        transform: translateZ(0) translateY(1px) scale(0.99); 
         opacity: 1 !important;
-        /* Full priority */
       }
 
       /* Light Mode Override */
       [data-theme="light"] .platter.active {
-        background: #ffffff !important;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        background: var(--bg-body) !important;
+        box-shadow: 
+          var(--neo-inset-dark), 
+          var(--neo-inset-light),
+          0 0 20px rgba(0,0,0,0.06) !important;
         color: #000 !important;
       }
 
       .platter.active::before {
-        display: none; /* Removed the old thick left bar */
-      }
-      
-      .platter.active {
-        border-left: 4px solid var(--status-color) !important;
-        transform: translateZ(0) translateY(-3px); /* 3D Floating Forward Elevation */
-        box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.2), 0 16px 48px -8px rgba(0, 0, 0, 0.4) !important; /* Huge Soft DropShadow */
-        z-index: 2; /* Float above others */
-      }
-      
-      [data-theme="light"] .platter.active {
-        box-shadow: inset 0 1px 1px rgba(255, 255, 255, 1), 0 16px 48px -8px rgba(0, 0, 0, 0.1) !important;
-      }
-
-      .platter.active .initials {
+        width: 6px;
         background: var(--status-color);
-        color: #fff;
-        border: none;
+        box-shadow: 0 0 10px var(--status-color);
+        display: block; /* Keep neon bar */
+      }
+      
+      .platter.active .initials {
+        background: var(--bg-body);
+        box-shadow: var(--neo-inset-dark), var(--neo-inset-light);
+        color: var(--status-color);
       }
 
       .platter.active .doc-spec {
@@ -3353,6 +3476,22 @@
           // --- DOM RECYCLING ENGINE ---
           const updateList = (containerId, list) => {
             const container = $(containerId);
+            
+            // Handle Empty State 3D Animation
+            if (list.length === 0) {
+              const emptyStateHTML = `
+                <div class="neo-empty-state">
+                  <div class="neo-orb"></div>
+                  <div class="neo-empty-text">TIDAK ADA JADWAL</div>
+                </div>
+              `;
+              if (container.innerHTML !== emptyStateHTML) {
+                container.innerHTML = emptyStateHTML;
+                return true; // signal scroller refresh
+              }
+              return false;
+            }
+
             const oldMap = new Map();
             // Map existing elements by Doctor Name
             Array.from(container.children).forEach((el) => {
