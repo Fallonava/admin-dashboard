@@ -85,6 +85,7 @@ exports.evaluateRules = evaluateRules;
 exports.runAutomation = runAutomation;
 var prisma_1 = require("./prisma");
 var automation_broadcaster_1 = require("./automation-broadcaster");
+var data_fetchers_1 = require("./data-fetchers");
 // NOTE: revalidatePath is loaded dynamically because this module runs
 // inside the custom server.ts context where next/cache is unavailable.
 var logger_1 = require("./logger");
@@ -213,8 +214,10 @@ function determineIdealStatus(doc, todayShifts, leaves, currentTimeMinutes, toda
             isAfterAllShifts = false;
         }
     }
-    // Sweep check: If the day is completely over, force SELESAI (ignores cooldown)
+    // Sweep check: If the day is completely over, force SELESAI (respects cooldown)
     if (isAfterAllShifts && latestEndMinutes > 0) {
+        if (isCooldownActive)
+            return doc.status;
         return 'SELESAI';
     }
     // Inside Shift -> PRAKTEK (or override)
@@ -223,25 +226,39 @@ function determineIdealStatus(doc, todayShifts, leaves, currentTimeMinutes, toda
             return doc.status;
         return activeShiftStatusOverride || 'PRAKTEK';
     }
-    // Before or Between Shifts -> TERJADWAL (or target shift override like OPERASI)
-    var nextShift = todayShifts
-        .filter(function (s) {
-        var _a;
-        var startStr = (_a = s.formattedTime) === null || _a === void 0 ? void 0 : _a.split('-')[0];
-        var start = parseTimeToMinutes(startStr);
-        return start !== null && start > currentTimeMinutes;
-    })
-        .sort(function (a, b) {
-        var _a, _b;
-        var startA = parseTimeToMinutes((_a = a.formattedTime) === null || _a === void 0 ? void 0 : _a.split('-')[0]) || 0;
-        var startB = parseTimeToMinutes((_b = b.formattedTime) === null || _b === void 0 ? void 0 : _b.split('-')[0]) || 0;
-        return startA - startB;
-    })[0];
-    var override = nextShift === null || nextShift === void 0 ? void 0 : nextShift.statusOverride;
-    var targetStatus = (override === 'PENUH' || override === 'OPERASI') ? override : 'TERJADWAL';
+    // Checks Registration Window for Upcoming Shifts
+    // Default lookahead if no registrationTime is provided: 30 minutes
+    var DEFAULT_LOOKAHEAD_MINS = 30;
+    for (var _b = 0, todayShifts_2 = todayShifts; _b < todayShifts_2.length; _b++) {
+        var shift = todayShifts_2[_b];
+        if (!shift.formattedTime)
+            continue;
+        var _c = shift.formattedTime.split('-'), startStr = _c[0], endStr = _c[1];
+        var startMinutes = parseTimeToMinutes(startStr);
+        var endMinutes = parseTimeToMinutes(endStr);
+        if (startMinutes === null || endMinutes === null)
+            continue;
+        if (currentTimeMinutes >= endMinutes)
+            continue;
+        var registrationStart = startMinutes - DEFAULT_LOOKAHEAD_MINS;
+        var rTime = shift.registrationTime || doc.registrationTime;
+        if (rTime) {
+            var regMin = parseTimeToMinutes(rTime);
+            if (regMin !== null)
+                registrationStart = regMin;
+        }
+        // Inside registration window (before shift starts)
+        if (currentTimeMinutes >= registrationStart && currentTimeMinutes < startMinutes) {
+            if (isCooldownActive)
+                return doc.status;
+            var override = shift.statusOverride;
+            return (override === 'PENUH' || override === 'OPERASI') ? override : 'PENDAFTARAN';
+        }
+    }
+    // Between shifts or before any registration begins
     if (isCooldownActive)
         return doc.status;
-    return targetStatus;
+    return 'TERJADWAL';
 }
 /**
  * Mengevaluasi daftar aturan (rules) automasi terhadap ketersediaan data dokter & jadwal saat ini.
@@ -327,7 +344,7 @@ function runAutomation() {
                     error = null;
                     _g.label = 1;
                 case 1:
-                    _g.trys.push([1, 17, 18, 23]);
+                    _g.trys.push([1, 19, 20, 25]);
                     now = new Date();
                     wibTime = new Date(now.getTime() + (7 * 60 * 60 * 1000));
                     currentDayIdx_1 = wibTime.getUTCDay() === 0 ? 6 : wibTime.getUTCDay() - 1;
@@ -361,30 +378,56 @@ function runAutomation() {
                     return [4 /*yield*/, prisma_1.prisma.settings.findFirst()];
                 case 5:
                     settingsRow = _g.sent();
+                    if (!!settingsRow) return [3 /*break*/, 7];
+                    return [4 /*yield*/, prisma_1.prisma.settings.create({
+                            data: {
+                                id: "1",
+                                automationEnabled: true,
+                                runTextMessage: "Selamat Datang di RSU Siaga Medika",
+                                emergencyMode: false,
+                                customMessages: []
+                            }
+                        })];
+                case 6:
+                    // Auto seed default settings jika belum ada
+                    settingsRow = _g.sent();
+                    logger_1.logger.info('[automation] Auto-seeded default Settings row with automationEnabled=true');
+                    _g.label = 7;
+                case 7:
                     settings = settingsRow ? __assign(__assign({}, settingsRow), { id: String(settingsRow.id), runTextMessage: (_d = settingsRow.runTextMessage) !== null && _d !== void 0 ? _d : undefined, emergencyMode: (_e = settingsRow.emergencyMode) !== null && _e !== void 0 ? _e : undefined, customMessages: (_f = settingsRow.customMessages) !== null && _f !== void 0 ? _f : undefined }) : null;
                     updates = [];
                     automationEnabled = (settings === null || settings === void 0 ? void 0 : settings.automationEnabled) || false;
-                    if (!automationEnabled || doctors.length === 0) {
+                    if (doctors.length === 0) {
+                        logger_1.logger.warn('[automation] No doctors found, skipping automation run.');
+                        return [2 /*return*/, { applied: 0, failed: 0 }];
+                    }
+                    if (!automationEnabled) {
+                        // Even when automation is disabled, broadcast current DB state to admins
+                        // so the dashboard always populates on load
+                        logger_1.logger.info('[automation] Automation disabled. Broadcasting current state only.');
+                        (0, data_fetchers_1.getFullSnapshot)().then(function (snapshot) {
+                            (0, automation_broadcaster_1.syncAdminData)(snapshot);
+                        }).catch(function (err) {
+                            logger_1.logger.error('[automation] Startup broadcast failed:', err.message);
+                        });
                         return [2 /*return*/, { applied: 0, failed: 0 }];
                     }
                     OVERRIDE_COOLDOWN_MS = 4 * 60 * 60 * 1000;
-                    if (!prisma_1.prisma.automationRule) return [3 /*break*/, 7];
+                    if (!prisma_1.prisma.automationRule) return [3 /*break*/, 9];
                     return [4 /*yield*/, prisma_1.prisma.automationRule.findMany({ where: { active: true } })];
-                case 6:
-                    _a = _g.sent();
-                    return [3 /*break*/, 8];
-                case 7:
-                    _a = [];
-                    _g.label = 8;
                 case 8:
+                    _a = _g.sent();
+                    return [3 /*break*/, 10];
+                case 9:
+                    _a = [];
+                    _g.label = 10;
+                case 10:
                     rules = _a;
                     if (rules.length > 0)
                         logger_1.logger.debug('[automation] loaded', rules.length, 'active rules');
                     ruleUpdates = evaluateRules(rules, doctors, shifts, leaves, now);
                     _loop_2 = function (doc) {
-                        var isCooldownActive = doc.lastManualOverride
-                            ? (now.getTime() - Number(doc.lastManualOverride)) < OVERRIDE_COOLDOWN_MS
-                            : false;
+                        var isCooldownActive = false; // [REVISI] Penalti otomatisasi dimatikan atas perintah user agar 100% full otomatis
                         var todayShifts = shifts.filter(function (s) {
                             return s.doctorId === doc.id && s.dayIdx === currentDayIdx_1 && s.formattedTime &&
                                 !(s.disabledDates || []).includes(todayStr_1);
@@ -395,12 +438,8 @@ function runAutomation() {
                         var idealStatus = determineIdealStatus(doc, todayShifts, leaves, currentTimeMinutes, todayStr_1, isCooldownActive);
                         // 3. Resolve final target status (Rules override Time-based, but Manual Cooldown overrides ALL)
                         var targetStatus = doc.status;
-                        if (isCooldownActive) {
-                            // If cooldown is active, we freeze the status.
-                            targetStatus = doc.status;
-                        }
-                        else if (ruleUpdate) {
-                            // Custom rule takes precedence over normal schedule if no manual override
+                        if (ruleUpdate) {
+                            // Custom rule takes precedence over normal schedule
                             targetStatus = ruleUpdate.status;
                         }
                         else if (doc.status !== idealStatus) {
@@ -418,52 +457,58 @@ function runAutomation() {
                         doc = doctors_2[_i];
                         _loop_2(doc);
                     }
-                    if (!(updates.length > 0)) return [3 /*break*/, 12];
+                    if (!(updates.length > 0)) return [3 /*break*/, 14];
                     concurrency = 5;
                     i = 0;
-                    _g.label = 9;
-                case 9:
-                    if (!(i < updates.length)) return [3 /*break*/, 12];
+                    _g.label = 11;
+                case 11:
+                    if (!(i < updates.length)) return [3 /*break*/, 14];
                     chunk = updates.slice(i, i + concurrency);
                     promises = chunk.map(function (u) {
                         return prisma_1.prisma.doctor.update({ where: { id: String(u.id) }, data: { status: u.status } });
                     });
                     return [4 /*yield*/, Promise.allSettled(promises)];
-                case 10:
+                case 12:
                     results = _g.sent();
                     results.forEach(function (r) { return r.status === 'fulfilled' ? applied++ : failed++; });
-                    _g.label = 11;
-                case 11:
-                    i += concurrency;
-                    return [3 /*break*/, 9];
-                case 12:
-                    if (!(applied > 0)) return [3 /*break*/, 16];
-                    // notify any listeners about which doctors changed
-                    (0, automation_broadcaster_1.notifyDoctorUpdates)(updates.map(function (u) { return ({ id: u.id }); }));
                     _g.label = 13;
                 case 13:
-                    _g.trys.push([13, 15, , 16]);
-                    return [4 /*yield*/, Promise.resolve().then(function () { return __importStar(require('next/cache')); })];
+                    i += concurrency;
+                    return [3 /*break*/, 11];
                 case 14:
+                    if (!(applied > 0)) return [3 /*break*/, 18];
+                    // notify any listeners about which doctors changed (SSE/Specific)
+                    (0, automation_broadcaster_1.notifyDoctorUpdates)(updates.map(function (u) { return ({ id: u.id }); }));
+                    // High Performance: Fetch updated state and push to all ADMINS via Socket.io
+                    (0, data_fetchers_1.getFullSnapshot)().then(function (snapshot) {
+                        (0, automation_broadcaster_1.syncAdminData)(snapshot);
+                    }).catch(function (syncErr) {
+                        logger_1.logger.error('[automation] Sync snapshot failed:', syncErr.message);
+                    });
+                    _g.label = 15;
+                case 15:
+                    _g.trys.push([15, 17, , 18]);
+                    return [4 /*yield*/, Promise.resolve().then(function () { return __importStar(require('next/cache')); })];
+                case 16:
                     revalidatePath = (_g.sent()).revalidatePath;
                     revalidatePath('/api/display');
-                    return [3 /*break*/, 16];
-                case 15:
-                    _b = _g.sent();
-                    return [3 /*break*/, 16];
-                case 16: return [3 /*break*/, 23];
+                    return [3 /*break*/, 18];
                 case 17:
+                    _b = _g.sent();
+                    return [3 /*break*/, 18];
+                case 18: return [3 /*break*/, 25];
+                case 19:
                     err_1 = _g.sent();
                     errMsg = err_1 instanceof Error ? err_1.stack || err_1.message : String(err_1);
                     logger_1.logger.error("[automation] run failed: ".concat(errMsg));
                     error = errMsg;
-                    return [3 /*break*/, 23];
-                case 18:
+                    return [3 /*break*/, 25];
+                case 20:
                     duration = Date.now() - runStartTime;
-                    if (!prisma_1.prisma.automationLog) return [3 /*break*/, 22];
-                    _g.label = 19;
-                case 19:
-                    _g.trys.push([19, 21, , 22]);
+                    if (!prisma_1.prisma.automationLog) return [3 /*break*/, 24];
+                    _g.label = 21;
+                case 21:
+                    _g.trys.push([21, 23, , 24]);
                     return [4 /*yield*/, prisma_1.prisma.automationLog.create({
                             data: {
                                 type: error ? 'error' : 'run',
@@ -478,14 +523,14 @@ function runAutomation() {
                         }).catch(function (writeErr) {
                             logger_1.logger.error('failed writing automationLog', writeErr);
                         })];
-                case 20:
+                case 22:
                     _g.sent();
-                    return [3 /*break*/, 22];
-                case 21:
+                    return [3 /*break*/, 24];
+                case 23:
                     _c = _g.sent();
-                    return [3 /*break*/, 22];
-                case 22: return [7 /*endfinally*/];
-                case 23: return [2 /*return*/, { applied: applied, failed: failed }];
+                    return [3 /*break*/, 24];
+                case 24: return [7 /*endfinally*/];
+                case 25: return [2 /*return*/, { applied: applied, failed: failed }];
             }
         });
     });

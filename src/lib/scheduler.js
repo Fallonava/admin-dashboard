@@ -57,6 +57,7 @@ exports.scheduleToday = scheduleToday;
 var prisma_1 = require("./prisma");
 var automation_1 = require("./automation");
 var automation_broadcaster_1 = require("./automation-broadcaster");
+var data_fetchers_1 = require("./data-fetchers");
 var logger_1 = require("./logger");
 // Kumpulan semua timer aktif agar bisa dibersihkan saat reschedule
 var activeTimers = [];
@@ -108,27 +109,41 @@ function msUntilMinute(targetMinutes) {
  */
 function triggerAndBroadcast(reason) {
     return __awaiter(this, void 0, void 0, function () {
-        var _a, applied, failed, err_1;
+        var _a, applied, failed, snapshot, snapErr_1, err_1;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
                     logger_1.logger.info("[scheduler] Triggered: ".concat(reason));
                     _b.label = 1;
                 case 1:
-                    _b.trys.push([1, 3, , 4]);
+                    _b.trys.push([1, 7, , 8]);
                     return [4 /*yield*/, (0, automation_1.runAutomation)()];
                 case 2:
                     _a = _b.sent(), applied = _a.applied, failed = _a.failed;
                     logger_1.logger.info("[scheduler] Done. Applied: ".concat(applied, ", Failed: ").concat(failed));
+                    _b.label = 3;
+                case 3:
+                    _b.trys.push([3, 5, , 6]);
+                    return [4 /*yield*/, (0, data_fetchers_1.getFullSnapshot)()];
+                case 4:
+                    snapshot = _b.sent();
+                    (0, automation_broadcaster_1.syncAdminData)(snapshot);
+                    logger_1.logger.info("[scheduler] Broadcast admin_sync_all: ".concat(snapshot.doctors.length, " doctors"));
+                    return [3 /*break*/, 6];
+                case 5:
+                    snapErr_1 = _b.sent();
+                    logger_1.logger.error('[scheduler] Failed to broadcast snapshot:', snapErr_1.message);
+                    return [3 /*break*/, 6];
+                case 6:
                     if (applied > 0) {
                         (0, automation_broadcaster_1.notifyViaSocket)('schedule_changed', { reason: reason, applied: applied, ts: Date.now() });
                     }
-                    return [3 /*break*/, 4];
-                case 3:
+                    return [3 /*break*/, 8];
+                case 7:
                     err_1 = _b.sent();
                     logger_1.logger.error('[scheduler] runAutomation error:', err_1.message);
-                    return [3 /*break*/, 4];
-                case 4: return [2 /*return*/];
+                    return [3 /*break*/, 8];
+                case 8: return [2 /*return*/];
             }
         });
     });
@@ -149,11 +164,11 @@ function clearAllTimers() {
  */
 function scheduleToday() {
     return __awaiter(this, void 0, void 0, function () {
-        var wib, dayIdx, todayStr, shifts, err_2, triggerMinutes, _i, shifts_1, shift, _a, startStr, endStr, start, end, scheduled, _loop_1, _b, _c, minutes, msUntilMidnight, midnightTimer;
+        var wib, dayIdx, todayStr, shifts, err_2, triggerMinutes, _i, shifts_1, shift, _a, startStr, endStr, start, end, regStart, rTime, customReg, scheduled, _loop_1, _b, _c, minutes, msUntilMidnight, midnightTimer;
         var _this = this;
-        var _d, _e;
-        return __generator(this, function (_f) {
-            switch (_f.label) {
+        var _d, _e, _f;
+        return __generator(this, function (_g) {
+            switch (_g.label) {
                 case 0:
                     clearAllTimers();
                     wib = new Date(Date.now() + 7 * 3600000);
@@ -161,17 +176,18 @@ function scheduleToday() {
                     todayStr = "".concat(wib.getUTCFullYear(), "-").concat(String(wib.getUTCMonth() + 1).padStart(2, '0'), "-").concat(String(wib.getUTCDate()).padStart(2, '0'));
                     logger_1.logger.info("[scheduler] Scheduling for today (dayIdx=".concat(dayIdx, ", date=").concat(todayStr, ")"));
                     shifts = [];
-                    _f.label = 1;
+                    _g.label = 1;
                 case 1:
-                    _f.trys.push([1, 3, , 4]);
+                    _g.trys.push([1, 3, , 4]);
                     return [4 /*yield*/, prisma_1.prisma.shift.findMany({
-                            where: { dayIdx: dayIdx, deletedAt: null },
+                            where: { dayIdx: dayIdx },
+                            include: { doctor: { select: { registrationTime: true } } }
                         })];
                 case 2:
-                    shifts = _f.sent();
+                    shifts = _g.sent();
                     return [3 /*break*/, 4];
                 case 3:
-                    err_2 = _f.sent();
+                    err_2 = _g.sent();
                     logger_1.logger.error('[scheduler] Failed to load shifts:', err_2.message);
                     return [2 /*return*/];
                 case 4:
@@ -186,8 +202,17 @@ function scheduleToday() {
                         _a = shift.formattedTime.split('-'), startStr = _a[0], endStr = _a[1];
                         start = parseToMinutes(startStr);
                         end = parseToMinutes(endStr);
-                        if (start !== null)
+                        if (start !== null) {
                             triggerMinutes.add(start);
+                            regStart = start - 30;
+                            rTime = shift.registrationTime || ((_d = shift.doctor) === null || _d === void 0 ? void 0 : _d.registrationTime);
+                            if (rTime) {
+                                customReg = parseToMinutes(rTime);
+                                if (customReg !== null)
+                                    regStart = customReg;
+                            }
+                            triggerMinutes.add(regStart);
+                        }
                         if (end !== null)
                             triggerMinutes.add(end);
                     }
@@ -211,7 +236,7 @@ function scheduleToday() {
                     // Also run immediately on startup to fix any drift
                     triggerAndBroadcast('startup sync');
                     logger_1.logger.info("[scheduler] ".concat(scheduled, " event(s) scheduled for today."));
-                    msUntilMidnight = (_e = (_d = msUntilMinute(24 * 60)) !== null && _d !== void 0 ? _d : msUntilMinute(0)) !== null && _e !== void 0 ? _e : 86400000;
+                    msUntilMidnight = (_f = (_e = msUntilMinute(24 * 60)) !== null && _e !== void 0 ? _e : msUntilMinute(0)) !== null && _f !== void 0 ? _f : 86400000;
                     midnightTimer = setTimeout(function () { return __awaiter(_this, void 0, void 0, function () {
                         return __generator(this, function (_a) {
                             switch (_a.label) {

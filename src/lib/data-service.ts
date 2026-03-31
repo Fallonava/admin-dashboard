@@ -30,6 +30,7 @@ export interface LeaveRequest {
     doctorId: string;
     doctor?: string;
     doctorRel?: Doctor;
+    avatar?: string;
     specialty?: string;
     type: 'Sakit' | 'Liburan' | 'Pribadi' | 'Konferensi' | 'Lainnya';
     startDate: Date;
