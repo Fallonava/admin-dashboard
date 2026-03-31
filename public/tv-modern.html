@@ -572,6 +572,12 @@
           background-color 0.4s ease;
       }
 
+      [data-theme="light"] .platter {
+        opacity: 1;
+        background: #ffffff;
+        box-shadow: 0 4px 10px -2px rgba(0, 0, 0, 0.03); /* Subtle solid elevation */
+      }
+
       /* Light Sweep Effect — DIMATIKAN untuk performa Smart TV */
       /* Efek visual tetap dijaga melalui border-color hijau pada .st-buka */
 
@@ -615,9 +621,9 @@
       }
 
       .doc-name {
-        font-size: 15px; /* Doctor Name - Larger, high contrast */
-        font-weight: 700;
-        color: var(--text-primary);
+        font-size: 13px; /* Name - Smaller */
+        font-weight: 600;
+        color: var(--text-secondary);
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -625,12 +631,13 @@
       }
 
       .doc-spec {
-        font-size: 11px; /* Specialty - Smaller, muted, spaced out */
-        font-weight: 600;
-        color: var(--text-secondary);
+        font-size: 17px; /* Specialty - Huge and Prominent */
+        font-weight: 800;
+        color: var(--text-primary);
         text-transform: uppercase;
-        letter-spacing: 0.04em;
+        letter-spacing: 0.02em;
         margin-bottom: 2px;
+        line-height: 1.1;
       }
 
       /* Meta */
@@ -654,6 +661,19 @@
         display: flex;
         align-items: center;
         gap: 4.5px;
+        position: relative; /* For pulse positioning */
+      }
+      
+      /* The Pulse Dot next to active pills */
+      .platter.active .status-pill::after {
+        content: '';
+        display: block;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background-color: var(--status-color);
+        animation: ecg-pulse 2s infinite;
+        margin-left: 4px;
       }
 
       /* Jam / Call Info */
@@ -751,11 +771,11 @@
       }
 
       .platter.active::before {
-        width: 5px;
-        height: 100%;
-        top: 0;
-        bottom: 0;
-        border-radius: 4px 0 0 4px;
+        display: none; /* Removed the old thick left bar */
+      }
+      
+      .platter.active {
+        border-left: 4px solid var(--status-color) !important; /* Elegant inset edge */
       }
 
       .platter.active .initials {
@@ -764,16 +784,23 @@
         border: none;
       }
 
-      .platter.active .doc-name {
-        font-size: 17px;
+      .platter.active .doc-spec {
+        font-size: 20px;
         color: var(--text-primary) !important;
-        font-weight: 800;
-        letter-spacing: -0.015em;
+        font-weight: 900;
+        letter-spacing: -0.01em;
       }
       
-      .platter.active .doc-spec {
+      .platter.active .doc-name {
         color: var(--status-color) !important;
-        font-weight: 800;
+        font-weight: 700;
+      }
+      
+      /* ECG Radar Pulse Indicator */
+      @keyframes ecg-pulse {
+        0% { transform: scale(0.9); box-shadow: 0 0 0 0 var(--status-color); }
+        70% { transform: scale(1); box-shadow: 0 0 0 6px transparent; }
+        100% { transform: scale(0.9); box-shadow: 0 0 0 0 transparent; }
       }
 
       [data-theme="light"] .platter.active .doc-name {
@@ -2275,8 +2302,8 @@
           <div class="platter-main">
             <div class="initials">${avatarText}</div>
             <div class="info-col">
+              <div class="doc-spec">${esc(d.Spesialis)}</div>
               <div class="doc-name">${esc(d.Dokter)}</div>
-              <div class="doc-spec" style="text-transform:uppercase">${esc(d.Spesialis)}</div>
             </div>
             <div class="meta-col">
               <div class="status-pill" style="background:var(--status-bg);color:var(--status-color)">
