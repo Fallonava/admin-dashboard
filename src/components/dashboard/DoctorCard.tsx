@@ -1,7 +1,7 @@
 "use client";
 
 import { memo, useMemo } from "react";
-import { Clock } from "lucide-react";
+import { Clock, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Doctor, Shift } from "@/lib/data-service";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -189,57 +189,83 @@ export const DoctorCard = memo(function DoctorCard({
         </div>
       )}
 
-      {/* Status change buttons */}
-      <div className="relative z-10 w-full">
-        {/* Mobile: 2 rows × 4 buttons grid */}
-        <div className="lg:hidden grid grid-cols-4 gap-1">
-          {STATUS_BUTTONS.slice(0, 4).map((action) => (
-            <button
-              key={action.id}
-              onClick={() => onStatusChange(doc.id, action.id as Doctor['status'])}
-              className={cn(
-                "py-2.5 px-1 rounded-[14px] text-[10px] font-black transition-all disabled:opacity-50 text-center min-h-[44px] flex items-center justify-center tracking-wide",
-                doc.status === action.id
-                  ? `${action.bg} text-white shadow-md ${action.hover}`
-                  : "bg-white/60 hover:bg-white backdrop-blur-md text-slate-500 border border-white/80 hover:border-white shadow-sm",
-              )}
+      {/* Status change buttons or AI status rendering */}
+      <div className="relative z-10 w-full mt-1">
+        {automationEnabled ? (
+          <div className="w-full flex flex-col items-center justify-center py-4 px-3 rounded-[20px] bg-gradient-to-br from-slate-50/50 to-slate-100/30 border border-slate-200/50 shadow-inner relative overflow-hidden group/ai">
+            {/* Subtle tech background */}
+            <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.1)_1px,transparent_1px)] bg-[size:10px_10px] opacity-20" />
+            
+            <div className="flex items-center gap-1.5 mb-2 relative z-10">
+              <Zap size={12} className="text-violet-500 fill-violet-500 animate-pulse drop-shadow-sm" />
+              <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Otomasi Pintar Aktif</span>
+            </div>
+            
+            <div className={cn(
+              "px-6 py-2.5 rounded-[14px] text-[13px] font-black uppercase tracking-widest shadow-md border-2 transition-all duration-500 relative z-10 group-hover/ai:scale-[1.03]",
+              getStatusBadgeStyle(doc.status).replace('text-', 'text-white border-transparent shadow-').replace('bg-', 'bg-')
+            )}
+            style={{ backgroundColor: getStatusDotColor(doc.status).split(' ')[0].replace('bg-', 'var(--') /* fallback */ }}
             >
-              {action.label}
-            </button>
-          ))}
-          {STATUS_BUTTONS.slice(4).map((action) => (
-            <button
-              key={action.id}
-              onClick={() => onStatusChange(doc.id, action.id as Doctor['status'])}
-              className={cn(
-                "py-2.5 px-1 rounded-[14px] text-[10px] font-black transition-all disabled:opacity-50 text-center min-h-[44px] flex items-center justify-center tracking-wide",
-                doc.status === action.id
-                  ? `${action.bg} text-white shadow-md ${action.hover}`
-                  : "bg-white/60 hover:bg-white backdrop-blur-md text-slate-500 border border-white/80 hover:border-white shadow-sm",
-              )}
-            >
-              {action.label}
-            </button>
-          ))}
-        </div>
+              <div className={cn("absolute inset-0 opacity-20 rounded-[12px]", getStatusDotColor(doc.status))} />
+              <span className="relative z-10 text-slate-800 drop-shadow-sm">
+                 {STATUS_LABELS[doc.status] || doc.status}
+              </span>
+            </div>
+          </div>
+        ) : (
+          <>
+            {/* Mobile: 2 rows × 4 buttons grid */}
+            <div className="lg:hidden grid grid-cols-4 gap-1">
+              {STATUS_BUTTONS.slice(0, 4).map((action) => (
+                <button
+                  key={action.id}
+                  onClick={() => onStatusChange(doc.id, action.id as Doctor['status'])}
+                  className={cn(
+                    "py-2.5 px-1 rounded-[14px] text-[10px] font-black transition-all disabled:opacity-50 text-center min-h-[44px] flex items-center justify-center tracking-wide",
+                    doc.status === action.id
+                      ? `${action.bg} text-white shadow-md ${action.hover}`
+                      : "bg-white/60 hover:bg-white backdrop-blur-md text-slate-500 border border-white/80 hover:border-white shadow-sm",
+                  )}
+                >
+                  {action.label}
+                </button>
+              ))}
+              {STATUS_BUTTONS.slice(4).map((action) => (
+                <button
+                  key={action.id}
+                  onClick={() => onStatusChange(doc.id, action.id as Doctor['status'])}
+                  className={cn(
+                    "py-2.5 px-1 rounded-[14px] text-[10px] font-black transition-all disabled:opacity-50 text-center min-h-[44px] flex items-center justify-center tracking-wide",
+                    doc.status === action.id
+                      ? `${action.bg} text-white shadow-md ${action.hover}`
+                      : "bg-white/60 hover:bg-white backdrop-blur-md text-slate-500 border border-white/80 hover:border-white shadow-sm",
+                  )}
+                >
+                  {action.label}
+                </button>
+              ))}
+            </div>
 
-        {/* Desktop: Original flex-wrap layout */}
-        <div className="hidden lg:flex lg:flex-wrap gap-1 w-full">
-          {STATUS_BUTTONS.map((action) => (
-            <button
-              key={action.id}
-              onClick={() => onStatusChange(doc.id, action.id as Doctor['status'])}
-              className={cn(
-                "py-2 px-1 flex-1 min-w-[32px] rounded-[12px] text-[10px] tracking-wide font-black transition-all disabled:opacity-50 line-clamp-1 truncate text-center",
-                doc.status === action.id
-                  ? `${action.bg} text-white shadow-md ${action.hover}`
-                  : "bg-white/60 hover:bg-white backdrop-blur-md text-slate-600 border border-white/80 hover:border-white shadow-sm scale-95 hover:scale-100",
-              )}
-            >
-              {action.label}
-            </button>
-          ))}
-        </div>
+            {/* Desktop: Original flex-wrap layout */}
+            <div className="hidden lg:flex lg:flex-wrap gap-1 w-full">
+              {STATUS_BUTTONS.map((action) => (
+                <button
+                  key={action.id}
+                  onClick={() => onStatusChange(doc.id, action.id as Doctor['status'])}
+                  className={cn(
+                    "py-2 px-1 flex-1 min-w-[32px] rounded-[12px] text-[10px] tracking-wide font-black transition-all disabled:opacity-50 line-clamp-1 truncate text-center",
+                    doc.status === action.id
+                      ? `${action.bg} text-white shadow-md ${action.hover}`
+                      : "bg-white/60 hover:bg-white backdrop-blur-md text-slate-600 border border-white/80 hover:border-white shadow-sm scale-95 hover:scale-100",
+                  )}
+                >
+                  {action.label}
+                </button>
+              ))}
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

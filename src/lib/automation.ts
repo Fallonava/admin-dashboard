@@ -164,8 +164,9 @@ export function determineIdealStatus(
         if (currentTimeMinutes >= endMinutes) continue;
 
         let registrationStart = startMinutes - DEFAULT_LOOKAHEAD_MINS;
-        if (shift.registrationTime) {
-            const regMin = parseTimeToMinutes(shift.registrationTime);
+        const rTime = shift.registrationTime || doc.registrationTime;
+        if (rTime) {
+            const regMin = parseTimeToMinutes(rTime);
             if (regMin !== null) registrationStart = regMin;
         }
 
@@ -346,9 +347,7 @@ export async function runAutomation(): Promise<{ applied: number, failed: number
 
         // Deterministic State Evaluation combined with rules
         for (const doc of doctors) {
-            const isCooldownActive = doc.lastManualOverride
-                ? (now.getTime() - Number(doc.lastManualOverride)) < OVERRIDE_COOLDOWN_MS
-                : false;
+            const isCooldownActive = false; // [REVISI] Penalti otomatisasi dimatikan atas perintah user agar 100% full otomatis
 
             const todayShifts = shifts.filter(s =>
                 s.doctorId === doc.id && s.dayIdx === currentDayIdx && s.formattedTime &&
@@ -364,11 +363,8 @@ export async function runAutomation(): Promise<{ applied: number, failed: number
             // 3. Resolve final target status (Rules override Time-based, but Manual Cooldown overrides ALL)
             let targetStatus = doc.status;
             
-            if (isCooldownActive) {
-                // If cooldown is active, we freeze the status.
-                targetStatus = doc.status;
-            } else if (ruleUpdate) {
-                // Custom rule takes precedence over normal schedule if no manual override
+            if (ruleUpdate) {
+                // Custom rule takes precedence over normal schedule
                 targetStatus = ruleUpdate.status;
             } else if (doc.status !== idealStatus) {
                 // Otherwise fallback to schedule machine

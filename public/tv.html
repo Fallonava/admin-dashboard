@@ -3006,8 +3006,41 @@
 
               const jamStr = shift.formattedTime || shift.title || "-";
 
-              // Status logic
+              // Status dasar yang diputuskan server secara global untuk dokter
               let status = (doc.status || "").toUpperCase();
+
+              // --- MULTI-SHIFT BUG FIX ---
+              // Jika status global adalah aktif (PRAKTEK/PENDAFTARAN/PENUH),  kita evaluasi apakah status ini
+              // valid untuk KARTU SHIFT INI. Jika kartu ini merujuk ke masa depan/lalu, paksa drop statusnya.
+              if (jamStr !== "-" && ["PRAKTEK", "PENDAFTARAN", "PENUH"].includes(status)) {
+                const parts = jamStr.replace(/\s/g, "").replace(/\./g, ":").toLowerCase().match(/(\d{1,2}:\d{2}).*?(\d{1,2}:\d{2})/);
+                if (parts) {
+                  const parseMins = (t) => {
+                    const [h, m] = t.split(":").map(Number);
+                    return h * 60 + m;
+                  };
+                  const startMins = parseMins(parts[1]);
+                  let endMins = parseMins(parts[2]);
+                  
+                  if (endMins < startMins) endMins += 24 * 60; // crossover midnight
+
+                  let regMins = startMins - 30; // default 30 min buka loket
+                  const rTime = shift.registrationTime || doc.registrationTime;
+                  if (rTime && rTime !== "-") {
+                    const rParts = rTime.replace(/\./g, ":").split(":");
+                    if (rParts.length >= 2) regMins = Number(rParts[0]) * 60 + Number(rParts[1]);
+                  }
+
+                  const now = new Date();
+                  const curMins = now.getHours() * 60 + now.getMinutes();
+
+                  if (curMins >= endMins) {
+                    status = "SELESAI"; // Shift sudah lewat
+                  } else if (curMins < regMins) {
+                    status = "TERJADWAL"; // Belum waktunya buka
+                  }
+                }
+              }
 
               mappedData.push({
                 Dokter: doc.name,

@@ -36,7 +36,8 @@ export interface LeaveRequest {
     endDate: Date;
     reason?: string;
     status: string;
-    avatar?: string;
+    createdAt?: string;
+    updatedAt?: string;
 }
 
 // --- Doctor Types ---
@@ -55,6 +56,7 @@ export interface Doctor {
     registrationTime?: string;
     lastManualOverride?: number; // Timestamp of last manual status change
     leaveRequests?: LeaveRequest[];
+    shifts?: Shift[];
 }
 
 // --- Automation / Settings Types ---

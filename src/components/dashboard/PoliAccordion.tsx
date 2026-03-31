@@ -66,6 +66,33 @@ const WING_STATUS_CONFIG = {
   OFFLINE:   { badge: 'bg-slate-100 text-slate-500 border-slate-200', headerBg: 'bg-slate-50', headerBorder: 'border-slate-200', label: '⚫ Belum Buka', barColor: 'bg-slate-300' },
 };
 
+function getRelevantShift(doc: Doctor, currentTimeMinutes: number, nowMs: number) {
+  if (!doc.shifts || doc.shifts.length === 0) return null;
+  const dayIdx = new Date(nowMs + 7 * 3600_000).getUTCDay() === 0 ? 6 : new Date(nowMs + 7 * 3600_000).getUTCDay() - 1;
+  const todayShifts = doc.shifts.filter(s => s.dayIdx === dayIdx && s.formattedTime);
+  if (todayShifts.length === 0) return null;
+  
+  // Jika hanya 1 shift khusus hari ini
+  if (todayShifts.length === 1) return todayShifts[0];
+
+  // Cari shift yg sedang aktif / akan buka sebentar lagi
+  for (const shift of todayShifts) {
+    const parts = shift.formattedTime!.split('-');
+    if (parts.length < 2) continue;
+    const startMins = parseTimeToMinutes(parts[0]);
+    const endMins = parseTimeToMinutes(parts[1]);
+    if (currentTimeMinutes >= startMins - 60 && currentTimeMinutes <= endMins) return shift;
+  }
+  
+  // Kalau belum ada yang aktif, cari shift berikutnya yang waktu start-nya > saat ini
+  const upcoming = todayShifts.find(s => {
+    const startMins = parseTimeToMinutes(s.formattedTime!.split('-')[0]);
+    return startMins > currentTimeMinutes;
+  });
+  
+  return upcoming || todayShifts[todayShifts.length - 1];
+}
+
 export function PoliAccordion({
   specialty, doctors, wingStatus, currentTimeMinutes, nowMs,
   defaultOpen = false, patientFilter, onOpenDoctorDetail,
@@ -83,14 +110,17 @@ export function PoliAccordion({
     if (wingStatus !== 'OFFLINE') return null;
     let nextStart = Infinity;
     for (const doc of doctors) {
-      const s = parseTimeToMinutes(doc.startTime);
-      if (s > currentTimeMinutes && s < nextStart) nextStart = s;
+      const shift = getRelevantShift(doc, currentTimeMinutes, nowMs);
+      if (shift) {
+        const s = parseTimeToMinutes(shift.formattedTime!.split('-')[0]);
+        if (s > currentTimeMinutes && s < nextStart) nextStart = s;
+      }
     }
     if (nextStart === Infinity) return null;
     const diff = nextStart - currentTimeMinutes;
     const h = Math.floor(diff / 60), m = diff % 60;
     return h > 0 ? `Buka dalam ${h}j ${m}m` : `Buka dalam ${m} mnt`;
-  }, [wingStatus, doctors, currentTimeMinutes]);
+  }, [wingStatus, doctors, currentTimeMinutes, nowMs]);
 
   // Filter doctors for display
   const filteredDoctors = useMemo(() => {
@@ -191,15 +221,25 @@ export function PoliAccordion({
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-3">
               {filteredDoctors.map(doc => {
-                const lbl = getPatientLabel(doc.status, doc.endTime, currentTimeMinutes);
+                const shift = getRelevantShift(doc, currentTimeMinutes, nowMs);
+                let startMins = 0, endMins = 0;
+                let formattedTime = 'Jadwal belum diatur';
+                
+                if (shift && shift.formattedTime) {
+                   formattedTime = shift.formattedTime;
+                   const parts = formattedTime.split('-');
+                   startMins = parseTimeToMinutes(parts[0]);
+                   endMins = parseTimeToMinutes(parts[1]);
+                }
+
+                const lbl = getPatientLabel(doc.status, shift ? shift.formattedTime?.split('-')[1] : undefined, currentTimeMinutes);
                 const StatusIcon = lbl.icon;
                 const isActive = isActiveStatus(doc.status);
-                const endMins = parseTimeToMinutes(doc.endTime);
-                const startMins = parseTimeToMinutes(doc.startTime);
+                
                 const isOvertime = isActive && currentTimeMinutes > endMins && endMins > 0;
                 const isSurge = doc.status === 'PENUH' && doc.lastManualOverride && (nowMs - doc.lastManualOverride) < 15 * 60 * 1000;
                 const isPendaftaran = doc.status === 'PENDAFTARAN';
-                const minsUntilOpen = isPendaftaran ? parseTimeToMinutes(doc.startTime) - currentTimeMinutes : 0;
+                const minsUntilOpen = isPendaftaran ? startMins - currentTimeMinutes : 0;
                 const shiftProgress = (isActive && endMins > startMins)
                   ? Math.max(0, Math.min(100, Math.round(((currentTimeMinutes - startMins) / (endMins - startMins)) * 100)))
                   : 0;
@@ -260,7 +300,7 @@ export function PoliAccordion({
                       <div className="flex items-center gap-2 mt-0.5 flex-wrap">
                         <span className="text-[11px] text-slate-400 font-medium flex items-center gap-1">
                           <Clock size={10} />
-                          {doc.startTime && doc.endTime ? `${doc.startTime} – ${doc.endTime}` : 'Jadwal belum diatur'}
+                          {formattedTime.replace('-', '–')}
                         </span>
                         {doc.queueCode && (
                           <span className="text-[10px] font-black text-slate-300 font-mono">Kode: {doc.queueCode}</span>

@@ -9,7 +9,7 @@ export async function fetchDoctors() {
         orderBy: [{ order: 'asc' }, { name: 'asc' }],
         include: {
             leaveRequests: true,
-            shifts: false,
+            shifts: true,
         }
     });
     return doctors.map(d => ({

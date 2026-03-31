@@ -25,9 +25,7 @@ export async function GET(req: Request) {
             lastManualOverride: rawDoc.lastManualOverride !== null ? Number(rawDoc.lastManualOverride) : undefined
         } as unknown as Doctor;
 
-        const isCooldownActive = doc.lastManualOverride
-                ? (now.getTime() - Number(doc.lastManualOverride)) < (4 * 60 * 60 * 1000)
-                : false;
+        const isCooldownActive = false;
 
         const todayShifts = rawShifts.filter(s =>
             s.doctorId === doc.id && s.dayIdx === currentDayIdx && s.formattedTime &&

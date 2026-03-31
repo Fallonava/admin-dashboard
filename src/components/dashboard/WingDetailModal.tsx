@@ -75,6 +75,30 @@ const WING_LIGHT_CONFIG = {
   },
 };
 
+function getRelevantShift(doc: Doctor, currentTimeMinutes: number, nowMs: number) {
+  if (!doc.shifts || doc.shifts.length === 0) return null;
+  const dayIdx = new Date(nowMs + 7 * 3600_000).getUTCDay() === 0 ? 6 : new Date(nowMs + 7 * 3600_000).getUTCDay() - 1;
+  const todayShifts = doc.shifts.filter(s => s.dayIdx === dayIdx && s.formattedTime);
+  if (todayShifts.length === 0) return null;
+  
+  if (todayShifts.length === 1) return todayShifts[0];
+
+  for (const shift of todayShifts) {
+    const parts = shift.formattedTime!.split('-');
+    if (parts.length < 2) continue;
+    const startMins = parseTimeToMinutes(parts[0]);
+    const endMins = parseTimeToMinutes(parts[1]);
+    if (currentTimeMinutes >= startMins - 60 && currentTimeMinutes <= endMins) return shift;
+  }
+  
+  const upcoming = todayShifts.find(s => {
+    const startMins = parseTimeToMinutes(s.formattedTime!.split('-')[0]);
+    return startMins > currentTimeMinutes;
+  });
+  
+  return upcoming || todayShifts[todayShifts.length - 1];
+}
+
 function getAvatarGradient(status: Doctor['status']) {
   switch (status) {
     case 'PRAKTEK':     return "from-blue-500 to-indigo-500";
@@ -123,29 +147,35 @@ export function WingDetailModal({
     if (activeDoctors.length === 0) return 0;
     let minStart = Infinity, maxEnd = 0;
     for (const d of activeDoctors) {
-      const s = parseTimeToMinutes(d.startTime);
-      const e = parseTimeToMinutes(d.endTime);
+      const shift = getRelevantShift(d, currentTimeMinutes, nowMs);
+      if (!shift || !shift.formattedTime) continue;
+      const parts = shift.formattedTime.split('-');
+      const s = parseTimeToMinutes(parts[0]);
+      const e = parseTimeToMinutes(parts[1]);
       if (s < minStart) minStart = s;
       if (e > maxEnd) maxEnd = e;
     }
-    if (maxEnd <= minStart) return 50;
+    if (maxEnd <= minStart || minStart === Infinity) return 50;
     const elapsed = currentTimeMinutes - minStart;
     const total = maxEnd - minStart;
     return Math.max(0, Math.min(100, Math.round((elapsed / total) * 100)));
-  }, [activeDoctors, currentTimeMinutes]);
+  }, [activeDoctors, currentTimeMinutes, nowMs]);
 
   const nextActive = useMemo(() => {
     if (wingStatus !== 'OFFLINE') return null;
     let nextStart = Infinity;
     for (const doc of doctors) {
-      const s = parseTimeToMinutes(doc.startTime);
-      if (s > currentTimeMinutes && s < nextStart) nextStart = s;
+      const shift = getRelevantShift(doc, currentTimeMinutes, nowMs);
+      if (shift && shift.formattedTime) {
+        const s = parseTimeToMinutes(shift.formattedTime.split('-')[0]);
+        if (s > currentTimeMinutes && s < nextStart) nextStart = s;
+      }
     }
     if (nextStart === Infinity) return null;
     const diff = nextStart - currentTimeMinutes;
     const h = Math.floor(diff / 60), m = diff % 60;
     return h > 0 ? `${h}j ${m}m lagi` : `${m} mnt lagi`;
-  }, [wingStatus, doctors, currentTimeMinutes]);
+  }, [wingStatus, doctors, currentTimeMinutes, nowMs]);
 
   useEffect(() => {
     document.body.style.overflow = 'hidden';
@@ -236,8 +266,16 @@ export function WingDetailModal({
               </p>
               <div className="space-y-2.5">
                 {activeDoctors.map(doc => {
-                  const endMins = parseTimeToMinutes(doc.endTime);
-                  const startMins = parseTimeToMinutes(doc.startTime);
+                  const shift = getRelevantShift(doc, currentTimeMinutes, nowMs);
+                  let startMins = 0, endMins = 0;
+                  let formattedTime = 'Jadwal belum diatur';
+                  if (shift && shift.formattedTime) {
+                    formattedTime = shift.formattedTime;
+                    const parts = formattedTime.split('-');
+                    startMins = parseTimeToMinutes(parts[0]);
+                    endMins = parseTimeToMinutes(parts[1]);
+                  }
+                  
                   const isOvertime = currentTimeMinutes > endMins && endMins > 0;
                   const isSurge = doc.status === 'PENUH' && doc.lastManualOverride && (nowMs - doc.lastManualOverride) < (15 * 60 * 1000);
                   const progress = endMins > startMins
@@ -310,7 +348,7 @@ export function WingDetailModal({
                           {/* Shift times */}
                           <div className="flex items-center gap-3 mt-1 flex-wrap">
                             <span className="text-[12px] text-slate-400 font-medium flex items-center gap-1">
-                              <Clock size={11} /> {doc.startTime || '--:--'} – {doc.endTime || '--:--'}
+                              <Clock size={11} /> {formattedTime.replace('-', '–')}
                             </span>
                             {doc.queueCode && (
                               <span className="text-[11px] font-black text-slate-300 font-mono">#{doc.queueCode}</span>
@@ -384,7 +422,11 @@ export function WingDetailModal({
               </p>
               <div className="space-y-2">
                 {offlineDoctors.map(doc => {
-                  const nextMins = parseTimeToMinutes(doc.startTime);
+                  const shift = getRelevantShift(doc, currentTimeMinutes, nowMs);
+                  let nextMins = 0;
+                  if (shift && shift.formattedTime) {
+                    nextMins = parseTimeToMinutes(shift.formattedTime.split('-')[0]);
+                  }
                   const timeUntil = nextMins > currentTimeMinutes ? nextMins - currentTimeMinutes : null;
 
                   // Upcoming leaves

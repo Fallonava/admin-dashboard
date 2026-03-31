@@ -47,6 +47,30 @@ const LEAVE_TYPE_COLOR: Record<string, string> = {
   Lainnya: "bg-slate-100 text-slate-600 border-slate-200",
 };
 
+function getRelevantShift(doc: Doctor, currentTimeMinutes: number, nowMs: number) {
+  if (!doc.shifts || doc.shifts.length === 0) return null;
+  const dayIdx = new Date(nowMs + 7 * 3600_000).getUTCDay() === 0 ? 6 : new Date(nowMs + 7 * 3600_000).getUTCDay() - 1;
+  const todayShifts = doc.shifts.filter(s => s.dayIdx === dayIdx && s.formattedTime);
+  if (todayShifts.length === 0) return null;
+  
+  if (todayShifts.length === 1) return todayShifts[0];
+
+  for (const shift of todayShifts) {
+    const parts = shift.formattedTime!.split('-');
+    if (parts.length < 2) continue;
+    const startMins = parseTimeToMinutes(parts[0]);
+    const endMins = parseTimeToMinutes(parts[1]);
+    if (currentTimeMinutes >= startMins - 60 && currentTimeMinutes <= endMins) return shift;
+  }
+  
+  const upcoming = todayShifts.find(s => {
+    const startMins = parseTimeToMinutes(s.formattedTime!.split('-')[0]);
+    return startMins > currentTimeMinutes;
+  });
+  
+  return upcoming || todayShifts[todayShifts.length - 1];
+}
+
 export function DoctorDetailModal({
   doctor, specialty, wingStatus, currentTimeMinutes, nowMs, onClose,
 }: DoctorDetailModalProps) {
@@ -59,8 +83,16 @@ export function DoctorDetailModal({
 
   const isActive = ['PRAKTEK', 'PENUH', 'OPERASI'].includes(doctor.status);
   const isPendaftaran = doctor.status === 'PENDAFTARAN';
-  const endMins = parseTimeToMinutes(doctor.endTime);
-  const startMins = parseTimeToMinutes(doctor.startTime);
+
+  const shift = getRelevantShift(doctor, currentTimeMinutes, nowMs);
+  let startMins = 0, endMins = 0;
+  let formattedTime = '--:-- - --:--';
+  if (shift && shift.formattedTime) {
+    formattedTime = shift.formattedTime;
+    const parts = formattedTime.split('-');
+    startMins = parseTimeToMinutes(parts[0]);
+    endMins = parseTimeToMinutes(parts[1]);
+  }
   const isOvertime = isActive && currentTimeMinutes > endMins && endMins > 0;
   const isSurge = doctor.status === 'PENUH' && doctor.lastManualOverride && (nowMs - doctor.lastManualOverride) < (15 * 60 * 1000);
 
@@ -191,7 +223,7 @@ export function DoctorDetailModal({
               
               <div className="flex justify-between items-end mb-2">
                 <div className="text-[16px] font-bold text-slate-800">
-                  {doctor.startTime || '--:--'} <span className="text-slate-400 font-medium mx-1">s/d</span> {doctor.endTime || '--:--'}
+                  {formattedTime.split('-')[0] || '--:--'} <span className="text-slate-400 font-medium mx-1">s/d</span> {formattedTime.split('-')[1] || '--:--'}
                 </div>
                 {doctor.queueCode && (
                   <div className="text-[12px] font-black text-slate-400 font-mono bg-white px-2.5 py-1 rounded-lg border border-slate-200">

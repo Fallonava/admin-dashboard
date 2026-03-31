@@ -74,10 +74,9 @@ export function DoctorFormModal({ isOpen, onClose, doctor, onSuccess }: DoctorFo
         setLoading(true);
         try {
             const method = isEditing ? 'PUT' : 'POST';
-            // Provide default startTime/endTime so the API doesn't fail validation
             const body = isEditing
-                ? { ...formData, id: doctor!.id, startTime: doctor!.startTime || "08:00", endTime: doctor!.endTime || "17:00" }
-                : { ...formData, startTime: "08:00", endTime: "17:00" };
+                ? { ...formData, id: doctor!.id }
+                : { ...formData };
 
             const res = await fetch('/api/doctors', {
                 method,

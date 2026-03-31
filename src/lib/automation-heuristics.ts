@@ -41,23 +41,6 @@ export async function suggestRules(prisma: any): Promise<HeuristicRule[]> {
       }
     });
 
-    // Suggestion C: If last manual override exists and frequent toggles, suggest manual-exempt rule
-    // Find doctors with lastManualOverride present
-    if ((prisma as any).doctor) {
-      const docs = await prisma.doctor.findMany({ where: { lastManualOverride: { not: null } }, take: 5 });
-      if (docs && docs.length > 0) {
-        suggestions.push({
-          name: 'Respect-manual-overrides',
-          rationale: 'Some doctors were manually overridden recently — consider rules that avoid overwriting manual settings',
-          suggestion: {
-            name: 'Auto: Respect manual overrides',
-            condition: { /* engine should skip doctors with lastManualOverride */ },
-            action: { /* no-op placeholder */ },
-            active: false
-          }
-        });
-      }
-    }
   } catch (err) {
     console.warn('heuristics suggest error', err);
   }

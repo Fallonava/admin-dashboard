@@ -121,6 +121,7 @@ export async function scheduleToday() {
   try {
     shifts = await (prisma as any).shift.findMany({
       where: { dayIdx },
+      include: { doctor: { select: { registrationTime: true } } }
     });
   } catch (err: any) {
     logger.error('[scheduler] Failed to load shifts:', err.message);
@@ -141,8 +142,9 @@ export async function scheduleToday() {
       triggerMinutes.add(start);
       // Tambahkan trigger untuk window registrasi (PENDAFTARAN)
       let regStart = start - 30; // default 30 menit
-      if (shift.registrationTime) {
-        const customReg = parseToMinutes(shift.registrationTime);
+      const rTime = shift.registrationTime || shift.doctor?.registrationTime;
+      if (rTime) {
+        const customReg = parseToMinutes(rTime);
         if (customReg !== null) regStart = customReg;
       }
       triggerMinutes.add(regStart);

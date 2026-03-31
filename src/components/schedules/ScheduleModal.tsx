@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
 import {
     X, Clock, Plus, Trash2, Save, Power, CalendarOff,
-    ChevronLeft, ChevronRight, Calendar, Check, AlertCircle
+    ChevronLeft, ChevronRight, Calendar, Check, AlertCircle, ShieldAlert
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Doctor, Shift } from "@/lib/data-service";
@@ -235,6 +235,30 @@ export function ScheduleModal({ doctor, shifts, isOpen, onClose, onUpdate }: Sch
         }
     };
 
+    const togglePenuh = async (s: Shift) => {
+        setIsToggling(true);
+        const isPenuh = s.statusOverride === 'PENUH';
+        try {
+            const payload = {
+                id: s.id,
+                statusOverride: isPenuh ? null : 'PENUH' // toggle behavior
+            };
+            const res = await fetch('/api/shifts', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            });
+            if (!res.ok) throw new Error('Gagal merubah kuota loket');
+            socket?.emit('schedule_updated', { action: 'toggle_kuota' });
+            onUpdate?.();
+            showToast('success', isPenuh ? 'Loket kembali dibuka otomatis' : 'Loket ditutup paksa (Kuota Penuh)');
+        } catch (err: any) {
+            showToast('error', err.message);
+        } finally {
+            setIsToggling(false);
+        }
+    };
+
     const isFormOpen = adding || !!editId;
 
     return createPortal(
@@ -363,30 +387,47 @@ export function ScheduleModal({ doctor, shifts, isOpen, onClose, onUpdate }: Sch
                                                     {s.registrationTime && (
                                                         <span className="text-[10px] opacity-50">Daftar: {s.registrationTime}</span>
                                                     )}
-                                                    {s.statusOverride && (
+                                                    {s.statusOverride === 'PENUH' ? (
+                                                        <span className="text-[10px] font-bold text-white bg-red-500 px-1.5 py-0.5 rounded-md flex items-center gap-1 shadow-sm"><ShieldAlert size={10} /> PENUH</span>
+                                                    ) : s.statusOverride && (
                                                         <span className="text-[10px] font-bold opacity-70 uppercase">{s.statusOverride}</span>
                                                     )}
                                                     {activeDay === tIdx && isDisabled && (
-                                                        <span className="text-[10px] font-bold text-red-500 bg-red-50 px-1.5 py-0.5 rounded-md">Nonaktif hari ini</span>
+                                                        <span className="text-[10px] font-bold text-red-500 bg-red-50 px-1.5 py-0.5 rounded-md flex items-center gap-1"><Power size={10}/> Nonaktif</span>
                                                     )}
                                                 </div>
                                             </div>
                                             <div className="flex items-center gap-1 flex-shrink-0">
                                                 {/* Toggle today */}
                                                 {activeDay === tIdx && (
-                                                    <button
-                                                        onClick={() => toggle(s)}
-                                                        disabled={isToggling}
-                                                        title={isDisabled ? "Aktifkan hari ini" : "Nonaktifkan hari ini"}
-                                                        className={cn(
-                                                            "p-2 rounded-xl border transition-all",
-                                                            isDisabled
-                                                                ? "bg-white border-slate-200 text-slate-400 hover:text-emerald-600 hover:border-emerald-200"
-                                                                : "bg-white/60 border-transparent text-slate-400 hover:text-red-500 hover:border-red-100"
-                                                        )}
-                                                    >
-                                                        <Power size={13} className={isToggling ? "animate-spin" : ""} />
-                                                    </button>
+                                                    <>
+                                                        <button
+                                                            onClick={() => togglePenuh(s)}
+                                                            disabled={isToggling}
+                                                            title={s.statusOverride === 'PENUH' ? "Buka Kembali Loket (Hapus Override)" : "Tutup Loket Paksa (Kuota Penuh)"}
+                                                            className={cn(
+                                                                "p-2 rounded-xl border transition-all",
+                                                                s.statusOverride === 'PENUH'
+                                                                    ? "bg-red-500 border-red-600 text-white shadow-md hover:bg-red-600"
+                                                                    : "bg-white/60 border-transparent text-slate-400 hover:text-amber-500 hover:border-amber-100 hover:bg-amber-50"
+                                                            )}
+                                                        >
+                                                            <ShieldAlert size={13} className={isToggling ? "animate-spin" : ""} />
+                                                        </button>
+                                                        <button
+                                                            onClick={() => toggle(s)}
+                                                            disabled={isToggling}
+                                                            title={isDisabled ? "Aktifkan hari ini" : "Nonaktifkan hari ini"}
+                                                            className={cn(
+                                                                "p-2 rounded-xl border transition-all",
+                                                                isDisabled
+                                                                    ? "bg-white border-slate-200 text-slate-400 hover:text-emerald-600 hover:border-emerald-200"
+                                                                    : "bg-white/60 border-transparent text-slate-400 hover:text-red-500 hover:border-red-100 hover:bg-red-50"
+                                                            )}
+                                                        >
+                                                            <Power size={13} className={isToggling ? "animate-spin" : ""} />
+                                                        </button>
+                                                    </>
                                                 )}
                                                 {/* Edit */}
                                                 <button
