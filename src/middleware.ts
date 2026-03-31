@@ -17,6 +17,8 @@ const PUBLIC_PATHS = [
   '/api/automation',      // Broadcast rules for TV display (GET is public)
   '/api/seed',            // Database seeding
   '/tv.html',             // Main TV display page
+  '/tv-lama.html',        // TV display (Legacy version) 
+  '/tv-modern.html',      // TV display (Modern version)
 ];
 
 // Prefixes that are always public (static assets, Next.js internals)
