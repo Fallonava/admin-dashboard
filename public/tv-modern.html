@@ -919,6 +919,10 @@
         display: block; /* Keep neon bar */
       }
       
+      .platter.active .jam-box {
+        display: none !important;
+      }
+      
       .platter.active .initials {
         background: var(--bg-body);
         box-shadow: var(--neo-inset-dark), var(--neo-inset-light);
@@ -954,6 +958,75 @@
 
       [data-theme="light"] .platter.active .detail-time {
         color: #000;
+      }
+
+      /* ===== SIDEBAR COMPACT PLATTER (NEW) ===== */
+      .platter-mini {
+        padding: 10px 12px;
+        min-height: 0;
+      }
+      .platter-mini .platter-main {
+        gap: 10px;
+      }
+      .platter-mini .initials {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        font-size: 14px;
+      }
+      .platter-mini .initials .material-icons-round,
+      .platter-mini .initials svg {
+        font-size: 18px !important;
+        width: 18px !important;
+        height: 18px !important;
+      }
+      .platter-mini .doc-name {
+        font-size: 11px;
+        line-height: 1.25;
+        white-space: normal;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+      }
+      .platter-mini .doc-spec {
+        font-size: 9px;
+        margin-bottom: 2px;
+      }
+      .platter-mini .meta-col {
+        gap: 0;
+        align-self: flex-start;
+      }
+      .platter-mini .status-pill {
+        padding: 4px 6px;
+        font-size: 8px;
+        letter-spacing: 0.05em;
+      }
+      
+      /* Danger Striping for CUTI and PENUH */
+      .platter.platter-mini.st-cuti::after, .platter.platter-mini.st-penuh::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: repeating-linear-gradient(
+          -45deg,
+          transparent,
+          transparent 8px,
+          var(--status-bg) 8px,
+          var(--status-bg) 16px
+        );
+        opacity: 0.25;
+        pointer-events: none;
+        z-index: 0;
+        border-radius: 16px;
+      }
+      
+      .platter.platter-mini.st-operasi {
+        animation: mini-soft-pulse-op 3s ease-in-out infinite;
+      }
+      
+      @keyframes mini-soft-pulse-op {
+        0%, 100% { box-shadow: 8px 8px 16px var(--neo-shadow-dark), -8px -8px 16px var(--neo-shadow-light); }
+        50% { box-shadow: 8px 8px 16px var(--neo-shadow-dark), -8px -8px 16px var(--neo-shadow-light), inset 0 0 15px rgba(139, 92, 246, 0.25); }
       }
 
       /* ===== EXPANDED DETAIL (NEW) ===== */
@@ -1686,7 +1759,7 @@
         }
 
         .platter.active .meta-col .jam-box {
-          display: flex !important;
+          display: none !important;
         }
 
         .platter.active .doc-name {
@@ -2420,6 +2493,27 @@
               .toUpperCase()
           : "DR";
 
+      const getSpecialistIcon = (spec) => {
+        const s = (spec || "").toLowerCase();
+        if (s.includes("urologi")) return `<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24" fill="currentColor"><path d="M480-120q-33 0-56.5-23.5T400-200q0-33 23.5-56.5T480-280q33 0 56.5 23.5T560-200q0 33-23.5 56.5T480-120Zm0-240q-48 0-83.5-31.5T352-472q-3-22-10-41t-18-35q-23-40-75-52.5T128-636q-14 8-29 6.5T72-646q-12-11-13.5-27t8.5-29q40-45 96.5-66.5T280-790q53 0 100 24t78 66q4 6 10.5 9t11.5 3q5 0 11.5-3t10.5-9q31-42 78-66t100-24q60 0 116.5 21.5T893-702q10 13 8.5 29t-13.5 27q-12 11-27 6.5T832-636q-68 40-120 52.5T637-548q-11 16-18 35t-10 41q-9 48-44.5 79T480-360Z"/></svg>`;
+        if (s.includes("bedah mulut")) return "medical_services";
+        if (s.includes("anak")) return "child_care";
+        if (s.includes("gigi") || s.includes("konservasi") || s.includes("dental") || s.includes("mulut")) return `<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24" fill="currentColor"><path d="M480-120q-48 0-84-30t-48-76q-30 11-61.5 16T224-204q-26 0-45-19t-19-45v-92q0-109 72.5-188.5T408-644v24q0 30 21 51t51 21q30 0 51-21t21-51v-24q103 16 175.5 95.5T800-360v92q0 26-19 45t-45 19q-31 0-62.5-5.5T612-226q-12 46-48 76t-84 30Zm0-80q23 0 45-12.5t33-35.5l14-40 40 10q23 6 49 8.5t55 2.5v-53q0-82-55.5-141.5T528-525q-11 25-33.5 45T440-460q0-8 2-15t4-15q12-40 43.5-72T564-604q-32-15-68-23t-76-8q2 6 3 12t1 13q0 39-24 67.5T334-514q-14 30-36 71.5T260-360v120q29 0 55-2.5t49-8.5l40-10 14 40q11 23 33 35.5T480-200Zm0-300Z"/></svg>`;
+        if (s.includes("kandungan") || s.includes("obgyn")) return "pregnant_woman";
+        if (s.includes("mata")) return "visibility";
+        if (s.includes("saraf") || s.includes("neurologi")) return "psychology";
+        if (s.includes("dalam")) return "monitor_heart";
+        if (s.includes("jantung")) return "favorite";
+        if (s.includes("bedah")) return "medical_services";
+        if (s.includes("kulit") || s.includes("kelamin")) return "face_retouching_natural";
+        if (s.includes("tht") || s.includes("tth")) return "hearing";
+        if (s.includes("paru") || s.includes("pulmo")) return "air";
+        if (s.includes("ortopedi") || s.includes("orthopaedi")) return "accessible_forward";
+        if (s.includes("jiwa") || s.includes("psikiatri")) return "self_improvement";
+        if (s.includes("rehab")) return "accessibility_new";
+        return "health_and_safety";
+      };
+
       // Helper: Tentukan apakah dokter dalam status "aktif" (sedang melayani/bisa daftar)
       // Satu definisi tunggal dipakai di _detectChanges DAN render()
       const isActive = (st) =>
@@ -2439,6 +2533,9 @@
         const jamTampil = d.JamDaftar !== "-"
           ? esc(d.JamDaftar)
           : formatJam((d.JamPraktek || "").split("-")[0]);
+          
+        const isCPO = ["CUTI", "PENUH", "OPERASI"].some(st => (d.Status || "").toUpperCase().includes(st));
+
         return `
           <div class="platter-main">
             <div class="initials">${avatarText}</div>
@@ -2450,7 +2547,7 @@
               <div class="status-pill" style="background:var(--status-bg);color:var(--status-color)">
                 <span class="material-icons-round" style="font-size:12px">${statusIcon}</span>${statusLabel}
               </div>
-              ${d.JamPraktek && d.JamPraktek !== "-" ? `
+              ${!isCPO && d.JamPraktek && d.JamPraktek !== "-" ? `
               <div class="jam-box">
                 <span class="jam-label">DAFTAR</span>
                 <span class="jam-val jam-val-daftar" style="color:var(--status-color)">${jamTampil}</span>
@@ -2465,6 +2562,24 @@
             <div class="live-status">
               <div class="pulse-dot"></div>
               <span class="live-text">${labelLive}</span>
+            </div>
+          </div>`;
+      };
+
+      const buildSidebarCardHTML = (d, avatarText, statusIcon, statusLabel) => {
+        return `
+          <div class="platter-mini-grid" style="position:relative; z-index:1; display:flex; flex-direction:column; gap:8px; width:100%;">
+            <div class="mini-top-row" style="display:flex; justify-content:space-between; align-items:flex-start; width:100%;">
+              <div class="initials">${avatarText}</div>
+              <div class="meta-col" style="flex-shrink:0;">
+                <div class="status-pill" style="background:var(--status-bg);color:var(--status-color)">
+                  <span class="material-icons-round" style="font-size:10px; margin-right:2px;">${statusIcon}</span>${statusLabel}
+                </div>
+              </div>
+            </div>
+            <div class="info-col" style="display:flex; flex-direction:column; gap:4px; margin-top:2px;">
+              <div class="doc-name" style="font-size:11.5px; font-weight:700;">${esc(d.Dokter)}</div>
+              <div class="doc-spec" style="font-size:9.5px; opacity:0.75;">${esc(d.Spesialis)}</div>
             </div>
           </div>`;
       };
@@ -3531,12 +3646,8 @@
                 i = "flight";
                 l = "CUTI";
               }
-              const avatarText =
-                d["Code Antrian"] ||
-                d.CodeAntrian ||
-                d.Code ||
-                d.Kode ||
-                initials(d.Dokter);
+              const avatarIcon = getSpecialistIcon(d.Spesialis);
+              const avatarText = avatarIcon.startsWith("<svg") ? avatarIcon : `<span class="material-icons-round" style="font-size:24px;">${avatarIcon}</span>`;
               if (d._isActive) c += " active";
 
               let labelJam = "REGISTRASI DIBUKA";
@@ -3725,12 +3836,8 @@
             else if (st === "OPERASI") { c = "st-operasi"; i = "local_hospital"; l = "OPERASI"; }
             else if (st === "CUTI") { c = "st-cuti"; i = "flight"; l = "CUTI"; }
             else if (st === "LIBUR") { c = "st-libur"; i = "block"; l = "LIBUR"; }
-            const avatarText =
-              d["Code Antrian"] ||
-              d.CodeAntrian ||
-              d.Code ||
-              d.Kode ||
-              initials(d.Dokter);
+            const avatarIcon = getSpecialistIcon(d.Spesialis);
+            const avatarText = avatarIcon.startsWith("<svg") ? avatarIcon : `<span class="material-icons-round" style="font-size:24px;">${avatarIcon}</span>`;
             if (d._isActive) c += " active";
 
             let labelJam = "REGISTRASI DIBUKA";
@@ -3753,7 +3860,7 @@
 
             if (el) {
               if (el.dataset.hash !== hash) {
-                el.className = `platter ${c}`;
+                el.className = `platter platter-mini ${c}`;
 
                 // IN-PLACE DOM Update Sidebar
                 const dName = el.querySelector(".doc-name");
@@ -3799,10 +3906,10 @@
               oldMap.delete(id);
             } else {
               el = document.createElement("div");
-              el.className = `platter ${c} platter-new`;
+              el.className = `platter platter-mini ${c} platter-new`;
               el.dataset.id = id;
               el.dataset.hash = hash;
-              el.innerHTML = buildCardHTML(d, avatarText, i, l, labelJam, labelLive);
+              el.innerHTML = buildSidebarCardHTML(d, avatarText, i, l);
               hasLayoutChange = true;
               el.addEventListener(
                 "animationend",
