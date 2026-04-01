@@ -198,6 +198,12 @@
         box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5) !important;
       }
 
+      *, *::before, *::after {
+        /* Mencegah Teks Blur & Subpixel Rendering pada Neomorfisme */
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
       /* ===== LAYOUT CONTAINER ===== */
       .app-container {
         position: relative;
@@ -246,21 +252,37 @@
         width: 44px;
         height: 44px;
         border-radius: 12px;
-        background: var(--bg-body);
+        background: #ffffff; /* Memalsukan efek transparan logo */
         display: flex;
         align-items: center;
         justify-content: center;
         box-shadow: 
           4px 4px 10px var(--neo-shadow-dark),
           -4px -4px 10px var(--neo-shadow-light);
+        overflow: hidden; /* Mengunci pendaran gambar */
+        border: 1px solid rgba(255, 255, 255, 0.4); /* Glass-glint frame tipis */
+        animation: slow-breathe 4s ease-in-out infinite;
       }
 
-      .logo-icon {
-        font-size: 26px;
-        background: linear-gradient(135deg, var(--accent-orange) 45%, var(--accent-green) 55%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.1));
+      @keyframes slow-breathe {
+        0%, 100% {
+          box-shadow: 
+            4px 4px 10px var(--neo-shadow-dark),
+            -4px -4px 10px var(--neo-shadow-light);
+        }
+        50% {
+          box-shadow: 
+            4px 4px 10px var(--neo-shadow-dark),
+            -4px -4px 10px var(--neo-shadow-light),
+            0 0 15px rgba(16, 185, 129, 0.25); /* Emerald Green Status Aura */
+        }
+      }
+
+      .logo-box img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        mix-blend-mode: multiply; /* Membuang sisa offset putih, jika ada */
       }
 
       .title-group h1 {
@@ -273,8 +295,8 @@
 
       .title-group span {
         font-size: 11px;
-        font-weight: 500;
-        opacity: 0.7;
+        font-weight: 600;
+        opacity: 1; /* Diperkuat untuk aksesibilitas */
         letter-spacing: 0.02em;
         text-transform: uppercase;
         color: var(--text-secondary);
@@ -294,8 +316,8 @@
 
       .date {
         font-size: 12px;
-        font-weight: 600;
-        opacity: 0.6;
+        font-weight: 700;
+        opacity: 1; /* Diperkuat */
         letter-spacing: 0.02em;
         text-transform: uppercase;
         margin-top: 2px;
@@ -437,7 +459,7 @@
         justify-content: center;
         height: 100%;
         width: 100%;
-        opacity: 0.8;
+        opacity: 1; /* Diperkuat (menghapus opacity 0.8) */
       }
 
       .neo-orb {
@@ -496,7 +518,7 @@
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 0.5px;
-        opacity: 0.6;
+        opacity: 1; /* Solid visibility */
         margin-top: 4px;
       }
 
@@ -522,7 +544,7 @@
       [data-theme="dark"] .sidebar-panel .header span,
       [data-theme="dark"] .sidebar-panel .date,
       [data-theme="dark"] .sidebar-panel .island-title {
-        color: rgba(255, 255, 255, 0.6) !important;
+        color: rgba(255, 255, 255, 0.9) !important;
       }
 
       .sidebar-panel .doc-name {
@@ -558,7 +580,7 @@
       }
 
       .sidebar-panel .header span {
-        color: rgba(0, 0, 0, 0.6) !important;
+        color: rgba(0, 0, 0, 0.85) !important;
       }
 
       .sidebar-panel .clock {
@@ -566,11 +588,11 @@
       }
 
       .sidebar-panel .date {
-        color: rgba(0, 0, 0, 0.6) !important;
+        color: rgba(0, 0, 0, 0.85) !important;
       }
 
       .sidebar-panel .island-title {
-        color: rgba(0, 0, 0, 0.5) !important;
+        color: rgba(0, 0, 0, 0.85) !important;
       }
 
       .sidebar-panel .island-badge {
@@ -639,8 +661,8 @@
 
       .island-title {
         font-size: 12px;
-        font-weight: 700;
-        opacity: 0.6;
+        font-weight: 800;
+        opacity: 1; /* Visibilitas tegak */
         text-transform: uppercase;
         letter-spacing: 0.1em;
       }
@@ -754,13 +776,17 @@
       }
 
       .doc-name {
-        font-size: 13px; /* Name - Smaller */
+        font-size: 13px; /* Name Integer - Non Blur */
         font-weight: 600;
         color: var(--text-secondary);
-        white-space: nowrap;
+        white-space: normal; /* wrap */
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
         overflow: hidden;
         text-overflow: ellipsis;
         letter-spacing: -0.01em;
+        line-height: 1.25;
       }
 
       .doc-spec {
@@ -819,9 +845,9 @@
       }
 
       .jam-label {
-        font-size: 7.5px;
-        font-weight: 800;
-        opacity: 0.5;
+        font-size: 8px; /* Integer */
+        font-weight: 900;
+        opacity: 0.9; /* Visibilitas tegak */
         text-transform: uppercase;
         letter-spacing: 0.08em;
         margin-bottom: 0.5px;
@@ -920,6 +946,11 @@
       }
       
       .platter.active .jam-box {
+        display: none !important;
+      }
+      
+      /* Penghapusan Redundansi: Sembunyikan BUKA/PENDAFTARAN di pojok ketika kartu berekspansi bawah */
+      .platter.active:not(.platter-mini) .status-pill {
         display: none !important;
       }
       
@@ -1064,10 +1095,10 @@
 
       .detail-label {
         font-size: 9px;
-        font-weight: 700;
+        font-weight: 800;
         text-transform: uppercase;
         letter-spacing: 1px;
-        opacity: 0.6;
+        opacity: 0.95; /* Visibilitas tegak */
         color: #fff;
       }
 
@@ -1079,46 +1110,48 @@
         letter-spacing: -0.5px;
       }
 
+      /* Neomorphism 3D Button Style untuk Banner Sedang Melayani */
       .live-status {
         display: flex;
         align-items: center;
         gap: 8px;
-        background: var(--status-color);
-        color: white;
+        background: var(--bg-body);
+        color: var(--status-color);
         padding: 6px 14px;
         border-radius: 20px;
         border: none;
+        box-shadow: 
+          4px 4px 8px var(--neo-shadow-dark),
+          -4px -4px 8px var(--neo-shadow-light),
+          inset 0 0 10px var(--status-bg);
       }
 
       .pulse-dot {
         width: 8px;
         height: 8px;
-        background: #fff;
+        background: var(--status-color);
         border-radius: 50%;
-        animation: pulse-white 2s infinite;
+        box-shadow: 0 0 8px var(--status-color);
+        animation: pulse-glow 2s infinite;
       }
 
       .live-text {
         font-size: 10px;
         font-weight: 800;
-        color: #fff;
+        color: var(--text-primary);
         letter-spacing: 0.5px;
         text-transform: uppercase;
       }
+      
+      [data-theme="light"] .live-text {
+        color: var(--status-color);
+      }
 
       /* Pulse: Offload GPU animation to opacity only */
-      @keyframes pulse-white {
-        0% {
-          opacity: 0.6;
-        }
-
-        50% {
-          opacity: 1;
-        }
-
-        100% {
-          opacity: 0.6;
-        }
+      @keyframes pulse-glow {
+        0% { opacity: 0.6; }
+        50% { opacity: 1; transform: scale(1.1); }
+        100% { opacity: 0.6; }
       }
 
       .st-operasi.active .pulse-dot {
@@ -1275,8 +1308,8 @@
         align-items: center;
         gap: 6px;
         font-size: 11px;
-        font-weight: 600;
-        opacity: 0.7;
+        font-weight: 800;
+        opacity: 0.9; /* Solid visibility */
       }
 
       .dot {
@@ -2111,6 +2144,50 @@
           transform: scale(0.85) translateY(30px);
         }
       }
+
+      /* ===== SMART TV RESPONSIVE (960x540 / 720p series) ===== */
+      @media (max-width: 1024px), (max-height: 600px) {
+        .app-container { gap: 10px; padding: 6px 12px 14px 12px; }
+        .header { margin-bottom: 10px; padding: 12px 14px 0 14px; gap: 8px; }
+        .island-header { height: 40px; padding: 0 16px; }
+        
+        /* Hindari bahaya overscan di dasar layar TV */
+        .sidebar-panel { flex: 0 0 255px; min-width: 240px; padding-bottom: 12px; }
+        .stat-panel { padding: 10px 12px; gap: 8px; }
+        .stat-count { font-size: 13px; }
+        .clock { font-size: 18px !important; }
+        
+        /* Platter Global Base Update (Penyisipan Internal Pad & Wrap) */
+        .platter { gap: 6px; padding: 8px 10px; border-radius: 12px; }
+        .initials { width: 28px; height: 28px; font-size: 11px; }
+        .doc-spec { font-size: 12px; }
+        
+        /* Mengizinkan Nama Dokter Wrapping Hingga 2 Baris Pada Layar Sempit */
+        .doc-name { 
+          font-size: 11px; 
+          white-space: normal; 
+          display: -webkit-box; 
+          -webkit-line-clamp: 2; 
+          -webkit-box-orient: vertical; 
+          line-height: 1.25; 
+        }
+        .jam-box { display: none; } /* Terlalu sempit, hide jam non-aktif */
+        
+        /* Active Status Shrink Down (Pendaftaran & Praktek) */
+        .platter.active { padding: 8px 10px !important; }
+        .platter.active .doc-spec { font-size: 14px; }
+        .platter.active .doc-name { font-size: 12px; }
+        .platter.active .platter-detail { max-height: 70px; margin-top: 6px; padding-top: 6px; }
+        .detail-time { font-size: 12px !important; }
+        .live-text { font-size: 8px; }
+        .detail-label { font-size: 8px; }
+        .live-status { padding: 3px 8px; gap: 4px; }
+        .pulse-dot { width: 5px; height: 5px; }
+        
+        /* Pill Tweaks */
+        .status-pill { font-size: 8px; padding: 2px 6px; }
+        .status-pill .material-icons-round { font-size: 9px !important; margin-right: 2px; }
+      }
     </style>
   </head>
 
@@ -2150,11 +2227,7 @@
           <div class="header" style="margin-bottom: 0; padding-bottom: 12px">
             <div class="brand">
               <div class="logo-box" style="width: 36px; height: 36px">
-                <span
-                  class="material-icons-round logo-icon"
-                  style="font-size: 20px"
-                  >local_hospital</span
-                >
+                <img src="/logo-rs.png" alt="RSU Siaga Medika Logo" />
               </div>
               <div class="title-group">
                 <h1 style="font-size: 14px; line-height: 1.1">
@@ -3074,13 +3147,6 @@
           const m = d.getMinutes();
           const s = d.getSeconds();
 
-          // --- AUTOMATIC CLINICAL DAY/NIGHT THEME ---
-          // Light Theme: 06:00 - 17:59 | Dark Theme: 18:00 - 05:59
-          const prefersTheme = (h >= 6 && h < 18) ? "light" : "dark";
-          if (document.documentElement.getAttribute('data-theme') !== prefersTheme) {
-              document.documentElement.setAttribute('data-theme', prefersTheme);
-          }
-
           // Custom Rotating Notification every 5 minutes (avoid clash with break time at 12:00)
           if (m % 5 === 0 && s === 0 && h !== 12) {
             const msg = this._customMsgs[this._customMsgIdx];
@@ -3163,7 +3229,8 @@
 
         updateTheme() {
           const h = new Date().getHours();
-          const isLight = h >= 6 && h < 16;
+          // Light Theme: 06:00 - 17:59 | Dark Theme: 18:00 - 05:59
+          const isLight = h >= 6 && h < 18;
           document.documentElement.setAttribute(
             "data-theme",
             isLight ? "light" : "dark",
