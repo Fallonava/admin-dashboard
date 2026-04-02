@@ -840,22 +840,13 @@
       /* Jam / Call Info */
       .jam-box {
         display: flex;
-        flex-direction: column;
-        align-items: flex-end;
-      }
-
-      .jam-label {
-        font-size: 8px; /* Integer */
-        font-weight: 900;
-        opacity: 0.9; /* Visibilitas tegak */
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        margin-bottom: 0.5px;
+        align-items: center;
+        justify-content: flex-end;
       }
 
       .jam-val {
-        font-size: 13px;
-        font-weight: 800;
+        font-size: 15px; /* Boosted visibility */
+        font-weight: 900;
         color: var(--text-primary);
         font-variant-numeric: tabular-nums;
         letter-spacing: -0.02em;
@@ -2171,7 +2162,8 @@
           -webkit-box-orient: vertical; 
           line-height: 1.25; 
         }
-        .jam-box { display: none; } /* Terlalu sempit, hide jam non-aktif */
+        .jam-val { font-size: 13px; }
+        .jam-box { display: flex; transform: none; }
         
         /* Active Status Shrink Down (Pendaftaran & Praktek) */
         .platter.active { padding: 8px 10px !important; }
@@ -2622,7 +2614,6 @@
               </div>
               ${!isCPO && d.JamPraktek && d.JamPraktek !== "-" ? `
               <div class="jam-box">
-                <span class="jam-label">DAFTAR</span>
                 <span class="jam-val jam-val-daftar" style="color:var(--status-color)">${jamTampil}</span>
               </div>` : ""}
             </div>
