@@ -46,7 +46,6 @@ export function WingDashboardClient() {
   const debouncedSearch = useDebounce(searchQuery, 400);
   const isSearching = searchQuery !== debouncedSearch;
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
-  const [wingFilter, setWingFilter] = useState<'ALL' | 'EMERGENCY' | 'BUSY' | 'NORMAL'>('ALL');
   const [patientFilter, setPatientFilter] = useState<'ALL' | 'ACTIVE' | 'FULL' | 'INACTIVE'>('ALL');
   const [selectedDoctor, setSelectedDoctor] = useState<{ doctor: Doctor, specialty: string, wingStatus: 'EMERGENCY' | 'BUSY' | 'NORMAL' | 'OFFLINE' } | null>(null);
 
@@ -64,17 +63,58 @@ export function WingDashboardClient() {
 
   const todayDoctors = useMemo(() => {
     if (!doctors.length || !shifts.length) {
-      console.log(`[Wing] No data yet — doctors: ${doctors.length}, shifts: ${shifts.length}`);
       return [];
     }
-    const result = doctors.filter(doc =>
-      shifts.some(s =>
+    const result = doctors.filter(doc => {
+      // Check if they are on leave today
+      let isOnLeaveToday = false;
+      if (doc.leaveRequests && doc.leaveRequests.length > 0) {
+         isOnLeaveToday = doc.leaveRequests.some((lr: import('@/lib/data-service').LeaveRequest) => {
+            const statusStr = (lr.status || '').toLowerCase();
+            if (statusStr === 'rejected' || statusStr === 'ditolak') return false;
+            const start = new Date(lr.startDate);
+            const end = new Date(lr.endDate);
+            const check = new Date(todayStr);
+            check.setHours(0, 0, 0, 0);
+            start.setHours(0, 0, 0, 0);
+            end.setHours(0, 0, 0, 0);
+            return check >= start && check <= end;
+         });
+      }
+
+      // Check if they have a shift defined today
+      const hasShiftToday = shifts.some(s =>
+        String(s.doctorId) === String(doc.id) &&
+        Number(s.dayIdx) === Number(todayDayIdx)
+      );
+
+      // Check if today's shift is active (not in disabledDates)
+      const hasActiveShift = shifts.some(s =>
         String(s.doctorId) === String(doc.id) &&
         Number(s.dayIdx) === Number(todayDayIdx) &&
         !(s.disabledDates || []).includes(todayStr)
-      )
-    );
-    console.log(`[Wing] todayDayIdx=${todayDayIdx}, todayStr=${todayStr}, todayDoctors=${result.length}/${doctors.length}`);
+      );
+
+      return (hasShiftToday && isOnLeaveToday) || hasActiveShift;
+    }).map(doc => {
+      let isOnLeave = false;
+      if (doc.leaveRequests && doc.leaveRequests.length > 0) {
+         isOnLeave = doc.leaveRequests.some((lr: import('@/lib/data-service').LeaveRequest) => {
+            const statusStr = (lr.status || '').toLowerCase();
+            if (statusStr === 'rejected' || statusStr === 'ditolak') return false;
+            
+            const start = new Date(lr.startDate);
+            const end = new Date(lr.endDate);
+            const check = new Date(todayStr); // safe stable anchor
+            check.setHours(0, 0, 0, 0);
+            start.setHours(0, 0, 0, 0);
+            end.setHours(0, 0, 0, 0);
+            return check >= start && check <= end;
+         });
+      }
+      return isOnLeave ? { ...doc, status: 'CUTI' as const } : doc;
+    });
+    
     return result;
   }, [doctors, shifts, todayDayIdx, todayStr]);
 
@@ -130,16 +170,15 @@ export function WingDashboardClient() {
   const busyCount = wingsWithStatus.filter(w => w.status === 'BUSY').length;
   const normalCount = wingsWithStatus.filter(w => w.status === 'NORMAL').length;
 
-  // Compute generic Pulse state
   const pulseVariant = emergencyCount > 0 ? 'EMERGENCY' : busyCount > 0 ? 'BUSY' : 'NORMAL';
   const pulseMessage = 
     pulseVariant === 'EMERGENCY' ? `MENDESAK: ${emergencyCount} Area Utama mendeteksi aktivitas Bedah/Operasi!` :
     pulseVariant === 'BUSY' ? `PERINGATAN: ${busyCount} Poliklinik sedang mengalami lonjakan antrean (Surge).` :
-    "Sistem Terkendali: Tidak ada antrean darurat yang terdeteksi.";
+    "Sistem Terkendali: Seluruh metrik operasional stabil.";
   const pulseStyle = 
-    pulseVariant === 'EMERGENCY' ? "bg-red-50/80 border-red-200 text-red-700 shadow-[0_0_30px_rgba(239,68,68,0.15)]" :
-    pulseVariant === 'BUSY' ? "bg-orange-50/80 border-orange-200 text-orange-700" :
-    "bg-indigo-50/80 border-indigo-200 text-indigo-700";
+    pulseVariant === 'EMERGENCY' ? "bg-red-500/10 border-red-500/30 text-red-700 shadow-[0_0_30px_rgba(239,68,68,0.15)] ring-1 ring-inset ring-red-500/20" :
+    pulseVariant === 'BUSY' ? "bg-orange-500/10 border-orange-500/30 text-orange-700 ring-1 ring-inset ring-orange-500/20" :
+    "bg-white/60 border-white/60 text-indigo-700 shadow-[0_4px_24px_rgba(0,0,0,0.02)]";
   const PulseIcon = pulseVariant === 'EMERGENCY' ? ShieldAlert : pulseVariant === 'BUSY' ? Flame : Sparkles;
 
   const tickerMessages = useMemo(() => {
@@ -246,17 +285,17 @@ export function WingDashboardClient() {
 
         {/* AI Command Pulse Bar */}
         <div className={cn(
-            "w-full rounded-[24px] border backdrop-blur-xl p-4 sm:p-5 flex flex-col xl:flex-row gap-4 xl:items-center justify-between transition-all duration-500",
+            "w-full rounded-[20px] sm:rounded-[28px] border backdrop-blur-3xl p-3.5 sm:p-5 flex flex-col xl:flex-row gap-3 xl:items-center justify-between transition-all duration-500",
             pulseStyle
         )}>
-            <div className="flex items-center gap-3.5">
+            <div className="flex items-center gap-3">
                 <div className={cn(
-                    "p-2.5 rounded-[14px] bg-white shadow-sm shrink-0",
+                    "p-2 sm:p-2.5 rounded-[12px] sm:rounded-[14px] bg-white shadow-sm shrink-0",
                     pulseVariant === 'EMERGENCY' ? "text-red-600 animate-pulse" :
                     pulseVariant === 'BUSY' ? "text-orange-500" :
                     "text-indigo-600"
                 )}>
-                    <PulseIcon size={20} className={pulseVariant === 'EMERGENCY' ? "animate-bounce" : ""} />
+                    <PulseIcon size={18} className={pulseVariant === 'EMERGENCY' ? "animate-bounce" : "sm:w-5 sm:h-5"} />
                 </div>
                 <div>
                     <h3 className="font-black text-[15px] leading-tight flex items-center gap-2">
@@ -267,37 +306,6 @@ export function WingDashboardClient() {
                         </span>
                     </h3>
                     <p className="text-[12px] font-bold opacity-80 mt-0.5">{pulseMessage}</p>
-                </div>
-            </div>
-
-            {/* Quick Filters */}
-            <div className="flex items-center gap-2 overflow-x-auto custom-scrollbar-hide -mx-2 px-2 xl:mx-0 xl:px-0">
-                <div className="flex items-center gap-1.5 bg-white/60 p-1.5 rounded-[16px] shadow-sm border border-black/5 shrink-0">
-                    <Filter size={14} className="mx-2 text-slate-400" />
-                    <button 
-                        onClick={() => setWingFilter('ALL')}
-                        className={cn("px-4 py-1.5 rounded-[12px] text-xs font-black transition-all", wingFilter === 'ALL' ? "bg-white text-slate-800 shadow-sm" : "hover:bg-white/50 text-slate-500")}
-                    >
-                        Semua Wing
-                    </button>
-                    {(emergencyCount > 0 || wingFilter === 'EMERGENCY') && <button 
-                        onClick={() => setWingFilter('EMERGENCY')}
-                        className={cn("px-4 py-1.5 rounded-[12px] text-xs font-black transition-all flex items-center gap-1.5", wingFilter === 'EMERGENCY' ? "bg-red-500 text-white shadow-md shadow-red-500/20" : "hover:bg-white/50 text-red-600")}
-                    >
-                        {wingFilter === 'EMERGENCY' && <CheckCircle2 size={12} />} Darurat
-                    </button>}
-                    {(busyCount > 0 || wingFilter === 'BUSY') && <button 
-                        onClick={() => setWingFilter('BUSY')}
-                        className={cn("px-4 py-1.5 rounded-[12px] text-xs font-black transition-all flex items-center gap-1.5", wingFilter === 'BUSY' ? "bg-orange-500 text-white shadow-md shadow-orange-500/20" : "hover:bg-white/50 text-orange-600")}
-                    >
-                        {wingFilter === 'BUSY' && <CheckCircle2 size={12} />} Sibuk
-                    </button>}
-                    <button 
-                        onClick={() => setWingFilter('NORMAL')}
-                        className={cn("px-4 py-1.5 rounded-[12px] text-xs font-black transition-all flex items-center gap-1.5", wingFilter === 'NORMAL' ? "bg-blue-500 text-white shadow-md shadow-blue-500/20" : "hover:bg-white/50 text-blue-600")}
-                    >
-                        {wingFilter === 'NORMAL' && <CheckCircle2 size={12} />} Normal
-                    </button>
                 </div>
             </div>
         </div>
@@ -337,42 +345,42 @@ export function WingDashboardClient() {
             </div>
           </div>
 
-          {/* Patient-Facing Filter Bar */}
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-[11px] font-black text-slate-400 uppercase tracking-widest mr-1">Filter Dokter:</span>
-            {([
-              { key: 'ALL',      label: '🏥 Semua Dokter' },
-              { key: 'ACTIVE',   label: '🟢 Tersedia' },
-              { key: 'FULL',     label: '🔴 Antrean Penuh' },
-              { key: 'INACTIVE', label: '⚫ Tidak Buka' },
-            ] as const).map(f => (
-              <button
-                key={f.key}
-                onClick={() => setPatientFilter(f.key)}
-                className={cn(
-                  "px-4 py-2 rounded-2xl text-[12px] font-black transition-all border touch-manipulation active:scale-95",
-                  patientFilter === f.key
-                    ? "bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-500/20"
-                    : "bg-white text-slate-600 border-slate-200 hover:border-indigo-300 hover:text-indigo-600"
-                )}
-              >
-                {f.label}
-              </button>
-            ))}
+          {/* Modern Segmented Filters - 2026 Style */}
+          <div className="flex items-center gap-3 overflow-x-auto snap-x snap-mandatory custom-scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0 pb-2 sm:pb-0 touch-pan-x">
+            <div className="flex items-center p-1.5 bg-slate-200/50 backdrop-blur-md rounded-full shrink-0 border border-slate-300/30 shadow-inner w-max">
+              {([
+                { key: 'ALL',      label: 'Semua Poli', icon: '🏥' },
+                { key: 'ACTIVE',   label: 'Tersedia', icon: '🟢' },
+                { key: 'FULL',     label: 'Penuh', icon: '🔴' },
+                { key: 'INACTIVE', label: 'Off-Duty', icon: '⚫' },
+              ] as const).map(f => (
+                <button
+                  key={f.key}
+                  onClick={() => setPatientFilter(f.key)}
+                  className={cn(
+                    "relative px-4 sm:px-5 py-2 rounded-full text-[12px] sm:text-[13px] font-bold transition-all duration-300 flex items-center gap-2",
+                    "touch-manipulation active:scale-[0.95] snap-center outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 shrink-0",
+                    patientFilter === f.key
+                      ? "bg-white text-indigo-700 shadow-sm ring-1 ring-black/5"
+                      : "text-slate-500 hover:text-slate-700 hover:bg-black/5"
+                  )}
+                >
+                  <span className="text-[14px]">{f.icon}</span>
+                  <span>{f.label}</span>
+                </button>
+              ))}
+            </div>
           </div>
 
           <ErrorBoundary name="Poli Accordion List" className="min-h-[400px]">
              {wingsWithStatus.length > 0 ? (
                 <div className="space-y-3 pb-6">
                   {wingsWithStatus.map(wing => {
-                    // Admin heatmap dim still applies
-                    const isDimmed = wingFilter !== 'ALL' && wing.status !== wingFilter;
-
                     return (
                       <div
                         key={wing.specialty}
                         id={`wing-${wing.specialty.replace(/\s+/g, '-').toLowerCase()}`}
-                        className={cn("transition-all duration-500 rounded-[28px]", isDimmed && "opacity-30 grayscale pointer-events-none")}
+                        className={cn("transition-all duration-500 rounded-[28px]")}
                       >
                         <PoliAccordion
                           specialty={wing.specialty}
@@ -412,23 +420,23 @@ export function WingDashboardClient() {
         isSearching={isSearching}
       />
 
-      {/* AI Insight Ticker — Light Theme */}
-      <div className="flex-none relative overflow-hidden bg-white/80 backdrop-blur-xl border-t border-slate-200/80 py-2.5 px-0 shadow-[0_-1px_0_rgba(0,0,0,0.04)]">
-        <div className="flex items-center">
+      {/* AI Insight Ticker — Floating Dynamic Pill 2026 */}
+      <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 w-[95%] sm:w-max max-w-[800px] z-[100] animate-in slide-in-from-bottom-8 duration-700 ease-[cubic-bezier(0.2,0.8,0.2,1)]">
+        <div className="flex items-center bg-white/80 backdrop-blur-3xl saturate-[1.2] rounded-full border border-white/60 shadow-[0_8px_32px_rgba(30,41,59,0.1),0_0_0_1px_rgba(255,255,255,0.7)_inset] overflow-hidden">
           {/* Static label */}
-          <div className="flex items-center gap-2 px-4 bg-white/90 border-r border-slate-200 shrink-0 py-0.5 z-10">
-            <Wifi size={11} className="text-emerald-500 animate-pulse" />
-            <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Live Intel</span>
+          <div className="flex items-center gap-2 px-3.5 sm:px-5 pb-[1px] bg-slate-50/50 backdrop-blur-md border-r border-slate-200/50 shrink-0 z-10">
+            <Wifi size={12} className="text-emerald-500 animate-pulse" />
+            <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest hidden sm:inline-block">Live Intel</span>
           </div>
           {/* Scrolling ticker */}
-          <div className="overflow-hidden flex-1">
-            <div className="flex whitespace-nowrap animate-ticker">
+          <div className="overflow-hidden flex-1 py-2.5">
+            <div className="flex whitespace-nowrap animate-ticker hover:[animation-play-state:paused]">
               {[...tickerMessages, ...tickerMessages].map((msg, i) => (
                 <button
                   key={i}
                   onClick={() => msg.target && scrollToWing(msg.target)}
                   className={cn(
-                    "inline-block text-[12px] font-semibold px-8 border-r border-slate-200/60 transition-colors",
+                    "inline-block text-[12px] font-bold px-8 border-r border-slate-200/60 transition-colors focus-visible:outline-none",
                     msg.target
                       ? "text-indigo-600 hover:text-indigo-800 cursor-pointer"
                       : "text-slate-500 cursor-default"

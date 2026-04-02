@@ -61,9 +61,9 @@ export function PageHeader({
       className={cn(
         "animate-in fade-in slide-in-from-top-4 duration-500 ease-out",
         "flex-none z-50",
-        "m-3 sm:m-4 lg:m-6 lg:mb-2",
+        "m-2 sm:m-4 lg:m-6 lg:mb-2",
         "rounded-[24px] lg:rounded-[32px]",
-        "bg-white/80 backdrop-blur-2xl saturate-150",
+        "bg-white/80 backdrop-blur-3xl saturate-150",
         "border border-white/60",
         "shadow-[0_8px_30px_rgb(0,0,0,0.04),inset_0_1px_1px_rgba(255,255,255,0.9)]",
         className

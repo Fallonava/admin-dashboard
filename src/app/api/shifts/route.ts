@@ -28,6 +28,8 @@ export async function GET(req: Request) {
     const includeLeaves = searchParams.get('include') === 'leaves';
     const dayIdxParam = searchParams.get('dayIdx');
     const dayIdx = dayIdxParam !== null ? parseInt(dayIdxParam, 10) : null;
+    const dateParam = searchParams.get('date'); // e.g. "2026-04-02"
+    const filterDate = dateParam ? new Date(dateParam) : null;
 
     const whereClause: any = {
         doctorId: { not: "" }
@@ -35,20 +37,22 @@ export async function GET(req: Request) {
     if (dayIdx !== null && !isNaN(dayIdx)) {
         whereClause.dayIdx = dayIdx;
     }
+    // We will do JavaScript-based filtering below to avoid UTC timezone offset issues
+    // that cause Prisma's exact lte/gte comparison to fail on local dates.
 
     const shifts = await prisma.shift.findMany({
         where: whereClause,
         include: { 
             doctor: {
                 include: {
-                    ...(includeLeaves ? { leaveRequests: true } : {})
+                    ...((includeLeaves || filterDate) ? { leaveRequests: true } : {})
                 }
             } 
         },
         orderBy: [{ dayIdx: 'asc' }, { timeIdx: 'asc' }]
     });
 
-    const mappedShifts = shifts.filter(s => s.doctor !== null).map((s: any) => {
+    let mappedShifts = shifts.filter(s => s.doctor !== null).map((s: any) => {
         const doctorRel = s.doctor ? { ...s.doctor } : null;
         if (doctorRel && typeof doctorRel.lastManualOverride === 'bigint') {
             doctorRel.lastManualOverride = Number(doctorRel.lastManualOverride);
@@ -60,6 +64,27 @@ export async function GET(req: Request) {
             doctorRel: doctorRel
         };
     });
+
+    if (filterDate && !isNaN(filterDate.getTime())) {
+        mappedShifts = mappedShifts.filter((s: any) => {
+            if (s.doctorRel && s.doctorRel.leaveRequests) {
+                const isOnLeave = s.doctorRel.leaveRequests.some((lr: any) => {
+                    const statusStr = (lr.status || '').toLowerCase();
+                    if (statusStr === 'rejected' || statusStr === 'ditolak') return false;
+                    
+                    const start = new Date(lr.startDate);
+                    const end = new Date(lr.endDate);
+                    const check = new Date(filterDate);
+                    check.setHours(0, 0, 0, 0);
+                    start.setHours(0, 0, 0, 0);
+                    end.setHours(0, 0, 0, 0);
+                    return check >= start && check <= end;
+                });
+                return !isOnLeave;
+            }
+            return true;
+        });
+    }
 
     return NextResponse.json(mappedShifts, {
         headers: {

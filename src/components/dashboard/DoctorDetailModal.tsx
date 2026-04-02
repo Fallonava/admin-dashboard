@@ -239,26 +239,29 @@ export function DoctorDetailModal({
                   Buka dalam {minsUntilOpen >= 60 ? `${Math.floor(minsUntilOpen/60)}j ${minsUntilOpen % 60}m` : `${minsUntilOpen} menit`}
                 </div>
               ) : isActive ? (
-                <div className="mt-4">
-                  <div className="flex justify-between items-center mb-1.5">
-                    <span className="text-[11px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1">
-                      <Activity size={10} className="text-blue-500" /> Progress Shift
-                    </span>
-                    {isOvertime && (
-                      <span className="text-[10px] font-black text-purple-600 uppercase flex items-center gap-1 bg-purple-100 px-2 py-0.5 rounded-full">
-                        <ClockAlert size={10} /> Lembur
+                <div className="mt-5">
+                  <div className="bg-white border border-slate-100 rounded-[18px] p-3 shadow-[inset_0_2px_10px_rgba(0,0,0,0.02)] relative">
+                    <div className="flex justify-between text-[11px] items-center font-black font-mono text-slate-400 mb-2 px-1">
+                      <span>{formattedTime.split('-')[0] || '--:--'}</span>
+                      <span className="flex items-center gap-1">
+                        {isOvertime ? (
+                          <span className="text-purple-500 animate-pulse uppercase tracking-wider bg-purple-50 px-2 py-0.5 rounded-md border border-purple-100">Lembur</span>
+                        ) : (
+                          <span className="text-indigo-500 uppercase tracking-wider bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-100">Live</span>
+                        )}
                       </span>
-                    )}
-                  </div>
-                  <div className="h-2.5 bg-slate-200 rounded-full overflow-hidden w-full">
-                    <div
-                      className={cn("h-full rounded-full transition-all duration-1000",
-                        isOvertime ? "bg-purple-500" :
-                        doctor.status === 'OPERASI' ? "bg-red-500" :
-                        doctor.status === 'PENUH' ? "bg-orange-500" : "bg-blue-500"
-                      )}
-                      style={{ width: `${progress}%` }}
-                    />
+                      <span>{formattedTime.split('-')[1] || '--:--'}</span>
+                    </div>
+                    <div className="h-2 bg-slate-100/80 rounded-full overflow-hidden relative">
+                      <div
+                        className={cn("h-full rounded-full transition-all duration-1000",
+                          isOvertime ? "bg-gradient-to-r from-purple-400 to-purple-500" :
+                          doctor.status === 'OPERASI' ? "bg-gradient-to-r from-red-400 to-red-500" :
+                          doctor.status === 'PENUH' ? "bg-gradient-to-r from-orange-400 to-orange-500" : "bg-gradient-to-r from-blue-400 to-blue-500"
+                        )}
+                        style={{ width: `${progress}%` }}
+                      />
+                    </div>
                   </div>
                 </div>
               ) : (
@@ -270,41 +273,48 @@ export function DoctorDetailModal({
 
             {/* CUTI/LEAVES CARD */}
             {(activeLeavesToday?.length || upcomingLeaves?.length) ? (
-              <div className="bg-white border text-left border-red-100 shadow-sm rounded-[24px] p-5">
-                <div className="flex items-center gap-2 mb-3">
-                  <CalendarOff size={16} className="text-red-400" />
-                  <h3 className="text-[14px] font-black text-slate-700 tracking-wide">Jadwal Cuti & Izin</h3>
-                </div>
+              <div className="relative border border-slate-200/50 shadow-[0_4px_24px_rgba(0,0,0,0.02)] rounded-[24px] p-5 overflow-hidden">
+                {/* Ambient Mesh Background */}
+                <div className="absolute inset-0 bg-slate-50/80 backdrop-blur-3xl saturate-150" />
+                <div className="absolute -top-10 -right-10 w-32 h-32 bg-rose-400/10 rounded-full blur-3xl pointer-events-none" />
+                <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-amber-400/10 rounded-full blur-3xl pointer-events-none" />
+                
+                <div className="relative z-10">
+                  <div className="flex items-center gap-2 mb-3">
+                    <CalendarOff size={16} className="text-red-500" />
+                    <h3 className="text-[14px] font-black text-slate-800 tracking-wide">Jadwal Cuti & Izin</h3>
+                  </div>
 
-                <div className="space-y-3">
-                  {/* Active Leaves */}
-                  {activeLeavesToday?.map(lr => (
-                    <div key={lr.id} className="flex flex-col gap-1.5 bg-red-50 rounded-xl px-4 py-3 border border-red-100">
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="text-[13px] text-red-700 font-bold flex items-center gap-1.5">
-                          <Flame size={12} className="text-red-500" /> Sedang Cuti ({lr.type})
+                  <div className="space-y-3">
+                    {/* Active Leaves */}
+                    {activeLeavesToday?.map(lr => (
+                      <div key={lr.id} className="flex flex-col gap-1.5 bg-white/60 hover:bg-white/80 transition-colors backdrop-blur-md rounded-[18px] px-4 py-3 border border-white shadow-sm">
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-[13px] text-red-600 font-black flex items-center gap-1.5">
+                            <Flame size={12} className="text-red-500 animate-pulse" /> Sedang Cuti ({lr.type})
+                          </span>
+                        </div>
+                        <span className="text-[12px] text-slate-600 font-medium leading-snug">
+                           Tanggal: {formatDateId(lr.startDate)} - {formatDateId(lr.endDate)}
+                           {lr.reason && <><br /><span className="text-slate-500 mt-0.5 inline-block">Keterangan: {lr.reason}</span></>}
                         </span>
                       </div>
-                      <span className="text-[12px] text-red-600/80 font-medium leading-snug">
-                         Tanggal: {formatDateId(lr.startDate)} - {formatDateId(lr.endDate)}
-                         {lr.reason && <><br />Keterangan: {lr.reason}</>}
-                      </span>
-                    </div>
-                  ))}
+                    ))}
 
-                  {/* Upcoming Leaves */}
-                  {upcomingLeaves?.map(lr => (
-                    <div key={lr.id} className="flex flex-col gap-1.5 bg-amber-50 rounded-xl px-4 py-3 border border-amber-100">
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="text-[13px] text-amber-700 font-bold flex items-center gap-1.5">
-                          <Calendar size={12} className="text-amber-500" /> Akan Datang ({lr.type})
+                    {/* Upcoming Leaves */}
+                    {upcomingLeaves?.map(lr => (
+                      <div key={lr.id} className="flex flex-col gap-1.5 bg-white/60 hover:bg-white/80 transition-colors backdrop-blur-md rounded-[18px] px-4 py-3 border border-white shadow-sm">
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-[13px] text-amber-600 font-black flex items-center gap-1.5">
+                            <Calendar size={12} className="text-amber-500" /> Akan Datang ({lr.type})
+                          </span>
+                        </div>
+                        <span className="text-[12px] text-slate-600 font-medium leading-snug">
+                           Tanggal: {formatDateId(lr.startDate)} - {formatDateId(lr.endDate)}
                         </span>
                       </div>
-                      <span className="text-[12px] text-amber-600/80 font-medium leading-snug">
-                         Tanggal: {formatDateId(lr.startDate)} - {formatDateId(lr.endDate)}
-                      </span>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               </div>
             ) : null}

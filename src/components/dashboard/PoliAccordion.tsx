@@ -61,9 +61,9 @@ function isActiveStatus(status: Doctor['status']) {
 
 const WING_STATUS_CONFIG = {
   EMERGENCY: { badge: 'bg-red-100 text-red-700 border-red-200', headerBg: 'bg-red-50', headerBorder: 'border-red-200', label: '🚨 Kondisi Darurat', barColor: 'bg-red-500' },
-  BUSY:      { badge: 'bg-orange-100 text-orange-700 border-orange-200', headerBg: 'bg-orange-50', headerBorder: 'border-orange-200', label: '⚡ Antrean Ramai', barColor: 'bg-orange-500' },
-  NORMAL:    { badge: 'bg-emerald-100 text-emerald-700 border-emerald-200', headerBg: 'bg-white', headerBorder: 'border-slate-200', label: '🟢 Buka Normal', barColor: 'bg-emerald-500' },
-  OFFLINE:   { badge: 'bg-slate-100 text-slate-500 border-slate-200', headerBg: 'bg-slate-50', headerBorder: 'border-slate-200', label: '⚫ Belum Buka', barColor: 'bg-slate-300' },
+  BUSY:      { badge: 'bg-orange-100 text-orange-700 border-orange-200', headerBg: 'bg-orange-50', headerBorder: 'border-orange-200', label: '⚡ Antrean Padat', barColor: 'bg-orange-500' },
+  NORMAL:    { badge: 'bg-emerald-100 text-emerald-700 border-emerald-200', headerBg: 'bg-white', headerBorder: 'border-slate-200', label: '🟢 Beroperasi Normal', barColor: 'bg-emerald-500' },
+  OFFLINE:   { badge: 'bg-slate-100 text-slate-500 border-slate-200', headerBg: 'bg-slate-50', headerBorder: 'border-slate-200', label: '⚫ Off-Duty', barColor: 'bg-slate-300' },
 };
 
 function getRelevantShift(doc: Doctor, currentTimeMinutes: number, nowMs: number) {
@@ -155,9 +155,10 @@ export function PoliAccordion({
         onClick={() => setIsOpen(prev => !prev)}
         onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setIsOpen(prev => !prev); } }}
         className={cn(
-          "w-full flex items-center gap-4 px-5 py-4 text-left transition-all duration-300 touch-manipulation cursor-pointer",
+          "w-full flex items-center gap-3 sm:gap-4 px-4 sm:px-5 py-4 text-left transition-all duration-300 touch-manipulation cursor-pointer",
           cfg.headerBg,
-          isOpen ? "border-b border-slate-200" : ""
+          "active:bg-slate-50/80 active:scale-[0.99]",
+          isOpen ? "border-b border-slate-200/60" : ""
         )}
       >
         {/* Status bar (left edge) */}
@@ -249,9 +250,10 @@ export function PoliAccordion({
                     key={doc.id}
                     onClick={() => onOpenDoctorDetail(doc)}
                     className={cn(
-                      "flex items-start text-left gap-3 bg-white rounded-[20px] border px-3 py-2.5 shadow-sm transition-all duration-200",
-                      "active:scale-[0.99] touch-manipulation cursor-pointer hover:shadow-md",
-                      isActive ? "border-slate-200 hover:border-slate-300" : "border-slate-100 opacity-75"
+                      "flex items-start text-left gap-3 bg-white rounded-[20px] sm:rounded-[24px] border px-3 sm:px-4 py-2.5 sm:py-3 shadow-sm",
+                      "transition-all duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] touch-manipulation cursor-pointer active:scale-[0.98]",
+                      "hover:-translate-y-1 hover:shadow-xl hover:shadow-indigo-500/10",
+                      isActive ? "border-slate-200 hover:border-indigo-200" : "border-slate-100 opacity-75"
                     )}
                   >
                     {/* Avatar */}

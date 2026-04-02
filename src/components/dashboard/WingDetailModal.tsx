@@ -5,7 +5,7 @@ import {
   X, Users, Activity, Flame, ClockAlert, Timer, Clock,
   CheckCircle2, Circle, Calendar, CalendarOff, Stethoscope, ChevronRight, Wifi
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, parseTimeToMinutes, getRelevantShift } from "@/lib/utils";
 import type { Doctor } from "@/lib/data-service";
 
 interface WingDetailModalProps {
@@ -17,11 +17,7 @@ interface WingDetailModalProps {
   onClose: () => void;
 }
 
-function parseTimeToMinutes(timeStr: string | undefined | null) {
-  if (!timeStr) return 0;
-  const [h, m] = timeStr.split(":").map(Number);
-  return isNaN(h) || isNaN(m) ? 0 : h * 60 + m;
-}
+
 
 function formatDateId(date: Date | string) {
   const d = typeof date === 'string' ? new Date(date) : date;
@@ -75,29 +71,7 @@ const WING_LIGHT_CONFIG = {
   },
 };
 
-function getRelevantShift(doc: Doctor, currentTimeMinutes: number, nowMs: number) {
-  if (!doc.shifts || doc.shifts.length === 0) return null;
-  const dayIdx = new Date(nowMs + 7 * 3600_000).getUTCDay() === 0 ? 6 : new Date(nowMs + 7 * 3600_000).getUTCDay() - 1;
-  const todayShifts = doc.shifts.filter(s => s.dayIdx === dayIdx && s.formattedTime);
-  if (todayShifts.length === 0) return null;
-  
-  if (todayShifts.length === 1) return todayShifts[0];
 
-  for (const shift of todayShifts) {
-    const parts = shift.formattedTime!.split('-');
-    if (parts.length < 2) continue;
-    const startMins = parseTimeToMinutes(parts[0]);
-    const endMins = parseTimeToMinutes(parts[1]);
-    if (currentTimeMinutes >= startMins - 60 && currentTimeMinutes <= endMins) return shift;
-  }
-  
-  const upcoming = todayShifts.find(s => {
-    const startMins = parseTimeToMinutes(s.formattedTime!.split('-')[0]);
-    return startMins > currentTimeMinutes;
-  });
-  
-  return upcoming || todayShifts[todayShifts.length - 1];
-}
 
 function getAvatarGradient(status: Doctor['status']) {
   switch (status) {
@@ -117,14 +91,14 @@ function StatusBadge({ status }: { status: Doctor['status'] }) {
     PENUH:        "bg-orange-100 text-orange-700 border-orange-200",
     OPERASI:      "bg-red-100 text-red-700 border-red-200",
     PENDAFTARAN:  "bg-indigo-100 text-indigo-600 border-indigo-200",
-    CUTI:         "bg-pink-100 text-pink-700 border-pink-200",
+    CUTI:         "bg-slate-100 text-rose-600 border-rose-200",
     SELESAI:      "bg-emerald-100 text-emerald-700 border-emerald-200",
     TERJADWAL:    "bg-sky-100 text-sky-600 border-sky-200",
     LIBUR:        "bg-slate-100 text-slate-500 border-slate-200",
   };
   const label: Record<Doctor['status'], string> = {
     PRAKTEK: "PRAKTEK", PENUH: "PENUH", OPERASI: "OPERASI",
-    PENDAFTARAN: "PENDAFTARAN", CUTI: "CUTI", SELESAI: "SELESAI",
+    PENDAFTARAN: "PENDAFTARAN", CUTI: "SEDANG CUTI", SELESAI: "SELESAI",
     TERJADWAL: "TERJADWAL", LIBUR: "LIBUR",
   };
   return (
@@ -185,7 +159,7 @@ export function WingDetailModal({
   return (
     <div
       ref={overlayRef}
-      className="fixed inset-0 z-[200] flex items-center justify-center p-4 sm:p-6"
+      className="fixed inset-0 z-[200] flex items-end sm:items-center justify-center sm:p-6"
       onClick={(e) => { if (e.target === overlayRef.current) onClose(); }}
     >
       {/* Backdrop */}
@@ -193,9 +167,8 @@ export function WingDetailModal({
 
       {/* Center Modal — Light Theme */}
       <div className={cn(
-        "relative w-full max-w-2xl max-h-[92vh] flex flex-col overflow-hidden",
-        "rounded-[32px] sm:rounded-[40px] m-4",
-        "bg-white border text-left",
+        "rounded-t-[32px] sm:rounded-[40px] w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden",
+        "bg-white border-t sm:border text-left",
         "animate-in zoom-in-95 duration-300 ease-out",
         cfg.headerBorder,
         cfg.glow
@@ -345,30 +318,35 @@ export function WingDetailModal({
                             )}
                           </div>
 
-                          {/* Shift times */}
-                          <div className="flex items-center gap-3 mt-1 flex-wrap">
-                            <span className="text-[12px] text-slate-400 font-medium flex items-center gap-1">
-                              <Clock size={11} /> {formattedTime.replace('-', '–')}
-                            </span>
-                            {doc.queueCode && (
-                              <span className="text-[11px] font-black text-slate-300 font-mono">#{doc.queueCode}</span>
-                            )}
-                          </div>
-
-                          {/* Shift progress per doctor */}
-                          <div className="mt-2 h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                            <div
-                              className={cn("h-full rounded-full transition-all duration-1000",
-                                isOvertime ? "bg-purple-400" :
-                                doc.status === 'OPERASI' ? "bg-red-400" :
-                                doc.status === 'PENUH' ? "bg-orange-400" : "bg-blue-400"
-                              )}
-                              style={{ width: `${progress}%` }}
-                            />
+                          {/* Timeline Track */}
+                          <div className="mt-3 bg-slate-50 border border-slate-100 rounded-xl p-2.5 relative shadow-inner">
+                            <div className="flex justify-between text-[10px] items-center font-black font-mono text-slate-400 mb-1.5 px-1">
+                              <span>{formattedTime.split('-')[0] || '--:--'}</span>
+                              <span className="flex items-center gap-1">
+                                {isOvertime ? (
+                                  <span className="text-purple-500 animate-pulse text-[9px] uppercase tracking-wider">Lembur</span>
+                                ) : (
+                                  <span className="text-indigo-500 text-[9px] uppercase tracking-wider">Live</span>
+                                )}
+                              </span>
+                              <span>{formattedTime.split('-')[1] || '--:--'}</span>
+                            </div>
+                            <div className="h-1.5 bg-slate-200 rounded-full overflow-hidden relative">
+                              <div
+                                className={cn("h-full rounded-full transition-all duration-1000",
+                                  isOvertime ? "bg-purple-400" :
+                                  doc.status === 'OPERASI' ? "bg-red-400" :
+                                  doc.status === 'PENUH' ? "bg-orange-400" : "bg-blue-400"
+                                )}
+                                style={{ width: `${progress}%` }}
+                              />
+                            </div>
                           </div>
                         </div>
 
-                        <StatusBadge status={doc.status} />
+                        <div className="self-start mt-1">
+                          <StatusBadge status={doc.status} />
+                        </div>
                       </div>
 
                       {/* Active Leave Warning */}

@@ -6,7 +6,7 @@ import { ChevronLeft, ChevronRight, Plus, X, Clock, User, ChevronDown, Search } 
 import { cn } from "@/lib/utils";
 import type { Shift, Doctor } from "@/lib/data-service";
 import { SearchableSelect } from "@/components/ui/SearchableSelect";
-import { useSSE } from '@/hooks/use-sse';
+import { useSocket } from '@/hooks/use-socket';
 
 const HOURS = [
     { label: "07:00", hour: 7 },
@@ -40,21 +40,25 @@ interface RealtimeCalendarProps {
 }
 
 export function RealtimeCalendar({ selectedDate, onDateChange }: RealtimeCalendarProps) {
-    const { data: shifts = [] } = useSWR<Shift[]>('/api/shifts?include=leaves');
+    // Compute date string early — used as SWR key so data re-fetches on date change
+    const dateKey = selectedDate.getFullYear() + '-'
+        + String(selectedDate.getMonth() + 1).padStart(2, '0') + '-'
+        + String(selectedDate.getDate()).padStart(2, '0');
+
+    const { data: shifts = [] } = useSWR<Shift[]>(`/api/shifts?include=leaves&date=${dateKey}`);
     const { data: doctors = [] } = useSWR<Doctor[]>('/api/doctors');
 
-    // ─── Real-time Updates via SSE ───
-    useSSE({
-        url: '/api/realtime/doctors',
-        handlers: {}, // Required by UseSSEOptions
-        onMessage: (data: any) => {
-            if (data && data.updates) {
-                console.log('[SSE] Updates in Calendar:', data);
-                mutate('/api/doctors');
-                mutate((key: string) => typeof key === 'string' && key.startsWith('/api/shifts'));
-            }
+    // ─── Real-time Updates via Socket.IO ───
+    const { lastUpdate } = useSocket('schedules');
+
+    useEffect(() => {
+        if (lastUpdate > 0) {
+            console.log('[Socket.IO] Updates in Calendar (via admin_sync_all)');
+            mutate('/api/doctors');
+            // Invalidate all shift keys (including date-scoped ones)
+            mutate((key: string) => typeof key === 'string' && key.startsWith('/api/shifts'));
         }
-    });
+    }, [lastUpdate]);
 
     const [showAddModal, setShowAddModal] = useState(false);
     const [newShift, setNewShift] = useState({
@@ -197,8 +201,8 @@ export function RealtimeCalendar({ selectedDate, onDateChange }: RealtimeCalenda
         fetchData();
     };
 
-    // Selected Date formatted for disabled date checks
-    const todayStr = selectedDate.getFullYear() + '-' + String(selectedDate.getMonth() + 1).padStart(2, '0') + '-' + String(selectedDate.getDate()).padStart(2, '0');
+    // Selected Date formatted for disabled date checks (same as dateKey)
+    const todayStr = dateKey;
 
     return (
         <div className="flex-1 w-full flex flex-col min-h-0 overflow-hidden relative space-y-4">
@@ -245,22 +249,8 @@ export function RealtimeCalendar({ selectedDate, onDateChange }: RealtimeCalenda
                                 if (s.extra === 'odd_weeks' && weekOfMonth % 2 === 0) return false; // Sembunyikan jika genap
                                 if (s.extra === 'even_weeks' && weekOfMonth % 2 !== 0) return false; // Sembunyikan jika ganjil
 
-                                // 4. Cek apakah dokter sedang cuti (Approved) pada tanggal terpilih
-                                const doctor = (s as any).doctorRel;
-                                if (doctor && doctor.leaveRequests) {
-                                    const isOnLeave = doctor.leaveRequests.some((lr: any) => {
-                                        if (lr.status !== 'Approved') return false;
-                                        const start = new Date(lr.startDate);
-                                        const end = new Date(lr.endDate);
-                                        // Reset jam ke 00:00:00 untuk perbandingan murni tanggal
-                                        const check = new Date(selectedDate);
-                                        check.setHours(0, 0, 0, 0);
-                                        start.setHours(0, 0, 0, 0);
-                                        end.setHours(0, 0, 0, 0);
-                                        return check >= start && check <= end;
-                                    });
-                                    if (isOnLeave) return false;
-                                }
+                                // 4. [Server-side handled] Doctor cuti filter done via API ?date= param
+                                // No additional client check needed — server already excluded them.
 
                                 return true;
                             });
