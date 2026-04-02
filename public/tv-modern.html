@@ -3300,9 +3300,7 @@
 
             // Find shifts for today
             const todayShifts = shifts.filter(
-              (s) =>
-                s.dayIdx === todayDayIdx &&
-                !(s.disabledDates || []).includes(todayStr),
+              (s) => s.dayIdx === todayDayIdx
             );
 
             todayShifts.forEach((shift, index) => {
@@ -3314,9 +3312,17 @@
               // Status dasar yang diputuskan server secara global untuk dokter
               let status = (doc.status || "").toUpperCase();
 
+              // Cek apakah dokter cuti/tidak praktek hari ini
+              const isLeaveToday = (shift.disabledDates || []).includes(todayStr) || 
+                                   leaves.some(l => l.doctorId === doc.id && l.startDate <= todayStr && l.endDate >= todayStr);
+
+              if (isLeaveToday) {
+                status = "CUTI";
+              }
+              
+              const isPriorityStatus = ["CUTI", "PENUH", "OPERASI"].some(s => status.includes(s));
+
               // --- MULTI-SHIFT BUG FIX ---
-              // Evaluasi status shift berdasarkan waktu saat ini SATU PER SATU terlepas dari status global,
-              // agar shift yang sudah lewat diset SELESAI, dan yang belum diset TERJADWAL.
               if (jamStr !== "-") {
                 const parts = jamStr.replace(/\s/g, "").replace(/\./g, ":").toLowerCase().match(/(\d{1,2}:\d{2})/g);
                 if (parts && parts.length > 0) {
@@ -3345,16 +3351,18 @@
                   const curMins = now.getHours() * 60 + now.getMinutes();
 
                   if (endMins !== null && curMins >= endMins) {
-                    // Shift ini sudah sepenuhnya lewat
+                    // Shift ini sudah sepenuhnya lewat (berlaku untuk SEMUA dokter, termasuk Cuti/Penuh/Operasi)
                     status = "SELESAI";
-                  } else if (curMins < regMins) {
-                    // Shift ini belum mulai dan loket belum buka
-                    status = "TERJADWAL";
-                  } else {
-                    // Shift sedang berjalan. Jika global status adalah "SELESAI" / "TERJADWAL" (mungkin salah state dari shift lain),
-                    // Set default jadi PRAKTEK, KECUALI status global adalah valid (PENDAFTARAN / PENUH / OPERASI / CUTI)
-                    if (!["PRAKTEK", "PENDAFTARAN", "PENUH", "OPERASI", "CUTI"].includes(status)) {
-                       status = "PRAKTEK";
+                  } else if (!isPriorityStatus) {
+                    // Jika belum habis, dan BUKAN status prioritas, evaluasi Terjadwal/Praktek
+                    if (curMins < regMins) {
+                      // Shift ini belum mulai dan loket belum buka
+                      status = "TERJADWAL";
+                    } else {
+                      // Shift sedang berjalan
+                      if (!["PRAKTEK", "PENDAFTARAN"].includes(status)) {
+                         status = "PRAKTEK";
+                      }
                     }
                   }
                 }
