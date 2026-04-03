@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useMemo, useState, useCallback, useEffect, useRef } from 'react';
-import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Download, Paintbrush, ArrowRightLeft, RotateCcw, Settings, X, Check, Pencil } from 'lucide-react';
+import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Download, Paintbrush, ArrowRightLeft, RotateCcw, Settings, X, Check, Pencil, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, subMonths, addMonths, getDay, differenceInDays } from 'date-fns';
 import { id } from 'date-fns/locale';
@@ -21,37 +21,20 @@ const SHIFTS: Record<string, ShiftDef> = {
 };
 
 const SHIFT_IDS_CYCLE = ['P6','P7','P8','P9','P10','P12'];
-
 const DEFAULT_LIBUR_QUOTA = 4;
 const DEFAULT_CUTI_QUOTA  = 12;
 
-// ─── DEFAULT STAFF CONFIG ───────────────────────────────
-interface StaffConfig {
-  id: string;      // stable internal ID, tidak berubah meski nama diganti
-  name: string;
-  cycle: string[]; // 10-day working-day cycle
-  isSpecial?: boolean; // RIDHO: special rule
-}
+const DEFAULT_CYCLES: Record<string, string[]> = {
+  s1: ['P12','P12','P10','P8','P6','P6','P8','P8','P6','P6'],
+  s2: ['P10','P8','P6','P6','P8','P8','P6','P6','P12','P12'],
+  s3: ['P6','P6','P8','P8','P6','P6','P12','P12','P10','P8'],
+  s4: ['P8','P8','P6','P6','P12','P12','P10','P8','P6','P6'],
+  s5: ['P6','P6','P12','P12','P10','P8','P6','P6','P8','P8'],
+  s6: [],
+};
 
-const DEFAULT_STAFF: StaffConfig[] = [
-  { id:'s1', name:'IBNU ISWANTORO',    cycle:['P12','P12','P10','P8','P6','P6','P8','P8','P6','P6'] },
-  { id:'s2', name:'FAISHAL FADHLULLOH',cycle:['P10','P8','P6','P6','P8','P8','P6','P6','P12','P12'] },
-  { id:'s3', name:'TEDI DWI C',        cycle:['P6','P6','P8','P8','P6','P6','P12','P12','P10','P8'] },
-  { id:'s4', name:'SIDIQ ARIEF P',     cycle:['P8','P8','P6','P6','P12','P12','P10','P8','P6','P6'] },
-  { id:'s5', name:'NUR SYAHID',        cycle:['P6','P6','P12','P12','P10','P8','P6','P6','P8','P8'] },
-  { id:'s6', name:'RIDHO R',           cycle:[], isSpecial:true },
-];
-
-const LS_STAFF_KEY = 'shiftboard-staff-v2';
-
-function loadStaff(): StaffConfig[] {
-  if (typeof window === 'undefined') return DEFAULT_STAFF;
-  try {
-    const raw = localStorage.getItem(LS_STAFF_KEY);
-    if (raw) return JSON.parse(raw) as StaffConfig[];
-  } catch {}
-  return DEFAULT_STAFF;
-}
+// ─── TYPES ───────────────────────────────────────────────
+interface StaffConfig { id: string; staffName: string; cycle: string[]; isSpecial: boolean; sortOrder: number; }
 
 // ─── SCHEDULE ENGINE ─────────────────────────────────────
 const MONDAY_ORIGIN = new Date(2026, 2, 30);
@@ -69,37 +52,45 @@ function getDeterministicShift(staff: StaffConfig, date: Date): string | undefin
   const dow = getDay(date);
   if (dow === 0) return undefined;
   if (staff.isSpecial) return (dow >= 1 && dow <= 4) ? 'P7' : 'P9';
-  const idx = getWorkingDayIndex(date);
-  return staff.cycle[idx];
+  const cycle = Array.isArray(staff.cycle) ? staff.cycle : [];
+  return cycle[getWorkingDayIndex(date)];
 }
 
 // ─── CYCLE CONFIG MODAL ───────────────────────────────────
 function CycleModal({ staff, onSave, onClose }: { staff: StaffConfig; onSave: (s: StaffConfig) => void; onClose: () => void }) {
-  const [cycle, setCycle] = useState<string[]>([...staff.cycle]);
+  const [cycle, setCycle] = useState<string[]>([...(staff.cycle ?? [])]);
+  const [saving, setSaving] = useState(false);
   const dayLabels = ['d1','d2','d3','d4','d5','d6','d7','d8','d9','d10'];
+
+  const handleSave = async () => {
+    setSaving(true);
+    await fetch('/api/jadwal/staff', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: staff.id, cycle }),
+    });
+    setSaving(false);
+    onSave({ ...staff, cycle });
+  };
 
   return (
     <div className="fixed inset-0 z-[500] flex items-center justify-center bg-black/30 backdrop-blur-sm animate-in fade-in" onClick={onClose}>
-      <div
-        className="bg-white/95 backdrop-blur-xl border border-slate-200 rounded-3xl shadow-2xl p-6 w-full max-w-lg mx-4 animate-in zoom-in-95 slide-in-from-bottom-4"
-        onClick={e => e.stopPropagation()}
-      >
+      <div className="bg-white/95 backdrop-blur-xl border border-slate-200 rounded-3xl shadow-2xl p-6 w-full max-w-lg mx-4 animate-in zoom-in-95 slide-in-from-bottom-4" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-5">
           <div>
             <h2 className="text-base font-black text-slate-800">Konfigurasi Siklus</h2>
-            <p className="text-xs text-slate-500 mt-0.5 font-medium">{staff.name} — Siklus 10 Hari Kerja</p>
+            <p className="text-xs text-slate-500 mt-0.5 font-medium">{staff.staffName} — Siklus 10 Hari Kerja</p>
           </div>
           <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-xl transition-colors text-slate-500"><X size={16}/></button>
         </div>
 
         {staff.isSpecial ? (
           <div className="bg-slate-50 rounded-2xl p-4 text-sm text-slate-600 font-medium">
-            <p>📌 <strong>RIDHO R</strong> menggunakan aturan tetap:</p>
+            <p>📌 <strong>{staff.staffName}</strong> menggunakan aturan tetap:</p>
             <ul className="mt-2 space-y-1 text-xs text-slate-500">
               <li>• Senin–Kamis: <span className="font-bold text-sky-600">P7 (07.00–15.00)</span></li>
               <li>• Jumat–Sabtu: <span className="font-bold text-emerald-600">P9 (09.00–17.00)</span></li>
             </ul>
-            <p className="mt-3 text-xs text-slate-400">Aturan ini tidak menggunakan siklus 10 hari. Ubah di kode jika perlu pergantian.</p>
           </div>
         ) : (
           <>
@@ -110,29 +101,24 @@ function CycleModal({ staff, onSave, onClose }: { staff: StaffConfig; onSave: (s
                   <select
                     value={cycle[i] ?? 'P6'}
                     onChange={e => { const c = [...cycle]; c[i] = e.target.value; setCycle(c); }}
-                    className={cn(
-                      "w-full text-xs font-black text-center rounded-xl py-2 border-2 cursor-pointer appearance-none focus:outline-none transition-all",
-                      SHIFTS[cycle[i]]?.colorClass ?? 'bg-slate-100 border-slate-200 text-slate-600'
-                    )}
+                    className={cn("w-full text-xs font-black text-center rounded-xl py-2 border-2 cursor-pointer appearance-none focus:outline-none transition-all", SHIFTS[cycle[i]]?.colorClass ?? 'bg-slate-100 border-slate-200 text-slate-600')}
                   >
                     {SHIFT_IDS_CYCLE.map(s => <option key={s} value={s}>{s}</option>)}
                   </select>
                 </div>
               ))}
             </div>
-
             <div className="bg-indigo-50/60 border border-indigo-100 rounded-2xl p-3 mb-4 text-xs text-indigo-700 font-medium">
-              💡 Perubahan siklus berlaku untuk semua bulan (masa lalu & masa depan) kecuali sel yang sudah di-<em>override</em> manual.
+              💡 Perubahan siklus tersimpan ke database — berlaku untuk semua perangkat secara real-time.
             </div>
-
             <div className="flex justify-between gap-3">
-              <button onClick={() => setCycle([...DEFAULT_STAFF.find(s=>s.id===staff.id)?.cycle ?? []])}
+              <button onClick={() => setCycle([...(DEFAULT_CYCLES[staff.id] ?? [])])}
                 className="px-4 py-2 text-xs font-bold text-slate-500 border border-slate-200 rounded-xl hover:bg-slate-50 transition-all flex items-center gap-1.5">
-                <RotateCcw size={12}/> Reset ke Default
+                <RotateCcw size={12}/> Reset Default
               </button>
-              <button onClick={() => onSave({ ...staff, cycle })}
-                className="px-5 py-2 bg-gradient-to-r from-fuchsia-600 to-indigo-600 text-white text-xs font-bold rounded-xl hover:shadow-md transition-all flex items-center gap-1.5">
-                <Check size={12}/> Simpan Siklus
+              <button onClick={handleSave} disabled={saving}
+                className="px-5 py-2 bg-gradient-to-r from-fuchsia-600 to-indigo-600 text-white text-xs font-bold rounded-xl hover:shadow-md transition-all flex items-center gap-1.5 disabled:opacity-60">
+                {saving ? <Loader2 size={12} className="animate-spin"/> : <Check size={12}/>} Simpan Siklus
               </button>
             </div>
           </>
@@ -150,7 +136,7 @@ function InlineNameEditor({ value, onSave }: { value: string; onSave: (v: string
 
   useEffect(() => { if (editing) inputRef.current?.focus(); }, [editing]);
 
-  const commit = () => {
+  const commit = async () => {
     const trimmed = draft.trim().toUpperCase();
     if (trimmed && trimmed !== value) onSave(trimmed);
     setDraft(trimmed || value);
@@ -158,22 +144,17 @@ function InlineNameEditor({ value, onSave }: { value: string; onSave: (v: string
   };
 
   if (editing) return (
-    <input
-      ref={inputRef}
-      value={draft}
-      onChange={e => setDraft(e.target.value)}
+    <input ref={inputRef} value={draft} onChange={e => setDraft(e.target.value)}
       onBlur={commit}
       onKeyDown={e => { if (e.key === 'Enter') commit(); if (e.key === 'Escape') { setDraft(value); setEditing(false); } }}
-      className="font-bold text-slate-800 text-[11px] border-b-2 border-indigo-400 bg-transparent w-full max-w-[145px] outline-none tracking-tight"
+      className="font-bold text-slate-800 text-[11px] border-b-2 border-indigo-400 bg-transparent w-full max-w-[145px] outline-none"
     />
   );
 
   return (
-    <span
-      className="font-bold text-slate-800 text-[11px] truncate max-w-[130px] leading-tight cursor-pointer group-hover/namerow:underline decoration-dashed decoration-slate-400 underline-offset-2 flex items-center gap-1"
+    <span className="font-bold text-slate-800 text-[11px] truncate max-w-[135px] leading-tight cursor-pointer flex items-center gap-1"
       title="Double-klik untuk ubah nama"
-      onDoubleClick={() => { setDraft(value); setEditing(true); }}
-    >
+      onDoubleClick={() => { setDraft(value); setEditing(true); }}>
       {value}
       <Pencil size={9} className="text-slate-300 opacity-0 group-hover/row:opacity-100 transition-opacity shrink-0"/>
     </span>
@@ -182,25 +163,42 @@ function InlineNameEditor({ value, onSave }: { value: string; onSave: (v: string
 
 // ─── MAIN COMPONENT ──────────────────────────────────────
 export default function ShiftBoard() {
-  const [currentMonth, setCurrentMonth] = useState<Date>(startOfMonth(new Date()));
-  const [staffList, setStaffList] = useState<StaffConfig[]>(loadStaff);
-  const [overrides, setOverrides] = useState<Record<string, Record<string, string>>>({});
-  const [isSwapMode, setIsSwapMode] = useState(false);
-  const [selectedSwap, setSelectedSwap] = useState<{ staffId: string; dateStr: string } | null>(null);
-  const [configModal, setConfigModal] = useState<StaffConfig | null>(null);
-  const [toast, setToast] = useState<string | null>(null);
-
-  // Persist staff config to localStorage
-  useEffect(() => {
-    localStorage.setItem(LS_STAFF_KEY, JSON.stringify(staffList));
-  }, [staffList]);
+  const [currentMonth, setCurrentMonth]   = useState<Date>(startOfMonth(new Date()));
+  const [staffList, setStaffList]         = useState<StaffConfig[]>([]);
+  const [overrides, setOverrides]         = useState<Record<string, Record<string, string>>>({});
+  const [loading, setLoading]             = useState(true);
+  const [savingCell, setSavingCell]       = useState<string | null>(null); // "staffId-dateStr"
+  const [isSwapMode, setIsSwapMode]       = useState(false);
+  const [selectedSwap, setSelectedSwap]   = useState<{ staffId: string; dateStr: string } | null>(null);
+  const [configModal, setConfigModal]     = useState<StaffConfig | null>(null);
+  const [toast, setToast]                 = useState<string | null>(null);
 
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 2800); };
+  const monthKey = format(currentMonth, 'yyyy-MM');
 
   const days = useMemo(() =>
     eachDayOfInterval({ start: startOfMonth(currentMonth), end: endOfMonth(currentMonth) }),
     [currentMonth]
   );
+
+  // ── Fetch staff config (sekali saat mount)
+  useEffect(() => {
+    fetch('/api/jadwal/staff')
+      .then(r => r.json())
+      .then(j => { if (j.success) setStaffList(j.data); })
+      .catch(() => {});
+  }, []);
+
+  // ── Fetch overrides setiap ganti bulan
+  useEffect(() => {
+    if (staffList.length === 0) return;
+    setLoading(true);
+    fetch(`/api/jadwal/override?month=${monthKey}`)
+      .then(r => r.json())
+      .then(j => { if (j.success) setOverrides(j.data ?? {}); })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, [monthKey, staffList.length]);
 
   const getEffectiveShift = useCallback((staff: StaffConfig, dateStr: string, day: Date): string | undefined => {
     const ov = overrides[staff.id]?.[dateStr];
@@ -209,15 +207,26 @@ export default function ShiftBoard() {
     return getDeterministicShift(staff, day);
   }, [overrides]);
 
-  const handleResetMonth = () => {
-    const newOv = { ...overrides };
-    staffList.forEach(s => {
-      if (!newOv[s.id]) return;
-      const copy = { ...newOv[s.id] };
-      days.forEach(d => { delete copy[format(d,'yyyy-MM-dd')]; });
-      newOv[s.id] = copy;
-    });
-    setOverrides(newOv);
+  // ── Persist override ke DB
+  const persistOverride = async (staffId: string, dateStr: string, shiftValue: string) => {
+    const key = `${staffId}-${dateStr}`;
+    setSavingCell(key);
+    await fetch('/api/jadwal/override', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ staffId, dateStr, shiftValue }),
+    }).catch(() => {});
+    setSavingCell(null);
+  };
+
+  const updateOverride = (staffId: string, dateStr: string, value: string) => {
+    setOverrides(prev => ({ ...prev, [staffId]: { ...prev[staffId], [dateStr]: value } }));
+    persistOverride(staffId, dateStr, value);
+  };
+
+  const handleResetMonth = async () => {
+    await fetch(`/api/jadwal/override?month=${monthKey}`, { method: 'DELETE' });
+    setOverrides({});
     showToast('Override bulan ini dihapus.');
   };
 
@@ -234,19 +243,24 @@ export default function ShiftBoard() {
       const val1 = getEffectiveShift(s1, d1, day1);
       const val2 = getEffectiveShift(staff, dateStr, day);
 
+      // Optimistic update
       setOverrides(prev => ({
         ...prev,
-        [s1id]:  { ...prev[s1id],  [d1]:     val2 ?? 'CLEAR' },
+        [s1id]:   { ...prev[s1id],   [d1]:     val2 ?? 'CLEAR' },
         [staff.id]:{ ...prev[staff.id], [dateStr]: val1 ?? 'CLEAR' },
       }));
+      // Persist both
+      persistOverride(s1id, d1, val2 ?? 'CLEAR');
+      persistOverride(staff.id, dateStr, val1 ?? 'CLEAR');
       setSelectedSwap(null);
-      showToast(`Tukar: ${s1.name} ⇄ ${staff.name} (${format(day,'dd MMM',{locale:id})})`);
+      showToast(`Tukar: ${s1.staffName} ⇄ ${staff.staffName} (${format(day,'dd MMM',{locale:id})})`);
       return;
     }
 
+    // Cyclic click: normal → CT → L → normal
     const ov = overrides[staff.id]?.[dateStr];
     const next = !ov || ov === 'CLEAR' ? 'CT' : ov === 'CT' ? 'L' : 'CLEAR';
-    setOverrides(prev => ({ ...prev, [staff.id]: { ...prev[staff.id], [dateStr]: next } }));
+    updateOverride(staff.id, dateStr, next);
   };
 
   const staffSummaries = useMemo(() => {
@@ -275,20 +289,14 @@ export default function ShiftBoard() {
         </div>
       )}
 
-      {/* Cycle modal */}
       {configModal && (
-        <CycleModal
-          staff={configModal}
-          onSave={(updated) => {
-            setStaffList(prev => prev.map(s => s.id === updated.id ? updated : s));
-            setConfigModal(null);
-            showToast(`Siklus ${updated.name} diperbarui!`);
-          }}
+        <CycleModal staff={configModal}
+          onSave={updated => { setStaffList(prev => prev.map(s => s.id === updated.id ? updated : s)); setConfigModal(null); showToast(`Siklus ${updated.staffName} diperbarui!`); }}
           onClose={() => setConfigModal(null)}
         />
       )}
 
-      {/* ── Toolbar ── */}
+      {/* Toolbar */}
       <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-2">
           <div className="flex items-center gap-0.5 bg-white/80 p-1 border border-slate-200/50 rounded-xl shadow-sm">
@@ -300,19 +308,17 @@ export default function ShiftBoard() {
             <button onClick={() => setCurrentMonth(addMonths(currentMonth,1))} className="p-2 hover:bg-slate-100 rounded-lg transition-colors text-slate-600"><ChevronRight size={16}/></button>
           </div>
           <div className="px-3 py-2 bg-indigo-50 border border-indigo-100 rounded-xl text-[10px] font-bold text-indigo-600 flex items-center gap-1.5 shadow-sm">
-            <div className="w-2 h-2 rounded-full bg-indigo-400 animate-pulse"/>Siklus otomatis aktif
+            {loading ? <Loader2 size={10} className="animate-spin"/> : <div className="w-2 h-2 rounded-full bg-indigo-400 animate-pulse"/>}
+            {loading ? 'Memuat...' : 'Tersinkron ke database'}
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <button onClick={handleResetMonth} className="px-3 py-2 bg-white border border-slate-200 text-slate-500 rounded-xl text-xs font-bold flex items-center gap-1.5 hover:bg-slate-50 shadow-sm transition-all">
             <RotateCcw size={13}/> Reset Override
           </button>
-          <button
-            onClick={() => { setIsSwapMode(v=>!v); setSelectedSwap(null); }}
+          <button onClick={() => { setIsSwapMode(v=>!v); setSelectedSwap(null); }}
             className={cn("px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 border shadow-sm",
-              isSwapMode ? "bg-amber-100 text-amber-700 border-amber-300 shadow-amber-200/60 shadow-md animate-pulse" : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
-            )}
-          >
+              isSwapMode ? "bg-amber-100 text-amber-700 border-amber-300 animate-pulse" : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50")}>
             <ArrowRightLeft size={14}/>{isSwapMode ? 'Batal Tukar' : '⇄ Tukar Jadwal'}
           </button>
           <button disabled className="px-4 py-2 bg-slate-100 text-slate-400 rounded-xl text-xs font-bold flex items-center gap-2 cursor-not-allowed border border-slate-200 hidden sm:flex">
@@ -321,73 +327,61 @@ export default function ShiftBoard() {
         </div>
       </div>
 
-      {/* Swap banner */}
       {isSwapMode && (
         <div className="bg-amber-50 border border-amber-200 p-3 rounded-xl flex items-center gap-3 animate-in slide-in-from-top-2">
           <div className="w-2 h-2 rounded-full bg-amber-500 animate-ping shrink-0"/>
           <p className="text-sm text-amber-800 font-medium">
-            {selectedSwap
-              ? <>Pilih jadwal <strong>kedua</strong> untuk ditukar.</>
-              : <><strong>Mode Tukar:</strong> Klik shift pertama, lalu shift tujuan.</>}
+            {selectedSwap ? <>Pilih jadwal <strong>kedua</strong> untuk ditukar.</> : <><strong>Mode Tukar:</strong> Klik shift pertama, lalu shift tujuan.</>}
           </p>
         </div>
       )}
 
-      {/* ── Info rename tip ── */}
       <div className="flex items-center gap-2 text-[10px] text-slate-400 font-medium">
-        <Pencil size={10}/>
-        <span>Double-klik nama petugas untuk mengubah nama. Klik ⚙ untuk mengubah pola siklus shift.</span>
+        <Pencil size={10}/><span>Double-klik nama petugas untuk ubah nama. Klik ⚙ untuk ubah pola siklus shift.</span>
       </div>
 
-      {/* ── Matrix ── */}
+      {/* Matrix */}
       <div className={cn("w-full overflow-x-auto custom-scrollbar rounded-2xl border bg-white/50 shadow-inner transition-colors duration-300",
         isSwapMode ? "border-amber-300 ring-4 ring-amber-100/60" : "border-slate-100")}>
         <div className="min-w-max inline-block pb-2">
           <table className="w-full border-collapse text-sm">
             <thead>
               <tr>
-                <th className="sticky left-0 z-30 bg-slate-50/95 backdrop-blur-md p-3 text-left border-b border-r border-slate-200/60 w-[230px] font-bold text-slate-600 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]">
-                  Petugas TPPRJ
-                </th>
+                <th className="sticky left-0 z-30 bg-slate-50/95 backdrop-blur-md p-3 text-left border-b border-r border-slate-200/60 w-[230px] font-bold text-slate-600 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]">Petugas TPPRJ</th>
                 {days.map(day => {
                   const isSun = getDay(day) === 0;
                   return (
                     <th key={day.toISOString()} className={cn("p-1.5 min-w-[44px] border-b border-r border-slate-100 text-center", isSun ? 'bg-rose-50/50' : 'bg-white/30')}>
                       <div className="flex flex-col items-center">
-                        <span className={cn("text-[10px] uppercase font-bold leading-none", isSun ? 'text-rose-400' : 'text-slate-400')}>
-                          {format(day,'E',{locale:id}).slice(0,3)}
-                        </span>
-                        <span className={cn("text-xs mt-0.5 font-bold", isSun ? 'text-rose-600' : 'text-slate-700')}>
-                          {format(day,'d')}
-                        </span>
+                        <span className={cn("text-[10px] uppercase font-bold leading-none", isSun ? 'text-rose-400' : 'text-slate-400')}>{format(day,'E',{locale:id}).slice(0,3)}</span>
+                        <span className={cn("text-xs mt-0.5 font-bold", isSun ? 'text-rose-600' : 'text-slate-700')}>{format(day,'d')}</span>
                       </div>
                     </th>
                   );
                 })}
-                <th className="sticky right-0 z-30 bg-slate-50/95 backdrop-blur-md p-3 text-center border-b border-l border-slate-200/60 font-black text-indigo-700 shadow-[-2px_0_5px_-2px_rgba(0,0,0,0.05)] min-w-[78px]">
-                  Jam
-                </th>
+                <th className="sticky right-0 z-30 bg-slate-50/95 backdrop-blur-md p-3 text-center border-b border-l border-slate-200/60 font-black text-indigo-700 shadow-[-2px_0_5px_-2px_rgba(0,0,0,0.05)] min-w-[78px]">Jam</th>
               </tr>
             </thead>
             <tbody>
-              {staffList.map(staff => {
+              {loading && staffList.length === 0 ? (
+                <tr><td colSpan={days.length + 2} className="py-16 text-center text-slate-400 text-sm">
+                  <Loader2 size={24} className="animate-spin mx-auto mb-2"/>Memuat jadwal dari database...
+                </td></tr>
+              ) : staffList.map(staff => {
                 const stats = staffSummaries[staff.id] ?? { hours:0, libur:0, cuti:0 };
                 return (
                   <tr key={staff.id} className="hover:bg-slate-50/60 transition-colors group/row">
-                    {/* Name cell */}
                     <td className="sticky left-0 z-20 bg-white/95 backdrop-blur-md p-2 border-b border-r border-slate-100/50 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.02)] group-hover/row:bg-indigo-50/10 transition-colors">
                       <div className="flex items-center gap-2">
                         <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-100 to-fuchsia-100 text-indigo-700 flex items-center justify-center font-black text-[10px] shrink-0 border border-indigo-200 shadow-sm">
-                          {staff.name.substring(0,2).toUpperCase()}
+                          {staff.staffName.substring(0,2).toUpperCase()}
                         </div>
                         <div className="flex flex-col flex-1 min-w-0">
-                          <InlineNameEditor
-                            value={staff.name}
-                            onSave={(newName) => {
-                              setStaffList(prev => prev.map(s => s.id === staff.id ? { ...s, name: newName } : s));
-                              showToast(`Nama diperbarui → ${newName}`);
-                            }}
-                          />
+                          <InlineNameEditor value={staff.staffName} onSave={async newName => {
+                            await fetch('/api/jadwal/staff', { method:'PATCH', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ id: staff.id, staffName: newName }) });
+                            setStaffList(prev => prev.map(s => s.id === staff.id ? { ...s, staffName: newName } : s));
+                            showToast(`Nama diperbarui → ${newName}`);
+                          }}/>
                           <div className="flex items-center gap-1.5 mt-1">
                             <span className={cn("text-[8px] font-bold px-1.5 py-0.5 rounded border leading-none",
                               stats.libur > DEFAULT_LIBUR_QUOTA ? 'bg-rose-50 text-rose-600 border-rose-300' : 'bg-slate-50 text-slate-500 border-slate-200')}>
@@ -397,20 +391,14 @@ export default function ShiftBoard() {
                               stats.cuti > DEFAULT_CUTI_QUOTA ? 'bg-rose-50 text-rose-600 border-rose-300' : 'bg-orange-50 text-orange-600 border-orange-200')}>
                               C:{stats.cuti}/{DEFAULT_CUTI_QUOTA}
                             </span>
-                            {/* Config button */}
-                            <button
-                              onClick={() => setConfigModal(staff)}
+                            <button onClick={() => setConfigModal(staff)}
                               className="ml-auto p-1 rounded-md hover:bg-indigo-100 text-slate-300 hover:text-indigo-600 transition-all opacity-0 group-hover/row:opacity-100"
-                              title="Ubah pola siklus shift"
-                            >
-                              <Settings size={10}/>
-                            </button>
+                              title="Ubah pola siklus"><Settings size={10}/></button>
                           </div>
                         </div>
                       </div>
                     </td>
 
-                    {/* Day cells */}
                     {days.map(day => {
                       const isSun = getDay(day) === 0;
                       const dateStr = format(day,'yyyy-MM-dd');
@@ -418,12 +406,12 @@ export default function ShiftBoard() {
                       const shift = shiftId ? SHIFTS[shiftId] : null;
                       const hasOverride = !!overrides[staff.id]?.[dateStr] && overrides[staff.id]?.[dateStr] !== 'CLEAR';
                       const isSelected = selectedSwap?.staffId === staff.id && selectedSwap?.dateStr === dateStr;
+                      const cellKey = `${staff.id}-${dateStr}`;
+                      const isSaving = savingCell === cellKey;
 
                       if (isSun) return (
                         <td key={dateStr} className="p-1 border-b border-r border-slate-50 bg-rose-50/30 text-center">
-                          <div className="w-full h-9 flex items-center justify-center">
-                            <div className="w-1.5 h-1.5 rounded-full bg-rose-200/70"/>
-                          </div>
+                          <div className="w-full h-9 flex items-center justify-center"><div className="w-1.5 h-1.5 rounded-full bg-rose-200/70"/></div>
                         </td>
                       );
 
@@ -434,18 +422,16 @@ export default function ShiftBoard() {
                             shift ? shift.colorClass : "bg-slate-50/50 border-transparent hover:bg-slate-100 hover:border-slate-200",
                             !isSwapMode && shift && "hover:-translate-y-0.5 hover:scale-105 hover:shadow-md",
                             isSwapMode && "hover:border-amber-400 hover:bg-amber-50",
-                            isSelected && "ring-4 ring-amber-400 scale-110 z-10 shadow-xl animate-pulse"
-                          )}
-                            title={shift ? `${shift.label} — ${getDay(day)===6 ? shift.timeSabtu : shift.timeSenin}` : 'Klik: CT → L → normal'}
-                          >
-                            {shift?.label ?? ''}
-                            {hasOverride && <span className="absolute -top-1 -right-1 w-2 h-2 bg-orange-500 rounded-full border border-white shadow-sm"/>}
+                            isSelected && "ring-4 ring-amber-400 scale-110 z-10 shadow-xl animate-pulse",
+                            isSaving && "opacity-60"
+                          )} title={shift ? `${shift.label} — ${getDay(day)===6?shift.timeSabtu:shift.timeSenin}` : 'Klik: CT → L → normal'}>
+                            {isSaving ? <Loader2 size={12} className="animate-spin"/> : (shift?.label ?? '')}
+                            {hasOverride && !isSaving && <span className="absolute -top-1 -right-1 w-2 h-2 bg-orange-500 rounded-full border border-white shadow-sm"/>}
                           </div>
                         </td>
                       );
                     })}
 
-                    {/* Total */}
                     <td className="sticky right-0 z-20 bg-white/95 backdrop-blur-md p-2 text-center border-b border-l border-slate-100/50 shadow-[-2px_0_5px_-2px_rgba(0,0,0,0.02)] group-hover/row:bg-indigo-50/10 transition-colors">
                       <span className="font-black text-indigo-700 text-xs flex items-center justify-center gap-0.5">
                         {stats.hours > 0 ? stats.hours : '–'}
@@ -460,7 +446,7 @@ export default function ShiftBoard() {
         </div>
       </div>
 
-      {/* ── Legend ── */}
+      {/* Legend */}
       <div className="flex flex-col sm:flex-row flex-wrap items-start justify-between gap-3 bg-slate-50/50 backdrop-blur-md border border-slate-200/50 p-4 rounded-2xl">
         <div className="flex items-center gap-2 shrink-0">
           <Paintbrush size={13} className="text-slate-400"/>

@@ -223,6 +223,21 @@ export async function getSession(request: Request): Promise<SessionPayload | nul
   return verifyToken(token);
 }
 
+/**
+ * Middleware-like helper for API routes to enforce authentication.
+ * Returns a 401 response if unauthorized, or null if authorized.
+ */
+export async function requireAuth(request: Request) {
+  const session = await getSession(request);
+  if (!session) {
+    return NextResponse.json(
+      { error: 'Unauthorized', message: 'Silakan login terlebih dahulu' },
+      { status: 401 }
+    );
+  }
+  return null;
+}
+
 // ─── Sesi dari Cookies (Server Actions / RSC) ───
 
 /**

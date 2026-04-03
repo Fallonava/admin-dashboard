@@ -155,6 +155,32 @@ model RefreshToken {
   @@index([token])
 }
 
+// ── JADWAL TPPRJ ────────────────────────────────────────
+model StaffShiftConfig {
+  id         String   @id           // stable key e.g. "s1"
+  staffName  String
+  cycle      Json                   // string[] - 10-day working day cycle
+  isSpecial  Boolean  @default(false)
+  sortOrder  Int      @default(0)
+  updatedAt  DateTime @updatedAt
+
+  overrides  ShiftOverride[]
+}
+
+model ShiftOverride {
+  id          String           @id @default(cuid())
+  staffId     String
+  dateStr     String           // format yyyy-MM-dd
+  shiftValue  String           // CT | L | P6 | CLEAR | etc.
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  staff       StaffShiftConfig @relation(fields: [staffId], references: [id], onDelete: Cascade)
+
+  @@unique([staffId, dateStr])
+  @@index([staffId])
+  @@index([dateStr])
+}
+
 enum DoctorStatus {
   TERJADWAL
   PENDAFTARAN
