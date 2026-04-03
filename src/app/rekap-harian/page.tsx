@@ -13,7 +13,10 @@ export default function RekapHarianPage() {
   });
 
   return (
-    <div className="flex-1 w-full flex flex-col h-[calc(100vh-1rem)] overflow-hidden bg-slate-50/50">
+    <div className="flex-1 w-full flex flex-col h-[calc(100vh-1rem)] overflow-hidden bg-white/40 backdrop-blur-3xl relative">
+      {/* Ambient background bloom */}
+      <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none -z-10" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-emerald-500/10 rounded-full blur-[100px] pointer-events-none -z-10" />
 
       <PageHeader
         icon={<BarChart2 size={20} className="text-white" />}

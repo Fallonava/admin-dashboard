@@ -34,6 +34,7 @@ export default function DailyRecapUploader() {
   const [rawRows, setRawRows] = useState<RowData[]>([]); // New state for raw data
   const [searchQuery, setSearchQuery] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const [extractedDate, setExtractedDate] = useState<Date | null>(null);
 
   const onDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -94,9 +95,48 @@ export default function DailyRecapUploader() {
         const poliHeaderCandidates = ['Poli', 'Nama Poli', 'Unit Pelayanan', 'Poli Klinik', 'Klinik'];
         const poliHeader = poliHeaderCandidates.find(h => colMap[h]) || '';
 
+        const statusBatalHeaderCandidates = ['Status Batal', 'Status', 'Batal', 'Keterangan Batal'];
+        const statusBatalHeader = statusBatalHeaderCandidates.find(h => colMap[h]) || '';
+
+        const tglKunjunganCandidates = ['Tgl. Kunjungan', 'Tanggal Kunjungan', 'TGL KUNJUNGAN', 'Tgl Kunjungan'];
+        const tglKunjunganHeader = tglKunjunganCandidates.find(h => colMap[h]) || '';
+
+        let detectedDate: Date | null = null;
+        
         const processed: RowData[] = [];
         worksheet.eachRow((row: ExcelJSType.Row, rowNumber: number) => {
           if (rowNumber === 1) return; // lewati baris header
+
+          if (!detectedDate && tglKunjunganHeader) {
+            const dateStr = getCellText(row, tglKunjunganHeader).trim();
+            if (dateStr) {
+              // format expected: 16-03-2026 12:59
+              const parts = dateStr.split(' ');
+              if (parts.length >= 1) {
+                const dateParts = parts[0].split(/[/-]/);
+                if (dateParts.length === 3) {
+                  const day = Number(dateParts[0]);
+                  const month = Number(dateParts[1]) - 1;
+                  const year = Number(dateParts[2].length === 2 ? '20' + dateParts[2] : dateParts[2]);
+                  let h = 0, m = 0;
+                  if (parts[1]) {
+                    const timeParts = parts[1].split(':');
+                    h = Number(timeParts[0] || '0');
+                    m = Number(timeParts[1] || '0');
+                  }
+                  const pd = new Date(year, month, day, h, m);
+                  if (!isNaN(pd.getTime())) {
+                    detectedDate = pd;
+                  }
+                }
+              }
+            }
+          }
+
+          const statusBatal = statusBatalHeader ? getCellText(row, statusBatalHeader).toLowerCase() : '';
+          if (statusBatal.includes('batal') || statusBatal.includes('dibatalkan') || statusBatal.includes('hapus')) {
+             return; // Skip pasien batal sesuai aturan baru
+          }
 
           const namaPasien  = getCellText(row, 'Nama Rekam Medis');
           const nomorRm     = getCellText(row, 'No. Rekam Medis');
@@ -133,58 +173,10 @@ export default function DailyRecapUploader() {
           });
         });
 
-        // Phase 7: Smart Deduplication (Group by RM) + Deteksi Rawat Bersama & Terapi Gabung
-        const deduplicatedMap = new Map<string, RowData>();
-
-        processed.forEach(row => {
-           if (!row.nomorRm || row.nomorRm === '-') {
-              deduplicatedMap.set(row.id, row);
-              return;
-           }
-
-           const existing = deduplicatedMap.get(row.nomorRm);
-           if (existing) {
-              existing.visitCount = (existing.visitCount || 1) + 1;
-
-              // Kumpulkan semua poli yang dikunjungi
-              if (!existing.poliList) existing.poliList = existing.poli && existing.poli !== '-' ? [existing.poli] : [];
-              if (row.poli && row.poli !== '-' && !existing.poliList.includes(row.poli)) {
-                existing.poliList.push(row.poli);
-              }
-
-              // Jika salah satu row punya SEP, pasien valid
-              if (existing.status === 'anomaly' && row.status === 'valid') {
-                 existing.status = 'valid';
-                 existing.nomorSep = row.nomorSep;
-              }
-
-              // --- Deteksi Pola Khusus ---
-              const poliLower = (existing.poliList || []).map(p => p.toLowerCase());
-
-              // Kondisi 2: Terapi Gabung — Rehab Medik + Fisioterapi/Terapi Wicara
-              const hasRehab = poliLower.some(p => p.includes('rehab'));
-              const hasFisio = poliLower.some(p => 
-                p.includes('fisioterapi') || p.includes('terapi wicara') || p.includes('fisio')
-              );
-              if (hasRehab && hasFisio) {
-                existing.anomalyReason = 'terapi_gabung';
-              }
-              // Kondisi 1: Rawat Bersama — 2+ poli berbeda (bukan terapi gabung)
-              else if (poliLower.length >= 2) {
-                existing.anomalyReason = 'rawat_bersama';
-              }
-
-              deduplicatedMap.set(row.nomorRm, existing);
-           } else {
-              deduplicatedMap.set(row.nomorRm, { ...row });
-           }
-        });
-
-        const finalProcessed = Array.from(deduplicatedMap.values());
-
         setTimeout(() => {
           setRawRows(processed);
-          setParsedData(finalProcessed);
+          setParsedData(processed); // Langsung gunakan array processed tanpa deduplikasi
+          if (detectedDate) setExtractedDate(detectedDate);
           setFileData({ name: file.name, rows: processed.length }); // Use actual row count for display
           setIsLoading(false);
         }, 800);
@@ -224,7 +216,10 @@ export default function DailyRecapUploader() {
      
      try {
        // Prepare payload
-       const today = new Date();
+       let today = extractedDate;
+       if (!today || isNaN(today.getTime())) {
+         today = new Date();
+       }
        today.setHours(0,0,0,0);
 
        const missingSepData = parsedData.filter(d => d.status === 'anomaly');
@@ -331,6 +326,7 @@ export default function DailyRecapUploader() {
     setParsedData([]);
     setRawRows([]);
     setSearchQuery("");
+    setExtractedDate(null);
   };
 
   return (
@@ -349,8 +345,8 @@ export default function DailyRecapUploader() {
       </Dialog.Trigger>
 
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 animate-in fade-in" />
-        <Dialog.Content className="fixed right-0 top-0 bottom-0 w-full md:w-[800px] bg-slate-50 border-l border-slate-200/60 shadow-2xl z-50 animate-in slide-in-from-right duration-300 flex flex-col focus:outline-none">
+        <Dialog.Overlay className="fixed inset-0 bg-slate-900/10 backdrop-blur-3xl z-40 animate-in fade-in" />
+        <Dialog.Content className="fixed right-0 top-0 bottom-0 w-full md:w-[800px] bg-slate-50/90 backdrop-blur-2xl border-l border-white/50 shadow-[0_0_80px_-20px_rgba(0,0,0,0.15)] z-50 animate-in slide-in-from-right duration-300 flex flex-col focus:outline-none">
           
           <div className="flex flex-col w-full h-full text-slate-900 font-sans px-4 sm:px-8 py-6 rounded-none relative overflow-y-auto custom-scrollbar">
             {/* Ambient backgrounds */}
@@ -458,17 +454,18 @@ export default function DailyRecapUploader() {
                 {/* Top Metrics Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 flex-shrink-0">
                   {/* Card 1: Total Patients */}
-                  <div className="bg-white/80 backdrop-blur border border-slate-200/60 p-5 rounded-2xl shadow-sm flex items-center justify-between gap-4 relative overflow-hidden group">
+                  <div className="bg-white/60 backdrop-blur-xl border border-white/80 p-5 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex items-center justify-between gap-4 relative overflow-hidden group transition-all duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] hover:-translate-y-1 hover:shadow-xl hover:bg-white/80 hover:border-indigo-100">
+                    <div className="absolute -right-10 -bottom-10 w-32 h-32 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-indigo-500/20 transition-all duration-700"></div>
                     <div className="flex flex-col z-10 relative w-full">
                        <div className="flex items-center gap-2 mb-2">
-                          <div className="p-1.5 bg-blue-50 text-blue-600 rounded-lg"><Users size={16} /></div>
-                          <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Pasien Unik</p>
+                          <div className="p-1.5 bg-indigo-50 text-indigo-600 rounded-lg shadow-sm"><Users size={16} /></div>
+                          <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Total Pasien</p>
                        </div>
                        <div className="flex items-end justify-between">
                          <p className="text-3xl font-black text-slate-800 mb-0">{parsedData.length}</p>
                          <div className="text-right">
-                           <p className="text-[10px] text-slate-400 font-medium">Total Kunjungan Poli</p>
-                           <p className="text-sm font-bold text-indigo-600">{totalKunjungan} <span className="text-[10px] font-medium text-slate-500">Baris</span></p>
+                           <p className="text-[10px] text-slate-400 font-medium">Valid Records</p>
+                           <p className="text-sm font-bold text-indigo-600">Baris</p>
                          </div>
                        </div>
                     </div>
@@ -476,10 +473,10 @@ export default function DailyRecapUploader() {
                   
                   {/* Card 2: Anomalies */}
                   <div className={cn(
-                    "bg-white/80 backdrop-blur border p-5 rounded-2xl shadow-sm flex items-center gap-4 relative overflow-hidden transition-all",
-                    anomalyCount > 0 ? "border-amber-200/60 hover:bg-amber-50/50" : "border-slate-200/60"
+                    "bg-white/60 backdrop-blur-xl border p-5 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex items-center gap-4 relative overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] hover:-translate-y-1 hover:shadow-xl",
+                    anomalyCount > 0 ? "border-amber-200/60 hover:bg-amber-50/80" : "border-white/80 hover:bg-white/80 hover:border-slate-300"
                   )}>
-                     <div className={cn("absolute top-0 right-0 w-32 h-32 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none", anomalyCount > 0 ? "bg-amber-100/50" : "bg-slate-100")}></div>
+                     <div className={cn("absolute top-0 right-0 w-32 h-32 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none transition-all duration-700", anomalyCount > 0 ? "bg-amber-500/20" : "bg-slate-300/20")}></div>
                     <div className={cn("p-3 rounded-xl relative z-10 border", anomalyCount > 0 ? "bg-amber-50 border-amber-100 text-amber-600" : "bg-slate-50 border-slate-200 text-slate-400")}>
                       <AlertCircle size={24} />
                     </div>
@@ -531,10 +528,10 @@ export default function DailyRecapUploader() {
                                <div 
                                  key={row.id || idx} 
                                  className={cn(
-                                   "flex items-center justify-between p-4 rounded-xl border transition-all duration-200 group relative overflow-hidden",
+                                   "flex items-center justify-between p-4 rounded-2xl border transition-all duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] group relative overflow-hidden hover:-translate-y-1 hover:shadow-xl",
                                    isAnomaly 
-                                     ? "bg-amber-50/80 border-amber-200 hover:border-amber-300 shadow-sm" 
-                                     : "bg-white border-slate-200/60 hover:border-slate-300 hover:shadow-sm"
+                                     ? "bg-gradient-to-r from-amber-50/90 to-orange-50/50 border-amber-200/80 hover:border-amber-300 backdrop-blur-sm" 
+                                     : "bg-white/60 border-white/80 hover:border-indigo-100 hover:bg-white/90 backdrop-blur-sm"
                                  )}
                                >
                                  {isAnomaly && <div className="absolute top-0 left-0 w-1 h-full bg-amber-400"></div>}
@@ -616,7 +613,7 @@ export default function DailyRecapUploader() {
                     
                     <div className="p-4 flex flex-col gap-3">
                        {leaderboard.length > 0 ? leaderboard.map(([user, count], idx) => (
-                         <div key={user} className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 transition-colors border border-transparent hover:border-slate-100 group">
+                         <div key={user} className="flex items-center gap-3 p-3 rounded-2xl transition-all duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] bg-white/40 border border-white/60 hover:bg-white/80 hover:border-indigo-100 hover:-translate-y-1 hover:shadow-lg group relative z-10">
                             <div className={cn(
                               "w-8 h-8 rounded-full flex items-center justify-center font-black text-xs shrink-0 shadow-sm",
                               idx === 0 ? "bg-gradient-to-br from-amber-300 to-amber-500 text-white" :

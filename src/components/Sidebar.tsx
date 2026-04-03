@@ -17,7 +17,8 @@ import {
   Shield,
   LogOut,
   FileSpreadsheet,
-  Zap
+  Zap,
+  CalendarDays
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/auth-context";
@@ -25,7 +26,8 @@ import { useAuth } from "@/lib/auth-context";
 export const navigation = [
   { name: "Denah Live", href: "/", icon: LayoutDashboard, resource: "denah_live" },
   { name: "Kontrol Status", href: "/control", icon: Zap, resource: "kontrol_status" },
-  { name: "Jadwal", href: "/schedules", icon: Calendar, resource: "schedules" },
+  { name: "Jadwal Petugas", href: "/jadwal-petugas", icon: CalendarDays, resource: "schedules" },
+  { name: "Jadwal Dokter", href: "/schedules", icon: Calendar, resource: "schedules" },
   { name: "Dokter", href: "/doctors", icon: Users, resource: "doctors" },
   { name: "Jadwal Cuti", href: "/leaves", icon: Calendar, resource: "leaves" },
   { name: "Rekap Harian", href: "/rekap-harian", icon: FileSpreadsheet, resource: "rekap_harian" },

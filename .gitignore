@@ -44,3 +44,6 @@ next-env.d.ts
 /server.js
 
 /src/generated/prisma
+
+# database backups (sensitive data)
+/backups/
