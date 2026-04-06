@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import type { Doctor, LeaveRequest, Shift, Settings } from "@/lib/data-service";
 import { LiveClock } from "@/components/LiveClock";
 import { useDebounce } from "@/hooks/use-debounce";
-import { useSSE } from "@/hooks/use-sse";
+import { useSocket } from "@/hooks/use-socket";
 import { useAuth } from "@/lib/auth-context";
 import { DashboardStats } from "./DashboardStats";
 import { DoctorCard } from "./DoctorCard";
@@ -32,16 +32,26 @@ export function DashboardClient() {
   const [shifts, setShifts] = useState<Shift[]>([]);
   const [settings, setSettings] = useState<Settings | null>(null);
 
-  // ── ONE SSE connection, per-event handlers ──
-  const sseStatus = useSSE({
-    url: '/api/stream/live',
-    handlers: {
-      doctors: (data: Doctor[]) => Array.isArray(data) && setDoctors(data),
-      shifts: (data: Shift[]) => Array.isArray(data) && setShifts(data),
-      leaves: (data: LeaveRequest[]) => Array.isArray(data) && setLeaves(data),
-      settings: (data: Settings) => data && setSettings(data),
-    },
-  });
+  // ── Unified Socket.IO connection ──
+  const { 
+    doctors: socketDoctors, 
+    shifts: socketShifts, 
+    leaves: socketLeaves, 
+    settings: socketSettings, 
+    isConnected,
+    lastUpdate
+  } = useSocket();
+
+  const sseStatus = isConnected ? 'connected' : 'reconnecting';
+
+  // Sync to local state for optimistic UI updates
+  useEffect(() => {
+    // Only update if there's actual data to prevent clearing state on initial mount/reconnect
+    if (socketDoctors && socketDoctors.length > 0) setDoctors(socketDoctors);
+    if (socketShifts && socketShifts.length > 0) setShifts(socketShifts);
+    if (socketLeaves && socketLeaves.length > 0) setLeaves(socketLeaves);
+    if (socketSettings) setSettings(socketSettings);
+  }, [socketDoctors, socketShifts, socketLeaves, socketSettings, lastUpdate]);
 
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedSearch = useDebounce(searchQuery, 400);

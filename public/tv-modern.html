@@ -825,8 +825,8 @@
         box-shadow: var(--neo-inset-dark), var(--neo-inset-light);
       }
       
-      /* The Pulse Dot next to active pills */
-      .platter.active .status-pill::after {
+      /* The Pulse Dot next to active or penuh pills */
+      .platter.active .status-pill::after, .platter.st-penuh .status-pill::after {
         content: '';
         display: block;
         width: 6px;
@@ -858,7 +858,7 @@
       .st-pendaftaran { --status-color: #F97316; --status-bg: rgba(249, 115, 22, 0.2); }
       .st-terjadwal { --status-color: #0EA5E9; --status-bg: rgba(14, 165, 233, 0.2); opacity: 0.8; }
       .st-selesai { --status-color: #64748B; --status-bg: rgba(100, 116, 139, 0.2); opacity: 0.6; }
-      .st-penuh { --status-color: #F43F5E; --status-bg: rgba(244, 63, 94, 0.2); }
+      .st-penuh { --status-color: #F59E0B; --status-bg: rgba(245, 158, 11, 0.2); }
       .st-operasi { --status-color: #8B5CF6; --status-bg: rgba(139, 92, 246, 0.2); }
       .st-cuti { --status-color: #EF4444; --status-bg: rgba(239, 68, 68, 0.2); opacity: 0.65; }
       .st-libur { --status-color: #8e8e93; --status-bg: rgba(142, 142, 147, 0.2); display: none; }
@@ -866,7 +866,7 @@
       .platter.st-pendaftaran .initials { background: var(--bg-body); color: #F97316; box-shadow: var(--neo-inset-dark), var(--neo-inset-light); }
       .platter.st-terjadwal .initials { background: var(--bg-body); color: #0EA5E9; box-shadow: var(--neo-inset-dark), var(--neo-inset-light); }
       .platter.st-selesai .initials { background: var(--bg-body); color: #64748B; box-shadow: var(--neo-inset-dark), var(--neo-inset-light); }
-      .platter.st-penuh .initials { background: var(--bg-body); color: #F43F5E; box-shadow: var(--neo-inset-dark), var(--neo-inset-light); }
+      .platter.st-penuh .initials { background: var(--bg-body); color: #F59E0B; box-shadow: var(--neo-inset-dark), var(--neo-inset-light); }
       .platter.st-cuti .initials { background: var(--bg-body); color: #EF4444; box-shadow: var(--neo-inset-dark), var(--neo-inset-light); }
       .platter.st-operasi .initials { background: var(--bg-body); color: #8B5CF6; box-shadow: var(--neo-inset-dark), var(--neo-inset-light); }
 
@@ -1024,8 +1024,8 @@
         letter-spacing: 0.05em;
       }
       
-      /* Danger Striping for CUTI and PENUH */
-      .platter.platter-mini.st-cuti::after, .platter.platter-mini.st-penuh::after {
+      /* Danger Striping for CUTI */
+      .platter.platter-mini.st-cuti::after {
         content: "";
         position: absolute;
         inset: 0;
@@ -1040,6 +1040,94 @@
         pointer-events: none;
         z-index: 0;
         border-radius: 16px;
+      }
+
+      /* Inset Neomorphism for PENUH (Lock-down) */
+      .platter.platter-mini.st-penuh {
+        box-shadow: inset 5px 5px 12px var(--neo-shadow-dark), inset -5px -5px 12px var(--neo-shadow-light);
+        background: var(--bg-body) !important;
+        border: 1px solid rgba(245, 158, 11, 0.1);
+      }
+      
+      /* Modern Compact Status Line for PENUH */
+      .platter.platter-mini.st-penuh::before {
+        top: 10px !important;
+        bottom: 10px !important;
+        height: auto !important;
+        width: 3px !important;
+        left: 0;
+        border-radius: 0 4px 4px 0;
+        box-shadow: 0 0 6px var(--status-color);
+        opacity: 1 !important;
+      }
+
+      .platter.platter-mini.st-penuh .meta-col {
+        display: flex !important;
+      }
+      
+      .platter.platter-mini.st-penuh .status-pill {
+        display: none !important;
+      }
+      
+      .platter.platter-mini.st-penuh .jam-sidebar {
+        display: flex !important;
+      }
+      
+      .platter.platter-mini.st-penuh .doc-name {
+        color: var(--text-primary) !important;
+        text-shadow: -1px -1px 1px var(--neo-shadow-dark), 1px 1px 1px var(--neo-shadow-light);
+        opacity: 0.9;
+        display: flex;
+        align-items: center;
+      }
+      
+      .platter.platter-mini.st-penuh .doc-name::after {
+        content: "lock";
+        font-family: "Material Icons Round";
+        font-size: 13px;
+        color: var(--status-color);
+        margin-left: 6px;
+        text-shadow: 0 0 8px var(--status-color);
+        animation: breath-lock 2.5s infinite;
+      }
+      
+      @keyframes breath-lock {
+        0%, 100% { opacity: 0.6; text-shadow: 0 0 4px var(--status-color); }
+        50% { opacity: 1; text-shadow: 0 0 12px var(--status-color); }
+      }
+
+      .platter.platter-mini.st-penuh::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: repeating-linear-gradient(
+          -45deg,
+          transparent,
+          transparent 6px,
+          rgba(0,0,0,0.03) 6px,
+          rgba(0,0,0,0.03) 12px
+        );
+        box-shadow: inset 2px 2px 6px rgba(0,0,0,0.2);
+        opacity: 1;
+        pointer-events: none;
+        z-index: 0;
+        border-radius: 12px;
+      }
+      
+      [data-theme="dark"] .platter.platter-mini.st-penuh::after {
+        background: repeating-linear-gradient(
+          -45deg,
+          transparent,
+          transparent 6px,
+          rgba(255,255,255,0.015) 6px,
+          rgba(255,255,255,0.015) 12px
+        );
+        box-shadow: inset 2px 2px 10px rgba(0,0,0,0.6);
+      }
+      
+      .platter.platter-mini.st-penuh .initials {
+        box-shadow: inset 2px 2px 5px var(--neo-shadow-dark), inset -2px -2px 5px var(--neo-shadow-light);
+        background: transparent;
       }
       
       .platter.platter-mini.st-operasi {
@@ -2369,103 +2457,7 @@
             </p>
           </div>
 
-          <!-- Legend Status Dokter (Dipindah dari Footer ke Sidebar Bottom) -->
-          <div
-            style="
-              padding: 12px 16px;
-              border-top: 1px solid var(--border-light);
-              background: rgba(0, 0, 0, 0.02);
-              display: flex;
-              flex-wrap: wrap;
-              gap: 8px;
-              justify-content: space-between;
-            "
-          >
-            <div
-              style="
-                display: flex;
-                align-items: center;
-                gap: 4px;
-                font-size: 9px;
-                font-weight: 700;
-                color: var(--text-primary);
-                opacity: 0.8;
-              "
-            >
-              <div
-                style="
-                  width: 6px;
-                  height: 6px;
-                  border-radius: 50%;
-                  background: var(--accent-green);
-                "
-              ></div>
-              Buka
-            </div>
-            <div
-              style="
-                display: flex;
-                align-items: center;
-                gap: 4px;
-                font-size: 9px;
-                font-weight: 700;
-                color: var(--text-primary);
-                opacity: 0.8;
-              "
-            >
-              <div
-                style="
-                  width: 6px;
-                  height: 6px;
-                  border-radius: 50%;
-                  background: #64d2ff;
-                "
-              ></div>
-              Terjadwal
-            </div>
-            <div
-              style="
-                display: flex;
-                align-items: center;
-                gap: 4px;
-                font-size: 9px;
-                font-weight: 700;
-                color: var(--text-primary);
-                opacity: 0.8;
-              "
-            >
-              <div
-                style="
-                  width: 6px;
-                  height: 6px;
-                  border-radius: 50%;
-                  background: var(--accent-orange);
-                "
-              ></div>
-              Penuh
-            </div>
-            <div
-              style="
-                display: flex;
-                align-items: center;
-                gap: 4px;
-                font-size: 9px;
-                font-weight: 700;
-                color: var(--text-primary);
-                opacity: 0.8;
-              "
-            >
-              <div
-                style="
-                  width: 6px;
-                  height: 6px;
-                  border-radius: 50%;
-                  background: var(--accent-red);
-                "
-              ></div>
-              Cuti
-            </div>
-          </div>
+
         </aside>
 
         <!-- Bedah Island -->
@@ -2631,6 +2623,10 @@
       };
 
       const buildSidebarCardHTML = (d, avatarText, statusIcon, statusLabel) => {
+        const jamTampil = d.JamDaftar !== "-"
+          ? esc(d.JamDaftar)
+          : formatJam((d.JamPraktek || "").split("-")[0]);
+          
         return `
           <div class="platter-mini-grid" style="position:relative; z-index:1; display:flex; flex-direction:column; gap:8px; width:100%;">
             <div class="mini-top-row" style="display:flex; justify-content:space-between; align-items:flex-start; width:100%;">
@@ -2638,6 +2634,10 @@
               <div class="meta-col" style="flex-shrink:0;">
                 <div class="status-pill" style="background:var(--status-bg);color:var(--status-color)">
                   <span class="material-icons-round" style="font-size:10px; margin-right:2px;">${statusIcon}</span>${statusLabel}
+                </div>
+                <div class="jam-sidebar" style="display:none; align-items:center; gap:4px; background:rgba(125,125,125,0.08); padding:3px 8px; border-radius:6px; box-shadow:var(--neo-inset-dark), var(--neo-inset-light);">
+                  <span class="material-icons-round" style="font-size:12px; color:var(--text-secondary);">schedule</span>
+                  <span class="jam-val-daftar" style="font-size:12px; font-weight:800; color:var(--text-primary); font-variant-numeric: tabular-nums;">${jamTampil}</span>
                 </div>
               </div>
             </div>
@@ -3701,7 +3701,7 @@
                 l = "TERJADWAL";
               } else if (st.includes("PENUH")) {
                 c = "st-penuh";
-                i = "groups";
+                i = "front_hand";
                 l = "PENUH";
               } else if (st.includes("OPERASI")) {
                 c = "st-operasi";
@@ -3898,7 +3898,7 @@
             else if (st === "PENDAFTARAN") { c = "st-pendaftaran"; i = "assignment"; l = "PENDAFTARAN"; }
             else if (st === "TERJADWAL") { c = "st-terjadwal"; i = "schedule"; l = "TERJADWAL"; }
             else if (st === "SELESAI") { c = "st-selesai"; i = "done_all"; l = "SELESAI"; }
-            else if (st === "PENUH") { c = "st-penuh"; i = "groups"; l = "PENUH"; }
+            else if (st === "PENUH") { c = "st-penuh"; i = "front_hand"; l = "PENUH"; }
             else if (st === "OPERASI") { c = "st-operasi"; i = "local_hospital"; l = "OPERASI"; }
             else if (st === "CUTI") { c = "st-cuti"; i = "flight"; l = "CUTI"; }
             else if (st === "LIBUR") { c = "st-libur"; i = "block"; l = "LIBUR"; }

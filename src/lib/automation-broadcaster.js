@@ -27,7 +27,13 @@ var Broadcaster = /** @class */ (function (_super) {
     }
     return Broadcaster;
 }(events_1.EventEmitter));
-exports.automationBroadcaster = new Broadcaster();
+
+exports.automationBroadcaster = global.automationBroadcaster || new Broadcaster();
+
+// Ensure it persists globally to bridge Next.js isolated API routes
+if (!global.automationBroadcaster) {
+    global.automationBroadcaster = exports.automationBroadcaster;
+}
 // helper to notify after automation run (in-process SSE only)
 function notifyDoctorUpdates(updates) {
     exports.automationBroadcaster.emit('doctors', updates);

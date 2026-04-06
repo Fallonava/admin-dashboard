@@ -170,6 +170,21 @@ export function WingDashboardClient() {
   const busyCount = wingsWithStatus.filter(w => w.status === 'BUSY').length;
   const normalCount = wingsWithStatus.filter(w => w.status === 'NORMAL').length;
 
+  // Find the fresh doctor from the updated array if modal is open to fix stale state bug
+  const freshSelectedDoctor = useMemo(() => {
+    if (!selectedDoctor) return null;
+    const freshDoc = filteredDoctors.find(d => d.id === selectedDoctor.doctor.id);
+    if (!freshDoc) return selectedDoctor;
+    
+    // Also find fresh wingStatus 
+    const wing = wingsWithStatus.find(w => w.specialty === selectedDoctor.specialty);
+    return {
+      ...selectedDoctor,
+      doctor: freshDoc,
+      wingStatus: (wing?.status as 'EMERGENCY' | 'BUSY' | 'NORMAL' | 'OFFLINE') || selectedDoctor.wingStatus
+    };
+  }, [selectedDoctor, filteredDoctors, wingsWithStatus]);
+
   const pulseVariant = emergencyCount > 0 ? 'EMERGENCY' : busyCount > 0 ? 'BUSY' : 'NORMAL';
   const pulseMessage = 
     pulseVariant === 'EMERGENCY' ? `MENDESAK: ${emergencyCount} Area Utama mendeteksi aktivitas Bedah/Operasi!` :
@@ -451,11 +466,11 @@ export function WingDashboardClient() {
       </div>
 
       {/* Doctor Control Station Modal */}
-      {selectedDoctor && (
+      {freshSelectedDoctor && (
         <DoctorDetailModal
-          doctor={selectedDoctor.doctor}
-          specialty={selectedDoctor.specialty}
-          wingStatus={selectedDoctor.wingStatus}
+          doctor={freshSelectedDoctor.doctor}
+          specialty={freshSelectedDoctor.specialty}
+          wingStatus={freshSelectedDoctor.wingStatus}
           currentTimeMinutes={currentTimeMinutes}
           nowMs={now.getTime()}
           onClose={() => setSelectedDoctor(null)}

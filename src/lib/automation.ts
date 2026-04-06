@@ -178,8 +178,26 @@ export function determineIdealStatus(
         }
     }
 
+    // Find the next upcoming shift to propagate its override early if admin wants to lock it down early
+    let nextShift = null;
+    let nextStartMinutes = Infinity;
+    for (const shift of todayShifts) {
+        if (!shift.formattedTime) continue;
+        const [startStr] = shift.formattedTime.split('-');
+        const startMinutes = parseTimeToMinutes(startStr);
+        if (startMinutes !== null && startMinutes > currentTimeMinutes && startMinutes < nextStartMinutes) {
+            nextStartMinutes = startMinutes;
+            nextShift = shift;
+        }
+    }
+
     // Between shifts or before any registration begins
     if (isCooldownActive) return doc.status;
+    
+    if (nextShift && (nextShift.statusOverride === 'PENUH' || nextShift.statusOverride === 'OPERASI')) {
+        return nextShift.statusOverride as Doctor['status'];
+    }
+
     return 'TERJADWAL';
 }
 

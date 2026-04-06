@@ -255,9 +255,26 @@ function determineIdealStatus(doc, todayShifts, leaves, currentTimeMinutes, toda
             return (override === 'PENUH' || override === 'OPERASI') ? override : 'PENDAFTARAN';
         }
     }
+    // Find the next upcoming shift to propagate its override early if admin wants to lock it down early
+    var nextShift = null;
+    var nextStartMinutes = Infinity;
+    for (var _d = 0, todayShifts_3 = todayShifts; _d < todayShifts_3.length; _d++) {
+        var shift = todayShifts_3[_d];
+        if (!shift.formattedTime)
+            continue;
+        var startStr = shift.formattedTime.split('-')[0];
+        var startMinutes = parseTimeToMinutes(startStr);
+        if (startMinutes !== null && startMinutes > currentTimeMinutes && startMinutes < nextStartMinutes) {
+            nextStartMinutes = startMinutes;
+            nextShift = shift;
+        }
+    }
     // Between shifts or before any registration begins
     if (isCooldownActive)
         return doc.status;
+    if (nextShift && (nextShift.statusOverride === 'PENUH' || nextShift.statusOverride === 'OPERASI')) {
+        return nextShift.statusOverride;
+    }
     return 'TERJADWAL';
 }
 /**
