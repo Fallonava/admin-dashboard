@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requirePermission, withMutationRateLimit } from '@/lib/api-utils';
 import { z } from 'zod';
-import { notifyViaSocket, syncAdminData } from '@/lib/automation-broadcaster';
+import { notifyViaSocket, syncAdminData, triggerSchedulerResync } from '@/lib/automation-broadcaster';
 import { getFullSnapshot } from '@/lib/data-fetchers';
 export const dynamic = 'force-dynamic';
 
@@ -109,8 +109,9 @@ export async function POST(req: Request) {
         notifyViaSocket('shift_updated', { id: newShift.id });
         notifyViaSocket('doctor_updated', { ids: [newShift.doctorId] });
 
-        // Trigger full sync for Admin Dashboard
+        // Trigger full sync for Admin Dashboard & resync event scheduler
         getFullSnapshot().then(syncAdminData).catch(console.error);
+        triggerSchedulerResync();
 
         return NextResponse.json(newShift);
     } catch (e) {
@@ -143,8 +144,9 @@ export async function PUT(req: Request) {
             notifyViaSocket('doctor_updated', { ids: [updated.doctorId] });
         }
 
-        // Trigger full sync for Admin Dashboard
+        // Trigger full sync for Admin Dashboard & resync event scheduler
         getFullSnapshot().then(syncAdminData).catch(console.error);
+        triggerSchedulerResync();
 
         return NextResponse.json(updated);
     } catch (e: any) {
@@ -179,8 +181,9 @@ export async function DELETE(req: Request) {
             notifyViaSocket('doctor_updated', { ids: [deleted.doctorId] });
         }
 
-        // Trigger full sync for Admin Dashboard
+        // Trigger full sync for Admin Dashboard & resync event scheduler
         getFullSnapshot().then(syncAdminData).catch(console.error);
+        triggerSchedulerResync();
 
         return NextResponse.json({ success: true });
     } catch (err: any) {

@@ -6,10 +6,22 @@ import { RESOURCES } from "@/lib/auth-shared";
 import {
   Shield, Users, Plus, Trash2, Save, Edit2, X, Check,
   UserPlus, Key, Eye, Pencil, AlertCircle, Loader2,
-  Fingerprint, Lock, Unlock, Activity, Clock, Star
+  Fingerprint, Lock, Unlock, Activity, Clock, Star,
+  LayoutDashboard, Zap, Calendar, CalendarDays, Palmtree,
+  FileSpreadsheet, Bot, Tv, UserSquare2, Settings
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PageHeader } from "@/components/ui/PageHeader";
+
+// Icon map matching auth-shared RESOURCES icon field
+const RESOURCE_ICON_MAP: Record<string, React.ElementType> = {
+  LayoutDashboard, Zap, Calendar, CalendarDays,
+  Users, Palmtree, FileSpreadsheet, Bot, Tv,
+  UserSquare2: Users, Shield, Settings,
+};
+function getResourceIcon(iconName: string): React.ElementType {
+  return RESOURCE_ICON_MAP[iconName] || Shield;
+}
 
 interface Permission { resource: string; action: string; }
 interface Role {
@@ -422,6 +434,7 @@ export default function AccessManagementPage() {
                     {RESOURCES.map((r) => {
                       const canRead = rolePerms[r.key]?.read || false;
                       const canWrite = rolePerms[r.key]?.write || false;
+                      const RIcon = getResourceIcon(r.icon);
                       return (
                         <div key={r.key} className={cn(
                           "flex items-center justify-between p-3.5 rounded-[16px] border transition-all",
@@ -429,10 +442,20 @@ export default function AccessManagementPage() {
                           canRead ? "bg-sky-50/70 border-sky-200/80" :
                           "bg-slate-50/50 border-slate-200/50 hover:border-slate-300"
                         )}>
-                          <span className={cn("text-sm font-bold", canWrite ? "text-emerald-800" : canRead ? "text-sky-800" : "text-slate-500")}>
-                            {r.label}
-                          </span>
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2.5 min-w-0">
+                            <div className={cn(
+                              "w-7 h-7 rounded-[10px] flex items-center justify-center shrink-0",
+                              canWrite ? "bg-emerald-100 text-emerald-600" :
+                              canRead ? "bg-sky-100 text-sky-600" :
+                              "bg-slate-100 text-slate-400"
+                            )}>
+                              <RIcon size={13} strokeWidth={2.5} />
+                            </div>
+                            <span className={cn("text-sm font-bold truncate", canWrite ? "text-emerald-800" : canRead ? "text-sky-800" : "text-slate-500")}>
+                              {r.label}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2 shrink-0">
                             {/* Read Toggle */}
                             <button
                               type="button"

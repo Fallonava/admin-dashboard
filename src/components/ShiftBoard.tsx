@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useMemo, useState, useCallback, useEffect, useRef } from 'react';
-import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Download, Paintbrush, ArrowRightLeft, RotateCcw, Settings, X, Check, Pencil, Loader2 } from 'lucide-react';
+import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Download, Paintbrush, ArrowRightLeft, RotateCcw, Settings, X, Check, Pencil, Loader2, UserPlus, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { generateSchedulePDF } from '@/lib/schedule-pdf';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, subMonths, addMonths, getDay, differenceInDays } from 'date-fns';
 import { id } from 'date-fns/locale';
 
@@ -128,7 +129,127 @@ function CycleModal({ staff, onSave, onClose }: { staff: StaffConfig; onSave: (s
   );
 }
 
-// ─── INLINE NAME EDITOR ───────────────────────────────────
+// ─── ADD STAFF MODAL ─────────────────────────────────────
+function AddStaffModal({ onSave, onClose }: { onSave: (s: StaffConfig) => void; onClose: () => void }) {
+  const [staffName, setStaffName] = useState('');
+  const [isSpecial, setIsSpecial] = useState(false);
+  const [template, setTemplate] = useState<string>('s1');
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
+
+  const TEMPLATES: Record<string, { label: string; cycle: string[] }> = {
+    s1: { label: 'Siklus A (P12→P10→P8→P6)', cycle: DEFAULT_CYCLES.s1 },
+    s2: { label: 'Siklus B (P10→P8→P6→P12)', cycle: DEFAULT_CYCLES.s2 },
+    s3: { label: 'Siklus C (P6→P8→P12→P10)', cycle: DEFAULT_CYCLES.s3 },
+    s4: { label: 'Siklus D (P8→P6→P12→P10)', cycle: DEFAULT_CYCLES.s4 },
+    s5: { label: 'Siklus E (P6→P12→P10→P8)', cycle: DEFAULT_CYCLES.s5 },
+    special: { label: 'Jadwal Tetap (Sen-Kam P7, Jum-Sab P9)', cycle: [] },
+  };
+
+  const handleSave = async () => {
+    if (!staffName.trim()) { setError('Nama petugas wajib diisi'); return; }
+    setSaving(true); setError('');
+    const cycle = template === 'special' ? [] : (TEMPLATES[template]?.cycle ?? TEMPLATES.s1.cycle);
+    const body = { staffName: staffName.trim(), cycle, isSpecial: template === 'special' };
+    const res = await fetch('/api/jadwal/staff', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    const json = await res.json();
+    if (res.ok && json.success) {
+      onSave(json.data);
+    } else {
+      setError(json.error || 'Gagal menambah petugas');
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-[500] flex items-center justify-center bg-black/30 backdrop-blur-sm animate-in fade-in" onClick={onClose}>
+      <div className="bg-white/95 backdrop-blur-xl border border-slate-200 rounded-3xl shadow-2xl p-6 w-full max-w-md mx-4 animate-in zoom-in-95 slide-in-from-bottom-4" onClick={e => e.stopPropagation()}>
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 bg-indigo-50 rounded-[14px]"><UserPlus size={18} className="text-indigo-600" /></div>
+            <div>
+              <h2 className="text-base font-black text-slate-800">Tambah Petugas Baru</h2>
+              <p className="text-xs text-slate-500 font-medium mt-0.5">Akan langsung tersinkron ke jadwal</p>
+            </div>
+          </div>
+          <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-xl transition-colors text-slate-500"><X size={16}/></button>
+        </div>
+
+        <div className="space-y-4">
+          {/* Nama */}
+          <div>
+            <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1.5">Nama Petugas</label>
+            <input
+              value={staffName}
+              onChange={e => { setStaffName(e.target.value); setError(''); }}
+              onKeyDown={e => e.key === 'Enter' && handleSave()}
+              placeholder="Contoh: BUDI SANTOSO"
+              className="w-full px-4 py-3 border border-slate-200 rounded-2xl text-sm font-bold bg-slate-50/50 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-400 transition-all uppercase placeholder:normal-case placeholder:font-normal"
+              autoFocus
+            />
+          </div>
+
+          {/* Template Siklus */}
+          <div>
+            <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1.5">Pola Siklus Shift</label>
+            <div className="grid grid-cols-2 gap-2">
+              {Object.entries(TEMPLATES).map(([key, val]) => (
+                <button
+                  key={key}
+                  type="button"
+                  onClick={() => setTemplate(key)}
+                  className={cn(
+                    "px-3 py-2.5 rounded-xl border text-left text-[11px] font-bold transition-all",
+                    template === key
+                      ? "bg-indigo-50 border-indigo-300 text-indigo-700 shadow-sm ring-2 ring-indigo-200"
+                      : "bg-white border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50"
+                  )}
+                >
+                  <div className="font-black text-[10px] uppercase tracking-wide">{key === 'special' ? 'Tetap' : `Siklus ${key.toUpperCase()}`}</div>
+                  <div className="text-[9px] text-slate-500 mt-0.5 font-medium leading-tight">{val.label.split('(')[1]?.replace(')','') || val.label}</div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Preview siklus */}
+          {template !== 'special' && (
+            <div className="bg-slate-50 rounded-xl p-3 border border-slate-100">
+              <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">Preview 10 Hari Kerja</p>
+              <div className="flex gap-1 flex-wrap">
+                {(TEMPLATES[template]?.cycle ?? []).map((sid, i) => (
+                  <span key={i} className={cn(
+                    "text-[9px] font-black px-2 py-1 rounded-lg border",
+                    SHIFTS[sid]?.colorClass ?? 'bg-slate-100 border-slate-200 text-slate-500'
+                  )}>{sid}</span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {error && <p className="text-xs text-rose-600 font-bold flex items-center gap-1.5"><X size={12}/>{error}</p>}
+        </div>
+
+        <div className="flex justify-end gap-3 mt-6 pt-5 border-t border-slate-100">
+          <button onClick={onClose} className="px-5 py-2.5 text-sm font-bold text-slate-600 hover:bg-slate-100 rounded-2xl transition-all">Batal</button>
+          <button
+            onClick={handleSave}
+            disabled={saving || !staffName.trim()}
+            className="px-6 py-2.5 text-sm font-black text-white bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 rounded-2xl transition-all disabled:opacity-50 flex items-center gap-2 shadow-[0_4px_12px_-2px_rgba(99,102,241,0.4)]"
+          >
+            {saving ? <Loader2 size={14} className="animate-spin" /> : <UserPlus size={14} />}
+            Tambah Petugas
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
 function InlineNameEditor({ value, onSave }: { value: string; onSave: (v: string) => void }) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(value);
@@ -171,6 +292,7 @@ export default function ShiftBoard() {
   const [isSwapMode, setIsSwapMode]       = useState(false);
   const [selectedSwap, setSelectedSwap]   = useState<{ staffId: string; dateStr: string } | null>(null);
   const [configModal, setConfigModal]     = useState<StaffConfig | null>(null);
+  const [addStaffModal, setAddStaffModal] = useState(false);
   const [toast, setToast]                 = useState<string | null>(null);
 
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 2800); };
@@ -257,10 +379,33 @@ export default function ShiftBoard() {
       return;
     }
 
-    // Cyclic click: normal → CT → L → normal
+    // Cyclic click: default → CT → L → kembali ke default
     const ov = overrides[staff.id]?.[dateStr];
-    const next = !ov || ov === 'CLEAR' ? 'CT' : ov === 'CT' ? 'L' : 'CLEAR';
-    updateOverride(staff.id, dateStr, next);
+    const defaultShift = getDeterministicShift(staff, day);
+
+    if (!ov || ov === 'CLEAR') {
+      // Belum ada override → masuk CT
+      updateOverride(staff.id, dateStr, 'CT');
+    } else if (ov === 'CT') {
+      // CT → L
+      updateOverride(staff.id, dateStr, 'L');
+    } else {
+      // L (atau apapun) → hapus override, kembalikan ke jadwal default
+      setOverrides(prev => {
+        const next = { ...prev };
+        if (next[staff.id]) {
+          const { [dateStr]: _, ...rest } = next[staff.id];
+          next[staff.id] = rest;
+        }
+        return next;
+      });
+      // Hapus override di DB
+      fetch('/api/jadwal/override', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ staffId: staff.id, dateStr }),
+      }).catch(() => {});
+    }
   };
 
   const staffSummaries = useMemo(() => {
@@ -287,6 +432,17 @@ export default function ShiftBoard() {
         <div className="fixed top-5 right-5 z-[999] bg-slate-800 text-white text-sm font-semibold px-4 py-3 rounded-2xl shadow-xl animate-in slide-in-from-top-2 flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-fuchsia-400 shrink-0"/>{toast}
         </div>
+      )}
+
+      {addStaffModal && (
+        <AddStaffModal
+          onSave={newStaff => {
+            setStaffList(prev => [...prev, newStaff]);
+            setAddStaffModal(false);
+            showToast(`Petugas ${newStaff.staffName} berhasil ditambahkan!`);
+          }}
+          onClose={() => setAddStaffModal(false)}
+        />
       )}
 
       {configModal && (
@@ -321,8 +477,26 @@ export default function ShiftBoard() {
               isSwapMode ? "bg-amber-100 text-amber-700 border-amber-300 animate-pulse" : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50")}>
             <ArrowRightLeft size={14}/>{isSwapMode ? 'Batal Tukar' : '⇄ Tukar Jadwal'}
           </button>
-          <button disabled className="px-4 py-2 bg-slate-100 text-slate-400 rounded-xl text-xs font-bold flex items-center gap-2 cursor-not-allowed border border-slate-200 hidden sm:flex">
+          <button
+            onClick={() =>
+              generateSchedulePDF(
+                currentMonth,
+                staffList,
+                overrides,
+                SHIFTS,
+                getEffectiveShift,
+                staffSummaries,
+              )
+            }
+            className="px-4 py-2 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-xl text-xs font-bold flex items-center gap-2 border border-indigo-500 shadow-sm hover:shadow-md hover:from-indigo-700 hover:to-violet-700 active:scale-95 transition-all hidden sm:flex"
+          >
             <Download size={14}/> Cetak PDF
+          </button>
+          <button
+            onClick={() => setAddStaffModal(true)}
+            className="px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-xl text-xs font-bold flex items-center gap-2 border border-emerald-500 shadow-sm hover:shadow-md hover:from-emerald-700 hover:to-teal-700 active:scale-95 transition-all"
+          >
+            <UserPlus size={14}/> Tambah Petugas
           </button>
         </div>
       </div>
@@ -392,8 +566,21 @@ export default function ShiftBoard() {
                               C:{stats.cuti}/{DEFAULT_CUTI_QUOTA}
                             </span>
                             <button onClick={() => setConfigModal(staff)}
-                              className="ml-auto p-1 rounded-md hover:bg-indigo-100 text-slate-300 hover:text-indigo-600 transition-all opacity-0 group-hover/row:opacity-100"
+                              className="p-1 rounded-md hover:bg-indigo-100 text-slate-300 hover:text-indigo-600 transition-all opacity-0 group-hover/row:opacity-100"
                               title="Ubah pola siklus"><Settings size={10}/></button>
+                           <button
+                              onClick={async (e) => {
+                                e.stopPropagation();
+                                if (!confirm(`Hapus petugas ${staff.staffName}? Semua override-nya juga akan dihapus.`)) return;
+                                const res = await fetch('/api/jadwal/staff', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: staff.id }) });
+                                if (res.ok) {
+                                  setStaffList(prev => prev.filter(s => s.id !== staff.id));
+                                  setOverrides(prev => { const n = { ...prev }; delete n[staff.id]; return n; });
+                                  showToast(`Petugas ${staff.staffName} dihapus.`);
+                                }
+                              }}
+                              className="p-1 rounded-md hover:bg-rose-100 text-slate-300 hover:text-rose-500 transition-all opacity-0 group-hover/row:opacity-100"
+                              title="Hapus petugas"><Trash2 size={10}/></button>
                           </div>
                         </div>
                       </div>
@@ -468,7 +655,7 @@ export default function ShiftBoard() {
           <div className="flex items-center gap-1.5 px-2 py-1 rounded-xl bg-white border border-slate-100 shadow-sm">
             <div className={cn("w-6 h-6 rounded-lg flex items-center justify-center text-[9px] font-black border",SHIFTS.CT.colorClass)}>CT</div>
             <div className={cn("w-6 h-6 rounded-lg flex items-center justify-center text-[9px] font-black border",SHIFTS.L.colorClass)}>L</div>
-            <span className="text-[9px] font-bold text-slate-500">Klik → CT → L</span>
+            <span className="text-[9px] font-bold text-slate-500">Klik → CT → L → balik default</span>
           </div>
         </div>
       </div>

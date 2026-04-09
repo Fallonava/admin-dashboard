@@ -119,6 +119,7 @@ export function determineIdealStatus(
     let isAfterAllShifts = true;
     let activeShiftStatusOverride: Doctor['status'] | null = null;
     let latestEndMinutes = 0;
+    let hasCompletedAnyShift = false;
 
     for (const shift of todayShifts) {
         if (!shift.formattedTime) continue;
@@ -135,6 +136,9 @@ export function determineIdealStatus(
         }
         if (currentTimeMinutes < endMinutes) {
             isAfterAllShifts = false;
+        } else {
+            // Shift is completely in the past
+            hasCompletedAnyShift = true;
         }
     }
 
@@ -196,6 +200,11 @@ export function determineIdealStatus(
     
     if (nextShift && (nextShift.statusOverride === 'PENUH' || nextShift.statusOverride === 'OPERASI')) {
         return nextShift.statusOverride as Doctor['status'];
+    }
+
+    // If they have already completed a shift today, they should be marked as SELESAI during the break, not TERJADWAL
+    if (hasCompletedAnyShift) {
+        return 'SELESAI';
     }
 
     return 'TERJADWAL';

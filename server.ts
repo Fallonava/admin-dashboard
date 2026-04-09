@@ -59,6 +59,9 @@ app.prepare().then(() => {
     const pubClient = createClient({ url: REDIS_URL });
     const subClient = pubClient.duplicate();
 
+    // Expose Redis client globally for distributed locking in the scheduler
+    (global as any).redisClient = pubClient;
+
     Promise.all([pubClient.connect(), subClient.connect()]).then(() => {
       io.adapter(createAdapter(pubClient, subClient));
       console.log("[Socket.IO] Redis adapter connected and ready!");

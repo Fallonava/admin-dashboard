@@ -18,6 +18,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.automationBroadcaster = void 0;
 exports.notifyDoctorUpdates = notifyDoctorUpdates;
 exports.notifyViaSocket = notifyViaSocket;
+exports.triggerSchedulerResync = triggerSchedulerResync;
 var events_1 = require("events");
 // simple in-memory broadcaster for doctor-update notifications
 var Broadcaster = /** @class */ (function (_super) {
@@ -71,3 +72,21 @@ function syncAdminData(snapshot) {
 }
 
 exports.syncAdminData = syncAdminData;
+
+/**
+ * Trigger dynamic rescheduling across the PM2 cluster whenever
+ * shifts or calendars are modified dynamically in the middle of the day.
+ */
+function triggerSchedulerResync() {
+    try {
+        var redisClient = global.redisClient;
+        if (redisClient) {
+            redisClient.publish('medcore:scheduler_sync', 'sync');
+        } else if (global.triggerScheduler) {
+            // Fallback for single-node / local dev without Redis
+            global.triggerScheduler().catch(console.error);
+        }
+    } catch(e) {
+        console.error('[broadcaster] Trigger resync error:', e);
+    }
+}

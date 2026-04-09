@@ -52,8 +52,10 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({ success: true });
 }
 
-// DELETE /api/jadwal/override?staffId=s1&month=2026-04
-// Reset semua override satu staf untuk bulan ini
+// DELETE /api/jadwal/override
+// - Body { staffId, dateStr }   → hapus override satu sel (kembali ke jadwal default)
+// - Query ?month=2026-04        → reset semua override bulan ini
+// - Query ?staffId=s1&month=... → reset semua override satu staf bulan ini
 export async function DELETE(req: NextRequest) {
   const authResult = await requireAuth(req);
   if (authResult) return authResult;
@@ -61,10 +63,21 @@ export async function DELETE(req: NextRequest) {
   const staffId = req.nextUrl.searchParams.get('staffId');
   const month   = req.nextUrl.searchParams.get('month');
 
+  // ── Per-cell delete via request body ──
+  let body: { staffId?: string; dateStr?: string } = {};
+  try { body = await req.json(); } catch { /* query-param mode */ }
+
+  if (body?.staffId && body?.dateStr) {
+    await prisma.shiftOverride.deleteMany({
+      where: { staffId: body.staffId, dateStr: body.dateStr },
+    });
+    return NextResponse.json({ success: true });
+  }
+
+  // ── Monthly reset via query params ──
   if (staffId && month) {
     await prisma.shiftOverride.deleteMany({ where: { staffId, dateStr: { startsWith: month } } });
   } else if (month) {
-    // Reset semua staf untuk bulan ini
     await prisma.shiftOverride.deleteMany({ where: { dateStr: { startsWith: month } } });
   }
 

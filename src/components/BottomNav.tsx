@@ -13,6 +13,7 @@ import {
   CalendarPlus,
   Palmtree,
   X,
+  Zap,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/auth-context";
@@ -24,11 +25,11 @@ export function BottomNav() {
   const [sheetOpen, setSheetOpen] = useState(false);
 
   const navItems = [
-    { name: "Beranda", href: "/", icon: LayoutDashboard, resource: "dashboard" },
-    { name: "Jadwal", href: "/schedules", icon: Calendar, resource: "schedules" },
-    { name: "Tambah", href: "#", icon: Plus, isCenter: true, resource: null },
-    { name: "Dokter", href: "/doctors", icon: Users, resource: "doctors" },
-    { name: "Menu", href: "#", icon: Menu, isMenu: true, resource: null },
+    { name: "Beranda",  href: "/",        icon: LayoutDashboard, resource: "denah_live" },
+    { name: "Kontrol",  href: "/control", icon: Zap,             resource: "kontrol_status" },
+    { name: "Tambah",   href: "#",        icon: Plus,            isCenter: true, resource: null },
+    { name: "Jadwal",   href: "/schedules", icon: Calendar,      resource: "schedules" },
+    { name: "Menu",     href: "#",        icon: Menu,            isMenu: true, resource: null },
   ];
 
   const filterByPermission = (items: any[]) => {
@@ -52,6 +53,43 @@ export function BottomNav() {
     setSheetOpen(false);
     router.push(href);
   };
+
+  // Quick add action definitions — permission-gated
+  const quickAddActions = [
+    {
+      label: "Tambah Shift",
+      sub: "Jadwal praktek dokter",
+      href: "/schedules",
+      resource: "schedules",
+      gradient: "from-indigo-500 to-violet-600",
+      bg: "from-indigo-50 to-violet-50",
+      border: "border-indigo-100 hover:border-indigo-200 hover:shadow-indigo-100",
+      Icon: CalendarPlus,
+      shadow: "shadow-[0_6px_16px_rgba(99,102,241,0.35)] group-hover:shadow-[0_8px_20px_rgba(99,102,241,0.45)]",
+    },
+    {
+      label: "Ajukan Cuti",
+      sub: "Kelola cuti dokter",
+      href: "/leaves",
+      resource: "leaves",
+      gradient: "from-emerald-500 to-teal-600",
+      bg: "from-emerald-50 to-teal-50",
+      border: "border-emerald-100 hover:border-emerald-200 hover:shadow-emerald-100",
+      Icon: Palmtree,
+      shadow: "shadow-[0_6px_16px_rgba(16,185,129,0.35)] group-hover:shadow-[0_8px_20px_rgba(16,185,129,0.45)]",
+    },
+    {
+      label: "Data Dokter",
+      sub: "Kelola profil dokter",
+      href: "/doctors",
+      resource: "doctors",
+      gradient: "from-sky-500 to-blue-600",
+      bg: "from-sky-50 to-blue-50",
+      border: "border-sky-100 hover:border-sky-200 hover:shadow-sky-100",
+      Icon: Users,
+      shadow: "shadow-[0_6px_16px_rgba(14,165,233,0.35)] group-hover:shadow-[0_8px_20px_rgba(14,165,233,0.45)]",
+    },
+  ].filter(a => !a.resource || isSuperAdmin || canRead(a.resource));
 
   return (
     <>
@@ -88,33 +126,36 @@ export function BottomNav() {
             </button>
           </div>
 
-          {/* Actions */}
-          <div className="grid grid-cols-2 gap-3">
-            <button
-              onClick={() => handleSheetNav("/schedules")}
-              className="group flex flex-col items-center justify-center gap-3 p-5 rounded-[20px] bg-gradient-to-br from-indigo-50 to-violet-50 border border-indigo-100 hover:border-indigo-200 hover:shadow-md hover:shadow-indigo-100 active:scale-95 transition-all duration-200"
-            >
-              <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-2xl flex items-center justify-center shadow-[0_6px_16px_rgba(99,102,241,0.35)] group-hover:shadow-[0_8px_20px_rgba(99,102,241,0.45)] transition-shadow">
-                <CalendarPlus size={22} className="text-white" strokeWidth={2} />
-              </div>
-              <div className="text-center">
-                <p className="font-black text-slate-800 text-[13px]">Tambah Shift</p>
-                <p className="text-slate-400 text-[11px] font-semibold mt-0.5">Jadwal praktek</p>
-              </div>
-            </button>
-
-            <button
-              onClick={() => handleSheetNav("/leaves")}
-              className="group flex flex-col items-center justify-center gap-3 p-5 rounded-[20px] bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-100 hover:border-emerald-200 hover:shadow-md hover:shadow-emerald-100 active:scale-95 transition-all duration-200"
-            >
-              <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-[0_6px_16px_rgba(16,185,129,0.35)] group-hover:shadow-[0_8px_20px_rgba(16,185,129,0.45)] transition-shadow">
-                <Palmtree size={22} className="text-white" strokeWidth={2} />
-              </div>
-              <div className="text-center">
-                <p className="font-black text-slate-800 text-[13px]">Ajukan Cuti</p>
-                <p className="text-slate-400 text-[11px] font-semibold mt-0.5">Kelola cuti dokter</p>
-              </div>
-            </button>
+          {/* Actions — dynamic grid based on count */}
+          <div className={cn(
+            "grid gap-3",
+            quickAddActions.length === 1 ? "grid-cols-1" :
+            quickAddActions.length === 2 ? "grid-cols-2" :
+            "grid-cols-3"
+          )}>
+            {quickAddActions.map((action) => (
+              <button
+                key={action.href}
+                onClick={() => handleSheetNav(action.href)}
+                className={cn(
+                  "group flex flex-col items-center justify-center gap-2.5 p-4 rounded-[20px]",
+                  `bg-gradient-to-br ${action.bg}`,
+                  `border ${action.border}`,
+                  "hover:shadow-md active:scale-95 transition-all duration-200"
+                )}
+              >
+                <div className={cn(
+                  "w-11 h-11 bg-gradient-to-br rounded-2xl flex items-center justify-center shadow transition-shadow",
+                  action.gradient, action.shadow
+                )}>
+                  <action.Icon size={20} className="text-white" strokeWidth={2} />
+                </div>
+                <div className="text-center">
+                  <p className="font-black text-slate-800 text-[12px] leading-tight">{action.label}</p>
+                  <p className="text-slate-400 text-[10px] font-semibold mt-0.5 hidden sm:block">{action.sub}</p>
+                </div>
+              </button>
+            ))}
           </div>
         </div>
       </div>

@@ -72,6 +72,21 @@ function msUntilMinute(targetMinutes: number): number | null {
  * Trigger the automation engine and broadcast results via Socket.IO.
  */
 async function triggerAndBroadcast(reason: string) {
+  const redisClient = (global as any).redisClient;
+  if (redisClient) {
+    const lockKey = `medcore-lock:scheduler:${reason.replace(/\s+/g, '-')}:${getNowWIBMinutes()}`;
+    try {
+      // Set lock only if it doesn't exist (NX), expires in 30 seconds (EX)
+      const acquired = await redisClient.set(lockKey, 'locked', { NX: true, EX: 30 });
+      if (!acquired) {
+        logger.info(`[scheduler] Batal dieksekusi: Lock sudah diambil oleh node PM2 lain.`);
+        return; // Prevent duplication!
+      }
+    } catch (lockErr: any) {
+      logger.warn(`[scheduler] Gagal acquire Redis lock: ${lockErr.message}. Fallback ke run paralel.`);
+    }
+  }
+
   logger.info(`[scheduler] Triggered: ${reason}`);
   try {
     const { applied, failed } = await runAutomation();

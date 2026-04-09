@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import {
   ChevronDown, Clock, Activity, Timer, Flame, ClockAlert,
-  User, CheckCircle, XCircle, AlertCircle, Pause, Eye
+  CheckCircle, XCircle, AlertCircle, Pause, Siren, Zap, CheckCircle2, PowerOff
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Doctor } from "@/lib/data-service";
@@ -60,10 +60,46 @@ function isActiveStatus(status: Doctor['status']) {
 }
 
 const WING_STATUS_CONFIG = {
-  EMERGENCY: { badge: 'bg-red-100 text-red-700 border-red-200', headerBg: 'bg-red-50', headerBorder: 'border-red-200', label: '🚨 Kondisi Darurat', barColor: 'bg-red-500' },
-  BUSY:      { badge: 'bg-orange-100 text-orange-700 border-orange-200', headerBg: 'bg-orange-50', headerBorder: 'border-orange-200', label: '⚡ Antrean Padat', barColor: 'bg-orange-500' },
-  NORMAL:    { badge: 'bg-emerald-100 text-emerald-700 border-emerald-200', headerBg: 'bg-white', headerBorder: 'border-slate-200', label: '🟢 Beroperasi Normal', barColor: 'bg-emerald-500' },
-  OFFLINE:   { badge: 'bg-slate-100 text-slate-500 border-slate-200', headerBg: 'bg-slate-50', headerBorder: 'border-slate-200', label: '⚫ Off-Duty', barColor: 'bg-slate-300' },
+  EMERGENCY: {
+    badge: 'bg-red-100 text-red-700 border-red-200',
+    headerBg: 'bg-gradient-to-r from-red-50 to-rose-50',
+    headerBorder: 'border-red-200',
+    label: 'Kondisi Darurat',
+    barColor: 'bg-red-500',
+    Icon: Siren,
+    iconColor: 'text-red-600',
+    capacityColor: 'bg-red-500',
+  },
+  BUSY: {
+    badge: 'bg-orange-100 text-orange-700 border-orange-200',
+    headerBg: 'bg-gradient-to-r from-orange-50 to-amber-50',
+    headerBorder: 'border-orange-200',
+    label: 'Antrean Padat',
+    barColor: 'bg-orange-500',
+    Icon: Zap,
+    iconColor: 'text-orange-500',
+    capacityColor: 'bg-orange-500',
+  },
+  NORMAL: {
+    badge: 'bg-emerald-100 text-emerald-700 border-emerald-200',
+    headerBg: 'bg-white',
+    headerBorder: 'border-slate-200',
+    label: 'Beroperasi Normal',
+    barColor: 'bg-emerald-500',
+    Icon: CheckCircle2,
+    iconColor: 'text-emerald-600',
+    capacityColor: 'bg-emerald-500',
+  },
+  OFFLINE: {
+    badge: 'bg-slate-100 text-slate-500 border-slate-200',
+    headerBg: 'bg-slate-50',
+    headerBorder: 'border-slate-200',
+    label: 'Off-Duty',
+    barColor: 'bg-slate-300',
+    Icon: PowerOff,
+    iconColor: 'text-slate-400',
+    capacityColor: 'bg-slate-300',
+  },
 };
 
 function getRelevantShift(doc: Doctor, currentTimeMinutes: number, nowMs: number) {
@@ -71,11 +107,7 @@ function getRelevantShift(doc: Doctor, currentTimeMinutes: number, nowMs: number
   const dayIdx = new Date(nowMs + 7 * 3600_000).getUTCDay() === 0 ? 6 : new Date(nowMs + 7 * 3600_000).getUTCDay() - 1;
   const todayShifts = doc.shifts.filter(s => s.dayIdx === dayIdx && s.formattedTime);
   if (todayShifts.length === 0) return null;
-  
-  // Jika hanya 1 shift khusus hari ini
   if (todayShifts.length === 1) return todayShifts[0];
-
-  // Cari shift yg sedang aktif / akan buka sebentar lagi
   for (const shift of todayShifts) {
     const parts = shift.formattedTime!.split('-');
     if (parts.length < 2) continue;
@@ -83,13 +115,10 @@ function getRelevantShift(doc: Doctor, currentTimeMinutes: number, nowMs: number
     const endMins = parseTimeToMinutes(parts[1]);
     if (currentTimeMinutes >= startMins - 60 && currentTimeMinutes <= endMins) return shift;
   }
-  
-  // Kalau belum ada yang aktif, cari shift berikutnya yang waktu start-nya > saat ini
   const upcoming = todayShifts.find(s => {
     const startMins = parseTimeToMinutes(s.formattedTime!.split('-')[0]);
     return startMins > currentTimeMinutes;
   });
-  
   return upcoming || todayShifts[todayShifts.length - 1];
 }
 
@@ -99,11 +128,16 @@ export function PoliAccordion({
 }: PoliAccordionProps) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
   const cfg = WING_STATUS_CONFIG[wingStatus];
+  const StatusIcon = cfg.Icon;
 
   const activeDoctors = doctors.filter(d => isActiveStatus(d.status));
   const activeCount = activeDoctors.length;
   const availableCount = doctors.filter(d => d.status === 'PRAKTEK').length;
   const fullCount = doctors.filter(d => d.status === 'PENUH').length;
+  const totalDoctors = doctors.length;
+
+  // Capacity ratio for sparkline bar
+  const capacityRatio = totalDoctors > 0 ? Math.round((activeCount / totalDoctors) * 100) : 0;
 
   // Next open time for OFFLINE wing
   const nextOpenStr = useMemo(() => {
@@ -131,7 +165,6 @@ export function PoliAccordion({
     return doctors;
   }, [doctors, patientFilter]);
 
-  // Should this poli be visible under current filter?
   const isVisible = useMemo(() => {
     if (patientFilter === 'ALL') return true;
     if (patientFilter === 'ACTIVE') return availableCount > 0;
@@ -145,10 +178,10 @@ export function PoliAccordion({
   return (
     <div className={cn(
       "rounded-[28px] border overflow-hidden transition-all duration-300 bg-white shadow-sm",
-      isOpen ? `border-slate-300 shadow-md` : `${cfg.headerBorder}`,
-      wingStatus === 'EMERGENCY' && "ring-2 ring-red-300"
+      isOpen ? `border-slate-200 shadow-md` : `${cfg.headerBorder}`,
+      wingStatus === 'EMERGENCY' && "ring-2 ring-red-300 shadow-red-100"
     )}>
-      {/* ─── Accordion Header ─── */}
+      {/* ─── Header ─── */}
       <div
         role="button"
         tabIndex={0}
@@ -157,62 +190,91 @@ export function PoliAccordion({
         className={cn(
           "w-full flex items-center gap-3 sm:gap-4 px-4 sm:px-5 py-4 text-left transition-all duration-300 touch-manipulation cursor-pointer",
           cfg.headerBg,
-          "active:bg-slate-50/80 active:scale-[0.99]",
+          "active:scale-[0.99]",
           isOpen ? "border-b border-slate-200/60" : ""
         )}
       >
         {/* Status bar (left edge) */}
         <div className={cn("w-1.5 h-12 rounded-full shrink-0", cfg.barColor)} />
 
+        {/* Icon */}
+        <div className={cn("p-2 bg-white rounded-xl shadow-sm border border-white/80 shrink-0", cfg.iconColor)}>
+          <StatusIcon size={16} strokeWidth={2.5} className={wingStatus === 'EMERGENCY' ? 'animate-bounce' : ''} />
+        </div>
+
         {/* Poli Info */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <h3 className="text-[17px] font-black text-slate-800 tracking-tight">
+            <h3 className="text-[16px] font-black text-slate-800 tracking-tight">
               {specialty}
             </h3>
-            <span className={cn("px-2.5 py-0.5 rounded-full text-[11px] font-black border tracking-wider uppercase", cfg.badge)}>
+            <span className={cn("px-2.5 py-0.5 rounded-full text-[10px] font-black border tracking-wider uppercase flex items-center gap-1", cfg.badge)}>
+              <StatusIcon size={9} />
               {cfg.label}
             </span>
           </div>
 
-          {/* Quick stats */}
-          <div className="flex items-center gap-3 mt-1.5 flex-wrap">
+          {/* Quick stats + Capacity Sparkline */}
+          <div className="flex items-center gap-3 mt-2 flex-wrap">
             {availableCount > 0 && (
-              <span className="flex items-center gap-1 text-[12px] font-bold text-emerald-600">
+              <span className="flex items-center gap-1 text-[11px] font-bold text-emerald-600">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                 {availableCount} Tersedia
               </span>
             )}
             {fullCount > 0 && (
-              <span className="flex items-center gap-1 text-[12px] font-bold text-red-500">
+              <span className="flex items-center gap-1 text-[11px] font-bold text-red-500">
                 <span className="w-2 h-2 rounded-full bg-red-500" />
                 {fullCount} Penuh
               </span>
             )}
             {activeCount === 0 && nextOpenStr && (
-              <span className="flex items-center gap-1 text-[12px] font-bold text-slate-400">
-                <Timer size={11} className="animate-pulse text-indigo-400" />
+              <span className="flex items-center gap-1 text-[11px] font-bold text-slate-400">
+                <Timer size={10} className="animate-pulse text-indigo-400" />
                 {nextOpenStr}
               </span>
             )}
-            <span className="text-[11px] text-slate-300 font-medium ml-1">
-              {doctors.length} dokter terdaftar
-            </span>
+
+            {/* Mini Capacity Sparkline Bar - capped at 8 */}
+            <div className="flex items-center gap-1.5 ml-1">
+              <div className="flex gap-[2px] items-end h-4">
+                {Array.from({ length: Math.min(totalDoctors, 8) }).map((_, i) => {
+                  const doc = doctors[i];
+                  const isAct = doc ? isActiveStatus(doc.status) : false;
+                  const isFull = doc?.status === 'PENUH';
+                  return (
+                    <div
+                      key={i}
+                      className={cn(
+                        "w-1.5 rounded-[2px] transition-all duration-500",
+                        isFull ? "bg-red-400 h-4" :
+                        isAct ? "bg-emerald-400 h-3" :
+                        "bg-slate-200 h-2"
+                      )}
+                    />
+                  );
+                })}
+                {totalDoctors > 8 && (
+                  <span className="text-[8px] text-slate-400 font-bold ml-0.5">+{totalDoctors - 8}</span>
+                )}
+              </div>
+              <span className="text-[10px] font-black text-slate-400 tabular-nums">
+                {activeCount}/{totalDoctors}
+              </span>
+            </div>
           </div>
         </div>
 
-        {/* Chevron + detail button */}
-        <div className="flex items-center gap-2 shrink-0">
-          <div className={cn(
-            "w-8 h-8 rounded-full flex items-center justify-center bg-slate-100 text-slate-400 transition-transform duration-300",
-            isOpen ? "rotate-180" : ""
-          )}>
-            <ChevronDown size={16} strokeWidth={2.5} />
-          </div>
+        {/* Chevron */}
+        <div className={cn(
+          "w-8 h-8 rounded-full flex items-center justify-center bg-slate-100 text-slate-400 transition-transform duration-300 shrink-0",
+          isOpen ? "rotate-180" : ""
+        )}>
+          <ChevronDown size={16} strokeWidth={2.5} />
         </div>
       </div>
 
-      {/* ─── Accordion Body ─── */}
+      {/* ─── Body ─── */}
       {isOpen && (
         <div className="bg-slate-50/50 p-4">
           {filteredDoctors.length === 0 ? (
@@ -220,7 +282,7 @@ export function PoliAccordion({
               Tidak ada dokter yang sesuai filter.
             </p>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 gap-2.5">
               {filteredDoctors.map(doc => {
                 const shift = getRelevantShift(doc, currentTimeMinutes, nowMs);
                 let startMins = 0, endMins = 0;
@@ -256,22 +318,20 @@ export function PoliAccordion({
                       isActive ? "border-slate-200 hover:border-indigo-200" : "border-slate-100 opacity-75"
                     )}
                   >
-                    {/* Avatar */}
-                    <div className="relative shrink-0">
+                    {/* Avatar - overflow hidden to prevent rings clipping outside */}
+                    <div className="relative shrink-0 overflow-visible">
                       <div className={cn(
-                        "w-11 h-11 rounded-2xl flex items-center justify-center font-black text-white text-sm shadow",
+                        "w-10 h-10 rounded-xl flex items-center justify-center font-black text-white text-sm shadow",
                         `bg-gradient-to-br ${getAvatarGradient(doc.status)}`,
                         !isActive && "grayscale opacity-60"
                       )}>
                         {doc.queueCode?.charAt(0) || doc.name.charAt(0)}
                       </div>
-                      {/* Orbiting ring for OPERASI */}
                       {doc.status === 'OPERASI' && (
-                        <div className="absolute inset-[-4px] rounded-full border-2 border-dashed border-red-400/60 animate-spin" style={{ animationDuration: '3s' }} />
+                        <div className="absolute inset-[-4px] rounded-full border-2 border-dashed border-red-400/60 animate-spin z-0" style={{ animationDuration: '3s' }} />
                       )}
-                      {/* Pulse for PRAKTEK */}
                       {doc.status === 'PRAKTEK' && (
-                        <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-emerald-500 rounded-full border-2 border-white flex items-center justify-center">
+                        <span className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-emerald-500 rounded-full border-2 border-white z-10">
                           <span className="absolute inset-0 rounded-full bg-emerald-500 animate-ping opacity-60" />
                         </span>
                       )}
@@ -315,9 +375,9 @@ export function PoliAccordion({
                         )}
                       </div>
 
-                      {/* Shift progress micro-bar (only for active) */}
+                      {/* Shift progress micro-bar */}
                       {isActive && shiftProgress > 0 && (
-                        <div className="mt-1 h-1 bg-slate-100 rounded-full overflow-hidden w-full max-w-[120px]">
+                        <div className="mt-1.5 h-1.5 bg-slate-100 rounded-full overflow-hidden w-full max-w-[120px]">
                           <div
                             className={cn("h-full rounded-full transition-all duration-1000",
                               isOvertime ? "bg-purple-400" :

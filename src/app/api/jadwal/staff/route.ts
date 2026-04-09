@@ -47,3 +47,49 @@ export async function PATCH(req: NextRequest) {
 
   return NextResponse.json({ success: true, data: updated });
 }
+
+// POST /api/jadwal/staff — tambah petugas baru
+export async function POST(req: NextRequest) {
+  const authResult = await requireAuth(req);
+  if (authResult) return authResult;
+
+  const body = await req.json();
+  const { staffName, cycle, isSpecial } = body;
+
+  if (!staffName?.trim()) {
+    return NextResponse.json({ error: 'staffName wajib diisi' }, { status: 400 });
+  }
+
+  // Auto-generate unique id & sortOrder
+  const maxOrder = await prisma.staffShiftConfig.aggregate({ _max: { sortOrder: true } });
+  const nextOrder = (maxOrder._max.sortOrder ?? -1) + 1;
+  const newId = `s_${Date.now().toString(36)}`;
+
+  const created = await prisma.staffShiftConfig.create({
+    data: {
+      id: newId,
+      staffName: staffName.trim().toUpperCase(),
+      cycle: Array.isArray(cycle) ? cycle : ['P8','P8','P6','P6','P12','P12','P10','P8','P6','P6'],
+      isSpecial: isSpecial ?? false,
+      sortOrder: nextOrder,
+    },
+  });
+
+  return NextResponse.json({ success: true, data: created });
+}
+
+// DELETE /api/jadwal/staff — hapus petugas
+export async function DELETE(req: NextRequest) {
+  const authResult = await requireAuth(req);
+  if (authResult) return authResult;
+
+  const body = await req.json();
+  const { id } = body;
+  if (!id) return NextResponse.json({ error: 'id wajib diisi' }, { status: 400 });
+
+  await prisma.staffShiftConfig.delete({ where: { id } });
+  // Also clean up any overrides for this staff
+  await prisma.shiftOverride.deleteMany({ where: { staffId: id } });
+
+  return NextResponse.json({ success: true });
+}

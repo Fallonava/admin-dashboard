@@ -2,27 +2,21 @@
 
 import { useEffect, useMemo, useState } from "react";
 import useSWR from "swr";
-import { BrainCircuit, RotateCw, Users, Calendar, Activity, Cpu } from "lucide-react";
+import { BrainCircuit, RotateCw, Users, Calendar, Activity, Cpu, Radio } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Shift, Doctor, BroadcastRule } from "@/lib/data-service";
+import { useSocket } from "@/hooks/use-socket";
 
 export function NeuralCore() {
     const { data: shifts = [] } = useSWR<Shift[]>('/api/shifts');
     const { data: doctors = [] } = useSWR<Doctor[]>('/api/doctors');
     const { data: broadcasts = [] } = useSWR<BroadcastRule[]>('/api/automation');
-    const [syncCountdown, setSyncCountdown] = useState(300);
+    const { lastUpdate } = useSocket();
 
-    useEffect(() => {
-        const iv = setInterval(() => {
-            setSyncCountdown(prev => (prev <= 0 ? 300 : prev - 1));
-        }, 1000);
-        return () => clearInterval(iv);
-    }, []);
-
-    const formatCountdown = (s: number) => {
-        const m = Math.floor(s / 60);
-        const sec = s % 60;
-        return `${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+    const formatLastUpdate = (ts: number | null) => {
+        if (!ts) return "SYNC PENDING";
+        const d = new Date(ts);
+        return d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
     };
 
     const { totalShifts, totalDoctors, activeBroadcasts, todayShifts, efficiency, circumference, dashOffset } = useMemo(() => {
@@ -152,11 +146,12 @@ export function NeuralCore() {
                     ))}
                 </div>
 
-                <div className="flex items-center gap-3 bg-indigo-50/80 backdrop-blur-md border border-indigo-200/60 px-5 py-2.5 rounded-2xl shrink-0 shadow-sm">
-                    <RotateCw size={16} className="text-indigo-500 animate-spin" style={{ animationDuration: '3s' }} />
-                    <div className="flex flex-col">
-                        <span className="text-[9px] text-indigo-500 uppercase font-black tracking-[0.2em] leading-none mb-1.5">Next Sync</span>
-                        <span className="text-sm font-mono font-bold text-indigo-800 leading-none">{formatCountdown(syncCountdown)}</span>
+                <div className="flex items-center gap-3 bg-indigo-50/80 backdrop-blur-md border border-indigo-200/60 px-5 py-2.5 rounded-2xl shrink-0 shadow-sm relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/0 via-indigo-500/5 to-indigo-500/0 translate-x-[-100%] animate-[shimmer_3s_infinite]" />
+                    <Radio size={16} className="text-indigo-500 animate-pulse drop-shadow-[0_0_8px_rgba(99,102,241,0.6)]" />
+                    <div className="flex flex-col relative z-10">
+                        <span className="text-[9px] text-indigo-500 uppercase font-black tracking-[0.2em] leading-none mb-1.5 line-clamp-1">Stream: LIVE</span>
+                        <span className="text-sm font-mono font-bold text-indigo-800 leading-none tracking-tight">{formatLastUpdate(lastUpdate)}</span>
                     </div>
                 </div>
             </div>

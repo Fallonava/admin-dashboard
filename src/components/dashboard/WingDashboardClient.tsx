@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { Activity, Search, Zap, Power, Wifi, WifiOff, Loader2, LayoutGrid, Flame, ShieldAlert, Sparkles, Filter, CheckCircle2 } from "lucide-react";
+import { Activity, Search, Zap, Power, Wifi, WifiOff, Loader2, LayoutGrid, Flame, ShieldAlert, Sparkles, CheckCircle2, Stethoscope, CircleAlert, CircleOff } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Doctor, LeaveRequest, Shift, Settings } from "@/lib/data-service";
 import { LiveClock } from "@/components/LiveClock";
@@ -169,6 +169,22 @@ export function WingDashboardClient() {
   const emergencyCount = wingsWithStatus.filter(w => w.status === 'EMERGENCY').length;
   const busyCount = wingsWithStatus.filter(w => w.status === 'BUSY').length;
   const normalCount = wingsWithStatus.filter(w => w.status === 'NORMAL').length;
+  const offlineCount = wingsWithStatus.filter(w => w.status === 'OFFLINE').length;
+
+  // Count DOCTORS (not wings) for each filter — more meaningful UX
+  const allTodayDoctors = wingsWithStatus.flatMap(w => w.doctors);
+  const filterCounts = {
+    ALL: wingsWithStatus.length, // total active wings
+    ACTIVE: allTodayDoctors.filter(d => d.status === 'PRAKTEK' || d.status === 'PENDAFTARAN' || d.status === 'OPERASI').length,
+    FULL: allTodayDoctors.filter(d => d.status === 'PENUH').length,
+    INACTIVE: allTodayDoctors.filter(d => !['PRAKTEK','PENUH','OPERASI','PENDAFTARAN'].includes(d.status || '')).length,
+  };
+  const filterUnits = {
+    ALL: 'Poli',
+    ACTIVE: 'Dokter',
+    FULL: 'Dokter',
+    INACTIVE: 'Dokter',
+  };
 
   // Find the fresh doctor from the updated array if modal is open to fix stale state bug
   const freshSelectedDoctor = useMemo(() => {
@@ -360,28 +376,35 @@ export function WingDashboardClient() {
             </div>
           </div>
 
-          {/* Modern Segmented Filters - 2026 Style */}
+          {/* Modern Segmented Filters — Lucide Icons + Live Count Badges */}
           <div className="flex items-center gap-3 overflow-x-auto snap-x snap-mandatory custom-scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0 pb-2 sm:pb-0 touch-pan-x">
             <div className="flex items-center p-1.5 bg-slate-200/50 backdrop-blur-md rounded-full shrink-0 border border-slate-300/30 shadow-inner w-max">
               {([
-                { key: 'ALL',      label: 'Semua Poli', icon: '🏥' },
-                { key: 'ACTIVE',   label: 'Tersedia', icon: '🟢' },
-                { key: 'FULL',     label: 'Penuh', icon: '🔴' },
-                { key: 'INACTIVE', label: 'Off-Duty', icon: '⚫' },
+                { key: 'ALL',      label: 'Semua Poli',  Icon: Stethoscope,  activeColor: 'text-indigo-700' },
+                { key: 'ACTIVE',   label: 'Tersedia',    Icon: CheckCircle2, activeColor: 'text-emerald-700' },
+                { key: 'FULL',     label: 'Penuh',       Icon: CircleAlert,  activeColor: 'text-red-600' },
+                { key: 'INACTIVE', label: 'Off-Duty',    Icon: CircleOff,    activeColor: 'text-slate-600' },
               ] as const).map(f => (
                 <button
                   key={f.key}
                   onClick={() => setPatientFilter(f.key)}
                   className={cn(
-                    "relative px-4 sm:px-5 py-2 rounded-full text-[12px] sm:text-[13px] font-bold transition-all duration-300 flex items-center gap-2",
+                    "relative px-3.5 sm:px-4 py-2 rounded-full text-[12px] sm:text-[13px] font-bold transition-all duration-300 flex items-center gap-1.5",
                     "touch-manipulation active:scale-[0.95] snap-center outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 shrink-0",
                     patientFilter === f.key
-                      ? "bg-white text-indigo-700 shadow-sm ring-1 ring-black/5"
+                      ? `bg-white shadow-sm ring-1 ring-black/5 ${f.activeColor}`
                       : "text-slate-500 hover:text-slate-700 hover:bg-black/5"
                   )}
                 >
-                  <span className="text-[14px]">{f.icon}</span>
+                  <f.Icon size={14} strokeWidth={2.5} />
                   <span>{f.label}</span>
+                  <span className={cn(
+                    "inline-flex flex-col items-center text-[9px] font-black leading-none px-1.5 py-1 rounded-[8px] min-w-[28px] text-center transition-all",
+                    patientFilter === f.key ? "bg-slate-100 text-slate-700" : "bg-white/60 text-slate-500"
+                  )}>
+                    <span className="text-[11px] tabular-nums leading-none">{filterCounts[f.key]}</span>
+                    <span className="text-[8px] opacity-60 mt-0.5">{filterUnits[f.key]}</span>
+                  </span>
                 </button>
               ))}
             </div>
@@ -389,31 +412,29 @@ export function WingDashboardClient() {
 
           <ErrorBoundary name="Poli Accordion List" className="min-h-[400px]">
              {wingsWithStatus.length > 0 ? (
-                <div className="space-y-3 pb-6">
-                  {wingsWithStatus.map(wing => {
-                    return (
-                      <div
-                        key={wing.specialty}
-                        id={`wing-${wing.specialty.replace(/\s+/g, '-').toLowerCase()}`}
-                        className={cn("transition-all duration-500 rounded-[28px]")}
-                      >
-                        <PoliAccordion
-                          specialty={wing.specialty}
-                          doctors={wing.doctors}
-                          wingStatus={wing.status as 'EMERGENCY' | 'BUSY' | 'NORMAL' | 'OFFLINE'}
-                          currentTimeMinutes={currentTimeMinutes}
-                          nowMs={now.getTime()}
-                          defaultOpen={wing.status === 'EMERGENCY' || wing.status === 'BUSY'}
-                          patientFilter={patientFilter}
-                          onOpenDoctorDetail={(doc) => setSelectedDoctor({
-                            doctor: doc,
-                            specialty: wing.specialty,
-                            wingStatus: wing.status as 'EMERGENCY' | 'BUSY' | 'NORMAL' | 'OFFLINE'
-                          })}
-                        />
-                      </div>
-                    );
-                  })}
+                <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-4 pb-6">
+                  {wingsWithStatus.map(wing => (
+                    <div
+                      key={wing.specialty}
+                      id={`wing-${wing.specialty.replace(/\s+/g, '-').toLowerCase()}`}
+                      className="transition-all duration-500 animate-in fade-in zoom-in-95"
+                    >
+                      <PoliAccordion
+                        specialty={wing.specialty}
+                        doctors={wing.doctors}
+                        wingStatus={wing.status as 'EMERGENCY' | 'BUSY' | 'NORMAL' | 'OFFLINE'}
+                        currentTimeMinutes={currentTimeMinutes}
+                        nowMs={now.getTime()}
+                        defaultOpen={wing.status === 'EMERGENCY' || wing.status === 'BUSY'}
+                        patientFilter={patientFilter}
+                        onOpenDoctorDetail={(doc) => setSelectedDoctor({
+                          doctor: doc,
+                          specialty: wing.specialty,
+                          wingStatus: wing.status as 'EMERGENCY' | 'BUSY' | 'NORMAL' | 'OFFLINE'
+                        })}
+                      />
+                    </div>
+                  ))}
                 </div>
              ) : (
                 <div className="w-full p-12 text-center text-slate-400 font-medium bg-white/40 backdrop-blur-xl rounded-[32px] border border-white/60">

@@ -9,6 +9,7 @@ import { SearchableSelect } from "@/components/ui/SearchableSelect";
 import { useSocket } from '@/hooks/use-socket';
 
 const HOURS = [
+    { label: "06:00", hour: 6 },
     { label: "07:00", hour: 7 },
     { label: "08:00", hour: 8 },
     { label: "09:00", hour: 9 },
@@ -298,9 +299,23 @@ export function RealtimeCalendar({ selectedDate, onDateChange }: RealtimeCalenda
                                                         </div>
 
                                                         <div className={cn("flex flex-col gap-2 pl-2 sm:pl-3 border-l-2 ml-1 sm:ml-1.5 relative z-10", color.border)}>
-                                                            <p className={cn("text-[9px] sm:text-[10px] font-black uppercase tracking-widest opacity-80", color.text)}>{shift.title}</p>
+                                                            <div className="flex items-center justify-between gap-2">
+                                                                <p className={cn("text-[9px] sm:text-[10px] font-black uppercase tracking-widest opacity-80", color.text)}>{shift.title}</p>
+                                                                {shift.statusOverride === 'PENUH' && (
+                                                                    <span className="px-1.5 py-0.5 bg-rose-500 text-white text-[8px] sm:text-[9px] font-black rounded shadow-sm animate-pulse">KUOTA PENUH</span>
+                                                                )}
+                                                                {shift.statusOverride === 'OPERASI' && (
+                                                                    <span className="px-1.5 py-0.5 bg-amber-500 text-white text-[8px] sm:text-[9px] font-black rounded shadow-sm">OPERASI</span>
+                                                                )}
+                                                                {shift.statusOverride === 'CUTI' && (
+                                                                    <span className="px-1.5 py-0.5 bg-slate-500 text-white text-[8px] sm:text-[9px] font-black rounded shadow-sm">CUTI</span>
+                                                                )}
+                                                                {shift.statusOverride === 'LIBUR' && (
+                                                                    <span className="px-1.5 py-0.5 bg-slate-400 text-white text-[8px] sm:text-[9px] font-black rounded shadow-sm">BATAL/LIBUR</span>
+                                                                )}
+                                                            </div>
 
-                                                            <div className="flex items-center justify-between mt-0.5">
+                                                            <div className="flex flex-wrap items-center gap-1.5 mt-0.5">
                                                                 <div className={cn("flex items-center gap-1.5 px-2 py-1 rounded-lg text-[10px] sm:text-xs font-black shadow-sm", color.innerBg, color.timeText)}>
                                                                     <Clock size={12} className={color.dotIcon} />
                                                                     {shift.formattedTime}

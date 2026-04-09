@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requirePermission, withMutationRateLimit } from '@/lib/api-utils';
 import { z } from 'zod';
-import { notifyViaSocket, syncAdminData } from '@/lib/automation-broadcaster';
+import { notifyViaSocket, syncAdminData, triggerSchedulerResync } from '@/lib/automation-broadcaster';
 import { getFullSnapshot } from '@/lib/data-fetchers';
 export const dynamic = 'force-dynamic';
 
@@ -79,6 +79,7 @@ export async function POST(req: Request) {
         
         // Trigger full sync for Admin Dashboard
         getFullSnapshot().then(syncAdminData).catch(console.error);
+        triggerSchedulerResync();
 
         return NextResponse.json(newLeaves.filter(Boolean));
     } else {
@@ -101,6 +102,7 @@ export async function POST(req: Request) {
         
         // Trigger full sync for Admin Dashboard
         getFullSnapshot().then(syncAdminData).catch(console.error);
+        triggerSchedulerResync();
 
         return NextResponse.json(newLeave);
     }
@@ -134,6 +136,7 @@ export async function PUT(req: Request) {
 
         // Trigger full sync for Admin Dashboard
         getFullSnapshot().then(syncAdminData).catch(console.error);
+        triggerSchedulerResync();
 
         return NextResponse.json(updatedLeave);
     } catch (error) {
@@ -163,6 +166,7 @@ export async function DELETE(req: Request) {
 
             // Trigger full sync for Admin Dashboard
             getFullSnapshot().then(syncAdminData).catch(console.error);
+            triggerSchedulerResync();
 
             return NextResponse.json({ success: true });
         } catch (err) {
