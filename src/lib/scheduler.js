@@ -109,41 +109,60 @@ function msUntilMinute(targetMinutes) {
  */
 function triggerAndBroadcast(reason) {
     return __awaiter(this, void 0, void 0, function () {
-        var _a, applied, failed, snapshot, snapErr_1, err_1;
+        var redisClient, lockKey, acquired, lockErr_1, _a, applied, failed, snapshot, snapErr_1, err_1;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
-                    logger_1.logger.info("[scheduler] Triggered: ".concat(reason));
+                    redisClient = global.redisClient;
+                    if (!redisClient) return [3 /*break*/, 4];
+                    lockKey = "medcore-lock:scheduler:".concat(reason.replace(/\s+/g, '-'), ":").concat(getNowWIBMinutes());
                     _b.label = 1;
                 case 1:
-                    _b.trys.push([1, 7, , 8]);
-                    return [4 /*yield*/, (0, automation_1.runAutomation)()];
+                    _b.trys.push([1, 3, , 4]);
+                    return [4 /*yield*/, redisClient.set(lockKey, 'locked', { NX: true, EX: 30 })];
                 case 2:
+                    acquired = _b.sent();
+                    if (!acquired) {
+                        logger_1.logger.info("[scheduler] Batal dieksekusi: Lock sudah diambil oleh node PM2 lain.");
+                        return [2 /*return*/]; // Prevent duplication!
+                    }
+                    return [3 /*break*/, 4];
+                case 3:
+                    lockErr_1 = _b.sent();
+                    logger_1.logger.warn("[scheduler] Gagal acquire Redis lock: ".concat(lockErr_1.message, ". Fallback ke run paralel."));
+                    return [3 /*break*/, 4];
+                case 4:
+                    logger_1.logger.info("[scheduler] Triggered: ".concat(reason));
+                    _b.label = 5;
+                case 5:
+                    _b.trys.push([5, 11, , 12]);
+                    return [4 /*yield*/, (0, automation_1.runAutomation)()];
+                case 6:
                     _a = _b.sent(), applied = _a.applied, failed = _a.failed;
                     logger_1.logger.info("[scheduler] Done. Applied: ".concat(applied, ", Failed: ").concat(failed));
-                    _b.label = 3;
-                case 3:
-                    _b.trys.push([3, 5, , 6]);
+                    _b.label = 7;
+                case 7:
+                    _b.trys.push([7, 9, , 10]);
                     return [4 /*yield*/, (0, data_fetchers_1.getFullSnapshot)()];
-                case 4:
+                case 8:
                     snapshot = _b.sent();
                     (0, automation_broadcaster_1.syncAdminData)(snapshot);
                     logger_1.logger.info("[scheduler] Broadcast admin_sync_all: ".concat(snapshot.doctors.length, " doctors"));
-                    return [3 /*break*/, 6];
-                case 5:
+                    return [3 /*break*/, 10];
+                case 9:
                     snapErr_1 = _b.sent();
                     logger_1.logger.error('[scheduler] Failed to broadcast snapshot:', snapErr_1.message);
-                    return [3 /*break*/, 6];
-                case 6:
+                    return [3 /*break*/, 10];
+                case 10:
                     if (applied > 0) {
                         (0, automation_broadcaster_1.notifyViaSocket)('schedule_changed', { reason: reason, applied: applied, ts: Date.now() });
                     }
-                    return [3 /*break*/, 8];
-                case 7:
+                    return [3 /*break*/, 12];
+                case 11:
                     err_1 = _b.sent();
                     logger_1.logger.error('[scheduler] runAutomation error:', err_1.message);
-                    return [3 /*break*/, 8];
-                case 8: return [2 /*return*/];
+                    return [3 /*break*/, 12];
+                case 12: return [2 /*return*/];
             }
         });
     });

@@ -194,6 +194,7 @@ function determineIdealStatus(doc, todayShifts, leaves, currentTimeMinutes, toda
     var isAfterAllShifts = true;
     var activeShiftStatusOverride = null;
     var latestEndMinutes = 0;
+    var hasCompletedAnyShift = false;
     for (var _i = 0, todayShifts_1 = todayShifts; _i < todayShifts_1.length; _i++) {
         var shift = todayShifts_1[_i];
         if (!shift.formattedTime)
@@ -212,6 +213,10 @@ function determineIdealStatus(doc, todayShifts, leaves, currentTimeMinutes, toda
         }
         if (currentTimeMinutes < endMinutes) {
             isAfterAllShifts = false;
+        }
+        else {
+            // Shift is completely in the past
+            hasCompletedAnyShift = true;
         }
     }
     // Sweep check: If the day is completely over, force SELESAI (respects cooldown)
@@ -274,6 +279,10 @@ function determineIdealStatus(doc, todayShifts, leaves, currentTimeMinutes, toda
         return doc.status;
     if (nextShift && (nextShift.statusOverride === 'PENUH' || nextShift.statusOverride === 'OPERASI')) {
         return nextShift.statusOverride;
+    }
+    // If they have already completed a shift today, they should be marked as SELESAI during the break, not TERJADWAL
+    if (hasCompletedAnyShift) {
+        return 'SELESAI';
     }
     return 'TERJADWAL';
 }
