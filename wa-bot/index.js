@@ -1,0 +1,209 @@
+require("dotenv").config();
+const { Client, LocalAuth } = require("whatsapp-web.js");
+const qrcode = require("qrcode-terminal");
+const mongoose = require("mongoose");
+const redis = require("redis");
+
+// ==========================================
+// 1. DATABASE & QUEUE SETUP (MongoDB)
+// ==========================================
+const BroadcastQueueSchema = new mongoose.Schema({
+  patientName: { type: String },
+  whatsappNumber: { type: String },
+  doctorName: { type: String },
+  clinicName: { type: String },
+  status: { type: String, enum: ["PENDING", "PROCESSING", "SENT", "FAILED"], default: "PENDING" },
+  messageText: { type: String },
+  log: { type: String },
+  sendAt: { type: Date, default: Date.now },
+}, { timestamps: true });
+
+const BroadcastQueue = mongoose.models.BroadcastQueue || mongoose.model("BroadcastQueue", BroadcastQueueSchema);
+
+// ==========================================
+// 2. WHATSAPP CLIENT SETUP
+// ==========================================
+console.log("Menyalakan mesin Chromium untuk WhatsApp (Mungkin memakan waktu)...");
+const waClient = new Client({
+  authStrategy: new LocalAuth({ dataPath: "./sessions" }),
+  puppeteer: {
+    headless: true,
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage',
+      '--disable-accelerated-2d-canvas',
+      '--no-first-run',
+      '--no-zygote',
+      '--single-process',
+      '--disable-gpu'
+    ],
+  }
+});
+
+// ==========================================
+// 3. REDIS PUB/SUB & PROCESSING LOGIC
+// ==========================================
+const redisSubscriber = redis.createClient({ url: process.env.REDIS_URL });
+let redisPublisher;
+
+async function setBotState(state, data = null) {
+    try {
+        if(redisPublisher) {
+            await redisPublisher.set('wa:bot_state', JSON.stringify({ state, qr: data, timestamp: Date.now() }));
+        }
+    } catch(e) { console.error("Gagal save state:", e) }
+}
+
+let isWaReady = false;
+let isProcessingQueue = false;
+
+waClient.on("qr", (qr) => {
+  console.log("SCAN QR CODE INI BILA BELUM TERHUBUNG:");
+  qrcode.generate(qr, { small: true });
+  setBotState("QR_READY", qr);
+});
+
+waClient.on("ready", () => {
+  console.log("✅ Whatsapp Bot Berhasil Terhubung!");
+  isWaReady = true;
+  setBotState("CONNECTED");
+  processQueue(); 
+});
+
+waClient.on("auth_failure", msg => {
+  console.error("❌ Autentikasi Gagal:", msg);
+  setBotState("DISCONNECTED");
+});
+
+waClient.on("disconnected", (reason) => {
+  console.error("❌ Whatsapp Disconnected:", reason);
+  isWaReady = false;
+  setBotState("DISCONNECTED");
+});
+
+waClient.initialize();
+
+async function initDB() {
+    try {
+        await mongoose.connect(process.env.MONGODB_URI);
+        console.log("✅ MongoDB Terhubung");
+
+        await redisSubscriber.connect();
+        console.log("✅ Redis Subscriber Terhubung");
+        
+        redisPublisher = redisSubscriber.duplicate();
+        await redisPublisher.connect();
+        setBotState("STARTING"); // Initial state
+
+        await redisSubscriber.subscribe("wa:trigger_queue", (message) => {
+            console.log(`[REDIS TRIGGER] Menerima sinyal queue: ${message}`);
+            if (isWaReady) processQueue();
+        });
+        
+        await redisSubscriber.subscribe("wa:command", async (message) => {
+            console.log(`[REDIS COMMAND] Menerima instruksi: ${message}`);
+            if (message === "LOGOUT") {
+                console.log("Loging out client...");
+                setBotState("DISCONNECTED");
+                try { await waClient.logout(); } catch(e){}
+                setTimeout(() => { process.exit(0); }, 1000); // Biarkan PM2 merestart bot secara bersih
+            }
+        });
+
+    } catch (err) {
+        console.error("Gagal inisialisasi infra:", err);
+    }
+}
+
+// Utility: Sleep / Random Delay
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+const randomDelay = (min, max) => Math.floor(Math.random() * (max - min + 1) + min);
+
+async function processQueue() {
+  if (isProcessingQueue) return;
+  isProcessingQueue = true;
+
+  try {
+    let pendingCount = await BroadcastQueue.countDocuments({ status: "PENDING" });
+    if (pendingCount === 0) {
+        isProcessingQueue = false;
+        return;
+    }
+    
+    console.log(`Menemukan ${pendingCount} antrean. Memulai proses broadcast...`);
+
+    let sentInBatch = 0;
+
+    while (true) {
+      // Ambil 1 terlama
+      const queue = await BroadcastQueue.findOneAndUpdate(
+        { status: "PENDING" },
+        { status: "PROCESSING" },
+        { sort: { createdAt: 1 }, new: true }
+      );
+
+      if (!queue) break; // Tidak ada lagi yang PENDING
+
+      try {
+         // Format nomor jadi jid
+         const numberId = `${queue.whatsappNumber}@c.us`; 
+
+         // Check isRegisteredUser (hanya kalau ragu, untuk meminimalisir banned, ditiadakan gapapa tapi bagus)
+         console.log(`[SIMULASI] Mengetik ke ${queue.whatsappNumber}...`);
+         
+         const chat = await waClient.getChatById(numberId).catch(() => null);
+         if(chat) {
+             await chat.sendStateTyping();
+         }
+         
+         // Random delay simulasi orang ngetik (realistis 3 - 6 detik)
+         await sleep(randomDelay(3000, 6000));
+         
+         // Inject zero-width space acak di akhir pesan (Anti-hash Meta filter)
+         const zeroWidthChars = ['\u200B', '\u200C', '\u200D', '\uFEFF'];
+         const randomHash = zeroWidthChars[Math.floor(Math.random() * zeroWidthChars.length)].repeat(Math.floor(Math.random() * 3));
+         
+         await waClient.sendMessage(numberId, queue.messageText + randomHash);
+
+         queue.status = "SENT";
+         await queue.save();
+         console.log(`✅ Sukses mengirim ke ${queue.whatsappNumber}`);
+
+         sentInBatch++;
+         
+         // Batch Pause: Tiap 40 pesan, istirahat 5 menit 
+         if (sentInBatch >= 40) {
+             console.log("⚠️ Istirahat Batch (Anti-Ban)... Menunggu 5 menit.");
+             await sleep(5 * 60 * 1000); // 5 menit
+             sentInBatch = 0;
+         } else {
+             // Jeda antar pesan biasa: 10 ~ 20 detik
+             const delayTime = randomDelay(10000, 20000);
+             console.log(`Menunggu ${delayTime/1000} detik untuk pesan berikutnya...`);
+             await sleep(delayTime);
+         }
+
+      } catch (err) {
+         console.error(`❌ Gagal mengirim ke ${queue.whatsappNumber}:`, err.message);
+         queue.status = "FAILED";
+         queue.log = err.message;
+         await queue.save();
+      }
+    }
+
+    console.log("✅ Seluruh antrean batch selesai.");
+
+  } catch (error) {
+    console.error("Fatal error saat processQueue:", error);
+  } finally {
+    isProcessingQueue = false;
+    // Check lagikali aja ada yang masuk pas lagi ngerjain
+    const remaining = await BroadcastQueue.countDocuments({ status: "PENDING" });
+    if (remaining > 0 && isWaReady) {
+        processQueue();
+    }
+  }
+}
+
+initDB();

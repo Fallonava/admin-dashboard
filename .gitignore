@@ -2,6 +2,8 @@
 
 # dependencies
 /node_modules
+/wa-bot/node_modules
+/wa-bot/sessions
 /.pnp
 .pnp.*
 .yarn/*

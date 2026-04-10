@@ -24,11 +24,12 @@ if [ -f ".env" ]; then
     echo "💾 Membackup file .env..."
     cp .env /home/fallonava/admin-dashboard.env.bak
 fi
+if [ -f "wa-bot/.env" ]; then
+    echo "💾 Membackup wa-bot/.env..."
+    cp wa-bot/.env /home/fallonava/wa-bot.env.bak
+fi
 
-# 2. Hentikan SEMUA proses PM2 (medcore-admin + medcore-cron-worker)
-# Penting: harus delete ALL agar tidak ada collision saat pm2 start ecosystem nanti.
-# Jika hanya delete medcore-admin, cron-worker (proses terpisah) tetap jalan dan
-# menyebabkan PM2 TypeError saat start ulang ecosystem.
+# 2. Hentikan SEMUA proses PM2 (medcore-admin + wa-worker + cron)
 echo "🛑 Menghentikan semua proses PM2..."
 pm2 delete all 2>/dev/null || true
 
@@ -37,12 +38,16 @@ if [ -d ".git" ]; then
     echo "📥 Menarik kode terbaru dari GitHub..."
     git fetch origin master
     git reset --hard origin/master
-    git clean -fd  # <--- Tambahan ini untuk hapus file "sampah" yang tidak ada di GitHub
+    git clean -fd  # hapus file "sampah"
     
-    # [FIX] Restore .env dari backup setelah git clean menghapusnya
+    # Restore .env
     if [ -f "/home/fallonava/admin-dashboard.env.bak" ]; then
-        echo "♻️ Me-restore file .env..."
+        echo "♻️ Me-restore file .env utama..."
         cp /home/fallonava/admin-dashboard.env.bak .env
+    fi
+     if [ -f "/home/fallonava/wa-bot.env.bak" ]; then
+        echo "♻️ Me-restore file .env bot..."
+        cp /home/fallonava/wa-bot.env.bak wa-bot/.env
     fi
 else
     echo "❌ Folder .git tidak ditemukan! Pastikan sudah dijalankan di folder repo."
@@ -50,9 +55,10 @@ else
 fi
 
 # 4. Bersihkan folder build (simpan cache agar build lebih cepat)
-echo "🧹 Membersihkan folder lama (node_modules, .next — kecuali cache)..."
+echo "🧹 Membersihkan folder lama (node_modules, .next)..."
 rm -rf node_modules
-# Hapus .next tapi PERTAHANKAN cache untuk mempercepat build berikutnya
+rm -rf wa-bot/node_modules
+
 if [ -d ".next/cache" ]; then
     mv .next/cache /tmp/next-cache-bak
     rm -rf .next
@@ -63,9 +69,14 @@ else
     rm -rf .next
 fi
 
-# 5. Install dependencies secara bersih
-echo "📦 Menginstall dependencies (npm ci)..."
+# 5. Install dependencies secara bersih (Untuk Web dan Bot!)
+echo "📦 Menginstall dependencies Utama (npm ci)..."
 npm ci --no-audit --no-fund --maxsockets=3 --loglevel=info
+
+echo "📦 Menginstall dependencies WA-Bot..."
+if [ -d "wa-bot" ]; then
+    cd wa-bot && npm install --no-audit --no-fund && cd ..
+fi
 
 # 6. Jalankan Migrasi Prisma (hanya jika ada folder migrations)
 echo "🗄️ Sinkronisasi database..."

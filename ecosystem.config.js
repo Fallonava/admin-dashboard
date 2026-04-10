@@ -50,5 +50,25 @@ module.exports = {
       min_uptime: '60s',              // App must stay up for 60s to be considered "healthy"
       max_restarts: 10,               // Stop thrashing CPU/Disk if app crashes 10 times in a row
     },
+    {
+      name: 'wa-worker',
+      script: './wa-bot/index.js',
+      cwd: '/home/fallonava/admin-dashboard',
+      instances: 1,                   // MUST BE 1 (Singleton) to prevent headless chromium wars
+      exec_mode: 'fork',              // MUST BE fork mode for headless chromium stability
+      autorestart: true,
+      watch: false,
+      max_memory_restart: '1G',
+      env: {
+        NODE_ENV: 'production',
+        TZ: 'Asia/Jakarta',
+      },
+      error_file: '/home/fallonava/logs/wa-worker-error.log',
+      out_file: '/home/fallonava/logs/wa-worker-out.log',
+      log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
+      merge_logs: true,
+      time: true,
+      exp_backoff_restart_delay: 2000, // Waits 2s before restart loop
+    }
   ],
 };
