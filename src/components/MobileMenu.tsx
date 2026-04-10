@@ -109,6 +109,14 @@ export function MobileMenu() {
   const visibleSystems = systems.filter((item) => !item.resource || isSuperAdmin || canRead(item.resource));
   const visibleAdmin = admin.filter((item) => !item.resource || isSuperAdmin || canRead(item.resource));
 
+  // Group visibleNav by category
+  const navByCategory = visibleNav.reduce((acc, item) => {
+     const cat = item.category || "Umum";
+     if (!acc[cat]) acc[cat] = [];
+     acc[cat].push(item);
+     return acc;
+  }, {} as Record<string, typeof visibleNav>);
+
   return (
     <div className="lg:hidden fixed inset-0 z-[150] flex flex-col justify-end">
       {/* Backdrop overlay */}
@@ -152,10 +160,14 @@ export function MobileMenu() {
         {/* Scrollable Content */}
         <div className="flex-1 overflow-y-auto px-6 py-6 custom-scrollbar pb-32">
             <div className="space-y-4">
-                <h2 className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">Menu Dasar</h2>
-                <nav className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {visibleNav.map(renderLink)}
-                </nav>
+                {Object.entries(navByCategory).map(([category, items]) => (
+                   <div key={category} className="mb-6">
+                      <h2 className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1 pb-3">{category}</h2>
+                      <nav className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          {items.map(renderLink)}
+                      </nav>
+                   </div>
+                ))}
 
                 {visibleSystems.length > 0 && (
                     <>

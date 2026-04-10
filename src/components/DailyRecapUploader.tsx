@@ -189,7 +189,7 @@ export default function DailyRecapUploader() {
 
         rmGroups.forEach(group => {
            if (group.length > 1) {
-              const uniquePolis = Array.from(new Set(group.map(g => g.poli).filter(p => p && p !== '-')));
+              const uniquePolis = Array.from(new Set(group.map(g => g.poli).filter((p): p is string => Boolean(p) && p !== '-')));
               const hasValidSep = group.some(g => g.nomorSep && g.nomorSep.trim() !== '' && g.nomorSep.trim() !== '-');
               
               if (uniquePolis.length > 1) {

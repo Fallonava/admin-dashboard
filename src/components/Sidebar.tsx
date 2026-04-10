@@ -24,13 +24,13 @@ import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/auth-context";
 
 export const navigation = [
-  { name: "Denah Live", href: "/", icon: LayoutDashboard, resource: "denah_live" },
-  { name: "Kontrol Status", href: "/control", icon: Zap, resource: "kontrol_status" },
-  { name: "Jadwal Petugas", href: "/jadwal-petugas", icon: CalendarDays, resource: "schedules" },
-  { name: "Jadwal Dokter", href: "/schedules", icon: Calendar, resource: "schedules" },
-  { name: "Dokter", href: "/doctors", icon: Users, resource: "doctors" },
-  { name: "Jadwal Cuti", href: "/leaves", icon: Calendar, resource: "leaves" },
-  { name: "Rekap Harian", href: "/rekap-harian", icon: FileSpreadsheet, resource: "rekap_harian" },
+  { name: "Denah Live", href: "/", icon: LayoutDashboard, resource: "denah_live", category: "Pelayanan" },
+  { name: "Kontrol Status", href: "/control", icon: Zap, resource: "kontrol_status", category: "Pelayanan" },
+  { name: "Rekap Harian", href: "/rekap-harian", icon: FileSpreadsheet, resource: "rekap_harian", category: "Pelayanan" },
+  { name: "Jadwal Petugas", href: "/jadwal-petugas", icon: CalendarDays, resource: "schedules", category: "Manajemen Staf" },
+  { name: "Jadwal Dokter", href: "/schedules", icon: Calendar, resource: "schedules", category: "Manajemen Staf" },
+  { name: "List Dokter", href: "/doctors", icon: Users, resource: "doctors", category: "Manajemen Staf" },
+  { name: "Jadwal Cuti", href: "/leaves", icon: Calendar, resource: "leaves", category: "Manajemen Staf" },
 ];
 
 export const systems = [
@@ -68,21 +68,21 @@ export function Sidebar() {
       : pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href));
       
     const linkClassName = cn(
-      "relative flex items-center gap-3.5 rounded-[20px] px-4 py-3.5 text-sm font-bold transition-all duration-500 group/link border",
+      "relative flex items-center gap-3.5 rounded-[16px] px-4 py-3 text-sm font-bold transition-all duration-300 group/link border",
       isActive
-        ? "bg-gradient-to-r from-indigo-500/10 to-violet-500/10 text-indigo-800 shadow-[inset_0_1px_1px_rgba(255,255,255,1),0_8px_20px_-8px_rgba(99,102,241,0.15)] border-indigo-500/20"
-        : "hover:bg-white/60 hover:text-slate-900 text-slate-500 border-transparent hover:border-white/80 hover:shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)] hover:-translate-y-0.5 mr-1"
+        ? "bg-indigo-50/80 text-indigo-700 shadow-sm border-indigo-200/50"
+        : "hover:bg-slate-50 hover:text-slate-900 text-slate-500 border-transparent hover:border-slate-200/60"
     );
     const iconClassName = cn(
-      "h-5 w-5 transition-all duration-300",
-      isActive ? "text-indigo-600 drop-shadow-sm scale-110" : "text-slate-400 group-hover/link:text-indigo-500 group-hover/link:scale-105"
+      "h-[18px] w-[18px] transition-all duration-300",
+      isActive ? "text-indigo-600 drop-shadow-sm scale-110" : "text-slate-400 group-hover/link:text-indigo-500 group-hover/link:scale-110"
     );
 
     if (item.external) {
       return (
         <a key={item.name} href={item.href} target="_blank" rel="noopener noreferrer" className={linkClassName}>
-          {isActive && <span className="absolute left-2.5 top-1/2 -translate-y-1/2 w-1.5 h-6 rounded-full bg-gradient-to-b from-indigo-400 to-violet-500 shadow-[0_0_10px_rgba(99,102,241,0.4)]" />}
-          <item.icon className={iconClassName} />
+          {isActive && <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 rounded-r-full bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.5)]" />}
+          <item.icon className={iconClassName} strokeWidth={isActive ? 2.5 : 2} />
           {item.name}
         </a>
       );
@@ -90,8 +90,8 @@ export function Sidebar() {
 
     return (
       <Link key={item.name} href={item.href} className={linkClassName}>
-        {isActive && <span className="absolute left-2.5 top-1/2 -translate-y-1/2 w-1.5 h-6 rounded-full bg-gradient-to-b from-indigo-400 to-violet-500 shadow-[0_0_10px_rgba(99,102,241,0.4)]" />}
-        <item.icon className={iconClassName} />
+        {isActive && <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 rounded-r-full bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.5)]" />}
+        <item.icon className={iconClassName} strokeWidth={isActive ? 2.5 : 2} />
         {item.name}
       </Link>
     );
@@ -101,67 +101,66 @@ export function Sidebar() {
   const visibleSystems = systems.filter((item) => !item.resource || isSuperAdmin || canRead(item.resource));
   const visibleAdmin = admin.filter((item) => !item.resource || isSuperAdmin || canRead(item.resource));
 
+  // Group visibleNav by category
+  const navByCategory = visibleNav.reduce((acc, item) => {
+     const cat = item.category || "Umum";
+     if (!acc[cat]) acc[cat] = [];
+     acc[cat].push(item);
+     return acc;
+  }, {} as Record<string, typeof visibleNav>);
+
   const sidebarContent = (
     <>
-      <div className="flex-1 overflow-y-auto no-scrollbar">
-        <div className="flex items-center gap-3 px-3 mb-10 mt-2">
-          <div className="h-11 w-11 flex items-center justify-center relative">
-            <div className="absolute inset-0 bg-indigo-400/20 blur-xl rounded-full mix-blend-multiply" />
-            <svg width="44" height="44" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" className="drop-shadow-md relative z-10 transition-transform duration-500 hover:scale-105 hover:-rotate-3">
-              <defs>
-                <linearGradient id="sidebar-bg-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#4f46e5" />
-                  <stop offset="100%" stopColor="#4338ca" />
-                </linearGradient>
-                <linearGradient id="sidebar-gold-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stopColor="#ffffff" />
-                  <stop offset="100%" stopColor="#e0e7ff" />
-                </linearGradient>
-              </defs>
-              <rect width="512" height="512" rx="140" fill="url(#sidebar-bg-gradient)" />
-              <circle cx="256" cy="256" r="210" stroke="#818cf8" strokeWidth={16} opacity={0.4} />
-              <circle cx="256" cy="256" r="160" fill="#3730a3" fillOpacity={0.2} stroke="#818cf8" strokeWidth={6} />
-              <path d="M190 220 C180 220, 160 240, 160 300 C160 340, 180 340, 190 340" stroke="url(#sidebar-gold-gradient)" strokeWidth={28} strokeLinecap="round" fill="none" />
-              <path d="M322 220 C332 220, 352 240, 352 300 C352 340, 332 340, 322 340" stroke="url(#sidebar-gold-gradient)" strokeWidth={28} strokeLinecap="round" fill="none" />
-              <path d="M190 220 L215 256" stroke="url(#sidebar-gold-gradient)" strokeWidth={28} strokeLinecap="round" />
-              <path d="M322 220 L297 256" stroke="url(#sidebar-gold-gradient)" strokeWidth={28} strokeLinecap="round" />
-              <rect x="226" y="196" width="60" height="120" rx="12" fill="white" />
-              <rect x="196" y="226" width="120" height="60" rx="12" fill="white" />
-            </svg>
+      <div className="flex-1 overflow-y-auto custom-scrollbar pr-1">
+        <div className="flex items-center gap-3 px-3 mb-8 mt-2">
+          <div className="h-11 w-11 flex items-center justify-center relative shrink-0">
+            <div className="absolute inset-0 bg-indigo-500/20 blur-xl rounded-full mix-blend-multiply" />
+            <div className="w-full h-full bg-gradient-to-br from-indigo-600 to-indigo-800 rounded-2xl shadow-lg ring-1 ring-white/50 flex items-center justify-center relative z-10 transition-transform duration-500 hover:scale-105 hover:-rotate-3">
+               <Activity size={24} className="text-white" strokeWidth={2.5} />
+            </div>
           </div>
-          <div className="flex flex-col">
-            <h1 className="text-xl font-black tracking-tight text-slate-800">
-              MedCore<span className="text-xs align-top text-indigo-500 font-black ml-0.5">26</span>
+          <div className="flex flex-col min-w-0">
+            <h1 className="text-lg font-black tracking-tight text-slate-800 truncate">
+              MedCore<span className="text-[10px] align-top text-indigo-500 font-black ml-0.5">26</span>
             </h1>
-            <p className="text-[10px] text-indigo-600/80 font-bold uppercase tracking-widest -mt-0.5">Admin Console</p>
+            <p className="text-[9px] text-indigo-600/80 font-bold uppercase tracking-widest truncate">Admin Console</p>
           </div>
         </div>
 
-        <nav className="space-y-1 mb-8">
-          {visibleNav.map(renderLink)}
-        </nav>
+        <div className="flex flex-col gap-6">
+          {Object.entries(navByCategory).map(([category, items]) => (
+             <div key={category} className="flex flex-col gap-1">
+                <div className="px-4 mb-1">
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em]">{category}</p>
+                </div>
+                <nav className="space-y-0.5">
+                  {items.map(renderLink)}
+                </nav>
+             </div>
+          ))}
 
-        {visibleSystems.length > 0 && (
-          <>
-            <div className="px-3 mb-2">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Sistem</p>
+          {visibleSystems.length > 0 && (
+            <div className="flex flex-col gap-1">
+              <div className="px-4 mb-1 border-t border-slate-100 pt-5">
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em]">Sistem & Otomatisasi</p>
+              </div>
+              <nav className="space-y-0.5">
+                {visibleSystems.map(renderLink)}
+              </nav>
             </div>
-            <nav className="space-y-1 mb-8">
-              {visibleSystems.map(renderLink)}
-            </nav>
-          </>
-        )}
+          )}
 
-        {visibleAdmin.length > 0 && (
-          <>
-            <div className="px-3 mb-2">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Admin</p>
+          {visibleAdmin.length > 0 && (
+            <div className="flex flex-col gap-1">
+               <div className="px-4 mb-1 border-t border-slate-100 pt-5">
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em]">Administrator</p>
+              </div>
+              <nav className="space-y-0.5">
+                {visibleAdmin.map(renderLink)}
+              </nav>
             </div>
-            <nav className="space-y-1">
-              {visibleAdmin.map(renderLink)}
-            </nav>
-          </>
-        )}
+          )}
+        </div>
       </div>
 
       <div className="mt-auto pt-6 border-t border-slate-100/60 pb-2">
