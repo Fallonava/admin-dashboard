@@ -173,6 +173,57 @@ export default function DailyRecapUploader() {
           });
         });
 
+        // --- POST PROCESSING: Validasi Rujuk Konsul Sehari ---
+        // Jika 1 pasien memiliki pendaftaran ke 2 poliklinik berbeda (rujuk konsul sehari),
+        // lolos sebagai 'valid' apabila salah satu pendaftaran sudah memiliki nomor SEP.
+        const rmGroups = new Map<string, RowData[]>();
+        processed.forEach(row => {
+          const rm = row.nomorRm;
+          if (rm && rm !== '-') {
+            if (!rmGroups.has(rm)) {
+              rmGroups.set(rm, []);
+            }
+            rmGroups.get(rm)!.push(row);
+          }
+        });
+
+        rmGroups.forEach(group => {
+           if (group.length > 1) {
+              const uniquePolis = Array.from(new Set(group.map(g => g.poli).filter(p => p && p !== '-')));
+              const hasValidSep = group.some(g => g.nomorSep && g.nomorSep.trim() !== '' && g.nomorSep.trim() !== '-');
+              
+              if (uniquePolis.length > 1) {
+                  // Berbeda poli: Rujuk Konsul Sehari
+                  if (hasValidSep) {
+                      // Apabila minimal 1 punya SEP, SEMUA pendaftaran RM ini hari ini lolos (valid)
+                      group.forEach(g => {
+                           if (g.status === 'anomaly') g.status = 'valid';
+                           g.poliList = uniquePolis;
+                           g.visitCount = group.length;
+                      });
+                  } else {
+                      group.forEach(g => {
+                           g.poliList = uniquePolis;
+                           g.visitCount = group.length;
+                      });
+                  }
+              } else {
+                 // Poli sama (kunjungan berulang) - terapkan kelonggaran yang sama
+                 // Jika minimal 1 valid SEP, anggap semua valid
+                 if (hasValidSep) {
+                      group.forEach(g => {
+                         if (g.status === 'anomaly') g.status = 'valid';
+                         g.visitCount = group.length;
+                      });
+                 } else {
+                      group.forEach(g => {
+                         g.visitCount = group.length;
+                      });
+                 }
+              }
+           }
+        });
+
         setTimeout(() => {
           setRawRows(processed);
           setParsedData(processed); // Langsung gunakan array processed tanpa deduplikasi

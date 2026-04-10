@@ -12,6 +12,8 @@ function getSocket(): Socket {
   if (!socketInstance) {
     socketInstance = io({
       path: '/socket.io',
+      transports: ['websocket'],
+      upgrade: false,
       autoConnect: false,
       reconnection: true,
       reconnectionAttempts: Infinity,

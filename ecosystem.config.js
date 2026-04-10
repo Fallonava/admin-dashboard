@@ -4,51 +4,51 @@ module.exports = {
       name: 'medcore-admin',
       script: 'server.js',
       cwd: '/home/fallonava/admin-dashboard',
-      instances: 'max',
-      exec_mode: 'cluster',
+      instances: 'max',               // Utilize all available CPU cores
+      exec_mode: 'cluster',           // Enable load balancing layer
       autorestart: true,
       watch: false,
-      max_memory_restart: '400M',
+
+      // ── Memory Management ──────────────────────────────────────────────────
+      // 400M is often too restrictive for Next.js with active WebSockets/SSR.
+      // Enterprise standard is typically 800M - 1G per worker based on Server spec.
+      max_memory_restart: '1G',
+      // Explicitly limit V8 Garbage Collector to prevent OS-level Out Of Memory (OOM)
+      // keeping it matching or slightly below max_memory_restart
+      node_args: '--max_old_space_size=1024',
 
       // ── Environment Variables ──────────────────────────────────────────────
-      // These vars are MERGED with vars already loaded from the .env file.
-      // Secrets (DATABASE_URL, JWT_SECRET, etc.) are written to
-      // /home/fallonava/admin-dashboard/.env by the deploy script — NOT here.
-      //
-      // Only put non-secret, deployment-level vars here.
       env: {
         NODE_ENV: 'production',
         PORT: 3000,
         HOSTNAME: '0.0.0.0',
         NEXT_PUBLIC_APP_URL: 'https://medcore.fallonava.my.id',
+        TZ: 'Asia/Jakarta',           // Guarantee consistent timezone across cluster
       },
-
-      // env_production mirrors env — needed to suppress PM2 warning when
-      // started with `pm2 start ecosystem.config.js --env production`
       env_production: {
         NODE_ENV: 'production',
         PORT: 3000,
         HOSTNAME: '0.0.0.0',
         NEXT_PUBLIC_APP_URL: 'https://medcore.fallonava.my.id',
+        TZ: 'Asia/Jakarta',
       },
 
-      // ── Production log config ──────────────────────────────────────────────
+      // ── Logging Config ─────────────────────────────────────────────────────
       error_file: '/home/fallonava/logs/medcore-error.log',
       out_file: '/home/fallonava/logs/medcore-out.log',
-      log_date_format: 'YYYY-MM-DD HH:mm:ss',
-      merge_logs: true,
+      log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
+      merge_logs: true,               // Aggregate all cluster worker logs into one file
+      time: true,                     // Prefix logs with standardized timestamp
 
-      // ── Graceful shutdown ──────────────────────────────────────────────────
-      kill_timeout: 5000,
-      wait_ready: true,
-      listen_timeout: 15000,
+      // ── Zero-Downtime Reloads & Graceful Shutdown ──────────────────────────
+      wait_ready: true,               // PM2 waits for process.send('ready') from Next.js server
+      listen_timeout: 30000,          // 30s timeout for app to boot and send 'ready' signal
+      kill_timeout: 10000,            // 10s to let active requests and DB queries finish gracefully before SIGKILL
 
-      // ── Restart policy ────────────────────────────────────────────────────
-      // Exponential backoff: don't hammer the process if it's crash-looping
-      exp_backoff_restart_delay: 100,
+      // ── Stability & Backoff Settings ───────────────────────────────────────
+      exp_backoff_restart_delay: 200, // Starts at 200ms, increases exponentially upon rapid crashes
+      min_uptime: '60s',              // App must stay up for 60s to be considered "healthy"
+      max_restarts: 10,               // Stop thrashing CPU/Disk if app crashes 10 times in a row
     },
-    // ── medcore-cron-worker has been removed ──────────────────────────────────
-    // Automation is now handled by the real-time scheduler embedded inside
-    // server.ts (src/lib/scheduler.ts). No separate PM2 process needed.
   ],
 };
