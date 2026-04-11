@@ -56,14 +56,17 @@ jobs:
       - name: Run Build
         run: npm run build
 
-      # Step 5: Restart PM2 Service
+      # Step 5: Restart Application via Scheduled Task
+      # (Scheduled Task "RestartAdminDashboard" harus sudah didaftarkan di server)
       - name: Restart Application
         shell: powershell
         run: |
-          $env:PM2_HOME = 'C:\Users\ANTRIAN 1\.pm2'
-          $env:HOMEPATH = 'C:\Users\ANTRIAN 1'
-          pm2 restart admin-dashboard
-          if ($LASTEXITCODE -ne 0) {
-            pm2 start server.js --name "admin-dashboard"
+          Write-Host "Memicu restart via Scheduled Task..."
+          schtasks /run /tn "RestartAdminDashboard"
+          if ($LASTEXITCODE -eq 0) {
+            Write-Host "Restart berhasil dipicu!"
+          } else {
+            Write-Host "Scheduled Task tidak ditemukan. Coba langsung via PM2..."
+            $env:PM2_HOME = "C:\Users\ANTRIAN 1\.pm2"
+            Start-Process -FilePath "pm2" -ArgumentList "restart admin-dashboard" -Verb RunAs -Wait
           }
-          pm2 save
