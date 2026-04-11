@@ -1,0 +1,44 @@
+name: Deploy to Beta Server (Ubuntu)
+
+on:
+  push:
+    branches:
+      - beta
+
+# Batalkan run lama jika ada push baru masuk — cegah race condition
+concurrency:
+  group: deploy-beta
+  cancel-in-progress: true
+
+env:
+  DEPLOY_DIR: /home/fallonava/admin-dashboard
+  LOG_FILE: /home/fallonava/logs/fresh-deploy.log
+
+jobs:
+  deploy:
+    name: Sync Home Server
+    runs-on: self-hosted
+    timeout-minutes: 15
+
+    steps:
+      - name: Run Fresh Deploy Script
+        run: |
+          cd ${{ env.DEPLOY_DIR }}
+          bash scripts/fresh-deploy.sh
+
+      - name: Verify PM2 is running
+        if: success()
+        run: |
+          # Membangunkan NVM agar perintah pm2 dikenali oleh GitHub Actions
+          export NVM_DIR="$HOME/.nvm"
+          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+          # Eksekusi PM2
+          pm2 show medcore-admin
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "❌ Deploy GAGAL pada $(date '+%Y-%m-%d %H:%M:%S')"
+          echo "📋 Log terakhir:"
+          tail -30 ${{ env.LOG_FILE }} 2>/dev/null || echo "(log tidak ditemukan)"

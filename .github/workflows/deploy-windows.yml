@@ -1,0 +1,35 @@
+name: Deploy to Stable Server (Windows)
+
+on:
+  push:
+    branches:
+      - master
+
+concurrency:
+  group: deploy-windows
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Sync Windows Server
+    runs-on: self-hosted-windows
+    timeout-minutes: 15
+
+    steps:
+      # Step 1: Checkout the code
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # Step 2: Install dependencies (Uses PowerShell internally since it's on Windows)
+      - name: Install Dependencies
+        run: npm ci
+
+      # Step 3: Build the application
+      - name: Run Build
+        run: npm run build
+
+      # Step 4: Restart PM2 Service or any equivalent Windows task
+      - name: Restart Application
+        run: |
+          pm2 restart admin-dashboard || pm2 start server.js --name "admin-dashboard"
+          pm2 save
