@@ -53,8 +53,12 @@ jobs:
       - name: Run Build
         run: npm run build
 
-      # Step 4: Restart PM2 Service or any equivalent Windows task
+      # Step 5: Restart PM2 Service
       - name: Restart Application
+        shell: powershell
         run: |
-          pm2 restart admin-dashboard || pm2 start server.js --name "admin-dashboard"
+          pm2 restart admin-dashboard
+          if ($LASTEXITCODE -ne 0) {
+            pm2 start server.js --name "admin-dashboard"
+          }
           pm2 save
