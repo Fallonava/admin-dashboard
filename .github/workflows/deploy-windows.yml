@@ -18,13 +18,16 @@ jobs:
     steps:
       # Step 1: Checkout the code
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      # Step 2: Install dependencies (Uses PowerShell internally since it's on Windows)
       - name: Install Dependencies
         run: npm ci
 
-      # Step 3: Build the application
+      # Step 3: Database Migration
+      - name: Run Database Migrations
+        run: npx prisma migrate deploy
+
+      # Step 4: Build the application
       - name: Run Build
         run: npm run build
 
