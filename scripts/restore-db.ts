@@ -1,9 +1,8 @@
 import 'dotenv/config';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../src/lib/prisma';
 import * as fs from 'fs';
 import * as path from 'path';
 
-const prisma = new PrismaClient();
 const BACKUP_DIR = path.join(process.cwd(), 'backups', '2026-04-02T13-13-59');
 
 async function restoreTable(tableName: string, model: any, options: { transform?: (data: any) => any } = {}) {
@@ -20,10 +19,8 @@ async function restoreTable(tableName: string, model: any, options: { transform?
   await model.deleteMany({});
 
   // Insert in chunks or all at once if safe
-  for (const item of data) {
-    const transformed = options.transform ? options.transform(item) : item;
-    await model.create({ data: transformed });
-  }
+  const transformedData = data.map((item: any) => options.transform ? options.transform(item) : item);
+  await model.createMany({ data: transformedData, skipDuplicates: true });
 }
 
 async function main() {
@@ -50,7 +47,12 @@ async function main() {
     await restoreTable('Doctor', prisma.doctor);
 
     // 5. Shifts
-    await restoreTable('Shift', prisma.shift);
+    await restoreTable('Shift', prisma.shift, {
+      transform: (item: any) => ({
+        ...item,
+        disabledDates: item.disabledDates || [],
+      })
+    });
 
     // 6. LeaveRequests
     await restoreTable('LeaveRequest', prisma.leaveRequest, {
@@ -65,7 +67,14 @@ async function main() {
     await restoreTable('Settings', prisma.settings);
 
     // 8. BroadcastRules
-    await restoreTable('BroadcastRule', prisma.broadcastRule);
+    await restoreTable('BroadcastRule', prisma.broadcastRule, {
+      transform: (item: any) => ({
+        ...item,
+        targetZone: item.targetZone === 'All Zones' ? 'All_Zones' :
+                    item.targetZone === 'Lobby Only' ? 'Lobby_Only' :
+                    item.targetZone === 'ER & Wards' ? 'ER_Wards' : item.targetZone
+      })
+    });
 
     // 9. AutomationRules
     await restoreTable('AutomationRule', prisma.automationRule, {
