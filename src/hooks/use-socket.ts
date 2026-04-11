@@ -12,14 +12,16 @@ function getSocket(): Socket {
   if (!socketInstance) {
     socketInstance = io({
       path: '/socket.io',
-      transports: ['websocket'],
-      upgrade: false,
+      // Cloudflare Tunnel compatibility:
+      // Start with polling (always works), then upgrade to WebSocket if available
+      transports: ['polling', 'websocket'],
+      upgrade: true,
       autoConnect: false,
       reconnection: true,
       reconnectionAttempts: Infinity,
-      reconnectionDelay: 1000,
-      reconnectionDelayMax: 5000,
-      timeout: 10000,
+      reconnectionDelay: 2000,
+      reconnectionDelayMax: 10000,
+      timeout: 20000,
     });
   }
   return socketInstance;
