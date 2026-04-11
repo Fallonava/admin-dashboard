@@ -24,15 +24,23 @@ jobs:
         shell: powershell
         run: |
           $content = @(
-            'DATABASE_URL="postgresql://postgres:postgres@localhost:5432/hospital_db?schema=public"',
+            'DATABASE_URL="postgresql://medcore:medcore_local_password@localhost:5432/medcoredb?sslmode=disable"',
+            'DATABASE_URL_UNPOOLED="postgresql://medcore:medcore_local_password@localhost:5432/medcoredb?sslmode=disable"',
+            'PGHOST="localhost"',
+            'PGUSER="medcore"',
+            'PGDATABASE="medcoredb"',
+            'PGPASSWORD="medcore_local_password"',
+            'POSTGRES_PRISMA_URL="postgresql://medcore:medcore_local_password@localhost:5432/medcoredb?sslmode=disable"',
+            'ADMIN_KEY="dev_key_123"',
+            'NEXT_PUBLIC_ADMIN_KEY="dev_key_123"',
+            'CRON_SECRET="siaga_medika_secret_2024"',
+            'JWT_SECRET="mc_jwt_k3y!S1ag4M3d1k4_2024_secure_t0ken_s3cr3t"',
             'NEXT_PUBLIC_APP_URL="http://localhost:3000"',
             'NODE_ENV="production"',
-            'PORT="3000"',
-            'JWT_SECRET="rahasia_admin_srimed_2026"'
+            'PORT="3000"'
           )
           $content | Set-Content -Path ".env" -Encoding UTF8
-          Write-Host ".env berhasil dibuat:"
-          Get-Content .env
+          Write-Host ".env berhasil dibuat"
 
       - name: Install Dependencies
         run: npm ci
