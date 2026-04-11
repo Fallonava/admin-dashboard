@@ -211,3 +211,37 @@ enum TargetZone {
   Lobby_Only @map("Lobby Only")
   ER_Wards   @map("ER & Wards")
 }
+
+// ─── Recap & Broadcast (Migrated from MongoDB) ──────────────────────────────
+
+model DailyRecap {
+  id                  String   @id @default(cuid())
+  date                DateTime @unique
+  total_patients      Int      @default(0)
+  missing_sep_count   Int      @default(0)
+  staff_performance   Json     @default("[]")
+  missing_sep_details Json     @default("[]")
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model BroadcastQueue {
+  id             String          @id @default(cuid())
+  patientName    String
+  whatsappNumber String
+  doctorName     String?
+  clinicName     String?
+  status         BroadcastStatus @default(PENDING)
+  messageText    String
+  log            String?
+  sendAt         DateTime        @default(now())
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+}
+
+enum BroadcastStatus {
+  PENDING
+  PROCESSING
+  SENT
+  FAILED
+}
