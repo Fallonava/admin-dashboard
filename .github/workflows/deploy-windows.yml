@@ -12,7 +12,7 @@ concurrency:
 jobs:
   deploy:
     name: Sync Windows Server
-    runs-on: self-hosted-windows
+    runs-on: [self-hosted, Windows]
     timeout-minutes: 15
 
     steps:
