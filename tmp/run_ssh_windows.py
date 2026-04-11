@@ -36,3 +36,5 @@ def execute_remote_cmd(password):
 
 if __name__ == "__main__":
     execute_remote_cmd('qwer')
+
+
