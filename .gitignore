@@ -4,6 +4,7 @@
 /node_modules
 /wa-bot/node_modules
 /wa-bot/sessions
+/sessions
 /.pnp
 .pnp.*
 .yarn/*
