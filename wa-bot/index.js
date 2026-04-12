@@ -8,7 +8,7 @@ const { PrismaPg } = require("@prisma/adapter-pg");
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
-const redis = require("redis");
+
 // ==========================================
 console.log("Menyalakan mesin Chromium untuk WhatsApp (Mungkin memakan waktu)...");
 const waClient = new Client({
