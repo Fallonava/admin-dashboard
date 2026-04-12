@@ -19,6 +19,18 @@ jobs:
       HOMEPATH: 'C:\Users\ANTRIAN 1'
 
     steps:
+      # Step 0: Stop PM2 to release file locks before cleaning workspace
+      - name: Stop PM2 to Release File Locks
+        shell: powershell
+        run: |
+          $env:PM2_HOME = "C:\Users\ANTRIAN 1\.pm2"
+          try {
+            pm2 stop admin-dashboard 2>$null
+            Write-Host "PM2 stopped."
+          } catch {
+            Write-Host "PM2 not running or already stopped."
+          }
+
       # Step 1: Checkout the code
       - name: Checkout Code
         uses: actions/checkout@v4
