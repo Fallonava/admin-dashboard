@@ -1,27 +1,9 @@
 require("dotenv").config();
 const { Client, LocalAuth } = require("whatsapp-web.js");
 const qrcode = require("qrcode-terminal");
-const mongoose = require("mongoose");
+const { PrismaClient } = require("../node_modules/@prisma/client");
+const prisma = new PrismaClient();
 const redis = require("redis");
-
-// ==========================================
-// 1. DATABASE & QUEUE SETUP (MongoDB)
-// ==========================================
-const BroadcastQueueSchema = new mongoose.Schema({
-  patientName: { type: String },
-  whatsappNumber: { type: String },
-  doctorName: { type: String },
-  clinicName: { type: String },
-  status: { type: String, enum: ["PENDING", "PROCESSING", "SENT", "FAILED"], default: "PENDING" },
-  messageText: { type: String },
-  log: { type: String },
-  sendAt: { type: Date, default: Date.now },
-}, { timestamps: true });
-
-const BroadcastQueue = mongoose.models.BroadcastQueue || mongoose.model("BroadcastQueue", BroadcastQueueSchema);
-
-// ==========================================
-// 2. WHATSAPP CLIENT SETUP
 // ==========================================
 console.log("Menyalakan mesin Chromium untuk WhatsApp (Mungkin memakan waktu)...");
 const waClient = new Client({
@@ -86,8 +68,8 @@ waClient.initialize();
 
 async function initDB() {
     try {
-        await mongoose.connect(process.env.MONGODB_URI);
-        console.log("✅ MongoDB Terhubung");
+        await prisma.$connect();
+        console.log("✅ PostgreSQL/Prisma Terhubung");
 
         await redisSubscriber.connect();
         console.log("✅ Redis Subscriber Terhubung");
@@ -125,7 +107,7 @@ async function processQueue() {
   isProcessingQueue = true;
 
   try {
-    let pendingCount = await BroadcastQueue.countDocuments({ status: "PENDING" });
+    let pendingCount = await prisma.broadcastQueue.count({ where: { status: "PENDING" } });
     if (pendingCount === 0) {
         isProcessingQueue = false;
         return;
@@ -136,14 +118,18 @@ async function processQueue() {
     let sentInBatch = 0;
 
     while (true) {
-      // Ambil 1 terlama
-      const queue = await BroadcastQueue.findOneAndUpdate(
-        { status: "PENDING" },
-        { status: "PROCESSING" },
-        { sort: { createdAt: 1 }, new: true }
-      );
+      // Cari data terlama dengan transaksi update jika ada
+      const topPending = await prisma.broadcastQueue.findFirst({
+        where: { status: "PENDING" },
+        orderBy: { createdAt: "asc" },
+      });
 
-      if (!queue) break; // Tidak ada lagi yang PENDING
+      if (!topPending) break; // Tidak ada lagi yang PENDING
+
+      const queue = await prisma.broadcastQueue.update({
+        where: { id: topPending.id },
+        data: { status: "PROCESSING" }
+      });
 
       try {
          // Format nomor jadi jid
@@ -166,8 +152,10 @@ async function processQueue() {
          
          await waClient.sendMessage(numberId, queue.messageText + randomHash);
 
-         queue.status = "SENT";
-         await queue.save();
+         await prisma.broadcastQueue.update({
+             where: { id: queue.id },
+             data: { status: "SENT" }
+         });
          console.log(`✅ Sukses mengirim ke ${queue.whatsappNumber}`);
 
          sentInBatch++;
@@ -186,9 +174,10 @@ async function processQueue() {
 
       } catch (err) {
          console.error(`❌ Gagal mengirim ke ${queue.whatsappNumber}:`, err.message);
-         queue.status = "FAILED";
-         queue.log = err.message;
-         await queue.save();
+         await prisma.broadcastQueue.update({
+             where: { id: queue.id },
+             data: { status: "FAILED", log: err.message }
+         });
       }
     }
 
@@ -199,7 +188,7 @@ async function processQueue() {
   } finally {
     isProcessingQueue = false;
     // Check lagikali aja ada yang masuk pas lagi ngerjain
-    const remaining = await BroadcastQueue.countDocuments({ status: "PENDING" });
+    const remaining = await prisma.broadcastQueue.count({ where: { status: "PENDING" } });
     if (remaining > 0 && isWaReady) {
         processQueue();
     }
