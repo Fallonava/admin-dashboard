@@ -2,7 +2,12 @@ require("dotenv").config();
 const { Client, LocalAuth } = require("whatsapp-web.js");
 const qrcode = require("qrcode-terminal");
 const { PrismaClient } = require("@prisma/client");
-const prisma = new PrismaClient();
+const { Pool } = require("pg");
+const { PrismaPg } = require("@prisma/adapter-pg");
+
+const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+const adapter = new PrismaPg(pool);
+const prisma = new PrismaClient({ adapter });
 const redis = require("redis");
 // ==========================================
 console.log("Menyalakan mesin Chromium untuk WhatsApp (Mungkin memakan waktu)...");
