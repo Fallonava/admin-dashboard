@@ -53,6 +53,10 @@ jobs:
       - name: Run Database Migrations
         run: npx prisma migrate deploy
 
+      # Step 3.5: Generate Prisma Client
+      - name: Generate Prisma Client
+        run: npx prisma generate
+
       # Step 4: Build the application
       - name: Run Build
         run: npm run build
