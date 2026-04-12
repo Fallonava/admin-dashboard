@@ -1,4 +1,9 @@
 "use strict";
+/**
+ * automation-broadcaster.ts
+ *
+ * In-memory event emitter for real-time updates.
+ */
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -18,9 +23,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.automationBroadcaster = void 0;
 exports.notifyDoctorUpdates = notifyDoctorUpdates;
 exports.notifyViaSocket = notifyViaSocket;
+exports.syncAdminData = syncAdminData;
 exports.triggerSchedulerResync = triggerSchedulerResync;
 var events_1 = require("events");
-// simple in-memory broadcaster for doctor-update notifications
+// Simple in-memory broadcaster
 var Broadcaster = /** @class */ (function (_super) {
     __extends(Broadcaster, _super);
     function Broadcaster() {
@@ -28,27 +34,18 @@ var Broadcaster = /** @class */ (function (_super) {
     }
     return Broadcaster;
 }(events_1.EventEmitter));
-
 exports.automationBroadcaster = global.automationBroadcaster || new Broadcaster();
-
 // Ensure it persists globally to bridge Next.js isolated API routes
 if (!global.automationBroadcaster) {
     global.automationBroadcaster = exports.automationBroadcaster;
 }
-// helper to notify after automation run (in-process SSE only)
+// Helper to notify after automation run
 function notifyDoctorUpdates(updates) {
     exports.automationBroadcaster.emit('doctors', updates);
 }
 /**
- * Emit a Socket.IO event to ALL connected clients across ALL cluster instances.
- * Works because server.ts attaches the `io` instance to `global` AND uses
- * the Redis adapter (Upstash) to bridge between cluster instances.
- *
- * Call this from API routes after any data mutation so every browser tab
- * (regardless of which PM2 instance they're connected to) gets notified.
- *
- * @param event  Socket.IO event name — must match what SWRProvider listens for
- * @param data   Optional payload (serialisable)
+ * Emit a Socket.IO event to connected clients.
+ * Attaches to global.io which is set in server.ts.
  */
 function notifyViaSocket(event, data) {
     try {
@@ -58,35 +55,27 @@ function notifyViaSocket(event, data) {
         }
     }
     catch (_a) {
-        // Graceful no-op if io is not yet available
+        // Graceful no-op
     }
 }
-
 /**
- * Specialized sync for Admin Dashboard (Full Socket.io mode).
- * Call this to send the entire state snapshot to all connected admins.
- * @param {object} snapshot - { doctors, shifts, leaves, settings }
+ * Specialized sync for Admin Dashboard.
  */
 function syncAdminData(snapshot) {
     notifyViaSocket('admin_sync_all', snapshot);
 }
-
-exports.syncAdminData = syncAdminData;
-
 /**
- * Trigger dynamic rescheduling across the PM2 cluster whenever
- * shifts or calendars are modified dynamically in the middle of the day.
+ * Trigger dynamic rescheduling.
+ * Since we are in a single-instance environment on Windows,
+ * we just call the trigger directly.
  */
 function triggerSchedulerResync() {
     try {
-        var redisClient = global.redisClient;
-        if (redisClient) {
-            redisClient.publish('medcore:scheduler_sync', 'sync');
-        } else if (global.triggerScheduler) {
-            // Fallback for single-node / local dev without Redis
+        if (global.triggerScheduler) {
             global.triggerScheduler().catch(console.error);
         }
-    } catch(e) {
+    }
+    catch (e) {
         console.error('[broadcaster] Trigger resync error:', e);
     }
 }

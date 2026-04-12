@@ -1,10 +1,9 @@
 /**
- * Automation Queue using BullMQ
- * Handles retry logic, rate limiting, and backoff for doctor updates
+ * Automation Queue
+ * Handles retry logic, rate limiting, and backoff for doctor updates.
+ * (In-Memory Implementation)
  */
 
-import { Queue, Worker } from 'bullmq';
-import { createClient } from 'redis';
 import { CircuitBreaker } from './circuit-breaker';
 
 export interface DoctorUpdateJob {
@@ -22,11 +21,15 @@ export interface QueueMetrics {
 }
 
 class AutomationQueueManager {
-    private queue: Queue<DoctorUpdateJob> | null = null;
-    private worker: Worker<DoctorUpdateJob> | null = null;
-    private redis: ReturnType<typeof createClient> | null = null;
     private circuitBreaker: CircuitBreaker;
     private isInitialized = false;
+    private isRunning = false;
+    private queue: { job: DoctorUpdateJob; id: string; attempts: number; nextTry: number }[] = [];
+    private failedJobs: any[] = [];
+    
+    private maxConcurrency = 5;
+    private activeJobs = 0;
+    private metrics: QueueMetrics = { active: 0, delayed: 0, failed: 0, completed: 0, waiting: 0 };
 
     constructor() {
         this.circuitBreaker = new CircuitBreaker({
@@ -38,141 +41,116 @@ class AutomationQueueManager {
     }
 
     /**
-     * Initialize queue, worker, and scheduler
-     * Should be called once on server startup
+     * Initialize queue and scheduler
      */
     async initialize() {
         if (this.isInitialized) return;
 
-        try {
-            // In Vercel or production environments, avoid attempting local Redis connections if no URL
-            if (!process.env.REDIS_URL && (process.env.VERCEL || process.env.VERCEL_ENV || process.env.NODE_ENV === 'production')) {
-                console.log('[AutomationQueue] Skipped initialization (no REDIS_URL in production/vercel). Using direct API fallback.');
-                this.isInitialized = true;
-                return;
-            }
+        this.isInitialized = true;
+        this.isRunning = true;
+        this.processLoop();
+        
+        console.log('[AutomationQueue] In-Memory Queue Initialized successfully');
+    }
 
-            // Create Redis connection
-            const redisUrl = process.env.REDIS_URL || `redis://localhost:6379`;
-            this.redis = createClient({
-                url: redisUrl
-            });
+    private async processLoop() {
+        while (this.isRunning) {
+            this.metrics.waiting = this.queue.filter(j => j.nextTry <= Date.now()).length;
+            this.metrics.delayed = this.queue.filter(j => j.nextTry > Date.now()).length;
 
-            // Log a one-time warning so operators can diagnose Redis issues
-            // without flooding logs on every reconnect attempt
-            let errorLogged = false;
-            this.redis.on('error', (err) => {
-                if (!this.isInitialized && !errorLogged) {
-                    console.warn('[AutomationQueue] Redis connection error:', err.message);
-                    errorLogged = true;
+            if (this.activeJobs < this.maxConcurrency) {
+                const now = Date.now();
+                const jobIndex = this.queue.findIndex(j => j.nextTry <= now);
+                
+                if (jobIndex !== -1) {
+                    // Extract job and process
+                    const queuedJob = this.queue.splice(jobIndex, 1)[0];
+                    this.activeJobs++;
+                    this.metrics.active++;
+                    
+                    this.processJob(queuedJob).finally(() => {
+                        this.activeJobs--;
+                        this.metrics.active--;
+                    });
+                } else {
+                    await new Promise(res => setTimeout(res, 200)); // Sleep slightly
                 }
-            });
-
-            await this.redis.connect();
-
-            // Create queue
-            this.queue = new Queue('doctor-updates', {
-                connection: this.redis as any
-            });
-
-            // Create worker with concurrency limit (rate limiting)
-            this.worker = new Worker('doctor-updates', this.processJob.bind(this), {
-                connection: this.redis as any,
-                concurrency: 5  // Process max 5 jobs concurrently
-            });
-
-            // Event handlers
-            this.worker.on('completed', (job) => {
-                console.log(`[Queue] Job ${job.id} completed`);
-            });
-
-            this.worker.on('failed', (job, error) => {
-                console.warn(`[Queue] Job ${job?.id} failed:`, error?.message);
-            });
-
-            this.worker.on('error', (error) => {
-                console.error('[Queue] Worker error:', error);
-            });
-
-            this.isInitialized = true;
-            console.log('[AutomationQueue] Initialized successfully');
-        } catch (error) {
-            console.error('[AutomationQueue] Initialization failed:', error);
-            // Continue without queue (fallback to direct updates)
+            } else {
+                await new Promise(res => setTimeout(res, 200));
+            }
         }
     }
 
     /**
      * Add a doctor update job to the queue
-     * Returns job ID if queued, throws if queue unavailable
      */
     async addJob(update: DoctorUpdateJob): Promise<string> {
-        if (!this.queue) {
+        if (!this.isInitialized) {
             throw new Error('Queue not initialized');
         }
 
-        const job = await this.queue.add('update', update, {
-            attempts: 5,  // Retry up to 5 times
-            backoff: {
-                type: 'exponential',
-                delay: 2000  // Start with 2s, exponentially increase
-            },
-            removeOnComplete: true,
-            removeOnFail: false
-        });
-
-        return job.id || '';
+        const id = Math.random().toString(36).substring(2, 9);
+        this.queue.push({ job: update, id, attempts: 0, nextTry: Date.now() });
+        return id;
     }
 
     /**
      * Batch add multiple jobs
      */
     async addBatch(updates: DoctorUpdateJob[]): Promise<string[]> {
-        if (!this.queue) {
+        if (!this.isInitialized) {
             throw new Error('Queue not initialized');
         }
 
-        const jobs = await this.queue.addBulk(
-            updates.map(u => ({
-                name: 'update',
-                data: u,
-                opts: {
-                    attempts: 5,
-                    backoff: {
-                        type: 'exponential',
-                        delay: 2000
-                    },
-                    removeOnComplete: true,
-                    removeOnFail: false
-                }
-            }))
-        );
-
-        return jobs.map(j => j.id || '');
+        const ids: string[] = [];
+        for (const update of updates) {
+            const id = Math.random().toString(36).substring(2, 9);
+            this.queue.push({ job: update, id, attempts: 0, nextTry: Date.now() });
+            ids.push(id);
+        }
+        return ids;
     }
 
     /**
      * Process a doctor update job with circuit breaker protection
      */
-    private async processJob(job: any): Promise<void> {
-        const update = job.data as DoctorUpdateJob;
+    private async processJob(queuedJob: { job: DoctorUpdateJob; id: string; attempts: number; nextTry: number }): Promise<void> {
+        const update = queuedJob.job;
 
         try {
             await this.circuitBreaker.execute(async () => {
                 const { prisma } = await import('./prisma');
 
                 // Apply update to database
-                const result = await prisma.doctor.update({
+                await prisma.doctor.update({
                     where: { id: String(update.id) },
                     data: { status: update.status as any }
                 });
 
                 console.log(`[Queue] Updated doctor ${update.id} to ${update.status}`);
-                return result;
             });
+            this.metrics.completed++;
         } catch (error) {
-            console.error(`[Queue] Failed to process job ${job.id}:`, error);
-            throw error; // Re-throw to trigger BullMQ retry
+            console.error(`[Queue] Failed to process job ${queuedJob.id}:`, error);
+            
+            queuedJob.attempts++;
+            if (queuedJob.attempts < 5) {
+                // Exponential backoff
+                queuedJob.nextTry = Date.now() + Math.pow(2, queuedJob.attempts) * 2000;
+                this.queue.push(queuedJob);
+            } else {
+                this.metrics.failed++;
+                this.failedJobs.unshift({
+                    id: queuedJob.id,
+                    data: queuedJob.job,
+                    error: (error as Error).message,
+                    attempts: queuedJob.attempts,
+                    timestamp: Date.now()
+                });
+                
+                // Keep only last 50 failed
+                if (this.failedJobs.length > 50) this.failedJobs.pop();
+            }
         }
     }
 
@@ -180,61 +158,43 @@ class AutomationQueueManager {
      * Get queue metrics
      */
     async getMetrics(): Promise<QueueMetrics> {
-        if (!this.queue) {
-            return { active: 0, delayed: 0, failed: 0, completed: 0, waiting: 0 };
-        }
-
-        const counts = await this.queue.getJobCounts();
-        return {
-            waiting: counts.waiting || 0,
-            active: counts.active || 0,
-            completed: counts.completed || 0,
-            failed: counts.failed || 0,
-            delayed: counts.delayed || 0
-        };
+        // Update waiting/delayed counts before returning
+        this.metrics.waiting = this.queue.filter(j => j.nextTry <= Date.now()).length;
+        this.metrics.delayed = this.queue.filter(j => j.nextTry > Date.now()).length;
+        return { ...this.metrics };
     }
 
     /**
      * Get failed jobs for inspection
      */
     async getFailedJobs(limit = 20): Promise<any[]> {
-        if (!this.queue) return [];
-
-        const jobs = await this.queue.getFailed(0, limit);
-        return jobs.map(j => ({
-            id: j.id,
-            data: j.data,
-            error: j.failedReason,
-            attempts: j.attemptsMade,
-            timestamp: j.finishedOn
-        }));
+        return this.failedJobs.slice(0, limit);
     }
 
     /**
      * Retry a failed job
      */
     async retryJob(jobId: string): Promise<boolean> {
-        if (!this.queue) return false;
-
-        try {
-            const job = await this.queue.getJob(jobId);
-            if (!job) return false;
-
-            await job.retry();
+        const index = this.failedJobs.findIndex(j => j.id === jobId);
+        if (index !== -1) {
+            const failed = this.failedJobs.splice(index, 1)[0];
+            this.metrics.failed--;
+            this.queue.push({
+                job: failed.data,
+                id: failed.id,
+                attempts: 0,
+                nextTry: Date.now()
+            });
             return true;
-        } catch (error) {
-            console.error('Failed to retry job:', error);
-            return false;
         }
+        return false;
     }
 
     /**
      * Cleanup queue resources
      */
     async close() {
-        if (this.worker) await this.worker.close();
-        if (this.queue) await this.queue.close();
-        if (this.redis) await this.redis.quit();
+        this.isRunning = false;
         this.isInitialized = false;
     }
 
@@ -243,7 +203,7 @@ class AutomationQueueManager {
     }
 
     isReady() {
-        return this.isInitialized && this.queue !== null;
+        return this.isInitialized;
     }
 }
 

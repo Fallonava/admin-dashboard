@@ -1,20 +1,5 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { createClient } from "redis";
-
-// Helper for sending redis trigger
-async function triggerWaBot() {
-  const REDIS_URL = process.env.REDIS_URL;
-  if (!REDIS_URL) return;
-  try {
-    const client = createClient({ url: REDIS_URL });
-    await client.connect();
-    await client.publish("wa:trigger_queue", "new_messages_added");
-    await client.disconnect();
-  } catch (error) {
-    console.error("Redis trigger error for WA bot:", error);
-  }
-}
 
 export async function GET(request: Request) {
   try {
@@ -55,8 +40,9 @@ export async function POST(request: Request) {
       })),
     });
 
-    await triggerWaBot();
-
+    // NOTE: Bot WA sekarang menggunakan polling berkala ke PostgreSQL, 
+    // jadi kita tidak mengirimkan trigger via Redis lagi.
+    
     return NextResponse.json({ success: true, count: inserted.count });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });

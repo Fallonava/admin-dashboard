@@ -1,112 +1,64 @@
 /**
- * RBAC Permission Cache using Redis
+ * RBAC Permission Cache
  *
- * Caches per-user permissions so that middleware and API routes
- * skip the DB lookup every request. Cache is invalidated when:
- *  - Admin changes a user's role  (call invalidateRbacCache(userId))
- *  - User logs out from all devices (call invalidateRbacCache(userId))
- *
- * Gracefully does nothing if REDIS_URL is not set.
+ * In-memory map cache for per-user permissions.
+ * Bypasses DB lookups for subsequent API requests.
  */
-import { createClient } from 'redis';
+
 import type { SessionPayload } from './auth-shared';
 
-const CACHE_TTL_SECONDS = 5 * 60; // 5 minutes
-const KEY_PREFIX = 'rbac:permissions:';
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
 
-type RedisClient = ReturnType<typeof createClient>;
+interface CacheEntry {
+  permissions: SessionPayload['permissions'];
+  expiresAt: number;
+}
 
-// ─── Singleton Redis client (shared with automation-queue if needed) ───
-let client: RedisClient | null = null;
-let connectPromise: Promise<void> | null = null;
+// ─── In-memory Map Cache ───
+const rbacCacheStore = new Map<string, CacheEntry>();
 
-async function getRedisClient(): Promise<RedisClient | null> {
-  const redisUrl = process.env.REDIS_URL;
-  if (!redisUrl) return null; // Redis not configured — cache disabled
-
-  if (client && client.isOpen) return client;
-
-  if (!connectPromise) {
-    const c = createClient({ url: redisUrl });
-    c.on('error', () => { /* suppress background reconnect noise */ });
-    connectPromise = c.connect().then(() => {
-      client = c;
-    }).catch(() => {
-      connectPromise = null; // Allow retry on next call
-    });
+function cleanExpiredEntries() {
+  const now = Date.now();
+  if (rbacCacheStore.size > 100) {
+    for (const [key, value] of rbacCacheStore) {
+      if (value.expiresAt < now) {
+        rbacCacheStore.delete(key);
+      }
+    }
   }
-
-  await connectPromise;
-  return client;
 }
 
 // ─── Public API ───
 
-/**
- * Get cached RBAC permissions for a userId.
- * Returns null if cache miss or Redis unavailable.
- */
 export async function getCachedPermissions(
   userId: string
 ): Promise<SessionPayload['permissions'] | null> {
-  try {
-    const redis = await getRedisClient();
-    if (!redis) return null;
+  const entry = rbacCacheStore.get(userId);
+  if (!entry) return null;
 
-    const raw = await redis.get(`${KEY_PREFIX}${userId}`);
-    if (!raw) return null;
-
-    return JSON.parse(raw) as SessionPayload['permissions'];
-  } catch {
-    return null; // Cache failure → fall through to DB
+  if (Date.now() > entry.expiresAt) {
+    rbacCacheStore.delete(userId);
+    return null;
   }
+
+  return entry.permissions;
 }
 
-/**
- * Store RBAC permissions for a userId in Redis.
- * Silently no-ops if Redis is unavailable.
- */
 export async function setCachedPermissions(
   userId: string,
   permissions: SessionPayload['permissions']
 ): Promise<void> {
-  try {
-    const redis = await getRedisClient();
-    if (!redis) return;
-
-    await redis.setEx(
-      `${KEY_PREFIX}${userId}`,
-      CACHE_TTL_SECONDS,
-      JSON.stringify(permissions)
-    );
-  } catch {
-    // Cache write failure is non-fatal
-  }
+  rbacCacheStore.set(userId, {
+    permissions,
+    expiresAt: Date.now() + CACHE_TTL_MS,
+  });
+  cleanExpiredEntries();
 }
 
-/**
- * Invalidate cached permissions for a userId.
- * Call this when a user's role/permissions change, or on logout-all.
- */
 export async function invalidateRbacCache(userId: string): Promise<void> {
-  try {
-    const redis = await getRedisClient();
-    if (!redis) return;
-
-    await redis.del(`${KEY_PREFIX}${userId}`);
-  } catch {
-    // Non-fatal
-  }
+  rbacCacheStore.delete(userId);
 }
 
-/**
- * Check if the RBAC cache is available (Redis connected).
- */
 export async function isRbacCacheAvailable(): Promise<boolean> {
-  try {
-    const redis = await getRedisClient();
-    return redis !== null && redis.isOpen;
-  } catch {
-    return false;
-  }
+  return true; // Always available in-memory
 }
