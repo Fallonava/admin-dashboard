@@ -31,15 +31,17 @@ const waClient = new Client({
 // ==========================================
 // 3. REDIS PUB/SUB & PROCESSING LOGIC
 // ==========================================
-const redisSubscriber = redis.createClient({ url: process.env.REDIS_URL });
-let redisPublisher;
+const fs = require('fs');
+const path = require('path');
+
+const stateFile = path.join(process.cwd(), '.wa-status.json');
+const commandFile = path.join(process.cwd(), '.wa-command');
 
 async function setBotState(state, data = null) {
     try {
-        if(redisPublisher) {
-            await redisPublisher.set('wa:bot_state', JSON.stringify({ state, qr: data, timestamp: Date.now() }));
-        }
-    } catch(e) { console.error("Gagal save state:", e) }
+        const payload = JSON.stringify({ state, qr: data, timestamp: Date.now() });
+        fs.writeFileSync(stateFile, payload, 'utf8');
+    } catch(e) { console.error("Gagal save state ke file:", e) }
 }
 
 let isWaReady = false;
@@ -76,27 +78,28 @@ async function initDB() {
         await prisma.$connect();
         console.log("✅ PostgreSQL/Prisma Terhubung");
 
-        await redisSubscriber.connect();
-        console.log("✅ Redis Subscriber Terhubung");
-        
-        redisPublisher = redisSubscriber.duplicate();
-        await redisPublisher.connect();
         setBotState("STARTING"); // Initial state
 
-        await redisSubscriber.subscribe("wa:trigger_queue", (message) => {
-            console.log(`[REDIS TRIGGER] Menerima sinyal queue: ${message}`);
-            if (isWaReady) processQueue();
-        });
-        
-        await redisSubscriber.subscribe("wa:command", async (message) => {
-            console.log(`[REDIS COMMAND] Menerima instruksi: ${message}`);
-            if (message === "LOGOUT") {
-                console.log("Loging out client...");
-                setBotState("DISCONNECTED");
-                try { await waClient.logout(); } catch(e){}
-                setTimeout(() => { process.exit(0); }, 1000); // Biarkan PM2 merestart bot secara bersih
+        // Polling loop to replace wa:trigger_queue pub/sub
+        setInterval(() => {
+            if (isWaReady && !isProcessingQueue) {
+                processQueue();
             }
-        });
+        }, 10000);
+
+        // Polling loop to replace wa:command pub/sub
+        setInterval(async () => {
+            if (fs.existsSync(commandFile)) {
+                const cmd = fs.readFileSync(commandFile, 'utf8').trim();
+                if (cmd === "LOGOUT") {
+                    console.log("Loging out client...");
+                    setBotState("DISCONNECTED");
+                    try { await waClient.logout(); } catch(e){}
+                    try { fs.unlinkSync(commandFile); } catch(e) {}
+                    setTimeout(() => { process.exit(0); }, 1000); // Biarkan PM2 merestart bot secara bersih
+                }
+            }
+        }, 2000);
 
     } catch (err) {
         console.error("Gagal inisialisasi infra:", err);

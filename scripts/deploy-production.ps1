@@ -120,7 +120,6 @@ NEXT_PUBLIC_ADMIN_KEY=dev_key_123
 CRON_SECRET=siaga_medika_secret_2024
 JWT_SECRET=mc_jwt_k3y!S1ag4M3d1k4_2024_secure_t0ken_s3cr3t
 NEXT_PUBLIC_APP_URL=https://simed.fallonava.my.id
-REDIS_URL=redis://localhost:6379
 HOSTNAME=0.0.0.0
 NODE_ENV=production
 PORT=3000
