@@ -21,7 +21,7 @@ jobs:
     steps:
       # ── Step 1: Checkout ─────────────────────────────────────────────────────
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.2
         with:
           clean: false
 
@@ -49,7 +49,8 @@ jobs:
             'NEXT_PUBLIC_APP_URL=https://simed.fallonava.my.id',
             'HOSTNAME=0.0.0.0',
             'NODE_ENV=production',
-            'PORT=3000'
+            'PORT=3000',
+            '# Redis & MongoDB (LEGACY) - Removed to prevent crashes'
           )
           $lines | Set-Content -Path ".env" -Encoding UTF8
           Write-Host ".env created."

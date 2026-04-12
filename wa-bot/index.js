@@ -29,7 +29,7 @@ const waClient = new Client({
 });
 
 // ==========================================
-// 3. REDIS PUB/SUB & PROCESSING LOGIC
+// 3. POLLING & PROCESSING LOGIC (REPLACED REDIS PUB/SUB)
 // ==========================================
 const fs = require('fs');
 const path = require('path');
