@@ -24,6 +24,8 @@ jobs:
       # ── Step 1: Checkout ──────────────────────────────────────────────────────
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          clean: false
 
       # Fix: GitHub Actions runner runs as NETWORK SERVICE, but user is ANTRIAN 1
       - name: Fix Git Safe Directory
