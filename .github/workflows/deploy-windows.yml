@@ -88,7 +88,7 @@ jobs:
         shell: powershell
         run: |
           Copy-Item -Recurse -Force ".next\static"  ".next\standalone\.next\static"
-          Copy-Item -Recurse -Force "public"         ".next\standalone\public"
+          Copy-Item -Recurse -Force "public"        ".next\standalone\public"
           Write-Host "Static assets disalin ke standalone."
 
       # ── Step 8: Prepare Production Directory ─────────────────────────────────
@@ -108,14 +108,21 @@ jobs:
         shell: powershell
         run: |
           $env:PM2_HOME = "C:\Users\ANTRIAN 1\.pm2"
-          # Abaikan error jika proses tidak ditemukan (exit code 1)
-          pm2 stop all 2>$null
-          pm2 delete all 2>$null
-          if ($LASTEXITCODE -eq 1) { $global:LASTEXITCODE = 0 }
-          
+
+          # Gunakan try/catch agar NativeCommandError dari PowerShell tidak menggagalkan workflow
+          try {
+            & pm2 stop all 2>$null
+            & pm2 delete all 2>$null
+          } catch {
+            # Abaikan error jika PM2 belum ada proses yang berjalan
+          }
+
           # Beri waktu file locks dilepas sebelum Robocopy
           Start-Sleep -Seconds 5
           Write-Host "PM2 dihentikan (atau sudah dalam keadaan berhenti)."
+
+          # Wajib ada agar GitHub Actions menganggap step ini sukses meskipun kosong
+          exit 0
 
       # ── Step 10: Robocopy Build → Production ─────────────────────────────────
       - name: Sync Files to Production Directory
