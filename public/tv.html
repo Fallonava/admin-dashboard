@@ -48,52 +48,56 @@
       :root {
         /* Semantic Base Colors (Clinical Dark) */
         --bg-body: #0B1120;
-        --bg-ambient: radial-gradient(at 10% 0%, rgba(2, 132, 199, 0.15) 0px, transparent 50%),
-                      radial-gradient(at 90% 10%, rgba(124, 58, 237, 0.12) 0px, transparent 50%),
-                      radial-gradient(at 50% 100%, rgba(225, 29, 72, 0.1) 0px, transparent 50%),
-                      linear-gradient(145deg, #0F172A 0%, #060B14 100%);
+        --bg-ambient: var(--bg-body); /* Neomorphism solid background */
+        --neo-shadow-dark: rgba(0, 0, 0, 0.5);
+        --neo-shadow-light: rgba(255, 255, 255, 0.08);
+        --neo-inset-dark: inset 4px 4px 8px rgba(0, 0, 0, 0.5);
+        --neo-inset-light: inset -4px -4px 8px rgba(255, 255, 255, 0.08);
+        
         --text-primary: #F8FAFC;
         --text-secondary: #94A3B8;
-        --glass-panel: rgba(15, 23, 42, 0.85); /* Slate 900 translucent */
-        --card-bg: rgba(30, 41, 59, 1); /* Slate 800 Solid */
-        --header-bg: rgba(255, 255, 255, 0.02);
-        --border-light: rgba(255, 255, 255, 0.08); /* Tipis membatasi ruang */
-        --platter-border: rgba(255, 255, 255, 0.06); 
-        --footer-bg: rgba(15, 23, 42, 0.95);
+        --glass-panel: var(--bg-body); /* Solid for Neomorphism */
+        --card-bg: var(--bg-body); /* Solid for Neomorphism */
+        --header-bg: transparent;
+        --border-light: transparent;
+        --platter-border: transparent; 
+        --footer-bg: var(--bg-body);
         --app-bg-overlay: transparent;
-        --shadow: inset 0 1px 1px rgba(255,255,255,0.06), 0 8px 32px rgba(0,0,0,0.25);
-        --accent-blue: #3B82F6;   /* 2026 Vivid Blue */
-        --accent-purple: #A855F7;  /* Electric Violet */
-        --accent-green: #00C96B;   /* Vivid Emerald */
-        --accent-orange: #FF6B35;  /* Deep Orange */
-        --accent-red: #E11D48;     /* Clinical Red (emergency only) */
+        --shadow: 8px 8px 16px var(--neo-shadow-dark), -8px -8px 16px var(--neo-shadow-light);
+        --accent-blue: #0284C7; /* Medical Sky Blue */
+        --accent-purple: #7C3AED; /* Violet */
+        --accent-green: #10B981; /* Emerald / Safe */
+        --accent-orange: #F59E0B; /* Amber / Warning */
+        --accent-red: #E11D48; /* Rose / Critical */
         --logo-text: #ffffff;
       }
 
       /* Light Mode Theme (Clinical Light) */
       [data-theme="light"] {
-        --bg-body: #F8FAFC; /* Slate 50 */
-        --bg-ambient: radial-gradient(at 10% 0%, rgba(3, 105, 161, 0.08) 0px, transparent 50%),
-                      radial-gradient(at 90% 10%, rgba(109, 40, 217, 0.05) 0px, transparent 50%),
-                      radial-gradient(at 50% 100%, rgba(190, 18, 60, 0.04) 0px, transparent 50%),
-                      linear-gradient(145deg, #F8FAFC 0%, #F1F5F9 100%);
+        --bg-body: #E0E5EC; /* Light Gray for Neomorphism */
+        --bg-ambient: var(--bg-body);
+        --neo-shadow-dark: #a3b1c6;
+        --neo-shadow-light: #ffffff;
+        --neo-inset-dark: inset 4px 4px 8px #a3b1c6;
+        --neo-inset-light: inset -4px -4px 8px #ffffff;
+
         --text-primary: #0F172A;
-        --text-secondary: #64748B;
-        --glass-panel: rgba(255, 255, 255, 1); /* Pure Solid White */
-        --card-bg: rgba(255, 255, 255, 1);
-        --header-bg: rgba(0, 0, 0, 0.02);
-        --border-light: rgba(0, 0, 0, 0.08);
-        --platter-border: rgba(0, 0, 0, 0.04);
-        --footer-bg: rgba(255, 255, 255, 1);
+        --text-secondary: #5f6f87;
+        --glass-panel: var(--bg-body);
+        --card-bg: var(--bg-body);
+        --header-bg: transparent;
+        --border-light: transparent;
+        --platter-border: transparent;
+        --footer-bg: var(--bg-body);
         --app-bg-overlay: transparent;
-        --shadow: inset 0 1px 1px rgba(255, 255, 255, 1), 0 8px 32px -4px rgba(0, 0, 0, 0.06);
+        --shadow: 8px 8px 16px var(--neo-shadow-dark), -8px -8px 16px var(--neo-shadow-light);
         --logo-text: #0F172A;
         
-        --accent-blue: #3B82F6;
-        --accent-purple: #A855F7;
-        --accent-green: #00C96B;
-        --accent-orange: #FF6B35;
-        --accent-red: #BE123C;
+        --accent-blue: #0369A1; /* Darker Sky for contrast */
+        --accent-purple: #6D28D9;
+        --accent-green: #0D9488; /* Teal for high visibility */
+        --accent-orange: #D97706; /* Darker Amber */
+        --accent-red: #BE123C; /* Darker Rose */
       }
 
       /* ===== RESET & BASE ===== */
@@ -194,6 +198,12 @@
         box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5) !important;
       }
 
+      *, *::before, *::after {
+        /* Mencegah Teks Blur & Subpixel Rendering pada Neomorfisme */
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
       /* ===== LAYOUT CONTAINER ===== */
       .app-container {
         position: relative;
@@ -202,8 +212,8 @@
         height: 100%;
         display: flex;
         flex-direction: column;
-        padding: 16px 20px; /* Relieved breathing room */
-        gap: 24px; /* Broader spatial gap */
+        padding: 12px 16px; /* Added breathing room for professional signage */
+        gap: 20px; /* Increased gap */
         background: var(--app-bg-overlay);
       }
 
@@ -242,20 +252,37 @@
         width: 44px;
         height: 44px;
         border-radius: 12px;
-        background: linear-gradient(
-          135deg,
-          var(--accent-blue),
-          var(--accent-purple)
-        );
+        background: #ffffff; /* Memalsukan efek transparan logo */
         display: flex;
         align-items: center;
         justify-content: center;
-        /* box-shadow: 0 4px 16px rgba(10, 132, 255, 0.3); */
+        box-shadow: 
+          4px 4px 10px var(--neo-shadow-dark),
+          -4px -4px 10px var(--neo-shadow-light);
+        overflow: hidden; /* Mengunci pendaran gambar */
+        border: 1px solid rgba(255, 255, 255, 0.4); /* Glass-glint frame tipis */
+        animation: slow-breathe 4s ease-in-out infinite;
       }
 
-      .logo-icon {
-        font-size: 26px;
-        color: white;
+      @keyframes slow-breathe {
+        0%, 100% {
+          box-shadow: 
+            4px 4px 10px var(--neo-shadow-dark),
+            -4px -4px 10px var(--neo-shadow-light);
+        }
+        50% {
+          box-shadow: 
+            4px 4px 10px var(--neo-shadow-dark),
+            -4px -4px 10px var(--neo-shadow-light),
+            0 0 15px rgba(16, 185, 129, 0.25); /* Emerald Green Status Aura */
+        }
+      }
+
+      .logo-box img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        mix-blend-mode: multiply; /* Membuang sisa offset putih, jika ada */
       }
 
       .title-group h1 {
@@ -268,8 +295,8 @@
 
       .title-group span {
         font-size: 11px;
-        font-weight: 500;
-        opacity: 0.7;
+        font-weight: 600;
+        opacity: 1; /* Diperkuat untuk aksesibilitas */
         letter-spacing: 0.02em;
         text-transform: uppercase;
         color: var(--text-secondary);
@@ -289,8 +316,8 @@
 
       .date {
         font-size: 12px;
-        font-weight: 600;
-        opacity: 0.6;
+        font-weight: 700;
+        opacity: 1; /* Diperkuat */
         letter-spacing: 0.02em;
         text-transform: uppercase;
         margin-top: 2px;
@@ -300,7 +327,7 @@
       .content {
         flex: 1;
         display: flex;
-        gap: 24px;
+        gap: 20px;
         min-height: 0;
       }
 
@@ -308,21 +335,12 @@
         flex: 1;
         display: flex;
         flex-direction: column;
-        background: var(--glass-panel);
-        border-radius: 20px;
-        box-shadow: var(--shadow);
+        background: var(--glass-panel); /* Kept solid via variable */
+        border-radius: 20px; 
+        box-shadow: var(--shadow); /* Refers to our new inset-heavy 3D shadow */
         border: 1px solid var(--border-light);
-        overflow: visible; /* Allow active cards to float above */
+        overflow: hidden;
         transition: background 0.5s ease;
-        position: relative;
-      }
-
-      /* Island identity: colored top-border accent per kategori */
-      .island-bedah {
-        border-top: 2px solid rgba(59, 130, 246, 0.5);
-      }
-      .island-nonbedah {
-        border-top: 2px solid rgba(168, 85, 247, 0.5);
       }
 
       .sidebar-panel {
@@ -331,13 +349,14 @@
         min-width: 300px;
         display: flex;
         flex-direction: column;
-        background: var(--glass-panel);
+        background: var(--bg-body);
         border-right: none;
         border-radius: 24px;
         margin-right: 0;
         overflow: hidden;
         z-index: 10;
-        /* box-shadow: 4px 0 16px rgba(0, 0, 0, 0.08); */
+        /* Sidebar Neomorph Trough (Debossed) */
+        box-shadow: var(--neo-inset-dark), var(--neo-inset-light);
       }
 
       .sidebar-panel .island-header {
@@ -345,50 +364,147 @@
         border-bottom: 1px solid rgba(125, 125, 125, 0.06);
       }
 
-      /* Sidebar Item Tweaks */
+      /* Sidebar Item Tweaks - Mencegah konten bertumpuk pada layar 1080p */
       .sidebar-panel .platter {
-        background: transparent;
-        border: 1px solid transparent;
-        box-shadow: none;
+        background: var(--bg-body);
+        border: none;
+        box-shadow: 4px 4px 10px var(--neo-shadow-dark), -4px -4px 10px var(--neo-shadow-light);
         padding: 10px 12px;
         border-radius: 12px;
         transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         color: var(--text-primary);
         gap: 12px;
+        margin: 8px 16px;
+      }
+
+      .sidebar-panel .platter-main {
+        gap: 8px;
+        align-items: center;
+      }
+      
+      .sidebar-panel .platter::before {
+        width: 3px;
+        top: 8px;
+        bottom: 8px;
+      }
+
+      .sidebar-panel .initials {
+        width: 34px;
+        height: 34px;
+        font-size: 12px;
+        flex-shrink: 0;
+      }
+
+      .sidebar-panel .info-col {
+        flex: 1;
+        min-width: 0; /* Ensures truncation works */
+      }
+
+      .sidebar-panel .doc-spec {
+        font-size: 13px;
+        line-height: 1.2;
+        margin-bottom: 2px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .sidebar-panel .doc-name {
+        font-size: 11px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .sidebar-panel .meta-col {
+        flex-shrink: 0;
+        align-items: flex-end;
+      }
+
+      .sidebar-panel .status-pill {
+        padding: 4px 8px;
+        font-size: 8px;
+      }
+
+      .sidebar-panel .jam-val {
+        font-size: 13px;
       }
 
       /* Stat Panel */
       .stat-panel {
         display: flex;
         justify-content: space-around;
-        padding: 10px 16px;
-        background: rgba(0, 0, 0, 0.03);
-        border-bottom: 1px solid var(--border-light);
-        gap: 8px;
+        padding: 14px 16px;
+        background: transparent;
+        gap: 12px;
       }
 
-      /* ===== SIDEBAR STAT ITEMS — Neumorphic Mini Badges ===== */
       .stat-item {
         display: flex;
         flex-direction: column;
         align-items: center;
         flex: 1;
-        padding: 8px;
+        background: var(--bg-body);
+        padding: 8px 0;
         border-radius: 12px;
-        background: rgba(10, 16, 30, 0.5); /* near-dark for neo */
-        /* Raised neumorphic mini tile */
-        box-shadow:
-          -3px -3px 7px rgba(255, 255, 255, 0.04),
-           3px  3px 7px rgba(0, 0, 0, 0.4),
-          inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        /* Extruded Neomorph Button inside Trough */
+        box-shadow: 4px 4px 8px var(--neo-shadow-dark), -4px -4px 8px var(--neo-shadow-light);
       }
 
-      [data-theme="light"] .stat-item {
-        background: #eef2f7;
-        box-shadow:
-          -3px -3px 7px rgba(255, 255, 255, 0.9),
-           3px  3px 7px rgba(163, 177, 198, 0.45),
-          inset 0 1px 0 rgba(255, 255, 255, 1);
+      /* ===== 3D EMPTY STATE (NEO ORB) ===== */
+      .neo-empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        width: 100%;
+        opacity: 1; /* Diperkuat (menghapus opacity 0.8) */
+      }
+
+      .neo-orb {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: var(--bg-body);
+        box-shadow: 
+          12px 12px 24px var(--neo-shadow-dark), 
+          -12px -12px 24px var(--neo-shadow-light),
+          inset 0 0 0 rgba(0,0,0,0);
+        margin-bottom: 30px; /* Space for text */
+        margin-top: 50px;
+        animation: orb-float 4s ease-in-out infinite, orb-pulse 4s ease-in-out infinite;
+      }
+
+      .neo-empty-text {
+        font-size: 16px;
+        font-weight: 800;
+        letter-spacing: 0.2em;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        text-align: center;
+      }
+
+      @keyframes orb-float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+      }
+
+      @keyframes orb-pulse {
+        0%, 100% { 
+          box-shadow: 
+            12px 12px 24px var(--neo-shadow-dark), 
+            -12px -12px 24px var(--neo-shadow-light),
+            inset 2px 2px 5px var(--neo-shadow-light), 
+            inset -2px -2px 5px var(--neo-shadow-dark);
+        }
+        50% { 
+          box-shadow: 
+            6px 6px 12px var(--neo-shadow-dark), 
+            -6px -6px 12px var(--neo-shadow-light),
+            inset 6px 6px 12px var(--neo-shadow-dark), 
+            inset -6px -6px 12px var(--neo-shadow-light);
+        }
       }
 
       .stat-count {
@@ -398,11 +514,11 @@
       }
 
       .stat-label {
-        font-size: 10px;
+        font-size: 8px;
         font-weight: 700;
         text-transform: uppercase;
-        letter-spacing: 0.6px;
-        opacity: 0.65;
+        letter-spacing: 0.5px;
+        opacity: 1; /* Solid visibility */
         margin-top: 4px;
       }
 
@@ -428,20 +544,35 @@
       [data-theme="dark"] .sidebar-panel .header span,
       [data-theme="dark"] .sidebar-panel .date,
       [data-theme="dark"] .sidebar-panel .island-title {
-        color: rgba(255, 255, 255, 0.6) !important;
+        color: rgba(255, 255, 255, 0.9) !important;
       }
 
       .sidebar-panel .doc-name {
-        color: var(--text-primary) !important;
+        color: var(--text-primary);
       }
 
+      .sidebar-panel .platter.active .doc-name {
+        color: var(--status-color) !important;
+      }
+      
       .sidebar-panel .doc-spec {
-        color: var(--text-primary) !important;
+        color: var(--text-primary);
         opacity: 0.85;
         margin-top: 1px;
       }
 
-      /* Override sidebar initials now handled in .initials block above */
+      .sidebar-panel .initials {
+        background: rgba(0, 0, 0, 0.05);
+        color: #333;
+        width: 32px;
+        /* Smaller Avatar */
+        height: 32px;
+        /* Smaller Avatar */
+        font-size: 11px;
+        line-height: 32px;
+        min-width: 32px;
+        /* Force size */
+      }
 
       /* Header Dark Mode Override */
       .sidebar-panel .header h1 {
@@ -449,7 +580,7 @@
       }
 
       .sidebar-panel .header span {
-        color: rgba(0, 0, 0, 0.6) !important;
+        color: rgba(0, 0, 0, 0.85) !important;
       }
 
       .sidebar-panel .clock {
@@ -457,11 +588,11 @@
       }
 
       .sidebar-panel .date {
-        color: rgba(0, 0, 0, 0.6) !important;
+        color: rgba(0, 0, 0, 0.85) !important;
       }
 
       .sidebar-panel .island-title {
-        color: rgba(0, 0, 0, 0.5) !important;
+        color: rgba(0, 0, 0, 0.85) !important;
       }
 
       .sidebar-panel .island-badge {
@@ -474,19 +605,22 @@
       }
 
       .sidebar-panel .platter.active {
-        background: var(--status-bg) !important;
-        color: #fff !important;
-        /* Force readable contrast for active items */
+        background: var(--bg-body) !important;
+        color: var(--status-color) !important;
+        /* Neomorph Inset (Pressed) */
+        box-shadow: var(--neo-inset-dark), var(--neo-inset-light), 0 0 10px var(--status-bg) !important;
       }
 
       /* Active Accent Indicator for Sidebar */
       .sidebar-panel .platter.active::before {
         background: var(--status-color);
-        width: 3px;
-        border-radius: 3px;
-        left: 4px;
-        top: 4px;
-        bottom: 4px;
+        width: 4px;
+        border-radius: 4px;
+        left: 6px;
+        top: 10px;
+        bottom: 10px;
+        box-shadow: 0 0 8px var(--status-color);
+        display: block;
       }
 
       /* Remove Active Animations in Sidebar for Performance */
@@ -501,28 +635,18 @@
       }
 
       .sidebar-panel .doc-name {
-        font-size: 10px;
+        font-size: 13px;
         font-weight: 600;
-        letter-spacing: 0;
-        line-height: 1.3;
+        letter-spacing: 0.01em;
+        line-height: 1.2;
         transition: color 0.3s ease;
-        white-space: normal;
-        overflow: visible;
-        word-break: break-word;
       }
 
       .sidebar-panel .doc-spec {
-        font-size: 14px;
-        font-weight: 800;
-        color: var(--text-primary) !important;
-        opacity: 1;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-        line-height: 1.1;
-        margin-bottom: 1px;
+        font-size: 10.5px;
+        font-weight: 500;
       }
 
-      /* ===== ISLAND HEADER IDENTITY GRADIENT ===== */
       .island-header {
         height: 52px;
         display: flex;
@@ -533,32 +657,14 @@
         background: var(--header-bg);
         border-bottom: 1px solid rgba(125, 125, 125, 0.08);
         transition: background 0.5s ease;
-        border-radius: 20px 20px 0 0; /* Ikut border-radius island */
-      }
-
-      /* Bedah island header: subtle blue gradient tint */
-      .island-bedah .island-header {
-        background: linear-gradient(
-          135deg,
-          rgba(59, 130, 246, 0.1) 0%,
-          transparent 60%
-        );
-      }
-      /* Non Bedah island header: subtle purple gradient tint */
-      .island-nonbedah .island-header {
-        background: linear-gradient(
-          135deg,
-          rgba(168, 85, 247, 0.1) 0%,
-          transparent 60%
-        );
       }
 
       .island-title {
-        font-size: 13px;
+        font-size: 12px;
         font-weight: 800;
-        opacity: 0.65;
+        opacity: 1; /* Visibilitas tegak */
         text-transform: uppercase;
-        letter-spacing: 0.12em;
+        letter-spacing: 0.1em;
       }
 
       .island-badge {
@@ -574,21 +680,18 @@
         flex: 1;
         overflow: hidden;
         position: relative;
-        /* Padding atas extra agar kartu floating tidak terpotong */
-        padding-top: 6px;
-        margin-top: -6px;
-        /* Fade masks untuk scroll feel */
+        /* Fade masks for scroll feel — bawah lebih tipis agar konten terakhir terlihat */
         mask-image: linear-gradient(
           to bottom,
           transparent,
-          black 22px,
+          black 16px,
           black calc(100% - 6px),
           transparent
         );
         -webkit-mask-image: linear-gradient(
           to bottom,
           transparent,
-          black 22px,
+          black 16px,
           black calc(100% - 6px),
           transparent
         );
@@ -598,117 +701,69 @@
         padding: 16px 16px 24px 16px;
         display: flex;
         flex-direction: column;
-        gap: 10px; /* Lebih breathable antar kartu */
+        gap: 6px;
         will-change: transform;
+        /* Hint to browser compositor */
       }
 
-      /* ===== PLATTER CARD (Pseudo-3D Physical Emboss) ===== */
+      /* ===== PLATTER CARD (Neo-Bento Style) ===== */
       .platter {
         display: flex;
         flex-direction: column;
         align-items: stretch;
-        gap: 12px;
-        padding: 14px 16px;
-        background: var(--card-bg);
-        border-radius: 18px; /* Squircle 2026 */
-        border: 1px solid var(--platter-border);
-        box-shadow:
-          inset 0 1px 0 rgba(255, 255, 255, 0.08),
-          0 2px 8px rgba(0, 0, 0, 0.12);
+        gap: 10px;
+        padding: 14px 18px; 
+        background: var(--bg-body); /* Neomorphism needs match */
+        border-radius: 16px;
+        border: none;
+        box-shadow: 
+          8px 8px 16px var(--neo-shadow-dark),
+          -8px -8px 16px var(--neo-shadow-light);
         position: relative;
         overflow: hidden;
         transform: translateZ(0) translateY(0);
-        opacity: 1;
+        opacity: 1; 
         transition:
-          opacity 0.35s cubic-bezier(0.2, 0.8, 0.2, 1),
-          border-color 0.35s ease,
-          transform 0.35s cubic-bezier(0.34, 1.2, 0.64, 1),
-          box-shadow 0.35s ease,
-          background-color 0.35s ease;
+          opacity 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),
+          transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1),
+          box-shadow 0.4s ease,
+          background-color 0.4s ease;
       }
 
       [data-theme="light"] .platter {
         opacity: 1;
-        background: #ffffff;
-        box-shadow:
-          inset 0 1px 0 rgba(255, 255, 255, 1),
-          0 1px 4px rgba(0, 0, 0, 0.04),
-          0 4px 16px -4px rgba(0, 0, 0, 0.06);
+        background: var(--bg-body);
       }
 
-      /* Top Gradient Shimmer — mengganti left bar kasar era 2020 */
-      /* Garis tipis 1px di atas card, prismatic/gradient sesuai warna status */
+      /* Status Edge Accent */
       .platter::before {
         content: "";
         position: absolute;
-        top: 0;
-        left: 16px;
-        right: 16px;
-        height: 1px;
-        background: linear-gradient(
-          to right,
-          transparent,
-          var(--status-color) 30%,
-          var(--status-color) 70%,
-          transparent
-        );
-        opacity: 0.6;
-        border-radius: 1px;
+        left: 0;
+        top: 16px;
+        bottom: 16px;
+        width: 4px;
+        background: var(--status-color);
+        border-radius: 0 4px 4px 0;
+        opacity: 0.8;
       }
 
-      /* ===== AVATAR — Neumorphic Raised (Convex) ===== */
-      /* Elemen timbul dari permukaan card — light source dari kiri atas */
+      /* Avatar */
       .initials {
-        width: 44px;
-        height: 44px;
-        border-radius: 12px;
-        background: rgba(20, 30, 50, 0.9); /* Near-card color for neo effect */
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background: var(--bg-body);
+        box-shadow: var(--neo-inset-dark), var(--neo-inset-light);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 13px;
-        font-weight: 900;
-        letter-spacing: -0.03em;
-        color: var(--status-color, var(--text-primary));
+        font-size: 14px;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        color: var(--text-primary);
         flex-shrink: 0;
         position: relative;
-        transition: background 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
-        /* Dual-shadow neumorphic raise: terang kiri atas, gelap kanan bawah */
-        box-shadow:
-          -5px -5px 12px rgba(255, 255, 255, 0.05),
-           5px  5px 12px rgba(0, 0, 0, 0.45),
-          inset 0 1px 0 rgba(255, 255, 255, 0.08);
-      }
-
-      /* Icon inside avatar */
-      .initials .material-icons-round {
-        font-size: 22px;
-        color: inherit;
-      }
-
-      /* Sidebar: smaller avatar */
-      .sidebar-panel .initials {
-        width: 36px !important;
-        height: 36px !important;
-        min-width: 36px !important;
-        border-radius: 10px;
-        font-size: 11px;
-        box-shadow:
-          -3px -3px 8px rgba(255, 255, 255, 0.04),
-           3px  3px 8px rgba(0, 0, 0, 0.35),
-          inset 0 1px 0 rgba(255, 255, 255, 0.06);
-      }
-      .sidebar-panel .initials .material-icons-round {
-        font-size: 17px;
-      }
-
-      /* Light mode avatar neomorphic */
-      [data-theme="light"] .initials {
-        background: #eef2f7;
-        box-shadow:
-          -5px -5px 12px rgba(255, 255, 255, 0.95),
-           5px  5px 12px rgba(163, 177, 198, 0.5),
-          inset 0 1px 0 rgba(255, 255, 255, 1);
       }
 
       /* Info */
@@ -721,19 +776,21 @@
       }
 
       .doc-name {
-        font-size: 12px; /* Nama dokter — kecil, di bawah spesialisasi */
+        font-size: 13px; /* Name Integer - Non Blur */
         font-weight: 600;
         color: var(--text-secondary);
-        /* Izinkan wrap agar nama panjang tidak terpotong */
-        white-space: normal;
-        overflow: visible;
-        word-break: break-word;
-        line-height: 1.3;
-        letter-spacing: 0;
+        white-space: normal; /* wrap */
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        letter-spacing: -0.01em;
+        line-height: 1.25;
       }
 
       .doc-spec {
-        font-size: 20px; /* Spesialisasi — BESAR & Prominent */
+        font-size: 17px; /* Specialty - Huge and Prominent */
         font-weight: 800;
         color: var(--text-primary);
         text-transform: uppercase;
@@ -751,48 +808,25 @@
         flex-shrink: 0;
       }
 
-      /* ===== STATUS PILL — Neumorphic Raised Convex ===== */
       .status-pill {
-        padding: 5px 12px;
-        border-radius: 20px;
-        font-size: 11px;
+        padding: 4px 12px;
+        border-radius: 8px;
+        font-size: 10px;
         font-weight: 800;
         text-transform: uppercase;
         letter-spacing: 0.08em;
-        background: rgba(20, 30, 50, 0.8); /* near-card dark for neo effect */
+        background: var(--bg-body);
         color: var(--status-color);
-        border: none; /* Hapus border — shadow menggantikan */
         display: flex;
         align-items: center;
-        gap: 5px;
-        position: relative;
-        /* Raised neumorphic pill: timbul dari card surface */
-        box-shadow:
-          -3px -3px 8px rgba(255, 255, 255, 0.05),
-           3px  3px 8px rgba(0, 0, 0, 0.4),
-          inset 0 1px 0 rgba(255, 255, 255, 0.07),
-          /* inner color tint dari status */
-          inset 0 0 0 1px rgba(var(--status-color, 0,0,0), 0);
-        /* Color indicator subtle inset tint */
-        background-image: linear-gradient(
-          135deg,
-          rgba(0,0,0,0) 0%,
-          var(--status-bg) 100%
-        );
-      }
-
-      /* Light mode status pill */
-      [data-theme="light"] .status-pill {
-        background: #eef2f7;
-        background-image: linear-gradient(135deg, rgba(0,0,0,0) 0%, var(--status-bg) 100%);
-        box-shadow:
-          -3px -3px 8px rgba(255, 255, 255, 0.95),
-           3px  3px 8px rgba(163, 177, 198, 0.45),
-          inset 0 1px 0 rgba(255, 255, 255, 1);
+        gap: 6px;
+        position: relative; 
+        /* Debossed Neo */
+        box-shadow: var(--neo-inset-dark), var(--neo-inset-light);
       }
       
-      /* The Pulse Dot next to active pills */
-      .platter.active .status-pill::after {
+      /* The Pulse Dot next to active or penuh pills */
+      .platter.active .status-pill::after, .platter.st-penuh .status-pill::after {
         content: '';
         display: block;
         width: 6px;
@@ -806,87 +840,62 @@
       /* Jam / Call Info */
       .jam-box {
         display: flex;
-        flex-direction: column;
-        align-items: flex-end;
-      }
-
-      .jam-label {
-        font-size: 9px;
-        font-weight: 700;
-        opacity: 0.6;
-        text-transform: uppercase;
-        letter-spacing: 0.1em;
-        margin-bottom: 1px;
-        color: var(--text-secondary);
+        align-items: center;
+        justify-content: flex-end;
       }
 
       .jam-val {
-        font-size: 15px;
+        font-size: 15px; /* Boosted visibility */
         font-weight: 900;
-        color: var(--status-color);
+        color: var(--text-primary);
         font-variant-numeric: tabular-nums;
         letter-spacing: -0.02em;
         line-height: 1;
       }
 
-      /* ===== STATUS COLOR PALETTE 2026 — High-Contrast Clinical ===== */
-      /* PRAKTEK: Vivid Emerald — Pasien BOLEH masuk, paling nyata */
-      .st-praktek    { --status-color: #00C96B; --status-bg: rgba(0, 201, 107, 0.12); }
-      /* PENDAFTARAN: Amber Gold — Loket buka, harap mendaftar */
-      .st-pendaftaran { --status-color: #F5A623; --status-bg: rgba(245, 166, 35, 0.12); }
-      /* TERJADWAL: Indigo Blue — Akan datang, belum mulai */
-      .st-terjadwal  { --status-color: #5E8CF4; --status-bg: rgba(94, 140, 244, 0.12); opacity: 0.85; }
-      /* SELESAI: Slate — Tidak perlu ditonjolkan */
-      .st-selesai    { --status-color: #6B7A99; --status-bg: rgba(107, 122, 153, 0.1); opacity: 0.55; }
-      /* PENUH: Deep Orange — Jangan mendaftar, tapi bukan darurat */
-      .st-penuh      { --status-color: #FF6B35; --status-bg: rgba(255, 107, 53, 0.12); }
-      /* OPERASI: Electric Violet — Tindakan khusus berlangsung */
-      .st-operasi    { --status-color: #A855F7; --status-bg: rgba(168, 85, 247, 0.12); }
-      /* CUTI: Slate-Red — Tidak aktif, tanpa kesan darurat */
-      .st-cuti       { --status-color: #94A3B8; --status-bg: rgba(148, 163, 184, 0.1); opacity: 0.7; }
-      /* LIBUR: tersembunyi total */
-      .st-libur      { --status-color: #64748B; --status-bg: rgba(100, 116, 139, 0.08); display: none; }
-
-      /* Sembunyikan Jam Daftar untuk status yang tidak menerima pendaftaran baru (menghindari info membingungkan/ganda) */
-      .st-selesai .jam-box,
-      .st-penuh .jam-box,
-      .st-operasi .jam-box,
-      .st-cuti .jam-box,
-      .st-libur .jam-box {
-        display: none !important;
-      }
-
-      .st-praktek .initials    { background: rgba(0, 201, 107, 0.18); color: #00C96B; }
-      .st-pendaftaran .initials { background: rgba(245, 166, 35, 0.18); color: #F5A623; }
-      .st-terjadwal .initials   { background: rgba(94, 140, 244, 0.18); color: #5E8CF4; }
-      .st-selesai .initials     { background: rgba(107, 122, 153, 0.15); color: #6B7A99; }
-      .st-penuh .initials       { background: rgba(255, 107, 53, 0.18); color: #FF6B35; }
-      .st-cuti .initials        { background: rgba(148, 163, 184, 0.15); color: #94A3B8; }
-      .st-operasi .initials     { background: rgba(168, 85, 247, 0.18); color: #A855F7; }
+      /* Status Styles - Synced with AI Automation (Brand Signature Palette) */
+      .st-praktek { --status-color: #10B981; --status-bg: rgba(16, 185, 129, 0.2); }
+      .st-pendaftaran { --status-color: #F97316; --status-bg: rgba(249, 115, 22, 0.2); }
+      .st-terjadwal { --status-color: #0EA5E9; --status-bg: rgba(14, 165, 233, 0.2); opacity: 0.8; }
+      .st-selesai { --status-color: #64748B; --status-bg: rgba(100, 116, 139, 0.2); opacity: 0.6; }
+      .st-penuh { --status-color: #F59E0B; --status-bg: rgba(245, 158, 11, 0.2); }
+      .st-operasi { --status-color: #8B5CF6; --status-bg: rgba(139, 92, 246, 0.2); }
+      .st-cuti { --status-color: #EF4444; --status-bg: rgba(239, 68, 68, 0.2); opacity: 0.65; }
+      .st-libur { --status-color: #8e8e93; --status-bg: rgba(142, 142, 147, 0.2); display: none; }
+      .platter.st-praktek .initials { background: var(--bg-body); color: #10B981; box-shadow: var(--neo-inset-dark), var(--neo-inset-light); }
+      .platter.st-pendaftaran .initials { background: var(--bg-body); color: #F97316; box-shadow: var(--neo-inset-dark), var(--neo-inset-light); }
+      .platter.st-terjadwal .initials { background: var(--bg-body); color: #0EA5E9; box-shadow: var(--neo-inset-dark), var(--neo-inset-light); }
+      .platter.st-selesai .initials { background: var(--bg-body); color: #64748B; box-shadow: var(--neo-inset-dark), var(--neo-inset-light); }
+      .platter.st-penuh .initials { background: var(--bg-body); color: #F59E0B; box-shadow: var(--neo-inset-dark), var(--neo-inset-light); }
+      .platter.st-cuti .initials { background: var(--bg-body); color: #EF4444; box-shadow: var(--neo-inset-dark), var(--neo-inset-light); }
+      .platter.st-operasi .initials { background: var(--bg-body); color: #8B5CF6; box-shadow: var(--neo-inset-dark), var(--neo-inset-light); }
 
       .platter.st-praktek, .platter.st-pendaftaran { z-index: 5; }
-      .platter.st-praktek    { background: rgba(0, 201, 107, 0.08); border-color: rgba(0, 201, 107, 0.3); }
-      .platter.st-pendaftaran { background: rgba(245, 166, 35, 0.08); border-color: rgba(245, 166, 35, 0.3); animation: pendaftaran-pulse 2.5s ease-in-out infinite; }
-      @keyframes pendaftaran-pulse {
-        0%, 100% { border-color: rgba(245,166,35,0.2); box-shadow: none; }
-        50%       { border-color: rgba(245,166,35,0.7); box-shadow: 0 0 0 3px rgba(245,166,35,0.08); }
+      .platter.st-praktek { background: var(--bg-body); box-shadow: 0 0 10px rgba(16, 185, 129, 0.2), 8px 8px 16px var(--neo-shadow-dark), -8px -8px 16px var(--neo-shadow-light); }
+      .platter.st-pendaftaran { background: var(--bg-body); animation: pendaftaran-pulse 2s infinite; }
+      @keyframes pendaftaran-pulse { 
+        0% { box-shadow: 0 0 5px rgba(249, 115, 22, 0.1), 8px 8px 16px var(--neo-shadow-dark), -8px -8px 16px var(--neo-shadow-light); } 
+        50% { box-shadow: 0 0 15px rgba(249, 115, 22, 0.4), 8px 8px 16px var(--neo-shadow-dark), -8px -8px 16px var(--neo-shadow-light); } 
+        100% { box-shadow: 0 0 5px rgba(249, 115, 22, 0.1), 8px 8px 16px var(--neo-shadow-dark), -8px -8px 16px var(--neo-shadow-light); } 
       }
+      
+      [data-theme="light"] .platter.st-praktek { background: var(--bg-body); box-shadow: 0 0 10px rgba(16, 185, 129, 0.15), 8px 8px 16px var(--neo-shadow-dark), -8px -8px 16px var(--neo-shadow-light); }
+      [data-theme="light"] .platter.st-pendaftaran { background: var(--bg-body); }
+      
+      .platter.st-praktek .jam-val, .platter.st-pendaftaran .jam-val { color: var(--status-color); font-size: 14px; }
 
-      [data-theme="light"] .platter.st-praktek    { background: rgba(0, 201, 107, 0.05); border-color: rgba(0, 201, 107, 0.18); }
-      [data-theme="light"] .platter.st-pendaftaran { background: rgba(245, 166, 35, 0.05); }
+      /* st-buka: Digunakan oleh panel Bedah & NonBedah untuk semua status aktif (PRAKTEK/PENDAFTARAN/TERJADWAL) */
+      .st-buka { --status-color: #10B981; --status-bg: rgba(16, 185, 129, 0.2); }
+      .st-buka .initials { background: var(--bg-body); color: #10B981; box-shadow: var(--neo-inset-dark), var(--neo-inset-light); }
+      .platter.st-buka {  }
+      .platter.st-buka.active { background: var(--bg-body) !important; box-shadow: var(--neo-inset-dark), var(--neo-inset-light), 0 0 15px rgba(16, 185, 129, 0.3) !important; }
+      [data-theme="light"] .platter.st-buka {  }
 
-      /* st-buka: Panel Bedah & NonBedah — PRAKTEK/PENDAFTARAN */
-      .st-buka { --status-color: #00C96B; --status-bg: rgba(0, 201, 107, 0.12); }
-      .st-buka .initials { background: rgba(0, 201, 107, 0.18); color: #00C96B; }
-      .platter.st-buka { border-color: rgba(0, 201, 107, 0.2); }
-      .platter.st-buka.active { background: rgba(0, 201, 107, 0.1) !important; border-color: rgba(0, 201, 107, 0.5) !important; }
-      [data-theme="light"] .platter.st-buka { background: rgba(0, 201, 107, 0.04); border-color: rgba(0, 201, 107, 0.15); }
-
-      /* st-buka--terjadwal: TERJADWAL — pakai Indigo */
-      .st-buka.st-terjadwal { --status-color: #5E8CF4; --status-bg: rgba(94, 140, 244, 0.12); opacity: 0.85; }
-      .st-buka.st-terjadwal .initials { background: rgba(100, 210, 255, 0.15); color: #64d2ff; }
-      .platter.st-buka.st-terjadwal { border-color: rgba(100, 210, 255, 0.2); }
-      [data-theme="light"] .platter.st-buka.st-terjadwal { background: rgba(100, 210, 255, 0.04); border-color: rgba(100, 210, 255, 0.15); }
+      /* st-buka--terjadwal: Override untuk status TERJADWAL (belum mulai) — pakai warna biru */
+      .st-buka.st-terjadwal { --status-color: #0EA5E9; --status-bg: rgba(14, 165, 233, 0.2); opacity: 0.82; }
+      .st-buka.st-terjadwal .initials { background: var(--bg-body); color: #0EA5E9; box-shadow: var(--neo-inset-dark), var(--neo-inset-light); }
+      .platter.st-buka.st-terjadwal {  }
+      [data-theme="light"] .platter.st-buka.st-terjadwal {  }
       
       /* ===== ACTIVE CALL HIGHLIGHT (NEW) ===== */
 
@@ -897,125 +906,61 @@
         width: 100%;
       }
 
-      /* ===== CARD ENTRANCE STAGGER ANIMATION 2026 ===== */
-      /* Setiap kartu masuk dengan delay cascading — lebih hidup dan tidak statis */
-      @keyframes card-enter {
-        0%   { opacity: 0; transform: translateY(14px) scale(0.97); }
-        60%  { opacity: 1; transform: translateY(-2px) scale(1.005); }
-        100% { opacity: 1; transform: translateY(0) scale(1); }
-      }
-      .platter[data-entering] {
-        animation: card-enter 0.45s cubic-bezier(0.34, 1.15, 0.64, 1)
-                   calc(var(--stagger, 0) * 55ms) both;
-      }
-
-      /* ===== CARD HOVER MICRO-INTERACTION ===== */
-      /* Subtle translateY — hanya pada non-TV dan non-active card */
-      @media (hover: hover) {
-        .platter:not(.active):hover {
-          transform: translateY(-3px) translateZ(0);
-          box-shadow:
-            inset 0 1px 0 rgba(255, 255, 255, 0.15),
-            0 10px 30px -4px rgba(0, 0, 0, 0.2);
-          border-color: color-mix(in srgb, var(--status-color) 35%, var(--platter-border));
-          cursor: default;
-        }
-      }
-
-      /* ===== STATUS PILL POP ANIMATION on Change ===== */
-      @keyframes pill-pop {
-        0%   { transform: scale(0.8); opacity: 0.6; }
-        60%  { transform: scale(1.1); }
-        100% { transform: scale(1); opacity: 1; }
-      }
-      .status-pill.changed {
-        animation: pill-pop 0.4s cubic-bezier(0.34, 1.3, 0.64, 1) both;
-      }
-
       .platter.active {
         z-index: 100;
-        background: var(--status-bg) !important;
-        /* Multi-layer shadow: elevation + glow + inner highlight */
-        box-shadow:
-          0 20px 60px -12px rgba(0, 0, 0, 0.45),
-          0 8px 24px -4px rgba(0, 0, 0, 0.25),
-          0 0 0 1px var(--status-color),
-          inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
-        padding-bottom: 2px;
-        /* Float forward — depth elevation 2026 */
-        transform: translateY(-4px) translateZ(0);
+        background: var(--bg-body) !important;
+        border: none !important;
+        /* Neomorph Inset (Pressed) + Neon Glow */
+        box-shadow: 
+          var(--neo-inset-dark), 
+          var(--neo-inset-light),
+          0 0 16px var(--status-bg) !important;
+        transform: translateZ(0) translateY(1px) scale(0.99); 
         opacity: 1 !important;
-        border-color: var(--status-color) !important;
       }
 
-      /* ===== AMBIENT GLOW — diganti dengan neumorfisme, tidak pakai glow ===== */
-      .platter.active::after {
-        display: none; /* Glow dihapus — neumorphisme menggantikan */
-      }
-
-      /* Hapus info ganda: Sembunyikan jam kecil di atas saat panel detail terbuka */
-      .platter.active .jam-box {
-        display: none !important;
-      }
-
-      /* Light Mode active card */
+      /* Light Mode Override */
       [data-theme="light"] .platter.active {
-        background: rgba(255, 255, 255, 0.9) !important;
-        box-shadow:
-          0 20px 60px -12px rgba(0, 0, 0, 0.15),
-          0 8px 24px -4px rgba(0, 0, 0, 0.08),
-          0 0 0 1px var(--status-color),
-          inset 0 1px 0 rgba(255, 255, 255, 1) !important;
+        background: var(--bg-body) !important;
+        box-shadow: 
+          var(--neo-inset-dark), 
+          var(--neo-inset-light),
+          0 0 20px rgba(0,0,0,0.06) !important;
         color: #000 !important;
       }
 
-      /* Remove left bar for active (replaced by box-shadow ring) */
       .platter.active::before {
-        opacity: 0.9;
-        left: 20px;
-        right: 20px;
-        background: linear-gradient(
-          to right,
-          transparent,
-          var(--status-color),
-          transparent
-        );
-      }
-
-      /* ===== ACTIVE CARD AVATAR — Neumorphic Active State ===== */
-      /* Saat aktif: avatar berubah menjadi raised dengan warna status ===== */
-      .platter.active .initials {
+        width: 6px;
         background: var(--status-color);
-        color: #fff;
-        border: none;
-        /* Convex raise dengan warna status — lebih premium dari glow biasa */
-        box-shadow:
-          -4px -4px 10px rgba(255, 255, 255, 0.1),
-           4px  4px 10px rgba(0, 0, 0, 0.5),
-          inset 0 1px 0 rgba(255, 255, 255, 0.25),
-          inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+        box-shadow: 0 0 10px var(--status-color);
+        display: block; /* Keep neon bar */
       }
-
-      [data-theme="light"] .platter.active .initials {
-        box-shadow:
-          -4px -4px 10px rgba(255, 255, 255, 0.8),
-           4px  4px 10px rgba(0, 0, 0, 0.2),
-          inset 0 1px 0 rgba(255, 255, 255, 0.5);
+      
+      .platter.active .jam-box {
+        display: none !important;
+      }
+      
+      /* Penghapusan Redundansi: Sembunyikan BUKA/PENDAFTARAN di pojok ketika kartu berekspansi bawah */
+      .platter.active:not(.platter-mini) .status-pill {
+        display: none !important;
+      }
+      
+      .platter.active .initials {
+        background: var(--bg-body);
+        box-shadow: var(--neo-inset-dark), var(--neo-inset-light);
+        color: var(--status-color);
       }
 
       .platter.active .doc-spec {
-        font-size: 22px; /* Spesialisasi lebih besar saat aktif */
-        color: #ffffff !important;
+        font-size: 20px;
+        color: var(--text-primary) !important;
         font-weight: 900;
-        letter-spacing: 0.02em;
+        letter-spacing: -0.01em;
       }
       
       .platter.active .doc-name {
-        font-size: 13px;
-        color: rgba(255, 255, 255, 0.75) !important;
-        font-weight: 600;
-        white-space: normal;
-        overflow: visible;
+        color: var(--status-color) !important;
+        font-weight: 700;
       }
       
       /* ECG Radar Pulse Indicator */
@@ -1026,9 +971,6 @@
       }
 
       [data-theme="light"] .platter.active .doc-name {
-        color: rgba(0, 0, 0, 0.7) !important;
-      }
-      [data-theme="light"] .platter.active .doc-spec {
         color: #000 !important;
       }
 
@@ -1038,6 +980,163 @@
 
       [data-theme="light"] .platter.active .detail-time {
         color: #000;
+      }
+
+      /* ===== SIDEBAR COMPACT PLATTER (NEW) ===== */
+      .platter-mini {
+        padding: 10px 12px;
+        min-height: 0;
+      }
+      .platter-mini .platter-main {
+        gap: 10px;
+      }
+      .platter-mini .initials {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        font-size: 14px;
+      }
+      .platter-mini .initials .material-icons-round,
+      .platter-mini .initials svg {
+        font-size: 18px !important;
+        width: 18px !important;
+        height: 18px !important;
+      }
+      .platter-mini .doc-name {
+        font-size: 11px;
+        line-height: 1.25;
+        white-space: normal;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+      }
+      .platter-mini .doc-spec {
+        font-size: 9px;
+        margin-bottom: 2px;
+      }
+      .platter-mini .meta-col {
+        gap: 0;
+        align-self: flex-start;
+      }
+      .platter-mini .status-pill {
+        padding: 4px 6px;
+        font-size: 8px;
+        letter-spacing: 0.05em;
+      }
+      
+      /* Danger Striping for CUTI */
+      .platter.platter-mini.st-cuti::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: repeating-linear-gradient(
+          -45deg,
+          transparent,
+          transparent 8px,
+          var(--status-bg) 8px,
+          var(--status-bg) 16px
+        );
+        opacity: 0.25;
+        pointer-events: none;
+        z-index: 0;
+        border-radius: 16px;
+      }
+
+      /* Inset Neomorphism for PENUH (Lock-down) */
+      .platter.platter-mini.st-penuh {
+        box-shadow: inset 5px 5px 12px var(--neo-shadow-dark), inset -5px -5px 12px var(--neo-shadow-light);
+        background: var(--bg-body) !important;
+        border: 1px solid rgba(245, 158, 11, 0.1);
+      }
+      
+      /* Modern Compact Status Line for PENUH */
+      .platter.platter-mini.st-penuh::before {
+        top: 10px !important;
+        bottom: 10px !important;
+        height: auto !important;
+        width: 3px !important;
+        left: 0;
+        border-radius: 0 4px 4px 0;
+        box-shadow: 0 0 6px var(--status-color);
+        opacity: 1 !important;
+      }
+
+      .platter.platter-mini.st-penuh .meta-col {
+        display: flex !important;
+      }
+      
+      .platter.platter-mini.st-penuh .status-pill {
+        display: none !important;
+      }
+      
+      .platter.platter-mini.st-penuh .jam-sidebar {
+        display: flex !important;
+      }
+      
+      .platter.platter-mini.st-penuh .doc-name {
+        color: var(--text-primary) !important;
+        text-shadow: -1px -1px 1px var(--neo-shadow-dark), 1px 1px 1px var(--neo-shadow-light);
+        opacity: 0.9;
+        display: flex;
+        align-items: center;
+      }
+      
+      .platter.platter-mini.st-penuh .doc-name::after {
+        content: "lock";
+        font-family: "Material Icons Round";
+        font-size: 13px;
+        color: var(--status-color);
+        margin-left: 6px;
+        text-shadow: 0 0 8px var(--status-color);
+        animation: breath-lock 2.5s infinite;
+      }
+      
+      @keyframes breath-lock {
+        0%, 100% { opacity: 0.6; text-shadow: 0 0 4px var(--status-color); }
+        50% { opacity: 1; text-shadow: 0 0 12px var(--status-color); }
+      }
+
+      .platter.platter-mini.st-penuh::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: repeating-linear-gradient(
+          -45deg,
+          transparent,
+          transparent 6px,
+          rgba(0,0,0,0.03) 6px,
+          rgba(0,0,0,0.03) 12px
+        );
+        box-shadow: inset 2px 2px 6px rgba(0,0,0,0.2);
+        opacity: 1;
+        pointer-events: none;
+        z-index: 0;
+        border-radius: 12px;
+      }
+      
+      [data-theme="dark"] .platter.platter-mini.st-penuh::after {
+        background: repeating-linear-gradient(
+          -45deg,
+          transparent,
+          transparent 6px,
+          rgba(255,255,255,0.015) 6px,
+          rgba(255,255,255,0.015) 12px
+        );
+        box-shadow: inset 2px 2px 10px rgba(0,0,0,0.6);
+      }
+      
+      .platter.platter-mini.st-penuh .initials {
+        box-shadow: inset 2px 2px 5px var(--neo-shadow-dark), inset -2px -2px 5px var(--neo-shadow-light);
+        background: transparent;
+      }
+      
+      .platter.platter-mini.st-operasi {
+        animation: mini-soft-pulse-op 3s ease-in-out infinite;
+      }
+      
+      @keyframes mini-soft-pulse-op {
+        0%, 100% { box-shadow: 8px 8px 16px var(--neo-shadow-dark), -8px -8px 16px var(--neo-shadow-light); }
+        50% { box-shadow: 8px 8px 16px var(--neo-shadow-dark), -8px -8px 16px var(--neo-shadow-light), inset 0 0 15px rgba(139, 92, 246, 0.25); }
       }
 
       /* ===== EXPANDED DETAIL (NEW) ===== */
@@ -1056,36 +1155,15 @@
         border-top: 1px solid rgba(0, 0, 0, 0.08);
       }
 
-      /* ===== EXPANDED DETAIL PANEL — Neumorphic Recessed (Concave) ===== */
-      /* Panel detail saat kartu aktif: terasa seperti 'ditekan ke dalam' card */
       .platter.active .platter-detail {
         max-height: 120px;
         opacity: 1;
         margin-top: 12px;
-        padding-top: 14px;
-        padding-bottom: 4px;
-        border-top: none;
+        padding-top: 12px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
         display: flex;
         justify-content: space-between;
         align-items: center;
-        /* Recessed / inset neumorphic — terasa cekung masuk ke permukaan */
-        background: rgba(8, 14, 28, 0.6);
-        border-radius: 14px;
-        padding: 14px 16px 12px;
-        box-shadow:
-          inset -3px -3px 8px rgba(255, 255, 255, 0.04),
-          inset  3px  3px 8px rgba(0, 0, 0, 0.5),
-          inset  0     1px  0   rgba(255, 255, 255, 0.04);
-        margin-left: -4px;
-        margin-right: -4px;
-      }
-
-      [data-theme="light"] .platter.active .platter-detail {
-        background: rgba(220, 228, 238, 0.8);
-        box-shadow:
-          inset -3px -3px 8px rgba(255, 255, 255, 0.9),
-          inset  3px  3px 8px rgba(163, 177, 198, 0.5);
-        border-top: none;
       }
 
       .detail-info {
@@ -1095,12 +1173,12 @@
       }
 
       .detail-label {
-        font-size: 10px;
-        font-weight: 700;
+        font-size: 9px;
+        font-weight: 800;
         text-transform: uppercase;
-        letter-spacing: 1.2px;
-        opacity: 0.7;
-        color: rgba(255, 255, 255, 0.9);
+        letter-spacing: 1px;
+        opacity: 0.95; /* Visibilitas tegak */
+        color: #fff;
       }
 
       .detail-time {
@@ -1111,54 +1189,48 @@
         letter-spacing: -0.5px;
       }
 
-      /* ===== LIVE STATUS BADGE — Neumorphic Convex ===== */
-      /* Badge 'SEDANG MELAYANI' timbul seperti embossed button */
+      /* Neomorphism 3D Button Style untuk Banner Sedang Melayani */
       .live-status {
         display: flex;
         align-items: center;
         gap: 8px;
-        background: var(--status-color);
-        color: white;
-        padding: 7px 16px;
+        background: var(--bg-body);
+        color: var(--status-color);
+        padding: 6px 14px;
         border-radius: 20px;
         border: none;
-        /* Neumorphic raised badge dengan warna status */
-        box-shadow:
-          -4px -4px 10px rgba(255, 255, 255, 0.08),
-           4px  4px 10px rgba(0, 0, 0, 0.5),
-          inset 0 1px 0 rgba(255, 255, 255, 0.25),
-          inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+        box-shadow: 
+          4px 4px 8px var(--neo-shadow-dark),
+          -4px -4px 8px var(--neo-shadow-light),
+          inset 0 0 10px var(--status-bg);
       }
 
       .pulse-dot {
         width: 8px;
         height: 8px;
-        background: #fff;
+        background: var(--status-color);
         border-radius: 50%;
-        animation: pulse-white 2s infinite;
+        box-shadow: 0 0 8px var(--status-color);
+        animation: pulse-glow 2s infinite;
       }
 
       .live-text {
-        font-size: 11px;
+        font-size: 10px;
         font-weight: 800;
-        color: #fff;
-        letter-spacing: 0.6px;
+        color: var(--text-primary);
+        letter-spacing: 0.5px;
         text-transform: uppercase;
+      }
+      
+      [data-theme="light"] .live-text {
+        color: var(--status-color);
       }
 
       /* Pulse: Offload GPU animation to opacity only */
-      @keyframes pulse-white {
-        0% {
-          opacity: 0.6;
-        }
-
-        50% {
-          opacity: 1;
-        }
-
-        100% {
-          opacity: 0.6;
-        }
+      @keyframes pulse-glow {
+        0% { opacity: 0.6; }
+        50% { opacity: 1; transform: scale(1.1); }
+        100% { opacity: 0.6; }
       }
 
       .st-operasi.active .pulse-dot {
@@ -1297,31 +1369,10 @@
         justify-content: space-between;
         padding: 0 20px;
         border: 1px solid var(--border-light);
+        /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); */
         overflow: hidden;
         flex-shrink: 0;
         transition: background 0.5s ease;
-        /* Subtle top shimmer on footer same as cards */
-        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
-      }
-
-      /* Ticker gradient fade on edges */
-      .ticker::before,
-      .ticker::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        width: 40px;
-        z-index: 2;
-        pointer-events: none;
-      }
-      .ticker::before {
-        left: 0;
-        background: linear-gradient(to right, var(--footer-bg), transparent);
-      }
-      .ticker::after {
-        right: 0;
-        background: linear-gradient(to left, var(--footer-bg), transparent);
       }
 
       .legend {
@@ -1336,8 +1387,8 @@
         align-items: center;
         gap: 6px;
         font-size: 11px;
-        font-weight: 600;
-        opacity: 0.7;
+        font-weight: 800;
+        opacity: 0.9; /* Solid visibility */
       }
 
       .dot {
@@ -1438,19 +1489,18 @@
       }
 
       .sidebar-section-dot {
-        /* Pill shape 2026 — bukan dot bulat kecil */
-        width: 16px;
-        height: 5px;
-        border-radius: 3px;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
         flex-shrink: 0;
       }
 
       .sidebar-section-label {
-        font-size: 10px;
+        font-size: 9px;
         font-weight: 800;
         text-transform: uppercase;
         letter-spacing: 1.2px;
-        color: rgba(0, 0, 0, 0.5);
+        color: rgba(0, 0, 0, 0.4);
       }
 
       [data-theme="dark"] .sidebar-section-label {
@@ -1750,17 +1800,15 @@
           font-weight: 900;
         }
 
-        .doc-spec {
-          font-size: 14px; /* Spesialis tetap terbaca di TV kecil */
-          font-weight: 800;
-          letter-spacing: 0.02em;
+        .doc-name {
+          font-size: 12px;
+          font-weight: 700;
         }
 
-        .doc-name {
-          font-size: 10px;
-          font-weight: 600;
-          white-space: normal;
-          overflow: visible;
+        .doc-spec {
+          font-size: 11px;
+          font-weight: 500;
+          letter-spacing: 0.02em;
         }
 
         .status-pill {
@@ -1820,6 +1868,10 @@
         .platter.active .platter-detail {
           margin-top: 6px;
           padding-top: 6px;
+        }
+
+        .platter.active .meta-col .jam-box {
+          display: none !important;
         }
 
         .platter.active .doc-name {
@@ -2171,6 +2223,51 @@
           transform: scale(0.85) translateY(30px);
         }
       }
+
+      /* ===== SMART TV RESPONSIVE (960x540 / 720p series) ===== */
+      @media (max-width: 1024px), (max-height: 600px) {
+        .app-container { gap: 10px; padding: 6px 12px 14px 12px; }
+        .header { margin-bottom: 10px; padding: 12px 14px 0 14px; gap: 8px; }
+        .island-header { height: 40px; padding: 0 16px; }
+        
+        /* Hindari bahaya overscan di dasar layar TV */
+        .sidebar-panel { flex: 0 0 255px; min-width: 240px; padding-bottom: 12px; }
+        .stat-panel { padding: 10px 12px; gap: 8px; }
+        .stat-count { font-size: 13px; }
+        .clock { font-size: 18px !important; }
+        
+        /* Platter Global Base Update (Penyisipan Internal Pad & Wrap) */
+        .platter { gap: 6px; padding: 8px 10px; border-radius: 12px; }
+        .initials { width: 28px; height: 28px; font-size: 11px; }
+        .doc-spec { font-size: 12px; }
+        
+        /* Mengizinkan Nama Dokter Wrapping Hingga 2 Baris Pada Layar Sempit */
+        .doc-name { 
+          font-size: 11px; 
+          white-space: normal; 
+          display: -webkit-box; 
+          -webkit-line-clamp: 2; 
+          -webkit-box-orient: vertical; 
+          line-height: 1.25; 
+        }
+        .jam-val { font-size: 13px; }
+        .jam-box { display: flex; transform: none; }
+        
+        /* Active Status Shrink Down (Pendaftaran & Praktek) */
+        .platter.active { padding: 8px 10px !important; }
+        .platter.active .doc-spec { font-size: 14px; }
+        .platter.active .doc-name { font-size: 12px; }
+        .platter.active .platter-detail { max-height: 70px; margin-top: 6px; padding-top: 6px; }
+        .detail-time { font-size: 12px !important; }
+        .live-text { font-size: 8px; }
+        .detail-label { font-size: 8px; }
+        .live-status { padding: 3px 8px; gap: 4px; }
+        .pulse-dot { width: 5px; height: 5px; }
+        
+        /* Pill Tweaks */
+        .status-pill { font-size: 8px; padding: 2px 6px; }
+        .status-pill .material-icons-round { font-size: 9px !important; margin-right: 2px; }
+      }
     </style>
   </head>
 
@@ -2210,11 +2307,7 @@
           <div class="header" style="margin-bottom: 0; padding-bottom: 12px">
             <div class="brand">
               <div class="logo-box" style="width: 36px; height: 36px">
-                <span
-                  class="material-icons-round logo-icon"
-                  style="font-size: 20px"
-                  >local_hospital</span
-                >
+                <img src="/logo-rs.png" alt="RSU Siaga Medika Logo" />
               </div>
               <div class="title-group">
                 <h1 style="font-size: 14px; line-height: 1.1">
@@ -2364,107 +2457,11 @@
             </p>
           </div>
 
-          <!-- Legend Status Dokter (Dipindah dari Footer ke Sidebar Bottom) -->
-          <div
-            style="
-              padding: 12px 16px;
-              border-top: 1px solid var(--border-light);
-              background: rgba(0, 0, 0, 0.02);
-              display: flex;
-              flex-wrap: wrap;
-              gap: 8px;
-              justify-content: space-between;
-            "
-          >
-            <div
-              style="
-                display: flex;
-                align-items: center;
-                gap: 4px;
-                font-size: 9px;
-                font-weight: 700;
-                color: var(--text-primary);
-                opacity: 0.8;
-              "
-            >
-              <div
-                style="
-                  width: 6px;
-                  height: 6px;
-                  border-radius: 50%;
-                  background: var(--accent-green);
-                "
-              ></div>
-              Buka
-            </div>
-            <div
-              style="
-                display: flex;
-                align-items: center;
-                gap: 4px;
-                font-size: 9px;
-                font-weight: 700;
-                color: var(--text-primary);
-                opacity: 0.8;
-              "
-            >
-              <div
-                style="
-                  width: 6px;
-                  height: 6px;
-                  border-radius: 50%;
-                  background: #64d2ff;
-                "
-              ></div>
-              Terjadwal
-            </div>
-            <div
-              style="
-                display: flex;
-                align-items: center;
-                gap: 4px;
-                font-size: 9px;
-                font-weight: 700;
-                color: var(--text-primary);
-                opacity: 0.8;
-              "
-            >
-              <div
-                style="
-                  width: 6px;
-                  height: 6px;
-                  border-radius: 50%;
-                  background: var(--accent-orange);
-                "
-              ></div>
-              Penuh
-            </div>
-            <div
-              style="
-                display: flex;
-                align-items: center;
-                gap: 4px;
-                font-size: 9px;
-                font-weight: 700;
-                color: var(--text-primary);
-                opacity: 0.8;
-              "
-            >
-              <div
-                style="
-                  width: 6px;
-                  height: 6px;
-                  border-radius: 50%;
-                  background: var(--accent-red);
-                "
-              ></div>
-              Cuti
-            </div>
-          </div>
+
         </aside>
 
         <!-- Bedah Island -->
-        <section class="island island-bedah">
+        <section class="island">
           <div class="island-header">
             <div
               style="display: flex; align-items: center; gap: 8px; min-width: 0"
@@ -2480,8 +2477,8 @@
               class="island-badge"
               id="countBedah"
               style="
-                background: rgba(59, 130, 246, 0.15);
-                color: #3B82F6;
+                background: rgba(10, 132, 255, 0.15);
+                color: var(--accent-blue);
               "
               >0</span
             >
@@ -2492,7 +2489,7 @@
         </section>
 
         <!-- Non Bedah Island -->
-        <section class="island island-nonbedah">
+        <section class="island">
           <div class="island-header">
             <div
               style="display: flex; align-items: center; gap: 8px; min-width: 0"
@@ -2512,8 +2509,8 @@
               class="island-badge"
               id="countNonBedah"
               style="
-                background: rgba(168, 85, 247, 0.15);
-                color: #A855F7;
+                background: rgba(191, 90, 242, 0.15);
+                color: var(--accent-purple);
               "
               >0</span
             >
@@ -2553,71 +2550,25 @@
               .toUpperCase()
           : "DR";
 
-      // ===== SPECIALTY ICON MAPPER (Klinis & Intuitif) =====
-      // Material Icons Round — dipilih yang paling dekat dengan simbol medis standar.
-      // Gunakan tabel SPECIALTY_MAP agar mudah di-maintain dan dikembangkan.
-      const SPECIALTY_MAP = [
-        // Indera & Kepala
-        { k: ['mata','ophthal'],                                    v: 'remove_red_eye'           }, // 👁 Mata
-        { k: ['tht','telinga','hidung','tenggorok'],                v: 'hearing'                  }, // 👂 THT
-        { k: ['gigi','mulut','dentist'],                            v: 'konservasi'                }, // 🦷 Gigi
-
-        // Reproduksi & Tumbuh Kembang
-        { k: ['kandungan','kebidanan','obstetri',
-              'fetomaternal','ginekologi'],                         v: 'pregnant_woman'           }, // 🤰 Kandungan
-        { k: ['anak','pediatri'],                                   v: 'child_care'               }, // 👶 Anak
-
-        // Kardiovaskular & Paru
-        { k: ['jantung','kardio'],                                  v: 'monitor_heart'            }, // 💓 Jantung (ECG)
-        { k: ['paru','pulmo','respirasi','pernafasan'],             v: 'air'                      }, // 🌬 Paru
-
-        // Neurologi & Jiwa
-        { k: ['saraf','syaraf','neuro'],                           v: 'psychology'               }, // 🧠 Saraf/Neuro
-        { k: ['jiwa','psikiatri','mental','psiko'],                 v: 'self_improvement'         }, // 🧘 Jiwa
-
-        // Kulit & Kelamin
-        { k: ['kulit','derma'],                                     v: 'face_retouching_natural'  }, // 🫠 Kulit
-        { k: ['kelamin','venere'],                                  v: 'wc'                       }, // Kel. Kelamin
-
-        // Muskuloskeletal
-        { k: ['tulang','ortho','bedah tulang'],                     v: 'accessibility_new'        }, // 🦴 Orthopaedi
-
-        // Urologi
-        { k: ['urologi','ginjal','urinary'],                        v: 'water_drop'               }, // 💧 Urologi
-
-        // Penyakit Dalam & Umum
-        { k: ['dalam','internal','penyakit dalam','internist'],     v: 'monitor_heart'              }, // 🩺 P.Dalam
-
-        // Onkologi
-        { k: ['onkologi','tumor','kanker'],                         v: 'biotech'                  }, // 🔬 Onkologi
-
-        // Bedah
-        { k: ['bedah','surger'],                                    v: 'medical_services'         }, // ⚕️ Bedah
-
-        // Penunjang
-        { k: ['rehabilitasi','fisio'],                              v: 'directions_walk'          }, // 🚶 Rehab
-        { k: ['anestesi'],                                          v: 'vaccines'                 }, // 💉 Anestesi
-        { k: ['radiologi','roentgen','imaging'],                    v: 'document_scanner'         }, // 📄 Radiologi
-        { k: ['gizi','nutrisi'],                                    v: 'lunch_dining'             }, // 🍱 Gizi
-        { k: ['geriatri','lansia'],                                 v: 'elderly'                  }, // 👴 Geriatri
-        { k: ['infeksi','tropis','tropik'],                         v: 'coronavirus'              }, // 🦠 Infeksi
-        { k: ['endokrin','metabolik','diabetes','tiroid'],          v: 'labs'                     }, // 🧪 Endokrin
-        { k: ['umum','general'],                                    v: 'health_and_safety'        }, // 🛡 Umum
-      ];
-
-      const getSpecialtyIcon = (specialty) => {
-        const s = (specialty || '').toLowerCase();
-        for (const entry of SPECIALTY_MAP) {
-          if (entry.k.some(k => s.includes(k))) return entry.v;
-        }
-        return 'local_hospital'; // default fallback
-      };
-
-      // Build avatar HTML: selalu tampilkan ikon spesialisasi medis universal.
-      // Ikon lebih cepat diproses otak (60.000x vs teks) — khususnya untuk pasien
-      // lansia dan dari luar daerah. Queue code tidak digunakan sebagai avatar.
-      const buildAvatarHtml = (d) => {
-        return `<span class="material-icons-round">${getSpecialtyIcon(d.Spesialis)}</span>`;
+      const getSpecialistIcon = (spec) => {
+        const s = (spec || "").toLowerCase();
+        if (s.includes("urologi")) return `<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24" fill="currentColor"><path d="M480-120q-33 0-56.5-23.5T400-200q0-33 23.5-56.5T480-280q33 0 56.5 23.5T560-200q0 33-23.5 56.5T480-120Zm0-240q-48 0-83.5-31.5T352-472q-3-22-10-41t-18-35q-23-40-75-52.5T128-636q-14 8-29 6.5T72-646q-12-11-13.5-27t8.5-29q40-45 96.5-66.5T280-790q53 0 100 24t78 66q4 6 10.5 9t11.5 3q5 0 11.5-3t10.5-9q31-42 78-66t100-24q60 0 116.5 21.5T893-702q10 13 8.5 29t-13.5 27q-12 11-27 6.5T832-636q-68 40-120 52.5T637-548q-11 16-18 35t-10 41q-9 48-44.5 79T480-360Z"/></svg>`;
+        if (s.includes("bedah mulut")) return "medical_services";
+        if (s.includes("anak")) return "child_care";
+        if (s.includes("gigi") || s.includes("konservasi") || s.includes("dental") || s.includes("mulut")) return `<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24" fill="currentColor"><path d="M480-120q-48 0-84-30t-48-76q-30 11-61.5 16T224-204q-26 0-45-19t-19-45v-92q0-109 72.5-188.5T408-644v24q0 30 21 51t51 21q30 0 51-21t21-51v-24q103 16 175.5 95.5T800-360v92q0 26-19 45t-45 19q-31 0-62.5-5.5T612-226q-12 46-48 76t-84 30Zm0-80q23 0 45-12.5t33-35.5l14-40 40 10q23 6 49 8.5t55 2.5v-53q0-82-55.5-141.5T528-525q-11 25-33.5 45T440-460q0-8 2-15t4-15q12-40 43.5-72T564-604q-32-15-68-23t-76-8q2 6 3 12t1 13q0 39-24 67.5T334-514q-14 30-36 71.5T260-360v120q29 0 55-2.5t49-8.5l40-10 14 40q11 23 33 35.5T480-200Zm0-300Z"/></svg>`;
+        if (s.includes("kandungan") || s.includes("obgyn")) return "pregnant_woman";
+        if (s.includes("mata")) return "visibility";
+        if (s.includes("saraf") || s.includes("neurologi")) return "psychology";
+        if (s.includes("dalam")) return "monitor_heart";
+        if (s.includes("jantung")) return "favorite";
+        if (s.includes("bedah")) return "medical_services";
+        if (s.includes("kulit") || s.includes("kelamin")) return "face_retouching_natural";
+        if (s.includes("tht") || s.includes("tth")) return "hearing";
+        if (s.includes("paru") || s.includes("pulmo")) return "air";
+        if (s.includes("ortopedi") || s.includes("orthopaedi")) return "accessible_forward";
+        if (s.includes("jiwa") || s.includes("psikiatri")) return "self_improvement";
+        if (s.includes("rehab")) return "accessibility_new";
+        return "health_and_safety";
       };
 
       // Helper: Tentukan apakah dokter dalam status "aktif" (sedang melayani/bisa daftar)
@@ -2639,6 +2590,9 @@
         const jamTampil = d.JamDaftar !== "-"
           ? esc(d.JamDaftar)
           : formatJam((d.JamPraktek || "").split("-")[0]);
+          
+        const isCPO = ["CUTI", "PENUH", "OPERASI"].some(st => (d.Status || "").toUpperCase().includes(st));
+
         return `
           <div class="platter-main">
             <div class="initials">${avatarText}</div>
@@ -2650,9 +2604,8 @@
               <div class="status-pill" style="background:var(--status-bg);color:var(--status-color)">
                 <span class="material-icons-round" style="font-size:12px">${statusIcon}</span>${statusLabel}
               </div>
-              ${d.JamPraktek && d.JamPraktek !== "-" ? `
+              ${!isCPO && d.JamPraktek && d.JamPraktek !== "-" ? `
               <div class="jam-box">
-                <span class="jam-label">DAFTAR</span>
                 <span class="jam-val jam-val-daftar" style="color:var(--status-color)">${jamTampil}</span>
               </div>` : ""}
             </div>
@@ -2665,6 +2618,32 @@
             <div class="live-status">
               <div class="pulse-dot"></div>
               <span class="live-text">${labelLive}</span>
+            </div>
+          </div>`;
+      };
+
+      const buildSidebarCardHTML = (d, avatarText, statusIcon, statusLabel) => {
+        const jamTampil = d.JamDaftar !== "-"
+          ? esc(d.JamDaftar)
+          : formatJam((d.JamPraktek || "").split("-")[0]);
+          
+        return `
+          <div class="platter-mini-grid" style="position:relative; z-index:1; display:flex; flex-direction:column; gap:8px; width:100%;">
+            <div class="mini-top-row" style="display:flex; justify-content:space-between; align-items:flex-start; width:100%;">
+              <div class="initials">${avatarText}</div>
+              <div class="meta-col" style="flex-shrink:0;">
+                <div class="status-pill" style="background:var(--status-bg);color:var(--status-color)">
+                  <span class="material-icons-round" style="font-size:10px; margin-right:2px;">${statusIcon}</span>${statusLabel}
+                </div>
+                <div class="jam-sidebar" style="display:none; align-items:center; gap:4px; background:rgba(125,125,125,0.08); padding:3px 8px; border-radius:6px; box-shadow:var(--neo-inset-dark), var(--neo-inset-light);">
+                  <span class="material-icons-round" style="font-size:12px; color:var(--text-secondary);">schedule</span>
+                  <span class="jam-val-daftar" style="font-size:12px; font-weight:800; color:var(--text-primary); font-variant-numeric: tabular-nums;">${jamTampil}</span>
+                </div>
+              </div>
+            </div>
+            <div class="info-col" style="display:flex; flex-direction:column; gap:4px; margin-top:2px;">
+              <div class="doc-name" style="font-size:11.5px; font-weight:700;">${esc(d.Dokter)}</div>
+              <div class="doc-spec" style="font-size:9.5px; opacity:0.75;">${esc(d.Spesialis)}</div>
             </div>
           </div>`;
       };
@@ -3159,13 +3138,6 @@
           const m = d.getMinutes();
           const s = d.getSeconds();
 
-          // --- AUTOMATIC CLINICAL DAY/NIGHT THEME ---
-          // Light Theme: 06:00 - 17:59 | Dark Theme: 18:00 - 05:59
-          const prefersTheme = (h >= 6 && h < 23) ? "light" : "dark";
-          if (document.documentElement.getAttribute('data-theme') !== prefersTheme) {
-              document.documentElement.setAttribute('data-theme', prefersTheme);
-          }
-
           // Custom Rotating Notification every 5 minutes (avoid clash with break time at 12:00)
           if (m % 5 === 0 && s === 0 && h !== 12) {
             const msg = this._customMsgs[this._customMsgIdx];
@@ -3248,7 +3220,8 @@
 
         updateTheme() {
           const h = new Date().getHours();
-          const isLight = h >= 6 && h < 16;
+          // Light Theme: 06:00 - 17:59 | Dark Theme: 18:00 - 05:59
+          const isLight = h >= 6 && h < 18;
           document.documentElement.setAttribute(
             "data-theme",
             isLight ? "light" : "dark",
@@ -3346,6 +3319,7 @@
               if (isLeaveToday) {
                 status = "CUTI";
               }
+              
               const isPriorityStatus = ["CUTI", "PENUH", "OPERASI"].some(s => status.includes(s));
 
               // --- MULTI-SHIFT BUG FIX ---
@@ -3683,6 +3657,22 @@
           // --- DOM RECYCLING ENGINE ---
           const updateList = (containerId, list) => {
             const container = $(containerId);
+            
+            // Handle Empty State 3D Animation
+            if (list.length === 0) {
+              const emptyStateHTML = `
+                <div class="neo-empty-state">
+                  <div class="neo-orb"></div>
+                  <div class="neo-empty-text">TIDAK ADA JADWAL</div>
+                </div>
+              `;
+              if (container.innerHTML !== emptyStateHTML) {
+                container.innerHTML = emptyStateHTML;
+                return true; // signal scroller refresh
+              }
+              return false;
+            }
+
             const oldMap = new Map();
             // Map existing elements by Doctor Name
             Array.from(container.children).forEach((el) => {
@@ -3711,7 +3701,7 @@
                 l = "TERJADWAL";
               } else if (st.includes("PENUH")) {
                 c = "st-penuh";
-                i = "groups";
+                i = "front_hand";
                 l = "PENUH";
               } else if (st.includes("OPERASI")) {
                 c = "st-operasi";
@@ -3722,7 +3712,8 @@
                 i = "flight";
                 l = "CUTI";
               }
-              const avatarText = buildAvatarHtml(d);
+              const avatarIcon = getSpecialistIcon(d.Spesialis);
+              const avatarText = avatarIcon.startsWith("<svg") ? avatarIcon : `<span class="material-icons-round" style="font-size:24px;">${avatarIcon}</span>`;
               if (d._isActive) c += " active";
 
               let labelJam = "REGISTRASI DIBUKA";
@@ -3907,11 +3898,12 @@
             else if (st === "PENDAFTARAN") { c = "st-pendaftaran"; i = "assignment"; l = "PENDAFTARAN"; }
             else if (st === "TERJADWAL") { c = "st-terjadwal"; i = "schedule"; l = "TERJADWAL"; }
             else if (st === "SELESAI") { c = "st-selesai"; i = "done_all"; l = "SELESAI"; }
-            else if (st === "PENUH") { c = "st-penuh"; i = "groups"; l = "PENUH"; }
+            else if (st === "PENUH") { c = "st-penuh"; i = "front_hand"; l = "PENUH"; }
             else if (st === "OPERASI") { c = "st-operasi"; i = "local_hospital"; l = "OPERASI"; }
             else if (st === "CUTI") { c = "st-cuti"; i = "flight"; l = "CUTI"; }
             else if (st === "LIBUR") { c = "st-libur"; i = "block"; l = "LIBUR"; }
-            const avatarText = buildAvatarHtml(d);
+            const avatarIcon = getSpecialistIcon(d.Spesialis);
+            const avatarText = avatarIcon.startsWith("<svg") ? avatarIcon : `<span class="material-icons-round" style="font-size:24px;">${avatarIcon}</span>`;
             if (d._isActive) c += " active";
 
             let labelJam = "REGISTRASI DIBUKA";
@@ -3934,7 +3926,7 @@
 
             if (el) {
               if (el.dataset.hash !== hash) {
-                el.className = `platter ${c}`;
+                el.className = `platter platter-mini ${c}`;
 
                 // IN-PLACE DOM Update Sidebar
                 const dName = el.querySelector(".doc-name");
@@ -3980,10 +3972,10 @@
               oldMap.delete(id);
             } else {
               el = document.createElement("div");
-              el.className = `platter ${c} platter-new`;
+              el.className = `platter platter-mini ${c} platter-new`;
               el.dataset.id = id;
               el.dataset.hash = hash;
-              el.innerHTML = buildCardHTML(d, avatarText, i, l, labelJam, labelLive);
+              el.innerHTML = buildSidebarCardHTML(d, avatarText, i, l);
               hasLayoutChange = true;
               el.addEventListener(
                 "animationend",

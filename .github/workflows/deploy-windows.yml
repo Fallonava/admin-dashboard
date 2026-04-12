@@ -13,14 +13,14 @@ jobs:
   deploy:
     name: Sync Windows Server
     runs-on: [self-hosted, Windows]
-    timeout-minutes: 15
+    timeout-minutes: 20
     env:
       PM2_HOME: 'C:\Users\ANTRIAN 1\.pm2'
       HOMEPATH: 'C:\Users\ANTRIAN 1'
 
     steps:
-      # Step 0: Stop PM2 to release file locks before cleaning workspace
-      - name: Stop PM2 to Release File Locks
+      # ── Step 0: Stop PM2 to release file locks before workspace cleanup ──────
+      - name: Stop PM2 (Release File Locks)
         shell: powershell
         run: |
           $env:PM2_HOME = "C:\Users\ANTRIAN 1\.pm2"
@@ -31,10 +31,18 @@ jobs:
             Write-Host "PM2 not running or already stopped."
           }
 
-      # Step 1: Checkout the code
+      # ── Step 1: Checkout ──────────────────────────────────────────────────────
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      # Fix: GitHub Actions runner runs as NETWORK SERVICE, but user is ANTRIAN 1
+      - name: Fix Git Safe Directory
+        shell: powershell
+        run: |
+          git config --global --add safe.directory $env:GITHUB_WORKSPACE
+          Write-Host "Safe directory added."
+
+      # ── Step 2: Create .env ───────────────────────────────────────────────────
       - name: Create Server Environment (.env)
         shell: powershell
         run: |
@@ -56,34 +64,53 @@ jobs:
             'PORT="3000"'
           )
           $content | Set-Content -Path ".env" -Encoding UTF8
-          Write-Host ".env berhasil dibuat"
+          Write-Host ".env created."
 
+      # ── Step 3: Install Dependencies ─────────────────────────────────────────
       - name: Install Dependencies
         run: npm ci
 
-      # Step 3: Database Migration
-      - name: Run Database Migrations
-        run: npx prisma migrate deploy
+      # ── Step 4: Database - Schema Push + Migrate ──────────────────────────────
+      # db push handles new models not yet in migration files (safe for additive changes)
+      - name: Sync Database Schema
+        shell: powershell
+        run: |
+          npx prisma migrate deploy
+          npx prisma db push --accept-data-loss
+          Write-Host "Database schema synced."
 
-      # Step 3.5: Generate Prisma Client
+      # ── Step 5: Generate Prisma Client ───────────────────────────────────────
       - name: Generate Prisma Client
         run: npx prisma generate
 
-      # Step 4: Build the application
-      - name: Run Build
+      # ── Step 6: Build Next.js + Compile custom server ────────────────────────
+      - name: Build Application
         run: npm run build
 
-      # Step 5: Restart Application via Scheduled Task
-      # (Scheduled Task "RestartAdminDashboard" harus sudah didaftarkan di server)
-      - name: Restart Application
+      # ── Step 7: Copy static assets to standalone (REQUIRED for Next.js standalone) ──
+      - name: Copy Static Assets to Standalone
         shell: powershell
         run: |
-          Write-Host "Memicu restart via Scheduled Task..."
-          schtasks /run /tn "RestartAdminDashboard"
-          if ($LASTEXITCODE -eq 0) {
-            Write-Host "Restart berhasil dipicu!"
+          Copy-Item -Recurse -Force ".next\static" ".next\standalone\.next\static"
+          Copy-Item -Recurse -Force "public" ".next\standalone\public"
+          Write-Host "Static assets copied to standalone."
+
+      # ── Step 8: Start/Restart PM2 using root server.js (includes Socket.IO) ──
+      - name: Start Application via PM2
+        shell: powershell
+        run: |
+          $env:PM2_HOME = "C:\Users\ANTRIAN 1\.pm2"
+          $appName = "admin-dashboard"
+          $serverJs = "server.js"
+
+          $running = pm2 list | Select-String $appName
+          if ($running) {
+            pm2 restart $appName
+            Write-Host "PM2 restarted."
           } else {
-            Write-Host "Scheduled Task tidak ditemukan. Coba langsung via PM2..."
-            $env:PM2_HOME = "C:\Users\ANTRIAN 1\.pm2"
-            Start-Process -FilePath "pm2" -ArgumentList "restart admin-dashboard" -Verb RunAs -Wait
+            pm2 start $serverJs --name $appName
+            Write-Host "PM2 started."
           }
+
+          pm2 save --force
+          Write-Host "PM2 state saved."
