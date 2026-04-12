@@ -138,21 +138,16 @@ PORT=3000
 
           Set-Location $ProdDir
 
-          # Tentukan server.js: standalone lebih ringan dari root server.js
-          $serverStandalone = "$ProdDir\.next\standalone\server.js"
-          $serverRoot       = "$ProdDir\server.js"
+          # PENTING: Gunakan server.js di ROOT (hasil compile server.ts)
+          # JANGAN gunakan .next/standalone/server.js — itu tidak punya Socket.IO!
+          $serverJs = "$ProdDir\server.js"
 
-          if (Test-Path $serverStandalone) {
-            $serverJs = $serverStandalone
-            Write-Host "Menggunakan standalone server: $serverJs"
-          } elseif (Test-Path $serverRoot) {
-            $serverJs = $serverRoot
-            Write-Host "Menggunakan root server: $serverJs"
-          } else {
-            Write-Error "server.js TIDAK DITEMUKAN di $ProdDir!"
+          if (-not (Test-Path $serverJs)) {
+            Write-Error "server.js tidak ditemukan di $ProdDir! Pastikan 'npm run build' berhasil (tsc server.ts)." 
             exit 1
           }
 
+          Write-Host "Menggunakan custom server: $serverJs (Socket.IO enabled)"
           pm2 flush
           pm2 start $serverJs --name "admin-dashboard" --update-env
           Write-Host "admin-dashboard dimulai."

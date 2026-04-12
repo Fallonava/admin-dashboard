@@ -27,21 +27,16 @@ pm2 flush
 # 2. Pindah ke production directory
 Set-Location $ProdDir
 
-# 3. Tentukan server.js
-$serverStandalone = "$ProdDir\.next\standalone\server.js"
-$serverRoot       = "$ProdDir\server.js"
+# 3. Tentukan server.js — WAJIB root server.js (ada Socket.IO)
+# JANGAN gunakan .next\standalone\server.js
+$serverJs = "$ProdDir\server.js"
 
-if (Test-Path $serverStandalone) {
-    $serverJs = $serverStandalone
-    Write-Host "[2/5] Server: standalone ($serverJs)" -ForegroundColor Gray
-} elseif (Test-Path $serverRoot) {
-    $serverJs = $serverRoot
-    Write-Host "[2/5] Server: root ($serverJs)" -ForegroundColor Gray
-} else {
-    Write-Host "ERROR: server.js tidak ditemukan di $ProdDir!" -ForegroundColor Red
-    Write-Host "       Jalankan deploy-production.ps1 untuk build dan deploy ulang." -ForegroundColor Yellow
+if (-not (Test-Path $serverJs)) {
+    Write-Host "ERROR: $ProdDir\server.js tidak ditemukan!" -ForegroundColor Red
+    Write-Host "       Jalankan 'npm run build' di folder production terlebih dahulu." -ForegroundColor Yellow
     exit 1
 }
+Write-Host "[2/5] Server: $serverJs (Socket.IO enabled)" -ForegroundColor Gray
 
 # 4. Start admin-dashboard
 Write-Host "[3/5] Start admin-dashboard..." -ForegroundColor Yellow
