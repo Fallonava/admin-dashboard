@@ -87,14 +87,14 @@ jobs:
           Copy-Item -Recurse -Force "public" ".next\standalone\public"
           Write-Host "Static assets copied to standalone."
 
-      # ── Step 8: Trigger Scheduled Task for Restart ───────────────────────────
-      - name: Restart Application
+      # ── Step 8: Trigger Scheduled Task for Production Deployment ─────────────
+      - name: Release to Production Directory
         shell: powershell
         run: |
-          Write-Host "Memicu restart via Scheduled Task (menghindari konflik PM2 daemon)..."
+          Write-Host "Memicu rilis file ke C:\simed-production dan restart aplikasi..."
           schtasks /run /tn "RestartAdminDashboard"
           if ($LASTEXITCODE -eq 0) {
-            Write-Host "Restart berhasil dipicu!"
+            Write-Host "Deployment Pipeline berjalan di background server! Sukses."
           } else {
             Write-Host "Peringatan: Scheduled Task 'RestartAdminDashboard' gagal dipicu."
           }
