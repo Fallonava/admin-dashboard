@@ -135,6 +135,7 @@ jobs:
           # Robocopy exit code <= 7 = sukses (0=no change, 1=copied, 2=extra, 4=mismatch, etc.)
           if ($LASTEXITCODE -le 7) {
             Write-Host "Robocopy selesai sukses (exit code: $LASTEXITCODE)"
+            exit 0
           } else {
             Write-Error "Robocopy GAGAL dengan exit code: $LASTEXITCODE"
             exit 1
@@ -186,3 +187,4 @@ jobs:
             exit 1
           }
           Write-Host "✅ Semua proses berjalan normal!"
+          exit 0
