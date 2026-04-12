@@ -35,23 +35,24 @@ jobs:
       - name: Create Server Environment (.env)
         shell: powershell
         run: |
-          @"
-DATABASE_URL=postgresql://medcore:medcore_local_password@localhost:5432/medcoredb?sslmode=disable
-DIRECT_URL=postgresql://medcore:medcore_local_password@localhost:5432/medcoredb?sslmode=disable
-PGHOST=localhost
-PGUSER=medcore
-PGDATABASE=medcoredb
-PGPASSWORD=medcore_local_password
-ADMIN_KEY=dev_key_123
-NEXT_PUBLIC_ADMIN_KEY=dev_key_123
-CRON_SECRET=siaga_medika_secret_2024
-JWT_SECRET=mc_jwt_k3y!S1ag4M3d1k4_2024_secure_t0ken_s3cr3t
-NEXT_PUBLIC_APP_URL=https://simed.fallonava.my.id
-REDIS_URL=redis://localhost:6379
-HOSTNAME=0.0.0.0
-NODE_ENV=production
-PORT=3000
-"@ | Set-Content -Path ".env" -Encoding UTF8
+          $lines = @(
+            'DATABASE_URL=postgresql://medcore:medcore_local_password@localhost:5432/medcoredb?sslmode=disable',
+            'DIRECT_URL=postgresql://medcore:medcore_local_password@localhost:5432/medcoredb?sslmode=disable',
+            'PGHOST=localhost',
+            'PGUSER=medcore',
+            'PGDATABASE=medcoredb',
+            'PGPASSWORD=medcore_local_password',
+            'ADMIN_KEY=dev_key_123',
+            'NEXT_PUBLIC_ADMIN_KEY=dev_key_123',
+            'CRON_SECRET=siaga_medika_secret_2024',
+            'JWT_SECRET=mc_jwt_k3y!S1ag4M3d1k4_2024_secure_t0ken_s3cr3t',
+            'NEXT_PUBLIC_APP_URL=https://simed.fallonava.my.id',
+            'REDIS_URL=redis://localhost:6379',
+            'HOSTNAME=0.0.0.0',
+            'NODE_ENV=production',
+            'PORT=3000'
+          )
+          $lines | Set-Content -Path ".env" -Encoding UTF8
           Write-Host ".env created."
 
       # ── Step 3: Install Dependencies ────────────────────────────────────────
