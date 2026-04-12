@@ -11,90 +11,172 @@ concurrency:
 
 jobs:
   deploy:
-    name: Sync Windows Server
+    name: Build & Deploy to C:\simed-production
     runs-on: [self-hosted, Windows]
-    timeout-minutes: 20
+    timeout-minutes: 30
     env:
       PM2_HOME: 'C:\Users\ANTRIAN 1\.pm2'
-      HOMEPATH: 'C:\Users\ANTRIAN 1'
+      PROD_DIR: 'C:\simed-production'
 
     steps:
-      # (PM2 commands removed to prevent daemon conflicts)
-
-      # ── Step 1: Checkout ──────────────────────────────────────────────────────
+      # ── Step 1: Checkout ─────────────────────────────────────────────────────
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
           clean: false
 
-      # Fix: GitHub Actions runner runs as NETWORK SERVICE, but user is ANTRIAN 1
       - name: Fix Git Safe Directory
         shell: powershell
         run: |
           git config --global --add safe.directory $env:GITHUB_WORKSPACE
-          Write-Host "Safe directory added."
+          Write-Host "Safe directory added: $env:GITHUB_WORKSPACE"
 
-      # ── Step 2: Create .env ───────────────────────────────────────────────────
+      # ── Step 2: Create .env ──────────────────────────────────────────────────
       - name: Create Server Environment (.env)
         shell: powershell
         run: |
-          $content = @(
-            'DATABASE_URL="postgresql://medcore:medcore_local_password@localhost:5432/medcoredb?sslmode=disable"',
-            'DATABASE_URL_UNPOOLED="postgresql://medcore:medcore_local_password@localhost:5432/medcoredb?sslmode=disable"',
-            'PGHOST="localhost"',
-            'PGUSER="medcore"',
-            'PGDATABASE="medcoredb"',
-            'PGPASSWORD="medcore_local_password"',
-            'POSTGRES_PRISMA_URL="postgresql://medcore:medcore_local_password@localhost:5432/medcoredb?sslmode=disable"',
-            'ADMIN_KEY="dev_key_123"',
-            'NEXT_PUBLIC_ADMIN_KEY="dev_key_123"',
-            'CRON_SECRET="siaga_medika_secret_2024"',
-            'JWT_SECRET="mc_jwt_k3y!S1ag4M3d1k4_2024_secure_t0ken_s3cr3t"',
-            'NEXT_PUBLIC_APP_URL="https://simed.fallonava.my.id"',
-            'HOSTNAME="0.0.0.0"',
-            'NODE_ENV="production"',
-            'PORT="3000"'
-          )
-          $content | Set-Content -Path ".env" -Encoding UTF8
+          @"
+DATABASE_URL=postgresql://medcore:medcore_local_password@localhost:5432/medcoredb?sslmode=disable
+DIRECT_URL=postgresql://medcore:medcore_local_password@localhost:5432/medcoredb?sslmode=disable
+PGHOST=localhost
+PGUSER=medcore
+PGDATABASE=medcoredb
+PGPASSWORD=medcore_local_password
+ADMIN_KEY=dev_key_123
+NEXT_PUBLIC_ADMIN_KEY=dev_key_123
+CRON_SECRET=siaga_medika_secret_2024
+JWT_SECRET=mc_jwt_k3y!S1ag4M3d1k4_2024_secure_t0ken_s3cr3t
+NEXT_PUBLIC_APP_URL=https://simed.fallonava.my.id
+REDIS_URL=redis://localhost:6379
+HOSTNAME=0.0.0.0
+NODE_ENV=production
+PORT=3000
+"@ | Set-Content -Path ".env" -Encoding UTF8
           Write-Host ".env created."
 
-      # ── Step 3: Install Dependencies ─────────────────────────────────────────
+      # ── Step 3: Install Dependencies ────────────────────────────────────────
       - name: Install Dependencies
-        run: npm ci
+        shell: powershell
+        run: |
+          npm ci
+          Write-Host "npm ci selesai."
 
-      # ── Step 4: Database - Schema Push + Migrate ──────────────────────────────
-      # db push handles new models not yet in migration files (safe for additive changes)
+      # ── Step 4: Database Migration ──────────────────────────────────────────
       - name: Sync Database Schema
         shell: powershell
         run: |
           npx prisma migrate deploy
-          npx prisma db push --accept-data-loss
           Write-Host "Database schema synced."
 
-      # ── Step 5: Generate Prisma Client ───────────────────────────────────────
+      # ── Step 5: Generate Prisma Client ──────────────────────────────────────
       - name: Generate Prisma Client
-        run: npx prisma generate
+        shell: powershell
+        run: |
+          npx prisma generate
+          Write-Host "Prisma client generated."
 
-      # ── Step 6: Build Next.js + Compile custom server ────────────────────────
+      # ── Step 6: Build Application ────────────────────────────────────────────
       - name: Build Application
-        run: npm run build
+        shell: powershell
+        run: |
+          npm run build
+          Write-Host "Build selesai."
 
-      # ── Step 7: Copy static assets to standalone (REQUIRED for Next.js standalone) ──
+      # ── Step 7: Copy Static Assets to Standalone ─────────────────────────────
       - name: Copy Static Assets to Standalone
         shell: powershell
         run: |
-          Copy-Item -Recurse -Force ".next\static" ".next\standalone\.next\static"
-          Copy-Item -Recurse -Force "public" ".next\standalone\public"
-          Write-Host "Static assets copied to standalone."
+          Copy-Item -Recurse -Force ".next\static"  ".next\standalone\.next\static"
+          Copy-Item -Recurse -Force "public"         ".next\standalone\public"
+          Write-Host "Static assets disalin ke standalone."
 
-      # ── Step 8: Trigger Scheduled Task for Production Deployment ─────────────
-      - name: Release to Production Directory
+      # ── Step 8: Prepare Production Directory ─────────────────────────────────
+      - name: Prepare Production Directory
         shell: powershell
         run: |
-          Write-Host "Memicu rilis file ke C:\simed-production dan restart aplikasi..."
-          schtasks /run /tn "RestartAdminDashboard"
-          if ($LASTEXITCODE -eq 0) {
-            Write-Host "Deployment Pipeline berjalan di background server! Sukses."
+          $ProdDir = $env:PROD_DIR
+          if (-not (Test-Path $ProdDir)) {
+            New-Item -ItemType Directory -Path $ProdDir -Force | Out-Null
+            Write-Host "Direktori $ProdDir dibuat."
           } else {
-            Write-Host "Peringatan: Scheduled Task 'RestartAdminDashboard' gagal dipicu."
+            Write-Host "Direktori $ProdDir sudah ada."
           }
+
+      # ── Step 9: Stop PM2 Safely (BEFORE touching files) ──────────────────────
+      - name: Stop PM2 Safely
+        shell: powershell
+        run: |
+          $env:PM2_HOME = "C:\Users\ANTRIAN 1\.pm2"
+          pm2 stop all 2>$null
+          pm2 delete all 2>$null
+          # Beri waktu file locks dilepas sebelum Robocopy
+          Start-Sleep -Seconds 5
+          Write-Host "PM2 dihentikan dan semua proses dihapus."
+
+      # ── Step 10: Robocopy Build → Production ─────────────────────────────────
+      - name: Sync Files to Production Directory
+        shell: powershell
+        run: |
+          $Src     = $env:GITHUB_WORKSPACE
+          $Dst     = $env:PROD_DIR
+          # Mirror semua file, kecuali git artifacts dan source node_modules dev
+          robocopy $Src $Dst /MIR /XD .git .github /R:2 /W:2 /NP /NFL /NJH /NDL
+          # Robocopy exit code <= 7 = sukses (0=no change, 1=copied, 2=extra, 4=mismatch, etc.)
+          if ($LASTEXITCODE -le 7) {
+            Write-Host "Robocopy selesai sukses (exit code: $LASTEXITCODE)"
+          } else {
+            Write-Error "Robocopy GAGAL dengan exit code: $LASTEXITCODE"
+            exit 1
+          }
+
+      # ── Step 11: Start PM2 from Production Directory ──────────────────────────
+      - name: Start PM2 from Production
+        shell: powershell
+        run: |
+          $env:PM2_HOME = "C:\Users\ANTRIAN 1\.pm2"
+          $ProdDir = $env:PROD_DIR
+
+          Set-Location $ProdDir
+
+          # Tentukan server.js: standalone lebih ringan dari root server.js
+          $serverStandalone = "$ProdDir\.next\standalone\server.js"
+          $serverRoot       = "$ProdDir\server.js"
+
+          if (Test-Path $serverStandalone) {
+            $serverJs = $serverStandalone
+            Write-Host "Menggunakan standalone server: $serverJs"
+          } elseif (Test-Path $serverRoot) {
+            $serverJs = $serverRoot
+            Write-Host "Menggunakan root server: $serverJs"
+          } else {
+            Write-Error "server.js TIDAK DITEMUKAN di $ProdDir!"
+            exit 1
+          }
+
+          pm2 flush
+          pm2 start $serverJs --name "admin-dashboard" --update-env
+          Write-Host "admin-dashboard dimulai."
+
+          if (Test-Path "$ProdDir\wa-bot\index.js") {
+            pm2 start "$ProdDir\wa-bot\index.js" --name "wa-worker" --update-env
+            Write-Host "wa-worker dimulai."
+          } else {
+            Write-Host "Peringatan: wa-bot tidak ditemukan, skip."
+          }
+
+          pm2 save --force
+          Write-Host "State PM2 disimpan."
+
+      # ── Step 12: Verify ───────────────────────────────────────────────────────
+      - name: Verify Deployment
+        shell: powershell
+        run: |
+          $env:PM2_HOME = "C:\Users\ANTRIAN 1\.pm2"
+          Start-Sleep -Seconds 5
+          pm2 list
+          $errored = pm2 list | Select-String "errored"
+          if ($errored) {
+            Write-Error "ADA PROSES YANG ERROR! Cek pm2 logs."
+            exit 1
+          }
+          Write-Host "✅ Semua proses berjalan normal!"

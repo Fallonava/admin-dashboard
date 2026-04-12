@@ -1,45 +1,64 @@
-param(
-    [string]$ProdDir = "C:\simed-production"
-)
+# ============================================================
+# restart-production.ps1 — Emergency Restart Script
+# Jalankan LANGSUNG di server jika PM2 perlu restart manual
+# Di server: powershell -ExecutionPolicy Bypass -File "C:\simed-production\scripts\restart-production.ps1"
+# ============================================================
 
-Write-Host "Memulai deployment pipeline aman di $ProdDir..."
-
-# Set environment PM2
+$ProdDir  = "C:\simed-production"
 $env:PM2_HOME = "C:\Users\ANTRIAN 1\.pm2"
-$SourceDir = "C:\Users\ANTRIAN 1\_work\admin-dashboard\admin-dashboard"
 
-# 1. Hentikan seluruh PM2 daemon di cluster ini
-Write-Host "Menghentikan klaster PM2 lama..."
-pm2 kill
+Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor DarkGray
+Write-Host "  SIMED Restart Production Script" -ForegroundColor Cyan
+Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor DarkGray
 
-Write-Host "Membersihkan file log cache..."
+# Validasi direktori production ada
+if (-not (Test-Path $ProdDir)) {
+    Write-Host "ERROR: $ProdDir tidak ditemukan. Jalankan deploy-production.ps1 dahulu." -ForegroundColor Red
+    exit 1
+}
+
+# 1. Hentikan PM2
+Write-Host "[1/5] Menghentikan klaster PM2..." -ForegroundColor Yellow
+pm2 stop all 2>$null
+pm2 delete all 2>$null
+Start-Sleep -Seconds 3
 pm2 flush
 
-# 2. Sinkronisasi (Deployment) dari folder Github Actions -> Production
-Write-Host "Menyalin file rilis terbaru ke $ProdDir..."
-robocopy $SourceDir $ProdDir /MIR /XD .git .github
-if ($LASTEXITCODE -le 7) { 
-    Write-Host "Robocopy berhasil menyinkronkan file!" 
+# 2. Pindah ke production directory
+Set-Location $ProdDir
+
+# 3. Tentukan server.js
+$serverStandalone = "$ProdDir\.next\standalone\server.js"
+$serverRoot       = "$ProdDir\server.js"
+
+if (Test-Path $serverStandalone) {
+    $serverJs = $serverStandalone
+    Write-Host "[2/5] Server: standalone ($serverJs)" -ForegroundColor Gray
+} elseif (Test-Path $serverRoot) {
+    $serverJs = $serverRoot
+    Write-Host "[2/5] Server: root ($serverJs)" -ForegroundColor Gray
 } else {
-    Write-Host "Peringatan: Robocopy menemui kendala!"
+    Write-Host "ERROR: server.js tidak ditemukan di $ProdDir!" -ForegroundColor Red
+    Write-Host "       Jalankan deploy-production.ps1 untuk build dan deploy ulang." -ForegroundColor Yellow
+    exit 1
 }
 
-# Pindah ke direktori rilis
-cd $ProdDir
+# 4. Start admin-dashboard
+Write-Host "[3/5] Start admin-dashboard..." -ForegroundColor Yellow
+pm2 start $serverJs --name "admin-dashboard" --update-env
 
-# 2. Start PM2 Admin Dashboard (Berjalan via Build Standalone)
-Write-Host "Start Admin Dashboard (Standalone Next.js)..."
-pm2 start server.js --name "admin-dashboard" --env production
-
-# 3. Start PM2 WA Worker
-Write-Host "Start WA Worker Engine..."
+# 5. Start wa-worker
+Write-Host "[4/5] Start wa-worker..." -ForegroundColor Yellow
 if (Test-Path "$ProdDir\wa-bot\index.js") {
-    pm2 start ".\wa-bot\index.js" --name "wa-worker"
+    pm2 start "$ProdDir\wa-bot\index.js" --name "wa-worker" --update-env
 } else {
-    Write-Host "Peringatan: Modul wa-bot tidak ditemukan di production."
+    Write-Host "       wa-bot tidak ditemukan, skip." -ForegroundColor DarkYellow
 }
 
-# 4. Simpan state config PM2
+# 6. Simpan dan tampilkan status
+Write-Host "[5/5] Simpan state PM2..." -ForegroundColor Yellow
 pm2 save --force
-Write-Host "Status PM2 berhasil dikunci."
+
+Write-Host ""
+Write-Host "✅ Restart selesai! Status saat ini:" -ForegroundColor Green
 pm2 list
