@@ -108,11 +108,14 @@ jobs:
         shell: powershell
         run: |
           $env:PM2_HOME = "C:\Users\ANTRIAN 1\.pm2"
+          # Abaikan error jika proses tidak ditemukan (exit code 1)
           pm2 stop all 2>$null
           pm2 delete all 2>$null
+          if ($LASTEXITCODE -eq 1) { $global:LASTEXITCODE = 0 }
+          
           # Beri waktu file locks dilepas sebelum Robocopy
           Start-Sleep -Seconds 5
-          Write-Host "PM2 dihentikan dan semua proses dihapus."
+          Write-Host "PM2 dihentikan (atau sudah dalam keadaan berhenti)."
 
       # ── Step 10: Robocopy Build → Production ─────────────────────────────────
       - name: Sync Files to Production Directory
