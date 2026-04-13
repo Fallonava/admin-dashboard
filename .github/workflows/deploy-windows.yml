@@ -181,15 +181,16 @@ jobs:
           # Pastikan ErrorActionPreference tidak memutus alur untuk peringatan non-kritikal
           $ErrorActionPreference = "Continue"
 
-          # Jalankan via pm2.cmd eksplisit untuk bypass stderr sensitivity
-          & pm2.cmd flush 2>&1 | Out-Null
-          & pm2.cmd start ecosystem.config.js --update-env 2>&1 | Out-Null
-
+          # Jalankan via pm2.cmd eksplisit untuk melihat pesan eror aslinya
+          & pm2.cmd flush
+          & pm2.cmd start ecosystem.config.js --update-env
+          
           if ($LASTEXITCODE -ne 0) {
-            Write-Warning "PM2 (pm2.cmd) start returned non-zero code $LASTEXITCODE. Silakan cek status nanti."
+            Write-Error "PM2 (pm2.cmd) start GAGAL dengan exit code $LASTEXITCODE. Menghentikan workflow."
+            exit 1
           }
-
-          & pm2.cmd save --force 2>&1 | Out-Null
+          
+          & pm2.cmd save --force
           Write-Host "State PM2 disimpan."
 
       # ── Step 12: Verify ───────────────────────────────────────────────────────
@@ -198,13 +199,24 @@ jobs:
         run: |
           $env:PM2_HOME = "C:\Users\ANTRIAN 1\.pm2"
           Start-Sleep -Seconds 5
-          cmd.exe /c "pm2 list"
-          $errored = cmd.exe /c "pm2 list" | Select-String "errored"
+          
+          $pm2Status = cmd.exe /c "pm2 list"
+          Write-Host $pm2Status
+          
+          $errored = $pm2Status | Select-String "errored"
           if ($errored) {
             Write-Error "ADA PROSES YANG ERROR! Cek pm2 logs."
             exit 1
           }
-          Write-Host "✅ Semua proses berjalan normal!"
+          
+          # HARSH CHECK: Pastikan admin-dashboard benar-benar masuk daftar
+          $adminExists = $pm2Status | Select-String "admin-dashboard"
+          if (-not $adminExists) {
+            Write-Error "SILENT FAILURE DETECTED: admin-dashboard tidak ditemukan di PM2!"
+            exit 1
+          }
+          
+          Write-Host "✅ Semua proses berjalan normal dan terdaftar di PM2!"
           exit 0
 
       # ── Step 13: Diagnostic on Failure ────────────────────────────────────────
