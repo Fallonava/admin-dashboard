@@ -3,7 +3,7 @@ module.exports = {
     {
       name: 'admin-dashboard',
       script: 'server.js',
-      cwd: 'C:/simed-production',
+      cwd: 'C:\\simed-production',
       instances: 2,                   // Reduced from 'max' to stabilize 8GB RAM usage
       exec_mode: 'cluster',           // Enable load balancing layer
       autorestart: true,
@@ -34,8 +34,8 @@ module.exports = {
       },
 
       // ── Logging Config ─────────────────────────────────────────────────────
-      error_file: 'C:/simed-production/logs/admin-error.log',
-      out_file: 'C:/simed-production/logs/admin-out.log',
+      error_file: 'C:\\simed-production\\logs\\admin-error.log',
+      out_file: 'C:\\simed-production\\logs\\admin-out.log',
       log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
       merge_logs: true,               // Aggregate all cluster worker logs into one file
       time: true,                     // Prefix logs with standardized timestamp
@@ -53,7 +53,7 @@ module.exports = {
     {
       name: 'wa-worker',
       script: './wa-bot/index.js',
-      cwd: 'C:/simed-production',
+      cwd: 'C:\\simed-production',
       instances: 1,                   // MUST BE 1 (Singleton) to prevent headless chromium wars
       exec_mode: 'fork',              // MUST BE fork mode for headless chromium stability
       autorestart: true,
@@ -63,8 +63,8 @@ module.exports = {
         NODE_ENV: 'production',
         TZ: 'Asia/Jakarta',
       },
-      error_file: 'C:/simed-production/logs/wa-worker-error.log',
-      out_file: 'C:/simed-production/logs/wa-worker-out.log',
+      error_file: 'C:\\simed-production\\logs\\wa-worker-error.log',
+      out_file: 'C:\\simed-production\\logs\\wa-worker-out.log',
       log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
       merge_logs: true,
       time: true,

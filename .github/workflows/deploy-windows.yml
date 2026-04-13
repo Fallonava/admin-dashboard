@@ -184,8 +184,15 @@ jobs:
           }
 
           Write-Host "Menjalankan aplikasi menggunakan ecosystem.config.js..."
-          pm2 flush
+          # Force PowerShell to ignore DeprecationWarnings on stderr by continuing on error
+          $ErrorActionPreference = "Continue"
+          
+          pm2 flush 2>$null
           pm2 start ecosystem.config.js --update-env
+          
+          if ($LASTEXITCODE -ne 0) {
+            Write-Warning "PM2 start returned non-zero, checking if apps are online anyway..."
+          }
           
           pm2 save --force
           Write-Host "State PM2 disimpan."
@@ -204,3 +211,27 @@ jobs:
           }
           Write-Host "✅ Semua proses berjalan normal!"
           exit 0
+
+      # ── Step 13: Diagnostic on Failure ────────────────────────────────────────
+      - name: Diagnostic on Failure
+        if: failure()
+        shell: powershell
+        run: |
+          $env:PM2_HOME = "C:\Users\ANTRIAN 1\.pm2"
+          $ProdDir = $env:PROD_DIR
+          Write-Host "❌ Deployment GAGAL! Mengambil log eror..."
+          
+          Write-Host "--- [PM2 STATUS] ---"
+          pm2 list
+          
+          Write-Host "--- [ADMIN ERROR LOG] ---"
+          if (Test-Path "$ProdDir\logs\admin-error.log") {
+            Get-Content "$ProdDir\logs\admin-error.log" -Tail 50
+          } else {
+             Write-Host "Log admin-error.log tidak ditemukan."
+          }
+
+          Write-Host "--- [WA-WORKER ERROR LOG] ---"
+          if (Test-Path "$ProdDir\logs\wa-worker-error.log") {
+            Get-Content "$ProdDir\logs\wa-worker-error.log" -Tail 50
+          }
