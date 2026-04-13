@@ -114,8 +114,8 @@ jobs:
 
           # Gunakan try/catch agar NativeCommandError dari PowerShell tidak menggagalkan workflow
           try {
-            & pm2 stop all 2>$null
-            & pm2 delete all 2>$null
+            cmd.exe /c "pm2 stop all" 2>$null
+            cmd.exe /c "pm2 delete all" 2>$null
             
             # Paksa matikan sisa chrome dan node agar RAM bersih (Zombie killer)
             taskkill /F /IM chrome.exe /T 2>$null
@@ -156,13 +156,13 @@ jobs:
           Write-Host "Mengonfigurasi pm2-logrotate..."
           
           # Install bila belum ada
-          pm2 install pm2-logrotate 2>$null
+          cmd.exe /c "pm2 install pm2-logrotate" 2>$null
           
           # Set standar industri untuk Windows Stability
-          pm2 set pm2-logrotate:max_size 10M      # Pecah log setiap 10MB
-          pm2 set pm2-logrotate:retain 7          # Simpan history 7 hari saja
-          pm2 set pm2-logrotate:compress true     # Kompres log lama (Gzip)
-          pm2 set pm2-logrotate:workerInterval 60 # Cek setiap 60 detik
+          cmd.exe /c "pm2 set pm2-logrotate:max_size 10M"
+          cmd.exe /c "pm2 set pm2-logrotate:retain 7"
+          cmd.exe /c "pm2 set pm2-logrotate:compress true"
+          cmd.exe /c "pm2 set pm2-logrotate:workerInterval 60"
           
           Write-Host "Logrotate dikonfigurasi."
 
@@ -189,14 +189,14 @@ jobs:
           $ErrorActionPreference = "Continue"
           
           pm2 flush 2>$null
-          # Gunakan cmd.exe agar PowerShell tidak mengubah stderr Node.js (DeprecationWarning) menjadi exception fatal
+          # Jalankan via cmd.exe untuk bypass stderr/DeprecationWarning hang
           cmd.exe /c "pm2 start ecosystem.config.js --update-env"
           
           if ($LASTEXITCODE -ne 0) {
             Write-Warning "PM2 start returned non-zero, checking if apps are online anyway..."
           }
           
-          pm2 save --force
+          cmd.exe /c "pm2 save --force"
           Write-Host "State PM2 disimpan."
 
       # ── Step 12: Verify ───────────────────────────────────────────────────────
@@ -205,8 +205,8 @@ jobs:
         run: |
           $env:PM2_HOME = "C:\Users\ANTRIAN 1\.pm2"
           Start-Sleep -Seconds 5
-          pm2 list
-          $errored = pm2 list | Select-String "errored"
+          cmd.exe /c "pm2 list"
+          $errored = cmd.exe /c "pm2 list" | Select-String "errored"
           if ($errored) {
             Write-Error "ADA PROSES YANG ERROR! Cek pm2 logs."
             exit 1
@@ -224,7 +224,7 @@ jobs:
           Write-Host "❌ Deployment GAGAL! Mengambil log eror..."
           
           Write-Host "--- [PM2 STATUS] ---"
-          pm2 list
+          cmd.exe /c "pm2 list"
           
           Write-Host "--- [ADMIN ERROR LOG] ---"
           if (Test-Path "$ProdDir\logs\admin-error.log") {
