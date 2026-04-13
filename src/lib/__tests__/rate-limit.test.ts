@@ -1,11 +1,7 @@
 /**
  * Rate Limiter Tests
  *
- * Tests the in-memory fallback rate limiter (Redis not available in test).
- */
-
-// Ensure no REDIS_URL so we use the in-memory fallback
-delete process.env.REDIS_URL;
+// Test the in-memory rate limiter logic
 
 import { checkRateLimit } from '@/lib/rate-limit';
 

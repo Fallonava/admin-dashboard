@@ -79,6 +79,8 @@ jobs:
       # ── Step 6: Build Application ────────────────────────────────────────────
       - name: Build Application
         shell: powershell
+        env:
+          NODE_OPTIONS: "--max-old-space-size=2048" # Cegah build memakan seluruh RAM server
         run: |
           npm run build
           Write-Host "Build selesai."
@@ -113,6 +115,10 @@ jobs:
           try {
             & pm2 stop all 2>$null
             & pm2 delete all 2>$null
+            
+            # Paksa matikan sisa chrome dan node agar RAM bersih (Zombie killer)
+            taskkill /F /IM chrome.exe /T 2>$null
+            taskkill /F /IM node.exe /T 2>$null
           } catch {
             # Abaikan error jika PM2 belum ada proses yang berjalan
           }
@@ -141,36 +147,46 @@ jobs:
             exit 1
           }
 
+      # ── Step 10.5: Global PM2 Optimization ──────────────────────────────────
+      - name: Optimize Global PM2 (Logrotate)
+        shell: powershell
+        run: |
+          $env:PM2_HOME = "C:\Users\ANTRIAN 1\.pm2"
+          Write-Host "Mengonfigurasi pm2-logrotate..."
+          
+          # Install bila belum ada
+          pm2 install pm2-logrotate 2>$null
+          
+          # Set standar industri untuk Windows Stability
+          pm2 set pm2-logrotate:max_size 10M      # Pecah log setiap 10MB
+          pm2 set pm2-logrotate:retain 7          # Simpan history 7 hari saja
+          pm2 set pm2-logrotate:compress true     # Kompres log lama (Gzip)
+          pm2 set pm2-logrotate:workerInterval 60 # Cek setiap 60 detik
+          
+          Write-Host "Logrotate dikonfigurasi."
+
       # ── Step 11: Start PM2 from Production Directory ──────────────────────────
       - name: Start PM2 from Production
         shell: powershell
         run: |
           $env:PM2_HOME = "C:\Users\ANTRIAN 1\.pm2"
           $ProdDir = $env:PROD_DIR
-
           Set-Location $ProdDir
 
-          # PENTING: Gunakan server.js di ROOT (hasil compile server.ts)
-          # JANGAN gunakan .next/standalone/server.js — itu tidak punya Socket.IO!
-          $serverJs = "$ProdDir\server.js"
+          # Pastikan folder log ada agar PM2 tidak error saat menulis log
+          if (-not (Test-Path "$ProdDir\logs")) {
+            New-Item -ItemType Directory -Path "$ProdDir\logs" -Force | Out-Null
+          }
 
-          if (-not (Test-Path $serverJs)) {
-            Write-Error "server.js tidak ditemukan di $ProdDir! Pastikan 'npm run build' berhasil (tsc server.ts)." 
+          if (-not (Test-Path "ecosystem.config.js")) {
+            Write-Error "ecosystem.config.js tidak ditemukan di $ProdDir!"
             exit 1
           }
 
-          Write-Host "Menggunakan custom server: $serverJs (Socket.IO enabled)"
+          Write-Host "Menjalankan aplikasi menggunakan ecosystem.config.js..."
           pm2 flush
-          pm2 start $serverJs --name "admin-dashboard" --update-env
-          Write-Host "admin-dashboard dimulai."
-
-          if (Test-Path "$ProdDir\wa-bot\index.js") {
-            pm2 start "$ProdDir\wa-bot\index.js" --name "wa-worker" --update-env
-            Write-Host "wa-worker dimulai."
-          } else {
-            Write-Host "Peringatan: wa-bot tidak ditemukan, skip."
-          }
-
+          pm2 start ecosystem.config.js --update-env
+          
           pm2 save --force
           Write-Host "State PM2 disimpan."
 

@@ -282,16 +282,16 @@ export function checkPermission(headers: Headers, resource: string, action: 'rea
   }
 }
 
-// ─── Membangun Sesi dari DB User (dengan Redis RBAC cache) ───
+// ─── Membangun Sesi dari DB User (dengan In-Memory RBAC cache) ───
 
 /**
  * Mengumpulkan data peran (roles) dan izin (permissions) yang dimiliki user ID ini, 
- * dengan pendekatan Redis RBAC cache untuk optimalisasi (menghindari query ulang).
+ * dengan pendekatan In-Memory RBAC cache untuk optimalisasi (menghindari query ulang).
  * @param userId UUID User.
  * @returns Payload lenggap beserta array permissions.
  */
 export async function buildSessionPayload(userId: string): Promise<SessionPayload | null> {
-  // 1. Try Redis cache for permissions (avoids DB lookup)
+  // 1. Try In-Memory cache for permissions (avoids DB lookup)
   const cached = await getCachedPermissions(userId);
   if (cached) {
     // We still need minimal user info — fetch from DB but skip permission join

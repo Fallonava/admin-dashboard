@@ -44,4 +44,4 @@ pm2 save
 echo ""
 echo "✅ Update selesai!"
 echo "📈 Cek status: pm2 status"
-echo "📜 Cek logs: pm2 logs medcore-admin --lines 50"
+echo "📜 Cek logs: pm2 logs admin-dashboard --lines 50"

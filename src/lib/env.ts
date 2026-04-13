@@ -18,13 +18,6 @@ const serverSchema = z.object({
     .string()
     .min(8, 'ADMIN_KEY must be at least 8 characters long'),
 
-  // ── Redis (optional — empty string or missing = disabled) ──
-  REDIS_URL: z
-    .preprocess(
-      (v) => (v === '' || v === undefined ? undefined : v),
-      z.string().url('REDIS_URL must be a valid Redis URL (e.g. rediss://)').optional()
-    ),
-
   // ── Misc ──
   NODE_ENV: z
     .enum(['development', 'production', 'test'])

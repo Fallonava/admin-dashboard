@@ -4,7 +4,7 @@ module.exports = {
       name: 'admin-dashboard',
       script: 'server.js',
       cwd: 'C:/simed-production',
-      instances: 'max',               // Utilize all available CPU cores
+      instances: 2,                   // Reduced from 'max' to stabilize 8GB RAM usage
       exec_mode: 'cluster',           // Enable load balancing layer
       autorestart: true,
       watch: false,

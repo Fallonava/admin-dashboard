@@ -22,8 +22,8 @@ const waClient = new Client({
       '--disable-accelerated-2d-canvas',
       '--no-first-run',
       '--no-zygote',
-      '--single-process',
-      '--disable-gpu'
+      '--disable-gpu',
+      '--js-flags="--max-old-space-size=512"' // Limit internal browser RAM
     ],
   }
 });
@@ -100,6 +100,14 @@ async function initDB() {
                 }
             }
         }, 2000);
+        
+        // --- 6-Hour Self-Heal Restart ---
+        // Browser sessions can leak over time. Auto-restart daily or every 6h cleans memory.
+        const SIX_HOURS = 6 * 60 * 60 * 1000;
+        setTimeout(() => {
+            console.log("🕒 [Self-Heal] Scheduled restart to clear browser memory leaks...");
+            process.exit(0); // Let PM2 restart the fork cleanly
+        }, SIX_HOURS);
 
     } catch (err) {
         console.error("Gagal inisialisasi infra:", err);
@@ -204,5 +212,22 @@ async function processQueue() {
 }
 
 initDB();
+
+// --- Graceful Shutdown ---
+// Memastikan Chromium tertutup bersih saat PM2 mematikan proses ini
+const handleLogout = async () => {
+    console.log("🛑 Menutup Bot WhatsApp secara bersih...");
+    isWaReady = false;
+    try {
+        await waClient.destroy();
+        console.log("✅ Browser Chromium berhasil ditutup.");
+    } catch (e) {
+        console.error("Gagal menutup browser:", e.message);
+    }
+    process.exit(0);
+};
+
+process.on("SIGINT", handleLogout);
+process.on("SIGTERM", handleLogout);
 
 

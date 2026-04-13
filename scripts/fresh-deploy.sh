@@ -33,11 +33,11 @@ fi
 echo "🛑 Menghentikan semua proses PM2..."
 pm2 delete all 2>/dev/null || true
 
-# 3. Pull kode terbaru dari GitHub (Master)
-if [ -d ".git" ]; then
-    echo "📥 Menarik kode terbaru dari GitHub..."
-    git fetch origin master
-    git reset --hard origin/master
+    # Deteksi branch saat ini (default ke beta jika tidak terdeteksi)
+    CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "beta")
+    echo "📥 Menarik kode terbaru dari GitHub (Branch: $CURRENT_BRANCH)..."
+    git fetch origin "$CURRENT_BRANCH"
+    git reset --hard "origin/$CURRENT_BRANCH"
     git clean -fd  # hapus file "sampah"
     
     # Restore .env

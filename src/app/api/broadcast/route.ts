@@ -40,8 +40,7 @@ export async function POST(request: Request) {
       })),
     });
 
-    // NOTE: Bot WA sekarang menggunakan polling berkala ke PostgreSQL, 
-    // jadi kita tidak mengirimkan trigger via Redis lagi.
+    // Bot WA akan memproses antrean ini secara otomatis melalui polling DB.
     
     return NextResponse.json({ success: true, count: inserted.count });
   } catch (error: any) {
