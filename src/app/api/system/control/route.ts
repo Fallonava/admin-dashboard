@@ -14,7 +14,8 @@ export async function POST(req: NextRequest) {
 
     // 1. Validasi Token (Hard Protection)
     if (!systemToken || authHeader !== systemToken) {
-        console.warn(`[SECURITY] Percobaan akses ilegal dari IP: ${req.ip || 'unknown'}`);
+        const clientIp = req.headers.get("x-forwarded-for") || "unknown";
+        console.warn(`[SECURITY] Percobaan akses ilegal dari IP: ${clientIp}`);
         return NextResponse.json({ error: "Access Denied: Invalid Agent Token" }, { status: 401 });
     }
 
