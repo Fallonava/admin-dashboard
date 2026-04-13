@@ -50,6 +50,7 @@ jobs:
             'HOSTNAME=0.0.0.0',
             'NODE_ENV=production',
             'PORT=3000',
+            'AGENT_EXEC_TOKEN=ac-7928-df91-4e8a-8db4-314a4d467736-mc-secure-gate-2026-gravity',
             '# Redis & MongoDB (LEGACY) - Removed to prevent crashes'
           )
           $lines | Set-Content -Path ".env" -Encoding UTF8
