@@ -17,6 +17,7 @@ jobs:
     env:
       PM2_HOME: 'C:\Users\ANTRIAN 1\.pm2'
       PROD_DIR: 'C:\simed-production'
+      NODE_NO_WARNINGS: 1
 
     steps:
       # ── Step 1: Checkout ─────────────────────────────────────────────────────
@@ -150,21 +151,21 @@ jobs:
 
       # ── Step 10.5: Global PM2 Optimization ──────────────────────────────────
       - name: Optimize Global PM2 (Logrotate)
-        shell: powershell
+        shell: cmd
         run: |
-          $env:PM2_HOME = "C:\Users\ANTRIAN 1\.pm2"
-          Write-Host "Mengonfigurasi pm2-logrotate..."
+          set PM2_HOME=C:\Users\ANTRIAN 1\.pm2
+          echo Mengonfigurasi pm2-logrotate...
           
-          # Install bila belum ada
-          cmd.exe /c "pm2 install pm2-logrotate" 2>$null
+          :: Install bila belum ada
+          call pm2.cmd install pm2-logrotate
           
-          # Set standar industri untuk Windows Stability
-          cmd.exe /c "pm2 set pm2-logrotate:max_size 10M"
-          cmd.exe /c "pm2 set pm2-logrotate:retain 7"
-          cmd.exe /c "pm2 set pm2-logrotate:compress true"
-          cmd.exe /c "pm2 set pm2-logrotate:workerInterval 60"
+          :: Set standar industri untuk Windows Stability
+          call pm2.cmd set pm2-logrotate:max_size 10M
+          call pm2.cmd set pm2-logrotate:retain 7
+          call pm2.cmd set pm2-logrotate:compress true
+          call pm2.cmd set pm2-logrotate:workerInterval 60
           
-          Write-Host "Logrotate dikonfigurasi."
+          echo Logrotate dikonfigurasi.
 
       # ── Step 11: Start PM2 from Production Directory ──────────────────────────
       - name: Start PM2 from Production
@@ -185,18 +186,18 @@ jobs:
           }
 
           Write-Host "Menjalankan aplikasi menggunakan ecosystem.config.js..."
-          # Force PowerShell to ignore DeprecationWarnings on stderr by continuing on error
+          # Pastikan ErrorActionPreference tidak memutus alur untuk peringatan non-kritikal
           $ErrorActionPreference = "Continue"
           
-          pm2 flush 2>$null
-          # Jalankan via cmd.exe untuk bypass stderr/DeprecationWarning hang
-          cmd.exe /c "pm2 start ecosystem.config.js --update-env"
+          # Jalankan via pm2.cmd eksplisit untuk bypass stderr sensitivity
+          & pm2.cmd flush 2>&1 | Out-Null
+          & pm2.cmd start ecosystem.config.js --update-env 2>&1 | Out-Null
           
           if ($LASTEXITCODE -ne 0) {
-            Write-Warning "PM2 start returned non-zero, checking if apps are online anyway..."
+            Write-Warning "PM2 (pm2.cmd) start returned non-zero code $LASTEXITCODE. Silakan cek status nanti."
           }
           
-          cmd.exe /c "pm2 save --force"
+          & pm2.cmd save --force 2>&1 | Out-Null
           Write-Host "State PM2 disimpan."
 
       # ── Step 12: Verify ───────────────────────────────────────────────────────
