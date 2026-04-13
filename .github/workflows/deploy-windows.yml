@@ -87,14 +87,6 @@ jobs:
           npm run build
           Write-Host "Build selesai."
 
-      # ── Step 7: Copy Static Assets to Standalone ─────────────────────────────
-      - name: Copy Static Assets to Standalone
-        shell: powershell
-        run: |
-          Copy-Item -Recurse -Force ".next\static"  ".next\standalone\.next\static"
-          Copy-Item -Recurse -Force "public"        ".next\standalone\public"
-          Write-Host "Static assets disalin ke standalone."
-
       # ── Step 8: Prepare Production Directory ─────────────────────────────────
       - name: Prepare Production Directory
         shell: powershell
@@ -155,16 +147,16 @@ jobs:
         run: |
           set PM2_HOME=C:\Users\ANTRIAN 1\.pm2
           echo Mengonfigurasi pm2-logrotate...
-          
+
           :: Install bila belum ada
           call pm2.cmd install pm2-logrotate
-          
+
           :: Set standar industri untuk Windows Stability
           call pm2.cmd set pm2-logrotate:max_size 10M
           call pm2.cmd set pm2-logrotate:retain 7
           call pm2.cmd set pm2-logrotate:compress true
           call pm2.cmd set pm2-logrotate:workerInterval 60
-          
+
           echo Logrotate dikonfigurasi.
 
       # ── Step 11: Start PM2 from Production Directory ──────────────────────────
@@ -188,15 +180,15 @@ jobs:
           Write-Host "Menjalankan aplikasi menggunakan ecosystem.config.js..."
           # Pastikan ErrorActionPreference tidak memutus alur untuk peringatan non-kritikal
           $ErrorActionPreference = "Continue"
-          
+
           # Jalankan via pm2.cmd eksplisit untuk bypass stderr sensitivity
           & pm2.cmd flush 2>&1 | Out-Null
           & pm2.cmd start ecosystem.config.js --update-env 2>&1 | Out-Null
-          
+
           if ($LASTEXITCODE -ne 0) {
             Write-Warning "PM2 (pm2.cmd) start returned non-zero code $LASTEXITCODE. Silakan cek status nanti."
           }
-          
+
           & pm2.cmd save --force 2>&1 | Out-Null
           Write-Host "State PM2 disimpan."
 
@@ -223,10 +215,10 @@ jobs:
           $env:PM2_HOME = "C:\Users\ANTRIAN 1\.pm2"
           $ProdDir = $env:PROD_DIR
           Write-Host "❌ Deployment GAGAL! Mengambil log eror..."
-          
+
           Write-Host "--- [PM2 STATUS] ---"
           cmd.exe /c "pm2 list"
-          
+
           Write-Host "--- [ADMIN ERROR LOG] ---"
           if (Test-Path "$ProdDir\logs\admin-error.log") {
             Get-Content "$ProdDir\logs\admin-error.log" -Tail 50

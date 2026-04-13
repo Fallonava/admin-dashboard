@@ -9,7 +9,6 @@ const withSerwist = withSerwistInit({
 });
 
 const nextConfig: NextConfig = {
-  output: "standalone",
   // Opt-out of anonymous telemetry
   env: {
     NEXT_TELEMETRY_DISABLED: "1",
