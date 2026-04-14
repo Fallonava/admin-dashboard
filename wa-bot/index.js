@@ -120,6 +120,16 @@ const randomDelay = (min, max) => Math.floor(Math.random() * (max - min + 1) + m
 
 async function processQueue() {
   if (isProcessingQueue) return;
+
+  // ─── [1] CEK JAM OPERASI (Anti-Ban: tidak mengirim tengah malam) ───────────
+  const now = new Date();
+  // Konversi ke WIB (UTC+7)
+  const wibHour = (now.getUTCHours() + 7) % 24;
+  if (wibHour < 7 || wibHour >= 20) {
+    console.log(`[FAKT-Bot] Di luar jam operasi (${wibHour}:xx WIB). Bot tidak akan mengirim. Menunggu...`);
+    return;
+  }
+
   isProcessingQueue = true;
 
   try {
@@ -129,18 +139,17 @@ async function processQueue() {
         return;
     }
     
-    console.log(`Menemukan ${pendingCount} antrean. Memulai proses broadcast...`);
+    console.log(`[FAKT-Bot] Menemukan ${pendingCount} antrean. Jam operasi aktif. Memulai broadcast...`);
 
     let sentInBatch = 0;
 
     while (true) {
-      // Cari data terlama dengan transaksi update jika ada
       const topPending = await prisma.broadcastQueue.findFirst({
         where: { status: "PENDING" },
         orderBy: { createdAt: "asc" },
       });
 
-      if (!topPending) break; // Tidak ada lagi yang PENDING
+      if (!topPending) break;
 
       const queue = await prisma.broadcastQueue.update({
         where: { id: topPending.id },
@@ -148,23 +157,32 @@ async function processQueue() {
       });
 
       try {
-         // Format nomor jadi jid
-         const numberId = `${queue.whatsappNumber}@c.us`; 
+         const numberId = `${queue.whatsappNumber}@c.us`;
 
-         // Check isRegisteredUser (hanya kalau ragu, untuk meminimalisir banned, ditiadakan gapapa tapi bagus)
-         console.log(`[SIMULASI] Mengetik ke ${queue.whatsappNumber}...`);
-         
-         const chat = await waClient.getChatById(numberId).catch(() => null);
-         if(chat) {
-             await chat.sendStateTyping();
+         // ─── [2] VALIDASI NOMOR WA AKTIF (Anti-Ban: tidak kirim ke nomor invalid) ─
+         console.log(`[FAKT-Bot] Memvalidasi nomor ${queue.whatsappNumber}...`);
+         const isRegistered = await waClient.isRegisteredUser(numberId).catch(() => false);
+         if (!isRegistered) {
+           console.warn(`[FAKT-Bot] ⚠️ Nomor ${queue.whatsappNumber} BUKAN pengguna WhatsApp aktif. Dilewati.`);
+           await prisma.broadcastQueue.update({
+               where: { id: queue.id },
+               data: { status: "FAILED", log: "Nomor tidak terdaftar di WhatsApp." }
+           });
+           // Jeda singkat setelah skip agar tidak terlihat bot
+           await sleep(randomDelay(2000, 4000));
+           continue;
          }
+
+         // Simulasi mengetik (humanisasi)
+         const chat = await waClient.getChatById(numberId).catch(() => null);
+         if (chat) await chat.sendStateTyping();
          
-         // Random delay simulasi orang ngetik (realistis 3 - 6 detik)
-         await sleep(randomDelay(3000, 6000));
+         // Jeda simulasi manusia mengetik
+         await sleep(randomDelay(4000, 8000));
          
-         // Inject zero-width space acak di akhir pesan (Anti-hash Meta filter)
+         // Inject zero-width space untuk variasi hash konten (Anti-filter Meta)
          const zeroWidthChars = ['\u200B', '\u200C', '\u200D', '\uFEFF'];
-         const randomHash = zeroWidthChars[Math.floor(Math.random() * zeroWidthChars.length)].repeat(Math.floor(Math.random() * 3));
+         const randomHash = zeroWidthChars[Math.floor(Math.random() * zeroWidthChars.length)].repeat(Math.floor(Math.random() * 3) + 1);
          
          await waClient.sendMessage(numberId, queue.messageText + randomHash);
 
@@ -172,24 +190,32 @@ async function processQueue() {
              where: { id: queue.id },
              data: { status: "SENT" }
          });
-         console.log(`✅ Sukses mengirim ke ${queue.whatsappNumber}`);
+         console.log(`✅ [FAKT-Bot] Pesan terkirim ke ${queue.whatsappNumber}`);
 
          sentInBatch++;
          
-         // Batch Pause: Tiap 40 pesan, istirahat 5 menit 
-         if (sentInBatch >= 40) {
-             console.log("⚠️ Istirahat Batch (Anti-Ban)... Menunggu 5 menit.");
-             await sleep(5 * 60 * 1000); // 5 menit
+         // ─── [3] THROTTLING CERDAS (Batas 30/batch, istirahat 8 menit) ──────────
+         if (sentInBatch >= 30) {
+             console.log("⚠️ [FAKT-Bot] Batas batch tercapai (30 pesan). Istirahat 8 menit (Anti-Ban)...");
+             await sleep(8 * 60 * 1000); // 8 menit
              sentInBatch = 0;
+
+             // Periksa jam operasi lagi setelah istirahat
+             const nowCheck = new Date();
+             const wibHourCheck = (nowCheck.getUTCHours() + 7) % 24;
+             if (wibHourCheck < 7 || wibHourCheck >= 20) {
+               console.log("[FAKT-Bot] Jam operasi habis saat istirahat. Menghentikan batch.");
+               break;
+             }
          } else {
-             // Jeda antar pesan biasa: 10 ~ 20 detik
-             const delayTime = randomDelay(10000, 20000);
-             console.log(`Menunggu ${delayTime/1000} detik untuk pesan berikutnya...`);
+             // Jeda antar pesan: 12–25 detik (lebih acak dari sebelumnya)
+             const delayTime = randomDelay(12000, 25000);
+             console.log(`[FAKT-Bot] Jeda ${(delayTime/1000).toFixed(1)} detik sebelum pesan berikutnya...`);
              await sleep(delayTime);
          }
 
       } catch (err) {
-         console.error(`❌ Gagal mengirim ke ${queue.whatsappNumber}:`, err.message);
+         console.error(`❌ [FAKT-Bot] Gagal mengirim ke ${queue.whatsappNumber}:`, err.message);
          await prisma.broadcastQueue.update({
              where: { id: queue.id },
              data: { status: "FAILED", log: err.message }
@@ -197,13 +223,12 @@ async function processQueue() {
       }
     }
 
-    console.log("✅ Seluruh antrean batch selesai.");
+    console.log("[FAKT-Bot] ✅ Seluruh batch selesai diproses.");
 
   } catch (error) {
-    console.error("Fatal error saat processQueue:", error);
+    console.error("[FAKT-Bot] Fatal error processQueue:", error);
   } finally {
     isProcessingQueue = false;
-    // Check lagikali aja ada yang masuk pas lagi ngerjain
     const remaining = await prisma.broadcastQueue.count({ where: { status: "PENDING" } });
     if (remaining > 0 && isWaReady) {
         processQueue();

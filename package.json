@@ -10,6 +10,7 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "automate": "ts-node src/scripts/run-automation.ts",
+    "bot": "node wa-bot/index.js",
     "postinstall": "prisma generate"
   },
   "dependencies": {

@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 import * as Dialog from '@radix-ui/react-dialog';
 
 interface QueueItem {
-  _id: string;
+  id: string;
   patientName: string;
   whatsappNumber: string;
   doctorName?: string;
@@ -88,30 +88,99 @@ export default function BroadcastPage() {
     await workbook.xlsx.load(await file.arrayBuffer());
     const worksheet = workbook.worksheets[0];
     if (!worksheet) return;
-    const colMap: Record<string, number> = {};
-    worksheet.getRow(1).eachCell((cell: any, col: number) => {
-      const h = String(cell.value ?? '').trim().toLowerCase();
-      if (h) colMap[h] = col;
-    });
+
+    // --- LOGIKA HEADER ROBUST ---
+    let headerRowNumber = 1;
+    let colMap: Record<string, number> = {};
+
+    // Cari baris header (mungkin bukan di baris 1 jika ada judul laporan diatasnya)
+    for (let r = 1; r <= 10; r++) {
+      const row = worksheet.getRow(r);
+      const tempMap: Record<string, number> = {};
+      let foundKeywords = 0;
+      
+      row.eachCell((cell: any, col: number) => {
+        // Bersihkan header secara agresif (kecilkan, hapus spasi berlebih)
+        const h = String(cell.value ?? '').trim().toLowerCase().replace(/\s+/g, ' ');
+        if (h) {
+          tempMap[h] = col;
+          // Cek kalau baris ini sepertinya baris header (ada kata kunci 'nama' atau 'hp' atau 'booking')
+          if (h.includes('nama') || h.includes('hp') || h.includes('registrasi') || h.includes('rekam medis')) {
+            foundKeywords++;
+          }
+        }
+      });
+
+      if (foundKeywords >= 2) {
+        headerRowNumber = r;
+        colMap = tempMap;
+        console.log(`[FAKT-Bot] Header ditemukan di baris ${r}:`, Object.keys(colMap));
+        break;
+      }
+    }
+
     const getCell = (row: any, keyword: string): string => {
-      const key = Object.keys(colMap).find(k => k.includes(keyword));
+      const q = keyword.toLowerCase().trim();
+      // 1. Exact match
+      let key = Object.keys(colMap).find(k => k === q);
+      // 2. Includes match
+      if (!key) key = Object.keys(colMap).find(k => k.includes(q));
+      
       if (!key) return '';
       const val = row.getCell(colMap[key]).value;
       if (val === null || val === undefined) return '';
       if (typeof val === 'object' && 'text' in (val as any)) return String((val as any).text);
       return String(val);
     };
+
     const rows: any[] = [];
     worksheet.eachRow((row: any, rowNumber: number) => {
-      if (rowNumber === 1) return;
-      let hp   = getCell(row, 'no') || getCell(row, 'hp') || getCell(row, 'telp');
-      let nama = getCell(row, 'nama') || getCell(row, 'pasien');
-      let dok  = getCell(row, 'dokter') || getCell(row, 'petugas');
-      let poli = getCell(row, 'poli') || getCell(row, 'klinik');
-      hp = hp.replace(/[^0-9]/g, '');
-      if (hp.startsWith('0')) hp = '62' + hp.substring(1);
-      if (hp && hp.length > 8 && nama) rows.push({ whatsappNumber: hp, patientName: nama, doctorName: dok, clinicName: poli });
+      if (rowNumber <= headerRowNumber) return; // Lewati header dan baris di atasnya
+      
+      const nama = getCell(row, 'nama rekam medis') || getCell(row, 'nama') || getCell(row, 'pasien');
+      const dok  = getCell(row, 'dokter') || getCell(row, 'petugas');
+      const poli = getCell(row, 'poliklinik') || getCell(row, 'poli');
+
+      // Ambil dua potensi nomor HP
+      const rawHp1 = getCell(row, 'no hp rekam medis');
+      const rawHp2 = getCell(row, 'no hp');
+
+      const normalizePhone = (num: string) => {
+        if (!num) return null;
+        // Hapus semua karakter non-digit (spasi, strip, dsb)
+        let clean = num.replace(/[^0-9]/g, '');
+        
+        // Kasus 1: Mulai dengan '0' (0812...) -> Ubah ke 62812...
+        if (clean.startsWith('0')) {
+          clean = '62' + clean.substring(1);
+        } 
+        // Kasus 2: Mulai dengan '8' (812... - Kasus User) -> Ubah ke 62812...
+        else if (clean.startsWith('8')) {
+          clean = '62' + clean;
+        }
+
+        // Pastikan hasil akhirnya valid (minimal 10 digit dan mulai dengan 62)
+        if (clean.length >= 10 && clean.startsWith('62')) {
+          return clean;
+        }
+        return null;
+      };
+
+      const validHp1 = normalizePhone(rawHp1);
+      const validHp2 = normalizePhone(rawHp2);
+
+      const uniqueNumbers = new Set<string>();
+      if (validHp1) uniqueNumbers.add(validHp1);
+      if (validHp2) uniqueNumbers.add(validHp2);
+
+      uniqueNumbers.forEach((hp) => {
+        if (nama && hp) {
+          rows.push({ whatsappNumber: hp, patientName: nama, doctorName: dok, clinicName: poli });
+        }
+      });
     });
+
+    console.log(`[FAKT-Bot] Berhasil memproses ${rows.length} baris pesan.`);
     setParsedRows(rows);
   };
 
@@ -467,7 +536,7 @@ export default function BroadcastPage() {
               {filteredQueues.map(q => {
                 const cfg = STATUS_CONFIG[q.status];
                 return (
-                  <div key={q._id} className="grid grid-cols-[130px_1fr_150px_1fr_110px] gap-x-4 px-6 py-3.5 items-center hover:bg-slate-50/60 transition-colors">
+                  <div key={q.id} className="grid grid-cols-[130px_1fr_150px_1fr_110px] gap-x-4 px-6 py-3.5 items-center hover:bg-slate-50/60 transition-colors">
                     <div>
                       <span className={cn("inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-black border", cfg.color, cfg.bg, cfg.border)}>
                         <span className={cn("w-1.5 h-1.5 rounded-full flex-shrink-0", cfg.dot)} />
