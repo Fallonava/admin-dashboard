@@ -20,6 +20,7 @@ interface RowData {
   visitCount?: number;
   poliList?: string[];
   anomalyReason?: 'rawat_bersama' | 'terapi_gabung' | null;
+  dateStr?: string;
 }
 
 export default function DailyRecapUploader() {
@@ -27,14 +28,13 @@ export default function DailyRecapUploader() {
   const [isDragging, setIsDragging] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [progressMsg, setProgressMsg] = useState("");
-  const [fileData, setFileData] = useState<{ name: string; rows: number } | null>(null);
+  const [fileData, setFileData] = useState<{ name: string; rows: number; dateCount: number } | null>(null);
   
   // Data state
   const [parsedData, setParsedData] = useState<RowData[]>([]);
   const [rawRows, setRawRows] = useState<RowData[]>([]); // New state for raw data
   const [searchQuery, setSearchQuery] = useState("");
   const [isSaving, setIsSaving] = useState(false);
-  const [extractedDate, setExtractedDate] = useState<Date | null>(null);
 
   const onDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -101,36 +101,29 @@ export default function DailyRecapUploader() {
         const tglKunjunganCandidates = ['Tgl. Kunjungan', 'Tanggal Kunjungan', 'TGL KUNJUNGAN', 'Tgl Kunjungan'];
         const tglKunjunganHeader = tglKunjunganCandidates.find(h => colMap[h]) || '';
 
-        let detectedDate: Date | null = null;
-        
         const processed: RowData[] = [];
         worksheet.eachRow((row: ExcelJSType.Row, rowNumber: number) => {
           if (rowNumber === 1) return; // lewati baris header
 
-          if (!detectedDate && tglKunjunganHeader) {
-            const dateStr = getCellText(row, tglKunjunganHeader).trim();
-            if (dateStr) {
-              // format expected: 16-03-2026 12:59
-              const parts = dateStr.split(' ');
+          let rowDateISO = '';
+          if (tglKunjunganHeader) {
+            const dateStrRaw = getCellText(row, tglKunjunganHeader).trim();
+            if (dateStrRaw) {
+              const parts = dateStrRaw.split(' ');
               if (parts.length >= 1) {
                 const dateParts = parts[0].split(/[/-]/);
                 if (dateParts.length === 3) {
-                  const day = Number(dateParts[0]);
-                  const month = Number(dateParts[1]) - 1;
-                  const year = Number(dateParts[2].length === 2 ? '20' + dateParts[2] : dateParts[2]);
-                  let h = 0, m = 0;
-                  if (parts[1]) {
-                    const timeParts = parts[1].split(':');
-                    h = Number(timeParts[0] || '0');
-                    m = Number(timeParts[1] || '0');
-                  }
-                  const pd = new Date(year, month, day, h, m);
-                  if (!isNaN(pd.getTime())) {
-                    detectedDate = pd;
-                  }
+                  const day = dateParts[0].padStart(2, '0');
+                  const month = dateParts[1].padStart(2, '0');
+                  const year = dateParts[2].length === 2 ? '20' + dateParts[2] : dateParts[2];
+                  rowDateISO = `${year}-${month}-${day}`;
                 }
               }
             }
+          }
+          
+          if (!rowDateISO) {
+             return; // Abaikan baris yang tidak memiliki tanggal
           }
 
           const statusBatal = statusBatalHeader ? getCellText(row, statusBatalHeader).toLowerCase() : '';
@@ -170,6 +163,7 @@ export default function DailyRecapUploader() {
             visitCount: 1,
             poliList: poli ? [poli] : [],
             anomalyReason: null,
+            dateStr: rowDateISO,
           });
         });
 
@@ -227,9 +221,12 @@ export default function DailyRecapUploader() {
         setTimeout(() => {
           setRawRows(processed);
           setParsedData(processed); // Langsung gunakan array processed tanpa deduplikasi
-          if (detectedDate) setExtractedDate(detectedDate);
-          setFileData({ name: file.name, rows: processed.length }); // Use actual row count for display
+          
+          const uniqueDates = new Set(processed.map(p => p.dateStr));
+          setFileData({ name: file.name, rows: processed.length, dateCount: uniqueDates.size }); 
+
           setIsLoading(false);
+          setProgressMsg("");
         }, 800);
 
       } catch (error) {
@@ -266,63 +263,82 @@ export default function DailyRecapUploader() {
      setIsSaving(true);
      
      try {
-       // Prepare payload
-       let today = extractedDate;
-       if (!today || isNaN(today.getTime())) {
-         today = new Date();
-       }
-       today.setHours(0,0,0,0);
-
-       const missingSepData = parsedData.filter(d => d.status === 'anomaly');
+       // Kelompokkan data yang valid berdasarkan tanggal
+       const groupedData: Record<string, RowData[]> = {};
+       const groupedRaw: Record<string, RowData[]> = {};
        
-       const staffCounts: Record<string, number> = {};
+       parsedData.forEach(d => {
+         const dKey = d.dateStr || new Date().toISOString().split('T')[0];
+         if (!groupedData[dKey]) groupedData[dKey] = [];
+         groupedData[dKey].push(d);
+       });
+       
        rawRows.forEach(row => {
-          if (row.petugas && row.petugas !== 'Sistem') {
-            staffCounts[row.petugas] = (staffCounts[row.petugas] || 0) + 1;
-          }
-       });
-       const staffPerformance = Object.entries(staffCounts)
-          .map(([name, total]) => ({ name, total }))
-          .sort((a, b) => b.total - a.total);
-
-       const payload = {
-          date: today.toISOString(),
-          total_patients: parsedData.length,
-          missing_sep_count: missingSepData.length,
-          staff_performance: staffPerformance,
-          missing_sep_details: missingSepData.map(d => ({
-            no_rm: d.nomorRm || '-',
-            nama: d.namaPasien || 'Unknown',
-            asuransi: d.jenisPasien || '-',
-            poli: (d.poliList || []).join(', ') || '-',
-            anomaly_reason: d.anomalyReason || null,
-          }))
-       };
-
-       const response = await fetch('/api/recaps', {
-         method: 'POST',
-         headers: { 'Content-Type': 'application/json' },
-         body: JSON.stringify(payload)
+          const dKey = row.dateStr || new Date().toISOString().split('T')[0];
+          if (!groupedRaw[dKey]) groupedRaw[dKey] = [];
+          groupedRaw[dKey].push(row);
        });
 
-       const result = await response.json();
-       
-       if (result.success) {
-         if (typeof window !== 'undefined') {
-            window.dispatchEvent(new Event('refresh-history'));
-         }
-         // Close modal on success
-         setIsOpen(false);
-         // Reset state after a short delay for animation
-         setTimeout(() => resetData(), 300);
-       } else {
-         throw new Error(result.error || 'Failed to save');
+       const datesToProcess = Object.keys(groupedData);
+       let completed = 0;
+
+       // Proses unggah satu per satu per hari ke Server
+       for (const dateKey of datesToProcess) {
+          setProgressMsg(`Menyimpan ${completed + 1} dari ${datesToProcess.length} hari...`);
+          const dailyParsed = groupedData[dateKey];
+          const dailyRaw = groupedRaw[dateKey] || [];
+          const missingSepData = dailyParsed.filter(d => d.status === 'anomaly');
+          
+          const staffCounts: Record<string, number> = {};
+          dailyRaw.forEach(row => {
+             if (row.petugas && row.petugas !== 'Sistem') {
+               staffCounts[row.petugas] = (staffCounts[row.petugas] || 0) + 1;
+             }
+          });
+          
+          const staffPerformance = Object.entries(staffCounts)
+             .map(([name, total]) => ({ name, total }))
+             .sort((a, b) => b.total - a.total);
+
+          const payload = {
+             date: dateKey + "T00:00:00.000Z",
+             total_patients: dailyParsed.length,
+             missing_sep_count: missingSepData.length,
+             staff_performance: staffPerformance,
+             missing_sep_details: missingSepData.map(d => ({
+               no_rm: d.nomorRm || '-',
+               nama: d.namaPasien || 'Unknown',
+               asuransi: d.jenisPasien || '-',
+               poli: (d.poliList || []).join(', ') || '-',
+               anomaly_reason: d.anomalyReason || null,
+             }))
+          };
+
+          const response = await fetch('/api/recaps', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+
+          const result = await response.json();
+          if (!result.success) throw new Error(`Simpan tanggal ${dateKey} gagal: ` + result.error);
+          
+          completed++;
        }
+
+       if (typeof window !== 'undefined') {
+          window.dispatchEvent(new Event('refresh-history'));
+       }
+       // Close modal on success
+       setIsOpen(false);
+       // Reset state after a short delay for animation
+       setTimeout(() => resetData(), 300);
      } catch (err: any) {
        console.error(err);
        alert("Gagal menyimpan data: " + err.message);
      } finally {
        setIsSaving(false);
+       setProgressMsg("");
      }
   };
 
@@ -354,14 +370,8 @@ export default function DailyRecapUploader() {
       .slice(0, 5); // Top 5
   }, [parsedData]);
   
-  // Only show missing SEP list in the table? "A clean borderless table of missingSEPList" from Phase 3, 
-  // but showing all data with search is also fine. Let's make it match Phase 3 strictly or keep the beautiful UI.
-  // The UI currently shows all. Let's keep the filter search.
   const filteredData = useMemo(() => {
     let baseData = parsedData;
-    // To strictly follow Phase 3 "UI logic: A clean borderless table of `missingSEPList`",
-    // maybe we default to showing missing SEP if there's no search query?
-    // Let's just filter based on search query.
     if (!searchQuery) return baseData.filter(d => d.status === 'anomaly');
     
     const lowerQ = searchQuery.toLowerCase();
@@ -377,7 +387,6 @@ export default function DailyRecapUploader() {
     setParsedData([]);
     setRawRows([]);
     setSearchQuery("");
-    setExtractedDate(null);
   };
 
   return (
@@ -431,7 +440,7 @@ export default function DailyRecapUploader() {
                  </button>
                  <button onClick={handleSaveToDatabase} disabled={isSaving} className="flex items-center justify-center gap-1.5 px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold text-xs transition-all shadow-sm disabled:opacity-50">
                    {isSaving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
-                   {isSaving ? 'Menyimpan...' : 'Simpan Database'}
+                   {isSaving ? (progressMsg || 'Menyimpan...') : 'Simpan Database'}
                  </button>
               </>
             )}
@@ -548,7 +557,7 @@ export default function DailyRecapUploader() {
                    </div>
                    <div>
                      <h3 className="text-emerald-800 font-bold text-lg">Data Berhasil Terbaca!</h3>
-                     <p className="text-emerald-600/80 text-sm font-medium">Sistem sukses memproses <strong className="text-emerald-700">{parsedData.length}</strong> baris data excel.</p>
+                     <p className="text-emerald-600/80 text-sm font-medium">Sistem sukses memproses <strong className="text-emerald-700">{parsedData.length}</strong> kunjungan dari <strong className="text-emerald-700">{fileData?.dateCount || 1}</strong> hari.</p>
                    </div>
                 </div>
 
@@ -600,6 +609,7 @@ export default function DailyRecapUploader() {
                                         {isAnomaly && <AlertCircle size={14} className="text-amber-500 animate-pulse" />}
                                       </p>
                                       <p className="text-xs font-mono text-slate-500 mt-0.5">{row.nomorRm}</p>
+                                      {row.dateStr && <p className="text-[10px] font-bold text-indigo-500 mt-0.5">{row.dateStr}</p>}
                                       {/* Tampilkan daftar poli jika multi-visit */}
                                       {row.poliList && row.poliList.length > 0 && (
                                         <p className="text-[10px] text-slate-400 mt-0.5 truncate max-w-[200px]" title={row.poliList.join(' · ')}>
