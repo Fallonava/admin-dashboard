@@ -1,118 +1,201 @@
-# Panduan Deploy MedCore Admin "Zero-to-Hero" 🚀
+# 🏥 SIMED — Panduan Deployment Lengkap (Windows Server)
 
-Dokumen ini adalah panduan lengkap untuk melakukan instalasi dan pembaruan aplikasi MedCore Admin pada peladen (*server*) Ubuntu (direkomendasikan versi 22.04 LTS atau 24.04 LTS).
-
-Arsitektur aplikasi ini menggunakan:
-- **Next.js (Standalone Mode)** untuk efisiensi memori.
-- **PM2 (Cluster Mode)** untuk memanfaatkan seluruh inti CPU server yang tersedia guna memastikan performa maksimal.
-- **Node/TSX Cron Daemon** sebagai pekerja mandiri yang mengurus sistem otomatisasi latar belakang database.
-- **Socket.io + Upstash Redis Adapter** untuk fitur real-time *broadcasting* berskala multi-CPU.
+> **Arsitektur Aktif**: Windows Server + PM2 Cluster + PostgreSQL + Socket.IO  
+> **CI/CD**: GitHub Actions → Self-Hosted Runner → `C:\simed-production`
 
 ---
 
-## 🛠️ Opsi 1: Instalasi Kilat (Server Kosong Baru) - *Disarankan*
-
-Jika Anda baru menyewa VPS/Cloud (misal AWS EC2, DigitalOcean, dsb) dengan OS Ubuntu dan ingin langsung menginstall semuanya:
-
-1. **Akses Server via SSH:**
-   ```bash
-   ssh -i kunci-server.pem ubuntu@IP_SERVER_ANDA
-   ```
-
-2. **Jalankan Skrip Instalasi 1-Klik:**
-   Cukup salin dan tempel satu baris kode di bawah ini, mesin akan otomatis mengunduh repositori, memasang Node.js, PM2, Nginx, hingga merangkai aplikasi dan menjalankannya:
-   ```bash
-   bash <(curl -s https://raw.githubusercontent.com/Fallonava/admin-dashboard/master/scripts/quick-install.sh)
-   ```
-
-3. **Langkah Wajib Terakhir:**
-   Skrip di atas akan berjalan dengan lancar, namun Anda **WAJIB** memasukkan password database sebelum aplikasi bisa dipakai.
-   ```bash
-   # Buka konfigurasi rahasia
-   nano /home/ubuntu/admin-dashboard/.env
-   
-   # Isi parameter MONGODB_URI, DATABASE_URL, dan REDIS_URL.
-   # Simpan (Ctrl+O, Enter, Ctrl+X)
-   
-   # Lakukan Sinkronisasi Database
-   cd /home/ubuntu/admin-dashboard
-   npx prisma migrate deploy
-   ```
+## 📋 Daftar Isi
+1. [Alur Deployment Sehari-hari](#1-alur-deployment-sehari-hari)
+2. [Setup Awal Server (Satu Kali)](#2-setup-awal-server-satu-kali)
+3. [Mengunci PM2 agar Kebal Restart](#3-mengunci-pm2-agar-kebal-restart)
+4. [Perintah SSH Penting](#4-perintah-ssh-penting)
+5. [Troubleshooting](#5-troubleshooting)
+6. [Variabel Environment (.env)](#6-variabel-environment-env)
 
 ---
 
-## 🏗️ Opsi 2: Instalasi Manual (Tahap demi Tahap)
+## 1. Alur Deployment Sehari-hari
 
-Gunakan metode ini jika Anda ingin mempelajari atau mendiagnosa kendala tiap lapisan perakitan.
+Setelah setup awal selesai, alur pengembangan Anda **cukup satu perintah**:
 
-### 1. Kloning Source Code
-```bash
-cd /home/ubuntu
-git clone https://github.com/Fallonava/admin-dashboard.git
-cd admin-dashboard
+```
+Edit kode → git push origin master → Selesai ✅
 ```
 
-### 2. Setup Library Dasar Server (Nginx, Node20, PM2)
-```bash
-# Otomasi instalasi dependency OS akan dilakukan oleh script ini
-bash scripts/setup-ec2.sh
+GitHub Actions yang akan **otomatis** menjalankan:
+
+| Langkah | Keterangan |
+|---|---|
+| `npm ci` | Install dependensi |
+| `npx prisma migrate deploy` | Sinkronisasi schema database |
+| `npm run build` | Bangun aplikasi produksi |
+| Robocopy | Salin ke `C:\simed-production` |
+| `pm2 start ecosystem.config.js` | Nyalakan ulang aplikasi |
+| Verify | Pastikan `admin-dashboard` & `wa-worker` **Online** |
+
+> ⚠️ **Anda TIDAK perlu SSH manual setiap kali update.**
+
+---
+
+## 2. Setup Awal Server (Satu Kali)
+
+> Lakukan langkah ini hanya saat pertama kali migasi ke server baru atau reset total.
+
+### 2.1 Prasyarat di Windows Server
+Pastikan sudah terinstal:
+- [Node.js v20+](https://nodejs.org/)
+- [PM2](https://pm2.keymetrics.io/) — `npm install -g pm2`
+- [PostgreSQL 16](https://www.postgresql.org/)
+- [GitHub Actions Self-Hosted Runner](https://github.com/Fallonava/admin-dashboard/settings/actions/runners)
+
+### 2.2 Konfigurasi Runner
+Runner harus berjalan sebagai service di server `srimed` dan terdaftar di repo GitHub dengan label `[self-hosted, Windows]`.
+
+### 2.3 Buat Folder Produksi
+```powershell
+New-Item -ItemType Directory -Path "C:\simed-production\logs" -Force
 ```
 
-### 3. File Rahasia (.env)
-Anda harus membuat file `.env` di dalam folder `admin-dashboard`.
-Jangan pernah melakukan `git commit` pada file berisi rahasia ini.
+### 2.4 Push Kode Pertama Kali
 ```bash
-nano .env
+git push origin master
 ```
-*(Tempel URL Database Neon, Secret JWT, dan URL Redis Upstash)*
+GitHub Actions akan otomatis melakukan deployment pertama.
 
-### 4. Build dan Migrasi Database
-```bash
-# Unduh dependency NPM
-npm ci
+---
 
-# Beritahu database tentang tabel-tabel baru
-npx prisma generate
-npx prisma migrate deploy
+## 3. Mengunci PM2 agar Kebal Restart
 
-# Bangun file optimasi produksi (Standalone)
-npm run build
+> Setelah deployment pertama selesai, jalankan **satu kali** saja untuk membuat PM2 bertahan meski server mati listrik atau SSH ditutup.
 
-# Salin aset statis ke folder keluaran NextJS
-cp -r .next/static .next/standalone/.next/static
-cp -r public .next/standalone/public
+```powershell
+ssh srimed "powershell -ExecutionPolicy Bypass -File C:\simed-production\scripts\install-pm2-service.ps1"
 ```
 
-### 5. Jalankan PM2 (Cluster + Daemon Mode)
-```bash
-pm2 start ecosystem.config.js --env production
-pm2 save
+**Yang dilakukan skrip ini:**
+- Memulai ulang semua aplikasi dari `ecosystem.config.js`
+- Membuat `C:\simed-production\start-pm2.bat` sebagai launcher
+- Mendaftarkan Task Scheduler Windows: **SIMED_PM2_Autostart** (berjalan saat boot)
 
-# Mendaftarkan auto-start agar nyala otomatis saat server restart
-pm2 startup systemd -u ubuntu --hp /home/ubuntu
+> ✅ Setelah ini, PM2 adalah **roh abadi** di server — kebal dari logout SSH dan restart server.
+
+---
+
+## 4. Perintah SSH Penting
+
+### Cek Status Aplikasi
+```powershell
+ssh srimed "powershell -Command ""pm2 list"""
+```
+
+### Lihat Log Error Dashboard
+```powershell
+ssh srimed "powershell -Command ""Get-Content 'C:\simed-production\logs\admin-error.log' -Tail 50"""
+```
+
+### Lihat Log Real-time
+```powershell
+ssh srimed "powershell -Command ""pm2 logs admin-dashboard --lines 50"""
+```
+
+### Restart Manual (Emergency)
+```powershell
+ssh srimed "powershell -Command ""pm2 restart ecosystem.config.js --update-env"""
+```
+
+### Cek Resource Server
+```powershell
+ssh srimed "powershell -Command ""pm2 list; Get-Process node | Measure-Object -Property WorkingSet -Sum"""
 ```
 
 ---
 
-## 🔄 Cara Melakukan Pembaruan (Update) Versi
-Bila peladen sudah aktif, dan sewaktu-waktu Anda / Tim *developer* baru saja mem-*push* fitur baru ke GitHub `master` branch:
+## 5. Troubleshooting
 
-Anda TIDAK PERLU lagi melakukan ulang panduan dari awal. Cukup _login_ ke server dan jalankan:
-```bash
-cd /home/ubuntu/admin-dashboard
-bash scripts/update-server.sh
+### ❌ `502 Bad Gateway`
+Aplikasi tidak mendengar di port 3000.
+```powershell
+# Cek apakah port terbuka
+ssh srimed "powershell -Command ""netstat -ano | findstr :3000"""
+
+# Cek log error
+ssh srimed "powershell -Command ""Get-Content 'C:\simed-production\logs\admin-error.log' -Tail 30"""
+
+# Nyalakan ulang darurat
+ssh srimed "powershell -Command ""cd C:\simed-production; pm2 start ecosystem.config.js --update-env"""
 ```
-Skrip `update-server.sh` akan menarik (`git pull`) fitur baru, *rebuild* sistem *standalone*, dan melakukan Zero-Downtime Reload pada PM2. Anda bahkan tidak perlu memutus *client* di rumah sakit! 🥂
 
-## 🚨 Status Troubleshooting Penting
-Jika aplikasi mengalami _crash_, Anda bisa memeriksa lalu-lintas _error_ menggunakan:
-```bash
-# Menengok log spesifik aplikasi API Web:
-pm2 logs medcore-admin
-
-# Menengok log khusus pekerja Automasi di latar belakang:
-pm2 logs medcore-cron-worker
-
-# Mengetahui status CPU dan Memori
-pm2 monit
+### ❌ PM2 hilang setelah SSH ditutup
+Berarti Task Scheduler belum terpasang. Jalankan skrip instalasi:
+```powershell
+ssh srimed "powershell -ExecutionPolicy Bypass -File C:\simed-production\scripts\install-pm2-service.ps1"
 ```
+
+### ❌ GitHub Actions gagal di Step PM2
+Periksa log di tab **Actions** GitHub. Kemungkinan penyebab:
+- `ecosystem.config.js` tidak ditemukan di `C:\simed-production` → Cek Robocopy berhasil
+- Port 3000 bentrok → Jalankan `taskkill /F /IM node.exe` via SSH lalu restart
+
+### ❌ Database error saat startup
+```powershell
+# Cek PostgreSQL berjalan
+ssh srimed "powershell -Command ""Get-Service postgresql*"""
+
+# Jalankan migrasi manual jika perlu
+ssh srimed "powershell -Command ""cd C:\simed-production; npx prisma migrate deploy"""
+```
+
+### ❌ WA Bot tidak tersambung
+```powershell
+ssh srimed "powershell -Command ""pm2 logs wa-worker --lines 30"""
+```
+Bot membutuhkan scan QR ulang lewat Dashboard → Halaman WA Bot Management.
+
+---
+
+## 6. Variabel Environment (.env)
+
+File `.env` dibuat **otomatis** oleh GitHub Actions setiap deployment. Variabel dikonfigurasi langsung di file `deploy-windows.yml`.
+
+### Variabel Wajib
+
+| Variabel | Deskripsi |
+|---|---|
+| `DATABASE_URL` | PostgreSQL connection string (pooled) |
+| `DIRECT_URL` | PostgreSQL connection string (non-pooled, untuk migrate) |
+| `JWT_SECRET` | Token rahasia untuk autentikasi (min 32 karakter) |
+| `ADMIN_KEY` | Kunci master admin |
+| `NEXT_PUBLIC_APP_URL` | URL publik aplikasi (`https://simed.fallonava.my.id`) |
+| `AGENT_EXEC_TOKEN` | Token akses AI Agent Bridge (internal, jangan disebarkan) |
+
+### Variabel Opsional
+
+| Variabel | Deskripsi |
+|---|---|
+| `CRON_SECRET` | Autentikasi endpoint cron internal |
+| `SENTRY_DSN` | Error tracking via Sentry |
+| `NODE_NO_WARNINGS` | Set `1` untuk membungkam DeprecationWarning Node.js |
+
+---
+
+## 📁 Struktur File Penting
+
+```
+admin-dashboard/
+├── ecosystem.config.js          # Konfigurasi PM2 (instances, RAM, log path)
+├── server.ts / server.js        # Custom Next.js server dengan Socket.IO
+├── next.config.ts               # Konfigurasi Next.js (tanpa standalone mode)
+├── scripts/
+│   ├── install-pm2-service.ps1  # ⭐ Skrip "Jurus Keabadian" (jalankan 1x)
+│   └── restart-production.ps1  # Restart darurat manual
+├── .github/workflows/
+│   ├── deploy-windows.yml       # Pipeline deployment utama ke srimed
+│   └── ci.yml                   # Pipeline CI (lint, test, build check)
+└── src/app/api/system/control/  # 🤖 AI Agent Bridge (akses terminal via HTTP)
+```
+
+---
+
+*Panduan ini berlaku untuk server `srimed` (Windows Server) dengan Cloudflare Tunnel ke domain `simed.fallonava.my.id`.*  
+*Diperbarui: April 2026*
