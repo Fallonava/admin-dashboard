@@ -21,6 +21,8 @@ Write-Host "Mencadangkan database ke: $BackupFile"
 if ($LASTEXITCODE -eq 0) {
     Write-Host "✅ Backup Sukses!"
     Write-Host "Lokasi file: $BackupFile"
-} else {
+}
+else {
     Write-Error "❌ Backup Gagal!"
 }
+
