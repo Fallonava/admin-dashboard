@@ -5,8 +5,8 @@ $BackupDir = "C:\backups"
 $Timestamp = Get-Date -Format "yyyyMMdd_HHmmss"
 $BackupFile = "${BackupDir}\medcoredb_backup_${Timestamp}.sql"
 
-# Path pg_dump (Ditemukan di Laragon)
-$PgDumpPath = "C:\laragon\bin\postgresql\postgresql\bin\pg_dump.exe"
+# Path pg_dump (Disesuaikan dengan PostgreSQL 16 di Server)
+$PgDumpPath = "C:\Program Files\PostgreSQL\16\bin\pg_dump.exe"
 
 # Jika tidak ada di Laragon, coba fallback ke path sistem
 if (-not (Test-Path $PgDumpPath)) {
