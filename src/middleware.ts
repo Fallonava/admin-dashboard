@@ -16,6 +16,9 @@ const PUBLIC_PATHS = [
   '/api/stream/live',     // SSE live stream for TV displays
   '/api/automation',      // Broadcast rules for TV display (GET is public)
   '/api/seed',            // Database seeding
+  '/publik',              // Public Patient Portal
+  '/api/settings/ai',     // AI Settings (for public assistant)
+  '/api/assistant',       // AI Chat Assistant (public)
   '/tv.html',             // Main TV display page
   '/tv-lama.html',        // TV display (Legacy version) 
   '/tv-modern.html',      // TV display (Modern version)

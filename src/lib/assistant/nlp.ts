@@ -59,21 +59,6 @@ export const SYMPTOM_MAP: Record<string, string[]> = {
   'nyeri dada': ['jantung', 'penyakit dalam']
 };
 
-export interface NLPResponse {
-  intent: IntentType;
-  entities: {
-    doctorName?: string;
-    specialty?: string;
-    polyclinic?: string;
-    day?: string;          // 'hari ini' | 'besok' | hari spesifik
-    dayIdx?: number;       // 0=Minggu, 1=Senin, dst
-    date?: string;         // ISO date string jika tanggal spesifik
-    query?: string;        // Query generik untuk pencarian fleksibel
-  };
-  confidence: number;      // 0-1 keyakinan intent
-  normalized: string;      // Kalimat setelah normalisasi slang
-}
-
 // ─── KAMUS SINONIM & NORMALISASI SLANG INDONESIA ──────
 const SLANG_MAP: Record<string, string> = {
   'kis':       'bpjs',

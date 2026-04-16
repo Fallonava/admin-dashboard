@@ -11,7 +11,7 @@ class PipelineSingleton {
   static async getInstance(progress_callback?: Function) {
     if (this.instance === null) {
       // Lazy load pipeline
-      this.instance = await pipeline(this.task, this.model, { 
+      this.instance = await pipeline(this.task as any, this.model, { 
         progress_callback 
       });
     }
@@ -95,7 +95,7 @@ export function findMostSimilar(
   });
 
   // 4. Find Best Result
-  let bestId = null;
+  let bestId: string | null = null;
   let highestRrf = 0;
   
   Object.entries(rrfScores).forEach(([id, score]) => {

@@ -57,7 +57,7 @@ export async function GET() {
           content: item.content,
           tags: item.tags,
           category: item.category,
-          embedding: JSON.stringify(embedding),
+          embedding: embedding,
           isActive: true
         }
       });
