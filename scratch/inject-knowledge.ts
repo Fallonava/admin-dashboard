@@ -67,7 +67,7 @@ async function seedKnowledge() {
           content: item.content,
           tags: item.tags,
           category: item.category,
-          embedding: JSON.stringify(embedding),
+          embedding: embedding,
           isActive: true
         }
       });
