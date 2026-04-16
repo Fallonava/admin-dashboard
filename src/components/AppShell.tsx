@@ -6,7 +6,7 @@ import { BottomNav } from "@/components/BottomNav";
 import { MobileMenu } from "@/components/MobileMenu";
 import { AutomationRunner } from "@/components/AutomationRunner";
 
-const AUTH_ROUTES = ["/login"];
+const AUTH_ROUTES = ["/login", "/publik"];
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -29,10 +29,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <Sidebar />
         <main
           id="main-content"
-          className="flex-1 overflow-hidden relative bg-white/5 focus:outline-none"
+          className="flex-1 overflow-y-auto relative bg-white/5 focus:outline-none"
           tabIndex={-1}
         >
-          <div className="page-enter h-full">{children}</div>
+          <div className="page-enter">{children}</div>
         </main>
         <BottomNav />
         <MobileMenu />

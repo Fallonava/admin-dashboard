@@ -245,3 +245,27 @@ enum BroadcastStatus {
   SENT
   FAILED
 }
+
+model KnowledgeBase {
+  id        String   @id @default(cuid())
+  category  String   // e.g. "BPJS", "Pendaftaran", "Fasilitas"
+  title     String
+  content   String   @db.Text
+  tags      String[]
+  embedding Float[]  // Digunakan untuk RAG semantik (Semantic Vector Search) In-Memory
+  isActive  Boolean  @default(true)
+  hitCount  Int      @default(0) // Berapa kali entri ini berhasil menjawab pertanyaan
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AiSettings {
+  id          String  @id @default("singleton") // Hanya 1 baris config
+  provider    String  @default("local")          // "local" | "gemini" | "openai"
+  apiKey      String? @default("")               // API Key eksternal (opsional)
+  aiEnabled   Boolean @default(false)            // Toggle AI Switch
+  aiModel     String  @default("gemini-1.5-flash") // Model AI eksternal
+  systemPrompt String? @db.Text                 // Prompt khusus RS
+  updatedAt   DateTime @updatedAt
+}
+

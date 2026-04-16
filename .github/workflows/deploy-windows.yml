@@ -64,6 +64,13 @@ jobs:
           npm ci
           Write-Host "npm ci selesai."
 
+      # ── Step 3.5: Backup Database (Safety First) ────────────────────────────
+      - name: Backup Database (Pre-Migration)
+        shell: powershell
+        run: |
+          powershell ./scripts/backup-db.ps1
+          Write-Host "Backup database produksi selesai."
+
       # ── Step 4: Database Migration ──────────────────────────────────────────
       - name: Sync Database Schema
         shell: powershell
