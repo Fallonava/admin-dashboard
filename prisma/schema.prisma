@@ -260,12 +260,16 @@ model KnowledgeBase {
 }
 
 model AiSettings {
-  id          String  @id @default("singleton") // Hanya 1 baris config
-  provider    String  @default("local")          // "local" | "gemini" | "openai"
-  apiKey      String? @default("")               // API Key eksternal (opsional)
-  aiEnabled   Boolean @default(false)            // Toggle AI Switch
-  aiModel     String  @default("gemini-1.5-flash") // Model AI eksternal
-  systemPrompt String? @db.Text                 // Prompt khusus RS
-  updatedAt   DateTime @updatedAt
+  id           String   @id @default("singleton")
+  provider     String   @default("ollama")
+  apiKey       String?  @default("") // Legacy fallback
+  geminiKey    String?  @map("gemini_key")
+  groqKey      String?  @map("groq_key")
+  cohereKey    String?  @map("cohere_key")
+  aiEnabled    Boolean  @default(false)
+  aiModel      String   @default("qwen2.5:1.5b")
+  ollamaUrl    String   @default("http://localhost:11434")
+  systemPrompt String?  @db.Text
+  updatedAt    DateTime @updatedAt
 }
 

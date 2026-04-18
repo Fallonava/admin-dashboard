@@ -148,16 +148,22 @@ jobs:
           set PM2_HOME=C:\Users\ANTRIAN 1\.pm2
           echo Mengonfigurasi pm2-logrotate...
 
-          :: Install bila belum ada
-          call pm2.cmd install pm2-logrotate
+          :: Cek apakah modul sudah ada di list untuk menghindari EBUSY
+          call pm2.cmd list | findstr "pm2-logrotate" > nul
+          if errorlevel 1 (
+            echo Memasang pm2-logrotate...
+            call pm2.cmd install pm2-logrotate
+          ) else (
+            echo pm2-logrotate sudah terpasang, melewati instalasi.
+          )
 
-          :: Set standar industri untuk Windows Stability
+          :: Tetap jalankan konfigurasi
           call pm2.cmd set pm2-logrotate:max_size 10M
           call pm2.cmd set pm2-logrotate:retain 7
           call pm2.cmd set pm2-logrotate:compress true
           call pm2.cmd set pm2-logrotate:workerInterval 60
 
-          echo Logrotate dikonfigurasi.
+          echo Logrotate dikonfigurasi sukses.
 
       # ── Step 11: Start PM2 from Production Directory ──────────────────────────
       - name: Start PM2 from Production

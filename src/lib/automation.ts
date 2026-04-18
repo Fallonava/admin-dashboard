@@ -5,6 +5,7 @@ import { getFullSnapshot } from "./data-fetchers";
 // NOTE: revalidatePath is loaded dynamically because this module runs
 // inside the custom server.ts context where next/cache is unavailable.
 import { logger } from './logger';
+import { isShiftActiveForDate } from './schedule-utils';
 
 // Fungsi Utilitas Internal
 
@@ -378,7 +379,8 @@ export async function runAutomation(): Promise<{ applied: number, failed: number
 
             const todayShifts = shifts.filter(s =>
                 s.doctorId === doc.id && s.dayIdx === currentDayIdx && s.formattedTime &&
-                !(s.disabledDates || []).includes(todayStr)
+                !(s.disabledDates || []).includes(todayStr) &&
+                isShiftActiveForDate((s as any).extra, wibTime)
             );
 
             // 1. Check if there's a custom rule for this doctor

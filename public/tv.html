@@ -3298,9 +3298,18 @@
             // Map standard format to legacy format needed by TV UI
             const mappedData = [];
 
+            // Helper inline untuk cek ganjil/genap
+            const isShiftActiveForDate = (extra, date) => {
+              if (!extra) return true;
+              const weekOfMonth = Math.ceil(date.getDate() / 7);
+              if (extra === 'odd_weeks' && weekOfMonth % 2 === 0) return false;
+              if (extra === 'even_weeks' && weekOfMonth % 2 !== 0) return false;
+              return true;
+            };
+
             // Find shifts for today
             const todayShifts = shifts.filter(
-              (s) => s.dayIdx === todayDayIdx
+              (s) => s.dayIdx === todayDayIdx && isShiftActiveForDate(s.extra, now)
             );
 
             todayShifts.forEach((shift, index) => {

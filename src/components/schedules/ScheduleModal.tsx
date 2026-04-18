@@ -9,6 +9,7 @@ import {
 import { cn } from "@/lib/utils";
 import type { Doctor, Shift } from "@/lib/data-service";
 import { useSocket } from "@/hooks/use-socket";
+import { getRoutineLabel } from "@/lib/schedule-utils";
 
 interface ScheduleModalProps {
     doctor: Doctor | null;
@@ -387,6 +388,12 @@ export function ScheduleModal({ doctor, shifts, isOpen, onClose, onUpdate }: Sch
                                                     {s.registrationTime && (
                                                         <span className="text-[10px] opacity-50">Daftar: {s.registrationTime}</span>
                                                     )}
+                                                    {s.extra === 'odd_weeks' && (
+                                                        <span className="text-[10px] font-bold text-violet-600 bg-violet-50 border border-violet-200 px-1.5 py-0.5 rounded-md">Ganjil</span>
+                                                    )}
+                                                    {s.extra === 'even_weeks' && (
+                                                        <span className="text-[10px] font-bold text-amber-600 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded-md">Genap</span>
+                                                    )}
                                                     {s.statusOverride === 'PENUH' ? (
                                                         <span className="text-[10px] font-bold text-white bg-red-500 px-1.5 py-0.5 rounded-md flex items-center gap-1 shadow-sm"><ShieldAlert size={10} /> PENUH</span>
                                                     ) : s.statusOverride && (
@@ -432,7 +439,7 @@ export function ScheduleModal({ doctor, shifts, isOpen, onClose, onUpdate }: Sch
                                                 {/* Edit */}
                                                 <button
                                                     onClick={() => {
-                                                        setForm({ title: s.title, formattedTime: s.formattedTime, registrationTime: s.registrationTime || "", color: s.color, statusOverride: s.statusOverride, extra: s.extra });
+                                                        setForm({ title: s.title, formattedTime: s.formattedTime, registrationTime: s.registrationTime || "", color: s.color, statusOverride: s.statusOverride, extra: s.extra || undefined });
                                                         setEditId(s.id);
                                                         setAdding(false);
                                                     }}

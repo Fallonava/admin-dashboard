@@ -89,6 +89,7 @@ var data_fetchers_1 = require("./data-fetchers");
 // NOTE: revalidatePath is loaded dynamically because this module runs
 // inside the custom server.ts context where next/cache is unavailable.
 var logger_1 = require("./logger");
+var schedule_utils_1 = require("./schedule-utils");
 // Fungsi Utilitas Internal
 /**
  * Mengonversi string waktu (misal: "09:00", "5 PM") menjadi total menit sejak tengah malam.
@@ -360,7 +361,7 @@ function evaluateRules(rules, doctors, shifts, leaves, now) {
  */
 function runAutomation() {
     return __awaiter(this, void 0, void 0, function () {
-        var runStartTime, applied, failed, error, now, wibTime, currentDayIdx_1, currentHour, currentMinute, currentTimeMinutes, todayStr_1, rawDoctors_1, doctors, rawShifts, shifts, recentDateLimit, rawLeaves, leaves, settingsRow, settings, updates, automationEnabled, OVERRIDE_COOLDOWN_MS, rules, _a, ruleUpdates, _loop_2, _i, doctors_2, doc, concurrency, i, chunk, promises, results, revalidatePath, _b, err_1, errMsg, duration, _c;
+        var runStartTime, applied, failed, error, now, wibTime_1, currentDayIdx_1, currentHour, currentMinute, currentTimeMinutes, todayStr_1, rawDoctors_1, doctors, rawShifts, shifts, recentDateLimit, rawLeaves, leaves, settingsRow, settings, updates, automationEnabled, OVERRIDE_COOLDOWN_MS, rules, _a, ruleUpdates, _loop_2, _i, doctors_2, doc, concurrency, i, chunk, promises, results, revalidatePath, _b, err_1, errMsg, duration, _c;
         var _d, _e, _f;
         return __generator(this, function (_g) {
             switch (_g.label) {
@@ -372,12 +373,12 @@ function runAutomation() {
                 case 1:
                     _g.trys.push([1, 19, 20, 25]);
                     now = new Date();
-                    wibTime = new Date(now.getTime() + (7 * 60 * 60 * 1000));
-                    currentDayIdx_1 = wibTime.getUTCDay() === 0 ? 6 : wibTime.getUTCDay() - 1;
-                    currentHour = wibTime.getUTCHours();
-                    currentMinute = wibTime.getUTCMinutes();
+                    wibTime_1 = new Date(now.getTime() + (7 * 60 * 60 * 1000));
+                    currentDayIdx_1 = wibTime_1.getUTCDay() === 0 ? 6 : wibTime_1.getUTCDay() - 1;
+                    currentHour = wibTime_1.getUTCHours();
+                    currentMinute = wibTime_1.getUTCMinutes();
                     currentTimeMinutes = currentHour * 60 + currentMinute;
-                    todayStr_1 = "".concat(wibTime.getUTCFullYear(), "-").concat(String(wibTime.getUTCMonth() + 1).padStart(2, '0'), "-").concat(String(wibTime.getUTCDate()).padStart(2, '0'));
+                    todayStr_1 = "".concat(wibTime_1.getUTCFullYear(), "-").concat(String(wibTime_1.getUTCMonth() + 1).padStart(2, '0'), "-").concat(String(wibTime_1.getUTCDate()).padStart(2, '0'));
                     return [4 /*yield*/, prisma_1.prisma.doctor.findMany()];
                 case 2:
                     rawDoctors_1 = _g.sent();
@@ -391,7 +392,7 @@ function runAutomation() {
                         var docRef = rawDoctors_1.find(function (d) { return d.id === s.doctorId; });
                         return __assign(__assign({}, s), { id: Number(s.id), doctor: (docRef === null || docRef === void 0 ? void 0 : docRef.name) || '' });
                     });
-                    recentDateLimit = new Date(wibTime.getTime() - (24 * 60 * 60 * 1000));
+                    recentDateLimit = new Date(wibTime_1.getTime() - (24 * 60 * 60 * 1000));
                     return [4 /*yield*/, prisma_1.prisma.leaveRequest.findMany({
                             where: { endDate: { gte: recentDateLimit } }
                         })];
@@ -456,7 +457,8 @@ function runAutomation() {
                         var isCooldownActive = false; // [REVISI] Penalti otomatisasi dimatikan atas perintah user agar 100% full otomatis
                         var todayShifts = shifts.filter(function (s) {
                             return s.doctorId === doc.id && s.dayIdx === currentDayIdx_1 && s.formattedTime &&
-                                !(s.disabledDates || []).includes(todayStr_1);
+                                !(s.disabledDates || []).includes(todayStr_1) &&
+                                (0, schedule_utils_1.isShiftActiveForDate)(s.extra, wibTime_1);
                         });
                         // 1. Check if there's a custom rule for this doctor
                         var ruleUpdate = ruleUpdates.find(function (u) { return String(u.id) === String(doc.id); });

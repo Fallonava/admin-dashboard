@@ -21,6 +21,7 @@ import { runAutomation } from './automation';
 import { notifyViaSocket, syncAdminData } from './automation-broadcaster';
 import { getFullSnapshot } from './data-fetchers';
 import { logger } from './logger';
+import { isShiftActiveForDate } from './schedule-utils';
 
 // Kumpulan semua timer aktif agar bisa dibersihkan saat reschedule
 const activeTimers: ReturnType<typeof setTimeout>[] = [];
@@ -134,6 +135,8 @@ export async function scheduleToday() {
     if (!shift.formattedTime) continue;
     // Skip if today is a disabled date
     if ((shift.disabledDates || []).includes(todayStr)) continue;
+    // Skip if shift is not active this week (odd/even weeks pattern)
+    if (!isShiftActiveForDate((shift as any).extra, wib)) continue;
 
     const [startStr, endStr] = shift.formattedTime.split('-');
     const start = parseToMinutes(startStr);

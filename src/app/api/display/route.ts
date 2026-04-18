@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { requirePermission } from '@/lib/api-utils';
 import { Doctor } from '@/lib/data-service'; // Only using for type if needed
 import { revalidatePath } from 'next/cache';
+import { isShiftActiveForDate } from '@/lib/schedule-utils';
 
 // Enable Time-based Revalidation (Vercel Edge Cache) for 10 seconds.
 // TV polling setiap 3s hanya akan mengenai DB 1 kali per 10 detik.
@@ -24,7 +25,11 @@ export async function GET() {
     const todayStr = wibNow.toISOString().slice(0, 10); // YYYY-MM-DD (WIB)
 
     const doctors = allDoctors.map((doc: any) => {
-        const todayShifts = (shifts as any[]).filter(s => s.doctorId === doc.id && s.dayIdx === todayIdx);
+        const todayShifts = (shifts as any[]).filter(s => 
+            s.doctorId === doc.id && 
+            s.dayIdx === todayIdx &&
+            isShiftActiveForDate(s.extra, wibNow)
+        );
         const shiftPills = todayShifts.map(s => ({
             time: s.formattedTime || '',
             disabled: s.disabledDates.includes(todayStr),

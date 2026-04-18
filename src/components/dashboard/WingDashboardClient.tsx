@@ -15,6 +15,7 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { isShiftActiveForDate } from "@/lib/schedule-utils";
 
 export function WingDashboardClient() {
   const { logout } = useAuth();
@@ -52,6 +53,7 @@ export function WingDashboardClient() {
   const timeContext = useMemo(() => {
     const wibNow = new Date(now.getTime() + (7 * 60 * 60 * 1000));
     return {
+      wibNow,
       todayDayIdx: wibNow.getUTCDay() === 0 ? 6 : wibNow.getUTCDay() - 1,
       todayStr: `${wibNow.getUTCFullYear()}-${String(wibNow.getUTCMonth() + 1).padStart(2, '0')}-${String(wibNow.getUTCDate()).padStart(2, '0')}`,
       currentTimeMinutes: wibNow.getUTCHours() * 60 + wibNow.getUTCMinutes(),
@@ -59,7 +61,7 @@ export function WingDashboardClient() {
     };
   }, [now]);
 
-  const { todayDayIdx, todayStr, currentTimeMinutes } = timeContext;
+  const { wibNow, todayDayIdx, todayStr, currentTimeMinutes } = timeContext;
 
   const todayDoctors = useMemo(() => {
     if (!doctors.length || !shifts.length) {
@@ -92,7 +94,8 @@ export function WingDashboardClient() {
       const hasActiveShift = shifts.some(s =>
         String(s.doctorId) === String(doc.id) &&
         Number(s.dayIdx) === Number(todayDayIdx) &&
-        !(s.disabledDates || []).includes(todayStr)
+        !(s.disabledDates || []).includes(todayStr) &&
+        isShiftActiveForDate(s.extra, wibNow)
       );
 
       return (hasShiftToday && isOnLeaveToday) || hasActiveShift;

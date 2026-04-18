@@ -59,6 +59,7 @@ var automation_1 = require("./automation");
 var automation_broadcaster_1 = require("./automation-broadcaster");
 var data_fetchers_1 = require("./data-fetchers");
 var logger_1 = require("./logger");
+var schedule_utils_1 = require("./schedule-utils");
 // Kumpulan semua timer aktif agar bisa dibersihkan saat reschedule
 var activeTimers = [];
 /**
@@ -198,6 +199,9 @@ function scheduleToday() {
                             continue;
                         // Skip if today is a disabled date
                         if ((shift.disabledDates || []).includes(todayStr))
+                            continue;
+                        // Skip if shift is not active this week (odd/even weeks pattern)
+                        if (!(0, schedule_utils_1.isShiftActiveForDate)(shift.extra, wib))
                             continue;
                         _a = shift.formattedTime.split('-'), startStr = _a[0], endStr = _a[1];
                         start = parseToMinutes(startStr);

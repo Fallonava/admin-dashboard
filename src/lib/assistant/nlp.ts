@@ -33,30 +33,103 @@ export interface NLPResponse {
   normalized: string;      // Kalimat setelah normalisasi slang
 }
 
-// ─── KAMUS GEJALA KE SPESIALISASI ──────────────────────
+// ─── KAMUS GEJALA KE SPESIALISASI (Clinical Intel v4) ───────
 export const SYMPTOM_MAP: Record<string, string[]> = {
-  'pusing': ['saraf', 'umum'],
-  'sakit kepala': ['saraf', 'umum'],
-  'demam': ['umum', 'penyakit dalam'],
-  'mencret': ['penyakit dalam', 'umum'],
-  'diare': ['penyakit dalam'],
-  'lambung': ['penyakit dalam'],
-  'maag': ['penyakit dalam'],
-  'hamil': ['kandungan'],
-  'kandungan': ['kandungan'],
-  'janin': ['kandungan'],
-  'batuk': ['penyakit dalam', 'umum', 'paru'],
-  'sesak': ['paru', 'penyakit dalam'],
-  'gatal': ['kulit kelamin', 'kulit'],
-  'jerawat': ['kulit kelamin', 'kulit'],
-  'sakit gigi': ['gigi'],
-  'karies': ['gigi'],
-  'katarak': ['mata'],
-  'rabun': ['mata'],
-  'patah': ['orthopedi', 'bedah'],
-  'sendi': ['orthopedi', 'saraf'],
-  'tekanan darah': ['jantung', 'penyakit dalam'],
-  'nyeri dada': ['jantung', 'penyakit dalam']
+  // Gigi & Mulut
+  'sakit gigi': ['Gigi', 'Konservasi Gigi'],
+  'gigi bungsu': ['Gigi Bedah Mulut'],
+  'impaksi': ['Gigi Bedah Mulut'],
+  'odontektomi': ['Gigi Bedah Mulut'],
+  'tambal gigi': ['Konservasi Gigi'],
+  'gusi bengkak': ['Gigi', 'Gigi Bedah Mulut'],
+  'bau mulut': ['Gigi'],
+  'karies': ['Gigi', 'Konservasi Gigi'],
+  'cabut gigi': ['Gigi'],
+  'behel': ['Gigi'],
+
+  // Jantung & Pembuluh Darah
+  'nyeri dada': ['Jantung'],
+  'serangan jantung': ['Jantung'],
+  'jantung berdebar': ['Jantung'],
+  'aritmia': ['Jantung'],
+  'pasang ring': ['Jantung'],
+  'sesak napas lelah': ['Jantung', 'Jantung'],
+
+  // Penyakit Dalam & Umum
+  'darah tinggi': ['Penyakit Dalam'],
+  'hipertensi': ['Penyakit Dalam'],
+  'diabetes': ['Penyakit Dalam'],
+  'kencing manis': ['Penyakit Dalam'],
+  'maag': ['Penyakit Dalam'],
+  'asam lambung': ['Penyakit Dalam'],
+  'gerd': ['Penyakit Dalam'],
+  'mual': ['Penyakit Dalam', 'Umum'],
+  'demam': ['Umum', 'Penyakit Dalam', 'Anak'],
+  'lemas': ['Umum', 'Penyakit Dalam'],
+  'tiroid': ['Penyakit Dalam'],
+  'hepatitis': ['Penyakit Dalam'],
+  'ginjal': ['Penyakit Dalam', 'Urologi'],
+
+  // Saraf
+  'stroke': ['Saraf', 'Rehab Medik'],
+  'vertigo': ['Saraf'],
+  'pusing': ['Umum', 'Saraf'],
+  'migrain': ['Saraf'],
+  'epilepsi': ['Saraf'],
+  'kejang': ['Saraf', 'Anak'],
+  'saraf terjepit': ['Saraf', 'Orthopaedi'],
+  'hnp': ['Saraf', 'Orthopaedi'],
+  'lumpuh': ['Saraf', 'Rehab Medik'],
+  'kesemutan': ['Saraf'],
+
+  // Kandungan (OBGYN)
+  'hamil': ['Kandungan'],
+  'usg': ['Kandungan'],
+  'promil': ['Kandungan'],
+  'kista': ['Kandungan'],
+  'miom': ['Kandungan'],
+  'nyeri haid': ['Kandungan'],
+  'keputihan': ['Kandungan'],
+  'melahirkan': ['Kandungan'],
+
+  // Anak
+  'anak demam': ['Anak'],
+  'imunisasi': ['Anak'],
+  'tumbuh kembang': ['Anak'],
+  'diare anak': ['Anak'],
+  'stunting': ['Anak'],
+
+  // Bedah & Orthopaedi
+  'patah tulang': ['Orthopaedi'],
+  'keseleo': ['Orthopaedi', 'Rehab Medik'],
+  'nyeri sendi': ['Orthopaedi', 'Rehab Medik'],
+  'operasi': ['Bedah Umum'],
+  'usus buntu': ['Bedah Umum'],
+  'hernia': ['Bedah Umum'],
+  'wasir': ['Bedah Umum'],
+  'ambeien': ['Bedah Umum'],
+  'benjolan': ['Bedah Umum'],
+
+  // THT & Mata
+  'telinga': ['THT-KL'],
+  'sinus': ['THT-KL'],
+  'amandel': ['THT-KL'],
+  'hidung tersumbat': ['THT-KL'],
+  'katarak': ['Mata'],
+  'mata rabun': ['Mata'],
+  'mata merah': ['Mata'],
+  'glaukoma': ['Mata'],
+
+  // Lainnya
+  'kencing sakit': ['Urologi'],
+  'prostat': ['Urologi'],
+  'batu ginjal': ['Urologi', 'Bedah Umum'],
+  'depresi': ['Jiwa'],
+  'cemas': ['Jiwa'],
+  'sulit tidur': ['Jiwa'],
+  'gatal': ['Kulit dan Kelamin'],
+  'jerawat': ['Kulit dan Kelamin'],
+  'jamur kulit': ['Kulit dan Kelamin']
 };
 
 // ─── KAMUS SINONIM & NORMALISASI SLANG INDONESIA ──────

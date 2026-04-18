@@ -13,6 +13,7 @@ import { DoctorCard } from "./DoctorCard";
 import { MobileSearchSheet } from "@/components/ui/MobileSearchSheet";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
+import { isShiftActiveForDate } from "@/lib/schedule-utils";
 
 export function DashboardClient() {
   const { logout } = useAuth();
@@ -63,6 +64,7 @@ export function DashboardClient() {
   const timeContext = useMemo(() => {
     const wibNow = new Date(now.getTime() + (7 * 60 * 60 * 1000));
     return {
+      wibNow,
       todayDayIdx: wibNow.getUTCDay() === 0 ? 6 : wibNow.getUTCDay() - 1, // 0=Sen, 6=Min
       todayStr: `${wibNow.getUTCFullYear()}-${String(wibNow.getUTCMonth() + 1).padStart(2, '0')}-${String(wibNow.getUTCDate()).padStart(2, '0')}`,
       currentTimeMinutes: wibNow.getUTCHours() * 60 + wibNow.getUTCMinutes(),
@@ -70,17 +72,18 @@ export function DashboardClient() {
     };
   }, [now]);
 
-  const { todayDayIdx, todayStr, currentTimeMinutes, weekOfMonth } = timeContext;
+  const { wibNow, todayDayIdx, todayStr, currentTimeMinutes, weekOfMonth } = timeContext;
 
   // Filter: hanya tampilkan dokter yang punya minimal 1 shift aktif hari ini
-  // (shift tidak di-disable hari ini)
+  // (shift tidak di-disable hari ini DAN shift aktif di minggu ini/ganjil-genap)
   const todayDoctors = useMemo(() => doctors.filter(doc =>
     shifts.some(s =>
       s.doctorId === doc.id &&
       s.dayIdx === todayDayIdx &&
-      !(s.disabledDates || []).includes(todayStr)
+      !(s.disabledDates || []).includes(todayStr) &&
+      isShiftActiveForDate(s.extra, wibNow)
     )
-  ), [doctors, shifts, todayDayIdx, todayStr]);
+  ), [doctors, shifts, todayDayIdx, todayStr, wibNow]);
 
   const automationEnabled = settings?.automationEnabled || false;
 

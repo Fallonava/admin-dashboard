@@ -45,7 +45,7 @@ export default function BotStudioPage() {
   const [toast, setToast] = useState<{ msg: string; type: 'ok' | 'err' } | null>(null);
 
   // AI LLM Settings State
-  const [aiSettings, setAiSettings] = useState({ provider: 'gemini', apiKey: '', aiEnabled: false, aiModel: 'gemini-1.5-flash', systemPrompt: '' });
+  const [aiSettings, setAiSettings] = useState({ provider: 'ollama', apiKey: '', geminiKey: '', groqKey: '', cohereKey: '', aiEnabled: false, aiModel: 'qwen2.5:1.5b', ollamaUrl: '', systemPrompt: '' });
   const [showAiSettings, setShowAiSettings] = useState(false);
   const [savingAi, setSavingAi] = useState(false);
 
@@ -71,7 +71,7 @@ export default function BotStudioPage() {
     try {
       const res = await fetch('/api/settings/ai');
       const data = await res.json();
-      if (data && !data.error) setAiSettings(data);
+      if (data && !data.error) setAiSettings(prev => ({ ...prev, ...data }));
     } catch (err) {
       console.warn("Gagal memuat konfigurasi AI:", err);
     }
@@ -232,8 +232,8 @@ export default function BotStudioPage() {
           <div className="space-y-5 relative z-10">
             <div className="flex items-center justify-between bg-slate-800/50 p-4 rounded-xl border border-slate-700/50">
               <div>
-                <div className="text-sm font-bold text-white mb-1">Aktifkan AI Eksternal (Gemini)</div>
-                <div className="text-xs text-slate-400">Jika mati, bot 100% menggunakan Local RAG dan Regex (Offline). Jika hidup, AI menjahit data RAG menjadi kalimat yang lebih natural.</div>
+                <div className="text-sm font-bold text-white mb-1">Aktifkan AI ({aiSettings.provider === 'ollama' ? 'Ollama Lokal' : 'Gemini Eksternal'})</div>
+                <div className="text-xs text-slate-400">Jika mati, bot 100% menggunakan Local RAG dan Regex (Offline). Jika hidup, AI akan menjahit data RAG menjadi kalimat yang lebih natural dan kontekstual.</div>
               </div>
               <label className="relative inline-flex items-center cursor-pointer">
                 <input type="checkbox" checked={aiSettings.aiEnabled} onChange={e => setAiSettings(s => ({ ...s, aiEnabled: e.target.checked }))} className="sr-only peer" />
@@ -244,16 +244,108 @@ export default function BotStudioPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                <div>
                   <label className="block text-xs font-bold text-slate-400 uppercase tracking-wide mb-1.5">Provider AI</label>
-                  <select value={aiSettings.provider} onChange={e => setAiSettings(s => ({ ...s, provider: e.target.value }))} className="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:border-indigo-500">
-                    <option value="gemini">Google Gemini</option>
-                    <option value="openai" disabled>OpenAI (Coming Soon)</option>
+                  <select 
+                    value={aiSettings.provider} 
+                    onChange={e => {
+                      const newProv = e.target.value;
+                      setAiSettings(s => {
+                        let newModel = 'qwen2.5:1.5b';
+                        if (newProv === 'gemini') newModel = 'gemini-1.5-flash-latest';
+                        if (newProv === 'groq') newModel = 'llama-3.1-8b-instant';
+                        if (newProv === 'cohere') newModel = 'command-r-plus-08-2024';
+                        return { ...s, provider: newProv, aiModel: newModel };
+                      });
+                    }} 
+                    className="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:border-indigo-500"
+                  >
+                    <option value="ollama">🦙 Ollama (AI Lokal)</option>
+                    <option value="gemini">✨ Google Gemini (Cloud)</option>
+                    <option value="groq">⚡ Groq (Super Cepat)</option>
+                    <option value="cohere">🏢 Cohere (Enterprise RAG)</option>
                   </select>
                </div>
                <div>
-                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wide mb-1.5">API Key {aiSettings.provider}</label>
-                  <input type="password" value={aiSettings.apiKey} onChange={e => setAiSettings(s => ({ ...s, apiKey: e.target.value }))} placeholder="AIzA..." className="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:border-indigo-500" />
+                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wide mb-1.5">Nama Model</label>
+                  <select 
+                    value={aiSettings.aiModel} 
+                    onChange={e => setAiSettings(s => ({ ...s, aiModel: e.target.value }))} 
+                    className="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:border-indigo-500"
+                  >
+                    {aiSettings.provider === 'ollama' ? (
+                      <>
+                        <option value="qwen2.5:1.5b">Qwen 2.5 (1.5B) - Sangat Ringan</option>
+                        <option value="llama3.2:3b">Llama 3.2 (3B) - Seimbang</option>
+                        <option value="gemma2:2b">Gemma 2 (2B) - Bahasa Indo Bagus</option>
+                        <option value="mistral">Mistral (7B) - Cerdas</option>
+                        <option value="phi3">Phi-3 (Mini) - Efisien</option>
+                      </>
+                    ) : aiSettings.provider === 'gemini' ? (
+                      <>
+                        <option value="gemini-1.5-flash-latest">Gemini 1.5 Flash (Sangat Cepat)</option>
+                        <option value="gemini-1.5-pro-latest">Gemini 1.5 Pro (Sangat Cerdas)</option>
+                        <option value="gemini-2.0-flash">Gemini 2.0 Flash (Terbaru)</option>
+                      </>
+                    ) : aiSettings.provider === 'groq' ? (
+                      <>
+                        <option value="llama-3.1-8b-instant">Llama 3.1 (8B) Instant - Super Ngebut</option>
+                        <option value="llama-3.1-70b-versatile">Llama 3.1 (70B) - Sangat Cerdas</option>
+                        <option value="mixtral-8x7b-32768">Mixtral 8x7b - Konteks Panjang</option>
+                      </>
+                    ) : (
+                      <>
+                        <option value="command-r-plus-08-2024">Command R-Plus (08-2024)</option>
+                      </>
+                    )}
+                  </select>
+                  <p className="text-[10px] text-slate-500 mt-1">
+                    {aiSettings.provider === 'ollama' 
+                      ? 'Pastikan model sudah di-pull di server: ollama pull <nama-model>' 
+                      : 'Membutuhkan Google AI Studio API Key'}
+                  </p>
                </div>
             </div>
+
+            {aiSettings.provider === 'ollama' && (
+              <div>
+                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wide mb-1.5">Ollama Base URL</label>
+                <input type="text" value={aiSettings.ollamaUrl || ''} onChange={e => setAiSettings(s => ({ ...s, ollamaUrl: e.target.value }))} placeholder="http://localhost:11434" className="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:border-indigo-500" />
+                <p className="text-[10px] text-slate-500 mt-1">Pastikan Ollama sudah berjalan: <code className="text-indigo-400">ollama serve</code></p>
+              </div>
+            )}
+            {aiSettings.provider === 'gemini' && (
+              <div>
+                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wide mb-1.5">Google Gemini API Key</label>
+                <input type="password" value={aiSettings.geminiKey || ''} onChange={e => setAiSettings(s => ({ ...s, geminiKey: e.target.value }))} placeholder="AIzaSy..." className="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:border-indigo-500" />
+                <p className="text-[10px] text-slate-500 mt-1">
+                  Gratis 1.500 req/hari. Dapatkan di <a href="https://aistudio.google.com/" target="_blank" className="text-indigo-400 hover:underline">aistudio.google.com</a> 
+                </p>
+              </div>
+            )}
+            {aiSettings.provider === 'groq' && (
+              <div>
+                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wide mb-1.5">Groq API Key</label>
+                <input type="password" value={aiSettings.groqKey || ''} onChange={e => setAiSettings(s => ({ ...s, groqKey: e.target.value }))} placeholder="gsk_..." className="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:border-indigo-500" />
+                <p className="text-[10px] text-slate-500 mt-1">
+                  Spesialis ngebut. Bebas kuota trial. Dapatkan di <a href="https://console.groq.com/" target="_blank" className="text-indigo-400 hover:underline">console.groq.com</a> 
+                </p>
+              </div>
+            )}
+            {aiSettings.provider === 'cohere' && (
+              <div>
+                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wide mb-1.5">Cohere API Key</label>
+                <input type="password" value={aiSettings.cohereKey || ''} onChange={e => setAiSettings(s => ({ ...s, cohereKey: e.target.value }))} placeholder="k..." className="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:border-indigo-500" />
+                <p className="text-[10px] text-slate-500 mt-1">
+                  Pakar RAG Enterprise. 1000 req/bulan trial. Dapatkan di <a href="https://dashboard.cohere.com/" target="_blank" className="text-indigo-400 hover:underline">dashboard.cohere.com</a> 
+                </p>
+              </div>
+            )}
+
+            {aiSettings.provider === 'gemini' && (
+              <div>
+                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wide mb-1.5">API Key Gemini</label>
+                <input type="password" value={aiSettings.apiKey} onChange={e => setAiSettings(s => ({ ...s, apiKey: e.target.value }))} placeholder="AIzA..." className="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:border-indigo-500" />
+              </div>
+            )}
 
             <div>
               <label className="block text-xs font-bold text-slate-400 uppercase tracking-wide mb-1.5">System Prompt (Karakteristik & Batasan)</label>

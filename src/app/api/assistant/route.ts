@@ -2,9 +2,13 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { parseIntent, SYMPTOM_MAP } from '@/lib/assistant/nlp';
 import { generateEmbedding, findMostSimilar } from '@/lib/vector-store';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { createOllama } from 'ollama-ai-provider-v2';
+import { createGoogleGenerativeAI } from '@ai-sdk/google';
+import { createGroq } from '@ai-sdk/groq';
+import { createCohere } from '@ai-sdk/cohere';
+import { streamText } from 'ai';
 
-const DAYS = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+const DAYS = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
 
 // ─── Helper: Format shift ke teks ─────────────────────
 function formatShift(shift: { dayIdx: number; formattedTime?: string | null; title: string; registrationTime?: string | null }) {
@@ -13,65 +17,34 @@ function formatShift(shift: { dayIdx: number; formattedTime?: string | null; tit
   return text;
 }
 
-// ─── Helper: Generate Context Memory ─────────────────
+// ─── Helper: Build DB context dari hasil query ─────────────────
 function buildMemoryContext(history: { sender: string; text: string }[]) {
   if (!history || history.length === 0) return '';
-  return "Konteks obrolan sebelumnya:\n" + history.slice(-4).map(h => `${h.sender === 'user' ? 'Pasien' : 'Asisten'}: ${h.text}`).join('\n') + "\n\n";
-}
-
-// ─── AI SWITCH ENGINE: Panggil Gemini Jika Diaktifkan ─────────────
-async function askGenerativeAI(prompt: string, contextSource: string, settings: any) {
-  try {
-    if (!settings.apiKey) return null;
-    const genAI = new GoogleGenerativeAI(settings.apiKey);
-    const model = genAI.getGenerativeModel({ model: settings.aiModel });
-    
-    const finalPrompt = `
-${settings.systemPrompt}
-
-PENTING: Gunakan informasi berikut sebagai 100% SUMBER KEBENARAN SATU-SATUNYA. Jangan menambah fakta fiktif. Jika informasi di sumber tidak cukup, jawab dengan sopan bahwa Anda tidak tahu jadwal/infonya.
-
-SUMBER DATA (RAG/DATABASE):
-"""
-${contextSource}
-"""
-
-PERTANYAAN PASIEN:
-"${prompt}"
-
-Tuliskan balasan untuk pasien secara natural, empatik, menggunakan emoji yang pas, dan diformat menggunakan Markdown (bold, list). Jangan menyebut "Berdasarkan sumber data" dsb, bersikap seolah-olah Anda yang tahu informasinya.
-`;
-    const result = await model.generateContent(finalPrompt);
-    return result.response.text();
-  } catch (error) {
-    console.error('Gemini API Error:', error);
-    return null; // Fallback ke Local text
-  }
+  return "Riwayat percakapan:\n" + history.slice(-4).map(h =>
+    `${h.sender === 'user' ? 'Pasien' : 'Asisten'}: ${h.text}`
+  ).join('\n') + "\n\n";
 }
 
 export async function POST(req: Request) {
   try {
-    const { message, role, conversationHistory } = await req.json();
+    const body = await req.json();
+    const { message, role, conversationHistory } = body;
 
     if (!message || typeof message !== 'string') {
       return NextResponse.json({ reply: 'Halo! Ada yang bisa saya bantu?' });
     }
 
     const userRole = role === 'admin' ? 'admin' : 'public';
-    
-    // Memory context for NLP
-    const memoryCtx = buildMemoryContext(conversationHistory || []);
-    const fullQuery = memoryCtx ? memoryCtx + "Pertanyaan: " + message : message;
-    
-    const parsed = parseIntent(message, userRole);
-    let replyText = '';
-    let source = '-';
-    let kbMatchId = null;
 
     // Ambil Settings AI
     const aiConfig = await prisma.aiSettings.findUnique({ where: { id: 'singleton' } });
 
-    // ─── LAYER 0: SEMANTIC RAG untuk intent general/unknown ────────────────────
+    const parsed = parseIntent(message, userRole);
+    let contextText = '';
+    let source = 'local-nlp';
+    let kbMatchId: string | null = null;
+
+    // ─── LAYER 0: SEMANTIC RAG (untuk intent general/unknown) ──────────
     if (parsed.intent === 'general' || parsed.intent === 'unknown') {
       try {
         const kbItems = await prisma.knowledgeBase.findMany({
@@ -81,11 +54,9 @@ export async function POST(req: Request) {
 
         if (kbItems.length > 0) {
           const queryEmbedding = await generateEmbedding(message);
-          // Menggunakan HYBRID SEARCH terbaru (BM25 + RRF)
           const { match, score } = findMostSimilar(message, queryEmbedding, kbItems as any, 0.40);
-
           if (match) {
-            replyText = `**${match.title}**\n\n${(match as any).content}\n\n_ℹ️ Kategori: ${(match as any).category}_`;
+            contextText = `Informasi dari Basis Pengetahuan RS:\n**${match.title}**\n${(match as any).content}`;
             source = 'hybrid-rag';
             kbMatchId = match.id;
           }
@@ -95,185 +66,153 @@ export async function POST(req: Request) {
       }
     }
 
-    // ─── LAYER 1: JADWAL HARI INI / BESOK (semua dokter yang praktek) ──────────
-    if (parsed.intent === 'jadwal_hari_ini' || parsed.intent === 'jadwal_besok') {
-      const targetDayIdx = parsed.intent === 'jadwal_hari_ini' ? new Date().getDay() : (new Date().getDay() + 1) % 7;
-      const dayWord = parsed.intent === 'jadwal_hari_ini' ? 'Hari ini' : 'Besok';
 
-      const shifts = await prisma.shift.findMany({
-        where: { dayIdx: targetDayIdx, doctor: { status: { not: 'CUTI' } } },
-        include: { doctor: { select: { name: true, specialty: true, category: true, status: true } } },
-        orderBy: { title: 'asc' }, take: 20,
+    // ─── AI OMNISCIENCE 2.0: GLOBAL DB & OPS CONTEXT ───────────────────
+    try {
+      // PERBAIKAN: Gunakan zona waktu Jakarta (WIB) untuk menentukan tanggal & hari index
+      const wibDate = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Jakarta"}));
+      const todayDayIdx = (wibDate.getDay() + 6) % 7;
+      const tomorrowDayIdx = (todayDayIdx + 1) % 7;
+      
+      const todayDateStr = wibDate.toISOString().split('T')[0];
+
+      const [shifts, leaves, stats, settings] = await Promise.all([
+        prisma.shift.findMany({
+          where: { dayIdx: { in: [todayDayIdx, tomorrowDayIdx] } },
+          include: { doctor: { select: { name: true, specialty: true } } }
+        }),
+        prisma.leaveRequest.findMany({
+          where: { endDate: { gte: new Date() }, status: 'APPROVED' },
+          include: { doctor: { select: { name: true } } }
+        }),
+        prisma.dailyRecap.findUnique({
+          where: { date: new Date(todayDateStr) }
+        }).catch(() => null),
+        prisma.settings.findUnique({ where: { id: "1" } }).catch(() => null)
+      ]);
+
+      let omniscienceDigest = `[DATA OMNISCIENCE RS MEDCORE - ${todayDateStr}]\n`;
+      omniscienceDigest += `Status Otomasi: ${settings?.automationEnabled ? 'AKTIF' : 'NON-AKTIF'} | Mode Darurat: ${settings?.emergencyMode ? 'AKTIF 🚨' : 'Mati'}\n\n`;
+
+      if (stats) {
+        omniscienceDigest += `> RINGKASAN OPERASIONAL HARI INI:\n`;
+        omniscienceDigest += `- Total Pasien Terdaftar: ${stats.total_patients}\n`;
+        omniscienceDigest += `- Kendala SEP (BPJS): ${stats.missing_sep_count} kasus\n\n`;
+      }
+
+      // Cuti
+      const leaveMap = new Map();
+      leaves.forEach(l => {
+        leaveMap.set(l.doctor.name, `SEDANG CUTI (${l.startDate.toLocaleDateString('id-ID')} s/d ${l.endDate.toLocaleDateString('id-ID')})`);
       });
 
-      if (shifts.length > 0) {
-        replyText = `📅 **${dayWord} (${DAYS[targetDayIdx]}), dokter praktek:**\n`;
-        const grouped: Record<string, string[]> = {};
-        for (const s of shifts) {
-          const key = s.doctor.specialty || 'Lainnya';
-          if (!grouped[key]) grouped[key] = [];
-          grouped[key].push(`- **${s.doctor.name}** ${s.formattedTime || s.title}`);
-        }
-        for (const [spec, items] of Object.entries(grouped)) {
-          replyText += `\n**${spec}**\n${items.join('\n')}\n`;
-        }
-      } else {
-        replyText = `Tidak ada jadwal praktek terdaftar untuk **${dayWord} (${DAYS[targetDayIdx]})**.`;
-      }
-      source = 'db-schedule';
-    }
+      // Filter shift & Cek Cuti
+      const todayShifts = shifts.filter(s => s.dayIdx === todayDayIdx);
+      const tomorrowShifts = shifts.filter(s => s.dayIdx === tomorrowDayIdx);
 
-    // ─── LAYER 2: JADWAL TANGGAL SPESIFIK ──────────────────────────────────────
-    else if (parsed.intent === 'jadwal_tanggal') {
-      const dayIdx = parsed.entities.dayIdx ?? new Date().getDay();
-      const shifts = await prisma.shift.findMany({
-        where: { dayIdx, doctor: { status: { not: 'CUTI' } } },
-        include: { doctor: { select: { name: true, specialty: true } } },
-        take: 15,
+      omniscienceDigest += `> JADWAL PRAKTEK DOKTER HARI INI (${DAYS[todayDayIdx]}):\n`;
+      todayShifts.forEach(s => {
+        const leaveStat = leaveMap.has(s.doctor.name) ? `[⚠️ ${leaveMap.get(s.doctor.name)}]` : '[AKTIF]';
+        omniscienceDigest += `- ${s.doctor.name} (${s.doctor.specialty}): ${s.formattedTime || s.title} ${leaveStat}\n`;
       });
+      if (todayShifts.length === 0) omniscienceDigest += `- Tidak ada jadwal terdaftar.\n`;
 
-      if (shifts.length > 0) {
-        replyText = `📅 **Jadwal Praktek — ${parsed.entities.day || DAYS[dayIdx]} (${DAYS[dayIdx]}):**\n`;
-        for (const s of shifts) replyText += `- **${s.doctor.name}** _(${s.doctor.specialty})_ — ${s.formattedTime || s.title}\n`;
-      } else {
-        replyText = `Tidak ada jadwal terdaftar untuk **${parsed.entities.day || DAYS[dayIdx]}**.`;
-      }
-      source = 'db-schedule';
-    }
-
-    // ─── LAYER 3: CARI DOKTER BY POLI / SPESIALISASI ───────────────────────────
-    else if (parsed.intent === 'cari_dokter') {
-      const { specialty, polyclinic } = parsed.entities;
-      const whereClause: any = { status: { not: 'CUTI' } };
-      if (specialty) whereClause.specialty = { contains: specialty, mode: 'insensitive' };
-      if (polyclinic && !specialty) whereClause.category = { contains: polyclinic.replace('poli ', ''), mode: 'insensitive' };
-
-      const doctors = await prisma.doctor.findMany({
-        where: whereClause,
-        include: { shifts: { select: { dayIdx: true, formattedTime: true, title: true } } },
-        take: 10,
+      omniscienceDigest += `\n> JADWAL PRAKTEK DOKTER BESOK (${DAYS[tomorrowDayIdx]}):\n`;
+      tomorrowShifts.forEach(s => {
+        const leaveStat = leaveMap.has(s.doctor.name) ? `[⚠️ ${leaveMap.get(s.doctor.name)}]` : '[AKTIF]';
+        omniscienceDigest += `- ${s.doctor.name} (${s.doctor.specialty}): ${s.formattedTime || s.title} ${leaveStat}\n`;
       });
+      if (tomorrowShifts.length === 0) omniscienceDigest += `- Tidak ada jadwal terdaftar.\n`;
 
-      if (doctors.length > 0) {
-        replyText = `🔍 Dokter spesialis terkait yang tersedia:\n\n`;
-        for (const doc of doctors) {
-          replyText += `- **${doc.name}** _(${doc.specialty})_\n`;
-        }
-      } else {
-        replyText = `Maaf, dokter dengan spesialisasi/poli tersebut tidak ditemukan.`;
+      if (contextText && contextText.length > 0) {
+        omniscienceDigest += `\n> PENGETAHUAN TAMBAHAN (WEB/FAQ):\n${contextText}\n`;
       }
-      source = 'db-doctors';
+
+      contextText = omniscienceDigest;
+      source = 'omniscience-2.0';
+
+    } catch (e) {
+      console.error('Omniscience fetch error:', e);
     }
 
-    // ─── LAYER 4: INFO DOKTER CUTI MASA DEPAN (FORECASTING) ────────────────────
-    else if (parsed.intent === 'cuti_dokter') {
-      const now = new Date();
-      // Cari cuti yang sedang berjalan atau di masa depan
-      const leaveRequests = await prisma.leaveRequest.findMany({
-        where: {
-          endDate: { gte: now },
-          status: 'APPROVED',
-          doctor: parsed.entities.doctorName ? { name: { contains: parsed.entities.doctorName, mode: 'insensitive' } } : undefined
-        },
-        include: { doctor: { select: { name: true, specialty: true } } },
-        orderBy: { startDate: 'asc' },
-        take: 15,
-      });
-
-      if (leaveRequests.length > 0) {
-        replyText = `📋 **Jadwal Cuti Dokter Terkonfirmasi:**\n`;
-        for (const leave of leaveRequests) {
-          const start = leave.startDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
-          const end = leave.endDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
-          replyText += `- **${leave.doctor.name}** _(${leave.doctor.specialty})_\n  Libur dari **${start}** s/d **${end}**.\n`;
-        }
-      } else {
-        replyText = `✅ Semua jadwal dokter aman. Tidak ada pengajuan cuti yang terdaftar dalam waktu dekat ini.`;
-      }
-      source = 'db-leaves';
-    }
-
-    // ─── LAYER 4.5: REKOMENDASI BERDASARKAN KELUHAN MEDIS ───────────────────
-    else if (parsed.intent === 'rekomendasi_keluhan') {
-      const symptom = parsed.entities.symptom;
-      if (!symptom || !SYMPTOM_MAP[symptom]) {
-        replyText = `Gejala Anda dicatat, namun saya kesulitan menemukan spesialis yang pas secara spesifik. Silakan hubungi Poli Umum terlebih dahulu.`;
-      } else {
-        const specs = SYMPTOM_MAP[symptom]; // Array ['saraf', 'umum'] dll
-        const todayIdx = new Date().getDay();
-
-        // Cari dokter yang punya shift HARI INI dengan spesialisasi tersebut
-        const recommendedDoctors = await prisma.doctor.findMany({
-          where: { 
-            status: { not: 'CUTI' },
-            specialty: { in: specs, mode: 'insensitive' },
-            shifts: { some: { dayIdx: todayIdx } }
-          },
-          include: { shifts: { where: { dayIdx: todayIdx } } },
-          take: 5
-        });
-
-        if (recommendedDoctors.length > 0) {
-          replyText = `💡 Untuk keluhan **"${symptom}"**, Anda disarankan periksa ke spesialis **${specs.join(' / ')}**.\n\nSangat kebetulan, berikut dokter yang **PRAKTEK HARI INI** dan bisa Anda temui:\n`;
-          for (const doc of recommendedDoctors) {
-            replyText += `- **${doc.name}** _(${doc.specialty})_ — ${doc.shifts[0]?.formattedTime || doc.shifts[0]?.title}\n`;
-          }
-        } else {
-          replyText = `💡 Untuk keluhan **"${symptom}"**, Anda disarankan periksa ke poli spesialis **${specs.join(' / ')}**.\nSayangnya belum ada spesialis tersebut yang terjadwal praktek hari ini.`;
-        }
-      }
-      source = 'db-recommendation';
-    }
-
-    // ─── LAYER 5: JADWAL DOKTER SPESIFIK (by nama) ─────────────────────────────
-    else if (parsed.intent === 'jadwal') {
-      if (parsed.entities.doctorName) {
-        let doctors = await prisma.doctor.findMany({
-          where: { name: { contains: parsed.entities.doctorName, mode: 'insensitive' } },
-          include: { shifts: { orderBy: { dayIdx: 'asc' } } },
-          take: 3,
-        });
-
-        if (doctors.length > 0) {
-          const doc = doctors[0];
-          if ((doc as any).status === 'CUTI') {
-            replyText = `😔 **${doc.name}** sedang **cuti** (tidak praktek).`;
-          } else if (doc.shifts.length > 0) {
-            replyText = `📅 Jadwal **${doc.name}** _(${(doc as any).specialty})_:\n` + doc.shifts.map(s => formatShift(s)).join('\n');
-          } else {
-            replyText = `**${doc.name}** terdaftar tapi belum ada data jam praktek.`;
-          }
-        }
-      } else {
-         replyText = `Mohon sebutkan nama dokter atau polisinya.`;
-      }
-      source = 'db-schedule';
-    }
-
-    // ─── FALLBACK FINAL ────────────────────────────────────────────────────────
-    if (!replyText) {
-      replyText = `Halo! Saya tidak menemukan jawaban yang tepat. Coba ketik "jadwal hari ini" atau "poli gigi".`;
-    }
-
-    // ─── AI ASSIST SWITCH (Jahit kalimat dengan AI Eksternal) ──────────────────
-    if (aiConfig?.aiEnabled && aiConfig.provider === 'gemini') {
-      const aiResponse = await askGenerativeAI(message, replyText, aiConfig);
-      if (aiResponse) {
-        replyText = aiResponse;
-        source = 'ai-generative';
-      }
-    }
-
-    // ─── HIT COUNT UPDATE UNTUK KNOWLEDGE BASE ─────────────────────────────────
+    // Fire and forget: update hit count jika dari RAG
     if (kbMatchId) {
-       // Fire and forget, update statistic score for bot studio analytics
-       prisma.knowledgeBase.update({ where: { id: kbMatchId }, data: { hitCount: { increment: 1 } } }).catch(()=>null);
+      prisma.knowledgeBase.update({ where: { id: kbMatchId }, data: { hitCount: { increment: 1 } } }).catch(() => null);
     }
 
-    return NextResponse.json({ reply: replyText, intent: parsed.intent, source, confidence: parsed.confidence });
+    // Bypass dimatikan secara permanen. Model AI akan bertanggung jawab penuh membaca data mentah (raw data) dan menjawab dengan logikanya sendiri.
+    const bypassAiForData = false;
+
+    // ─── CLOUD / LOCAL AI STREAMING (Multi-Provider) ──────────────────
+    if (aiConfig?.aiEnabled && !bypassAiForData) {
+      try {
+        let aiModelOptions: any = null;
+        let modelName = aiConfig.aiModel || 'qwen2.5:1.5b';
+
+        // 1. Inisialisasi Model Berdasarkan Provider
+        if (aiConfig.provider === 'ollama') {
+          const baseUrl = (aiConfig.ollamaUrl || 'http://localhost:11434').replace(/\/+$/, '');
+          const ollamaProvider = createOllama({ baseURL: `${baseUrl}/api` });
+          if (modelName.includes('gemini')) modelName = 'qwen2.5:1.5b'; // Fallback aman
+          aiModelOptions = ollamaProvider(modelName);
+        } 
+        else if (aiConfig.provider === 'gemini') {
+          const google = createGoogleGenerativeAI({ apiKey: aiConfig.geminiKey || aiConfig.apiKey || '' });
+          aiModelOptions = google(modelName);
+        }
+        else if (aiConfig.provider === 'groq') {
+          const groq = createGroq({ apiKey: aiConfig.groqKey || '' });
+          aiModelOptions = groq(modelName);
+        }
+        else if (aiConfig.provider === 'cohere') {
+          const cohere = createCohere({ apiKey: aiConfig.cohereKey || '' });
+          let cohereModel = modelName;
+          if (cohereModel === 'command-r' || cohereModel === 'command-r-plus') cohereModel = 'command-r-plus-08-2024';
+          aiModelOptions = cohere(cohereModel);
+        }
+
+        if (!aiModelOptions) throw new Error("Provider tidak valid");
+
+        // 2. Prompt Diet & Context
+        const shortHistory = (conversationHistory || []).slice(-2);
+        const memoryCtx = buildMemoryContext(shortHistory);
+
+        // 3. System Prompt (Double Persona)
+        let finalSystemPrompt = aiConfig.systemPrompt || 'Anda adalah asisten virtual resmi RS.';
+        if (userRole === 'admin') {
+          finalSystemPrompt += '\n\nINSTRUKSI KHUSUS MODE ADMIN:\nAnda berbicara dengan staf atau manajemen RS. Bersikaplah profesional, analitis, dan to-the-point sebagai asisten operasional RS. Berikan jawaban yang ringkas dan informatif tanpa basa-basi berlebihan.';
+        } else {
+          finalSystemPrompt += '\n\nINSTRUKSI KHUSUS MODE PUBLIK:\nAnda berbicara dengan pasien atau keluarga pasien. Bersikaplah sebagai Customer Service RS yang sangat hangat, ramah, suportif, dan empati. Gunakan panggilan "Bapak/Ibu" mendoakan kesembuhan. JANGAN berikan diagnosis medis.';
+        }
+
+        // 4. Eksekusi Streaming
+        const result = streamText({
+          model: aiModelOptions,
+          system: finalSystemPrompt,
+          prompt: `${memoryCtx}KONTEKS DATA RUMAH SAKIT:\n${contextText}\n\nPERTANYAAN: ${message}\n\nJawablah berdasarkan konteks di atas dengan gaya bahasa sesuai peran Anda.`,
+        });
+
+        return result.toTextStreamResponse();
+
+      } catch (ollamaErr) {
+        console.error('Ollama stream error, falling back to local:', ollamaErr);
+        // Jatuh ke local fallback di bawah
+      }
+    }
+
+    // ─── LOCAL FALLBACK (Jika Ollama mati atau disabled) ──────────────
+    return NextResponse.json({
+      reply: contextText,
+      intent: parsed.intent,
+      source,
+      confidence: parsed.confidence,
+    });
 
   } catch (err: any) {
-    console.error('Chat Assistant Error:', err);
-    return NextResponse.json({ reply: 'Maaf, sistem AI sedang pulih dari gangguan.' }, { status: 500 });
+    console.error('Chat Assistant Error:', err?.message || err);
+    return NextResponse.json(
+      { reply: 'Maaf, sistem AI sedang dalam perbaikan. Coba lagi sebentar.' },
+      { status: 500 }
+    );
   }
 }

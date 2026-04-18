@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
+const DEFAULT_SYSTEM_PROMPT = 'Anda adalah asisten virtual resmi Rumah Sakit bernama SIMED AI. Jawablah secara singkat, ramah, dan empatik dalam bahasa Indonesia. JANGAN pernah memberikan informasi medis diagnostik, arahkan pasien ke pelayanan. Gunakan data konteks yang diberikan sebagai sumber utama.';
+
 export async function GET() {
   try {
     let settings = await prisma.aiSettings.findUnique({
@@ -11,11 +13,12 @@ export async function GET() {
       settings = await prisma.aiSettings.create({
         data: {
           id: 'singleton',
-          provider: 'local',
+          provider: 'ollama',
           aiEnabled: false,
-          aiModel: 'gemini-1.5-flash',
+          aiModel: 'qwen2.5:1.5b',
+          ollamaUrl: 'http://localhost:11434',
           apiKey: '',
-          systemPrompt: 'Anda adalah asisten virtual resmi Rumah Sakit MedCore bernama FAKT-Bot. Jawablah secara singkat, ramah, dan empatik. JANGAN pernah memberikan informasi medis diagnostik, arahkan pasien ke pelayanan. Gunakan bahasa Indonesia sehari-hari yang sopan.'
+          systemPrompt: DEFAULT_SYSTEM_PROMPT,
         }
       });
     }
@@ -31,7 +34,7 @@ export async function PATCH(req: Request) {
   try {
     const data = await req.json();
 
-    const allowedFields = ['provider', 'apiKey', 'aiEnabled', 'aiModel', 'systemPrompt'];
+    const allowedFields = ['provider', 'apiKey', 'aiEnabled', 'aiModel', 'ollamaUrl', 'systemPrompt', 'geminiKey', 'groqKey', 'cohereKey'];
     const updateData: any = {};
 
     for (const key of allowedFields) {
@@ -45,7 +48,13 @@ export async function PATCH(req: Request) {
       update: updateData,
       create: {
         id: 'singleton',
-        ...updateData
+        provider: 'ollama',
+        aiEnabled: false,
+        aiModel: 'qwen2.5:1.5b',
+        ollamaUrl: 'http://localhost:11434',
+        apiKey: '',
+        systemPrompt: DEFAULT_SYSTEM_PROMPT,
+        ...updateData,
       }
     });
 

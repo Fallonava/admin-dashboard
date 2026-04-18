@@ -209,8 +209,15 @@ export function RealtimeCalendar({ selectedDate, onDateChange }: RealtimeCalenda
         <div className="flex-1 w-full flex flex-col min-h-0 overflow-hidden relative space-y-4">
             {/* ── Header Controls ──────────────────────────────── */}
             <div className="flex-none bg-white/80 backdrop-blur-xl border border-white/50 px-4 py-3 sm:py-4 sm:rounded-2xl shadow-sm flex items-center justify-between">
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 flex-wrap">
                     <h2 className="text-lg lg:text-xl font-extrabold text-foreground capitalize tracking-tight bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">{formatDateObj(selectedDate)}</h2>
+                    <span className={`inline-flex items-center gap-1 text-[10px] font-black px-2 py-0.5 rounded-full border ${
+                        weekOfMonth % 2 !== 0
+                            ? 'text-violet-600 bg-violet-50 border-violet-200'
+                            : 'text-amber-600 bg-amber-50 border-amber-200'
+                    }`}>
+                        Minggu ke-{weekOfMonth} · {weekOfMonth % 2 !== 0 ? 'Ganjil' : 'Genap'}
+                    </span>
                 </div>
 
                 <button
