@@ -38,7 +38,8 @@ export const systems = [
   { name: "Otomatisasi", href: "/automation", icon: Bot, resource: "automation" },
   { name: "FAKT-Bot", href: "/broadcast", icon: MessageSquare, resource: "automation" },
   { name: "Bot Studio", href: "/bot-studio", icon: Server, resource: "automation" },
-  { name: "Layar Langsung", href: "/tv.html", icon: Tv, external: true, resource: "display_tv" },
+  { name: "Layar Langsung (Lama)", href: "/tv.html", icon: Tv, external: true, resource: "display_tv" },
+  { name: "Layar Neo TV", href: "/publik/tv", icon: Tv, external: true, resource: "display_tv" },
 ];
 
 export const admin = [

@@ -12,11 +12,11 @@ import StaffMatrixDashboard from '@/components/StaffMatrixDashboard';
 interface StaffPerformance {
   name: string;
   total: number;
-  _id?: string;
+  id?: string;
 }
 
 interface DailyRecap {
-  _id: string;
+  id: string;
   date: string;
   total_patients: number;
   missing_sep_count: number;
@@ -639,7 +639,7 @@ export default function HistoryDashboard() {
         </div>
         <div className="divide-y divide-slate-100">
           {[...data].reverse().map((recap) => (
-            <div key={recap._id} className="flex items-center justify-between px-5 py-3.5 hover:bg-slate-50/80 transition-colors group">
+            <div key={recap.id || recap.date} className="flex items-center justify-between px-5 py-3.5 hover:bg-slate-50/80 transition-colors group">
               <div className="flex items-center gap-4">
                 <div className="text-center bg-indigo-50 border border-indigo-100 rounded-xl px-3 py-1.5 shrink-0">
                   <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-wider">{format(parseISO(recap.date), 'MMM', { locale: id })}</p>

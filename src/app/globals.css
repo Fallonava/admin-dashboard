@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Tailwind v4: dark mode via class selector on html/root element */
+@variant dark (&:where(.dark, .dark *));
+
 @theme {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -260,6 +263,29 @@ html.reduce-effects .animate-spin {
 .custom-scrollbar::-webkit-scrollbar-thumb {
   background: rgba(0, 0, 0, 0.1);
   border-radius: 9999px;
+}
+
+/* ─── Dark Mode Variables ─── */
+.dark {
+  --background: 240 6% 4%;
+  --foreground: 240 5% 96%;
+  --card: 240 5% 8%;
+  --card-foreground: 240 5% 96%;
+  --popover: 240 5% 8%;
+  --popover-foreground: 240 5% 96%;
+  --primary: 160 84% 39%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 240 4% 15%;
+  --secondary-foreground: 240 5% 96%;
+  --muted: 240 4% 15%;
+  --muted-foreground: 240 5% 60%;
+  --accent: 160 84% 15%;
+  --accent-foreground: 160 84% 60%;
+  --destructive: 0 80% 50%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 240 4% 12%;
+  --input: 240 4% 12%;
+  --ring: 160 84% 39%;
 }
 
 /* ════════════════ PAGE HEADER ANIMATIONS ════════════════ */

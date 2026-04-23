@@ -10,7 +10,7 @@ interface StaffPerformance {
 }
 
 interface DailyRecap {
-  _id: string;
+  id: string;
   date: string;
   total_patients: number;
   missing_sep_count: number;
