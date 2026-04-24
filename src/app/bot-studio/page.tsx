@@ -43,6 +43,7 @@ export default function BotStudioPage() {
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ category: 'Umum', title: '', content: '', tags: '', isActive: true });
   const [toast, setToast] = useState<{ msg: string; type: 'ok' | 'err' } | null>(null);
+  const [importing, setImporting] = useState(false);
 
   // AI LLM Settings State
   const [aiSettings, setAiSettings] = useState({ provider: 'ollama', apiKey: '', geminiKey: '', groqKey: '', cohereKey: '', aiEnabled: false, aiModel: 'qwen2.5:1.5b', ollamaUrl: '', systemPrompt: '' });
@@ -163,6 +164,39 @@ export default function BotStudioPage() {
 
   const activeCount = items.filter(i => i.isActive).length;
 
+  const handleDownloadTemplate = () => {
+    window.open('/api/knowledge-base/import-export?action=template', '_blank');
+  };
+
+  const handleExport = () => {
+    window.open('/api/knowledge-base/import-export?action=export', '_blank');
+  };
+
+  const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setImporting(true);
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const res = await fetch('/api/knowledge-base/import-export', {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Gagal impor');
+      showToast('✅ ' + data.message);
+      fetchItems();
+    } catch (err: any) {
+      showToast('❌ Impor Gagal: ' + err.message, 'err');
+    } finally {
+      setImporting(false);
+      if (e.target) e.target.value = '';
+    }
+  };
+
   return (
     <main className="p-6 sm:p-8 space-y-6 max-w-[1400px] mx-auto pb-24">
 
@@ -211,6 +245,51 @@ export default function BotStudioPage() {
           >
             <Plus size={16} /> Tambah Pengetahuan
           </button>
+        </div>
+      </section>
+
+      {/* ─── DATASET ACTIONS (IMPORT/EXPORT) ─────────────────────────── */}
+      <section className="flex flex-wrap items-center justify-between gap-4 bg-white/50 border border-slate-200 rounded-2xl p-4 shadow-sm">
+        <div className="flex items-center gap-2">
+          <div className="p-2 bg-slate-100 rounded-lg text-slate-600">
+            <Database size={18} />
+          </div>
+          <div>
+            <h3 className="text-sm font-bold text-slate-800">Manajemen Dataset</h3>
+            <p className="text-[10px] text-slate-500 font-medium">Impor atau ekspor seluruh pengetahuan AI dalam format Excel.</p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleDownloadTemplate}
+            className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold text-slate-600 bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-all"
+          >
+            <BookOpen size={14} /> Download Format
+          </button>
+          <button
+            onClick={handleExport}
+            className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold text-slate-600 bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-all"
+          >
+            <Save size={14} /> Export Data
+          </button>
+          
+          <div className="h-6 w-px bg-slate-200 mx-1" />
+
+          <label className={cn(
+            "flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold text-white transition-all cursor-pointer shadow-md",
+            importing ? "bg-slate-400 cursor-not-allowed" : "bg-emerald-600 hover:bg-emerald-700 shadow-emerald-100"
+          )}>
+            <RefreshCw size={14} className={importing ? "animate-spin" : ""} />
+            {importing ? "Sedang Mengimpor..." : "Import Dataset (Excel)"}
+            <input 
+              type="file" 
+              accept=".xlsx, .xls" 
+              className="hidden" 
+              onChange={handleImport} 
+              disabled={importing}
+            />
+          </label>
         </div>
       </section>
 
