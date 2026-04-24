@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/Skeleton";
-import { PortalManagerClient } from "@/components/portal-manager/PortalManagerClient";
+import { PortalManagerClient } from "@/features/portal-manager/components/PortalManagerClient";
 
 export default function PortalManagerPage() {
   return (

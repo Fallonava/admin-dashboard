@@ -1,43 +1,19 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import { hashPassword, getSession } from '@/lib/auth';
 import { requirePermission, withMutationRateLimit } from '@/lib/api-utils';
-import { logAuditAction } from '@/lib/audit';
 import { z } from 'zod';
+import { UserCreateSchema, UserUpdateSchema } from '@/features/auth/types';
+import { UserService } from '@/features/auth/services/UserService';
 
 export const dynamic = 'force-dynamic';
 
-const UserCreateSchema = z.object({
-  username: z.string().min(3).max(50),
-  password: z.string().min(6),
-  name: z.string().min(1).max(100),
-  roleId: z.string().nullable().optional(),
-});
-
-const UserUpdateSchema = z.object({
-  id: z.string().min(1),
-  username: z.string().min(3).max(50).optional(),
-  password: z.string().min(6).optional(),
-  name: z.string().min(1).max(100).optional(),
-  roleId: z.string().nullable().optional(),
-});
-
-// GET /api/users — List all users
 export async function GET(req: Request) {
   const authErr = await requirePermission(req, 'users', 'read');
   if (authErr) return authErr;
 
-  const users = await prisma.user.findMany({
-    include: { role: { select: { id: true, name: true } } },
-    orderBy: { createdAt: 'desc' },
-  });
-
-  // Strip password from response
-  const safeUsers = users.map(({ password, ...rest }) => rest);
-  return NextResponse.json(safeUsers);
+  const users = await UserService.getAllUsers();
+  return NextResponse.json(users);
 }
 
-// POST /api/users — Create a new user
 export async function POST(req: Request) {
   const rateLimitErr = await withMutationRateLimit(req, 'users');
   if (rateLimitErr) return rateLimitErr;
@@ -48,40 +24,21 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
     const validated = UserCreateSchema.parse(body);
-    const { username, password, name, roleId } = validated;
 
-    const existing = await prisma.user.findUnique({ where: { username } });
-    if (existing) {
-      return NextResponse.json({ error: 'Username sudah digunakan' }, { status: 409 });
-    }
-
-    const hashed = await hashPassword(password);
-    const user = await prisma.user.create({
-      data: { username, password: hashed, name, roleId: roleId || null },
-      include: { role: { select: { id: true, name: true } } },
-    });
-
-    const session = await getSession(req);
-    await logAuditAction({
-      userId: session?.userId,
-      action: 'CREATE_USER',
-      resource: 'users',
-      details: { createdUserId: user.id, username: user.username },
-      req,
-    });
-
-    const { password: _, ...safeUser } = user;
+    const safeUser = await UserService.createUser(validated, req);
     return NextResponse.json(safeUser, { status: 201 });
-  } catch (err) {
+  } catch (err: any) {
     if (err instanceof z.ZodError) {
       return NextResponse.json({ error: 'Validation failed', details: err.flatten() }, { status: 400 });
+    }
+    if (err.message === 'Username sudah digunakan') {
+      return NextResponse.json({ error: err.message }, { status: 409 });
     }
     console.error('[Users POST]', err);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
 
-// PUT /api/users — Update user (expects { id, ...fields })
 export async function PUT(req: Request) {
   const rateLimitErr = await withMutationRateLimit(req, 'users');
   if (rateLimitErr) return rateLimitErr;
@@ -92,31 +49,10 @@ export async function PUT(req: Request) {
   try {
     const body = await req.json();
     const validated = UserUpdateSchema.parse(body);
-    const { id, password, ...rest } = validated;
 
-    const data: Record<string, unknown> = { ...rest };
-    if (password) {
-      data.password = await hashPassword(password);
-    }
-
-    const user = await prisma.user.update({
-      where: { id },
-      data,
-      include: { role: { select: { id: true, name: true } } },
-    });
-
-    const session = await getSession(req);
-    await logAuditAction({
-      userId: session?.userId,
-      action: 'UPDATE_USER',
-      resource: 'users',
-      details: { updatedUserId: user.id, username: user.username, fields: Object.keys(rest) },
-      req,
-    });
-
-    const { password: _, ...safeUser } = user;
+    const safeUser = await UserService.updateUser(validated, req);
     return NextResponse.json(safeUser);
-  } catch (err) {
+  } catch (err: any) {
     if (err instanceof z.ZodError) {
       return NextResponse.json({ error: 'Validation failed', details: err.flatten() }, { status: 400 });
     }
@@ -125,7 +61,6 @@ export async function PUT(req: Request) {
   }
 }
 
-// DELETE /api/users — Delete user (expects { id })
 export async function DELETE(req: Request) {
   const rateLimitErr = await withMutationRateLimit(req, 'users');
   if (rateLimitErr) return rateLimitErr;
@@ -139,19 +74,9 @@ export async function DELETE(req: Request) {
       return NextResponse.json({ error: 'User ID wajib diisi' }, { status: 400 });
     }
 
-    const deletedUser = await prisma.user.delete({ where: { id } });
-    
-    const session = await getSession(req);
-    await logAuditAction({
-      userId: session?.userId,
-      action: 'DELETE_USER',
-      resource: 'users',
-      details: { deletedUserId: deletedUser.id, username: deletedUser.username },
-      req,
-    });
-
+    await UserService.deleteUser(id, req);
     return NextResponse.json({ success: true });
-  } catch (err) {
+  } catch (err: any) {
     console.error('[Users DELETE]', err);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }

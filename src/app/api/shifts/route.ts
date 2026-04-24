@@ -1,92 +1,22 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
 import { requirePermission, withMutationRateLimit } from '@/lib/api-utils';
 import { z } from 'zod';
-import { notifyViaSocket, syncAdminData, triggerSchedulerResync } from '@/lib/automation-broadcaster';
-import { getFullSnapshot } from '@/lib/data-fetchers';
+import { ShiftCreateSchema, ShiftUpdateSchema } from '@/features/schedules/types';
+import { ShiftService } from '@/features/schedules/services/ShiftService';
+
 export const dynamic = 'force-dynamic';
-
-const ShiftCreateSchema = z.object({
-    doctorId: z.string().min(1),
-    dayIdx: z.number().int().min(0).max(6),
-    timeIdx: z.number().int().min(0).optional().default(0),
-    title: z.string().min(1),
-    color: z.string().min(1),
-    formattedTime: z.string().min(1),
-    registrationTime: z.string().nullable().optional(),
-    extra: z.string().nullable().optional(),
-    disabledDates: z.array(z.string()).optional(),
-    statusOverride: z.enum(['TERJADWAL', 'PENDAFTARAN', 'PRAKTEK', 'PENUH', 'OPERASI', 'CUTI', 'SELESAI', 'LIBUR']).nullable().optional(),
-});
-
-const ShiftUpdateSchema = ShiftCreateSchema.partial().extend({
-    id: z.string().min(1),
-});
 
 export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const includeLeaves = searchParams.get('include') === 'leaves';
     const dayIdxParam = searchParams.get('dayIdx');
     const dayIdx = dayIdxParam !== null ? parseInt(dayIdxParam, 10) : null;
-    const dateParam = searchParams.get('date'); // e.g. "2026-04-02"
+    const dateParam = searchParams.get('date'); 
     const filterDate = dateParam ? new Date(dateParam) : null;
 
-    const whereClause: any = {
-        doctorId: { not: "" }
-    };
-    if (dayIdx !== null && !isNaN(dayIdx)) {
-        whereClause.dayIdx = dayIdx;
-    }
-    // We will do JavaScript-based filtering below to avoid UTC timezone offset issues
-    // that cause Prisma's exact lte/gte comparison to fail on local dates.
+    const shifts = await ShiftService.getShifts(dayIdx, filterDate, includeLeaves);
 
-    const shifts = await prisma.shift.findMany({
-        where: whereClause,
-        include: { 
-            doctor: {
-                include: {
-                    ...((includeLeaves || filterDate) ? { leaveRequests: true } : {})
-                }
-            } 
-        },
-        orderBy: [{ dayIdx: 'asc' }, { timeIdx: 'asc' }]
-    });
-
-    let mappedShifts = shifts.filter(s => s.doctor !== null).map((s: any) => {
-        const doctorRel = s.doctor ? { ...s.doctor } : null;
-        if (doctorRel && typeof doctorRel.lastManualOverride === 'bigint') {
-            doctorRel.lastManualOverride = Number(doctorRel.lastManualOverride);
-        }
-        return {
-            ...s,
-            doctor: s.doctor?.name || 'Unknown',
-            doctorName: s.doctor?.name || 'Unknown',
-            doctorRel: doctorRel
-        };
-    });
-
-    if (filterDate && !isNaN(filterDate.getTime())) {
-        mappedShifts = mappedShifts.filter((s: any) => {
-            if (s.doctorRel && s.doctorRel.leaveRequests) {
-                const isOnLeave = s.doctorRel.leaveRequests.some((lr: any) => {
-                    const statusStr = (lr.status || '').toLowerCase();
-                    if (statusStr === 'rejected' || statusStr === 'ditolak') return false;
-                    
-                    const start = new Date(lr.startDate);
-                    const end = new Date(lr.endDate);
-                    const check = new Date(filterDate);
-                    check.setHours(0, 0, 0, 0);
-                    start.setHours(0, 0, 0, 0);
-                    end.setHours(0, 0, 0, 0);
-                    return check >= start && check <= end;
-                });
-                return !isOnLeave;
-            }
-            return true;
-        });
-    }
-
-    return NextResponse.json(mappedShifts, {
+    return NextResponse.json(shifts, {
         headers: {
             'Cache-Control': 'private, max-age=30, stale-while-revalidate=60'
         }
@@ -105,14 +35,7 @@ export async function POST(req: Request) {
         if (body.id === null) delete body.id;
         const validated = ShiftCreateSchema.parse(body);
 
-        const newShift = await prisma.shift.create({ data: validated as any });
-        notifyViaSocket('shift_updated', { id: newShift.id });
-        notifyViaSocket('doctor_updated', { ids: [newShift.doctorId] });
-
-        // Trigger full sync for Admin Dashboard & resync event scheduler
-        getFullSnapshot().then(syncAdminData).catch(console.error);
-        triggerSchedulerResync();
-
+        const newShift = await ShiftService.create(validated);
         return NextResponse.json(newShift);
     } catch (e) {
         if (e instanceof z.ZodError) {
@@ -135,19 +58,7 @@ export async function PUT(req: Request) {
         const validated = ShiftUpdateSchema.parse(body);
         const { id, ...updates } = validated;
 
-        const updated = await prisma.shift.update({
-            where: { id },
-            data: updates as any // Zod-to-Prisma overlap can be tricky
-        });
-        notifyViaSocket('shift_updated', { id });
-        if (updated.doctorId) {
-            notifyViaSocket('doctor_updated', { ids: [updated.doctorId] });
-        }
-
-        // Trigger full sync for Admin Dashboard & resync event scheduler
-        getFullSnapshot().then(syncAdminData).catch(console.error);
-        triggerSchedulerResync();
-
+        const updated = await ShiftService.update(id, updates);
         return NextResponse.json(updated);
     } catch (e: any) {
         if (e instanceof z.ZodError) {
@@ -173,22 +84,10 @@ export async function DELETE(req: Request) {
     if (!id) return NextResponse.json({ error: 'ID required' }, { status: 400 });
 
     try {
-        const deleted = await prisma.shift.delete({
-            where: { id: String(id) }
-        });
-        notifyViaSocket('shift_updated', { id });
-        if (deleted && deleted.doctorId) {
-            notifyViaSocket('doctor_updated', { ids: [deleted.doctorId] });
-        }
-
-        // Trigger full sync for Admin Dashboard & resync event scheduler
-        getFullSnapshot().then(syncAdminData).catch(console.error);
-        triggerSchedulerResync();
-
+        await ShiftService.delete(String(id));
         return NextResponse.json({ success: true });
     } catch (err: any) {
         if (err.code === 'P2025') {
-            // If already deleted, consider it a success (idempotency)
             return NextResponse.json({ success: true, message: 'Already deleted' });
         }
         console.error("Shift DELETE Error:", err);

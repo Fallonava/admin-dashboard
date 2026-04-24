@@ -1,7 +1,7 @@
-import { NeuralCore } from "@/components/automation/NeuralCore";
-import { BroadcastControl } from "@/components/automation/BroadcastControl";
-import { ActivityStream } from "@/components/automation/ActivityStream";
-import { DynamicIslandSettings } from "@/components/automation/DynamicIslandSettings";
+import { NeuralCore } from "@/features/automation/components/NeuralCore";
+import { BroadcastControl } from "@/features/automation/components/BroadcastControl";
+import { ActivityStream } from "@/features/automation/components/ActivityStream";
+import { DynamicIslandSettings } from "@/features/automation/components/DynamicIslandSettings";
 import { Sparkles } from "lucide-react";
 import Link from "next/link";
 import { PageHeader } from "@/components/ui/PageHeader";

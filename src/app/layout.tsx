@@ -8,7 +8,7 @@ import { SWRProvider } from "@/components/swr-provider";
 import { AuthProvider } from "@/lib/auth-context";
 import { AppShell } from "@/components/layouts/AppShell";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
-import AiChatWidget from "@/components/AiChatWidget";
+import AiChatWidget from "@/features/assistant/components/AiChatWidget";
 
 const inter = Inter({ subsets: ["latin"] });
 

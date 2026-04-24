@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { Skeleton, DoctorCardSkeleton, StatsSkeleton } from "@/components/ui/Skeleton";
-import { WingDashboardClient } from "@/components/dashboard/WingDashboardClient";
+import { WingDashboardClient } from "@/features/dashboard/components/WingDashboardClient";
 
 /**
  * Dashboard Page — Server Component (Live-Wing View)

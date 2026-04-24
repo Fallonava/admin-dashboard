@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import ShiftBoard from '@/components/ShiftBoard';
+import ShiftBoard from '@/features/schedules/components/ShiftBoard';
 
 export default function JadwalPetugasPage() {
   return (

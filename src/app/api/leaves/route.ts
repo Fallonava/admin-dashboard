@@ -1,49 +1,13 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
 import { requirePermission, withMutationRateLimit } from '@/lib/api-utils';
 import { z } from 'zod';
-import { notifyViaSocket, syncAdminData, triggerSchedulerResync } from '@/lib/automation-broadcaster';
-import { getFullSnapshot } from '@/lib/data-fetchers';
+import { LeaveCreateBulkSchema, LeaveUpdateSchema } from '@/features/schedules/types';
+import { LeaveService } from '@/features/schedules/services/LeaveService';
+
 export const dynamic = 'force-dynamic';
 
-const LeaveCreateSchema = z.object({
-    doctor: z.string().min(1),
-    dates: z.any().optional(),
-    specialty: z.string().optional().nullable(),
-    type: z.string().min(1),
-    startDate: z.union([z.string(), z.date()]),
-    endDate: z.union([z.string(), z.date()]),
-    reason: z.string().optional().nullable(),
-    status: z.string().optional().nullable(),
-    avatar: z.string().optional().nullable(),
-});
-
-const LeaveCreateBulkSchema = z.union([LeaveCreateSchema, z.array(LeaveCreateSchema)]);
-
-const LeaveUpdateSchema = z.object({
-    id: z.string().min(1),
-    specialty: z.string().optional().nullable(),
-    type: z.string().optional(),
-    startDate: z.union([z.string(), z.date()]).optional(),
-    endDate: z.union([z.string(), z.date()]).optional(),
-    reason: z.string().optional().nullable(),
-    status: z.string().optional().nullable(),
-    avatar: z.string().optional().nullable(),
-});
-
 export async function GET() {
-    const leaves = await (prisma.leaveRequest as any).findMany({
-        where: { doctorId: { not: "" } },
-        include: { doctor: true }
-    });
-
-    const mappedLeaves = leaves
-        .filter((l: any) => l.doctor !== null)
-        .map((l: any) => ({
-            ...l,
-            doctor: l.doctor?.name || 'Unknown'
-        }));
-
+    const mappedLeaves = await LeaveService.getLeaves();
     return NextResponse.json(mappedLeaves);
 }
 
@@ -59,56 +23,18 @@ export async function POST(req: Request) {
         const data = LeaveCreateBulkSchema.parse(body);
 
         if (Array.isArray(data)) {
-        const newLeaves = await Promise.all(
-            data.map(async (item) => {
-                const { dates, doctor, ...rest } = item;
-                const doc = await prisma.doctor.findFirst({ where: { name: doctor } });
-                if (!doc) return;
-                return prisma.leaveRequest.create({
-                    data: {
-                        ...rest,
-                        type: item.type as any,
-                        doctorId: doc.id,
-                        status: 'Approved',
-                        startDate: new Date(item.startDate),
-                        endDate: new Date(item.endDate)
-                    }
-                });
-            })
-        );
-        
-        // Trigger full sync for Admin Dashboard
-        getFullSnapshot().then(syncAdminData).catch(console.error);
-        triggerSchedulerResync();
-
-        return NextResponse.json(newLeaves.filter(Boolean));
-    } else {
-        const { dates, doctor, ...rest } = data;
-        const doc = await prisma.doctor.findFirst({ where: { name: doctor } });
-        if (!doc) return NextResponse.json({ error: 'Doctor not found' }, { status: 404 });
-
-        const newLeave = await prisma.leaveRequest.create({
-            data: {
-                ...rest,
-                type: data.type as any,
-                doctorId: doc.id,
-                status: 'Approved',
-                startDate: new Date(data.startDate),
-                endDate: new Date(data.endDate)
-            }
-        });
-        notifyViaSocket('leave_updated', { id: newLeave.id });
-        notifyViaSocket('doctor_updated', { ids: [doc.id] }); // cuti mempengaruhi status dokter
-        
-        // Trigger full sync for Admin Dashboard
-        getFullSnapshot().then(syncAdminData).catch(console.error);
-        triggerSchedulerResync();
-
-        return NextResponse.json(newLeave);
-    }
+            const newLeaves = await LeaveService.createBulk(data);
+            return NextResponse.json(newLeaves);
+        } else {
+            const newLeave = await LeaveService.create(data);
+            return NextResponse.json(newLeave);
+        }
     } catch (error) {
         if (error instanceof z.ZodError) {
             return NextResponse.json({ error: 'Validation failed', details: error.flatten() }, { status: 400 });
+        }
+        if ((error as any).message === 'Doctor not found') {
+            return NextResponse.json({ error: 'Doctor not found' }, { status: 404 });
         }
         return NextResponse.json({ error: String(error) }, { status: 500 });
     }
@@ -125,19 +51,8 @@ export async function PUT(req: Request) {
         const body = await req.json();
         const validated = LeaveUpdateSchema.parse(body);
         const { id, ...updates } = validated;
-        if (updates.startDate) updates.startDate = new Date(updates.startDate);
-        if (updates.endDate) updates.endDate = new Date(updates.endDate);
 
-        const updatedLeave = await (prisma.leaveRequest as any).update({
-            where: { id: String(id) },
-            data: updates
-        });
-        notifyViaSocket('leave_updated', { id });
-
-        // Trigger full sync for Admin Dashboard
-        getFullSnapshot().then(syncAdminData).catch(console.error);
-        triggerSchedulerResync();
-
+        const updatedLeave = await LeaveService.update(id, updates);
         return NextResponse.json(updatedLeave);
     } catch (error) {
         if (error instanceof z.ZodError) {
@@ -159,15 +74,7 @@ export async function DELETE(req: Request) {
 
     if (id) {
         try {
-            await (prisma.leaveRequest as any).delete({
-                where: { id: String(id) }
-            });
-            notifyViaSocket('leave_updated', { id });
-
-            // Trigger full sync for Admin Dashboard
-            getFullSnapshot().then(syncAdminData).catch(console.error);
-            triggerSchedulerResync();
-
+            await LeaveService.delete(String(id));
             return NextResponse.json({ success: true });
         } catch (err) {
             console.error("Leave DELETE Error:", err);

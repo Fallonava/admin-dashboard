@@ -3,11 +3,11 @@
 import { useState, useMemo } from "react";
 import useSWR, { mutate } from "swr";
 import { useDebounce } from "@/hooks/use-debounce";
-import { LeaveCalendar } from "@/components/leaves/LeaveCalendar";
+import { LeaveCalendar } from "@/features/leaves/components/LeaveCalendar";
 import { Search, CalendarDays, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { LeaveRequest, Doctor } from "@/lib/data-service";
-import { AllLeavesModal } from "@/components/leaves/AllLeavesModal";
+import { AllLeavesModal } from "@/features/leaves/components/AllLeavesModal";
 import { PageHeader } from "@/components/ui/PageHeader";
 
 export default function LeavesPage() {

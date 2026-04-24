@@ -1,7 +1,7 @@
 import React from "react";
 import { BarChart2, CalendarDays, Activity } from "lucide-react";
-import DailyRecapUploader from "@/components/DailyRecapUploader";
-import HistoryDashboard from "@/components/HistoryDashboard";
+import DailyRecapUploader from "@/features/recaps/components/DailyRecapUploader";
+import HistoryDashboard from "@/features/automation/components/HistoryDashboard";
 import { PageHeader } from "@/components/ui/PageHeader";
 
 export default function RekapHarianPage() {

@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { Skeleton, DoctorCardSkeleton, StatsSkeleton } from "@/components/ui/Skeleton";
-import { DashboardClient } from "@/components/dashboard/DashboardClient";
+import { DashboardClient } from "@/features/dashboard/components/DashboardClient";
 
 export default function ControlDashboardPage() {
   return (

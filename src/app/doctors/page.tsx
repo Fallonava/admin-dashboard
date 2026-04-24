@@ -6,12 +6,12 @@ import { useDebounce } from "@/hooks/use-debounce";
 import { Plus, Search, UserRound, Activity, Users, CheckSquare, Trash2, X, ChevronDown, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Doctor } from "@/lib/data-service";
-import { DoctorFormModal } from "@/components/schedules/DoctorFormModal";
+import { DoctorFormModal } from "@/features/schedules/components/DoctorFormModal";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { DoctorCardSkeleton } from "@/components/ui/Skeleton";
-import { DoctorCard } from "@/components/doctors/DoctorCard";
+import { DoctorCard } from "@/features/doctors/components/DoctorCard";
 
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragOverlay, defaultDropAnimationSideEffects } from "@dnd-kit/core";
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, rectSortingStrategy } from "@dnd-kit/sortable";

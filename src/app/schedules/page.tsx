@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
-import { RealtimeCalendar } from "@/components/schedules/RealtimeCalendar";
-import { UpcomingShifts } from "@/components/schedules/UpcomingShifts";
+import { RealtimeCalendar } from "@/features/schedules/components/RealtimeCalendar";
+import { UpcomingShifts } from "@/features/schedules/components/UpcomingShifts";
 import { CalendarDays, ChevronLeft, ChevronRight, Users, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PageHeader } from "@/components/ui/PageHeader";
