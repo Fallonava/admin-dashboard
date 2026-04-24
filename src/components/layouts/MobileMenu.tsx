@@ -3,16 +3,24 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { X, LogOut, Activity, ChevronRight } from "lucide-react";
+import { X, LogOut, Activity, ChevronRight, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/auth-context";
-import { navigation, systems, admin } from "@/components/layouts/Sidebar";
+import { menuConfig } from "@/components/layouts/Sidebar";
 
 export function MobileMenu() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const { user, canRead, isSuperAdmin, logout } = useAuth();
   const [isClosing, setIsClosing] = useState(false);
+  
+  // By default, open all menus in mobile for easy access, or just let them behave as lists.
+  // Actually, since mobile is vertical, accordions work well. Let's start with all open.
+  const [openMenus, setOpenMenus] = useState<Record<string, boolean>>(() => {
+    const defaultOpen: Record<string, boolean> = {};
+    menuConfig.forEach(m => defaultOpen[m.id] = true);
+    return defaultOpen;
+  });
 
   useEffect(() => {
     const handleOpen = () => {
@@ -31,7 +39,6 @@ export function MobileMenu() {
     }, 300); // Matches the animation duration
   };
 
-  // Close when route changes
   useEffect(() => {
     if (isOpen) {
       closeMenu();
@@ -52,22 +59,17 @@ export function MobileMenu() {
     await logout();
   };
 
-  const filterByPermission = (items: typeof navigation) => {
-    if (isSuperAdmin) return items;
-    return items.filter((item) => !item.resource || canRead(item.resource));
+  const toggleMenu = (id: string) => {
+    setOpenMenus(prev => ({ ...prev, [id]: !prev[id] }));
   };
 
-  const renderLink = (item: { name: string; href: string; icon: React.ElementType; external?: boolean; resource?: string | null }) => {
-    const allLinks = [...navigation, ...systems, ...admin];
-    const hasExactMatch = allLinks.some(l => l.href === pathname);
-    
-    // We don't want the exact match for 'Beranda' (dashboard) bottom nav to highlight everything else
-    const isActive = hasExactMatch 
-      ? pathname === item.href 
-      : pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href));
+  const renderSubItem = (item: any) => {
+    if (!isSuperAdmin && item.resource && !canRead(item.resource)) return null;
+
+    const isActive = pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href));
       
     const linkClassName = cn(
-      "flex items-center justify-between gap-3 rounded-[20px] px-5 py-4 text-[13px] font-bold transition-all duration-300 w-full active:scale-[0.98] min-h-[44px]",
+      "flex items-center justify-between gap-3 rounded-[16px] px-4 py-3 text-[13px] font-bold transition-all duration-300 w-full active:scale-[0.98] min-h-[44px]",
       isActive
         ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/20"
         : "bg-slate-50 text-slate-700 border border-slate-100/60 hover:bg-slate-100"
@@ -77,7 +79,7 @@ export function MobileMenu() {
       <>
         <div className="flex items-center gap-3">
           <div className={cn(
-            "p-2 rounded-[12px] flex items-center justify-center",
+            "p-1.5 rounded-[10px] flex items-center justify-center",
             isActive ? "bg-white/20 text-white" : "bg-white border border-slate-200 text-blue-600 shadow-sm"
           )}>
             <item.icon className="h-4 w-4" />
@@ -103,19 +105,40 @@ export function MobileMenu() {
     );
   };
 
+  const renderParentNode = (folder: typeof menuConfig[0]) => {
+    const visibleItems = folder.items.filter(item => isSuperAdmin || !item.resource || canRead(item.resource));
+    if (visibleItems.length === 0) return null;
+
+    const isOpen = openMenus[folder.id];
+
+    return (
+      <div key={folder.id} className="mb-4">
+        <button 
+          onClick={() => toggleMenu(folder.id)}
+          className="w-full flex items-center justify-between px-2 pb-3 mb-2 border-b border-slate-100"
+        >
+          <div className="flex items-center gap-2 text-slate-400">
+            <folder.icon className="h-[14px] w-[14px]" />
+            <h2 className="text-[10px] font-black uppercase tracking-widest leading-none mt-0.5">{folder.title}</h2>
+          </div>
+          <ChevronDown className={cn("h-4 w-4 text-slate-300 transition-transform duration-300", isOpen ? "rotate-180" : "")} />
+        </button>
+
+        <div className={cn(
+          "grid transition-all duration-300 ease-in-out",
+          isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+        )}>
+          <div className="overflow-hidden">
+            <nav className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-1">
+              {visibleItems.map(renderSubItem)}
+            </nav>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   if (!isOpen && !isClosing) return null;
-
-  const visibleNav = filterByPermission(navigation);
-  const visibleSystems = systems.filter((item) => !item.resource || isSuperAdmin || canRead(item.resource));
-  const visibleAdmin = admin.filter((item) => !item.resource || isSuperAdmin || canRead(item.resource));
-
-  // Group visibleNav by category
-  const navByCategory = visibleNav.reduce((acc, item) => {
-     const cat = item.category || "Umum";
-     if (!acc[cat]) acc[cat] = [];
-     acc[cat].push(item);
-     return acc;
-  }, {} as Record<string, typeof visibleNav>);
 
   return (
     <div className="lg:hidden fixed inset-0 z-[150] flex flex-col justify-end">
@@ -159,38 +182,13 @@ export function MobileMenu() {
 
         {/* Scrollable Content */}
         <div className="flex-1 overflow-y-auto px-6 py-6 custom-scrollbar pb-32">
-            <div className="space-y-4">
-                {Object.entries(navByCategory).map(([category, items]) => (
-                   <div key={category} className="mb-6">
-                      <h2 className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1 pb-3">{category}</h2>
-                      <nav className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                          {items.map(renderLink)}
-                      </nav>
-                   </div>
-                ))}
-
-                {visibleSystems.length > 0 && (
-                    <>
-                        <h2 className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1 pt-4 border-t border-slate-100 mt-6">Sistem & Otomatisasi</h2>
-                        <nav className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            {visibleSystems.map(renderLink)}
-                        </nav>
-                    </>
-                )}
-
-                {visibleAdmin.length > 0 && (
-                    <>
-                        <h2 className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1 pt-4 border-t border-slate-100 mt-6">Administrator</h2>
-                        <nav className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            {visibleAdmin.map(renderLink)}
-                        </nav>
-                    </>
-                )}
+            <div className="space-y-2">
+                {menuConfig.map(renderParentNode)}
             </div>
         </div>
 
         {/* Sticky Utility / Logout Header at bottom */}
-        <div className="p-6 shrink-0 bg-white/80 backdrop-blur-xl border-t border-slate-100">
+        <div className="p-6 shrink-0 bg-white/80 backdrop-blur-xl border-t border-slate-100 absolute bottom-0 left-0 right-0">
             <div className="flex bg-slate-50 border border-slate-200 p-3 rounded-[24px] items-center justify-between">
                 <div className="flex items-center gap-3 min-w-0 px-2">
                     <div className="h-10 w-10 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex-shrink-0 flex items-center justify-center text-white font-bold text-sm shadow-md">
