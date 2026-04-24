@@ -6,7 +6,7 @@ import { OfflineSyncer } from "@/components/OfflineSyncer";
 
 import { SWRProvider } from "@/components/swr-provider";
 import { AuthProvider } from "@/lib/auth-context";
-import { AppShell } from "@/components/AppShell";
+import { AppShell } from "@/components/layouts/AppShell";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import AiChatWidget from "@/components/AiChatWidget";
 
