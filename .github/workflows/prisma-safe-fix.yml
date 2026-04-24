@@ -12,7 +12,7 @@ jobs:
   safe-fix:
     name: "Backup and Resolve Migration"
     runs-on: self-hosted
-    
+
     steps:
       - name: "Checkout Repository"
         uses: actions/checkout@v4
@@ -32,9 +32,9 @@ jobs:
           $timestamp = Get-Date -Format "yyyyMMdd_HHmmss"
           $backupDir = "C:\simed-backups"
           if (!(Test-Path $backupDir)) { New-Item -ItemType Directory -Path $backupDir }
-          
+
           $backupFile = "$backupDir\backup_before_fix_$timestamp.sql"
-          
+
           Write-Host "Sedang membuat backup di $backupFile ..."
           try {
             $dbUrl = "${{ secrets.DATABASE_URL }}"
