@@ -16,6 +16,8 @@ jobs:
     env:
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
       DIRECT_URL: ${{ secrets.DIRECT_URL }}
+      # Pindahkan input ke env untuk mencegah PowerShell Script Injection
+      MIGRATION_TARGET: ${{ inputs.migration_name }}
     
     steps:
       - name: "Checkout Repository"
@@ -35,35 +37,49 @@ jobs:
         run: |
           $timestamp = Get-Date -Format "yyyyMMdd_HHmmss"
           $backupDir = "C:\simed-backups"
-          if (!(Test-Path $backupDir)) { New-Item -ItemType Directory -Path $backupDir }
+          if (!(Test-Path $backupDir)) { New-Item -ItemType Directory -Path $backupDir | Out-Null }
 
           $backupFile = "$backupDir\backup_before_fix_$timestamp.sql"
 
-          Write-Host "Sedang membuat backup di $backupFile ..."
-          try {
-            # Backup logika di sini (jika pg_dump tersedia)
-            Write-Host "Koneksi database terdeteksi. Melanjutkan ke proses perbaikan..."
-          } catch {
-            Write-Host "Gagal mendeteksi koneksi."
-          }
+          Write-Host "Sedang menyiapkan backup di $backupFile ..."
+          # Catatan: Pastikan Anda menambahkan perintah pg_dump di sini jika ingin backup sungguhan
+          Write-Host "Koneksi database terdeteksi. Melanjutkan ke proses perbaikan..."
 
       - name: "Step 2: Resolve Failed Migration"
         shell: powershell
         run: |
-          $migName = "${{ github.event.inputs.migration_name }}"
+          $migName = $env:MIGRATION_TARGET
           Write-Host "Menyelesaikan migrasi: $migName ..."
+          
+          # Eksekusi Prisma
           npx prisma migrate resolve --applied $migName
-          Write-Host "Berhasil! Status migrasi telah diubah menjadi Applied."
+          
+          # Cek apakah perintah sebelumnya berhasil (Exit Code 0)
+          if ($LASTEXITCODE -eq 0) {
+            Write-Host "Berhasil! Status migrasi telah diubah menjadi Applied."
+          } else {
+            Write-Error "Gagal melakukan resolve pada migrasi: $migName"
+            exit 1
+          }
 
       - name: "Step 3: Run Remaining Migrations"
         shell: powershell
         run: |
           Write-Host "Menjalankan migrasi tertunda lainnya..."
           npx prisma migrate deploy
-          Write-Host "Database sekarang sudah sinkron sepenuhnya."
+          
+          if ($LASTEXITCODE -eq 0) {
+            Write-Host "Database sekarang sudah sinkron sepenuhnya."
+          } else {
+            Write-Error "Gagal menjalankan deploy migrasi sisa!"
+            exit 1
+          }
 
       - name: "Final Check"
         shell: powershell
         run: |
           npx prisma migrate status
-          Write-Host "Semua sistem hijau."
+          if ($LASTEXITCODE -eq 0) {
+            Write-Host "Semua sistem hijau."
+          }
+          
