@@ -6,7 +6,8 @@ export async function GET() {
     const items = await KnowledgeBaseService.getAll();
     return NextResponse.json({ items });
   } catch (e: any) {
-    return NextResponse.json({ error: e.message }, { status: 500 });
+    console.error("GET KB ERROR:", e);
+    return NextResponse.json({ error: String(e.stack || e.message || e) }, { status: 500 });
   }
 }
 

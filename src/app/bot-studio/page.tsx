@@ -60,9 +60,14 @@ export default function BotStudioPage() {
     try {
       const res = await fetch('/api/knowledge-base');
       const data = await res.json();
+      if (!res.ok) {
+        console.error("GET KB ERROR FROM SERVER:", data);
+        throw new Error(data.error || 'Gagal memuat data Knowledge Base');
+      }
       setItems(data.items ?? []);
-    } catch {
-      showToast('Gagal memuat data Knowledge Base', 'err');
+    } catch (e: any) {
+      console.error("fetchItems caught error:", e);
+      showToast(e.message, 'err');
     } finally {
       setLoading(false);
     }
