@@ -28,8 +28,13 @@ const nextConfig: NextConfig = {
   },
   // Cache gambar lebih lama di CDN/browser
   images: {
-    minimumCacheTTL: 3600, // 1 jam
+    minimumCacheTTL: 86400, // 24 jam
     formats: ['image/avif', 'image/webp'],
+    remotePatterns: [
+      { protocol: 'https', hostname: 'images.unsplash.com', pathname: '/**' },
+      { protocol: 'https', hostname: 'plus.unsplash.com', pathname: '/**' },
+      { protocol: 'https', hostname: '**.fallonava.my.id', pathname: '/**' },
+    ],
   },
   async headers() {
     return [
@@ -55,8 +60,8 @@ const nextConfig: NextConfig = {
               "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://static.cloudflareinsights.com",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "font-src 'self' https://fonts.gstatic.com",
-              "img-src 'self' data: blob:",
-              "connect-src 'self' https://*.sentry.io https://*.ingest.sentry.io", // Sentry reporting
+              "img-src 'self' data: blob: https://images.unsplash.com https://plus.unsplash.com https://*.fallonava.my.id",
+              "connect-src 'self' https://*.sentry.io https://*.ingest.sentry.io",
               "frame-ancestors 'none'",
             ].join("; "),
           },

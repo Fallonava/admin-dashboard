@@ -1,7 +1,17 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { generateEmbedding } from '@/lib/vector-store';
 import ExcelJS from 'exceljs';
+
+// Lazy import untuk menghindari crash saat model ML tidak tersedia di server
+async function getEmbedding(text: string): Promise<number[]> {
+  try {
+    const { generateEmbedding } = await import('@/lib/vector-store');
+    return await generateEmbedding(text);
+  } catch {
+    console.warn('[ImportExport] Embedding generation failed, using empty vector.');
+    return new Array(384).fill(0);
+  }
+}
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
@@ -127,7 +137,7 @@ export async function POST(req: Request) {
     for (const row of rows) {
       try {
         const textToEmbed = `${row.title}. ${row.content}`;
-        const embedding = await generateEmbedding(textToEmbed);
+        const embedding = await getEmbedding(textToEmbed);
 
         await prisma.knowledgeBase.create({
           data: {

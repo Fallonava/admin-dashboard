@@ -41,6 +41,10 @@ export default function RootLayout({
   return (
     <html lang="id" suppressHydrationWarning>
       <head>
+        {/* Preconnect ke domain gambar untuk mempercepat LCP */}
+        <link rel="preconnect" href="https://images.unsplash.com" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         {/* Low-end device detection — runs before paint to avoid FOUC */}
         <script dangerouslySetInnerHTML={{
           __html: `

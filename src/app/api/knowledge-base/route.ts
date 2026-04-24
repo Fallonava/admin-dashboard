@@ -1,6 +1,20 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { generateEmbedding } from '@/lib/vector-store';
+
+// ⚠️ generateEmbedding TIDAK di-import secara static di sini.
+// @xenova/transformers memerlukan model download saat pertama kali digunakan.
+// Import secara lazy (dynamic) di dalam POST/PATCH agar route GET tidak terpengaruh.
+async function getEmbedding(text: string): Promise<number[]> {
+  try {
+    const { generateEmbedding } = await import('@/lib/vector-store');
+    return await generateEmbedding(text);
+  } catch {
+    // Jika model gagal dimuat, kembalikan array kosong sebagai fallback
+    // Fitur semantic search tidak bekerja, tapi data tetap tersimpan
+    console.warn('[KnowledgeBase] Embedding generation failed, storing empty vector.');
+    return new Array(384).fill(0);
+  }
+}
 
 // GET: Ambil semua Knowledge Base entries
 export async function GET() {
@@ -30,7 +44,7 @@ export async function POST(req: Request) {
 
     // Generate embedding dari gabungan title + content untuk search yang lebih akurat
     const textToEmbed = `${title}. ${content}`;
-    const embedding = await generateEmbedding(textToEmbed);
+    const embedding = await getEmbedding(textToEmbed);
 
     const item = await prisma.knowledgeBase.create({
       data: {
@@ -61,7 +75,7 @@ export async function PATCH(req: Request) {
     if (title || content) {
       const existing = await prisma.knowledgeBase.findUnique({ where: { id } });
       const textToEmbed = `${title ?? existing?.title}. ${content ?? existing?.content}`;
-      updateData.embedding = await generateEmbedding(textToEmbed);
+      updateData.embedding = await getEmbedding(textToEmbed);
     }
 
     // Hapus field yang undefined
