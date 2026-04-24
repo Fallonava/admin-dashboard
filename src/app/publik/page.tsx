@@ -135,7 +135,7 @@ function FadeInView({ children, delay = 0, className }: { children: ReactNode, d
   
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
+      entries.forEach((entry: any) => {
         if (entry.isIntersecting) {
           setVisible(true);
           observer.unobserve(entry.target);
@@ -165,6 +165,20 @@ function FadeInView({ children, delay = 0, className }: { children: ReactNode, d
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
+const IconMap: Record<string, any> = {
+  Activity, Bed, Tag, LifeBuoy, HeartPulse, Stethoscope, CalendarDays, ShieldCheck, Phone, Clock
+};
+
+const ColorMap: Record<string, { bg: string, text: string, hoverBg: string }> = {
+  indigo: { bg: "bg-indigo-50 dark:bg-indigo-900/30", text: "text-indigo-600 dark:text-indigo-400", hoverBg: "group-hover:bg-indigo-500" },
+  amber: { bg: "bg-amber-50 dark:bg-amber-900/30", text: "text-amber-600 dark:text-amber-400", hoverBg: "group-hover:bg-amber-500" },
+  rose: { bg: "bg-rose-50 dark:bg-rose-900/30", text: "text-rose-600 dark:text-rose-400", hoverBg: "group-hover:bg-rose-500" },
+  teal: { bg: "bg-teal-50 dark:bg-teal-900/30", text: "text-teal-600 dark:text-teal-400", hoverBg: "group-hover:bg-teal-500" },
+  emerald: { bg: "bg-emerald-50 dark:bg-emerald-900/30", text: "text-emerald-600 dark:text-emerald-400", hoverBg: "group-hover:bg-emerald-500" },
+  blue: { bg: "bg-blue-50 dark:bg-blue-900/30", text: "text-blue-600 dark:text-blue-400", hoverBg: "group-hover:bg-blue-500" },
+  purple: { bg: "bg-purple-50 dark:bg-purple-900/30", text: "text-purple-600 dark:text-purple-400", hoverBg: "group-hover:bg-purple-500" },
+};
+
 export default function PublikPage() {
   const endRef = useRef<HTMLDivElement>(null);
   const coeRef = useRef<HTMLDivElement>(null); // Anchor reference for Specialties
@@ -185,7 +199,26 @@ export default function PublikPage() {
   
   // Realtime API Data
   const { data: apiData } = useSWR('/api/display', fetcher, { refreshInterval: 10000 });
-
+  const { data: settingsData } = useSWR('/api/settings', fetcher, { refreshInterval: 60000 });
+  const portalSettings = settingsData?.portalSettings || null;
+  const coe = portalSettings?.centersOfExcellence || {
+    title: "Pusat Trauma & Ortopedi Terpadu",
+    desc: "Pusat unggulan bedah tulang, sendi, dan trauma sport medicine dengan kapabilitas operasi invasif minimal bertaraf internasional.",
+    imageUrl: "https://images.unsplash.com/photo-1551601651-2a8555f1a136?auto=format&fit=crop&w=1920&q=80",
+    features: [
+      "Layanan UGD Trauma 24 Jam dengan Alur Prioritas",
+      "Tim Subspesialis Bedah Ortopedi & Konsultan Spine",
+      "Fasilitas MRI 3 Tesla & CT-Scan 128 Slices",
+      "Gymnasium Rehabilitasi Medik Terpadu"
+    ]
+  };
+  const gen = portalSettings?.general || {
+    address: "Jl. Letnan Jenderal S. Parman No.1, Purbalingga",
+    phone: "(0281) 895 111",
+    email: "info@siagamedika.id",
+    workingHours: "UGD 24 Jam | Poliklinik: 07:00 - 21:00",
+    socials: {}
+  };
   const { messages, input, setInput, isLoading, append, handleSubmit, handleInputChange } = useStreamChat({
     api: '/api/assistant',
     body: { role: 'public' },
@@ -203,7 +236,7 @@ export default function PublikPage() {
 
   // Cinematic Hero Slider State
   const [currentSlide, setCurrentSlide] = useState(0);
-  const heroSlides = [
+  const defaultHeroSlides = [
     {
       title: t.hero_title,
       highlight: t.hero_highlight,
@@ -220,6 +253,8 @@ export default function PublikPage() {
       desc: lang === 'id' ? "Rasakan pengalaman masa penyembuhan dengan privasi maksimal dan fasilitas sekelas hotel bintang lima untuk Anda dan keluarga." : "Experience a healing journey with maximum privacy and five-star hotel amenities for you and your family.",
     }
   ];
+
+  const heroSlides = portalSettings?.heroSlides || defaultHeroSlides;
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -300,7 +335,7 @@ export default function PublikPage() {
   ];
   const specColor = ["bg-rose-50 dark:bg-rose-950/50", "bg-indigo-50 dark:bg-indigo-950/50", "bg-amber-50 dark:bg-amber-950/50"];
 
-  let dynamicCOE = topSpecialties.map((spec, i) => ({
+  let dynamicCOE = topSpecialties.map((spec: string, i: number) => ({
       title: spec,
       count: specMap[spec].count,
       active: specMap[spec].active,
@@ -310,7 +345,7 @@ export default function PublikPage() {
       avatars: specMap[spec].docs.filter((d: any) => d.image).slice(0, 4).map((d: any) => d.image)
   }));
   
-  const allSpecsMapped = Object.keys(specMap).sort((a,b) => specMap[b].count - specMap[a].count).map((spec, i) => ({
+  const allSpecsMapped = Object.keys(specMap).sort((a,b) => specMap[b].count - specMap[a].count).map((spec: string, i: number) => ({
       title: spec,
       count: specMap[spec].count,
       active: specMap[spec].active,
@@ -357,7 +392,7 @@ export default function PublikPage() {
                       className="w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl px-5 py-4 text-zinc-900 dark:text-white placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 transition-all font-medium"
                    />
                    <div className="flex flex-wrap items-center gap-2 mt-4">
-                      {quickFilters.map(f => (
+                      {quickFilters.map((f: string) => (
                          <button key={f} onClick={() => setActiveFilter(f)} className={cn("px-4 py-1.5 rounded-full text-xs font-bold transition-all border", activeFilter === f ? "bg-emerald-500 border-emerald-500 text-white shadow-md" : "bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 hover:border-emerald-500/50")}>
                             {f === "Praktek Sekarang" && <span className={cn("inline-block w-1.5 h-1.5 rounded-full mr-1.5 align-middle", activeFilter === f ? "bg-white animate-pulse" : "bg-emerald-400")} />}
                             {f}
@@ -458,7 +493,7 @@ export default function PublikPage() {
 
                 <div className="flex-1 overflow-y-auto p-4 sm:p-8 custom-scrollbar bg-zinc-50/30 dark:bg-zinc-950/10">
                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-                      {allSpecsMapped.map((spec, i) => (
+                      {allSpecsMapped.map((spec: any, i: number) => (
                          <div key={i} style={{ animationDelay: `${i * 30}ms` }} className="bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md rounded-3xl p-5 sm:p-6 border border-zinc-200/50 dark:border-zinc-800/50 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group cursor-pointer animate-in fade-in slide-in-from-bottom-4 flex flex-col justify-between h-full" onClick={() => { setShowAllSpecs(false); setShowDocModal(true); setActiveFilter(spec.title); }}>
                             <div className="flex justify-between items-start mb-6">
                                <div className={cn("w-12 h-12 sm:w-14 sm:h-14 rounded-[18px] flex items-center justify-center transition-transform group-hover:scale-110 duration-500", spec.color)}>
@@ -580,42 +615,116 @@ export default function PublikPage() {
            hasMessages ? "opacity-0 scale-95 pointer-events-none h-0 overflow-hidden" : "opacity-100 scale-100 min-h-screen pb-[300px]"
         )}>
            
-           {/* 1. HERO SECTION (Bento Grid) */}
-           <section className="pt-36 pb-20 px-6 lg:px-8 max-w-7xl mx-auto w-full">
+           {/* 1. HERO SECTION — 2026 Spatial Edition */}
+           <section className="pt-28 pb-10 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full relative overflow-hidden">
+              {/* Ambient Mesh Luminance */}
+              <div className="pointer-events-none absolute -top-32 -left-32 w-[600px] h-[600px] rounded-full bg-emerald-400/20 dark:bg-emerald-500/10 blur-[120px] z-0" />
+              <div className="pointer-events-none absolute -top-16 right-0 w-[400px] h-[400px] rounded-full bg-teal-400/15 dark:bg-teal-500/8 blur-[100px] z-0" />
+
               <FadeInView>
-                 <div className="mb-8 sm:mb-12 text-center sm:text-left max-w-4xl relative min-h-[280px] sm:min-h-[200px]">
-                    {heroSlides.map((slide, index) => (
-                      <div 
-                        key={index}
+                 {/* ── OUTER GLASS CARD ── */}
+                 <div className="relative rounded-[48px] overflow-hidden min-h-[560px] sm:min-h-[600px] flex items-center border border-white/40 dark:border-zinc-700/50 shadow-[0_32px_80px_-12px_rgba(0,0,0,0.18)] dark:shadow-[0_32px_80px_-12px_rgba(0,0,0,0.6)] mb-8 sm:mb-12" style={{backdropFilter: 'blur(2px)'}}>
+
+                    {/* Ken Burns background layers */}
+                    {heroSlides.map((slide: any, index: number) => (
+                      <div
+                        key={`bg-${index}`}
                         className={cn(
-                          "absolute inset-0 transition-all duration-1000 ease-in-out",
-                          index === currentSlide ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"
+                          "absolute inset-0 transition-all duration-[1400ms] ease-[cubic-bezier(0.32,0.72,0,1)]",
+                          index === currentSlide ? "opacity-100 z-0 scale-100" : "opacity-0 z-0 scale-110"
                         )}
+                        style={{ willChange: 'transform, opacity' }}
                       >
-                         <h1 className="text-5xl sm:text-[72px] font-black tracking-tight text-zinc-900 dark:text-white mb-5 leading-[1.05] transition-colors">
-                            {slide.title} <br className="hidden sm:block"/>
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-500 dark:from-emerald-400 dark:to-teal-300">
-                              {slide.highlight}
-                            </span>
-                         </h1>
-                         <p className="text-zinc-500 dark:text-zinc-400 font-medium text-lg leading-relaxed max-w-2xl transition-colors mx-auto sm:mx-0">
-                            {slide.desc}
-                         </p>
+                         {slide.imageUrl && (
+                            <img
+                              src={slide.imageUrl}
+                              alt={slide.title}
+                              className={cn(
+                                "absolute inset-0 w-full h-full object-cover transition-transform duration-[8000ms] ease-linear",
+                                index === currentSlide ? "scale-105" : "scale-100"
+                              )}
+                            />
+                         )}
+                         {/* Dual-gradient overlay */}
+                         <div className="absolute inset-0 bg-gradient-to-r from-white/97 via-white/85 to-white/20 dark:from-zinc-950/98 dark:via-zinc-950/88 dark:to-zinc-950/10" />
+                         <div className="absolute inset-0 bg-gradient-to-t from-white/60 via-transparent to-transparent dark:from-zinc-950/60" />
                       </div>
                     ))}
-                 </div>
-                 {/* Slider Indicators */}
-                 <div className="flex items-center gap-2 mb-10 justify-center sm:justify-start relative z-20">
-                    {heroSlides.map((_, idx) => (
-                      <button 
-                        key={idx} 
-                        onClick={() => setCurrentSlide(idx)}
-                        className={cn("h-1.5 rounded-full transition-all duration-500", idx === currentSlide ? "w-8 bg-emerald-500" : "w-2 bg-zinc-300 dark:bg-zinc-700 hover:bg-emerald-300")}
-                        aria-label={`Go to slide ${idx + 1}`}
-                      />
-                    ))}
+
+                    {/* ── TEXT CONTENT LAYERS ── */}
+                    <div className="relative z-20 flex flex-col justify-center max-w-4xl px-8 sm:px-16 py-16 w-full">
+                      {heroSlides.map((slide: any, index: number) => (
+                        <div
+                          key={`text-${index}`}
+                          className={cn(
+                            "absolute inset-0 flex flex-col justify-center px-8 sm:px-16 py-16 transition-all duration-[900ms] ease-[cubic-bezier(0.32,0.72,0,1)]",
+                            index === currentSlide
+                              ? "opacity-100 translate-y-0 pointer-events-auto"
+                              : "opacity-0 translate-y-8 pointer-events-none"
+                          )}
+                        >
+                          {/* Eyebrow label */}
+                          <div className="inline-flex items-center gap-2 mb-6 w-fit">
+                            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                            <span className="text-emerald-600 dark:text-emerald-400 font-bold tracking-[0.2em] text-[11px] uppercase">RS Siaga Medika Purbalingga</span>
+                          </div>
+
+                          {/* Main heading — Hyper-aesthetic 2026 */}
+                          <h1 className="font-black tracking-tighter leading-[1.0] text-zinc-900 dark:text-white mb-5" style={{fontSize: 'clamp(2.8rem, 6vw, 5.5rem)'}}>
+                            {slide.title}<br/>
+                            <span
+                              className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-500"
+                              style={{
+                                backgroundSize: '200% auto',
+                                animation: 'shimmer 4s linear infinite'
+                              }}
+                            >
+                              {slide.highlight}
+                            </span>
+                          </h1>
+
+                          {/* Body */}
+                          <p className="text-zinc-500 dark:text-zinc-400 font-medium text-base sm:text-lg leading-relaxed max-w-xl">
+                            {slide.desc}
+                          </p>
+                        </div>
+                      ))}
+                      {/* Placeholder to set min height */}
+                      <div className="invisible">
+                        <h1 className="font-black tracking-tighter leading-[1.0]" style={{fontSize: 'clamp(2.8rem, 6vw, 5.5rem)'}}>.</h1>
+                        <p className="text-base sm:text-lg max-w-xl">.</p>
+                      </div>
+                    </div>
+
+                    {/* ── GLASS FLOATING CAPSULE INDICATOR ── */}
+                    <div className="absolute bottom-8 left-8 sm:left-16 z-30">
+                      <div className="flex items-center gap-3 bg-white/20 dark:bg-zinc-900/40 backdrop-blur-xl border border-white/30 dark:border-zinc-700/40 px-4 py-2.5 rounded-full shadow-lg">
+                        {heroSlides.map((slide: any, idx: number) => (
+                          <button
+                            key={idx}
+                            onClick={() => setCurrentSlide(idx)}
+                            aria-label={`Slide ${idx + 1}`}
+                            className="flex items-center gap-2 group/dot"
+                          >
+                            <span className={cn(
+                              "block rounded-full transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]",
+                              idx === currentSlide
+                                ? "w-8 h-2 bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.6)]"
+                                : "w-2 h-2 bg-white/50 dark:bg-zinc-500 group-hover/dot:bg-emerald-400 group-hover/dot:scale-125"
+                            )} />
+                          </button>
+                        ))}
+                        <span className="text-[10px] font-black text-zinc-500 dark:text-zinc-400 ml-1 tabular-nums">
+                          {String(currentSlide + 1).padStart(2,'0')}/{String(heroSlides.length).padStart(2,'0')}
+                        </span>
+                      </div>
+                    </div>
+
                  </div>
               </FadeInView>
+
+              {/* shimmer keyframe */}
+              <style>{`@keyframes shimmer { 0%{background-position:0% center} 100%{background-position:200% center} }`}</style>
 
               <FadeInView delay={100}>
                  <div className="grid grid-cols-1 md:grid-cols-12 gap-5 w-full">
@@ -630,7 +739,7 @@ export default function PublikPage() {
                           </div>
                           <h2 className="text-4xl md:text-5xl font-black mb-4">{t.er_title}</h2>
                           <p className="text-zinc-300 dark:text-zinc-700 md:text-lg mb-10 max-w-md font-medium leading-relaxed">{t.er_desc}</p>
-                          <button className="px-8 py-4 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white rounded-full font-black text-sm hover:scale-105 transition-transform active:scale-95 shadow-[0_0_40px_rgba(255,255,255,0.2)] dark:shadow-[0_0_40px_rgba(0,0,0,0.1)]">
+                          <button onClick={() => window.open(`https://wa.me/${portalSettings?.general?.emergencyPhone || "628111111111"}`, "_blank")} className="px-8 py-4 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white rounded-full font-black text-sm hover:scale-105 transition-transform active:scale-95 shadow-[0_0_40px_rgba(255,255,255,0.2)] dark:shadow-[0_0_40px_rgba(0,0,0,0.1)]">
                              {t.er_btn}
                           </button>
                        </div>
@@ -659,45 +768,28 @@ export default function PublikPage() {
            </section>
 
            {/* 1.5. QUICK ACCESS ACTION GRID (International Standard) */}
-           <section className="relative z-30 max-w-7xl mx-auto px-6 lg:px-8 -mt-6 sm:-mt-10 mb-20">
+           <section className="relative z-30 max-w-7xl mx-auto px-6 lg:px-8 mt-8 mb-24">
               <FadeInView delay={300}>
-                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    
-                    {/* Card 1 */}
-                    <div className="bg-white/90 dark:bg-zinc-900/90 backdrop-blur-xl border border-zinc-200/60 dark:border-zinc-800/60 rounded-[24px] p-6 shadow-[0_10px_40px_rgba(0,0,0,0.06)] dark:shadow-[0_10px_40px_rgba(0,0,0,0.4)] hover:-translate-y-2 hover:shadow-xl hover:border-emerald-500/50 transition-all duration-300 group cursor-pointer flex flex-col items-center text-center">
-                       <div className="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-indigo-500 group-hover:text-white transition-all duration-500 shadow-sm">
-                          <Activity size={24} strokeWidth={2.5} />
-                       </div>
-                       <h4 className="font-bold text-zinc-900 dark:text-white text-sm sm:text-base mb-1">Medical Check Up</h4>
-                       <p className="text-zinc-500 dark:text-zinc-400 text-xs font-medium">Paket MCU Eksekutif</p>
-                    </div>
-
-                    {/* Card 2 */}
-                    <div className="bg-white/90 dark:bg-zinc-900/90 backdrop-blur-xl border border-zinc-200/60 dark:border-zinc-800/60 rounded-[24px] p-6 shadow-[0_10px_40px_rgba(0,0,0,0.06)] dark:shadow-[0_10px_40px_rgba(0,0,0,0.4)] hover:-translate-y-2 hover:shadow-xl hover:border-emerald-500/50 transition-all duration-300 group cursor-pointer flex flex-col items-center text-center">
-                       <div className="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-amber-500 group-hover:text-white transition-all duration-500 shadow-sm">
-                          <Bed size={24} strokeWidth={2.5} />
-                       </div>
-                       <h4 className="font-bold text-zinc-900 dark:text-white text-sm sm:text-base mb-1">Tarif Kamar VIP</h4>
-                       <p className="text-zinc-500 dark:text-zinc-400 text-xs font-medium">Tur Fasilitas Inap</p>
-                    </div>
-
-                    {/* Card 3 */}
-                    <div className="bg-white/90 dark:bg-zinc-900/90 backdrop-blur-xl border border-zinc-200/60 dark:border-zinc-800/60 rounded-[24px] p-6 shadow-[0_10px_40px_rgba(0,0,0,0.06)] dark:shadow-[0_10px_40px_rgba(0,0,0,0.4)] hover:-translate-y-2 hover:shadow-xl hover:border-emerald-500/50 transition-all duration-300 group cursor-pointer flex flex-col items-center text-center">
-                       <div className="w-12 h-12 rounded-2xl bg-rose-50 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-rose-500 group-hover:text-white transition-all duration-500 shadow-sm">
-                          <Tag size={24} strokeWidth={2.5} />
-                       </div>
-                       <h4 className="font-bold text-zinc-900 dark:text-white text-sm sm:text-base mb-1">Promo Layanan</h4>
-                       <p className="text-zinc-500 dark:text-zinc-400 text-xs font-medium">Penawaran Eksklusif</p>
-                    </div>
-
-                    {/* Card 4 */}
-                    <div className="bg-white/90 dark:bg-zinc-900/90 backdrop-blur-xl border border-zinc-200/60 dark:border-zinc-800/60 rounded-[24px] p-6 shadow-[0_10px_40px_rgba(0,0,0,0.06)] dark:shadow-[0_10px_40px_rgba(0,0,0,0.4)] hover:-translate-y-2 hover:shadow-xl hover:border-emerald-500/50 transition-all duration-300 group cursor-pointer flex flex-col items-center text-center">
-                       <div className="w-12 h-12 rounded-2xl bg-teal-50 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-teal-500 group-hover:text-white transition-all duration-500 shadow-sm">
-                          <LifeBuoy size={24} strokeWidth={2.5} />
-                       </div>
-                       <h4 className="font-bold text-zinc-900 dark:text-white text-sm sm:text-base mb-1">Pusat Bantuan</h4>
-                       <p className="text-zinc-500 dark:text-zinc-400 text-xs font-medium">Informasi Asuransi</p>
-                    </div>
+                 <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
+                      
+                      {(portalSettings?.quickAccess || [
+                        { title: "Medical Check Up", desc: "Paket MCU Eksekutif", icon: "Activity", color: "indigo" },
+                        { title: "Tarif Kamar VIP", desc: "Tur Fasilitas Inap", icon: "Bed", color: "amber" },
+                        { title: "Promo Layanan", desc: "Penawaran Eksklusif", icon: "Tag", color: "rose" },
+                        { title: "Pusat Bantuan", desc: "Informasi Asuransi", icon: "LifeBuoy", color: "teal" }
+                      ]).slice(0,4).map((item: any, idx: number) => {
+                        const IconComponent = IconMap[item.icon] || Activity;
+                        const theme = ColorMap[item.color] || ColorMap.indigo;
+                        return (
+                           <div key={idx} className="bg-white/90 dark:bg-zinc-900/90 backdrop-blur-xl border border-zinc-200/60 dark:border-zinc-800/60 rounded-[32px] p-8 shadow-[0_10px_40px_rgba(0,0,0,0.06)] dark:shadow-[0_10px_40px_rgba(0,0,0,0.4)] hover:-translate-y-2 hover:shadow-xl hover:border-emerald-500/50 transition-all duration-300 group cursor-pointer flex flex-col items-center text-center gap-1">
+                              <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 group-hover:text-white transition-all duration-500 shadow-sm", theme.bg, theme.text, theme.hoverBg)}>
+                                 <IconComponent size={26} strokeWidth={2} />
+                              </div>
+                              <h4 className="font-bold text-zinc-900 dark:text-white text-sm sm:text-base leading-snug">{item.title}</h4>
+                              <p className="text-zinc-400 dark:text-zinc-500 text-xs font-medium mt-1">{item.desc}</p>
+                           </div>
+                        );
+                      })}
 
                  </div>
               </FadeInView>
@@ -732,8 +824,13 @@ export default function PublikPage() {
                                 <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-emerald-500/20 backdrop-blur-md rounded-full text-emerald-300 text-xs font-bold uppercase tracking-widest mb-4 border border-emerald-500/30">
                                    <Sparkles size={12} /> Flagship Institute
                                 </div>
-                                <h3 className="font-black text-3xl sm:text-4xl text-white mb-2">Orthopaedic & Traumatology Center</h3>
-                                <p className="text-emerald-100/70 font-medium max-w-md text-sm sm:text-base">Pusat unggulan bedah tulang, sendi, dan trauma sport medicine dengan kapabilitas operasi invasif minimal bertaraf internasional.</p>
+                                <h3 className="font-black text-3xl sm:text-4xl text-white mb-2">{coe.title}</h3>
+                                <p className="text-emerald-100/70 font-medium max-w-md text-sm sm:text-base">{coe.desc}</p>
+                                 <ul className="mt-4 space-y-2">
+                                    {coe.features?.slice(0, 4).map((feat: string, fIdx: number) => feat ? (
+                                      <li key={fIdx} className="text-emerald-100/80 text-xs flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-emerald-400" />{feat}</li>
+                                    ) : null)}
+                                 </ul>
                              </div>
                           </div>
 
@@ -858,7 +955,7 @@ export default function PublikPage() {
                         Ambil kendali dan jelajahi setiap sudut kemewahan kamar inap VVIP, kebersihan lobi, hingga kecanggihan ruang operasi Hybrid kami melalui pengalaman 360° yang imersif.
                      </p>
                      
-                     <button className="px-8 py-4 bg-white text-zinc-900 rounded-full font-black text-sm hover:scale-105 transition-transform active:scale-95 shadow-xl flex items-center gap-2 mx-auto">
+                     <button onClick={() => window.open(portalSettings?.general?.virtualTourUrl || "#", "_blank")} className="px-8 py-4 bg-white text-zinc-900 rounded-full font-black text-sm hover:scale-105 transition-transform active:scale-95 shadow-xl flex items-center gap-2 mx-auto">
                         Mulai Virtual Tour <ArrowRight size={16} />
                      </button>
                   </FadeInView>
@@ -882,38 +979,58 @@ export default function PublikPage() {
 
                   <FadeInView delay={200}>
                      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        {/* Article 1 */}
-                        <div className="group cursor-pointer">
-                           <div className="w-full h-60 bg-zinc-200 dark:bg-zinc-800 rounded-[32px] mb-6 overflow-hidden relative shadow-md">
-                              <img src="https://images.unsplash.com/photo-1579154204601-01588f351e67?auto=format&fit=crop&w=800&q=80" alt="Penelitian Kanker" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-                              <div className="absolute top-4 left-4 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md px-4 py-1.5 rounded-full text-[11px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400">Onkologi</div>
-                           </div>
-                           <p className="text-zinc-400 text-sm font-medium mb-3">18 April 2026 • dr. Ratna Wijayanti, Sp.B(K)Onk</p>
-                           <h3 className="text-xl font-black text-zinc-900 dark:text-white mb-3 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors line-clamp-2">Revolusi Pengobatan Kanker Payudara dengan Terapi Target Genetik</h3>
-                           <p className="text-zinc-500 dark:text-zinc-400 text-sm font-medium line-clamp-2 leading-relaxed">Teknologi onkologi terbaru kini memungkinkan pengobatan kanker payudara yang jauh lebih presisi dan secara signifikan meminimalisir efek samping radiasi konvensional.</p>
-                        </div>
+                        {(() => {
+                            // Build articles: use portalSettings OR fallback to doctor-authored defaults
+                            const specialistDoctors = doctors.filter((d: any) => d.specialty);
+                            const defaultArticles = [
+                              {
+                                title: "Pentingnya Deteksi Dini Kanker: Kapan Harus Mulai Cek Rutin?",
+                                category: "Onkologi",
+                                author: specialistDoctors.find((d: any) => d.specialty?.toLowerCase().includes('bedah') || d.specialty?.toLowerCase().includes('onk'))?.name || (specialistDoctors[0]?.name || "Tim Dokter Spesialis"),
+                                desc: "Deteksi dini terbukti meningkatkan angka kesembuhan kanker hingga 90%. Pelajari panduan skrining yang tepat berdasarkan usia dan faktor risiko Anda.",
+                                imageUrl: "https://images.unsplash.com/photo-1579154204601-01588f351e67?auto=format&fit=crop&w=800&q=80"
+                              },
+                              {
+                                title: "Cedera Ligamen ACL: Kapan Perlu Operasi dan Bagaimana Pemulihannya?",
+                                category: "Ortopedi",
+                                author: specialistDoctors.find((d: any) => d.specialty?.toLowerCase().includes('ot') || d.specialty?.toLowerCase().includes('ortho'))?.name || (specialistDoctors[1]?.name || "Tim Dokter Spesialis"),
+                                desc: "Robekan ligamen ACL adalah cedera paling umum pada atlet. Kenali gejalanya dan temukan jawaban kapan harus memilih fisioterapi vs rekonstruksi bedah.",
+                                imageUrl: "https://images.unsplash.com/photo-1607619056574-7b8d3ee536b2?auto=format&fit=crop&w=800&q=80"
+                              },
+                              {
+                                title: "Diet Anti-Inflamasi Pasca Operasi: Makanan yang Mempercepat Pemulihan",
+                                category: "Gizi Klinis",
+                                author: specialistDoctors.find((d: any) => d.specialty?.toLowerCase().includes('gizi') || d.specialty?.toLowerCase().includes('nutrisi'))?.name || (specialistDoctors[2]?.name || "Tim Dokter Spesialis"),
+                                desc: "Nutrisi yang tepat pasca operasi bukan sekadar menjaga stamina — protein, zinc, dan vitamin C berperan krusial dalam regenerasi jaringan dan pencegahan infeksi luka.",
+                                imageUrl: "https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=800&q=80"
+                              },
+                            ];
 
-                        {/* Article 2 */}
-                        <div className="group cursor-pointer">
-                           <div className="w-full h-60 bg-zinc-200 dark:bg-zinc-800 rounded-[32px] mb-6 overflow-hidden relative shadow-md">
-                              <img src="https://images.unsplash.com/photo-1551601651-2a8555f1a136?auto=format&fit=crop&w=800&q=80" alt="Bedah Saraf Ortopedi" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-                              <div className="absolute top-4 left-4 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md px-4 py-1.5 rounded-full text-[11px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400">Ortopedi</div>
-                           </div>
-                           <p className="text-zinc-400 text-sm font-medium mb-3">15 April 2026 • dr. Hendra Cipta, Sp.OT (K) Spine</p>
-                           <h3 className="text-xl font-black text-zinc-900 dark:text-white mb-3 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors line-clamp-2">Penanganan Terkini Cedera Saraf Tulang Belakang via Endoskopi Biportal</h3>
-                           <p className="text-zinc-500 dark:text-zinc-400 text-sm font-medium line-clamp-2 leading-relaxed">Metode operasi invasif minimal BESS (Biportal Endoscopic Spinal Surgery) mempercepat masa pemulihan pasien cedera tulang belakang hingga 3x lipat.</p>
-                        </div>
+                            const articlesToShow = (portalSettings?.articles && portalSettings.articles.length > 0)
+                              ? portalSettings.articles
+                              : defaultArticles;
 
-                        {/* Article 3 */}
-                        <div className="group cursor-pointer">
-                           <div className="w-full h-60 bg-zinc-200 dark:bg-zinc-800 rounded-[32px] mb-6 overflow-hidden relative shadow-md">
-                              <img src="https://images.unsplash.com/photo-1516627145497-ae6968895b74?auto=format&fit=crop&w=800&q=80" alt="Kesehatan Mental Anak" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-                              <div className="absolute top-4 left-4 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md px-4 py-1.5 rounded-full text-[11px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400">Psikiatri</div>
-                           </div>
-                           <p className="text-zinc-400 text-sm font-medium mb-3">10 April 2026 • dr. Larasati Putri, Sp.KJ</p>
-                           <h3 className="text-xl font-black text-zinc-900 dark:text-white mb-3 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors line-clamp-2">Membangun Ketahanan Mental Anak di Era Disrupsi Digital & Gadget</h3>
-                           <p className="text-zinc-500 dark:text-zinc-400 text-sm font-medium line-clamp-2 leading-relaxed">Paparan layar (screen time) berlebih telah terbukti mempengaruhi perkembangan korteks prafrontal. Berikut panduan pakar menjaga keseimbangan psikologis anak.</p>
-                        </div>
+                            return articlesToShow.map((art: any, i: number) => (
+                              <div key={i} className="group cursor-pointer flex flex-col">
+                                 <div className="w-full h-60 bg-zinc-200 dark:bg-zinc-800 rounded-[32px] mb-6 overflow-hidden relative shadow-[0_8px_30px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.4)] border border-zinc-100/80 dark:border-zinc-800/80">
+                                    <img
+                                      src={art.imageUrl}
+                                      alt={art.title}
+                                      className="w-full h-full object-cover group-hover:scale-[1.07] transition-transform duration-700 ease-[cubic-bezier(0.32,0.72,0,1)]"
+                                      onError={(e: any) => { e.target.style.display='none'; }}
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                                    <div className="absolute top-4 left-4 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.15em] text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">{art.category}</div>
+                                 </div>
+                                 <p className="text-emerald-600 dark:text-emerald-400 text-[11px] font-black uppercase tracking-[0.15em] mb-2">{art.author}</p>
+                                 <h3 className="text-xl font-black tracking-tight text-zinc-900 dark:text-white mb-3 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors duration-300 line-clamp-2 leading-tight">{art.title}</h3>
+                                 <p className="text-zinc-500 dark:text-zinc-400 text-sm font-medium line-clamp-3 leading-relaxed flex-1">{art.desc}</p>
+                                 <div className="mt-4 flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-bold text-xs group-hover:gap-2 transition-all">
+                                    Baca Selengkapnya <ArrowRight size={12} />
+                                 </div>
+                              </div>
+                            ));
+                         })()}
                      </div>
                   </FadeInView>
                </div>
@@ -937,11 +1054,12 @@ export default function PublikPage() {
                     
                     <div className="space-y-4 mb-8 pr-4">
                        <p className="text-zinc-500 dark:text-zinc-400 font-medium text-[13px] leading-relaxed">
-                          Jl. Letnan Sudani, Desa Karangsentul, Kec. Padamara, Kabupaten Purbalingga, Jawa Tengah 53372
+                          {gen.address}
                        </p>
                        <div className="flex flex-col gap-2 text-[13px] font-semibold text-zinc-600 dark:text-zinc-300">
-                          <span className="flex items-center gap-2 hover:text-emerald-600 dark:hover:text-emerald-400 cursor-pointer transition-colors"><Phone size={14} className="text-emerald-500"/> (0281) 65 80400</span>
-                          <span className="flex items-center gap-2 hover:text-emerald-600 dark:hover:text-emerald-400 cursor-pointer transition-colors"><Mail size={14} className="text-emerald-500"/> siagamedika.pbg@gmail.com</span>
+                          <span className="flex items-center gap-2 hover:text-emerald-600 dark:hover:text-emerald-400 cursor-pointer transition-colors"><Phone size={14} className="text-emerald-500"/> {gen.phone}</span>
+                          <span className="flex items-center gap-2 hover:text-emerald-600 dark:hover:text-emerald-400 cursor-pointer transition-colors"><Mail size={14} className="text-emerald-500"/> {gen.email}</span>
+                          <span className="flex items-center gap-2 hover:text-emerald-600 dark:hover:text-emerald-400 cursor-pointer transition-colors mt-2"><Clock size={14} className="text-emerald-500"/> {gen.workingHours}</span>
                        </div>
                     </div>
 

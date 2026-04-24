@@ -81,3 +81,6 @@ export default withSentryConfig(withSerwist(nextConfig), {
     disable: false, // Upload to Sentry, but exclude from public bundle
   },
 });
+
+// Trigger full reload
+

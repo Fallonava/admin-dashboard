@@ -19,7 +19,8 @@ import {
   FileSpreadsheet,
   Zap,
   CalendarDays,
-  MessageSquare
+  MessageSquare,
+  Globe
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/auth-context";
@@ -32,6 +33,7 @@ export const navigation = [
   { name: "Jadwal Dokter", href: "/schedules", icon: Calendar, resource: "schedules", category: "Manajemen Staf" },
   { name: "List Dokter", href: "/doctors", icon: Users, resource: "doctors", category: "Manajemen Staf" },
   { name: "Jadwal Cuti", href: "/leaves", icon: Calendar, resource: "leaves", category: "Manajemen Staf" },
+  { name: "Portal Publik", href: "/portal-manager", icon: Globe, resource: "settings", category: "Manajemen Konten" },
 ];
 
 export const systems = [

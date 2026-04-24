@@ -25,6 +25,7 @@ export async function POST(req: Request) {
         if (typeof body.emergencyMode === 'boolean') data.emergencyMode = body.emergencyMode;
         if (body.emergencyMode === null) data.emergencyMode = null;
         if (body.customMessages !== undefined) data.customMessages = body.customMessages;
+        if (body.portalSettings !== undefined) data.portalSettings = body.portalSettings;
 
         const all = await prisma.settings.findMany();
         const current = all.length > 0 ? all[0] : null;

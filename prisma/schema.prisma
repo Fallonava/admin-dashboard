@@ -90,6 +90,7 @@ model Settings {
   runTextMessage    String?
   emergencyMode     Boolean? @default(false)
   customMessages    Json?
+  portalSettings    Json?
 }
 
 model User {
