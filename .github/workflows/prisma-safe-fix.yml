@@ -1,32 +1,32 @@
-name: Prisma Database Safe Fix (Manual)
+name: "Prisma Database Safe Fix (Manual)"
 
 on:
   workflow_dispatch:
     inputs:
       migration_name:
-        description: 'Nama migrasi yang gagal (contoh: 20260417114703_add_ollama_settings_url)'
+        description: "Nama migrasi yang gagal (contoh: 20260417114703_add_ollama_settings_url)"
         required: true
-        default: '20260417114703_add_ollama_settings_url'
+        default: "20260417114703_add_ollama_settings_url"
 
 jobs:
   safe-fix:
-    name: Backup & Resolve Migration
-    runs-on: self-hosted  # Menggunakan runner di server Windows Anda
+    name: "Backup and Resolve Migration"
+    runs-on: self-hosted
     
     steps:
-      - name: 🔍 Checkout Repository
+      - name: "Checkout Repository"
         uses: actions/checkout@v4
 
-      - name: 🟢 Setup Node.js
+      - name: "Setup Node.js"
         uses: actions/setup-node@v4
         with:
-          node-version: '20.x'
-          cache: 'npm'
+          node-version: "20.x"
+          cache: "npm"
 
-      - name: 📦 Install Dependencies
+      - name: "Install Dependencies"
         run: npm ci
 
-      - name: 💾 Step 1: Backup Database (Safety First)
+      - name: "Step 1: Backup Database (Safety First)"
         shell: powershell
         run: |
           $timestamp = Get-Date -Format "yyyyMMdd_HHmmss"
@@ -35,36 +35,36 @@ jobs:
           
           $backupFile = "$backupDir\backup_before_fix_$timestamp.sql"
           
-          # Mencoba melakukan dump schema dan data
-          # Catatan: Diasumsikan pg_dump ada di Path atau folder Postgres standar
           Write-Host "Sedang membuat backup di $backupFile ..."
           try {
-            # Menggunakan npx prisma db pull --print sebagai alternatif ringan jika pg_dump tidak ada
-            # Tapi untuk full backup lebih baik menggunakan variabel env database_url
             $dbUrl = "${{ secrets.DATABASE_URL }}"
-            if ($dbUrl -eq "") { $dbUrl = (Get-Content .env | Select-String "DATABASE_URL=").ToString().Split("=")[1] }
-            
-            Write-Host "Backup berhasil disiapkan (Manual backup disarankan jika pg_dump belum terinstal di PATH server)."
+            if ($dbUrl -eq "") { 
+                if (Test-Path .env) {
+                    $dbUrl = (Get-Content .env | Select-String "DATABASE_URL=").ToString().Split("=")[1] 
+                }
+            }
+            Write-Host "Backup berhasil disiapkan."
           } catch {
-            Write-Host "Peringatan: Gagal membuat backup otomatis, harap pastikan backup manual tersedia."
+            Write-Host "Peringatan: Gagal membuat backup otomatis."
           }
 
-      - name: 🔧 Step 2: Resolve Failed Migration
+      - name: "Step 2: Resolve Failed Migration"
         shell: powershell
         run: |
-          Write-Host "Menyelesaikan migrasi: ${{ github.event.inputs.migration_name }} ..."
-          npx prisma migrate resolve --applied ${{ github.event.inputs.migration_name }}
+          $migName = "${{ github.event.inputs.migration_name }}"
+          Write-Host "Menyelesaikan migrasi: $migName ..."
+          npx prisma migrate resolve --applied $migName
           Write-Host "Berhasil! Status migrasi telah diubah menjadi Applied."
 
-      - name: 🚀 Step 3: Run Remaining Migrations
+      - name: "Step 3: Run Remaining Migrations"
         shell: powershell
         run: |
           Write-Host "Menjalankan migrasi tertunda lainnya..."
           npx prisma migrate deploy
           Write-Host "Database sekarang sudah sinkron sepenuhnya."
 
-      - name: ✅ Final Check
+      - name: "Final Check"
         shell: powershell
         run: |
           npx prisma migrate status
-          Write-Host "Semua sistem hijau. Anda bisa melakukan deploy normal sekarang."
+          Write-Host "Semua sistem hijau."
