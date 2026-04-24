@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma';
+import ExcelJS from 'exceljs';
 
 // ⚠️ generateEmbedding TIDAK di-import secara static di sini.
 // @xenova/transformers memerlukan model download saat pertama kali digunakan.
@@ -65,5 +66,112 @@ export class KnowledgeBaseService {
     if (!id) throw new Error('id is required');
     await prisma.knowledgeBase.delete({ where: { id } });
     return true;
+  }
+
+  static async getExportTemplate() {
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Template Knowledge Base');
+
+    worksheet.columns = [
+      { header: 'Category', key: 'category', width: 20 },
+      { header: 'Title', key: 'title', width: 40 },
+      { header: 'Content', key: 'content', width: 80 },
+      { header: 'Tags (separate by comma)', key: 'tags', width: 40 },
+      { header: 'Is Active (TRUE/FALSE)', key: 'isActive', width: 15 },
+    ];
+
+    worksheet.addRow({
+      category: 'Umum',
+      title: 'Cara mendaftar di rumah sakit?',
+      content: 'Anda dapat mendaftar langsung di loket pendaftaran atau melalui aplikasi mobile kami.',
+      tags: 'pendaftaran, rumah sakit, cara daftar',
+      isActive: 'TRUE'
+    });
+
+    return workbook.xlsx.writeBuffer();
+  }
+
+  static async exportData() {
+    const items = await prisma.knowledgeBase.findMany({
+      orderBy: { category: 'asc' }
+    });
+
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Knowledge Base Export');
+
+    worksheet.columns = [
+      { header: 'Category', key: 'category', width: 20 },
+      { header: 'Title', key: 'title', width: 40 },
+      { header: 'Content', key: 'content', width: 80 },
+      { header: 'Tags', key: 'tags', width: 40 },
+      { header: 'Is Active', key: 'isActive', width: 15 },
+    ];
+
+    items.forEach(item => {
+      worksheet.addRow({
+        category: item.category,
+        title: item.title,
+        content: item.content,
+        tags: item.tags.join(', '),
+        isActive: item.isActive ? 'TRUE' : 'FALSE'
+      });
+    });
+
+    return workbook.xlsx.writeBuffer();
+  }
+
+  static async importData(arrayBuffer: ArrayBuffer) {
+    const workbook = new ExcelJS.Workbook();
+    await workbook.xlsx.load(arrayBuffer);
+
+    const worksheet = workbook.getWorksheet(1);
+    if (!worksheet) {
+      throw new Error('Empty worksheet');
+    }
+
+    const rows: any[] = [];
+    worksheet.eachRow((row, rowNumber) => {
+      if (rowNumber === 1) return; // Skip header
+
+      const category = row.getCell(1).text?.trim();
+      const title = row.getCell(2).text?.trim();
+      const content = row.getCell(3).text?.trim();
+      const tagsStr = row.getCell(4).text?.trim();
+      const isActiveStr = row.getCell(5).text?.trim();
+
+      if (category && title && content) {
+        rows.push({
+          category,
+          title,
+          content,
+          tags: tagsStr ? tagsStr.split(',').map(t => t.trim()).filter(Boolean) : [],
+          isActive: isActiveStr ? isActiveStr.toUpperCase() === 'TRUE' : true
+        });
+      }
+    });
+
+    if (rows.length === 0) {
+      throw new Error('No valid data rows found');
+    }
+
+    let successCount = 0;
+    for (const row of rows) {
+      try {
+        const textToEmbed = `${row.title}. ${row.content}`;
+        const embedding = await getEmbedding(textToEmbed);
+
+        await prisma.knowledgeBase.create({
+          data: {
+            ...row,
+            embedding
+          }
+        });
+        successCount++;
+      } catch (err) {
+        console.error(`Failed to import row: ${row.title}`, err);
+      }
+    }
+
+    return successCount;
   }
 }
