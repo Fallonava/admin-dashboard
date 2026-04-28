@@ -8,11 +8,20 @@ import {
   HeartPulse, Building2, CalendarDays, ShieldCheck, 
   Activity, Globe, PlaneTakeoff, ChevronRight, CheckCircle2,
   Sun, Moon, Languages, Users, X, Menu, Bone, Phone, Mail, MapPin, Download,
-  Instagram, Linkedin, Youtube, Twitter, Tag, Bed, LifeBuoy, Play
+  Instagram, Linkedin, Youtube, Twitter, Tag, Bed, LifeBuoy, Play, Mic
 } from 'lucide-react';
+import Tilt from 'react-parallax-tilt';
+import dynamic from 'next/dynamic';
 import { useStreamChat } from '@/hooks/useStreamChat';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
+import Lenis from 'lenis';
+import 'lenis/dist/lenis.css';
+
+const AbstractMedicalShapeCanvas = dynamic(
+  () => import('./components/AbstractMedicalShape'),
+  { ssr: false, loading: () => <div className="w-full h-full" /> }
+);
 
 // --- DICTIONARY ---
 const DICT = {
@@ -186,6 +195,41 @@ const ColorMap: Record<string, { bg: string, text: string, hoverBg: string }> = 
   purple: { bg: "bg-purple-50 dark:bg-purple-900/30", text: "text-purple-600 dark:text-purple-400", hoverBg: "group-hover:bg-purple-500" },
 };
 
+// --- GENERATIVE UI COMPONENT ---
+function GenerativeBookingWidget({ doctorName = "Spesialis Ortopedi", date = "Besok" }) {
+  return (
+    <div className="mt-4 w-full bg-white dark:bg-zinc-950 border border-emerald-500/30 rounded-[20px] sm:rounded-[24px] p-4 sm:p-5 shadow-xl animate-in fade-in slide-in-from-bottom-4 duration-500 overflow-hidden relative">
+       <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-400 to-teal-500"></div>
+       <div className="flex items-start justify-between mb-4">
+          <div className="flex items-center gap-3">
+             <div className="w-10 h-10 bg-emerald-100 dark:bg-emerald-900/50 rounded-full flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+                <CalendarDays size={20} />
+             </div>
+             <div>
+                <h4 className="font-bold text-zinc-900 dark:text-white text-[14px] sm:text-[15px] leading-tight">Booking Otomatis</h4>
+                <p className="text-[10px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">via SIMED AI Concierge</p>
+             </div>
+          </div>
+          <span className="bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 text-[10px] px-2 py-1 rounded-md font-black tracking-widest uppercase border border-emerald-200 dark:border-emerald-800">Agentic</span>
+       </div>
+       <div className="bg-zinc-50 dark:bg-zinc-900 rounded-xl p-4 mb-4 border border-zinc-100 dark:border-zinc-800">
+          <div className="flex justify-between items-center mb-2">
+             <span className="text-sm font-medium text-zinc-500 dark:text-zinc-400">Pakar Medis</span>
+             <span className="text-sm font-bold text-zinc-900 dark:text-white">{doctorName}</span>
+          </div>
+          <div className="flex justify-between items-center">
+             <span className="text-sm font-medium text-zinc-500 dark:text-zinc-400">Jadwal Tersedia</span>
+             <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400">{date}</span>
+          </div>
+       </div>
+       <button className="w-full bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-black text-sm py-3.5 rounded-xl transition-all active:scale-95 shadow-[0_0_20px_rgba(16,185,129,0.3)] hover:-translate-y-1">
+          Konfirmasi Jadwal
+       </button>
+    </div>
+  );
+}
+
+
 export default function PublikClient({ initialSettings = null }: { initialSettings?: any }) {
   const endRef = useRef<HTMLDivElement>(null);
   const coeRef = useRef<HTMLDivElement>(null); // Anchor reference for Specialties
@@ -199,7 +243,6 @@ export default function PublikClient({ initialSettings = null }: { initialSettin
   const [showAllSpecs, setShowAllSpecs] = useState(false);
   const [docSearch, setDocSearch] = useState("");
   const [activeFilter, setActiveFilter] = useState("Semua");
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Fallback to 'id' if somehow lang is undefined, for strong typing
   const t = DICT[lang] || DICT['id'];
@@ -242,12 +285,37 @@ export default function PublikClient({ initialSettings = null }: { initialSettin
   });
 
   // Dynamic Theme by Time setup component mount
+  const [isNight, setIsNight] = useState(false);
   useEffect(() => {
     setMounted(true);
     const hours = new Date().getHours();
     // Default to dark mode from 18:00 to 05:59
     const prefersDark = hours >= 18 || hours < 6;
     setTheme(prefersDark ? 'dark' : 'light');
+    setIsNight(prefersDark);
+
+    // Initialize Lenis smooth scroll
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      orientation: 'vertical',
+      gestureOrientation: 'vertical',
+      smoothWheel: true,
+      wheelMultiplier: 1,
+      touchMultiplier: 2,
+      infinite: false,
+    });
+
+    function raf(time: number) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+
+    requestAnimationFrame(raf);
+
+    return () => {
+      lenis.destroy();
+    };
   }, []);
 
   // Cinematic Hero Slider State
@@ -295,90 +363,132 @@ export default function PublikClient({ initialSettings = null }: { initialSettin
 
   const hasMessages = messages.length > 0;
 
-  const suggestions = [
+  const suggestions = useMemo(() => [
     { text: t.sug_1, icon: <Stethoscope size={14} /> },
     { text: t.sug_2, icon: <Clock size={14} /> },
     { text: t.sug_3, icon: <ShieldCheck size={14} /> },
     { text: t.sug_4, icon: <PlaneTakeoff size={14} /> },
-  ];
+  ], [t]);
   
   // --- DATA LOGIC ---
   const doctors = apiData?.doctors || [];
-  const activeDoctorsCount = doctors.filter((d: any) => d.status === 'PRAKTEK' || d.status === 'PENDAFTARAN' || d.status === 'OPERASI').length;
+  
+  const { activeDoctorsCount, filteredDocs } = useMemo(() => {
+    const activeCount = doctors.filter((d: any) => d.status === 'PRAKTEK' || d.status === 'PENDAFTARAN' || d.status === 'OPERASI').length;
+    
+    const filtered = doctors.filter((d: any) => {
+       const matchesSearch = d.name.toLowerCase().includes(docSearch.toLowerCase()) || 
+                             (d.specialty && d.specialty.toLowerCase().includes(docSearch.toLowerCase()));
+       if (!matchesSearch) return false;
+       if (activeFilter === "Semua") return true;
+       if (activeFilter === "Praktek Sekarang") return d.status === 'PRAKTEK' || d.status === 'PENDAFTARAN' || d.status === 'OPERASI';
+       return d.specialty === activeFilter;
+    });
+
+    return { activeDoctorsCount: activeCount, filteredDocs: filtered };
+  }, [doctors, docSearch, activeFilter]);
+
   const skeletonPulse = !apiData ? "animate-pulse bg-zinc-200 dark:bg-zinc-800 text-transparent rounded" : "";
   
-  // Search Filter for Modal
-  const filteredDocs = doctors.filter((d: any) => {
-     const matchesSearch = d.name.toLowerCase().includes(docSearch.toLowerCase()) || 
-                           (d.specialty && d.specialty.toLowerCase().includes(docSearch.toLowerCase()));
-     if (!matchesSearch) return false;
-     if (activeFilter === "Semua") return true;
-     if (activeFilter === "Praktek Sekarang") return d.status === 'PRAKTEK' || d.status === 'PENDAFTARAN' || d.status === 'OPERASI';
-     return d.specialty === activeFilter;
-  });
-  
-  // COE Logic & Flagship Orthopedi
-  const specMap: Record<string, { count: number, active: number, docs: any[] }> = {};
-  let flagshipOrthoDocs: any[] = [];
-  let flagshipOrthoActive = 0;
+  const { flagshipOrthoDocs, flagshipOrthoActive, dynamicCOE, allSpecsMapped, quickFilters } = useMemo(() => {
+    const specMap: Record<string, { count: number, active: number, docs: any[] }> = {};
+    let orthoDocs: any[] = [];
+    let orthoActive = 0;
 
-  doctors.forEach((d: any) => {
-     const isPracticing = d.status === 'PRAKTEK' || d.status === 'PENDAFTARAN' || d.status === 'OPERASI';
-     const isOrtho = d.specialty && (d.specialty.toLowerCase().includes('ortho') || d.specialty.toLowerCase().includes('ortopedi') || d.specialty.toLowerCase().includes('sp.ot'));
-     
-     if (isOrtho) {
-         flagshipOrthoDocs.push(d);
-         if (isPracticing) flagshipOrthoActive += 1;
-     }
+    doctors.forEach((d: any) => {
+       const isPracticing = d.status === 'PRAKTEK' || d.status === 'PENDAFTARAN' || d.status === 'OPERASI';
+       const isOrtho = d.specialty && (d.specialty.toLowerCase().includes('ortho') || d.specialty.toLowerCase().includes('ortopedi') || d.specialty.toLowerCase().includes('sp.ot'));
+       
+       if (isOrtho) {
+           orthoDocs.push(d);
+           if (isPracticing) orthoActive += 1;
+       }
 
-     if (d.specialty) {
-        if (!specMap[d.specialty]) specMap[d.specialty] = { count: 0, active: 0, docs: [] };
-        specMap[d.specialty].count += 1;
-        if (isPracticing) specMap[d.specialty].active += 1;
-        specMap[d.specialty].docs.push(d);
-     }
-  });
-  
-  const topSpecialties = Object.keys(specMap)
-      .filter(s => !(s.toLowerCase().includes('ortho') || s.toLowerCase().includes('ortopedi') || s.toLowerCase().includes('sp.ot')))
-      .sort((a,b) => specMap[b].count - specMap[a].count)
-      .slice(0, 3);
-  
-  const specIcons = [
-      <Activity key="1" size={32} className="text-rose-500 dark:text-rose-400 group-hover:scale-110 transition-transform duration-500" />,
-      <Bot key="2" size={32} className="text-indigo-500 dark:text-indigo-400 group-hover:scale-110 transition-transform duration-500" />,
-      <Sparkles key="3" size={32} className="text-amber-500 dark:text-amber-400 group-hover:scale-110 transition-transform duration-500" />
-  ];
-  const specColor = ["bg-rose-50 dark:bg-rose-950/50", "bg-indigo-50 dark:bg-indigo-950/50", "bg-amber-50 dark:bg-amber-950/50"];
+       if (d.specialty) {
+          if (!specMap[d.specialty]) specMap[d.specialty] = { count: 0, active: 0, docs: [] };
+          specMap[d.specialty].count += 1;
+          if (isPracticing) specMap[d.specialty].active += 1;
+          specMap[d.specialty].docs.push(d);
+       }
+    });
+    
+    const topSpecialties = Object.keys(specMap)
+        .filter(s => !(s.toLowerCase().includes('ortho') || s.toLowerCase().includes('ortopedi') || s.toLowerCase().includes('sp.ot')))
+        .sort((a,b) => specMap[b].count - specMap[a].count)
+        .slice(0, 3);
+    
+    const specIcons = [
+        <Activity key="1" size={32} className="text-rose-500 dark:text-rose-400 group-hover:scale-110 transition-transform duration-500" />,
+        <Bot key="2" size={32} className="text-indigo-500 dark:text-indigo-400 group-hover:scale-110 transition-transform duration-500" />,
+        <Sparkles key="3" size={32} className="text-amber-500 dark:text-amber-400 group-hover:scale-110 transition-transform duration-500" />
+    ];
+    const specColor = ["bg-rose-50 dark:bg-rose-950/50", "bg-indigo-50 dark:bg-indigo-950/50", "bg-amber-50 dark:bg-amber-950/50"];
 
-  let dynamicCOE = topSpecialties.map((spec: string, i: number) => ({
-      title: spec,
-      count: specMap[spec].count,
-      active: specMap[spec].active,
-      desc: lang === 'en' ? `We have ${specMap[spec].count} medical experts, with ${specMap[spec].active} currently on duty.` : `Terdapat ${specMap[spec].count} Pakar Medis, dan ${specMap[spec].active} di antaranya sedang berpraktik saat ini.`,
-      icon: specIcons[i % specIcons.length],
-      color: specColor[i % specColor.length],
-      avatars: specMap[spec].docs.filter((d: any) => d.image).slice(0, 4).map((d: any) => d.image)
-  }));
-  
-  const allSpecsMapped = Object.keys(specMap).sort((a,b) => specMap[b].count - specMap[a].count).map((spec: string, i: number) => ({
-      title: spec,
-      count: specMap[spec].count,
-      active: specMap[spec].active,
-      icon: specIcons[i % specIcons.length],
-      color: specColor[i % specColor.length]
-  }));
-  
-  if (dynamicCOE.length === 0) {
-      dynamicCOE = [
-         { title: "Heart & Vascular", count: 0, active: 0, desc: t.coe_heart_desc, color: specColor[0], icon: specIcons[0], avatars: [] },
-         { title: "Neuroscience", count: 0, active: 0, desc: t.coe_neuro_desc, color: specColor[1], icon: specIcons[1], avatars: [] },
-         { title: "Oncology Center", count: 0, active: 0, desc: t.coe_oncology_desc, color: specColor[2], icon: specIcons[2], avatars: [] }
-      ];
-  }
+    let dynCOE = topSpecialties.map((spec: string, i: number) => ({
+        title: spec,
+        count: specMap[spec].count,
+        active: specMap[spec].active,
+        desc: lang === 'en' ? `We have ${specMap[spec].count} medical experts, with ${specMap[spec].active} currently on duty.` : `Terdapat ${specMap[spec].count} Pakar Medis, dan ${specMap[spec].active} di antaranya sedang berpraktik saat ini.`,
+        icon: specIcons[i % specIcons.length],
+        color: specColor[i % specColor.length],
+        avatars: specMap[spec].docs.filter((d: any) => d.image).slice(0, 4).map((d: any) => d.image)
+    }));
+    
+    const mappedSpecs = Object.keys(specMap).sort((a,b) => specMap[b].count - specMap[a].count).map((spec: string, i: number) => ({
+        title: spec,
+        count: specMap[spec].count,
+        active: specMap[spec].active,
+        icon: specIcons[i % specIcons.length],
+        color: specColor[i % specColor.length]
+    }));
+    
+    if (dynCOE.length === 0) {
+        dynCOE = [
+           { title: "Heart & Vascular", count: 0, active: 0, desc: t.coe_heart_desc, color: specColor[0], icon: specIcons[0], avatars: [] },
+           { title: "Neuroscience", count: 0, active: 0, desc: t.coe_neuro_desc, color: specColor[1], icon: specIcons[1], avatars: [] },
+           { title: "Oncology Center", count: 0, active: 0, desc: t.coe_oncology_desc, color: specColor[2], icon: specIcons[2], avatars: [] }
+        ];
+    }
 
-  // Quick filters combining dynamic top specialties
-  const quickFilters = ["Semua", "Praktek Sekarang", ...topSpecialties];
+    return {
+       flagshipOrthoDocs: orthoDocs,
+       flagshipOrthoActive: orthoActive,
+       dynamicCOE: dynCOE,
+       allSpecsMapped: mappedSpecs,
+       quickFilters: ["Semua", "Praktek Sekarang", ...topSpecialties]
+    };
+  }, [doctors, lang, t]);
+
+  const articlesToShow = useMemo(() => {
+    const specialistDoctors = doctors.filter((d: any) => d.specialty);
+    const defaultArticles = [
+      {
+        title: "Pentingnya Deteksi Dini Kanker: Kapan Harus Mulai Cek Rutin?",
+        category: "Onkologi",
+        author: specialistDoctors.find((d: any) => d.specialty?.toLowerCase().includes('bedah') || d.specialty?.toLowerCase().includes('onk'))?.name || (specialistDoctors[0]?.name || "Tim Dokter Spesialis"),
+        desc: "Deteksi dini terbukti meningkatkan angka kesembuhan kanker hingga 90%. Pelajari panduan skrining yang tepat berdasarkan usia dan faktor risiko Anda.",
+        imageUrl: "https://images.unsplash.com/photo-1579154204601-01588f351e67?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        title: "Cedera Ligamen ACL: Kapan Perlu Operasi dan Bagaimana Pemulihannya?",
+        category: "Ortopedi",
+        author: specialistDoctors.find((d: any) => d.specialty?.toLowerCase().includes('ot') || d.specialty?.toLowerCase().includes('ortho'))?.name || (specialistDoctors[1]?.name || "Tim Dokter Spesialis"),
+        desc: "Robekan ligamen ACL adalah cedera paling umum pada atlet. Kenali gejalanya dan temukan jawaban kapan harus memilih fisioterapi vs rekonstruksi bedah.",
+        imageUrl: "https://images.unsplash.com/photo-1607619056574-7b8d3ee536b2?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        title: "Diet Anti-Inflamasi Pasca Operasi: Makanan yang Mempercepat Pemulihan",
+        category: "Gizi Klinis",
+        author: specialistDoctors.find((d: any) => d.specialty?.toLowerCase().includes('gizi') || d.specialty?.toLowerCase().includes('nutrisi'))?.name || (specialistDoctors[2]?.name || "Tim Dokter Spesialis"),
+        desc: "Nutrisi yang tepat pasca operasi bukan sekadar menjaga stamina — protein, zinc, dan vitamin C berperan krusial dalam regenerasi jaringan dan pencegahan infeksi luka.",
+        imageUrl: "https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=800&q=80"
+      },
+    ];
+
+    return (portalSettings?.articles && portalSettings.articles.length > 0)
+      ? portalSettings.articles
+      : defaultArticles;
+  }, [doctors, portalSettings]);
 
   if (!mounted) return (
     <div className="min-h-screen bg-[#F5F7FA] flex flex-col items-center justify-center">
@@ -551,102 +661,21 @@ export default function PublikClient({ initialSettings = null }: { initialSettin
 
         {/* ─── LUMINANCE BACKGROUND (Fixed) ─── */}
         <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-           <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-emerald-400/20 dark:bg-emerald-900/30 rounded-full blur-[140px] mix-blend-multiply dark:mix-blend-screen transition-all duration-700" />
-           <div className="absolute top-[40%] right-[-10%] w-[40%] h-[60%] bg-indigo-500/15 dark:bg-indigo-900/20 rounded-full blur-[150px] mix-blend-multiply dark:mix-blend-screen transition-all duration-700" />
-           <div className="absolute bottom-[-10%] left-[20%] w-[50%] h-[40%] bg-cyan-400/10 dark:bg-cyan-900/20 rounded-full blur-[130px] mix-blend-multiply dark:mix-blend-screen transition-all duration-700" />
+           <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-emerald-400/20 dark:bg-emerald-900/30 rounded-full blur-[140px] mix-blend-multiply dark:mix-blend-screen transition-colors duration-700" style={{ willChange: 'transform' }} />
+           <div className="absolute top-[40%] right-[-10%] w-[40%] h-[60%] bg-indigo-500/15 dark:bg-indigo-900/20 rounded-full blur-[150px] mix-blend-multiply dark:mix-blend-screen transition-colors duration-700" style={{ willChange: 'transform' }} />
+           <div className="absolute bottom-[-10%] left-[20%] w-[50%] h-[40%] bg-cyan-400/10 dark:bg-cyan-900/20 rounded-full blur-[130px] mix-blend-multiply dark:mix-blend-screen transition-colors duration-700" style={{ willChange: 'transform' }} />
         </div>
 
-        {/* ─── HEADER ─── */}
-        <header className="fixed top-0 w-full z-[60] bg-white/50 dark:bg-zinc-950/50 backdrop-blur-3xl border-b border-white/50 dark:border-zinc-800/50 shadow-[0_2px_20px_rgba(0,0,0,0.02)] transition-colors duration-700">
-          <div className="max-w-7xl mx-auto px-6 lg:px-8 h-20 flex items-center justify-between">
-            <div className="flex items-center gap-3 group cursor-pointer" onClick={() => window.location.reload()}>
-              <div className="w-11 h-11 bg-white rounded-[14px] flex items-center justify-center shadow-lg group-hover:scale-105 group-active:scale-95 transition-transform duration-500 border border-zinc-200/50 overflow-hidden relative">
-                <div className="absolute inset-0 bg-emerald-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <img src="/logo-rs.png" alt="Siaga Medika" className="w-full h-full object-contain p-1.5 drop-shadow-sm" />
-              </div>
-              <div className="flex flex-col">
-                 <span className="font-black text-zinc-900 dark:text-white tracking-tight text-xl leading-none mt-1">SIAGA MEDIKA</span>
-                 <span className="text-emerald-600 dark:text-emerald-500 font-bold text-[10px] tracking-widest uppercase">Purbalingga</span>
-              </div>
-            </div>
-            
-            <nav className="hidden md:flex items-center gap-8 font-bold text-sm text-zinc-600 dark:text-zinc-400">
-               <span onClick={() => setShowDocModal(true)} className="cursor-pointer hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors flex items-center gap-1"><Search size={14} />{t.nav_findDoctor}</span>
-               <span onClick={() => coeRef.current?.scrollIntoView({behavior: 'smooth'})} className="cursor-pointer hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">{t.nav_specialties}</span>
-               <span onClick={() => { setInput("Buka Portal Pasien"); setTimeout(() => append({role: 'user', content: 'Buka Portal Pasien'}), 150); }} className="cursor-pointer hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors flex items-center gap-1.5 py-1.5 px-3 bg-zinc-100 dark:bg-zinc-900 rounded-full">{t.nav_portal} <Sparkles size={12} className="text-emerald-500" /></span>
-            </nav>
 
-            <div className="flex flex-row items-center gap-4">
-               {/* Context Toggles */}
-               <div className="hidden sm:flex items-center bg-white/80 dark:bg-zinc-900/80 rounded-full p-1 border border-zinc-200 dark:border-zinc-800 shadow-sm transition-colors">
-                 <button 
-                   type="button"
-                   onClick={() => setLang(lang === 'id' ? 'en' : 'id')}
-                   className="w-10 h-8 rounded-full flex items-center justify-center hover:bg-zinc-100 dark:hover:bg-zinc-800 text-xs font-bold transition-colors text-zinc-600 dark:text-zinc-300"
-                 >
-                   {lang === 'id' ? 'ID' : 'EN'}
-                 </button>
-                 <div className="w-[1px] h-4 bg-zinc-200 dark:bg-zinc-700 mx-1"></div>
-                 <button 
-                   type="button"
-                   onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
-                   className="w-10 h-8 rounded-full flex items-center justify-center hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors text-zinc-600 dark:text-zinc-300"
-                 >
-                   {theme === 'light' ? <Moon size={14} /> : <Sun size={14} />}
-                 </button>
-               </div>
-
-               <Link href="/login" className="hidden sm:flex items-center gap-2 px-5 py-2.5 bg-zinc-900 dark:bg-emerald-500 border border-zinc-800 dark:border-emerald-400 text-white dark:text-zinc-900 font-bold text-[13px] rounded-full hover:bg-zinc-800 dark:hover:bg-emerald-400 hover:shadow-xl transition-all shadow-sm">
-                  {t.header_admin} <ArrowRight size={15} />
-               </Link>
-
-               {/* Mobile Hamburger */}
-               <button onClick={() => setMobileMenuOpen(true)} className="md:hidden flex items-center justify-center w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-white transition-colors">
-                  <Menu size={20} />
-               </button>
-            </div>
-          </div>
-        </header>
-
-        {/* ─── MOBILE MENU DRAWER ─── */}
-        <div className={cn("fixed inset-0 z-[100] bg-zinc-900/40 dark:bg-black/60 backdrop-blur-md transition-all duration-500 md:hidden", mobileMenuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none")}>
-           <div className={cn("absolute right-0 top-0 bottom-0 w-4/5 max-w-sm bg-white dark:bg-zinc-950 shadow-2xl transition-transform duration-500 flex flex-col p-6 border-l border-zinc-200 dark:border-zinc-800", mobileMenuOpen ? "translate-x-0" : "translate-x-full")}>
-              <div className="flex justify-between items-center mb-10">
-                 <span className="font-black text-xl text-zinc-900 dark:text-white">Menu</span>
-                 <button onClick={() => setMobileMenuOpen(false)} className="w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-500"><X size={16} /></button>
-              </div>
-              <div className="flex flex-col gap-6 font-bold text-lg text-zinc-700 dark:text-zinc-300">
-                 <span onClick={() => { setMobileMenuOpen(false); setShowDocModal(true); }} className="flex items-center gap-3 cursor-pointer"><Search size={18} className="text-emerald-500" /> {t.nav_findDoctor}</span>
-                 <span onClick={() => { setMobileMenuOpen(false); coeRef.current?.scrollIntoView({behavior: 'smooth'}); }} className="flex items-center gap-3 cursor-pointer"><Activity size={18} className="text-emerald-500" /> {t.nav_specialties}</span>
-                 <span onClick={() => { setMobileMenuOpen(false); setInput("Buka Portal Pasien"); setTimeout(() => append({role: 'user', content: 'Buka Portal Pasien'}), 150); }} className="flex items-center gap-3 cursor-pointer"><User size={18} className="text-emerald-500" /> {t.nav_portal}</span>
-                 
-                 <div className="h-px w-full bg-zinc-200 dark:bg-zinc-800 my-2" />
-                 
-                 <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">Tema Gelap</span>
-                    <button onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')} className="w-12 h-6 rounded-full bg-zinc-200 dark:bg-emerald-500 relative transition-colors flex items-center px-1">
-                       <div className={cn("w-4 h-4 rounded-full bg-white shadow-sm transition-transform duration-300", theme === 'dark' ? "translate-x-6" : "translate-x-0")} />
-                    </button>
-                 </div>
-                 <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">Bahasa</span>
-                    <button onClick={() => setLang(lang === 'id' ? 'en' : 'id')} className="bg-zinc-100 dark:bg-zinc-800 px-3 py-1 rounded-md text-sm transition-colors">
-                       {lang === 'id' ? '🇮🇩 ID' : '🇬🇧 EN'}
-                    </button>
-                 </div>
-
-                 <Link href="/login" className="flex items-center justify-between bg-zinc-900 dark:bg-emerald-500 text-white dark:text-zinc-900 px-5 py-3 rounded-2xl mt-4 shadow-lg hover:-translate-y-1 transition-transform">
-                    {t.header_admin} <ArrowRight size={16} />
-                 </Link>
-              </div>
-           </div>
-        </div>
 
         {/* ─── SCROLLING CONTENT WRAPPER ─── */}
-        <div className={cn(
-           "relative z-10 w-full flex flex-col transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] origin-top",
-           hasMessages ? "opacity-0 scale-95 pointer-events-none h-0 overflow-hidden" : "opacity-100 scale-100 min-h-screen pb-[300px]"
-        )}>
+        <div
+          className={cn(
+            "relative z-10 w-full flex flex-col transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] origin-top",
+            hasMessages ? "opacity-0 scale-95 pointer-events-none h-0 overflow-hidden" : "opacity-100 scale-100 min-h-screen pb-[300px]"
+          )}
+          style={{ contain: 'layout style', willChange: 'opacity, transform' }}
+        >
            
            {/* 1. HERO SECTION — 2026 Spatial Edition */}
            <section className="pt-28 pb-10 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full relative overflow-hidden">
@@ -766,39 +795,81 @@ export default function PublikClient({ initialSettings = null }: { initialSettin
               <FadeInView delay={100}>
                  <div className="grid grid-cols-1 md:grid-cols-12 gap-5 w-full">
                     {/* Darurat */}
-                    <div className="md:col-span-8 bg-gradient-to-br from-zinc-900 to-zinc-800 dark:from-zinc-100 dark:to-zinc-300 rounded-[40px] p-10 text-white dark:text-zinc-900 relative overflow-hidden shadow-2xl hover:shadow-[0_20px_60px_rgba(0,0,0,0.15)] dark:hover:shadow-[0_20px_60px_rgba(255,255,255,0.05)] hover:-translate-y-1 transition-all duration-700 group cursor-pointer">
-                       <div className="absolute right-[-5%] top-[-20%] opacity-20 dark:opacity-10 group-hover:scale-110 transition-transform duration-700">
-                          <HeartPulse size={300} strokeWidth={1} />
-                       </div>
-                       <div className="relative z-10">
-                          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-white/10 dark:bg-zinc-900/10 backdrop-blur-md rounded-full text-xs font-bold uppercase tracking-widest mb-6 border border-white/10 dark:border-zinc-900/10">
-                             <span className="w-2 h-2 rounded-full bg-red-400 dark:bg-red-500 animate-pulse"></span> {t.er_badge}
+                    <div className={cn("flex flex-col", isNight ? "md:col-span-12 order-first" : "md:col-span-8")}>
+                       <Tilt tiltMaxAngleX={isNight ? 1 : 3} tiltMaxAngleY={isNight ? 1 : 3} perspective={1000} scale={1.01} transitionSpeed={2000} glareEnable={true} glareMaxOpacity={0.15} glarePosition="all" className="flex-1 rounded-[32px] sm:rounded-[40px] shadow-2xl hover:shadow-[0_20px_60px_rgba(0,0,0,0.15)] dark:hover:shadow-[0_20px_60px_rgba(255,255,255,0.05)] transition-shadow duration-700 h-full">
+                          <div className="bg-gradient-to-br from-zinc-900 to-zinc-800 dark:from-zinc-100 dark:to-zinc-300 rounded-[32px] sm:rounded-[40px] p-6 sm:p-10 text-white dark:text-zinc-900 relative overflow-hidden h-full flex flex-col group cursor-pointer border border-transparent dark:border-white/20">
+                             <div className="absolute right-[-5%] top-[-20%] opacity-20 dark:opacity-10 group-hover:scale-110 transition-transform duration-700 pointer-events-none">
+                                <HeartPulse size={300} strokeWidth={1} />
+                             </div>
+                             <div className="relative z-10 flex flex-col flex-1">
+                                <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-white/10 dark:bg-zinc-900/10 backdrop-blur-md rounded-full text-xs font-bold uppercase tracking-widest mb-6 border border-white/10 dark:border-zinc-900/10 w-fit">
+                                   <span className="w-2 h-2 rounded-full bg-red-400 dark:bg-red-500 animate-pulse"></span> {t.er_badge}
+                                </div>
+                                <h2 className="text-4xl md:text-5xl font-black mb-4">{t.er_title}</h2>
+                                <p className="text-zinc-300 dark:text-zinc-700 md:text-lg mb-8 max-w-md font-medium leading-relaxed flex-1">{t.er_desc}</p>
+                                
+                                <div className="flex flex-wrap items-center gap-4 mb-8">
+                                   <button onClick={() => window.open(`https://wa.me/${portalSettings?.general?.emergencyPhone || "628111111111"}`, "_blank")} className="px-8 py-4 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white rounded-full font-black text-sm hover:scale-105 transition-transform active:scale-95 shadow-[0_0_40px_rgba(255,255,255,0.2)] dark:shadow-[0_0_40px_rgba(0,0,0,0.1)]">
+                                      {t.er_btn}
+                                   </button>
+                                   
+                                   {/* Data-Dense Micro-Widget: ER Wait Time */}
+                                   <div className="flex items-center gap-4 bg-black/20 dark:bg-white/20 p-3 rounded-2xl border border-white/10 dark:border-black/10 backdrop-blur-md">
+                                      <div className="flex flex-col">
+                                         <span className="text-[10px] uppercase font-bold tracking-wider opacity-80">Estimasi Tunggu</span>
+                                         <span className="text-xl font-black flex items-center gap-2">4 Mnt <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"/></span>
+                                      </div>
+                                      <div className="w-[60px] h-[30px] opacity-80">
+                                         <svg viewBox="0 0 100 30" className="w-full h-full stroke-emerald-400 dark:stroke-emerald-600 fill-none" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                                            <path d="M0 20 L20 20 L30 5 L40 25 L50 15 L60 20 L100 20" />
+                                         </svg>
+                                      </div>
+                                   </div>
+                                </div>
+                             </div>
                           </div>
-                          <h2 className="text-4xl md:text-5xl font-black mb-4">{t.er_title}</h2>
-                          <p className="text-zinc-300 dark:text-zinc-700 md:text-lg mb-10 max-w-md font-medium leading-relaxed">{t.er_desc}</p>
-                          <button onClick={() => window.open(`https://wa.me/${portalSettings?.general?.emergencyPhone || "628111111111"}`, "_blank")} className="px-8 py-4 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white rounded-full font-black text-sm hover:scale-105 transition-transform active:scale-95 shadow-[0_0_40px_rgba(255,255,255,0.2)] dark:shadow-[0_0_40px_rgba(0,0,0,0.1)]">
-                             {t.er_btn}
-                          </button>
-                       </div>
+                       </Tilt>
                     </div>
 
                     {/* Dokter Praktik Live Data */}
-                    <div className="md:col-span-4 flex flex-col gap-5">
-                       <div className="flex-1 bg-white/60 dark:bg-zinc-900/60 backdrop-blur-3xl border border-white/50 dark:border-zinc-800/50 rounded-[40px] p-8 shadow-[0_8px_30px_rgba(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.4)] hover:shadow-xl transition-all group flex flex-col cursor-pointer">
-                          <div className="flex justify-between items-start mb-6">
-                             <div className="w-14 h-14 bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-100 dark:border-emerald-900 text-emerald-600 dark:text-emerald-400 rounded-[20px] flex items-center justify-center group-hover:bg-emerald-500 group-hover:text-white dark:group-hover:bg-emerald-500 transition-colors duration-500">
-                                <Users size={26} strokeWidth={2.5} />
+                    <div className={cn("flex flex-col", isNight ? "md:col-span-12" : "md:col-span-4")}>
+                       <Tilt tiltMaxAngleX={4} tiltMaxAngleY={4} perspective={1000} scale={1.01} transitionSpeed={2000} glareEnable={true} glareMaxOpacity={0.1} glarePosition="all" className="flex-1 rounded-[40px] shadow-[0_8px_30px_rgba(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.4)] hover:shadow-xl transition-shadow duration-700 h-full">
+                          <div className="bg-white/60 dark:bg-zinc-900/60 backdrop-blur-3xl border border-white/50 dark:border-zinc-800/50 rounded-[40px] p-8 group flex flex-col cursor-pointer h-full">
+                             <div className="flex justify-between items-start mb-6">
+                                <div className="w-14 h-14 bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-100 dark:border-emerald-900 text-emerald-600 dark:text-emerald-400 rounded-[20px] flex items-center justify-center group-hover:bg-emerald-500 group-hover:text-white dark:group-hover:bg-emerald-500 transition-colors duration-500">
+                                   <Users size={26} strokeWidth={2.5} />
+                                </div>
+                                <span className="text-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 px-3 py-1 rounded-full flex items-center gap-1.5 font-bold text-xs"><span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"/>{t.inpatient_avail}</span>
                              </div>
-                             <span className="text-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 px-3 py-1 rounded-full flex items-center gap-1.5 font-bold text-xs"><span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"/>{t.inpatient_avail}</span>
+                             
+                             <h3 className="font-black text-2xl text-zinc-900 dark:text-white mb-2">{t.inpatient_title}</h3>
+                             <p className="text-zinc-500 dark:text-zinc-400 text-sm font-medium leading-relaxed flex-1">{t.inpatient_desc}</p>
+                             
+                             <div className="mt-4 flex flex-col gap-3">
+                                <div className="flex items-center justify-between font-bold text-sm bg-white/80 dark:bg-zinc-950/80 p-4 rounded-2xl border border-zinc-100 dark:border-zinc-800">
+                                   <span>{t.inpatient_room}</span>
+                                   <span className={cn("text-xl bg-gradient-to-br from-zinc-800 to-zinc-600 dark:from-zinc-100 dark:to-zinc-300 text-transparent bg-clip-text font-black", skeletonPulse)}>{activeDoctorsCount}</span>
+                                </div>
+
+                                {/* Data-Dense Micro-Widget: Bed Availability */}
+                                <div className="flex items-center justify-between bg-white/80 dark:bg-zinc-950/80 p-3 rounded-2xl border border-zinc-100 dark:border-zinc-800">
+                                   <div className="flex items-center gap-3">
+                                      <div className="relative w-10 h-10 flex items-center justify-center">
+                                         <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
+                                            <path className="text-zinc-200 dark:text-zinc-800" strokeWidth="3" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                            <path className="text-emerald-500 animate-[stroke-dasharray_1.5s_ease-out]" strokeWidth="3" strokeDasharray="85, 100" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                         </svg>
+                                         <span className="absolute text-[10px] font-black text-zinc-900 dark:text-white">85%</span>
+                                      </div>
+                                      <div className="flex flex-col">
+                                         <span className="text-[10px] text-zinc-400 dark:text-zinc-500 uppercase tracking-widest font-bold">Kamar Inap</span>
+                                         <span className="text-xs font-bold text-zinc-800 dark:text-zinc-200">Ketersediaan Bed</span>
+                                      </div>
+                                   </div>
+                                </div>
+                             </div>
                           </div>
-                          
-                          <h3 className="font-black text-2xl text-zinc-900 dark:text-white mb-2">{t.inpatient_title}</h3>
-                          <p className="text-zinc-500 dark:text-zinc-400 text-sm font-medium leading-relaxed flex-1">{t.inpatient_desc}</p>
-                          <div className="mt-4 flex items-center justify-between font-bold text-sm bg-white/80 dark:bg-zinc-950/80 p-4 rounded-2xl border border-white dark:border-zinc-800">
-                             <span>{t.inpatient_room}</span>
-                             <span className={cn("text-xl bg-gradient-to-br from-zinc-800 to-zinc-600 dark:from-zinc-100 dark:to-zinc-300 text-transparent bg-clip-text font-black", skeletonPulse)}>{activeDoctorsCount}</span>
-                          </div>
-                       </div>
+                       </Tilt>
                     </div>
                  </div>
               </FadeInView>
@@ -851,9 +922,9 @@ export default function PublikClient({ initialSettings = null }: { initialSettin
                     <div className="grid grid-cols-1 md:grid-cols-12 gap-6 auto-rows-auto">
                        
                        {/* FLAGSHIP ORTHOPEDICS (WIDE CARD) */}
-                       <div className="md:col-span-12 lg:col-span-8 bg-gradient-to-br from-emerald-950 to-teal-900 dark:from-zinc-900 dark:to-zinc-950 rounded-[40px] p-8 sm:p-10 shadow-2xl relative overflow-hidden group cursor-pointer border border-emerald-800/30 dark:border-zinc-800 flex flex-col justify-between min-h-[340px]">
-                          <div className="absolute right-[-10%] top-[-10%] opacity-10 dark:opacity-5 group-hover:scale-110 transition-transform duration-700 pointer-events-none">
-                             <Bone size={400} strokeWidth={1} className="text-emerald-500" />
+                       <div className="md:col-span-12 lg:col-span-8 bg-gradient-to-br from-emerald-950 to-teal-900 dark:from-zinc-900 dark:to-zinc-950 rounded-[32px] sm:rounded-[40px] p-6 sm:p-10 shadow-2xl relative overflow-hidden group cursor-pointer border border-emerald-800/30 dark:border-zinc-800 flex flex-col justify-between min-h-[300px] sm:min-h-[340px]">
+                          <div className="absolute right-[-40%] sm:right-[-20%] top-[-10%] sm:top-[-15%] w-[300px] sm:w-[450px] h-[300px] sm:h-[450px] opacity-20 sm:opacity-40 dark:opacity-20 sm:dark:opacity-30 group-hover:scale-110 group-hover:rotate-6 transition-all duration-[1500ms] pointer-events-none">
+                             <AbstractMedicalShapeCanvas />
                           </div>
                           
                           <div className="relative z-10 flex justify-between items-start mb-8">
@@ -1016,58 +1087,26 @@ export default function PublikClient({ initialSettings = null }: { initialSettin
 
                   <FadeInView delay={200}>
                      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        {(() => {
-                            // Build articles: use portalSettings OR fallback to doctor-authored defaults
-                            const specialistDoctors = doctors.filter((d: any) => d.specialty);
-                            const defaultArticles = [
-                              {
-                                title: "Pentingnya Deteksi Dini Kanker: Kapan Harus Mulai Cek Rutin?",
-                                category: "Onkologi",
-                                author: specialistDoctors.find((d: any) => d.specialty?.toLowerCase().includes('bedah') || d.specialty?.toLowerCase().includes('onk'))?.name || (specialistDoctors[0]?.name || "Tim Dokter Spesialis"),
-                                desc: "Deteksi dini terbukti meningkatkan angka kesembuhan kanker hingga 90%. Pelajari panduan skrining yang tepat berdasarkan usia dan faktor risiko Anda.",
-                                imageUrl: "https://images.unsplash.com/photo-1579154204601-01588f351e67?auto=format&fit=crop&w=800&q=80"
-                              },
-                              {
-                                title: "Cedera Ligamen ACL: Kapan Perlu Operasi dan Bagaimana Pemulihannya?",
-                                category: "Ortopedi",
-                                author: specialistDoctors.find((d: any) => d.specialty?.toLowerCase().includes('ot') || d.specialty?.toLowerCase().includes('ortho'))?.name || (specialistDoctors[1]?.name || "Tim Dokter Spesialis"),
-                                desc: "Robekan ligamen ACL adalah cedera paling umum pada atlet. Kenali gejalanya dan temukan jawaban kapan harus memilih fisioterapi vs rekonstruksi bedah.",
-                                imageUrl: "https://images.unsplash.com/photo-1607619056574-7b8d3ee536b2?auto=format&fit=crop&w=800&q=80"
-                              },
-                              {
-                                title: "Diet Anti-Inflamasi Pasca Operasi: Makanan yang Mempercepat Pemulihan",
-                                category: "Gizi Klinis",
-                                author: specialistDoctors.find((d: any) => d.specialty?.toLowerCase().includes('gizi') || d.specialty?.toLowerCase().includes('nutrisi'))?.name || (specialistDoctors[2]?.name || "Tim Dokter Spesialis"),
-                                desc: "Nutrisi yang tepat pasca operasi bukan sekadar menjaga stamina — protein, zinc, dan vitamin C berperan krusial dalam regenerasi jaringan dan pencegahan infeksi luka.",
-                                imageUrl: "https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=800&q=80"
-                              },
-                            ];
-
-                            const articlesToShow = (portalSettings?.articles && portalSettings.articles.length > 0)
-                              ? portalSettings.articles
-                              : defaultArticles;
-
-                            return articlesToShow.map((art: any, i: number) => (
-                              <div key={i} className="group cursor-pointer flex flex-col">
-                                 <div className="w-full h-60 bg-zinc-200 dark:bg-zinc-800 rounded-[32px] mb-6 overflow-hidden relative shadow-[0_8px_30px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.4)] border border-zinc-100/80 dark:border-zinc-800/80">
-                                    <img
-                                      src={art.imageUrl}
-                                      alt={art.title}
-                                      className="w-full h-full object-cover group-hover:scale-[1.07] transition-transform duration-700 ease-[cubic-bezier(0.32,0.72,0,1)]"
-                                      onError={(e: any) => { e.target.style.display='none'; }}
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                                    <div className="absolute top-4 left-4 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.15em] text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">{art.category}</div>
-                                 </div>
-                                 <p className="text-emerald-600 dark:text-emerald-400 text-[11px] font-black uppercase tracking-[0.15em] mb-2">{art.author}</p>
-                                 <h3 className="text-xl font-black tracking-tight text-zinc-900 dark:text-white mb-3 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors duration-300 line-clamp-2 leading-tight">{art.title}</h3>
-                                 <p className="text-zinc-500 dark:text-zinc-400 text-sm font-medium line-clamp-3 leading-relaxed flex-1">{art.desc}</p>
-                                 <div className="mt-4 flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-bold text-xs group-hover:gap-2 transition-all">
-                                    Baca Selengkapnya <ArrowRight size={12} />
-                                 </div>
-                              </div>
-                            ));
-                         })()}
+                        {articlesToShow.map((art: any, i: number) => (
+                          <div key={i} className="group cursor-pointer flex flex-col">
+                             <div className="w-full h-60 bg-zinc-200 dark:bg-zinc-800 rounded-[32px] mb-6 overflow-hidden relative shadow-[0_8px_30px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.4)] border border-zinc-100/80 dark:border-zinc-800/80">
+                                <img
+                                  src={art.imageUrl}
+                                  alt={art.title}
+                                  className="w-full h-full object-cover group-hover:scale-[1.07] transition-transform duration-700 ease-[cubic-bezier(0.32,0.72,0,1)]"
+                                  onError={(e: any) => { e.target.style.display='none'; }}
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                                <div className="absolute top-4 left-4 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.15em] text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">{art.category}</div>
+                             </div>
+                             <p className="text-emerald-600 dark:text-emerald-400 text-[11px] font-black uppercase tracking-[0.15em] mb-2">{art.author}</p>
+                             <h3 className="text-xl font-black tracking-tight text-zinc-900 dark:text-white mb-3 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors duration-300 line-clamp-2 leading-tight">{art.title}</h3>
+                             <p className="text-zinc-500 dark:text-zinc-400 text-sm font-medium line-clamp-3 leading-relaxed flex-1">{art.desc}</p>
+                             <div className="mt-4 flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-bold text-xs group-hover:gap-2 transition-all">
+                                Baca Selengkapnya <ArrowRight size={12} />
+                             </div>
+                          </div>
+                        ))}
                      </div>
                   </FadeInView>
                </div>
@@ -1184,7 +1223,7 @@ export default function PublikClient({ initialSettings = null }: { initialSettin
         )}>
           <div className="w-full max-w-4xl space-y-8 animate-in fade-in duration-700">
             {messages.map((m) => (
-              <div key={m.id} className={cn("flex w-full", m.role === 'user' ? 'justify-end' : 'justify-start')}>
+              <div key={m.id} className={cn("flex w-full flex-col gap-2", m.role === 'user' ? 'items-end' : 'items-start')}>
                 <div className={cn(
                   "flex gap-4 max-w-[85%] sm:max-w-[75%]",
                   m.role === 'user' ? 'flex-row-reverse' : 'flex-row'
@@ -1217,6 +1256,52 @@ export default function PublikClient({ initialSettings = null }: { initialSettin
                     ))}
                   </div>
                 </div>
+                {/* GENERATIVE UI INJECTION */}
+                {m.role === 'assistant' && (() => {
+                   const content = m.content;
+                   const lower = content.toLowerCase();
+                   if (!lower.includes('jadwal') && !lower.includes('dr.')) return null;
+
+                   // DO NOT render widget if AI says unavailable, leave, or not found
+                   if (lower.includes('tidak menemukan') || lower.includes('tidak ada jadwal') || lower.includes('cuti') || lower.includes('mohon maaf') || lower.includes('belum ada')) {
+                      return null;
+                   }
+
+                   let docName = "Spesialis Medis";
+                   let time = "Jadwal Tersedia";
+
+                   // Try to match specific schedule format like "- dr. Name: Time"
+                   const scheduleMatch = content.match(/-\s*(dr\.?[^:]+):\s*([^.\n]+)/i);
+                   if (scheduleMatch) {
+                      docName = scheduleMatch[1].trim();
+                      time = scheduleMatch[2].trim();
+                   } else {
+                      // Fallback to finding any doctor name
+                      const nameMatch = content.match(/(dr\.?\s[A-Za-z\.\s\,]+)/i);
+                      if (nameMatch) {
+                         docName = nameMatch[1].trim();
+                      } else {
+                         // Fallback to specialization if doctor name not found
+                         const specMatch = content.match(/spesialis\s([a-zA-Z\s]+)/i);
+                         if (specMatch) docName = `Tim Spesialis ${specMatch[1].trim()}`;
+                      }
+                   }
+
+                   // Clean up time if it's too long
+                   if (time.length > 40) time = time.substring(0, 40) + '...';
+
+                   return (
+                      <div className="flex w-full justify-start mt-2">
+                         <div className="w-10 h-10 shrink-0 mr-4 opacity-0 hidden sm:block"></div>
+                         <div className="max-w-[85%] sm:max-w-[75%] w-full">
+                            <GenerativeBookingWidget 
+                               doctorName={docName} 
+                               date={time} 
+                            />
+                         </div>
+                      </div>
+                   );
+                })()}
               </div>
             ))}
             
@@ -1300,23 +1385,39 @@ export default function PublikClient({ initialSettings = null }: { initialSettin
                    hasMessages ? "pl-14 pr-16 py-1 text-[15px] sm:text-[16px]" : "pl-[64px] pr-20 py-2 text-[16px] sm:text-[18px]"
                  )}
                />
-               <button
-                 type="submit"
-                 disabled={!input.trim() || isLoading}
-                 className={cn(
-                   "absolute flex items-center justify-center rounded-full transition-all duration-500 relative z-10 overflow-hidden",
-                   hasMessages 
-                     ? "right-4 w-10 h-10 bg-emerald-500 text-zinc-950 hover:bg-emerald-400 disabled:bg-zinc-200 disabled:text-zinc-500 dark:disabled:bg-zinc-800 dark:disabled:text-zinc-600" 
-                     : "right-3 w-12 h-12 shadow-md " + (!input.trim() ? "bg-white dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500" : "bg-emerald-500 text-white dark:text-zinc-950 shadow-[0_0_20px_rgba(16,185,129,0.4)] rotate-0 hover:scale-105 active:scale-95")
+               <div className="absolute right-3 flex items-center gap-2 z-10">
+                 {/* Voice Mic Button */}
+                 {!hasMessages && !input.trim() && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                         setInput("Tolong carikan jadwal dokter spesialis Ortopedi besok pagi.");
+                         setTimeout(() => append({ role: 'user', content: "Tolong carikan jadwal dokter spesialis Ortopedi besok pagi." }), 500);
+                      }}
+                      className="w-10 h-10 flex items-center justify-center rounded-full text-zinc-400 hover:text-emerald-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                    >
+                      <Mic size={20} strokeWidth={2.5} />
+                    </button>
                  )}
-               >
-                 <div className={cn("transition-transform duration-500", input.trim() ? "rotate-0 scale-100" : "rotate-90 scale-75 opacity-50")}>
-                    <Send size={hasMessages ? 18 : 20} className={cn("-ml-0.5", input.trim() ? "translate-x-0" : "-translate-x-1")} strokeWidth={3} />
-                 </div>
-               </button>
+                 <button
+                   type="submit"
+                   disabled={!input.trim() || isLoading}
+                   className={cn(
+                     "flex items-center justify-center rounded-full transition-all duration-500 overflow-hidden",
+                     hasMessages 
+                       ? "w-10 h-10 bg-emerald-500 text-zinc-950 hover:bg-emerald-400 disabled:bg-zinc-200 disabled:text-zinc-500 dark:disabled:bg-zinc-800 dark:disabled:text-zinc-600" 
+                       : "w-12 h-12 shadow-md " + (!input.trim() ? "bg-white dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500" : "bg-emerald-500 text-white dark:text-zinc-950 shadow-[0_0_20px_rgba(16,185,129,0.4)] rotate-0 hover:scale-105 active:scale-95")
+                   )}
+                 >
+                   <div className={cn("transition-transform duration-500", input.trim() ? "rotate-0 scale-100" : "rotate-90 scale-75 opacity-50")}>
+                      <Send size={hasMessages ? 18 : 20} className={cn("-ml-0.5", input.trim() ? "translate-x-0" : "-translate-x-1")} strokeWidth={3} />
+                   </div>
+                 </button>
+               </div>
              </form>
            </div>
         </div>
     </div>
   );
 }
+

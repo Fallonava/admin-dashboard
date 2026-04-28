@@ -98,6 +98,26 @@
       -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", sans-serif;
     -webkit-font-smoothing: antialiased;
   }
+
+  html.lenis {
+    height: auto;
+  }
+
+  .lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+  }
+
+  .lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+  }
+
+  .lenis.lenis-stopped {
+    overflow: hidden;
+  }
+
+  .lenis.lenis-scrolling iframe {
+    pointer-events: none;
+  }
 }
 
 /* Base UI Components — Blur dikurangi untuk 60fps di mid-range */

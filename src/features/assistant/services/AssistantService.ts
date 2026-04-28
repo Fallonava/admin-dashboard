@@ -65,10 +65,10 @@ export class AssistantService {
       const tomorrowDayIdx = (todayDayIdx + 1) % 7;
       const todayDateStr = wibDate.toISOString().split('T')[0];
 
-      const [shifts, leaves, stats, settings] = await Promise.all([
+      const [shifts, leaves, stats, settings, allDoctors] = await Promise.all([
         prisma.shift.findMany({
-          where: { dayIdx: { in: [todayDayIdx, tomorrowDayIdx] } },
-          include: { doctor: { select: { name: true, specialty: true } } }
+          include: { doctor: { select: { name: true, specialty: true } } },
+          orderBy: [{ dayIdx: 'asc' }, { timeIdx: 'asc' }]
         }),
         prisma.leaveRequest.findMany({
           where: { endDate: { gte: new Date() }, status: 'APPROVED' },
@@ -77,10 +77,12 @@ export class AssistantService {
         prisma.dailyRecap.findUnique({
           where: { date: new Date(todayDateStr) }
         }).catch(() => null),
-        prisma.settings.findUnique({ where: { id: "1" } }).catch(() => null)
+        prisma.settings.findUnique({ where: { id: "1" } }).catch(() => null),
+        prisma.doctor.findMany({ select: { name: true, specialty: true } })
       ]);
 
-      let omniscienceDigest = `[DATA OMNISCIENCE RS MEDCORE - ${todayDateStr}]\n`;
+      const todayFullString = wibDate.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+      let omniscienceDigest = `[DATA OMNISCIENCE RS MEDCORE]\nINFO WAKTU SAAT INI: HARI INI ADALAH ${todayFullString.toUpperCase()}\n`;
       omniscienceDigest += `Status Otomasi: ${settings?.automationEnabled ? 'AKTIF' : 'NON-AKTIF'} | Mode Darurat: ${settings?.emergencyMode ? 'AKTIF 🚨' : 'Mati'}\n\n`;
 
       if (stats) {
@@ -91,25 +93,35 @@ export class AssistantService {
 
       const leaveMap = new Map();
       leaves.forEach(l => {
-        leaveMap.set(l.doctor.name, `SEDANG CUTI (${l.startDate.toLocaleDateString('id-ID')} s/d ${l.endDate.toLocaleDateString('id-ID')})`);
+        leaveMap.set(l.doctor.name, l);
       });
 
-      const todayShifts = shifts.filter(s => s.dayIdx === todayDayIdx);
-      const tomorrowShifts = shifts.filter(s => s.dayIdx === tomorrowDayIdx);
+      if (leaves.length > 0) {
+        omniscienceDigest += `> STATUS DOKTER CUTI (PENTING!):\n`;
+        leaves.forEach(l => {
+           omniscienceDigest += `- ${l.doctor.name} SEDANG CUTI dari tanggal ${l.startDate.toLocaleDateString('id-ID')} sampai ${l.endDate.toLocaleDateString('id-ID')}.\n  INSTRUKSI AI: Jangan sebutkan jam praktek dokter ini selama masa cuti. Langsung beritahu pasien bahwa dokter sedang cuti dan arahkan ke dokter spesialis yang sama jika ada.\n`;
+        });
+        omniscienceDigest += `\n`;
+      }
 
-      omniscienceDigest += `> JADWAL PRAKTEK DOKTER HARI INI (${DAYS[todayDayIdx]}):\n`;
-      todayShifts.forEach(s => {
-        const leaveStat = leaveMap.has(s.doctor.name) ? `[⚠️ ${leaveMap.get(s.doctor.name)}]` : '[AKTIF]';
-        omniscienceDigest += `- ${s.doctor.name} (${s.doctor.specialty}): ${s.formattedTime || s.title} ${leaveStat}\n`;
-      });
-      if (todayShifts.length === 0) omniscienceDigest += `- Tidak ada jadwal terdaftar.\n`;
+      const allDocsStr = allDoctors.map(d => `${d.name} (${d.specialty})`).join(', ');
+      omniscienceDigest += `> DIREKTORI SELURUH DOKTER RS: ${allDocsStr}\n`;
+      omniscienceDigest += `INSTRUKSI: Jika pasien menyebut nama tidak lengkap/typo (misal "dr ardian"), cocokkan dengan direktori ini. Jika dokter tidak ada di jadwal hari ini/besok dan tidak ada di daftar cuti, sampaikan bahwa dokter tersebut belum ada jadwal praktek terdaftar.\n\n`;
 
-      omniscienceDigest += `\n> JADWAL PRAKTEK DOKTER BESOK (${DAYS[tomorrowDayIdx]}):\n`;
-      tomorrowShifts.forEach(s => {
-        const leaveStat = leaveMap.has(s.doctor.name) ? `[⚠️ ${leaveMap.get(s.doctor.name)}]` : '[AKTIF]';
-        omniscienceDigest += `- ${s.doctor.name} (${s.doctor.specialty}): ${s.formattedTime || s.title} ${leaveStat}\n`;
+      omniscienceDigest += `> JADWAL PRAKTEK DOKTER REGULER (7 HARI):\nCatatan PENTING untuk AI: Jika pasien meminta jadwal hari ini/besok, Anda WAJIB mengelompokkan daftar nama dokter berdasarkan Poliklinik/Spesialisasinya menggunakan Markdown bullet points berlapis (nested list) agar mudah dibaca, BUKAN daftar rata satu level. Jika dokter pada hari tersebut sedang cuti (lihat STATUS DOKTER CUTI di atas), maka BATALKAN jadwalnya dan beritahu pasien.\n`;
+      
+      DAYS.forEach((dayName, idx) => {
+         const dayShifts = shifts.filter(s => s.dayIdx === idx);
+         omniscienceDigest += `\n[HARI ${dayName.toUpperCase()}]\n`;
+         if (dayShifts.length > 0) {
+            dayShifts.forEach(s => {
+               omniscienceDigest += `- ${s.doctor.name} (${s.doctor.specialty}): ${s.formattedTime || s.title}\n`;
+            });
+         } else {
+            omniscienceDigest += `- Belum ada jadwal praktek dokter yang terdaftar.\n`;
+         }
       });
-      if (tomorrowShifts.length === 0) omniscienceDigest += `- Tidak ada jadwal terdaftar.\n`;
+      omniscienceDigest += `\n`;
 
       if (contextText && contextText.length > 0) {
         omniscienceDigest += `\n> PENGETAHUAN TAMBAHAN (WEB/FAQ):\n${contextText}\n`;
@@ -159,6 +171,8 @@ export class AssistantService {
         const memoryCtx = buildMemoryContext(shortHistory);
 
         let finalSystemPrompt = aiConfig.systemPrompt || 'Anda adalah asisten virtual resmi RS.';
+        finalSystemPrompt += '\n\nPERINGATAN KRITIKAL (ANTI-HALLUCINATION): DILARANG KERAS mengarang atau menciptakan jadwal/nama dokter palsu. JAWAB HANYA BERDASARKAN DATA OMNISCIENCE DI BAWAH INI. Jika data jadwal kosong, sampaikan dengan sopan bahwa jadwal belum tersedia.';
+        
         if (userRole === 'admin') {
           finalSystemPrompt += '\n\nINSTRUKSI KHUSUS MODE ADMIN:\nAnda berbicara dengan staf atau manajemen RS. Bersikaplah profesional, analitis, dan to-the-point sebagai asisten operasional RS. Berikan jawaban yang ringkas dan informatif tanpa basa-basi berlebihan.';
         } else {

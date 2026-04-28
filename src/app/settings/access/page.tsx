@@ -434,7 +434,7 @@ export default function AccessManagementPage() {
                     {RESOURCES.map((r) => {
                       const canRead = rolePerms[r.key]?.read || false;
                       const canWrite = rolePerms[r.key]?.write || false;
-                      const RIcon = getResourceIcon(r.icon);
+                      const RIcon = getResourceIcon(r.icon) as React.FC<{ size?: number; strokeWidth?: number }>;
                       return (
                         <div key={r.key} className={cn(
                           "flex items-center justify-between p-3.5 rounded-[16px] border transition-all",
