@@ -2,6 +2,7 @@ I am building a Next.js (App Router) full-stack application to automate my hospi
 
 Tech Stack: Next.js App Router, Tailwind CSS, Mongoose (MongoDB), `xlsx`, `recharts`, `lucide-react`.
 
+
 Here is the complete requirement:
 
 
