@@ -12,6 +12,7 @@ import { runAutomation } from './src/lib/automation';
 import { getFullSnapshot } from './src/lib/data-fetchers';
 import { logger } from './src/lib/logger';
 
+
 // Expose internal scheduling engine to isolated API routes
 (global as any).triggerScheduler = scheduleToday;
 (global as any).runAutomationNow = runAutomation;
