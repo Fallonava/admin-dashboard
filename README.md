@@ -114,3 +114,6 @@ bash scripts/sync-home.sh
 ---
 
 *Dokumen ini menggantikan README.md lama agar lebih ringkas dan praktis.*
+
+
+
