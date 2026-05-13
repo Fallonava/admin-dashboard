@@ -35,7 +35,7 @@ Jika kamu ingin melakukannya step-by-step:
 
 2. **Jalankan Update di Server**
 
-   Masuk ke SSH server (`ssh -i "hospital-api.pem" ubuntu@16.79.196.134`), lalu ketik:
+   Masuk ke SSH server (`ssh -i "your-key.pem" user@server-ip`), lalu ketik:
 
    ```bash
    cd /home/ubuntu/admin-dashboard && bash scripts/update-server.sh
@@ -69,7 +69,7 @@ Perintah berguna untuk mengecek kesehatan kode:
 ## 🔑 Akses Server EC2
 
 ```bash
-ssh -i "hospital-api.pem" ubuntu@16.79.196.134
+ssh -i "your-key.pem" user@server-ip
 ```
 
 ---

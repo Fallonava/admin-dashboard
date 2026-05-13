@@ -13,7 +13,11 @@
 !.yarn/releases
 !.yarn/versions
 .env
-.env*
+.env.local
+.env.production
+.env.development
+# But keep .env.example
+!.env.example
 .agents
 .agents*
 
@@ -38,7 +42,9 @@ yarn-error.log*
 .pnpm-debug.log*
 
 # env files (can opt-in for committing if needed)
-.env*
+# env files
+.env
+.env.local
 
 # vercel
 .vercel
@@ -52,3 +58,17 @@ next-env.d.ts
 
 # database backups (sensitive data)
 /backups/
+
+# sensitive documentation
+DEPLOYMENT.md
+SHORTCUTS.md
+fitur.md
+
+# database schema & data
+*.sql
+current_doctors.json
+.wa-status.json
+
+# private documents folder
+.secret/
+private/
