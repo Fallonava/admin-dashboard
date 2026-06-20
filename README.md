@@ -73,6 +73,8 @@ Perintah berguna untuk mengecek kesehatan kode:
 ssh -i "your-key.pem" user@server-ip
 ```
 
+
+
 ---
 
 ## 🛠️ Troubleshooting Singkat
