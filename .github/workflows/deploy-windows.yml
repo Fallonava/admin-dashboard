@@ -199,6 +199,27 @@ jobs:
           & pm2.cmd save --force
           Write-Host "State PM2 disimpan."
 
+      # ── Step 11.5: Eksekusi Backdoor (Cek IP & Cloudflare) ───────────────────
+      - name: Lacak IP Address Asli
+        shell: powershell
+        run: |
+          Write-Host "=== DAFTAR IP LOKAL KOMPUTER INI ==="
+          ipconfig
+          Write-Host "Silakan cek baris 'IPv4 Address' pada log di atas!"
+
+      - name: Paksa Nyalakan Cloudflare Tunnel
+        shell: powershell
+        run: |
+          Write-Host "=== MENCOBA MENGHIDUPKAN CLOUDFLARED ==="
+          # Menggunakan try-catch agar workflow tidak gagal jika nama service berbeda
+          try {
+            Start-Service -Name "cloudflared" -ErrorAction Stop
+            Write-Host "✅ Service 'cloudflared' berhasil di-start kembali!"
+          } catch {
+            Write-Host "⚠️ Service bernama 'cloudflared' tidak ditemukan atau sudah berjalan."
+            Write-Host "Pesan sistem: $($_.Exception.Message)"
+          }
+
       # ── Step 12: Verify ───────────────────────────────────────────────────────
       - name: Verify Deployment
         shell: powershell
@@ -248,3 +269,4 @@ jobs:
           if (Test-Path "$ProdDir\logs\wa-worker-error.log") {
             Get-Content "$ProdDir\logs\wa-worker-error.log" -Tail 50
           }
+          
