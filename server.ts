@@ -18,7 +18,7 @@ import { logger } from './src/lib/logger';
 (global as any).runAutomationNow = runAutomation;
 
 const dev = process.env.NODE_ENV !== 'production';
-const hostname = process.env.HOSTNAME || (dev ? 'localhost' : '0.0.0.0');
+const hostname = dev ? 'localhost' : (process.env.HOSTNAME || '0.0.0.0');
 const port = parseInt(process.env.PORT || '3000', 10);
 
 const app = next({ dev, hostname, port });
@@ -95,7 +95,7 @@ app.prepare().then(() => {
       console.error(err);
       process.exit(1);
     })
-    .listen(port, () => {
+    .listen(port, hostname, () => {
       console.log(`> Ready on http://${hostname}:${port} (with Socket.IO enabled)`);
       if (process.send) {
         process.send('ready');

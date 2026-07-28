@@ -10,6 +10,9 @@ export async function GET() {
     const todayDayIdx = (wibDate.getDay() + 6) % 7;
     const tomorrowDayIdx = (todayDayIdx + 1) % 7;
 
+    const startOfToday = new Date(wibDate);
+    startOfToday.setHours(0, 0, 0, 0);
+
     const [doctors, leaves] = await Promise.all([
       prisma.doctor.findMany({
         orderBy: [{ specialty: 'asc' }, { name: 'asc' }],
@@ -20,7 +23,10 @@ export async function GET() {
         },
       }),
       prisma.leaveRequest.findMany({
-        where: { status: 'APPROVED', endDate: { gte: new Date() } },
+        where: {
+          status: { notIn: ['Rejected', 'REJECTED', 'rejected'] },
+          endDate: { gte: startOfToday },
+        },
         select: {
           doctorId: true,
           startDate: true,

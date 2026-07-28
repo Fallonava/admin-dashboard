@@ -2,134 +2,189 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import { Stethoscope, Building2, Users, ArrowRight, Menu, X, Sparkles, Sun, Moon } from 'lucide-react';
+import { Stethoscope, Users, PhoneCall, Menu, X, ArrowRight, CalendarDays } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navLinks = [
-  { href: '/publik', label: 'Beranda', icon: Sparkles },
-  { href: '/publik/dokter', label: 'Direktori Dokter', icon: Users },
-  { href: '/publik/fasilitas', label: 'Fasilitas', icon: Building2 },
+  { href: '#keseluruhan-jadwal', label: 'Jadwal Dokter', icon: Users },
 ];
 
 export default function PublikNavbar() {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
 
   useEffect(() => {
-    const saved = localStorage.getItem('publik-theme') as 'light' | 'dark' | null;
-    if (saved) setTheme(saved);
-    else if (window.matchMedia('(prefers-color-scheme: dark)').matches) setTheme('dark');
+    document.documentElement.classList.remove('dark');
   }, []);
 
   useEffect(() => {
-    document.documentElement.classList.toggle('dark', theme === 'dark');
-    localStorage.setItem('publik-theme', theme);
-  }, [theme]);
-
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 10);
+    const handleScroll = () => setScrolled(window.scrollY > 30);
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const handleNavClick = (e: React.MouseEvent, href: string) => {
+    if (pathname === '/publik') {
+      e.preventDefault();
+      const targetId = href.replace('#', '');
+      const targetElement = document.getElementById(targetId);
+      if (targetElement) {
+        targetElement.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  };
+
   return (
     <>
-      <header className={cn(
-        "fixed top-0 w-full z-[60] transition-all duration-500",
-        scrolled
-          ? "bg-white/70 dark:bg-zinc-950/70 backdrop-blur-3xl shadow-[0_2px_20px_rgba(0,0,0,0.06)] border-b border-white/50 dark:border-zinc-800/50"
-          : "bg-transparent"
-      )}>
-        <div className="max-w-7xl mx-auto px-5 lg:px-8 h-20 flex items-center justify-between">
-
-          {/* LOGO */}
-          <Link href="/publik" className="flex items-center gap-3 group">
-            <div className="w-11 h-11 bg-white dark:bg-zinc-900 rounded-[14px] flex items-center justify-center shadow-md group-hover:scale-105 transition-transform border border-zinc-200/60 dark:border-zinc-700/60 overflow-hidden">
-              <Stethoscope size={22} className="text-emerald-500" />
-            </div>
-            <div className="flex flex-col leading-none">
-              <span className="font-black text-zinc-900 dark:text-white tracking-tight text-[17px]">SIAGA MEDIKA</span>
-              <span className="text-emerald-600 dark:text-emerald-400 font-bold text-[10px] tracking-widest uppercase">Purbalingga</span>
-            </div>
-          </Link>
-
-          {/* DESKTOP NAV */}
-          <nav className="hidden md:flex items-center gap-1 bg-white/60 dark:bg-zinc-900/60 backdrop-blur-xl rounded-full px-2 py-2 border border-zinc-200/50 dark:border-zinc-800/50 shadow-sm">
-            {navLinks.map(({ href, label, icon: Icon }) => {
-              const isActive = pathname === href || (href !== '/publik' && pathname.startsWith(href));
-              return (
-                <Link key={href} href={href} className={cn(
-                  "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold transition-all duration-300",
-                  isActive
-                    ? "bg-emerald-500 text-white shadow-[0_4px_14px_rgba(16,185,129,0.35)]"
-                    : "text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800"
-                )}>
-                  <Icon size={14} />
-                  {label}
-                </Link>
-              );
-            })}
-          </nav>
-
-          {/* RIGHT ACTIONS */}
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setTheme(t => t === 'light' ? 'dark' : 'light')}
-              className="w-9 h-9 rounded-full bg-white/80 dark:bg-zinc-900/80 border border-zinc-200 dark:border-zinc-800 flex items-center justify-center text-zinc-500 dark:text-zinc-400 hover:scale-105 transition-transform shadow-sm"
-              aria-label="Toggle theme"
-            >
-              {theme === 'light' ? <Moon size={15} /> : <Sun size={15} />}
-            </button>
-
-            <Link href="/login" className="hidden sm:flex items-center gap-2 px-5 py-2.5 bg-zinc-900 dark:bg-emerald-500 text-white dark:text-zinc-900 font-bold text-[13px] rounded-full hover:scale-105 transition-all shadow-sm hover:shadow-md">
-              Admin <ArrowRight size={14} />
+      {/* ── FLOATING DYNAMIC PILL & SCROLLED COMMAND DOCK NAVBAR ── */}
+      <header
+        className={cn(
+          "fixed z-[60] transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] bg-white/90 backdrop-blur-3xl border border-slate-200/80 shadow-[0_20px_60px_rgba(0,0,0,0.08)] overflow-hidden",
+          scrolled
+            ? "top-3 left-1/2 -translate-x-1/2 w-[95vw] max-w-6xl px-4 py-2.5 sm:px-6 sm:py-3 rounded-[32px]"
+            : "top-5 left-1/2 -translate-x-1/2 w-[94vw] max-w-4xl px-5 py-3 rounded-full"
+        )}
+      >
+        {!scrolled ? (
+          /* ── UNSCROLLED STATE: HORIZONTAL FLOATING PILL ── */
+          <div className="flex items-center justify-between gap-4">
+            <Link href="/publik" className="flex items-center gap-2.5 group shrink-0">
+              <div className="w-10 h-10 rounded-2xl flex items-center justify-center bg-[#007AFF] text-white group-hover:-translate-y-0.5 transition-transform duration-500 shadow-md shadow-[#007AFF]/25">
+                <Stethoscope size={20} />
+              </div>
+              <div className="flex items-center gap-2 leading-none">
+                <span className="font-black tracking-tight text-slate-900 text-lg">
+                  Siaga Medika
+                  <span className="text-[#007AFF]">.</span>
+                </span>
+                <span className="hidden sm:inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#34C759]/10 text-[#248A3D] border border-[#34C759]/30 shadow-xs">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#34C759] animate-pulse" /> Live 24/7
+                </span>
+              </div>
             </Link>
 
-            {/* Mobile toggle */}
-            <button onClick={() => setMobileOpen(true)} className="md:hidden w-9 h-9 rounded-full bg-zinc-100 dark:bg-zinc-900 flex items-center justify-center text-zinc-700 dark:text-zinc-200">
-              <Menu size={18} />
-            </button>
+            {/* DESKTOP NAV ITEMS */}
+            <nav className="hidden md:flex items-center gap-1 bg-slate-100/70 px-3 py-1 rounded-full border border-slate-200/60 animate-in fade-in duration-300">
+              {navLinks.map(({ href, label, icon: Icon }) => (
+                <a
+                  key={href}
+                  href={href}
+                  onClick={(e) => handleNavClick(e, href)}
+                  className="flex items-center gap-2 px-4 py-1.5 rounded-full text-[13px] font-extrabold text-slate-700 hover:text-[#007AFF] hover:bg-white transition-all duration-300 cursor-pointer"
+                >
+                  <Icon size={14} className="text-[#007AFF]" />
+                  {label}
+                </a>
+              ))}
+            </nav>
+
+            {/* RIGHT ACTIONS: IGD EMERGENCY BUTTON */}
+            <div className="flex items-center gap-2 shrink-0 animate-in fade-in duration-300">
+              <a
+                href="tel:0281895111"
+                className="hidden sm:inline-flex items-center gap-2 bg-[#34C759] hover:bg-[#28A745] text-white font-black rounded-full px-4.5 py-2 text-xs transition-all duration-300 shadow-md shadow-[#34C759]/30 hover:scale-105 active:scale-95"
+              >
+                <PhoneCall size={14} />
+                IGD 24 Jam
+              </a>
+
+              {/* Mobile toggle */}
+              <button
+                onClick={() => setMobileOpen(true)}
+                className="md:hidden w-9 h-9 rounded-full bg-[#E5E5EA] hover:bg-[#D1D1D6] text-slate-900 shadow-xs border border-slate-300/50 flex items-center justify-center active:scale-95 transition-all"
+              >
+                <Menu size={18} />
+              </button>
+            </div>
           </div>
-        </div>
+        ) : (
+          /* ── SCROLLED STATE: FLOATING COMMAND CONTROL DOCK ── */
+          <div className="flex items-center justify-between gap-3 sm:gap-4 animate-in fade-in duration-300">
+            {/* Brand Logo & Live Badge */}
+            <Link href="/publik" className="flex items-center gap-2 group shrink-0">
+              <div className="w-9 h-9 rounded-2xl flex items-center justify-center bg-[#007AFF] text-white shadow-sm">
+                <Stethoscope size={18} />
+              </div>
+              <span className="hidden xl:inline-block font-black tracking-tight text-slate-900 text-base">
+                Siaga Medika<span className="text-[#007AFF]">.</span>
+              </span>
+            </Link>
+
+            {/* Compact Search & Navigation Dock Bar */}
+            <a
+              href="#keseluruhan-jadwal"
+              onClick={(e) => handleNavClick(e, '#keseluruhan-jadwal')}
+              className="flex-1 max-w-xl flex items-center gap-2.5 px-4 py-2 rounded-2xl bg-[#E5E5EA]/80 hover:bg-[#E5E5EA] border border-slate-300/60 transition-all duration-300 text-slate-600 hover:text-slate-900 cursor-pointer shadow-inner"
+            >
+              <Users size={16} className="text-[#007AFF] shrink-0" />
+              <span className="text-xs sm:text-sm font-extrabold truncate">
+                Direktori & Cari Dokter Spesialis...
+              </span>
+              <span className="hidden sm:inline-flex items-center gap-1 ml-auto text-[11px] font-black bg-[#007AFF] text-white px-2.5 py-0.5 rounded-full shrink-0 shadow-xs">
+                Cari <ArrowRight size={11} />
+              </span>
+            </a>
+
+            {/* Right Action: IGD Emergency */}
+            <div className="flex items-center gap-2 shrink-0">
+              <a
+                href="tel:0281895111"
+                className="inline-flex items-center gap-1.5 bg-[#34C759] hover:bg-[#28A745] text-white font-black rounded-2xl px-3.5 py-2 text-xs transition-all duration-300 shadow-md shadow-[#34C759]/25 hover:scale-105 active:scale-95"
+              >
+                <PhoneCall size={13} />
+                <span className="hidden sm:inline">IGD 24 Jam</span>
+              </a>
+            </div>
+          </div>
+        )}
       </header>
 
       {/* MOBILE DRAWER */}
-      <div className={cn(
-        "fixed inset-0 z-[100] transition-all duration-500 md:hidden",
-        mobileOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
-      )}>
-        <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
-        <div className={cn(
-          "absolute right-0 top-0 bottom-0 w-[75vw] max-w-sm bg-white dark:bg-zinc-950 shadow-2xl flex flex-col p-6 border-l border-zinc-200 dark:border-zinc-800 transition-transform duration-500",
-          mobileOpen ? "translate-x-0" : "translate-x-full"
-        )}>
-          <div className="flex justify-between items-center mb-10">
-            <span className="font-black text-lg text-zinc-900 dark:text-white">Menu</span>
-            <button onClick={() => setMobileOpen(false)} className="w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
-              <X size={16} className="text-zinc-500" />
+      <div
+        className={cn(
+          "fixed inset-0 z-[100] transition-all duration-500 md:hidden",
+          mobileOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+        )}
+      >
+        <div className="absolute inset-0 bg-slate-900/30 backdrop-blur-md" onClick={() => setMobileOpen(false)} />
+        <div
+          className={cn(
+            "absolute right-0 top-0 bottom-0 w-[80vw] max-w-sm bg-white/95 backdrop-blur-2xl shadow-2xl flex flex-col p-8 transition-transform duration-500 rounded-l-[40px] border-l border-purple-100",
+            mobileOpen ? "translate-x-0" : "translate-x-full"
+          )}
+        >
+          <div className="flex justify-between items-center mb-12">
+            <span className="font-black text-xl text-slate-900">Menu Navigation</span>
+            <button
+              onClick={() => setMobileOpen(false)}
+              className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center active:scale-95 transition-transform"
+            >
+              <X size={18} className="text-slate-500" />
             </button>
           </div>
-          <nav className="flex flex-col gap-2">
-            {navLinks.map(({ href, label, icon: Icon }) => {
-              const isActive = pathname === href || (href !== '/publik' && pathname.startsWith(href));
-              return (
-                <Link key={href} href={href} onClick={() => setMobileOpen(false)} className={cn(
-                  "flex items-center gap-3 px-4 py-3.5 rounded-2xl font-bold text-base transition-all",
-                  isActive
-                    ? "bg-emerald-500 text-white shadow-lg"
-                    : "text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800"
-                )}>
-                  <Icon size={18} /> {label}
-                </Link>
-              );
-            })}
+          <nav className="flex flex-col gap-3">
+            {navLinks.map(({ href, label, icon: Icon }) => (
+              <a
+                key={href}
+                href={href}
+                onClick={(e) => {
+                  setMobileOpen(false);
+                  handleNavClick(e, href);
+                }}
+                className="flex items-center gap-4 px-5 py-4 rounded-3xl font-extrabold text-base text-slate-700 bg-purple-50/50 hover:bg-purple-100/60 transition-all"
+              >
+                <Icon size={18} className="text-[#A78BFA]" /> {label}
+              </a>
+            ))}
           </nav>
           <div className="mt-auto">
-            <Link href="/login" className="flex items-center justify-between bg-zinc-900 dark:bg-emerald-500 text-white dark:text-zinc-900 px-5 py-3.5 rounded-2xl font-bold shadow-lg">
-              Akses Admin <ArrowRight size={16} />
-            </Link>
+            <a
+              href="tel:0281895111"
+              className="flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white py-4 rounded-full font-black shadow-[0_10px_25px_rgba(16,185,129,0.35)] w-full text-base"
+            >
+              <PhoneCall size={18} /> Panggil IGD 24 Jam
+            </a>
           </div>
         </div>
       </div>

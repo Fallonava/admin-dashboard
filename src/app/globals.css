@@ -387,3 +387,53 @@ html.reduce-effects .animate-spin {
 /* ─── custom-scrollbar-hide ─── */
 .custom-scrollbar-hide::-webkit-scrollbar { display: none; }
 .custom-scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ════════════════ APPLE STYLE & ANTIGRAVITY ANIMATIONS ════════════════ */
+
+/* Zero-gravity floating animation for cards and 3D assets */
+@keyframes antigravity-float {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-12px) rotate(1.2deg);
+  }
+}
+
+@keyframes antigravity-float-reverse {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(10px) rotate(-1.2deg);
+  }
+}
+
+@keyframes apple-pulse-glow {
+  0%, 100% {
+    box-shadow: 0 10px 30px rgba(124, 58, 237, 0.15), 0 0 20px rgba(14, 165, 233, 0.1);
+  }
+  50% {
+    box-shadow: 0 20px 50px rgba(124, 58, 237, 0.3), 0 0 40px rgba(14, 165, 233, 0.25);
+  }
+}
+
+.animate-antigravity {
+  animation: antigravity-float 6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.animate-antigravity-fast {
+  animation: antigravity-float 4.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.animate-antigravity-reverse {
+  animation: antigravity-float-reverse 5.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.apple-spring-hover {
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.apple-spring-hover:hover {
+  transform: translateY(-8px) scale(1.02);
+}

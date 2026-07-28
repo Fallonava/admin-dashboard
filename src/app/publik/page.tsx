@@ -30,8 +30,8 @@ export async function generateMetadata(): Promise<Metadata> {
   const address = ps?.general?.address || 'Jl. Letnan Jenderal S. Parman No.1, Purbalingga';
   const phone = ps?.general?.phone || '(0281) 895 111';
 
-  const title = `${hospitalName} | Rumah Sakit Terpercaya di Purbalingga`;
-  const description = `${hospitalName} — Layanan kesehatan komprehensif 24 jam di Purbalingga. UGD, Poliklinik Spesialis, Rawat Inap, dan MCU. ${address}. Hubungi: ${phone}.`;
+  const title = `Direktori & Jadwal Dokter | ${hospitalName}`;
+  const description = `Direktori dokter spesialis dan jadwal praktek real-time ${hospitalName}. Cari spesialisasi, cek status praktek hari ini, dan jadwal mingguan. Hubungi: ${phone}.`;
 
   return {
     title,
