@@ -4,8 +4,10 @@ import { useState, useRef } from "react";
 import { ChevronLeft, ChevronRight, Plus, Upload, X, Check, Search, Calendar as CalendarIcon, Clock, AlignLeft, Download, User, Trash2, CalendarCheck, Coffee, Sparkles } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
-import type { LeaveRequest } from "@/lib/data-service";
+import type { LeaveRequest, Doctor } from "@/lib/data-service";
 import { LeaveRequestModal } from "./LeaveRequestModal";
+import { AiLeaveImportModal } from "./AiLeaveImportModal";
+import useSWR from "swr";
 
 interface LeaveCalendarProps {
     leaves: LeaveRequest[];
@@ -34,9 +36,11 @@ const TYPE_CONFIG: Record<string, { color: string; bg: string; emoji: string }> 
 };
 
 export function LeaveCalendar({ leaves, onRefresh, onOpenAll, totalLeaves = 0 }: LeaveCalendarProps) {
+    const { data: doctors = [] } = useSWR<Doctor[]>('/api/doctors');
     const [currentDate, setCurrentDate] = useState(new Date());
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [isAiModalOpen, setIsAiModalOpen] = useState(false);
     const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -258,26 +262,36 @@ export function LeaveCalendar({ leaves, onRefresh, onOpenAll, totalLeaves = 0 }:
                 </div>
 
                 {/* Tombol Aksi */}
-                <div className="flex flex-col gap-3 relative z-10 px-1 mt-2 lg:mt-4">
+                <div className="flex flex-col gap-2.5 relative z-10 px-1 mt-2 lg:mt-4">
+                    {/* AI Smart Import Button */}
+                    <button
+                        onClick={() => setIsAiModalOpen(true)}
+                        className="w-full h-11 sm:h-12 rounded-[22px] bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white text-xs sm:text-[13px] font-black transition-all shadow-[0_8px_20px_-6px_rgba(124,58,237,0.5)] hover:shadow-[0_8px_25px_-6px_rgba(124,58,237,0.6)] hover:-translate-y-0.5 flex items-center justify-center gap-2 active:scale-95 group relative overflow-hidden border border-violet-400/30"
+                    >
+                        <div className="absolute inset-0 w-full h-full bg-white/15 -translate-x-full group-hover:animate-shimmer" />
+                        <Sparkles size={16} className="text-violet-200 relative z-10" />
+                        <span className="relative z-10">Input Cuti Cerdas (AI dari WA)</span>
+                    </button>
+
                     <button
                         onClick={() => setIsAddModalOpen(true)}
-                        className="w-full h-12 sm:h-14 rounded-[24px] bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white text-xs sm:text-sm font-black transition-all shadow-[0_8px_20px_-6px_rgba(16,185,129,0.5)] hover:shadow-[0_8px_25px_-6px_rgba(16,185,129,0.6)] hover:-translate-y-0.5 flex items-center justify-center gap-2.5 active:scale-95 group relative overflow-hidden"
+                        className="w-full h-11 sm:h-12 rounded-[22px] bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white text-xs sm:text-[13px] font-black transition-all shadow-[0_8px_20px_-6px_rgba(16,185,129,0.5)] hover:shadow-[0_8px_25px_-6px_rgba(16,185,129,0.6)] hover:-translate-y-0.5 flex items-center justify-center gap-2 active:scale-95 group relative overflow-hidden"
                     >
                         <div className="absolute inset-0 w-full h-full bg-white/10 -translate-x-full group-hover:animate-shimmer" />
-                        <Plus size={18} className="relative z-10" />
-                        <span className="relative z-10">Tambah Cuti</span>
+                        <Plus size={16} className="relative z-10" />
+                        <span className="relative z-10">Tambah Cuti Manual</span>
                     </button>
 
                     <button
                         onClick={onOpenAll}
-                        className="w-full h-12 sm:h-14 rounded-[24px] bg-white/60 backdrop-blur-xl hover:bg-white text-slate-700 text-xs sm:text-sm font-black transition-all shadow-[0_4px_14px_-4px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_25px_-4px_rgba(0,0,0,0.1)] hover:-translate-y-0.5 flex items-center justify-between px-5 sm:px-6 active:scale-95 group relative overflow-hidden border border-white/80"
+                        className="w-full h-11 sm:h-12 rounded-[22px] bg-white/60 backdrop-blur-xl hover:bg-white text-slate-700 text-xs sm:text-[13px] font-black transition-all shadow-[0_4px_14px_-4px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_25px_-4px_rgba(0,0,0,0.1)] hover:-translate-y-0.5 flex items-center justify-between px-5 sm:px-6 active:scale-95 group relative overflow-hidden border border-white/80"
                     >
                         <div className="absolute inset-0 w-full h-full bg-slate-50/50 -translate-x-full group-hover:animate-shimmer" />
                         <div className="flex items-center gap-2.5 relative z-10">
-                            <CalendarIcon size={18} className="text-emerald-500" />
+                            <CalendarIcon size={16} className="text-emerald-500" />
                             <span>Lihat Semua Data Cuti</span>
                         </div>
-                        <div className="bg-emerald-50 text-emerald-700 rounded-[12px] px-2.5 py-1 text-[11px] sm:text-xs font-black relative z-10 select-none border border-emerald-100/50">
+                        <div className="bg-emerald-50 text-emerald-700 rounded-[10px] px-2 py-0.5 text-[11px] font-black relative z-10 select-none border border-emerald-100/50">
                             {totalLeaves} Data
                         </div>
                     </button>
@@ -461,6 +475,13 @@ export function LeaveCalendar({ leaves, onRefresh, onOpenAll, totalLeaves = 0 }:
                 isOpen={isAddModalOpen}
                 onClose={() => setIsAddModalOpen(false)}
                 onSubmit={handleAddLeave}
+            />
+
+            <AiLeaveImportModal
+                isOpen={isAiModalOpen}
+                onClose={() => setIsAiModalOpen(false)}
+                doctors={doctors}
+                onSuccess={() => onRefresh()}
             />
         </div>
     );
