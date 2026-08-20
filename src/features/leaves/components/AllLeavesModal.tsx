@@ -32,8 +32,8 @@ export function AllLeavesModal({ isOpen, onClose, leaves, onDelete }: Props) {
                 {/* Header */}
                 <div className="flex items-center justify-between mb-5 pb-4 border-b border-zinc-100 dark:border-zinc-800/60 relative z-10">
                     <div className="flex items-center gap-3">
-                        <div className="w-11 h-11 rounded-[18px] clay-pill-emerald flex items-center justify-center text-white">
-                            <CalendarDays className="h-5 w-5" strokeWidth={2.5} />
+                        <div className="w-11 h-11 rounded-[16px] clay-icon-emerald flex items-center justify-center text-white shrink-0">
+                            <CalendarDays className="h-5 w-5 relative z-10" strokeWidth={2.5} />
                         </div>
                         <div>
                             <h3 className="text-lg font-black text-zinc-800 dark:text-zinc-100 tracking-tight">

@@ -37,7 +37,7 @@ export function ThemeToggle({ className }: { className?: string }) {
 
   if (!mounted) {
     return (
-      <div className={cn("w-8 h-8 rounded-xl bg-zinc-100 dark:bg-[#141722] border border-zinc-200 dark:border-[#2B3145]", className)} />
+      <div className={cn("w-9 h-9 rounded-[16px] clay-button opacity-50", className)} />
     );
   }
 
@@ -45,17 +45,15 @@ export function ThemeToggle({ className }: { className?: string }) {
     <button
       onClick={toggleTheme}
       className={cn(
-        "p-2 rounded-xl border transition-all duration-200 flex items-center justify-center shrink-0",
-        "bg-zinc-100 hover:bg-zinc-200 text-zinc-700 border-zinc-200",
-        "dark:bg-[#141722] dark:hover:bg-[#1C2130] dark:text-zinc-300 dark:border-[#2B3145] dark:hover:border-[#3A425C]",
+        "p-2.5 rounded-[16px] clay-button flex items-center justify-center shrink-0 transition-all duration-200 active:scale-95",
         className
       )}
       title={theme === "dark" ? "Ganti ke Mode Terang (Light)" : "Ganti ke Mode Gelap (Dark)"}
     >
       {theme === "dark" ? (
-        <Sun size={15} className="text-amber-400" strokeWidth={2.5} />
+        <Sun size={16} className="text-amber-400" strokeWidth={2.5} />
       ) : (
-        <Moon size={15} className="text-indigo-600" strokeWidth={2.5} />
+        <Moon size={16} className="text-indigo-600" strokeWidth={2.5} />
       )}
     </button>
   );

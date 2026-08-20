@@ -38,6 +38,7 @@
 # debug
 npm-debug.log*
 yarn-debug.log*
+scratch/
 yarn-error.log*
 .pnpm-debug.log*
 

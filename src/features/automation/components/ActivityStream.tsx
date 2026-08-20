@@ -23,32 +23,28 @@ const ICON_MAP = {
 
 const COLOR_MAP = {
     shift: {
-        dot: "bg-blue-400 shadow-[0_0_10px_rgba(96,165,250,0.6)]",
-        text: "text-blue-600",
-        badge: "bg-white/60 border-blue-200/60 text-blue-700",
-        block: "hover:bg-white/80 border-blue-100/50",
-        icon: "bg-gradient-to-br from-blue-100 to-blue-200 text-blue-600 border-blue-200 shadow-inner",
+        dot: "bg-blue-500 shadow-blue-500/50",
+        text: "text-blue-600 dark:text-blue-400",
+        badge: "clay-pill-blue text-white",
+        icon: "clay-button text-blue-600 dark:text-blue-400",
     },
     broadcast: {
-        dot: "bg-orange-400 shadow-[0_0_10px_rgba(251,146,60,0.6)]",
-        text: "text-orange-600",
-        badge: "bg-white/60 border-orange-200/60 text-orange-700",
-        block: "hover:bg-white/80 border-orange-100/50",
-        icon: "bg-gradient-to-br from-orange-100 to-orange-200 text-orange-600 border-orange-200 shadow-inner",
+        dot: "bg-amber-500 shadow-amber-500/50",
+        text: "text-amber-600 dark:text-amber-400",
+        badge: "clay-pill-amber text-white",
+        icon: "clay-button text-amber-600 dark:text-amber-400",
     },
     doctor: {
-        dot: "bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.6)]",
-        text: "text-emerald-600",
-        badge: "bg-white/60 border-emerald-200/60 text-emerald-700",
-        block: "hover:bg-white/80 border-emerald-100/50",
-        icon: "bg-gradient-to-br from-emerald-100 to-emerald-200 text-emerald-600 border-emerald-200 shadow-inner",
+        dot: "bg-emerald-500 shadow-emerald-500/50",
+        text: "text-emerald-600 dark:text-emerald-400",
+        badge: "clay-pill-emerald text-white",
+        icon: "clay-button text-emerald-600 dark:text-emerald-400",
     },
     system: {
-        dot: "bg-violet-400 shadow-[0_0_10px_rgba(167,139,250,0.6)]",
-        text: "text-violet-600",
-        badge: "bg-white/60 border-violet-200/60 text-violet-700",
-        block: "hover:bg-white/80 border-violet-100/50",
-        icon: "bg-gradient-to-br from-violet-100 to-violet-200 text-violet-600 border-violet-200 shadow-inner",
+        dot: "bg-violet-500 shadow-violet-500/50",
+        text: "text-violet-600 dark:text-violet-400",
+        badge: "clay-pill-violet text-white",
+        icon: "clay-button text-violet-600 dark:text-violet-400",
     },
 };
 
@@ -92,7 +88,7 @@ export function ActivityStream() {
             id: 'sys-health',
             title: 'System Diagnostics OK',
             desc: 'All processes and stores synchronized.',
-            time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+            time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
             type: 'system'
         });
 
@@ -100,27 +96,24 @@ export function ActivityStream() {
     }, [shifts, doctors, broadcasts]);
 
     return (
-        <div className="flex flex-col rounded-[40px] bg-slate-900/90 backdrop-blur-2xl border border-slate-700/50 overflow-hidden group transition-all duration-500 shadow-[0_8px_30px_rgba(0,0,0,0.12)] hover:shadow-[0_8px_40px_rgba(0,0,0,0.15)] h-max relative">
-            {/* Subtle inner dark glow */}
-            <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 blur-[80px] rounded-full pointer-events-none" />
-            
-            <div className="p-7 md:p-8 border-b border-slate-700/50 flex items-center justify-between relative z-10">
+        <div className="flex flex-col rounded-[36px] clay-surface overflow-hidden shadow-2xl h-max relative">
+            <div className="p-7 md:p-8 border-b border-zinc-200/60 dark:border-white/5 flex items-center justify-between relative z-10">
                 <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 rounded-[20px] bg-gradient-to-tr from-indigo-600 to-violet-600 flex items-center justify-center text-white shadow-lg shadow-indigo-500/30 group-hover:scale-105 transition-transform duration-500 border border-white/10">
-                        <Activity size={26} className="stroke-[2.5]" />
+                    <div className="w-14 h-14 rounded-[20px] clay-pill-violet flex items-center justify-center text-white shadow-md">
+                        <Activity size={26} strokeWidth={2.5} />
                     </div>
                     <div>
-                        <h3 className="text-xl font-black text-white tracking-tight">System Logs</h3>
-                        <p className="text-[11px] text-indigo-300 font-mono uppercase tracking-widest mt-1 font-bold">Activity Stream</p>
+                        <h3 className="text-xl font-black text-zinc-900 dark:text-zinc-100 tracking-tight">System Logs</h3>
+                        <p className="text-[11px] text-violet-600 dark:text-violet-400 font-mono uppercase tracking-widest mt-1 font-bold">Activity Stream</p>
                     </div>
                 </div>
             </div>
 
             {/* Timeline */}
             <div className="relative z-10 p-7 md:p-8 pt-4">
-                <div className="absolute left-[40px] md:left-[44px] top-6 bottom-8 w-[2px] bg-gradient-to-b from-slate-600 via-slate-700 to-transparent rounded-full" />
+                <div className="absolute left-[40px] md:left-[44px] top-6 bottom-8 w-[2px] bg-zinc-200 dark:bg-zinc-800 rounded-full" />
 
-                <div className="space-y-5 pb-2">
+                <div className="space-y-4 pb-2">
                     {activities.map((item) => {
                         const color = COLOR_MAP[item.type];
                         const Icon = ICON_MAP[item.type];
@@ -128,26 +121,24 @@ export function ActivityStream() {
                             <div key={item.id} className="relative pl-12 group/item">
                                 {/* Timeline Dot */}
                                 <div className={cn(
-                                    "absolute left-[-2px] sm:left-[-1px] top-3 h-4 w-4 rounded-full transition-all duration-300 group-hover/item:scale-125 border-[3px] border-slate-900 z-10",
+                                    "absolute left-[-2px] sm:left-[-1px] top-4 h-3.5 w-3.5 rounded-full transition-all duration-200 group-hover/item:scale-125 border-2 border-white dark:border-zinc-900 z-10 shadow-sm",
                                     color.dot
                                 )} />
 
                                 {/* Content Block */}
-                                <div className={cn(
-                                    "bg-slate-800/40 backdrop-blur-md border border-slate-700/50 rounded-[24px] p-5 transition-all duration-300 shadow-sm group-hover/item:shadow-lg group-hover/item:bg-slate-800/60 group-hover/item:border-slate-600",
-                                )}>
+                                <div className="clay-surface rounded-[24px] p-4 sm:p-5 transition-all duration-200 shadow-sm">
                                     <div className="flex flex-col sm:flex-row justify-between items-start gap-3 sm:gap-4">
                                         <div className="min-w-0 flex-1">
-                                            <div className="flex items-center gap-3 mb-2">
-                                                <div className={cn("p-2 rounded-[12px] border", color.icon)}>
-                                                    <Icon size={14} className="stroke-[2.5]" />
+                                            <div className="flex items-center gap-3 mb-1.5">
+                                                <div className={cn("p-2 rounded-[12px] shrink-0", color.icon)}>
+                                                    <Icon size={15} strokeWidth={2.5} />
                                                 </div>
-                                                <h4 className="text-[15px] font-bold text-slate-100 truncate tracking-tight">{item.title}</h4>
+                                                <h4 className="text-[14px] font-black text-zinc-900 dark:text-zinc-100 truncate tracking-tight">{item.title}</h4>
                                             </div>
-                                            <p className="text-xs text-slate-400 leading-relaxed font-medium pl-1">{item.desc}</p>
+                                            <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed font-bold pl-1">{item.desc}</p>
                                         </div>
                                         <span className={cn(
-                                            "text-[10px] font-black uppercase tracking-widest flex-shrink-0 px-3 py-1.5 rounded-[10px] border",
+                                            "text-[10px] font-black uppercase tracking-widest flex-shrink-0 px-3 py-1.5 rounded-[12px] shadow-sm",
                                             color.badge
                                         )}>
                                             {item.time}

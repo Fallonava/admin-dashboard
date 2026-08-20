@@ -18,10 +18,11 @@ import { logger } from './src/lib/logger';
 (global as any).runAutomationNow = runAutomation;
 
 const dev = process.env.NODE_ENV !== 'production';
-const hostname = dev ? 'localhost' : (process.env.HOSTNAME || '0.0.0.0');
+const hostname = process.env.HOSTNAME || 'localhost';
 const port = parseInt(process.env.PORT || '3000', 10);
 
-const app = next({ dev, hostname, port });
+// In development, give Next.js internal compiler a separate internal port to prevent collision with custom httpServer
+const app = next(dev ? { dev, hostname: '127.0.0.1', port: port + 1 } : { dev, hostname, port });
 const handle = app.getRequestHandler();
 
 app.prepare().then(() => {
@@ -32,7 +33,7 @@ app.prepare().then(() => {
 
   const allowedOrigins = process.env.ALLOWED_ORIGINS
     ? process.env.ALLOWED_ORIGINS.split(',').map(s => s.trim())
-    : dev ? ['http://localhost:3000'] : [];
+    : dev ? ['http://localhost:3000', 'http://localhost:3005', 'http://127.0.0.1:3005'] : [];
 
   const io = new Server(httpServer, {
     cors: {

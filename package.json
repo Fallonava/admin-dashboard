@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "tsx server.ts",
+    "dev": "cross-env PORT=3005 NODE_ENV=development tsx server.ts",
     "build": "next build && tsc server.ts --outDir . --module commonjs --esModuleInterop --skipLibCheck",
     "start": "cross-env NODE_ENV=production node server.js",
     "lint": "eslint",

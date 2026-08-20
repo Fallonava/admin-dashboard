@@ -21,9 +21,18 @@ const nextConfig: NextConfig = {
   compress: true,
   // Package native Node.js: jangan dibundle oleh webpack
   serverExternalPackages: ['bcryptjs', 'pg'],
-  // Optimasi icon library: hanya import yang dipakai, bukan seluruh bundle
+  // Optimasi package imports: hanya import yang dipakai, bukan seluruh bundle
   experimental: {
-    optimizePackageImports: ['lucide-react', '@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu'],
+    optimizePackageImports: [
+      'lucide-react',
+      '@radix-ui/react-dialog',
+      '@radix-ui/react-dropdown-menu',
+      '@dnd-kit/core',
+      '@dnd-kit/sortable',
+      '@dnd-kit/utilities',
+      'date-fns',
+      'framer-motion',
+    ],
     clientTraceMetadata: [],
   },
   // Cache gambar lebih lama di CDN/browser
@@ -88,4 +97,3 @@ export default withSentryConfig(withSerwist(nextConfig), {
 });
 
 // Trigger full reload
-

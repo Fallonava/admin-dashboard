@@ -18,7 +18,7 @@ export async function GET(req: Request) {
 
     return NextResponse.json(shifts, {
         headers: {
-            'Cache-Control': 'private, max-age=30, stale-while-revalidate=60'
+            'Cache-Control': 'public, s-maxage=2, stale-while-revalidate=59'
         }
     });
 }

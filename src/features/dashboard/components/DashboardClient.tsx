@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { Activity, Search, Zap, Power, Wifi, WifiOff, Loader2, LayoutDashboard, LayoutGrid, StretchHorizontal } from "lucide-react";
+import { Activity, Search, Zap, Wifi, WifiOff, Loader2, LayoutDashboard, LayoutGrid, StretchHorizontal } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Doctor, LeaveRequest, Shift, Settings } from "@/lib/data-service";
 import { LiveClock } from "@/components/LiveClock";
@@ -178,8 +178,10 @@ export function DashboardClient() {
   const [efficiency, setEfficiency] = useState(0);
   useEffect(() => {
     if (todayDoctors.length > 0) {
-      const baseEff = Math.round((activeDocs.length / todayDoctors.length) * 100);
-      setEfficiency(baseEff > 0 ? 90 + Math.round(Math.random() * 5) : 0);
+      const realEff = Math.round((activeDocs.length / todayDoctors.length) * 100);
+      setEfficiency(realEff);
+    } else {
+      setEfficiency(0);
     }
   }, [todayDoctors.length, activeDocs.length]);
 
@@ -212,59 +214,61 @@ export function DashboardClient() {
   const todayLabel = now.toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
 
   return (
-    <div className="w-full h-full flex flex-col overflow-hidden relative bg-[#F4F4F6] dark:bg-[#0B0D13] text-zinc-900 dark:text-zinc-100">
+    <div className="w-full h-full flex flex-col overflow-hidden relative bg-[#EDF2F8] dark:bg-[#0B0E14] text-zinc-900 dark:text-zinc-100">
       <div className="relative z-10 w-full flex-none">
       {/* ═══════════════════ UNIFIED PAGE HEADER ═══════════════════ */}
       <PageHeader
         title="Dashboard Utama"
         subtitle="Sistem Manajemen Operasional Dokter & Antrean"
         icon={<Activity size={22} className="text-white" strokeWidth={2.5} />}
-        iconGradient="from-blue-600 to-indigo-600"
+        iconClay="clay-icon-blue w-10 h-10 lg:w-12 lg:h-12"
+        accentBarGradient="from-blue-500 via-indigo-500 to-cyan-400"
+        accentColor="text-blue-600 dark:text-blue-400"
         badge={
           <>
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-950/40 dark:text-blue-400 dark:border-blue-800/50 shrink-0">
-              <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10.5px] font-extrabold clay-button text-blue-700 dark:text-blue-400 shrink-0">
+              <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
               Live Monitor
             </span>
             <span className={cn(
-              "hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold border shrink-0",
-              sseStatus === 'connected' ? "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-400 dark:border-emerald-800/50"
-              : sseStatus === 'reconnecting' ? "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-400 dark:border-amber-800/50 animate-pulse"
-              : "bg-zinc-100 text-zinc-600 border-zinc-200 dark:bg-zinc-800 dark:text-zinc-400 dark:border-zinc-700"
+              "hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10.5px] font-extrabold shrink-0",
+              sseStatus === 'connected' ? "clay-pill-emerald text-white"
+              : sseStatus === 'reconnecting' ? "clay-pill-amber text-white animate-pulse"
+              : "clay-button text-zinc-500"
             )}>
               {sseStatus === 'connected'
-                ? <><Wifi size={10} strokeWidth={2.5} className="shrink-0" /> Live</>
+                ? <><Wifi size={11} strokeWidth={2.5} className="shrink-0" /> Live</>
                 : sseStatus === 'reconnecting'
-                  ? <><WifiOff size={10} strokeWidth={2.5} className="shrink-0" /> Recon...</>
-                  : <><WifiOff size={10} strokeWidth={2.5} className="shrink-0" /> Offline</>
+                  ? <><WifiOff size={11} strokeWidth={2.5} className="shrink-0" /> Recon...</>
+                  : <><WifiOff size={11} strokeWidth={2.5} className="shrink-0" /> Offline</>
               }
             </span>
           </>
         }
         actions={
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-2.5 shrink-0">
             {/* Live Clock */}
             <div className="hidden lg:flex shrink-0">
               <LiveClock />
             </div>
-            <div className="hidden lg:block h-5 w-px bg-zinc-200 dark:bg-[#2B3145] mx-1" />
+            <div className="hidden lg:block h-6 w-px bg-zinc-300 dark:bg-[#2B3145] mx-1" />
 
             {/* Automation Toggle */}
             <button
               onClick={toggleAutomation}
               className={cn(
-                "flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all active:scale-[0.97] border shrink-0",
+                "touch-ripple flex items-center gap-2 px-4 py-2 rounded-[16px] text-xs font-black transition-all active:scale-[0.97] shrink-0",
                 automationEnabled
-                  ? "bg-violet-600 text-white border-violet-500 shadow-sm"
-                  : "bg-white text-zinc-700 hover:text-zinc-900 border-zinc-200 dark:bg-[#141722] dark:text-zinc-400 dark:hover:text-zinc-200 dark:border-[#2B3145]"
+                  ? "clay-pill-violet text-white"
+                  : "clay-button text-zinc-700 dark:text-zinc-300"
               )}
             >
-              <Zap size={13} className={cn("shrink-0", automationEnabled ? "fill-white text-white" : "text-zinc-400")} />
+              <Zap size={14} className={cn("shrink-0", automationEnabled ? "fill-white text-white" : "text-zinc-500")} />
               <span>{automationEnabled ? "AI Aktif" : "AI Pasif"}</span>
               {automationEnabled && (
-                <span className="flex h-1.5 w-1.5 shrink-0 ml-0.5">
-                  <span className="animate-ping absolute inline-flex h-1.5 w-1.5 top-2 right-2 rounded-full bg-emerald-400 opacity-75" />
-                  <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500" />
+                <span className="flex h-2 w-2 shrink-0 ml-0.5">
+                  <span className="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-white opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-white" />
                 </span>
               )}
             </button>
@@ -282,56 +286,47 @@ export function DashboardClient() {
                   placeholder="Cari dokter..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-9 pr-12 py-2 rounded-xl bg-white dark:bg-[#141722] text-zinc-900 dark:text-zinc-100 text-xs w-44 xl:w-52 outline-none border border-zinc-200 dark:border-[#2B3145] hover:border-zinc-300 dark:hover:border-[#3A425C] focus:border-blue-500 transition-all font-bold placeholder:text-zinc-400 dark:placeholder:text-zinc-500"
+                  className="pl-9 pr-12 py-2 rounded-[16px] clay-inset text-zinc-900 dark:text-zinc-100 text-xs w-48 xl:w-56 outline-none focus:ring-2 focus:ring-blue-500 transition-all font-bold placeholder:text-zinc-400 dark:placeholder:text-zinc-500"
                 />
-                <kbd className="absolute right-2.5 top-1/2 -translate-y-1/2 hidden xl:inline-flex items-center px-1.5 py-0.5 text-[9px] font-bold text-zinc-400 dark:text-zinc-500 bg-zinc-100 dark:bg-[#1A1E2B] border border-zinc-200 dark:border-[#2B3145] rounded-md pointer-events-none">
+                <kbd className="absolute right-2.5 top-1/2 -translate-y-1/2 hidden xl:inline-flex items-center px-1.5 py-0.5 text-[9px] font-black text-zinc-500 dark:text-zinc-400 clay-button rounded-md pointer-events-none">
                   ⌘K
                 </kbd>
               </div>
             </div>
 
             {/* Density Toggle (Comfortable vs Compact) */}
-            <div className="hidden sm:flex items-center bg-zinc-100 dark:bg-[#141722] p-1 rounded-xl border border-zinc-200 dark:border-[#2B3145] shrink-0">
+            <div className="hidden sm:flex items-center clay-inset p-1 rounded-[16px] shrink-0">
               <button
                 onClick={() => setDensity('comfortable')}
                 className={cn(
-                  "p-1.5 rounded-lg transition-all text-xs",
-                  density === 'comfortable' ? "bg-white dark:bg-[#1F2433] text-blue-600 dark:text-blue-400 font-bold border border-zinc-200 dark:border-[#2E354B] shadow-sm" : "text-zinc-500 hover:text-zinc-700 dark:text-zinc-500 dark:hover:text-zinc-300"
+                  "p-2 rounded-xl transition-all text-xs",
+                  density === 'comfortable' ? "clay-surface text-blue-600 dark:text-blue-400 font-black shadow-sm" : "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"
                 )}
                 title="Tampilan Nyaman (Detail)"
               >
-                <StretchHorizontal size={14} />
+                <StretchHorizontal size={15} strokeWidth={2.5} />
               </button>
               <button
                 onClick={() => setDensity('compact')}
                 className={cn(
-                  "p-1.5 rounded-lg transition-all text-xs",
-                  density === 'compact' ? "bg-white dark:bg-[#1F2433] text-blue-600 dark:text-blue-400 font-bold border border-zinc-200 dark:border-[#2E354B] shadow-sm" : "text-zinc-500 hover:text-zinc-700 dark:text-zinc-500 dark:hover:text-zinc-300"
+                  "p-2 rounded-xl transition-all text-xs",
+                  density === 'compact' ? "clay-surface text-blue-600 dark:text-blue-400 font-black shadow-sm" : "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"
                 )}
                 title="Tampilan Kompak (Grid Padat)"
               >
-                <LayoutGrid size={14} />
+                <LayoutGrid size={15} strokeWidth={2.5} />
               </button>
             </div>
 
             {/* Theme Toggle (Light / Dark Switcher) */}
             <ThemeToggle />
-
-            {/* Logout */}
-            <button
-              onClick={() => logout()}
-              className="p-2 text-zinc-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-xl transition-all border border-transparent shrink-0"
-              title="Keluar"
-            >
-              <Power size={16} strokeWidth={2.5} />
-            </button>
           </div>
         }
       />
       </div>
 
       {/* ═══════════ SCROLLABLE CONTENT ═══════════ */}
-      <div className="flex-1 overflow-y-auto custom-scrollbar px-4 sm:px-6 lg:px-8 pb-6 space-y-6 pt-3 relative z-10">
+      <div className="flex-1 overflow-y-auto custom-scrollbar px-4 sm:px-6 lg:px-8 pb-8 space-y-6 pt-3 relative z-10">
 
         <DashboardStats
           todayDoctors={todayDoctors}
@@ -343,8 +338,8 @@ export function DashboardClient() {
         {/* Live Control Panel */}
         <div className="w-full space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
-              <span className="w-1.5 h-4 rounded-full bg-blue-500" />
+            <h3 className="text-base font-extrabold text-zinc-900 dark:text-zinc-100 flex items-center gap-2.5">
+              <span className="w-2.5 h-5 rounded-full clay-pill-blue" />
               Kontrol Status Langsung
             </h3>
 
@@ -352,37 +347,29 @@ export function DashboardClient() {
               {/* Mobile Search Button */}
               <button
                 onClick={() => setIsMobileSearchOpen(true)}
-                className="lg:hidden flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-[#141722] border border-zinc-200 dark:border-[#2B3145] rounded-xl text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 shadow-sm"
+                className="lg:hidden flex items-center gap-2 px-3.5 py-2 clay-button rounded-[16px] text-zinc-700 dark:text-zinc-300 shadow-sm"
                 title="Cari Dokter"
               >
                 <Search size={14} strokeWidth={2.5} />
-                <span className="text-xs font-bold">Cari</span>
+                <span className="text-xs font-black">Cari</span>
               </button>
 
               {/* Status Indicator */}
               <div className={cn(
-                "px-3 py-1.5 rounded-xl text-[11px] font-bold tracking-wider uppercase flex items-center gap-2 border",
-                automationEnabled
-                  ? "bg-violet-50 text-violet-700 border-violet-200 dark:bg-violet-950/40 dark:text-violet-400 dark:border-violet-800/50"
-                  : "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-400 dark:border-emerald-800/50"
+                "px-3.5 py-1.5 rounded-full text-[11px] font-black tracking-wider uppercase flex items-center gap-2",
+                automationEnabled ? "clay-pill-violet text-white" : "clay-pill-emerald text-white"
               )}>
                 <span className="relative flex h-2 w-2">
-                  <span className={cn(
-                    "animate-ping absolute inline-flex h-full w-full rounded-full opacity-75",
-                    automationEnabled ? "bg-violet-400" : "bg-emerald-400"
-                  )} />
-                  <span className={cn(
-                    "relative inline-flex rounded-full h-2 w-2",
-                    automationEnabled ? "bg-violet-500" : "bg-emerald-500"
-                  )} />
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-white" />
                 </span>
                 {automationEnabled ? "AI Active" : "Online"}
               </div>
             </div>
           </div>
 
-          {/* ═══════════ iOS SEGMENTED FILTER PILLS (HORIZONTAL SCROLL ON MOBILE) ═══════════ */}
-          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1 -mx-4 px-4 sm:mx-0 sm:px-0">
+          {/* ═══════════ CLAY SEGMENTED FILTER PILLS ═══════════ */}
+          <div className="clay-inset p-1.5 rounded-[22px] flex items-center gap-1.5 overflow-x-auto no-scrollbar">
             {STATUS_FILTERS.map(f => {
               const isSelected = statusFilter === f.id;
               return (
@@ -390,19 +377,19 @@ export function DashboardClient() {
                   key={f.id}
                   onClick={() => setStatusFilter(f.id)}
                   className={cn(
-                    "flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all duration-150 active:scale-95 shrink-0 border",
+                    "flex items-center gap-2 px-4 py-2 rounded-[18px] text-xs font-black whitespace-nowrap transition-all duration-150 active:scale-95 shrink-0",
                     isSelected
-                      ? "bg-zinc-900 text-white border-zinc-900 dark:bg-white dark:text-zinc-900 dark:border-white shadow-sm"
-                      : "bg-white dark:bg-[#131620] text-zinc-600 dark:text-zinc-400 border-zinc-200 dark:border-[#232736] hover:border-zinc-300 dark:hover:border-zinc-700"
+                      ? "clay-surface text-blue-600 dark:text-blue-400 shadow-sm"
+                      : "text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-200"
                   )}
                 >
                   <span>{f.label}</span>
                   {f.count > 0 && (
                     <span className={cn(
-                      "text-[10px] font-black px-1.5 py-0.5 rounded-full",
+                      "text-[10px] font-black px-2 py-0.5 rounded-full",
                       isSelected
-                        ? "bg-zinc-700 text-white dark:bg-zinc-200 dark:text-zinc-900"
-                        : "bg-zinc-100 dark:bg-[#1A1E2B] text-zinc-500 dark:text-zinc-400"
+                        ? "clay-pill-blue text-white"
+                        : "clay-button text-zinc-500 dark:text-zinc-400"
                     )}>
                       {f.count}
                     </span>
@@ -414,7 +401,7 @@ export function DashboardClient() {
 
           <ErrorBoundary name="Doctor Grid" className="min-h-[400px]">
             <div className={cn(
-              "grid gap-3 lg:gap-4 transition-all duration-300",
+              "grid gap-4 lg:gap-5 transition-all duration-300",
               density === 'compact'
                 ? "grid-cols-2 sm:grid-cols-3 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5"
                 : "grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"

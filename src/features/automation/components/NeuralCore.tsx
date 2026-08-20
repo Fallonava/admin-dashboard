@@ -33,94 +33,83 @@ export function NeuralCore() {
     }, [shifts, doctors, broadcasts]);
 
     return (
-        <div className="relative flex flex-col rounded-[40px] border border-white/60 bg-white/40 backdrop-blur-2xl p-7 md:p-8 overflow-hidden group shadow-[0_8px_40px_rgba(0,0,0,0.04)] transition-all duration-500 hover:shadow-[0_8px_50px_rgba(0,0,0,0.08)] hover:bg-white/60 hover:border-white/80">
-            {/* Soft ambient light glows */}
-            <div className="absolute top-0 right-0 h-56 w-56 bg-gradient-to-br from-indigo-300/30 to-purple-300/30 blur-[60px] -z-10 pointer-events-none group-hover:scale-110 transition-transform duration-700 ease-out" />
-            <div className="absolute bottom-0 left-0 h-48 w-48 bg-gradient-to-tr from-cyan-300/20 to-blue-300/20 blur-[50px] -z-10 pointer-events-none group-hover:scale-110 transition-transform duration-700 ease-out" />
-
+        <div className="relative flex flex-col rounded-[36px] clay-surface p-7 md:p-8 overflow-hidden shadow-2xl">
             {/* Header */}
-            <div className="flex justify-between items-start mb-10 relative z-10">
+            <div className="flex justify-between items-start mb-8 relative z-10">
                 <div className="flex gap-4 items-center">
-                    <div className="relative flex h-16 w-16 items-center justify-center rounded-[22px] bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 shadow-xl shadow-indigo-300/40 group-hover:shadow-indigo-400/60 transition-all duration-500 group-hover:scale-105">
-                        <div className="absolute inset-0 rounded-[22px] border border-white/40 mix-blend-overlay" />
+                    <div className="relative flex h-16 w-16 items-center justify-center rounded-[24px] clay-pill-violet shadow-lg text-white">
                         <BrainCircuit className="text-white h-8 w-8" />
-                        <div className="absolute -top-1.5 -right-1.5 h-4 w-4 rounded-full bg-emerald-400 border-[3px] border-white animate-pulse shadow-md" />
+                        <div className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-emerald-400 border-[3px] border-white dark:border-zinc-900 animate-pulse shadow-md" />
                     </div>
                     <div className="flex flex-col justify-center">
-                        <h3 className="text-xl font-black text-slate-800 tracking-tight">Neural Engine</h3>
-                        <p className="text-[11px] text-indigo-600/80 font-mono uppercase tracking-widest mt-1 flex items-center gap-1.5 font-bold">
-                            <Cpu size={12} className="text-indigo-500" /> Core Process
+                        <h3 className="text-xl font-black text-zinc-900 dark:text-zinc-100 tracking-tight">Neural Engine</h3>
+                        <p className="text-[11px] text-violet-600 dark:text-violet-400 font-mono uppercase tracking-widest mt-1 flex items-center gap-1.5 font-bold">
+                            <Cpu size={12} className="text-violet-500" /> Core Process
                         </p>
                     </div>
                 </div>
 
-                <div className="flex items-center gap-2 bg-emerald-50/80 backdrop-blur-sm border border-emerald-200/50 px-3.5 py-1.5 rounded-full shadow-sm mt-1">
-                    <Activity className="h-3.5 w-3.5 text-emerald-500 animate-pulse" />
-                    <span className="text-[10px] font-black text-emerald-700 tracking-widest uppercase">Monitoring</span>
+                <div className="flex items-center gap-2 clay-pill-emerald text-white px-3.5 py-1.5 rounded-full shadow-sm mt-1">
+                    <Activity className="h-3.5 w-3.5 text-white animate-pulse" />
+                    <span className="text-[10px] font-black tracking-widest uppercase">Monitoring</span>
                 </div>
             </div>
 
             {/* Main Content */}
             <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-6 relative z-10">
                 {/* Circular Progress */}
-                <div className="relative flex flex-col items-center justify-center bg-gradient-to-b from-white/80 to-slate-50/50 backdrop-blur-xl border border-white/60 rounded-[32px] p-6 shadow-sm hover:shadow-md transition-shadow">
+                <div className="relative flex flex-col items-center justify-center clay-inset rounded-[30px] p-6">
                     <div className="relative w-40 h-40 flex items-center justify-center">
-                        <svg className="w-full h-full transform -rotate-90 drop-shadow-sm">
-                            <circle cx="80" cy="80" r="60" stroke="currentColor" strokeWidth="12" fill="transparent" className="text-slate-100" strokeLinecap="round" />
+                        <svg className="w-full h-full transform -rotate-90">
+                            <circle cx="80" cy="80" r="60" stroke="currentColor" strokeWidth="12" fill="transparent" className="text-zinc-200 dark:text-zinc-800" strokeLinecap="round" />
                             <circle
                                 cx="80" cy="80" r="60" stroke="url(#gradient)" strokeWidth="12" fill="transparent"
                                 strokeDasharray={circumference}
                                 strokeDashoffset={dashOffset}
-                                className="transition-all duration-[1500ms] ease-out drop-shadow-md"
+                                className="transition-all duration-[1500ms] ease-out"
                                 strokeLinecap="round"
                             />
                             <defs>
                                 <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                                    <stop offset="0%" stopColor="#4F46E5" />
-                                    <stop offset="100%" stopColor="#D946EF" />
+                                    <stop offset="0%" stopColor="#6366F1" />
+                                    <stop offset="100%" stopColor="#A855F7" />
                                 </linearGradient>
                             </defs>
                         </svg>
                         <div className="absolute inset-0 flex flex-col items-center justify-center">
                             <div className="flex items-baseline gap-1">
-                                <span className="text-5xl font-black text-slate-800 tracking-tighter">{efficiency}</span>
-                                <span className="text-2xl font-bold text-indigo-500">%</span>
+                                <span className="text-5xl font-black text-zinc-900 dark:text-zinc-100 tracking-tighter">{efficiency}</span>
+                                <span className="text-2xl font-black text-violet-500">%</span>
                             </div>
                         </div>
                     </div>
-                    <span className="text-[11px] text-slate-400 font-bold uppercase tracking-[0.2em] mt-2">Efficiency Rated</span>
+                    <span className="text-[11px] text-zinc-500 dark:text-zinc-400 font-extrabold uppercase tracking-[0.2em] mt-3">Efficiency Rated</span>
                 </div>
 
                 {/* Stats */}
                 <div className="flex flex-col gap-4">
                     {/* Doctors Card */}
-                    <div className="group/stat bg-gradient-to-br from-indigo-50/80 to-blue-50/50 backdrop-blur-md hover:from-indigo-100/80 hover:to-blue-100/60 rounded-[28px] p-5 border border-indigo-100/60 transition-all duration-300 relative overflow-hidden flex-1 flex flex-col justify-center shadow-sm">
-                        <div className="absolute -right-4 -top-4 text-indigo-200/50 group-hover/stat:scale-110 group-hover/stat:rotate-12 transition-all duration-500">
-                            <Users size={80} strokeWidth={1} />
-                        </div>
-                        <div className="flex items-center gap-2 mb-3 relative z-10">
-                            <div className="p-2 rounded-[12px] bg-indigo-200/50 text-indigo-700 shadow-inner">
-                                <Users size={14} />
+                    <div className="clay-surface rounded-[26px] p-5 relative overflow-hidden flex-1 flex flex-col justify-center">
+                        <div className="flex items-center gap-2.5 mb-2 relative z-10">
+                            <div className="p-2 rounded-[12px] clay-button text-blue-600 dark:text-blue-400">
+                                <Users size={16} />
                             </div>
-                            <p className="text-[11px] text-indigo-700 uppercase font-black tracking-widest">Active Doctors</p>
+                            <p className="text-[11px] text-zinc-500 dark:text-zinc-400 uppercase font-black tracking-widest">Active Doctors</p>
                         </div>
-                        <span className="text-4xl font-black text-indigo-900 relative z-10 tracking-tight">{totalDoctors}</span>
+                        <span className="text-4xl font-black text-zinc-900 dark:text-zinc-100 relative z-10 tracking-tight">{totalDoctors}</span>
                     </div>
 
                     {/* Shifts Card */}
-                    <div className="group/stat bg-gradient-to-br from-fuchsia-50/80 to-purple-50/50 backdrop-blur-md hover:from-fuchsia-100/80 hover:to-purple-100/60 rounded-[28px] p-5 border border-fuchsia-100/60 transition-all duration-300 relative overflow-hidden flex-1 flex flex-col justify-center shadow-sm">
-                        <div className="absolute -right-4 -top-4 text-fuchsia-200/50 group-hover/stat:scale-110 group-hover/stat:rotate-12 transition-all duration-500">
-                            <Calendar size={80} strokeWidth={1} />
-                        </div>
-                        <div className="flex items-center gap-2 mb-3 relative z-10">
-                            <div className="p-2 rounded-[12px] bg-fuchsia-200/50 text-fuchsia-700 shadow-inner">
-                                <Calendar size={14} />
+                    <div className="clay-surface rounded-[26px] p-5 relative overflow-hidden flex-1 flex flex-col justify-center">
+                        <div className="flex items-center gap-2.5 mb-2 relative z-10">
+                            <div className="p-2 rounded-[12px] clay-button text-violet-600 dark:text-violet-400">
+                                <Calendar size={16} />
                             </div>
-                            <p className="text-[11px] text-fuchsia-700 uppercase font-black tracking-widest">Total Shifts</p>
+                            <p className="text-[11px] text-zinc-500 dark:text-zinc-400 uppercase font-black tracking-widest">Total Shifts</p>
                         </div>
                         <div className="flex items-baseline gap-3 relative z-10">
-                            <span className="text-4xl font-black text-fuchsia-900 tracking-tight">{totalShifts}</span>
-                            <span className="text-[11px] font-bold text-emerald-700 bg-emerald-100/80 px-2.5 py-1 rounded-[10px] border border-emerald-200 uppercase tracking-wider backdrop-blur-md shadow-sm">
+                            <span className="text-4xl font-black text-zinc-900 dark:text-zinc-100 tracking-tight">{totalShifts}</span>
+                            <span className="text-[11px] font-black text-white clay-pill-emerald px-3 py-1 rounded-[10px] uppercase tracking-wider shadow-sm">
                                 {todayShifts} Today
                             </span>
                         </div>
@@ -129,29 +118,28 @@ export function NeuralCore() {
             </div>
 
             {/* Bottom Status Panel */}
-            <div className="mt-8 pt-6 border-t border-slate-200/60 flex flex-col md:flex-row items-center justify-between gap-5 relative z-10">
-                <div className="flex items-center gap-3 w-full md:w-auto overflow-x-auto pb-2 md:pb-0 hide-scrollbar">
+            <div className="mt-8 pt-6 border-t border-zinc-200/60 dark:border-white/5 flex flex-col md:flex-row items-center justify-between gap-5 relative z-10">
+                <div className="flex items-center gap-2.5 w-full md:w-auto overflow-x-auto pb-2 md:pb-0 hide-scrollbar">
                     {[
                         { label: "Scheduling Engine", ok: true },
                         { label: "Broadcast Service", ok: activeBroadcasts > 0 },
                         { label: "Data Pipeline", ok: true },
                     ].map((s, i) => (
-                        <div key={i} className="flex items-center gap-2 whitespace-nowrap bg-white/60 backdrop-blur-md px-3.5 py-2 rounded-full border border-white/80 shadow-sm hover:shadow-md transition-shadow">
+                        <div key={i} className="flex items-center gap-2 whitespace-nowrap clay-button px-3.5 py-2 rounded-full">
                             <div className={cn(
                                 "h-2 w-2 rounded-full",
-                                s.ok ? "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)] animate-pulse" : "bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.6)] animate-pulse"
+                                s.ok ? "bg-emerald-500 animate-pulse" : "bg-amber-500 animate-pulse"
                             )} />
-                            <span className="text-[11px] text-slate-700 font-bold">{s.label}</span>
+                            <span className="text-[11px] text-zinc-700 dark:text-zinc-300 font-extrabold">{s.label}</span>
                         </div>
                     ))}
                 </div>
 
-                <div className="flex items-center gap-3 bg-indigo-50/80 backdrop-blur-md border border-indigo-200/60 px-5 py-2.5 rounded-2xl shrink-0 shadow-sm relative overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/0 via-indigo-500/5 to-indigo-500/0 translate-x-[-100%] animate-[shimmer_3s_infinite]" />
-                    <Radio size={16} className="text-indigo-500 animate-pulse drop-shadow-[0_0_8px_rgba(99,102,241,0.6)]" />
+                <div className="flex items-center gap-3 clay-inset px-4 py-2.5 rounded-[18px] shrink-0">
+                    <Radio size={16} className="text-violet-500 animate-pulse" />
                     <div className="flex flex-col relative z-10">
-                        <span className="text-[9px] text-indigo-500 uppercase font-black tracking-[0.2em] leading-none mb-1.5 line-clamp-1">Stream: LIVE</span>
-                        <span className="text-sm font-mono font-bold text-indigo-800 leading-none tracking-tight">{formatLastUpdate(lastUpdate)}</span>
+                        <span className="text-[9px] text-violet-500 uppercase font-black tracking-[0.2em] leading-none mb-1">Stream: LIVE</span>
+                        <span className="text-sm font-mono font-black text-zinc-800 dark:text-zinc-200 leading-none tracking-tight">{formatLastUpdate(lastUpdate)}</span>
                     </div>
                 </div>
             </div>

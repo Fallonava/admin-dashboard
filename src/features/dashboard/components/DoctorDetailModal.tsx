@@ -30,22 +30,14 @@ function formatDateId(date: Date | string) {
 
 function getAvatarStyle(status: Doctor['status']) {
   switch (status) {
-    case 'PRAKTEK':  return "from-blue-500 to-indigo-500 shadow-blue-500/30";
-    case 'PENUH':    return "from-orange-500 to-amber-500 shadow-orange-500/30";
-    case 'CUTI':     return "from-pink-500 to-rose-500 shadow-pink-500/30";
-    case 'OPERASI':  return "from-red-500 to-rose-600 shadow-red-500/30";
-    case 'PENDAFTARAN':return "from-indigo-400 to-purple-500 shadow-indigo-500/30";
-    default:         return "from-slate-300 to-slate-400 shadow-slate-300/30";
+    case 'PRAKTEK':    return "clay-icon-blue";
+    case 'PENUH':      return "clay-icon-amber";
+    case 'CUTI':       return "clay-icon-rose";
+    case 'OPERASI':    return "clay-icon-rose";
+    case 'PENDAFTARAN': return "clay-icon-violet";
+    default:           return "clay-icon-blue";
   }
 }
-
-const LEAVE_TYPE_COLOR: Record<string, string> = {
-  Sakit: "bg-red-100 text-red-700 border-red-200",
-  Liburan: "bg-sky-100 text-sky-700 border-sky-200",
-  Pribadi: "bg-violet-100 text-violet-700 border-violet-200",
-  Konferensi: "bg-amber-100 text-amber-700 border-amber-200",
-  Lainnya: "bg-slate-100 text-slate-600 border-slate-200",
-};
 
 function getRelevantShift(doc: Doctor, currentTimeMinutes: number, nowMs: number) {
   if (!doc.shifts || doc.shifts.length === 0) return null;
@@ -119,14 +111,14 @@ export function DoctorDetailModal({
 
   const getStatusBadge = () => {
     const map: Record<Doctor['status'], string> = {
-      PRAKTEK: "bg-blue-100 text-blue-700 border-blue-200",
-      PENUH: "bg-orange-100 text-orange-700 border-orange-200",
-      OPERASI: "bg-red-100 text-red-700 border-red-200",
-      PENDAFTARAN: "bg-indigo-100 text-indigo-700 border-indigo-200",
-      CUTI: "bg-pink-100 text-pink-700 border-pink-200",
-      SELESAI: "bg-emerald-100 text-emerald-700 border-emerald-200",
-      LIBUR: "bg-slate-100 text-slate-500 border-slate-200",
-      TERJADWAL: "bg-sky-100 text-sky-600 border-sky-200",
+      PRAKTEK: "clay-pill-blue text-white",
+      PENUH: "clay-pill-amber text-white",
+      OPERASI: "clay-pill-rose text-white",
+      PENDAFTARAN: "clay-pill-violet text-white",
+      CUTI: "clay-pill-rose text-white",
+      SELESAI: "clay-pill-emerald text-white",
+      LIBUR: "clay-button text-zinc-500 dark:text-zinc-400",
+      TERJADWAL: "clay-button text-sky-700 dark:text-sky-300",
     };
     const label: Record<Doctor['status'], string> = {
       PRAKTEK: "Tersedia", PENUH: "Antrean Penuh", OPERASI: "Sedang Operasi",
@@ -135,14 +127,14 @@ export function DoctorDetailModal({
       TERJADWAL: "Terjadwal",
     };
     const dotMap: Record<Doctor['status'], string> = {
-      PRAKTEK: "bg-blue-500 animate-pulse", PENUH: "bg-orange-500", OPERASI: "bg-red-500",
-      PENDAFTARAN: "bg-indigo-500", CUTI: "bg-pink-500", SELESAI: "bg-emerald-500",
-      LIBUR: "bg-slate-400",
+      PRAKTEK: "bg-white animate-pulse", PENUH: "bg-white", OPERASI: "bg-white",
+      PENDAFTARAN: "bg-white", CUTI: "bg-white", SELESAI: "bg-white",
+      LIBUR: "bg-zinc-400",
       TERJADWAL: "bg-sky-400",
     };
 
     return (
-      <div className={cn("inline-flex items-center gap-2 px-4 py-2 rounded-2xl border font-black text-[13px] tracking-wide", map[doctor.status])}>
+      <div className={cn("inline-flex items-center gap-2 px-4 py-2 rounded-full font-black text-[13px] tracking-wide", map[doctor.status])}>
         <span className={cn("w-2 h-2 rounded-full", dotMap[doctor.status])} />
         {label[doctor.status]}
       </div>
@@ -156,19 +148,19 @@ export function DoctorDetailModal({
       onClick={(e) => { if (e.target === overlayRef.current) onClose(); }}
     >
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-300" />
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-md animate-in fade-in duration-300" />
 
       {/* Center Modal */}
       <div className={cn(
-        "relative w-full max-w-lg max-h-[95vh] flex flex-col overflow-hidden",
-        "rounded-[36px] bg-white border border-slate-200/60 shadow-2xl",
-        "animate-in zoom-in-95 duration-400 ease-out"
+        "relative w-full max-w-lg max-h-[92vh] flex flex-col overflow-hidden",
+        "clay-surface rounded-[36px] shadow-2xl",
+        "animate-in zoom-in-95 duration-300 ease-out"
       )}>
         {/* HEADER AREA */}
         <div className="relative pt-8 pb-6 px-6 sm:px-8 text-center shrink-0">
           <button
             onClick={onClose}
-            className="absolute top-5 right-5 p-2.5 bg-slate-100 hover:bg-slate-200 active:bg-slate-300 rounded-full text-slate-400 hover:text-slate-600 transition-all z-10 touch-ripple"
+            className="absolute top-5 right-5 p-2.5 clay-button rounded-full text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 transition-all z-10 active:scale-95"
           >
             <X size={18} />
           </button>
@@ -176,34 +168,30 @@ export function DoctorDetailModal({
           {/* LARGE AVATAR */}
           <div className="relative inline-flex items-center justify-center mb-5">
             <div className={cn(
-              "w-24 h-24 sm:w-28 sm:h-28 rounded-[28px] sm:rounded-[32px] flex items-center justify-center font-black text-white text-3xl sm:text-4xl shadow-xl",
-              `bg-gradient-to-br ${getAvatarStyle(doctor.status)}`,
+              "w-24 h-24 sm:w-28 sm:h-28 rounded-[28px] sm:rounded-[32px] flex items-center justify-center font-black text-white text-3xl sm:text-4xl shadow-xl shrink-0",
+              getAvatarStyle(doctor.status),
               !isActive && doctor.status !== 'PENDAFTARAN' && "grayscale opacity-80"
             )}>
-              {doctor.queueCode?.charAt(0) || doctor.name.charAt(0)}
+              <span className="relative z-10 tracking-tight">{doctor.queueCode?.charAt(0) || doctor.name.charAt(0)}</span>
             </div>
 
             {/* Orbiting ring for OPERASI */}
             {doctor.status === 'OPERASI' && (
-              <div className="absolute inset-[-6px] rounded-[34px] sm:rounded-[38px] border-[3px] border-dashed border-red-500/60 animate-spin" style={{ animationDuration: '4s' }} />
-            )}
-            {/* Pulsing ring for PRAKTEK */}
-            {doctor.status === 'PRAKTEK' && (
-              <div className="absolute inset-[-6px] rounded-[34px] sm:rounded-[38px] border-[2px] border-blue-400/40" />
+              <div className="absolute inset-[-6px] rounded-[38px] border-[3px] border-dashed border-red-500 animate-spin" style={{ animationDuration: '4s' }} />
             )}
             {/* Surge warning */}
             {isSurge && (
-              <div className="absolute -top-3 -right-6 flex items-center gap-1.5 px-3 py-1 bg-orange-500 text-white text-[11px] font-black rounded-full border-[3px] border-white shadow-sm animate-bounce">
+              <div className="absolute -top-3 -right-6 flex items-center gap-1.5 px-3 py-1 clay-pill-amber text-white text-[11px] font-black rounded-full shadow-sm animate-bounce">
                 <Flame size={12} fill="currentColor" /> Lonjakan
               </div>
             )}
           </div>
 
-          <h2 className="text-xl sm:text-2xl font-black text-slate-800 tracking-tight leading-tight">
+          <h2 className="text-xl sm:text-2xl font-black text-zinc-900 dark:text-zinc-100 tracking-tight leading-tight">
             {doctor.name}
           </h2>
-          <p className="text-[14px] text-slate-500 font-medium mt-1 mb-4 flex items-center justify-center gap-1.5">
-            <Stethoscope size={14} className="text-slate-400" />
+          <p className="text-[14px] text-zinc-500 dark:text-zinc-400 font-bold mt-1 mb-4 flex items-center justify-center gap-1.5">
+            <Stethoscope size={14} className="text-zinc-400" />
             Poliklinik {specialty}
           </p>
 
@@ -215,18 +203,18 @@ export function DoctorDetailModal({
           <div className="space-y-4">
             
             {/* SHIFT & TIMING CARD */}
-            <div className="bg-slate-50/70 border border-slate-200/60 rounded-[24px] p-5">
+            <div className="clay-inset rounded-[26px] p-5">
               <div className="flex items-center gap-2 mb-3">
-                <Clock size={16} className="text-slate-400" />
-                <h3 className="text-[14px] font-black text-slate-700 tracking-wide">Jadwal Praktik</h3>
+                <Clock size={16} className="text-zinc-500 dark:text-zinc-400" />
+                <h3 className="text-[14px] font-black text-zinc-800 dark:text-zinc-200 tracking-wide">Jadwal Praktik</h3>
               </div>
               
               <div className="flex justify-between items-end mb-2">
-                <div className="text-[16px] font-bold text-slate-800">
-                  {formattedTime.split('-')[0] || '--:--'} <span className="text-slate-400 font-medium mx-1">s/d</span> {formattedTime.split('-')[1] || '--:--'}
+                <div className="text-[16px] font-bold text-zinc-900 dark:text-zinc-100">
+                  {formattedTime.split('-')[0] || '--:--'} <span className="text-zinc-400 font-medium mx-1">s/d</span> {formattedTime.split('-')[1] || '--:--'}
                 </div>
                 {doctor.queueCode && (
-                  <div className="text-[12px] font-black text-slate-400 font-mono bg-white px-2.5 py-1 rounded-lg border border-slate-200">
+                  <div className="text-[12px] font-black text-zinc-600 dark:text-zinc-400 font-mono clay-button px-3 py-1 rounded-xl">
                     KODE: {doctor.queueCode}
                   </div>
                 )}
@@ -234,30 +222,30 @@ export function DoctorDetailModal({
 
               {/* Progress Shift atau Countdown */}
               {isPendaftaran && minsUntilOpen > 0 ? (
-                <div className="mt-4 flex items-center gap-2 text-[13px] font-black text-indigo-600 bg-indigo-50 px-4 py-2.5 rounded-[14px] border border-indigo-100">
+                <div className="mt-4 flex items-center gap-2 text-[13px] font-black text-white clay-pill-violet px-4 py-2.5 rounded-[16px]">
                   <Timer size={14} className="animate-pulse" />
                   Buka dalam {minsUntilOpen >= 60 ? `${Math.floor(minsUntilOpen/60)}j ${minsUntilOpen % 60}m` : `${minsUntilOpen} menit`}
                 </div>
               ) : isActive ? (
                 <div className="mt-5">
-                  <div className="bg-white border border-slate-100 rounded-[18px] p-3 shadow-[inset_0_2px_10px_rgba(0,0,0,0.02)] relative">
-                    <div className="flex justify-between text-[11px] items-center font-black font-mono text-slate-400 mb-2 px-1">
+                  <div className="clay-surface rounded-[20px] p-3.5 relative">
+                    <div className="flex justify-between text-[11px] items-center font-black font-mono text-zinc-500 dark:text-zinc-400 mb-2 px-1">
                       <span>{formattedTime.split('-')[0] || '--:--'}</span>
                       <span className="flex items-center gap-1">
                         {isOvertime ? (
-                          <span className="text-purple-500 animate-pulse uppercase tracking-wider bg-purple-50 px-2 py-0.5 rounded-md border border-purple-100">Lembur</span>
+                          <span className="text-purple-600 dark:text-purple-400 animate-pulse uppercase tracking-wider clay-button px-2 py-0.5 rounded-md">Lembur</span>
                         ) : (
-                          <span className="text-indigo-500 uppercase tracking-wider bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-100">Live</span>
+                          <span className="text-blue-600 dark:text-blue-400 uppercase tracking-wider clay-button px-2 py-0.5 rounded-md">Live</span>
                         )}
                       </span>
                       <span>{formattedTime.split('-')[1] || '--:--'}</span>
                     </div>
-                    <div className="h-2 bg-slate-100/80 rounded-full overflow-hidden relative">
+                    <div className="h-2.5 clay-inset rounded-full overflow-hidden relative">
                       <div
                         className={cn("h-full rounded-full transition-all duration-1000",
-                          isOvertime ? "bg-gradient-to-r from-purple-400 to-purple-500" :
-                          doctor.status === 'OPERASI' ? "bg-gradient-to-r from-red-400 to-red-500" :
-                          doctor.status === 'PENUH' ? "bg-gradient-to-r from-orange-400 to-orange-500" : "bg-gradient-to-r from-blue-400 to-blue-500"
+                          isOvertime ? "bg-gradient-to-r from-purple-500 to-purple-600" :
+                          doctor.status === 'OPERASI' ? "bg-gradient-to-r from-red-500 to-rose-600" :
+                          doctor.status === 'PENUH' ? "bg-gradient-to-r from-amber-500 to-orange-600" : "bg-gradient-to-r from-blue-500 to-indigo-600"
                         )}
                         style={{ width: `${progress}%` }}
                       />
@@ -265,7 +253,7 @@ export function DoctorDetailModal({
                   </div>
                 </div>
               ) : (
-                <div className="mt-4 text-[12px] text-slate-400 font-medium italic">
+                <div className="mt-4 text-[12px] text-zinc-500 dark:text-zinc-400 font-bold italic">
                   Sedang tidak ada jam praktik aktif.
                 </div>
               )}
@@ -273,48 +261,41 @@ export function DoctorDetailModal({
 
             {/* CUTI/LEAVES CARD */}
             {(activeLeavesToday?.length || upcomingLeaves?.length) ? (
-              <div className="relative border border-slate-200/50 shadow-[0_4px_24px_rgba(0,0,0,0.02)] rounded-[24px] p-5 overflow-hidden">
-                {/* Ambient Mesh Background */}
-                <div className="absolute inset-0 bg-slate-50/80 backdrop-blur-3xl saturate-150" />
-                <div className="absolute -top-10 -right-10 w-32 h-32 bg-rose-400/10 rounded-full blur-3xl pointer-events-none" />
-                <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-amber-400/10 rounded-full blur-3xl pointer-events-none" />
-                
-                <div className="relative z-10">
-                  <div className="flex items-center gap-2 mb-3">
-                    <CalendarOff size={16} className="text-red-500" />
-                    <h3 className="text-[14px] font-black text-slate-800 tracking-wide">Jadwal Cuti & Izin</h3>
-                  </div>
+              <div className="clay-surface rounded-[26px] p-5 relative overflow-hidden">
+                <div className="flex items-center gap-2 mb-3 relative z-10">
+                  <CalendarOff size={16} className="text-rose-500" />
+                  <h3 className="text-[14px] font-black text-zinc-900 dark:text-zinc-100 tracking-wide">Jadwal Cuti & Izin</h3>
+                </div>
 
-                  <div className="space-y-3">
-                    {/* Active Leaves */}
-                    {activeLeavesToday?.map(lr => (
-                      <div key={lr.id} className="flex flex-col gap-1.5 bg-white/60 hover:bg-white/80 transition-colors backdrop-blur-md rounded-[18px] px-4 py-3 border border-white shadow-sm">
-                        <div className="flex items-center justify-between gap-2">
-                          <span className="text-[13px] text-red-600 font-black flex items-center gap-1.5">
-                            <Flame size={12} className="text-red-500 animate-pulse" /> Sedang Cuti ({lr.type})
-                          </span>
-                        </div>
-                        <span className="text-[12px] text-slate-600 font-medium leading-snug">
-                           Tanggal: {formatDateId(lr.startDate)} - {formatDateId(lr.endDate)}
-                           {lr.reason && <><br /><span className="text-slate-500 mt-0.5 inline-block">Keterangan: {lr.reason}</span></>}
+                <div className="space-y-3 relative z-10">
+                  {/* Active Leaves */}
+                  {activeLeavesToday?.map(lr => (
+                    <div key={lr.id} className="flex flex-col gap-1.5 clay-button rounded-[20px] px-4 py-3.5">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-[13px] text-rose-600 dark:text-rose-400 font-black flex items-center gap-1.5">
+                          <Flame size={12} className="text-rose-500 animate-pulse" /> Sedang Cuti ({lr.type})
                         </span>
                       </div>
-                    ))}
+                      <span className="text-[12px] text-zinc-600 dark:text-zinc-300 font-bold leading-snug">
+                         Tanggal: {formatDateId(lr.startDate)} - {formatDateId(lr.endDate)}
+                         {lr.reason && <><br /><span className="text-zinc-500 dark:text-zinc-400 mt-0.5 inline-block font-normal">Keterangan: {lr.reason}</span></>}
+                      </span>
+                    </div>
+                  ))}
 
-                    {/* Upcoming Leaves */}
-                    {upcomingLeaves?.map(lr => (
-                      <div key={lr.id} className="flex flex-col gap-1.5 bg-white/60 hover:bg-white/80 transition-colors backdrop-blur-md rounded-[18px] px-4 py-3 border border-white shadow-sm">
-                        <div className="flex items-center justify-between gap-2">
-                          <span className="text-[13px] text-amber-600 font-black flex items-center gap-1.5">
-                            <Calendar size={12} className="text-amber-500" /> Akan Datang ({lr.type})
-                          </span>
-                        </div>
-                        <span className="text-[12px] text-slate-600 font-medium leading-snug">
-                           Tanggal: {formatDateId(lr.startDate)} - {formatDateId(lr.endDate)}
+                  {/* Upcoming Leaves */}
+                  {upcomingLeaves?.map(lr => (
+                    <div key={lr.id} className="flex flex-col gap-1.5 clay-button rounded-[20px] px-4 py-3.5">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-[13px] text-amber-600 dark:text-amber-400 font-black flex items-center gap-1.5">
+                          <Calendar size={12} className="text-amber-500" /> Akan Datang ({lr.type})
                         </span>
                       </div>
-                    ))}
-                  </div>
+                      <span className="text-[12px] text-zinc-600 dark:text-zinc-300 font-bold leading-snug">
+                         Tanggal: {formatDateId(lr.startDate)} - {formatDateId(lr.endDate)}
+                      </span>
+                    </div>
+                  ))}
                 </div>
               </div>
             ) : null}

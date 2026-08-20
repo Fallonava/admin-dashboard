@@ -1,9 +1,25 @@
 "use client";
 
-import { useState, useMemo, useEffect, useRef } from "react";
+import { useState, useMemo, useEffect, useRef, useDeferredValue } from "react";
 import useSWR, { mutate } from "swr";
 import { useDebounce } from "@/hooks/use-debounce";
-import { Plus, Search, UserRound, Activity, Users, CheckSquare, Trash2, X, ChevronDown, Loader2 } from "lucide-react";
+import {
+  Plus,
+  Search,
+  UserRound,
+  Activity,
+  Users,
+  CheckSquare,
+  Trash2,
+  X,
+  ChevronDown,
+  Loader2,
+  LayoutGrid,
+  List,
+  Edit2,
+  Stethoscope,
+  ArrowUpDown,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Doctor } from "@/lib/data-service";
 import { DoctorFormModal } from "@/features/schedules/components/DoctorFormModal";
@@ -11,494 +27,673 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { DoctorCardSkeleton } from "@/components/ui/Skeleton";
-import { DoctorCard } from "@/features/doctors/components/DoctorCard";
+import { DoctorCard, getStatusConfig } from "@/features/doctors/components/DoctorCard";
 
-import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragOverlay, defaultDropAnimationSideEffects } from "@dnd-kit/core";
-import { arrayMove, SortableContext, sortableKeyboardCoordinates, rectSortingStrategy } from "@dnd-kit/sortable";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragOverlay,
+  defaultDropAnimationSideEffects,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  rectSortingStrategy,
+} from "@dnd-kit/sortable";
 
-// Custom Dropdown Component moved outside to prevent re-definitions on parent render
-const CustomDropdown = ({ value, options, onChange, icon }: any) => {
-    const [open, setOpen] = useState(false);
-    const containerRef = useRef<HTMLDivElement>(null);
-    const selectedLabel = options.find((o: any) => o.value === value)?.label || value;
+// Compact Dropdown Component
+const CompactDropdown = ({ value, options, onChange, label, icon: Icon }: any) => {
+  const [open, setOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const selectedOption = options.find((o: any) => o.value === value);
 
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-                setOpen(false);
-            }
-        };
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, []);
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
-    return (
-        <div className="relative z-30" ref={containerRef}>
-            <button 
-                type="button"
-                onClick={() => setOpen(!open)}
-                className={cn(
-                    "w-full sm:w-auto flex items-center justify-between gap-1.5 sm:gap-2.5 bg-white dark:bg-[#131620] rounded-xl px-3.5 py-2 text-xs font-bold text-zinc-700 dark:text-zinc-300 outline-none shadow-sm hover:text-zinc-900 dark:hover:text-zinc-100 border border-zinc-200 dark:border-[#232736] transition-all whitespace-nowrap active:scale-95",
-                    open && "border-blue-500 ring-2 ring-blue-500/20 text-zinc-900 dark:text-zinc-100"
-                )}
-                aria-haspopup="listbox"
-                aria-expanded={open}
-            >
-                <span className="flex items-center gap-1.5 sm:gap-2 truncate">{icon} {selectedLabel}</span>
-                <ChevronDown className={cn("w-3.5 h-3.5 text-zinc-400 transition-transform duration-200 flex-shrink-0", open && "rotate-180")} />
-            </button>
-            
-            <div className={cn(
-                "absolute top-[calc(100%+8px)] left-0 w-full min-w-[200px] bg-white dark:bg-[#131620] rounded-xl shadow-xl border border-zinc-200 dark:border-[#232736] p-1.5 transition-all duration-150 origin-top-left z-50 overflow-y-auto max-h-[280px] custom-scrollbar",
-                open ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-95 -translate-y-2 pointer-events-none"
-            )}>
-                {options.map((opt: any) => (
-                    <button
-                        key={opt.value}
-                        type="button"
-                        onClick={() => { onChange(opt.value); setOpen(false); }}
-                        className={cn(
-                            "w-full text-left px-3 py-2 rounded-lg text-xs font-bold transition-all flex items-center justify-between",
-                            value === opt.value 
-                                ? "bg-blue-600 text-white shadow-sm" 
-                                : "text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-[#1A1E2B] hover:text-zinc-900 dark:hover:text-zinc-100"
-                        )}
-                    >
-                        <span>{opt.label}</span>
-                        {value === opt.value && (
-                            <CheckSquare size={12} className="text-white" />
-                        )}
-                    </button>
-                ))}
-            </div>
-        </div>
-    );
+  return (
+    <div className="relative z-30" ref={containerRef}>
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        className={cn(
+          "flex items-center gap-1.5 clay-button rounded-[16px] px-3.5 py-2 text-xs font-black text-zinc-700 dark:text-zinc-300 transition-all active:scale-95 whitespace-nowrap",
+          open && "text-blue-600 dark:text-blue-400"
+        )}
+      >
+        {Icon && <Icon size={13} className="text-zinc-400" />}
+        <span>{selectedOption?.label || label}</span>
+        <ChevronDown className={cn("w-3.5 h-3.5 text-zinc-400 transition-transform duration-200", open && "rotate-180")} />
+      </button>
+
+      <div
+        className={cn(
+          "absolute top-[calc(100%+6px)] left-0 min-w-[170px] clay-surface rounded-[18px] p-1.5 shadow-xl transition-all duration-150 origin-top-left z-50",
+          open ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-95 -translate-y-2 pointer-events-none"
+        )}
+      >
+        {options.map((opt: any) => (
+          <button
+            key={opt.value}
+            type="button"
+            onClick={() => { onChange(opt.value); setOpen(false); }}
+            className={cn(
+              "w-full text-left px-3 py-2 rounded-[12px] text-xs font-black transition-all flex items-center justify-between mb-0.5 last:mb-0",
+              value === opt.value
+                ? "clay-pill-blue text-white"
+                : "text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200/50 dark:hover:bg-white/5"
+            )}
+          >
+            <span>{opt.label}</span>
+            {value === opt.value && <CheckSquare size={12} />}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
 };
 
 export default function DoctorsPage() {
-    const { data, isLoading } = useSWR<Doctor[]>('/api/doctors');
-    const doctors = data || [];
+  const { data, isLoading } = useSWR<Doctor[]>('/api/doctors');
+  const doctors = data || [];
 
-    // Local state for doctors to handle optimistic UI during drag-and-drop
-    const [localDoctors, setLocalDoctors] = useState<Doctor[]>([]);
-    useEffect(() => {
-        // Sync with SWR data but keep order if previously dragged (unless SWR is fresh)
-        if (data) {
-            setLocalDoctors(data);
+  const [localDoctors, setLocalDoctors] = useState<Doctor[]>([]);
+  useEffect(() => {
+    if (data) setLocalDoctors(data);
+  }, [data]);
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const debouncedSearch = useDebounce(searchTerm, 300);
+  const deferredSearch = useDeferredValue(debouncedSearch);
+  const isSearching = searchTerm !== debouncedSearch;
+
+  // Filters, Sort & View Mode
+  const [catFilter, setCatFilter] = useState<"Semua" | "Bedah" | "NonBedah">("Semua");
+  const [statusFilter, setStatusFilter] = useState<string>("Semua");
+  const [sortMode, setSortMode] = useState<"default" | "A-Z" | "Z-A">("default");
+  const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
+
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [editingDoctor, setEditingDoctor] = useState<Doctor | undefined>(undefined);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  // DND States
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
+
+  const isReorderEnabled = catFilter === "Semua" && statusFilter === "Semua" && sortMode === "default" && deferredSearch === "";
+
+  // ── Computed Data with Non-Blocking Search ──
+  const filteredDoctors = useMemo(() => {
+    let result = [...localDoctors];
+
+    if (deferredSearch) {
+      result = result.filter(d =>
+        d.name.toLowerCase().includes(deferredSearch.toLowerCase()) ||
+        d.specialty.toLowerCase().includes(deferredSearch.toLowerCase())
+      );
+    }
+    if (catFilter !== "Semua") {
+      result = result.filter(d => d.category === catFilter);
+    }
+    if (statusFilter !== "Semua") {
+      result = result.filter(d =>
+        statusFilter === "Aktif"
+          ? (d.status === "PRAKTEK" || d.status === "PENUH" || d.status === "OPERASI")
+          : d.status === statusFilter.toUpperCase()
+      );
+    }
+
+    if (sortMode === "A-Z") result.sort((a, b) => a.name.localeCompare(b.name));
+    if (sortMode === "Z-A") result.sort((a, b) => b.name.localeCompare(a.name));
+
+    return result;
+  }, [localDoctors, deferredSearch, catFilter, statusFilter, sortMode]);
+
+  // Status counts for pills
+  const statusCounts = useMemo(() => {
+    const total = localDoctors.length;
+    const praktek = localDoctors.filter(d => d.status === 'PRAKTEK' || d.status === 'OPERASI').length;
+    const cuti = localDoctors.filter(d => d.status === 'CUTI').length;
+    const libur = localDoctors.filter(d => d.status === 'LIBUR').length;
+    return { total, praktek, cuti, libur };
+  }, [localDoctors]);
+
+  // ── Event Handlers ──
+  const handleEdit = (doc: Doctor) => {
+    setEditingDoctor(doc);
+    setIsFormOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteId && selectedIds.size === 0) return;
+    setIsDeleting(true);
+    try {
+      if (deleteId) {
+        const res = await fetch(`/api/doctors?id=${deleteId}`, { method: 'DELETE' });
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData.error || 'Gagal menghapus dokter');
         }
-    }, [data]);
-
-    const [searchTerm, setSearchTerm] = useState("");
-    const debouncedSearch = useDebounce(searchTerm, 400); // 400ms delay for visual feedback
-
-    // isSearching checks if the user is typing but the debounce hasn't caught up yet
-    const isSearching = searchTerm !== debouncedSearch;
-    
-    // Filters & Sorting
-    const [catFilter, setCatFilter] = useState<"Semua" | "Bedah" | "NonBedah">("Semua");
-    const [statusFilter, setStatusFilter] = useState<string>("Semua");
-    const [sortMode, setSortMode] = useState<"default" | "A-Z" | "Z-A">("default");
-
-    // Modal States
-    const [isFormOpen, setIsFormOpen] = useState(false);
-    const [editingDoctor, setEditingDoctor] = useState<Doctor | undefined>(undefined);
-
-    // Bulk Select State
-    const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
-
-    // Delete State
-    const [deleteId, setDeleteId] = useState<string | null>(null);
-    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-    const [isDeleting, setIsDeleting] = useState(false);
-
-    // DND States
-    const [activeId, setActiveId] = useState<string | null>(null);
-    const sensors = useSensors(
-        useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
-        useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
-    );
-
-    const isReorderEnabled = catFilter === "Semua" && statusFilter === "Semua" && sortMode === "default" && debouncedSearch === "";
-
-    // ── Computed Data ──
-    const filteredDoctors = useMemo(() => {
-        let result = [...localDoctors];
-
-        if (debouncedSearch) {
-            result = result.filter(d => d.name.toLowerCase().includes(debouncedSearch.toLowerCase()) || d.specialty.toLowerCase().includes(debouncedSearch.toLowerCase()));
+      } else if (selectedIds.size > 0) {
+        for (const id of Array.from(selectedIds)) {
+          const res = await fetch(`/api/doctors?id=${id}`, { method: 'DELETE' });
+          if (!res.ok) {
+            const errData = await res.json().catch(() => ({}));
+            throw new Error(errData.error || `Gagal menghapus dokter ID ${id}`);
+          }
         }
-        if (catFilter !== "Semua") {
-            result = result.filter(d => d.category === catFilter);
-        }
-        if (statusFilter !== "Semua") {
-            result = result.filter(d => statusFilter === "Aktif" ? (d.status === "PRAKTEK" || d.status === "PENUH" || d.status === "OPERASI") : d.status === statusFilter.toUpperCase());
-        }
+      }
+      mutate('/api/doctors');
+      setDeleteId(null);
+      setIsDeleteModalOpen(false);
+      setSelectedIds(new Set());
+    } catch (error: any) {
+      alert(error.message || "Terjadi kesalahan saat menghapus data.");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
-        if (sortMode === "A-Z") result.sort((a,b) => a.name.localeCompare(b.name));
-        if (sortMode === "Z-A") result.sort((a,b) => b.name.localeCompare(a.name));
-        
-        return result;
-    }, [localDoctors, debouncedSearch, catFilter, statusFilter, sortMode]);
+  const handleBulkStatusChange = async (newStatus: string) => {
+    if (selectedIds.size === 0) return;
+    try {
+      const updates = Array.from(selectedIds).map(id => ({ id, status: newStatus }));
+      const res = await fetch('/api/doctors?action=bulk', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updates)
+      });
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || 'Gagal update massal');
+      }
+      mutate('/api/doctors');
+      setSelectedIds(new Set());
+    } catch (error: any) {
+      alert(error.message || "Gagal mengubah status secara massal.");
+    }
+  };
 
-    const { totalCuti, totalBedah, totalNonBedah } = useMemo(() => ({
-        totalCuti: doctors.filter(d => d.status === 'CUTI').length,
-        totalBedah: doctors.filter(d => d.category === 'Bedah').length,
-        totalNonBedah: doctors.filter(d => d.category === 'NonBedah').length,
-    }), [doctors]);
+  const handleToggleSelect = (id: string) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
 
-    // ── Event Handlers ──
-    const handleEdit = (doc: Doctor) => {
-        setEditingDoctor(doc);
-        setIsFormOpen(true);
-    };
+  const toggleSelectAll = () => {
+    if (selectedIds.size === filteredDoctors.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(filteredDoctors.map(d => d.id)));
+    }
+  };
 
-    const confirmDelete = async () => {
-        if (!deleteId && selectedIds.size === 0) return;
-        setIsDeleting(true);
-        try {
-            if (deleteId) {
-                // Delete single
-                const res = await fetch(`/api/doctors?id=${deleteId}`, { method: 'DELETE' });
-                if (!res.ok) {
-                    const errData = await res.json().catch(() => ({}));
-                    throw new Error(errData.error || 'Gagal menghapus dokter');
-                }
-            } else if (selectedIds.size > 0) {
-                for (const id of Array.from(selectedIds)) {
-                    const res = await fetch(`/api/doctors?id=${id}`, { method: 'DELETE' });
-                    if (!res.ok) {
-                        const errData = await res.json().catch(() => ({}));
-                        throw new Error(errData.error || `Gagal menghapus dokter dengan ID ${id}`);
-                    }
-                }
-            }
-            mutate('/api/doctors');
-            setDeleteId(null);
-            setIsDeleteModalOpen(false);
-            setSelectedIds(new Set());
-        } catch (error: any) {
-            console.error("Gagal menghapus dokter", error);
-            alert(error.message || "Terjadi kesalahan saat menghapus data.");
-        } finally {
-            setIsDeleting(false);
-        }
-    };
+  const handleDragStart = (event: any) => {
+    setActiveId(event.active.id);
+  };
 
-    const handleBulkStatusChange = async (newStatus: string) => {
-        if (selectedIds.size === 0) return;
-        try {
-            const updates = Array.from(selectedIds).map(id => ({ id, status: newStatus }));
-            const res = await fetch('/api/doctors?action=bulk', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(updates)
-            });
-            if (!res.ok) {
-                const errData = await res.json().catch(() => ({}));
-                throw new Error(errData.error || 'Gagal update massal');
-            }
-            mutate('/api/doctors');
-            setSelectedIds(new Set());
-        } catch (error: any) {
-            console.error("Gagal update massal", error);
-            alert(error.message || "Gagal mengubah status secara massal.");
-        }
-    };
+  const handleDragEnd = async (event: any) => {
+    const { active, over } = event;
+    setActiveId(null);
 
-    const handleToggleSelect = (id: string) => {
-        setSelectedIds(prev => {
-            const next = new Set(prev);
-            if (next.has(id)) next.delete(id);
-            else next.add(id);
-            return next;
+    if (over && active.id !== over.id) {
+      const oldIndex = localDoctors.findIndex(d => d.id === active.id);
+      const newIndex = localDoctors.findIndex(d => d.id === over.id);
+
+      const reordered = arrayMove(localDoctors, oldIndex, newIndex);
+      setLocalDoctors(reordered);
+
+      const payload = reordered.map((doc, idx) => ({ id: doc.id, order: idx }));
+      try {
+        const res = await fetch('/api/doctors?action=reorder', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
         });
-    };
-
-    const toggleSelectAll = () => {
-        if (selectedIds.size === filteredDoctors.length) {
-            setSelectedIds(new Set());
-        } else {
-            setSelectedIds(new Set(filteredDoctors.map(d => d.id)));
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData.error || 'Gagal mengurutkan');
         }
-    };
+        mutate('/api/doctors');
+      } catch (err: any) {
+        alert(err.message || "Gagal menyimpan urutan dokter.");
+        mutate('/api/doctors');
+      }
+    }
+  };
 
-    // ── DND Logic ──
-    const handleDragStart = (event: any) => {
-        setActiveId(event.active.id);
-    };
+  return (
+    <div className="flex-1 w-full flex flex-col h-[calc(100vh-1rem)] overflow-hidden relative bg-[#EDF2F8] dark:bg-[#0B0E14] text-zinc-900 dark:text-zinc-100">
+      {/* ─── UNIFIED PAGE HEADER ─── */}
+      <div className="relative z-10 w-full flex-none">
+        <PageHeader
+          icon={<Users size={22} className="text-white" strokeWidth={2.5} />}
+          title="Direktori Dokter"
+          accentWord="Dokter"
+          accentColor="text-blue-600 dark:text-blue-400"
+          subtitle={`Kelola profil ${doctors.length} dokter dan jadwal tayang real-time`}
+          iconClay="clay-icon-blue"
+          accentBarGradient="from-blue-500 via-indigo-500 to-violet-500"
+          badge={
+            <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 clay-pill-blue text-white rounded-full text-[10px] font-black shrink-0 shadow-sm">
+              <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
+              {statusCounts.praktek} Dokter Tayang
+            </span>
+          }
+          actions={
+            <button
+              onClick={() => { setEditingDoctor(undefined); setIsFormOpen(true); }}
+              className="flex items-center gap-2 clay-pill-blue text-white px-4 sm:px-5 py-2 sm:py-2.5 rounded-[18px] font-black text-xs sm:text-sm active:scale-95 transition-all shadow-md shrink-0"
+            >
+              <Plus size={17} strokeWidth={2.5} />
+              <span>Tambah Dokter</span>
+            </button>
+          }
+        />
+      </div>
 
-    const handleDragEnd = async (event: any) => {
-        const { active, over } = event;
-        setActiveId(null);
-
-        if (over && active.id !== over.id) {
-            const oldIndex = localDoctors.findIndex(d => d.id === active.id);
-            const newIndex = localDoctors.findIndex(d => d.id === over.id);
-
-            const reordered = arrayMove(localDoctors, oldIndex, newIndex);
-            setLocalDoctors(reordered); // Optimistic
-
-            // Prepare payload
-            const payload = reordered.map((doc, idx) => ({ id: doc.id, order: idx }));
-            
-            try {
-                const res = await fetch('/api/doctors?action=reorder', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                if (!res.ok) {
-                    const errData = await res.json().catch(() => ({}));
-                    throw new Error(errData.error || 'Gagal mengurutkan');
-                }
-                mutate('/api/doctors'); // Revalidate
-            } catch (err: any) {
-                console.error("Failed to reorder", err);
-                alert(err.message || "Gagal menyimpan urutan dokter.");
-                mutate('/api/doctors'); // Revert pessimistic update
-            }
-        }
-    };
-
-    return (
-        <div className="flex-1 w-full flex flex-col h-[calc(100vh-1rem)] overflow-hidden relative bg-[#F4F4F6] dark:bg-[#0B0D13] text-zinc-900 dark:text-zinc-100">
-            <div className="relative z-10 w-full flex-none">
-            <PageHeader
-              icon={<Users size={20} className="text-white" />}
-              title="Direktori Dokter"
-              accentWord="Dokter"
-              accentColor="text-blue-600"
-              subtitle="Kelola profil dan jadwal tayang dokter secara real-time"
-              iconGradient="from-blue-500 to-indigo-600"
-              accentBarGradient="from-blue-500 via-indigo-500 to-violet-500"
-              actions={
-                <>
-                  <button
-                    onClick={toggleSelectAll}
-                    className="lg:hidden bg-white hover:bg-slate-50 rounded-xl p-2.5 shadow-sm border border-slate-200 text-slate-500 hover:text-slate-800 transition-all active:scale-95"
-                  >
-                    <CheckSquare size={18} />
-                  </button>
-                  <button
-                    onClick={() => { setEditingDoctor(undefined); setIsFormOpen(true); }}
-                    className="flex items-center gap-1.5 bg-blue-600 text-white px-5 py-2.5 rounded-[18px] font-bold text-sm shadow-[0_8px_20px_-6px_rgba(0,92,255,0.4)] hover:bg-blue-700 transition-all active:scale-95"
-                  >
-                    <Plus size={16} />
-                    <span>Tambah Dokter</span>
-                  </button>
-                </>
-              }
-            />
-            </div>
-
-            <div className="flex-1 flex flex-col px-4 sm:px-6 lg:px-8 pt-5 overflow-hidden relative z-10 animate-in fade-in zoom-in-95 duration-700 ease-out fill-mode-both">
-
-            <div className="flex flex-col xl:flex-row gap-3 xl:gap-4 mb-6 xl:mb-8 relative z-20 w-full items-center">
-                {/* Search Input */}
-                <div className="relative group w-full xl:w-[320px] shrink-0">
-                    <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-indigo-500/20 rounded-[24px] blur-xl opacity-0 group-focus-within:opacity-100 transition duration-500 pointer-events-none"></div>
-                    <div className="relative flex items-center w-full shadow-sm rounded-[24px] bg-white/40 backdrop-blur-xl border border-white/60 hover:bg-white/60 hover:border-white/80 transition-all duration-300 focus-within:border-blue-300 focus-within:ring-4 focus-within:bg-white focus-within:ring-blue-500/20 overflow-hidden group-focus-within:shadow-[0_8px_30px_rgba(59,130,246,0.15)]">
-                        {isSearching ? (
-                            <Loader2 className="absolute left-4 text-blue-500 h-4 w-4 animate-spin" />
-                        ) : (
-                            <Search className="absolute left-4 text-slate-400 h-4 w-4 group-focus-within:text-blue-500 transition-colors" />
-                        )}
-                        <input
-                            type="search"
-                            placeholder="Cari nama dokter..."
-                            className="w-full bg-transparent pl-11 pr-10 py-2.5 sm:py-3 text-[13px] sm:text-sm font-semibold text-slate-700 outline-none placeholder:text-slate-400"
-                            value={searchTerm}
-                            onChange={e => setSearchTerm(e.target.value)}
-                        />
-                        {searchTerm && (
-                            <button 
-                                onClick={() => setSearchTerm("")}
-                                className="absolute right-3 text-slate-400 hover:text-slate-600 transition-colors bg-white/60 hover:bg-white rounded-full p-1 border border-black/5"
-                            >
-                                <X size={14} strokeWidth={2.5} />
-                            </button>
-                        )}
-                    </div>
-                </div>
-
-                {/* Filters Row - Flex Wrap to avoid clipping absolute dropdowns */}
-                <div className="flex flex-wrap gap-2 sm:gap-3 px-1 -mx-1 items-center w-full">
-                    <div className="flex-shrink-0">
-                        <CustomDropdown 
-                            value={catFilter} 
-                            onChange={setCatFilter}
-                            options={[
-                                { value: "Semua", label: "Semua Kategori" },
-                                { value: "Bedah", label: "Bedah" },
-                                { value: "NonBedah", label: "Non Bedah" },
-                            ]}
-                        />
-                    </div>
-
-                    <div className="flex-shrink-0">
-                        <CustomDropdown 
-                            value={statusFilter} 
-                            onChange={setStatusFilter}
-                            options={[
-                                { value: "Semua", label: "Semua Status" },
-                                { value: "Aktif", label: "Aktif (Tayang)" },
-                                { value: "Cuti", label: "Cuti" },
-                                { value: "Selesai", label: "Selesai" },
-                                { value: "LIBUR", label: "Libur/Tidak Praktek" },
-                            ]}
-                        />
-                    </div>
-
-                    <div className="flex-shrink-0">
-                        <CustomDropdown 
-                            value={sortMode} 
-                            onChange={setSortMode}
-                            options={[
-                                { value: "default", label: "Urutan Default" },
-                                { value: "A-Z", label: "Abjad A-Z" },
-                                { value: "Z-A", label: "Abjad Z-A" },
-                            ]}
-                        />
-                    </div>
-                    
-                    {/* Desktop only Select All Icon */}
-                    <button
-                        onClick={toggleSelectAll}
-                        title={selectedIds.size === filteredDoctors.length && filteredDoctors.length > 0 ? "Batal Pilih Semua" : "Pilih Semua"}
-                        className="hidden xl:flex items-center justify-center w-11 h-11 bg-white/40 backdrop-blur-xl rounded-[20px] border border-white/60 shadow-sm text-slate-500 hover:text-slate-800 hover:bg-white/60 hover:border-white/80 transition-all duration-300 active:scale-95 ml-auto focus:outline-none focus:ring-4 focus:ring-slate-300/20"
-                    >
-                        <CheckSquare className="w-5 h-5" strokeWidth={2.5} />
-                    </button>
-                </div>
-            </div>
-
-            {/* Warning if DND is disabled */}
-            {!isReorderEnabled && (
-                <div className="mb-4 text-xs font-semibold text-amber-600 bg-amber-50 px-4 py-2 rounded-xl inline-flex items-center gap-2">
-                    <Activity size={14} /> Drag & Drop untuk mengurutkan dokter dinonaktifkan asaat pencarian/filter aktif.
-                </div>
-            )}
-
-            {/* ═══════════════════ GRID KARTU DOKTER ═══════════════════ */}
-            {isLoading ? (
-                <div className="flex-1 w-full min-h-0 mb-2">
-                    <div className="h-full overflow-y-auto custom-scrollbar px-1 min-h-full pb-4">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 3xl:grid-cols-5 4xl:grid-cols-6 gap-6">
-                            {[1, 2, 3, 4, 5, 6].map(i => <DoctorCardSkeleton key={i} />)}
-                        </div>
-                    </div>
-                </div>
-            ) : filteredDoctors.length === 0 ? (
-                <EmptyState 
-                    icon={<UserRound size={40} className="text-blue-500" />}
-                    title="Tidak Ada Dokter"
-                    description="Kami tidak dapat menemukan nama dokter dengan pencarian tersebut. Coba ubah kata kunci Anda."
-                />
-            ) : (
-                <DndContext 
-                    sensors={sensors} 
-                    collisionDetection={closestCenter} 
-                    onDragStart={handleDragStart} 
-                    onDragEnd={isReorderEnabled ? handleDragEnd : undefined}
+      {/* ─── TOOLBAR CONTROLS ─── */}
+      <div className="flex-1 flex flex-col px-3 sm:px-6 lg:px-8 pt-2 overflow-hidden relative z-10">
+        <div className="flex flex-col lg:flex-row gap-2.5 lg:gap-3 mb-4 items-stretch lg:items-center justify-between relative z-20">
+          {/* Left: Search Bar */}
+          <div className="relative flex-1 max-w-full lg:max-w-md">
+            <div className="relative flex items-center w-full rounded-[18px] clay-inset overflow-hidden">
+              {isSearching ? (
+                <Loader2 className="absolute left-3.5 text-blue-500 h-4 w-4 animate-spin shrink-0" />
+              ) : (
+                <Search className="absolute left-3.5 text-zinc-400 h-4 w-4 shrink-0" />
+              )}
+              <input
+                type="search"
+                placeholder="Cari nama dokter atau spesialisasi..."
+                className="w-full bg-transparent pl-10 pr-9 py-2.5 text-xs sm:text-sm font-bold text-zinc-800 dark:text-zinc-100 outline-none placeholder:text-zinc-400 dark:placeholder:text-zinc-500"
+                value={searchTerm}
+                onChange={e => setSearchTerm(e.target.value)}
+              />
+              {searchTerm && (
+                <button
+                  onClick={() => setSearchTerm("")}
+                  className="absolute right-3 text-zinc-400 hover:text-zinc-600 transition-colors clay-button rounded-full p-1"
                 >
-                    <div className="flex-1 w-full min-h-0 mb-2">
-                        <div className="h-full overflow-y-auto custom-scrollbar px-1 min-h-full pb-4">
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 3xl:grid-cols-5 4xl:grid-cols-6 gap-6">
-                                <SortableContext items={filteredDoctors.map(d => d.id)} strategy={rectSortingStrategy}>
-                                    {filteredDoctors.map((doc, idx) => (
-                                        <DoctorCard 
-                                            key={doc.id}
-                                            doctor={doc}
-                                            index={idx}
-                                            isSelected={selectedIds.has(doc.id)}
-                                            onToggleSelect={handleToggleSelect}
-                                            onEdit={handleEdit}
-                                            onDelete={(id) => { setDeleteId(id); setIsDeleteModalOpen(true); }}
-                                        />
-                                    ))}
-                                </SortableContext>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    {/* Drag Overlay smoothly floats the card while moving */}
-                    <DragOverlay dropAnimation={{
-                        sideEffects: defaultDropAnimationSideEffects({ styles: { active: { opacity: '0.4' } } }),
-                    }}>
-                        {activeId ? (() => {
-                            const actDoc = localDoctors.find(d => d.id === activeId);
-                            if (!actDoc) return null;
-                            const dIndex = localDoctors.findIndex(d => d.id === activeId);
-                            return (
-                                <DoctorCard 
-                                    doctor={actDoc} 
-                                    index={dIndex} 
-                                    isSelected={selectedIds.has(activeId)}
-                                    onToggleSelect={() => {}}
-                                    onEdit={() => {}}
-                                    onDelete={() => {}}
-                                    isOverlay 
-                                />
-                            );
-                        })() : null}
-                    </DragOverlay>
-                </DndContext>
-            )}
+                  <X size={13} strokeWidth={2.5} />
+                </button>
+              )}
+            </div>
+          </div>
 
-            {/* ═══════════════════ FLOATING ACTION BAR (BULK) ═══════════════════ */}
-            <div className={cn(
-                "fixed bottom-8 left-1/2 -translate-x-1/2 max-w-[95vw] sm:max-w-none bg-white/40 backdrop-blur-[40px] border border-white/80 rounded-[32px] shadow-[0_24px_60px_-12px_rgba(0,0,0,0.15)] ring-1 ring-white/60 p-2.5 sm:p-3 flex items-center transition-all duration-700 z-[100] overflow-hidden ease-[cubic-bezier(0.23,1,0.32,1)]",
-                selectedIds.size > 0 ? "translate-y-0 opacity-100 scale-100" : "translate-y-24 opacity-0 scale-90 pointer-events-none"
-            )}>
-                <div className="flex items-center gap-2 sm:gap-3 overflow-x-auto custom-scrollbar-hide px-1">
-                    <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-2 sm:py-2.5 rounded-[20px] text-xs sm:text-sm font-bold flex items-center gap-2 text-white shadow-lg shadow-blue-500/30 whitespace-nowrap flex-shrink-0">
-                        <CheckSquare size={16} strokeWidth={2.5} />
-                        <span>{selectedIds.size} dipilih</span>
-                    </div>
-                    
-                    <div className="h-8 w-px bg-slate-200/60 flex-shrink-0" />
-                    
-                    <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
-                        <button onClick={() => handleBulkStatusChange('CUTI')} className="px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-[16px] text-xs font-bold bg-white/60 hover:bg-white text-slate-600 border border-white/60 transition-all shadow-sm whitespace-nowrap">Cuti</button>
-                        <button onClick={() => handleBulkStatusChange('LIBUR')} className="px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-[16px] text-xs font-bold bg-white/60 hover:bg-white text-slate-600 border border-white/60 transition-all shadow-sm whitespace-nowrap">Nonaktif</button>
-                        <button onClick={() => handleBulkStatusChange('PRAKTEK')} className="px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-[16px] text-xs font-bold bg-emerald-50 text-emerald-600 hover:bg-emerald-100 border border-emerald-100 transition-all shadow-sm whitespace-nowrap">Buka</button>
-                    </div>
-
-                    <div className="h-8 w-px bg-slate-200/60 flex-shrink-0" />
-
-                    <button 
-                        onClick={() => setIsDeleteModalOpen(true)}
-                        className="flex-shrink-0 flex items-center justify-center h-9 w-9 sm:h-10 sm:w-10 rounded-[16px] bg-rose-50 hover:bg-rose-100 text-rose-500 font-bold transition-all border border-rose-100 hover:shadow-sm"
-                        title="Hapus Massal"
-                    >
-                        <Trash2 size={16} strokeWidth={2.5} />
-                    </button>
-
-                    <button onClick={() => setSelectedIds(new Set())} className="flex-shrink-0 flex items-center justify-center h-9 w-9 sm:h-10 sm:w-10 ml-0 sm:ml-1 rounded-[16px] text-slate-400 hover:bg-white/80 hover:text-slate-700 transition-all border border-transparent hover:border-white hover:shadow-sm">
-                        <X size={20} strokeWidth={2.5} />
-                    </button>
-                </div>
+          {/* Middle/Right: Quick Filter Pills + Dropdowns + View Mode Switcher */}
+          <div className="flex flex-wrap items-center gap-2">
+            {/* Quick Status Pills */}
+            <div className="flex clay-inset p-1 rounded-[16px] overflow-x-auto no-scrollbar gap-1">
+              {[
+                { id: "Semua", label: "Semua", count: statusCounts.total },
+                { id: "Aktif", label: "Praktek", count: statusCounts.praktek },
+                { id: "Cuti", label: "Cuti", count: statusCounts.cuti },
+                { id: "LIBUR", label: "Libur", count: statusCounts.libur },
+              ].map(tab => (
+                <button
+                  key={tab.id}
+                  onClick={() => setStatusFilter(tab.id)}
+                  className={cn(
+                    "px-3 py-1.5 rounded-[12px] text-[11px] font-black transition-all flex items-center gap-1.5 whitespace-nowrap active:scale-95",
+                    statusFilter === tab.id
+                      ? "clay-pill-blue text-white shadow-sm"
+                      : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100"
+                  )}
+                >
+                  <span>{tab.label}</span>
+                  <span className={cn(
+                    "text-[9px] px-1.5 py-0.2 rounded-full font-black",
+                    statusFilter === tab.id ? "bg-white/20 text-white" : "bg-zinc-200 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-300"
+                  )}>
+                    {tab.count}
+                  </span>
+                </button>
+              ))}
             </div>
 
-            {/* ═══════════════════ MODALS ═══════════════════ */}
-            <DoctorFormModal
-                isOpen={isFormOpen}
-                onClose={() => { setIsFormOpen(false); setEditingDoctor(undefined); }}
-                doctor={editingDoctor || null}
-                onSuccess={() => mutate('/api/doctors')}
+            {/* Dropdowns for Category & Sort */}
+            <CompactDropdown
+              value={catFilter}
+              onChange={setCatFilter}
+              label="Kategori"
+              options={[
+                { value: "Semua", label: "Semua Kategori" },
+                { value: "Bedah", label: "Bedah" },
+                { value: "NonBedah", label: "Non Bedah" },
+              ]}
             />
 
-            <ConfirmDialog
-                isOpen={isDeleteModalOpen}
-                onClose={() => { setIsDeleteModalOpen(false); setDeleteId(null); }}
-                onConfirm={confirmDelete}
-                title={deleteId ? "Hapus Dokter" : "Hapus Massal"}
-                description={`Apakah Anda yakin ingin menghapus ${deleteId ? 'dokter ini' : `${selectedIds.size} dokter yang dipilih`}? Tindakan ini tidak dapat dibatalkan.`}
-                confirmText={deleteId ? "Hapus" : "Hapus Semua"}
-                variant="danger"
-                isLoading={isDeleting}
+            <CompactDropdown
+              value={sortMode}
+              onChange={setSortMode}
+              icon={ArrowUpDown}
+              label="Urutan"
+              options={[
+                { value: "default", label: "Urutan Default (DND)" },
+                { value: "A-Z", label: "Abjad A-Z" },
+                { value: "Z-A", label: "Abjad Z-A" },
+              ]}
             />
-            </div>{/* end inner content wrapper */}
+
+            {/* View Mode Toggle (Grid vs Table) */}
+            <div className="flex clay-inset p-1 rounded-[14px] items-center gap-1">
+              <button
+                onClick={() => setViewMode("grid")}
+                title="Tampilan Grid Kartu"
+                className={cn(
+                  "p-1.5 rounded-[10px] transition-all",
+                  viewMode === "grid" ? "clay-pill-blue text-white" : "text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200"
+                )}
+              >
+                <LayoutGrid size={15} strokeWidth={2.5} />
+              </button>
+              <button
+                onClick={() => setViewMode("table")}
+                title="Tampilan Tabel Ringkas"
+                className={cn(
+                  "p-1.5 rounded-[10px] transition-all",
+                  viewMode === "table" ? "clay-pill-blue text-white" : "text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200"
+                )}
+              >
+                <List size={15} strokeWidth={2.5} />
+              </button>
+            </div>
+
+            {/* Select All Button */}
+            <button
+              onClick={toggleSelectAll}
+              title={selectedIds.size === filteredDoctors.length && filteredDoctors.length > 0 ? "Batal Pilih Semua" : "Pilih Semua"}
+              className={cn(
+                "p-2 rounded-[14px] transition-all active:scale-95",
+                selectedIds.size > 0 ? "clay-pill-blue text-white" : "clay-button text-zinc-600 dark:text-zinc-400"
+              )}
+            >
+              <CheckSquare size={16} strokeWidth={2.5} />
+            </button>
+          </div>
         </div>
-    );
+
+        {/* ─── MAIN DOCTOR LIST / GRID ─── */}
+        {isLoading ? (
+          <div className="flex-1 w-full min-h-0 mb-2 overflow-y-auto custom-scrollbar pb-28">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4 sm:gap-5">
+              {[1, 2, 3, 4, 5, 6, 7, 8].map(i => <DoctorCardSkeleton key={i} />)}
+            </div>
+          </div>
+        ) : filteredDoctors.length === 0 ? (
+          <EmptyState
+            icon={<UserRound size={40} className="text-blue-500" />}
+            title="Tidak Ada Dokter"
+            description="Tidak ditemukan dokter yang sesuai dengan filter atau pencarian Anda."
+          />
+        ) : viewMode === "grid" ? (
+          /* ── GRID MODE ── */
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragStart={handleDragStart}
+            onDragEnd={isReorderEnabled ? handleDragEnd : undefined}
+          >
+            <div className="flex-1 w-full min-h-0 mb-2 overflow-y-auto custom-scrollbar pb-28">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4 sm:gap-5">
+                <SortableContext items={filteredDoctors.map(d => d.id)} strategy={rectSortingStrategy}>
+                  {filteredDoctors.map((doc, idx) => (
+                    <DoctorCard
+                      key={doc.id}
+                      doctor={doc}
+                      index={idx}
+                      isSelected={selectedIds.has(doc.id)}
+                      onToggleSelect={handleToggleSelect}
+                      onEdit={handleEdit}
+                      onDelete={(id) => { setDeleteId(id); setIsDeleteModalOpen(true); }}
+                    />
+                  ))}
+                </SortableContext>
+              </div>
+            </div>
+
+            <DragOverlay
+              dropAnimation={{
+                sideEffects: defaultDropAnimationSideEffects({ styles: { active: { opacity: '0.4' } } }),
+              }}
+            >
+              {activeId ? (() => {
+                const actDoc = localDoctors.find(d => d.id === activeId);
+                if (!actDoc) return null;
+                const dIndex = localDoctors.findIndex(d => d.id === activeId);
+                return (
+                  <DoctorCard
+                    doctor={actDoc}
+                    index={dIndex}
+                    isSelected={selectedIds.has(activeId)}
+                    onToggleSelect={() => {}}
+                    onEdit={() => {}}
+                    onDelete={() => {}}
+                    isOverlay
+                  />
+                );
+              })() : null}
+            </DragOverlay>
+          </DndContext>
+        ) : (
+          /* ── TABLE LIST MODE ── */
+          <div className="flex-1 w-full min-h-0 mb-2 overflow-y-auto custom-scrollbar pb-28">
+            <div className="clay-surface rounded-[26px] overflow-hidden shadow-lg border border-zinc-200/50 dark:border-white/5">
+              <table className="w-full text-left text-xs">
+                <thead className="border-b border-zinc-200/60 dark:border-white/5 text-zinc-500 dark:text-zinc-400 font-black uppercase text-[10px] tracking-wider bg-zinc-500/5">
+                  <tr>
+                    <th className="p-3.5 w-12 text-center">
+                      <button
+                        onClick={toggleSelectAll}
+                        className="cursor-pointer"
+                        aria-label="Pilih Semua"
+                      >
+                        <CheckSquare size={14} />
+                      </button>
+                    </th>
+                    <th className="p-3.5">Dokter</th>
+                    <th className="p-3.5">Poliklinik / Spesialisasi</th>
+                    <th className="p-3.5">Kategori</th>
+                    <th className="p-3.5">Status Tayang</th>
+                    <th className="p-3.5 text-right pr-4">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-zinc-200/40 dark:divide-white/5">
+                  {filteredDoctors.map((doc) => {
+                    const status = getStatusConfig(doc.status);
+                    const isSelected = selectedIds.has(doc.id);
+                    const isBedah = doc.category === "Bedah";
+                    const initials = doc.queueCode || doc.name
+                      .replace(/^dr\.\s*/i, '')
+                      .split(' ')
+                      .filter(Boolean)
+                      .slice(0, 2)
+                      .map(w => w[0])
+                      .join('')
+                      .toUpperCase() || 'DR';
+
+                    return (
+                      <tr
+                        key={doc.id}
+                        onClick={() => handleToggleSelect(doc.id)}
+                        className={cn(
+                          "content-visibility-auto hover:bg-blue-500/5 cursor-pointer transition-colors",
+                          isSelected && "bg-blue-500/10 dark:bg-blue-500/15"
+                        )}
+                      >
+                        <td className="p-3.5 text-center" onClick={(e) => e.stopPropagation()}>
+                          <button
+                            type="button"
+                            onClick={() => handleToggleSelect(doc.id)}
+                            className={cn(
+                              "h-6 w-6 rounded-[8px] flex items-center justify-center transition-all mx-auto",
+                              isSelected ? "clay-pill-blue text-white" : "clay-button text-zinc-400"
+                            )}
+                          >
+                            {isSelected ? <CheckSquare size={12} /> : <div className="w-2.5 h-2.5 rounded-[4px] border border-zinc-400/40" />}
+                          </button>
+                        </td>
+                        <td className="p-3.5">
+                          <div className="flex items-center gap-3">
+                            <div className={cn(
+                              "w-9 h-9 rounded-[12px] flex items-center justify-center text-white font-black text-xs shrink-0",
+                              isBedah ? "clay-icon-rose" : "clay-icon-blue"
+                            )}>
+                              <span className="relative z-10">{initials}</span>
+                            </div>
+                            <div>
+                              <p className="font-black text-zinc-900 dark:text-zinc-100 text-[13.5px] leading-tight">
+                                {doc.name}
+                              </p>
+                              <p className="text-[10.5px] text-zinc-400 font-bold mt-0.5">
+                                Kode: {doc.queueCode || "—"}
+                              </p>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="p-3.5 font-bold text-zinc-700 dark:text-zinc-300">
+                          <div className="flex items-center gap-1.5">
+                            <Stethoscope size={13} className="text-zinc-400 shrink-0" />
+                            <span>{doc.specialty}</span>
+                          </div>
+                        </td>
+                        <td className="p-3.5">
+                          <span className={cn(
+                            "px-2.5 py-1 rounded-[10px] text-[10px] font-black uppercase tracking-wider",
+                            isBedah
+                              ? "clay-button text-rose-600 dark:text-rose-400"
+                              : "clay-button text-blue-600 dark:text-blue-400"
+                          )}>
+                            {doc.category === 'NonBedah' ? 'Non Bedah' : doc.category}
+                          </span>
+                        </td>
+                        <td className="p-3.5">
+                          <span className={cn(
+                            "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10.5px] font-black",
+                            status.clayPill
+                          )}>
+                            {status.dot && <span className={cn("w-1.5 h-1.5 rounded-full", status.dot)} />}
+                            {status.label}
+                          </span>
+                        </td>
+                        <td className="p-3.5 text-right pr-4" onClick={(e) => e.stopPropagation()}>
+                          <div className="flex items-center justify-end gap-1.5">
+                            <button
+                              onClick={() => handleEdit(doc)}
+                              className="p-2 rounded-[10px] clay-button text-zinc-600 dark:text-zinc-400 hover:text-blue-600 dark:hover:text-blue-400 transition-all active:scale-95"
+                              title="Edit Profil"
+                            >
+                              <Edit2 size={13} strokeWidth={2.5} />
+                            </button>
+                            <button
+                              onClick={() => { setDeleteId(doc.id); setIsDeleteModalOpen(true); }}
+                              className="p-2 rounded-[10px] clay-button text-zinc-500 hover:text-rose-600 dark:hover:text-rose-400 transition-all active:scale-95"
+                              title="Hapus Dokter"
+                            >
+                              <Trash2 size={13} strokeWidth={2.5} />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* ─── FLOATING BULK ACTION BAR (SAFE SPACING) ─── */}
+        <div className={cn(
+          "fixed bottom-24 lg:bottom-8 left-1/2 -translate-x-1/2 max-w-[94vw] sm:max-w-none clay-surface rounded-[28px] shadow-2xl p-2.5 sm:p-3 flex items-center transition-all duration-300 z-[90]",
+          selectedIds.size > 0 ? "translate-y-0 opacity-100 scale-100" : "translate-y-24 opacity-0 scale-90 pointer-events-none"
+        )}>
+          <div className="flex items-center gap-2 sm:gap-3 overflow-x-auto no-scrollbar px-1">
+            <div className="clay-pill-blue px-3.5 py-2 rounded-[16px] text-xs font-black flex items-center gap-1.5 text-white shadow-md shrink-0">
+              <CheckSquare size={14} strokeWidth={2.5} />
+              <span>{selectedIds.size} dipilih</span>
+            </div>
+
+            <div className="h-6 w-px bg-zinc-300 dark:bg-white/10 shrink-0" />
+
+            <div className="flex items-center gap-1.5 shrink-0">
+              <button
+                onClick={() => handleBulkStatusChange('PRAKTEK')}
+                className="px-3 py-2 rounded-[14px] text-xs font-black clay-pill-emerald text-white shadow-sm transition-all active:scale-95"
+              >
+                Set Praktek
+              </button>
+              <button
+                onClick={() => handleBulkStatusChange('CUTI')}
+                className="px-3 py-2 rounded-[14px] text-xs font-black clay-button text-zinc-700 dark:text-zinc-300 transition-all active:scale-95"
+              >
+                Set Cuti
+              </button>
+              <button
+                onClick={() => handleBulkStatusChange('LIBUR')}
+                className="px-3 py-2 rounded-[14px] text-xs font-black clay-button text-zinc-700 dark:text-zinc-300 transition-all active:scale-95"
+              >
+                Set Libur
+              </button>
+            </div>
+
+            <div className="h-6 w-px bg-zinc-300 dark:bg-white/10 shrink-0" />
+
+            <button
+              onClick={() => setIsDeleteModalOpen(true)}
+              className="px-3.5 py-2 rounded-[14px] text-xs font-black clay-pill-rose text-white shadow-sm flex items-center gap-1.5 transition-all active:scale-95 shrink-0"
+            >
+              <Trash2 size={13} strokeWidth={2.5} />
+              <span>Hapus Massal</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* ─── MODALS ─── */}
+      <DoctorFormModal
+        isOpen={isFormOpen}
+        onClose={() => setIsFormOpen(false)}
+        doctor={editingDoctor}
+        onSuccess={() => mutate('/api/doctors')}
+      />
+
+      <ConfirmDialog
+        isOpen={isDeleteModalOpen}
+        onClose={() => { setIsDeleteModalOpen(false); setDeleteId(null); }}
+        onConfirm={confirmDelete}
+        title="Hapus Data Dokter?"
+        description={
+          deleteId
+            ? "Data dokter ini akan dihapus permanen beserta seluruh relasi jadwal dan kuotanya."
+            : `Apakah Anda yakin ingin menghapus ${selectedIds.size} dokter terpilih? Tindakan ini tidak dapat dibatalkan.`
+        }
+        confirmText="Hapus Permanen"
+        variant="danger"
+        isLoading={isDeleting}
+      />
+    </div>
+  );
 }

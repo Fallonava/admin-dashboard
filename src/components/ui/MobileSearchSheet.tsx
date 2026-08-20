@@ -60,30 +60,30 @@ export function MobileSearchSheet({
 
       {/* Bottom Sheet */}
       <div className={cn(
-        "relative w-full bg-white rounded-t-[32px] sm:rounded-t-[40px] shadow-[0_-10px_40px_rgba(0,0,0,0.1)] flex flex-col transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]",
+        "relative w-full clay-surface rounded-t-[36px] sm:rounded-t-[44px] flex flex-col transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]",
         isClosing ? "translate-y-full" : "translate-y-0"
       )} style={{ height: 'auto', maxHeight: '80vh' }}>
         {/* Grab Handle */}
         <div className="flex justify-center pt-4 pb-2 shrink-0 cursor-ns-resize" onClick={handleClose}>
-          <div className="w-12 h-1.5 bg-slate-200 rounded-full" />
+          <div className="w-12 h-1.5 rounded-full clay-inset" />
         </div>
 
         {/* Header */}
-        <div className="px-6 pb-4 shrink-0 flex items-center justify-between border-b border-slate-100">
+        <div className="px-6 pb-4 shrink-0 flex items-center justify-between border-b border-zinc-200/60 dark:border-white/5">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-[14px] bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold shadow-lg shadow-blue-500/20 shrink-0">
-              <Search size={20} />
+            <div className="h-10 w-10 rounded-[14px] clay-icon-blue flex items-center justify-center text-white shrink-0">
+              <Search size={18} strokeWidth={2.5} className="relative z-10" />
             </div>
             <div>
-              <h1 className="text-lg font-black tracking-tight text-slate-800 leading-none">Cari Dokter</h1>
-              <p className="text-[11px] text-slate-500 font-medium mt-1">Cari berdasarkan nama atau spesialisasi</p>
+              <h1 className="text-base font-black tracking-tight text-zinc-900 dark:text-zinc-100 leading-none">Cari Dokter</h1>
+              <p className="text-[11px] text-zinc-500 font-bold mt-0.5">Cari berdasarkan nama atau spesialisasi</p>
             </div>
           </div>
           <button
             onClick={handleClose}
-            className="p-2.5 min-h-[44px] min-w-[44px] bg-slate-50 hover:bg-slate-100 rounded-full text-slate-400 hover:text-slate-600 transition-colors"
+            className="p-2.5 min-h-[44px] min-w-[44px] clay-button rounded-full text-zinc-400 transition-all active:scale-95"
           >
-            <X size={20} />
+            <X size={18} />
           </button>
         </div>
 
@@ -91,28 +91,28 @@ export function MobileSearchSheet({
         <div className="p-6 shrink-0">
           <div className="relative">
             {isSearching ? (
-              <Loader2 className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-500 h-5 w-5 animate-spin" />
+              <Loader2 className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-500 h-4 w-4 animate-spin" />
             ) : (
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 h-5 w-5" />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 h-4 w-4" />
             )}
             <input
               type="text"
               placeholder="Ketik nama dokter atau spesialisasi..."
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
-              className="w-full pl-12 pr-4 py-4 rounded-2xl bg-slate-50 border border-slate-200 focus:border-blue-300 focus:ring-2 focus:ring-blue-500/10 transition-all text-base font-medium text-slate-700 placeholder:text-slate-400 outline-none"
+              className="w-full pl-11 pr-4 py-3.5 clay-inset rounded-2xl text-sm font-bold text-zinc-800 dark:text-zinc-200 placeholder:text-zinc-400 outline-none transition-all"
               autoFocus
             />
           </div>
 
           {searchQuery && (
             <div className="mt-3 flex items-center justify-between">
-              <span className="text-sm text-slate-500 font-medium">
-                Mencari: "{searchQuery}"
+              <span className="text-xs text-zinc-500 font-bold">
+                Mencari: &ldquo;{searchQuery}&rdquo;
               </span>
               <button
                 onClick={() => onSearchChange('')}
-                className="text-sm text-blue-600 hover:text-blue-700 font-semibold"
+                className="text-xs text-blue-600 dark:text-blue-400 font-black hover:underline"
               >
                 Hapus
               </button>
@@ -123,8 +123,8 @@ export function MobileSearchSheet({
         {/* Quick Suggestions */}
         {!searchQuery && (
           <div className="px-6 pb-6">
-            <h3 className="text-sm font-bold text-slate-700 mb-3">Pencarian Cepat</h3>
-            <div className="grid grid-cols-2 gap-3">
+            <h3 className="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-3">Pencarian Cepat</h3>
+            <div className="grid grid-cols-3 gap-2">
               {[
                 'Jantung', 'Mata', 'Kulit', 'Anak', 'Bedah', 'Gigi',
                 'THT', 'Saraf', 'Paru', 'Gizi', 'Jiwa', 'Orthopedi'
@@ -132,7 +132,7 @@ export function MobileSearchSheet({
                 <button
                   key={specialty}
                   onClick={() => onSearchChange(specialty)}
-                  className="p-3 min-h-[44px] bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-200 rounded-xl text-sm font-semibold text-slate-600 hover:text-blue-600 transition-all text-left"
+                  className="p-2.5 min-h-[40px] clay-button rounded-xl text-xs font-black text-zinc-600 dark:text-zinc-300 hover:text-blue-600 dark:hover:text-blue-400 transition-all active:scale-95 text-center"
                 >
                   {specialty}
                 </button>

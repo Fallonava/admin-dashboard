@@ -20,8 +20,12 @@ export async function GET(req: Request) {
 
     const { data, total } = await DoctorService.getDoctors(page, limit);
 
+    const headers = {
+        'Cache-Control': 'public, s-maxage=2, stale-while-revalidate=59',
+    };
+
     if (!pageParam && !limitParam) {
-        return NextResponse.json(data);
+        return NextResponse.json(data, { headers });
     }
 
     return NextResponse.json({
@@ -32,7 +36,7 @@ export async function GET(req: Request) {
             total,
             totalPages: Math.ceil(total / limit)
         }
-    });
+    }, { headers });
 }
 
 export async function POST(req: Request) {

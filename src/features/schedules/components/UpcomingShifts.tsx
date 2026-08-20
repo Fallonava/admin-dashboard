@@ -1,222 +1,177 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useMemo, useState } from "react";
 import useSWR, { mutate } from "swr";
-import Image from "next/image";
-import { useDebounce } from "@/hooks/use-debounce";
-import { Users, Search, Plus, Edit2, Trash2, Loader2 } from "lucide-react";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { UserCheck, Clock, Stethoscope, ChevronRight, Sparkles, Calendar } from "lucide-react";
+import { cn } from "@/lib/utils";
 import type { Shift, Doctor } from "@/lib/data-service";
 import { ScheduleModal } from "./ScheduleModal";
-import { DoctorFormModal } from "./DoctorFormModal";
-import { useVirtualizer } from '@tanstack/react-virtual';
-import { useRef, useEffect } from "react";
-import { useSocket } from "@/hooks/use-socket";
 
-// Color hash for doctor initials
-const getInitials = (name: string) => name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+interface UpcomingShiftsProps {
+  selectedDate?: Date;
+  onOpenScheduleModal?: (doctor: Doctor) => void;
+}
 
-export function UpcomingShifts() {
-    const { data: shifts = [] } = useSWR<Shift[]>('/api/shifts');
-    const { data: doctors = [] } = useSWR<Doctor[]>('/api/doctors');
-    const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
-    const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
+export function UpcomingShifts({ selectedDate = new Date(), onOpenScheduleModal }: UpcomingShiftsProps) {
+  const currentDayIdx = selectedDate.getDay() === 0 ? 6 : selectedDate.getDay() - 1;
+  const weekOfMonth = Math.ceil(selectedDate.getDate() / 7);
+  const dateKey = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;
 
-    // CRUD State
-    const [isFormOpen, setIsFormOpen] = useState(false);
-    const [editingDoctor, setEditingDoctor] = useState<Doctor | null>(null);
-    const [searchQuery, setSearchQuery] = useState("");
-    const debouncedSearch = useDebounce(searchQuery, 400); // Increased delay
-    const isSearching = searchQuery !== debouncedSearch;
+  const { data: shifts = [] } = useSWR<Shift[]>(`/api/shifts?include=leaves&date=${dateKey}`);
+  const { data: doctors = [] } = useSWR<Doctor[]>('/api/doctors');
 
-    const parentRef = useRef<HTMLDivElement>(null);
+  const [selectedDocForModal, setSelectedDocForModal] = useState<Doctor | null>(null);
 
-    const fetchAll = () => {
-        mutate((key: string) => typeof key === 'string' && key.startsWith('/api/shifts'));
-        mutate('/api/doctors');
-    };
-
-    // WebSocket Integration
-    const { socket } = useSocket('schedules');
-    useEffect(() => {
-        if (!socket) return;
-        
-        socket.on('schedule_changed', () => {
-            fetchAll(); // Real-time UI refresh for all schedules
-        });
-        
-        return () => {
-            socket.off('schedule_changed');
-        };
-    }, [socket]);
-
-    const filteredDoctors = useMemo(() => {
-        return doctors.filter(d =>
-            d.name.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
-            d.specialty.toLowerCase().includes(debouncedSearch.toLowerCase())
-        );
-    }, [doctors, debouncedSearch]);
-
-    const rowVirtualizer = useVirtualizer({
-        count: filteredDoctors.length,
-        getScrollElement: () => parentRef.current,
-        estimateSize: () => 76,
-        overscan: 5,
+  // Doctors on duty for the selected date
+  const activeDoctorsOnDuty = useMemo(() => {
+    const dayShifts = shifts.filter((s) => {
+      if (!s.formattedTime || s.formattedTime === '-' || !s.formattedTime.includes(':')) return false;
+      if (s.dayIdx !== currentDayIdx) return false;
+      if ((s.disabledDates || []).includes(dateKey)) return false;
+      if (s.extra === 'odd_weeks' && weekOfMonth % 2 === 0) return false;
+      if (s.extra === 'even_weeks' && weekOfMonth % 2 !== 0) return false;
+      return true;
     });
 
-    const handleDoctorClick = (doc: Doctor) => {
-        setSelectedDoctor(doc);
-        setIsScheduleModalOpen(true);
-    };
+    const docMap = new Map<string, { doctor: Doctor; shifts: Shift[] }>();
 
-    const handleAdd = () => {
-        setEditingDoctor(null);
-        setIsFormOpen(true);
-    };
-
-    const handleEdit = (e: React.MouseEvent, doc: Doctor) => {
-        e.stopPropagation(); // Prevent opening schedule modal
-        setEditingDoctor(doc);
-        setIsFormOpen(true);
-    };
-
-    const handleDelete = async (e: React.MouseEvent, id: string | number) => {
-        e.stopPropagation();
-        if (!confirm("Apakah Anda yakin ingin menghapus dokter ini?")) return;
-
-        try {
-            await fetch(`/api/doctors?id=${id}`, { method: 'DELETE' });
-            fetchAll();
-        } catch (error) {
-            console.error("Failed to delete", error);
+    dayShifts.forEach((shift) => {
+      const doc = doctors.find((d) => d.id === shift.doctorId || d.name === shift.doctor);
+      if (doc) {
+        if (!docMap.has(doc.id)) {
+          docMap.set(doc.id, { doctor: doc, shifts: [] });
         }
-    };
+        docMap.get(doc.id)!.shifts.push(shift);
+      }
+    });
 
-    return (
-        <div className="w-full lg:w-[320px] xl:w-[380px] bg-white/40 backdrop-blur-3xl rounded-[32px] min-h-[300px] lg:min-h-0 lg:h-full flex flex-col z-10 p-2 shadow-[0_8px_40px_-12px_rgba(0,0,0,0.08)] border border-white/60 flex-shrink-0">
+    return Array.from(docMap.values());
+  }, [shifts, doctors, currentDayIdx, dateKey, weekOfMonth]);
 
-            {/* ── All Doctors List (Full Sidebar) ─────────────────── */}
-            <div className="p-4 lg:p-6 flex-1 flex flex-col min-h-0 bg-white/40 rounded-[24px] border border-white/60">
-                <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2.5">
-                        <div className="p-2 bg-white/60 text-blue-600 rounded-[14px] shadow-sm border border-white/80">
-                            <Users size={16} className="text-blue-600" strokeWidth={2.5} />
-                        </div>
-                        <h3 className="text-[11px] font-black text-slate-800 uppercase tracking-widest">Semua Dokter</h3>
-                    </div>
-                    <div className="flex items-center gap-2.5">
-                        <span className="text-[10px] text-slate-600 font-black bg-white/70 backdrop-blur-md px-2.5 py-1 rounded-[10px] shadow-sm border border-white/80">{filteredDoctors.length}</span>
-                        <button
-                            onClick={handleAdd}
-                            className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white p-2 rounded-[14px] transition-all active:scale-95 shadow-[0_4px_14px_0_rgba(0,92,255,0.4)] hover:shadow-[0_8px_20px_-4px_rgba(0,92,255,0.5)] group relative overflow-hidden"
-                            title="Tambah Dokter"
-                        >
-                            <div className="absolute inset-0 w-full h-full bg-white/20 -translate-x-full group-hover:animate-shimmer" />
-                            <Plus size={14} className="relative z-10" strokeWidth={2.5} />
-                        </button>
-                    </div>
-                </div>
+  const handleCardClick = (doc: Doctor) => {
+    if (onOpenScheduleModal) {
+      onOpenScheduleModal(doc);
+    } else {
+      setSelectedDocForModal(doc);
+    }
+  };
 
-                {/* Search */}
-                <div className="relative mb-4 group">
-                    <div className="absolute -inset-0.5 bg-blue-500/10 rounded-[20px] blur opacity-0 group-focus-within:opacity-100 transition duration-500" />
-                    <div className="relative">
-                        {isSearching ? (
-                            <Loader2 className="absolute left-3.5 top-1/2 -translate-y-1/2 text-blue-500 h-4 w-4 animate-spin" />
-                        ) : (
-                            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 h-4 w-4 group-focus-within:text-blue-500 transition-colors" />
-                        )}
-                        <input
-                            type="text"
-                            placeholder="Cari dokter..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full bg-white/60 backdrop-blur-xl rounded-[18px] pl-10 pr-4 py-2.5 text-sm font-bold text-slate-700 placeholder:text-slate-400 focus:outline-none border border-white/80 focus:border-blue-200 focus:ring-4 focus:ring-blue-500/10 transition-all shadow-sm focus:bg-white/90"
-                        />
-                    </div>
-                </div>
+  const dayName = selectedDate.toLocaleDateString('id-ID', { weekday: 'long' });
+  const dateFormatted = selectedDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
 
-                {/* Scrollable List */}
-                <div ref={parentRef} className="flex-1 overflow-y-auto space-y-2 pr-1 custom-scrollbar">
-                    <div
-                        style={{
-                            height: `${rowVirtualizer.getTotalSize()}px`,
-                            width: '100%',
-                            position: 'relative',
-                        }}
-                    >
-                        {rowVirtualizer.getVirtualItems().map((virtualRow) => {
-                            const doc = filteredDoctors[virtualRow.index];
-                            return (
-                                <div
-                                    key={doc.id}
-                                    style={{
-                                        position: 'absolute',
-                                        top: 0,
-                                        left: 0,
-                                        width: '100%',
-                                        height: `${virtualRow.size}px`,
-                                        transform: `translateY(${virtualRow.start}px)`,
-                                        paddingBottom: '8px'
-                                    }}
-                                >
-                                    <div
-                                        onClick={() => handleDoctorClick(doc)}
-                                        className="w-full h-full flex items-center gap-3 px-3 py-2.5 rounded-[18px] bg-white/40 hover:bg-white/80 hover:shadow-[0_8px_24px_-8px_rgba(0,0,0,0.1)] hover:-translate-y-0.5 transition-all duration-300 text-left group cursor-pointer relative border border-white/60 hover:border-white"
-                                    >
-                                        <Avatar className="h-11 w-11 border-[2px] border-white/80 shadow-sm group-hover:scale-105 transition-transform duration-300 ring-1 ring-black/5">
-                                            {doc.image ? (
-                                                <Image src={doc.image} alt={doc.name} width={48} height={48} className="h-full w-full object-cover" />
-                                            ) : (
-                                                <AvatarFallback className="bg-gradient-to-br from-slate-100 to-white text-[12px] font-black text-slate-600 group-hover:text-blue-600 transition-colors">
-                                                    {doc.queueCode || getInitials(doc.name)}
-                                                </AvatarFallback>
-                                            )}
-                                        </Avatar>
-                                        <div className="min-w-0 flex-1">
-                                            <p className="text-[13px] font-black tracking-tight text-slate-800 truncate group-hover:text-blue-600 transition-colors">{doc.name}</p>
-                                            <p className="text-[10.5px] text-slate-400 font-bold truncate mt-0.5 tracking-wide">{doc.specialty}</p>
-                                        </div>
-
-                                        {/* CRUD Actions (Visible on Hover) */}
-                                        <div className="absolute right-3 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all transform translate-x-2 group-hover:translate-x-0 bg-white/90 backdrop-blur-xl p-1.5 rounded-[14px] shadow-sm border border-white/80">
-                                            <button
-                                                onClick={(e) => handleEdit(e, doc)}
-                                                className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50/80 rounded-[10px] transition-all"
-                                                title="Edit"
-                                            >
-                                                <Edit2 size={13} strokeWidth={2.5} />
-                                            </button>
-                                            <button
-                                                onClick={(e) => handleDelete(e, doc.id)}
-                                                className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50/80 rounded-[10px] transition-all"
-                                                title="Hapus"
-                                            >
-                                                <Trash2 size={12} strokeWidth={2.5} />
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </div>
-                </div>
-            </div>
-
-            <ScheduleModal
-                doctor={selectedDoctor}
-                shifts={shifts}
-                isOpen={isScheduleModalOpen}
-                onClose={() => setIsScheduleModalOpen(false)}
-                onUpdate={fetchAll}
-            />
-
-            <DoctorFormModal
-                isOpen={isFormOpen}
-                onClose={() => setIsFormOpen(false)}
-                doctor={editingDoctor}
-                onSuccess={fetchAll}
-            />
+  return (
+    <div className="w-full lg:w-[310px] xl:w-[350px] clay-surface rounded-[28px] lg:rounded-[32px] flex flex-col z-10 p-3.5 sm:p-4 flex-shrink-0 shadow-lg min-h-[280px] lg:min-h-0 lg:h-full">
+      {/* ── Header ── */}
+      <div className="flex items-center justify-between pb-3 mb-3 border-b border-zinc-200/60 dark:border-white/5 flex-none">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-[12px] clay-icon-blue flex items-center justify-center text-white shrink-0">
+            <UserCheck size={16} className="relative z-10" strokeWidth={2.5} />
+          </div>
+          <div>
+            <h3 className="text-xs font-black text-zinc-900 dark:text-zinc-100 tracking-tight">
+              Dokter Bertugas
+            </h3>
+            <p className="text-[10px] font-extrabold text-blue-600 dark:text-blue-400 mt-0.5">
+              {dayName}, {dateFormatted}
+            </p>
+          </div>
         </div>
-    );
+        <span className="text-[10.5px] font-black px-2.5 py-1 rounded-[12px] clay-button text-zinc-700 dark:text-zinc-300">
+          {activeDoctorsOnDuty.length} Dokter
+        </span>
+      </div>
+
+      {/* ── Content List ── */}
+      <div className="flex-1 overflow-y-auto space-y-2.5 pr-1 custom-scrollbar min-h-0">
+        {activeDoctorsOnDuty.length === 0 ? (
+          <div className="h-full flex flex-col items-center justify-center text-center p-6 space-y-2">
+            <div className="w-12 h-12 rounded-[18px] clay-surface flex items-center justify-center text-zinc-400 mb-1">
+              <Calendar size={22} strokeWidth={2} />
+            </div>
+            <p className="text-xs font-black text-zinc-800 dark:text-zinc-200">
+              Tidak Ada Shift
+            </p>
+            <p className="text-[10.5px] text-zinc-400 font-bold max-w-[200px]">
+              Belum ada dokter yang terjadwal bertugas pada {dayName}.
+            </p>
+          </div>
+        ) : (
+          activeDoctorsOnDuty.map(({ doctor, shifts }) => {
+            const isBedah = doctor.category === 'Bedah';
+            const avatarClay = isBedah ? "clay-icon-rose" : "clay-icon-blue";
+            const initials =
+              doctor.queueCode ||
+              doctor.name
+                .replace(/^dr\.\s*/i, '')
+                .split(' ')
+                .filter(Boolean)
+                .slice(0, 2)
+                .map((w) => w[0])
+                .join('')
+                .toUpperCase() || 'DR';
+
+            return (
+              <div
+                key={doctor.id}
+                onClick={() => handleCardClick(doctor)}
+                className="p-3 rounded-[20px] clay-button hover:-translate-y-0.5 transition-all text-left group cursor-pointer relative"
+              >
+                <div className="flex items-start gap-2.5">
+                  {/* 3D Clay Avatar */}
+                  <div
+                    className={cn(
+                      "w-10 h-10 rounded-[14px] flex items-center justify-center text-white font-black text-xs shrink-0 shadow-sm",
+                      avatarClay
+                    )}
+                  >
+                    <span className="relative z-10">{initials}</span>
+                  </div>
+
+                  {/* Info */}
+                  <div className="flex-1 min-w-0 pr-1">
+                    <p className="text-xs font-black text-zinc-900 dark:text-zinc-100 truncate group-hover:text-blue-600 transition-colors">
+                      {doctor.name}
+                    </p>
+                    <p className="text-[10px] text-zinc-500 dark:text-zinc-400 font-bold truncate flex items-center gap-1 mt-0.5">
+                      <Stethoscope size={11} className="shrink-0" />
+                      <span>{doctor.specialty}</span>
+                    </p>
+
+                    {/* Shift badges */}
+                    <div className="flex flex-wrap items-center gap-1.5 mt-2">
+                      {shifts.map((s) => (
+                        <span
+                          key={s.id}
+                          className="inline-flex items-center gap-1 px-2 py-0.5 rounded-[8px] clay-inset text-[9.5px] font-black text-blue-600 dark:text-blue-400"
+                        >
+                          <Clock size={10} strokeWidth={2.5} />
+                          {s.formattedTime}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <ChevronRight size={14} className="text-zinc-400 group-hover:text-blue-500 transition-colors shrink-0 mt-2" />
+                </div>
+              </div>
+            );
+          })
+        )}
+      </div>
+
+      {/* Internal Schedule Modal fallback */}
+      {selectedDocForModal && (
+        <ScheduleModal
+          doctor={selectedDocForModal}
+          shifts={shifts}
+          isOpen={Boolean(selectedDocForModal)}
+          onClose={() => setSelectedDocForModal(null)}
+          onUpdate={() => {
+            mutate('/api/doctors');
+            mutate((key: string) => typeof key === 'string' && key.startsWith('/api/shifts'));
+          }}
+        />
+      )}
+    </div>
+  );
 }

@@ -2,34 +2,25 @@
 
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { UserRound, Edit2, Trash2, Activity, Clock, Check } from "lucide-react";
+import { Edit2, Trash2, Activity, Clock, Check, GripVertical, Stethoscope } from "lucide-react";
 import { cn, calculateRemainingTime } from "@/lib/utils";
 import type { Doctor } from "@/lib/data-service";
-import { useEffect, useState } from "react";
+import { useEffect, useState, memo } from "react";
 
-// Palet warna avatar berdasarkan indeks
-const avatarGradients = [
-    "from-blue-600 to-indigo-600",
-    "from-indigo-600 to-purple-600",
-    "from-rose-600 to-pink-600",
-    "from-emerald-600 to-teal-600",
-    "from-amber-600 to-orange-600",
-];
-
-const statusConfig: Record<string, { label: string; color: string; bg: string; dot?: string; pulse?: boolean }> = {
-    'PRAKTEK':     { label: 'Praktek', color: 'text-blue-600 dark:text-blue-400', bg: 'bg-blue-50 dark:bg-blue-950/40 border-blue-200 dark:border-blue-800/50', dot: 'bg-blue-500' },
-    'OPERASI':     { label: 'Operasi', color: 'text-rose-600 dark:text-rose-400', bg: 'bg-rose-50 dark:bg-rose-950/40 border-rose-200 dark:border-rose-800/50', dot: 'bg-rose-500', pulse: true },
-    'PENUH':       { label: 'Penuh', color: 'text-amber-600 dark:text-amber-400', bg: 'bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-800/50' },
-    'CUTI':        { label: 'Cuti', color: 'text-zinc-500 dark:text-zinc-400', bg: 'bg-zinc-100 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700' },
-    'SELESAI':     { label: 'Selesai', color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800/50' },
-    'TERJADWAL':   { label: 'Terjadwal', color: 'text-sky-600 dark:text-sky-400', bg: 'bg-sky-50 dark:bg-sky-950/40 border-sky-200 dark:border-sky-800/50', dot: 'bg-sky-400' },
-    'PENDAFTARAN': { label: 'Pendaftaran', color: 'text-indigo-600 dark:text-indigo-400', bg: 'bg-indigo-50 dark:bg-indigo-950/40 border-indigo-200 dark:border-indigo-800/50', dot: 'bg-indigo-400' },
-    'LIBUR':       { label: 'Libur', color: 'text-zinc-400 dark:text-zinc-500', bg: 'bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800' },
+const statusConfig: Record<string, { label: string; clayPill: string; dot?: string; pulse?: boolean }> = {
+    'PRAKTEK':     { label: 'Praktek',     clayPill: 'clay-pill-blue text-white', dot: 'bg-white' },
+    'OPERASI':     { label: 'Operasi',     clayPill: 'clay-pill-rose text-white', dot: 'bg-white', pulse: true },
+    'PENUH':       { label: 'Penuh',       clayPill: 'clay-pill-amber text-white' },
+    'CUTI':        { label: 'Cuti',        clayPill: 'clay-pill-rose text-white' },
+    'SELESAI':     { label: 'Selesai',     clayPill: 'clay-pill-emerald text-white' },
+    'TERJADWAL':   { label: 'Terjadwal',   clayPill: 'clay-button text-sky-700 dark:text-sky-300', dot: 'bg-sky-500' },
+    'PENDAFTARAN': { label: 'Pendaftaran', clayPill: 'clay-pill-violet text-white', dot: 'bg-white' },
+    'LIBUR':       { label: 'Libur',       clayPill: 'clay-button text-zinc-500 dark:text-zinc-400' },
 };
 
 export function getStatusConfig(status?: string | null) {
-    if (!status) return { label: 'Auto', color: 'text-zinc-400', bg: 'bg-zinc-50 dark:bg-zinc-900' };
-    return statusConfig[status] || { label: status, color: 'text-zinc-400', bg: 'bg-zinc-50 dark:bg-zinc-900' };
+    if (!status) return { label: 'Standar', clayPill: 'clay-button text-zinc-400' };
+    return statusConfig[status] || { label: status, clayPill: 'clay-button text-zinc-400' };
 }
 
 interface DoctorCardProps {
@@ -42,18 +33,29 @@ interface DoctorCardProps {
     isOverlay?: boolean;
 }
 
-export function DoctorCard({ doctor, index, isSelected, onToggleSelect, onEdit, onDelete, isOverlay }: DoctorCardProps) {
+function DoctorCardComponent({ doctor, index, isSelected, onToggleSelect, onEdit, onDelete, isOverlay }: DoctorCardProps) {
     const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: doctor.id, data: { doctor } });
 
     const style = {
         transform: CSS.Transform.toString(transform),
         transition,
-        opacity: isDragging ? 0.4 : 1,
+        opacity: isDragging ? 0.35 : 1,
         zIndex: isDragging ? 50 : 1,
     };
 
-    const gradientClass = avatarGradients[index % avatarGradients.length];
     const status = getStatusConfig(doctor.status);
+    const isBedah = doctor.category === 'Bedah';
+    const avatarClay = isBedah ? "clay-icon-rose" : "clay-icon-blue";
+
+    // Extract initials (2 letters)
+    const initials = doctor.queueCode || doctor.name
+        .replace(/^dr\.\s*/i, '')
+        .split(' ')
+        .filter(Boolean)
+        .slice(0, 2)
+        .map(w => w[0])
+        .join('')
+        .toUpperCase() || 'DR';
 
     // Centralized Countdown Logic
     const [timeRemaining, setTimeRemaining] = useState<string>(() => calculateRemainingTime(doctor.endTime, doctor.status));
@@ -67,101 +69,109 @@ export function DoctorCard({ doctor, index, isSelected, onToggleSelect, onEdit, 
 
     const cardContent = (
         <div className={cn(
-            "group bg-white dark:bg-[#131620] p-5 sm:p-6 rounded-[20px] flex flex-col min-h-[175px] cursor-grab active:cursor-grabbing border transition-all duration-200 relative overflow-hidden",
-            isSelected 
-                ? "border-blue-500 shadow-md ring-1 ring-blue-400 scale-[1.01]" 
-                : "border-zinc-200 dark:border-[#232736] shadow-sm hover:border-zinc-300 dark:hover:border-[#3A425C]",
-            isOverlay && "rotate-2 shadow-2xl scale-105 bg-white dark:bg-[#131620] border-blue-500 ring-1 ring-black/5"
-        )}
-            {...attributes} {...listeners}
-        >
-            {/* Checkbox Overlay */}
-            <button
-                type="button" 
-                onClick={(e) => { e.stopPropagation(); onToggleSelect(doctor.id); }}
-                onPointerDown={(e) => e.stopPropagation()}
-                className={cn(
-                    "absolute top-4 right-4 h-6 w-6 rounded-full border flex items-center justify-center transition-all duration-200 z-30 cursor-pointer shadow-sm",
-                    isSelected 
-                        ? "bg-blue-600 border-transparent text-white scale-110" 
-                        : "border-zinc-300 dark:border-[#2B3145] bg-zinc-50 dark:bg-[#1A1E2B] opacity-100 lg:opacity-0 lg:group-hover:opacity-100 hover:border-blue-500"
-                )}
-            >
-                {isSelected && <Check size={12} strokeWidth={3} />}
-            </button>
-
-            {/* Avatar & Main Info */}
-            <div className="flex items-start gap-3.5 mb-4 relative z-10">
-                <div className="relative flex-shrink-0">
+            "group clay-surface p-4 sm:p-5 rounded-[26px] flex flex-col min-h-[200px] transition-all duration-200 relative overflow-hidden",
+            isSelected && "ring-2 ring-blue-500 scale-[1.01] shadow-lg",
+            isOverlay && "rotate-2 shadow-2xl scale-105 ring-2 ring-blue-500"
+        )}>
+            {/* Top Bar: Drag Handle + Avatar + Identity + Checkbox */}
+            <div className="flex items-start gap-3.5 relative z-10 mb-3.5">
+                {/* 3D Clay Avatar with Drag Handle on Hover */}
+                <div className="relative shrink-0 flex items-center">
+                    <div 
+                        {...attributes} {...listeners}
+                        title="Geser urutan dokter"
+                        className="cursor-grab active:cursor-grabbing mr-1 text-zinc-300 dark:text-zinc-600 group-hover:text-blue-500 transition-colors p-0.5"
+                    >
+                        <GripVertical size={16} />
+                    </div>
                     <div className={cn(
-                        "h-12 w-12 rounded-xl bg-gradient-to-br flex items-center justify-center text-white font-black text-lg shadow-sm border border-white/10 shrink-0",
-                        gradientClass
+                        "w-12 h-12 rounded-[16px] flex items-center justify-center text-white font-black text-base shrink-0 shadow-sm",
+                        avatarClay
                     )}>
-                        {doctor.queueCode || doctor.name.charAt(0)}
+                        <span className="relative z-10 tracking-tight">{initials}</span>
                     </div>
                 </div>
 
-                <div className="flex-1 min-w-0 pr-6">
-                    <h3 className="font-black text-zinc-900 dark:text-zinc-100 text-[15px] sm:text-[16px] tracking-tight leading-tight line-clamp-1">
+                {/* Info Text */}
+                <div className="flex-1 min-w-0 pr-1">
+                    <h3 className="font-black text-zinc-900 dark:text-zinc-100 text-[14.5px] sm:text-[15.5px] tracking-tight leading-snug line-clamp-1">
                         {doctor.name}
                     </h3>
-                    <p className="text-[11px] font-medium text-zinc-500 dark:text-zinc-400 mt-1 line-clamp-1 tracking-wide">
-                        {doctor.specialty}
+                    <p className="text-[11.5px] font-bold text-zinc-500 dark:text-zinc-400 mt-0.5 line-clamp-1 flex items-center gap-1">
+                        <Stethoscope size={12} className="text-zinc-400 shrink-0" />
+                        <span>{doctor.specialty}</span>
                     </p>
-                    {timeRemaining && (
-                        <div className="flex items-center gap-1.5 mt-2 bg-zinc-100 dark:bg-[#1A1E2B] self-start px-2 py-0.5 rounded-[6px] border border-zinc-200 dark:border-[#2B3145]">
-                            <Clock size={11} className="text-blue-600 dark:text-blue-400" strokeWidth={2.5} />
-                            <span className="text-[9.5px] font-bold text-blue-600 dark:text-blue-400 tracking-wide">{timeRemaining}</span>
-                        </div>
-                    )}
+
+                    {/* Category pill & Countdown */}
+                    <div className="flex flex-wrap items-center gap-1.5 mt-2">
+                        <span className={cn(
+                            "px-2 py-0.5 rounded-[8px] text-[9.5px] font-black uppercase tracking-wider",
+                            isBedah
+                                ? "clay-button text-rose-600 dark:text-rose-400"
+                                : "clay-button text-blue-600 dark:text-blue-400"
+                        )}>
+                            {doctor.category === 'NonBedah' ? 'Non Bedah' : doctor.category}
+                        </span>
+
+                        {timeRemaining && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-[8px] clay-inset text-[9.5px] font-black text-blue-600 dark:text-blue-400">
+                                <Clock size={10} strokeWidth={2.5} />
+                                {timeRemaining}
+                            </span>
+                        )}
+                    </div>
                 </div>
+
+                {/* Checkbox */}
+                <button
+                    type="button" 
+                    onClick={(e) => { e.stopPropagation(); onToggleSelect(doctor.id); }}
+                    className={cn(
+                        "h-8 w-8 rounded-[12px] flex items-center justify-center transition-all duration-150 shrink-0 cursor-pointer",
+                        isSelected 
+                            ? "clay-pill-blue text-white shadow-sm" 
+                            : "clay-button text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
+                    )}
+                    aria-label="Pilih dokter"
+                >
+                    {isSelected ? <Check size={14} strokeWidth={3} /> : <div className="w-3.5 h-3.5 rounded-[6px] border border-zinc-400/40" />}
+                </button>
             </div>
 
-            {/* Bottom Section: Category & Status */}
-            <div className="mt-auto flex items-center justify-between gap-2 pt-3.5 border-t border-zinc-100 dark:border-[#1E2230]">
+            {/* Bottom Section: Status Pill & Action Buttons */}
+            <div className="mt-auto flex items-center justify-between gap-2 pt-3 border-t border-zinc-200/50 dark:border-white/5">
+                {/* Status Badge */}
                 <div className={cn(
-                    "flex items-center gap-1 px-2.5 py-1 rounded-[6px] text-[9.5px] font-bold tracking-wider uppercase border",
-                    doctor.category === 'Bedah'
-                      ? "text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/40 border-rose-200 dark:border-rose-800/50"
-                      : "text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800/50"
-                )}>
-                    <Activity size={11} strokeWidth={2.5} />
-                    {doctor.category === 'NonBedah' ? 'Non Bedah' : doctor.category}
-                </div>
-
-                <div className={cn(
-                    "flex items-center gap-1.5 px-2.5 py-1 rounded-[6px] text-[9.5px] font-bold tracking-wider uppercase border",
-                    status.color,
-                    status.bg
+                    "flex items-center gap-1.5 px-3 py-1 rounded-full text-[10.5px] font-black tracking-wide",
+                    status.clayPill
                 )}>
                     {status.dot && (
                         <span className="relative flex h-1.5 w-1.5">
-                            {status.pulse && <span className={cn("animate-ping absolute inline-flex h-full w-full rounded-full opacity-60", status.dot)} />}
+                            {status.pulse && <span className={cn("animate-ping absolute inline-flex h-full w-full rounded-full opacity-75", status.dot)} />}
                             <span className={cn("relative inline-flex rounded-full h-1.5 w-1.5", status.dot)} />
                         </span>
                     )}
                     {status.label}
                 </div>
-            </div>
 
-            {/* Action Buttons (Appears on Hover or Mobile) */}
-            <div className="absolute top-4 left-4 flex gap-1.5 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-200 z-20 pointer-events-auto">
-                <button
-                    onClick={(e) => { e.stopPropagation(); onEdit(doctor); }}
-                    onPointerDown={(e) => e.stopPropagation()}
-                    className="h-8 w-8 flex items-center justify-center rounded-[8px] bg-white dark:bg-[#1A1E2B] shadow-sm border border-zinc-200 dark:border-[#2B3145] text-zinc-600 dark:text-zinc-400 hover:text-blue-600 hover:border-blue-300 dark:hover:text-blue-400 transition-all active:scale-95"
-                    title="Edit"
-                >
-                    <Edit2 size={13} strokeWidth={2.5} />
-                </button>
-                <button
-                    onClick={(e) => { e.stopPropagation(); onDelete(doctor.id); }}
-                    onPointerDown={(e) => e.stopPropagation()}
-                    className="h-8 w-8 flex items-center justify-center rounded-[8px] bg-white dark:bg-[#1A1E2B] shadow-sm border border-zinc-200 dark:border-[#2B3145] text-zinc-600 dark:text-zinc-400 hover:text-rose-600 hover:border-rose-300 dark:hover:text-rose-400 transition-all active:scale-95"
-                    title="Hapus"
-                >
-                    <Trash2 size={13} strokeWidth={2.5} />
-                </button>
+                {/* Card Action Buttons in Footer */}
+                <div className="flex items-center gap-1.5">
+                    <button
+                        onClick={(e) => { e.stopPropagation(); onEdit(doctor); }}
+                        className="h-8 px-2.5 flex items-center gap-1 rounded-[12px] clay-button text-zinc-600 dark:text-zinc-400 hover:text-blue-600 dark:hover:text-blue-400 text-xs font-black transition-all active:scale-90"
+                        title="Edit Profil"
+                    >
+                        <Edit2 size={13} strokeWidth={2.5} />
+                        <span className="hidden sm:inline text-[11px]">Edit</span>
+                    </button>
+                    <button
+                        onClick={(e) => { e.stopPropagation(); onDelete(doctor.id); }}
+                        className="h-8 w-8 flex items-center justify-center rounded-[12px] clay-button text-zinc-500 hover:text-rose-600 dark:hover:text-rose-400 transition-all active:scale-90"
+                        title="Hapus Dokter"
+                    >
+                        <Trash2 size={13} strokeWidth={2.5} />
+                    </button>
+                </div>
             </div>
         </div>
     );
@@ -174,3 +184,5 @@ export function DoctorCard({ doctor, index, isSelected, onToggleSelect, onEdit, 
         </div>
     );
 }
+
+export const DoctorCard = memo(DoctorCardComponent);

@@ -28,35 +28,37 @@ export function ConfirmDialog({
 }: ConfirmDialogProps) {
     return (
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-            <DialogContent className="sm:max-w-[425px] bg-slate-950/90 backdrop-blur-xl">
-                <DialogHeader>
-                    <DialogTitle className="text-white">{title}</DialogTitle>
-                    <DialogDescription className="text-slate-400">
-                        {description}
-                    </DialogDescription>
-                </DialogHeader>
-                <DialogFooter className="mt-4 gap-2 sm:gap-0">
-                    <button
-                        onClick={onClose}
-                        disabled={isLoading}
-                        className="px-4 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-white/5 transition-colors"
-                    >
-                        {cancelText}
-                    </button>
-                    <button
-                        onClick={onConfirm}
-                        disabled={isLoading}
-                        className={cn(
-                            "px-4 py-2 rounded-lg text-sm font-bold text-white transition-all shadow-lg active:scale-95",
-                            variant === 'danger'
-                                ? "bg-red-600 hover:bg-red-500 shadow-red-600/20"
-                                : "bg-blue-600 hover:bg-blue-500 shadow-blue-600/20",
-                            isLoading && "opacity-50 cursor-not-allowed"
-                        )}
-                    >
-                        {isLoading ? "Processing..." : confirmText}
-                    </button>
-                </DialogFooter>
+            <DialogContent className="sm:max-w-[420px] clay-surface border-0 p-0 overflow-hidden">
+                <div className="p-6">
+                    <DialogHeader className="mb-4">
+                        <DialogTitle className="text-base font-black text-zinc-900 dark:text-zinc-100">{title}</DialogTitle>
+                        <DialogDescription className="text-xs font-bold text-zinc-500 dark:text-zinc-400 mt-1">
+                            {description}
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter className="flex gap-2 mt-2">
+                        <button
+                            onClick={onClose}
+                            disabled={isLoading}
+                            className="flex-1 px-4 py-2.5 rounded-xl text-xs font-black clay-button text-zinc-600 dark:text-zinc-300 transition-all active:scale-95"
+                        >
+                            {cancelText}
+                        </button>
+                        <button
+                            onClick={onConfirm}
+                            disabled={isLoading}
+                            className={cn(
+                                "flex-1 px-4 py-2.5 rounded-xl text-xs font-black text-white transition-all active:scale-95 shadow-md",
+                                variant === 'danger'
+                                    ? "clay-pill-rose"
+                                    : "clay-pill-blue",
+                                isLoading && "opacity-50 cursor-not-allowed"
+                            )}
+                        >
+                            {isLoading ? "Memproses..." : confirmText}
+                        </button>
+                    </DialogFooter>
+                </div>
             </DialogContent>
         </Dialog>
     );

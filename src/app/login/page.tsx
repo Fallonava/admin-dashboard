@@ -8,297 +8,266 @@ import {
   ArrowRight,
   ShieldCheck,
   AlertCircle,
+  Eye,
+  EyeOff,
   Sparkles,
-  Zap,
-  Users,
-  BarChart2,
   CheckCircle2,
+  LockKeyhole,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/auth-context";
-
-const features = [
-  {
-    icon: Zap,
-    title: "Real-time Monitoring",
-    desc: "Pantau status dokter & antrian langsung",
-  },
-  {
-    icon: Users,
-    title: "Manajemen Dokter",
-    desc: "Kelola jadwal & profil seluruh dokter",
-  },
-  {
-    icon: BarChart2,
-    title: "Rekap & Analitik",
-    desc: "Laporan harian otomatis & insight kinerja",
-  },
-];
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!username || !password) return;
+    if (!username.trim() || !password || loading) return;
 
     setLoading(true);
     setError("");
 
     try {
-      const result = await login(username, password);
+      const result = await login(username.trim(), password);
       if (!result.success) {
-        setError(result.error || "Username atau password salah.");
+        setError(result.error || "Username atau password tidak valid.");
       }
     } catch {
-      setError("Terjadi kesalahan jaringan. Periksa koneksi Anda.");
+      setError("Terjadi kesalahan jaringan. Periksa koneksi internet Anda.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 z-[999] flex overflow-hidden font-sans">
+    <div className="min-h-screen w-full relative flex items-center justify-center p-4 sm:p-6 lg:p-8 overflow-hidden bg-gradient-to-br from-[#EDF2F8] via-[#F4F7FB] to-[#E2EAF4] dark:from-[#090B10] dark:via-[#0E121C] dark:to-[#0A0D15] text-zinc-900 dark:text-zinc-100 selection:bg-blue-500/25 selection:text-white transition-colors duration-300">
+      
+      {/* ─── Ambient Glow Mesh Orbs (Layered 3D Depth) ─── */}
+      <div
+        aria-hidden="true"
+        className="absolute -top-32 -left-32 w-96 h-96 sm:w-[540px] sm:h-[540px] rounded-full bg-blue-500/15 dark:bg-blue-600/20 blur-[100px] sm:blur-[140px] pointer-events-none animate-pulse"
+      />
+      <div
+        aria-hidden="true"
+        className="absolute -bottom-32 -right-32 w-96 h-96 sm:w-[560px] sm:h-[560px] rounded-full bg-indigo-500/15 dark:bg-indigo-600/20 blur-[100px] sm:blur-[140px] pointer-events-none animate-pulse"
+        style={{ animationDelay: "2s" }}
+      />
+      <div
+        aria-hidden="true"
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 sm:w-[420px] sm:h-[420px] rounded-full bg-sky-400/10 dark:bg-sky-500/10 blur-[80px] sm:blur-[110px] pointer-events-none"
+      />
 
-      {/* ══════════════════════════════════════
-          KIRI — BRANDING PANEL (desktop only)
-          ══════════════════════════════════════ */}
-      <div className="hidden lg:flex lg:w-[55%] relative flex-col overflow-hidden bg-gradient-to-br from-slate-900 via-blue-950 to-indigo-950">
+      {/* ─── Subtle Geometric Grid Texture ─── */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 bg-[radial-gradient(#3b82f6_1px,transparent_1px)] dark:bg-[radial-gradient(#60a5fa_1px,transparent_1px)] [background-size:28px_28px] opacity-[0.07] dark:opacity-[0.09] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_50%,#000_30%,transparent_100%)] pointer-events-none"
+      />
 
-        {/* Animated mesh orbs */}
-        <div className="absolute top-[-20%] left-[-10%] w-[700px] h-[700px] rounded-full bg-blue-600/20 blur-[120px] animate-[pulse_8s_ease-in-out_infinite]" />
-        <div className="absolute bottom-[-15%] right-[-10%] w-[500px] h-[500px] rounded-full bg-indigo-500/20 blur-[100px] animate-[pulse_10s_ease-in-out_infinite_1s]" />
-        <div className="absolute top-[35%] left-[55%] w-[300px] h-[300px] rounded-full bg-violet-600/15 blur-[80px] animate-[pulse_7s_ease-in-out_infinite_2s]" />
+      {/* ─── Top Floating Utility Bar (Theme Switcher) ─── */}
+      <header className="absolute top-4 right-4 sm:top-6 sm:right-6 z-20 flex items-center gap-3">
+        <ThemeToggle className="shadow-md hover:shadow-lg transition-transform active:scale-95" />
+      </header>
 
-        {/* Grid overlay */}
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:60px_60px] [mask-image:radial-gradient(ellipse_at_center,black_30%,transparent_80%)] pointer-events-none" />
-
-        {/* Content */}
-        <div className="relative z-10 flex flex-col justify-between h-full p-12 xl:p-16">
-
-          {/* Top: Logo */}
-          <div className="flex items-center gap-3 animate-in fade-in slide-in-from-top-4 duration-700">
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-xl flex items-center justify-center shadow-[0_0_20px_rgba(99,102,241,0.5)]">
-              <Activity size={20} className="text-white" strokeWidth={2.5} />
+      {/* ─── Main Login Container ─── */}
+      <main className="relative z-10 w-full max-w-[430px] my-auto">
+        <div className="clay-surface rounded-[32px] sm:rounded-[36px] p-6 sm:p-9 shadow-2xl transition-all duration-300">
+          
+          {/* ─── Brand & Header Section ─── */}
+          <div className="flex flex-col items-center text-center mb-7">
+            {/* 3D Clay Icon Pill */}
+            <div className="w-14 h-14 sm:w-16 sm:h-16 clay-icon-blue rounded-2xl sm:rounded-[20px] mb-4 shadow-lg shadow-blue-500/25 flex items-center justify-center group cursor-default transition-transform duration-300 hover:scale-105">
+              <Activity
+                size={28}
+                className="text-white drop-shadow-sm transition-transform duration-300 group-hover:scale-110"
+                strokeWidth={2.4}
+              />
             </div>
-            <span className="text-white font-black text-xl tracking-tight">
-              MedCore<span className="text-blue-400">26</span>
-            </span>
-          </div>
 
-          {/* Middle: Hero text */}
-          <div className="animate-in fade-in slide-in-from-bottom-8 duration-700 delay-150">
-            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/15 rounded-full px-4 py-1.5 mb-8">
-              <Sparkles size={12} className="text-blue-300" />
-              <span className="text-blue-200 text-xs font-bold uppercase tracking-widest">
-                Dashboard Premium
-              </span>
+            {/* Pill Badge */}
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] sm:text-[11px] font-extrabold uppercase tracking-widest bg-blue-500/10 dark:bg-blue-400/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 mb-2.5">
+              <Sparkles size={12} />
+              <span>Portal Manajemen Medis</span>
             </div>
 
-            <h1 className="text-4xl xl:text-5xl font-black text-white leading-tight tracking-tight mb-6">
-              Sistem Manajemen{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-300">
-                Klinik Terpadu
-              </span>
+            {/* Main Title */}
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-zinc-900 dark:text-zinc-50">
+              SIMED<span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-500 dark:from-blue-400 dark:to-indigo-300">26</span>
             </h1>
 
-            <p className="text-slate-400 text-base leading-relaxed max-w-md mb-10">
-              Kendali penuh atas operasional klinik dalam satu platform — real-time, otomatis, dan presisi.
-            </p>
-
-            {/* Feature list */}
-            <div className="space-y-4">
-              {features.map((feat, i) => (
-                <div
-                  key={feat.title}
-                  className="flex items-start gap-4 group animate-in fade-in slide-in-from-left-4 duration-500"
-                  style={{ animationDelay: `${300 + i * 100}ms` }}
-                >
-                  <div className="w-10 h-10 rounded-2xl bg-white/8 border border-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-white/12 group-hover:border-white/20 transition-all duration-300">
-                    <feat.icon size={18} className="text-blue-400" />
-                  </div>
-                  <div>
-                    <p className="text-white font-bold text-sm leading-tight">{feat.title}</p>
-                    <p className="text-slate-500 text-xs mt-0.5 font-medium">{feat.desc}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Floating glass stat cards */}
-            <div className="flex gap-3 mt-10">
-              {[
-                { label: "Dokter Aktif", value: "24+", color: "blue" },
-                { label: "Pasien/Hari", value: "200+", color: "indigo" },
-                { label: "Uptime", value: "99.9%", color: "violet" },
-              ].map((stat) => (
-                <div
-                  key={stat.label}
-                  className="flex-1 bg-white/8 backdrop-blur-sm border border-white/10 rounded-2xl px-4 py-3 hover:bg-white/12 hover:border-white/20 transition-all duration-300"
-                >
-                  <p className="text-white font-black text-xl">{stat.value}</p>
-                  <p className="text-slate-500 text-[10px] font-bold uppercase tracking-wider mt-0.5">{stat.label}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Bottom: version strip */}
-          <div className="flex items-center justify-between animate-in fade-in duration-700 delay-500">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-slate-500 text-xs font-semibold">Sistem Online</span>
-            </div>
-            <span className="text-slate-600 text-xs font-bold">v2.6.0</span>
-          </div>
-        </div>
-      </div>
-
-      {/* ══════════════════════════════════════
-          KANAN — FORM PANEL
-          ══════════════════════════════════════ */}
-      <div className="flex-1 relative flex items-center justify-center overflow-hidden bg-slate-50">
-
-        {/* Subtle background effects */}
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-400/8 rounded-full blur-[100px] pointer-events-none translate-x-1/3 -translate-y-1/3" />
-        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-indigo-400/8 rounded-full blur-[80px] pointer-events-none -translate-x-1/3 translate-y-1/3" />
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.025)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.025)_1px,transparent_1px)] bg-[size:48px_48px] [mask-image:radial-gradient(ellipse_at_center,black_20%,transparent_70%)] pointer-events-none" />
-
-        {/* Mobile logo — only on small screens */}
-        <div className="absolute top-8 left-1/2 -translate-x-1/2 flex items-center gap-2.5 lg:hidden animate-in fade-in duration-500">
-          <div className="w-9 h-9 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-[0_8px_20px_rgba(59,130,246,0.35)]">
-            <Activity size={18} className="text-white" strokeWidth={2.5} />
-          </div>
-          <span className="text-slate-800 font-black text-lg tracking-tight">
-            MedCore<span className="text-blue-600">26</span>
-          </span>
-        </div>
-
-        {/* Form card */}
-        <div className="relative z-10 w-full max-w-md px-6 animate-in fade-in zoom-in-95 slide-in-from-bottom-4 duration-700">
-
-          {/* Header */}
-          <div className="mb-8 text-center lg:text-left">
-            <h2 className="text-2xl font-black text-slate-800 tracking-tight mb-2">
-              Selamat datang kembali
-            </h2>
-            <p className="text-slate-500 text-sm font-semibold">
-              Masuk untuk mengakses dashboard klinik
+            {/* Subtitle */}
+            <p className="text-xs sm:text-sm font-medium text-zinc-500 dark:text-zinc-400 mt-1 max-w-[280px]">
+              Masuk untuk mengelola operasional dan jadwal klinik secara terpadu
             </p>
           </div>
 
-          {/* Glass form card */}
-          <div className="bg-white/85 backdrop-blur-2xl border border-white/70 p-7 sm:p-8 rounded-[2rem] shadow-[0_8px_40px_-12px_rgba(0,0,0,0.08),0_0_0_1px_rgba(255,255,255,0.6)_inset]">
-            <form onSubmit={handleLogin} className="space-y-4">
-
-              {/* Username */}
-              <div className="space-y-1.5">
-                <label className="text-[11px] font-black text-slate-500 uppercase tracking-widest ml-1">
-                  Username
-                </label>
-                <div className="relative group">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-600 transition-colors duration-200">
-                    <User size={17} strokeWidth={2.5} />
-                  </div>
-                  <input
-                    type="text"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    placeholder="Masukkan username..."
-                    className="w-full pl-11 pr-4 py-3.5 bg-slate-50/80 border border-slate-200 rounded-2xl text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-400 focus:bg-white transition-all duration-200 font-semibold text-sm shadow-[inset_0_1px_2px_rgba(0,0,0,0.03)]"
-                    disabled={loading}
-                    autoComplete="username"
-                  />
+          {/* ─── Login Form ─── */}
+          <form onSubmit={handleLogin} className="space-y-4" noValidate>
+            
+            {/* Username Input Field */}
+            <div className="space-y-1.5">
+              <label
+                htmlFor="login-username"
+                className="block text-[11px] font-extrabold uppercase tracking-wider text-zinc-600 dark:text-zinc-400 ml-1"
+              >
+                Username
+              </label>
+              <div className="relative group">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-400 dark:text-zinc-500 group-focus-within:text-blue-500 dark:group-focus-within:text-blue-400 transition-colors duration-200">
+                  <User size={18} strokeWidth={2.2} />
                 </div>
+                <input
+                  id="login-username"
+                  name="username"
+                  type="text"
+                  value={username}
+                  onChange={(e) => {
+                    setUsername(e.target.value);
+                    if (error) setError("");
+                  }}
+                  placeholder="Masukkan username akun"
+                  disabled={loading}
+                  autoComplete="username"
+                  autoFocus
+                  required
+                  className="w-full pl-11 pr-4 py-3 sm:py-3.5 clay-inset rounded-2xl text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 font-semibold text-xs sm:text-sm outline-none transition-all duration-200 focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/50 disabled:opacity-50"
+                />
               </div>
+            </div>
 
-              {/* Password */}
-              <div className="space-y-1.5">
-                <label className="text-[11px] font-black text-slate-500 uppercase tracking-widest ml-1">
+            {/* Password Input Field with Show/Hide Toggle */}
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between ml-1">
+                <label
+                  htmlFor="login-password"
+                  className="block text-[11px] font-extrabold uppercase tracking-wider text-zinc-600 dark:text-zinc-400"
+                >
                   Password
                 </label>
-                <div className="relative group">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-600 transition-colors duration-200">
-                    <Lock size={17} strokeWidth={2.5} />
-                  </div>
-                  <input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Masukkan password..."
-                    className="w-full pl-11 pr-4 py-3.5 bg-slate-50/80 border border-slate-200 rounded-2xl text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-400 focus:bg-white transition-all duration-200 font-semibold text-sm shadow-[inset_0_1px_2px_rgba(0,0,0,0.03)]"
-                    disabled={loading}
-                    autoComplete="current-password"
-                  />
-                </div>
-
-                {/* Error Message */}
-                <div
-                  className={cn(
-                    "overflow-hidden transition-all duration-300 ease-in-out",
-                    error ? "max-h-16 opacity-100 mt-2" : "max-h-0 opacity-0"
-                  )}
-                >
-                  <div className="flex items-start gap-2.5 text-[12px] font-bold text-rose-600 bg-rose-50 px-3.5 py-2.5 rounded-xl border border-rose-100 shadow-sm">
-                    <AlertCircle size={14} className="mt-0.5 flex-shrink-0" />
-                    <span>{error}</span>
-                  </div>
-                </div>
               </div>
+              <div className="relative group">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-400 dark:text-zinc-500 group-focus-within:text-blue-500 dark:group-focus-within:text-blue-400 transition-colors duration-200">
+                  <Lock size={18} strokeWidth={2.2} />
+                </div>
+                <input
+                  id="login-password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    if (error) setError("");
+                  }}
+                  placeholder="Masukkan kata sandi"
+                  disabled={loading}
+                  autoComplete="current-password"
+                  required
+                  className="w-full pl-11 pr-11 py-3 sm:py-3.5 clay-inset rounded-2xl text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 font-semibold text-xs sm:text-sm outline-none transition-all duration-200 focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/50 disabled:opacity-50"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  tabIndex={-1}
+                  aria-label={showPassword ? "Sembunyikan kata sandi" : "Tampilkan kata sandi"}
+                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-zinc-400 hover:text-zinc-700 dark:text-zinc-500 dark:hover:text-zinc-200 focus:outline-none transition-colors duration-200 cursor-pointer"
+                >
+                  {showPassword ? (
+                    <EyeOff size={18} strokeWidth={2.2} className="transition-transform active:scale-90" />
+                  ) : (
+                    <Eye size={18} strokeWidth={2.2} className="transition-transform active:scale-90" />
+                  )}
+                </button>
+              </div>
+            </div>
 
-              {/* Submit Button */}
+            {/* Error Notification Alert */}
+            {error && (
+              <div
+                role="alert"
+                className="flex items-start gap-2.5 p-3 rounded-2xl bg-rose-500/10 dark:bg-rose-500/15 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-xs font-bold animate-in fade-in slide-in-from-top-2 duration-200"
+              >
+                <AlertCircle size={16} className="mt-0.5 shrink-0" />
+                <span className="leading-tight">{error}</span>
+              </div>
+            )}
+
+            {/* Submit Action Button */}
+            <div className="pt-2">
               <button
                 type="submit"
-                disabled={loading || !username || !password}
-                className="group relative w-full flex justify-center py-3.5 px-4 text-sm font-black rounded-2xl text-white bg-slate-900 focus:outline-none focus:ring-4 focus:ring-slate-900/10 transition-all overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_4px_14px_rgba(0,0,0,0.1)] active:scale-[0.98] mt-2"
+                disabled={loading || !username.trim() || !password}
+                className={cn(
+                  "w-full py-3.5 px-4 rounded-2xl text-xs sm:text-sm font-black text-white clay-pill-blue flex items-center justify-center gap-2.5 shadow-lg shadow-blue-500/25 cursor-pointer transition-all duration-200",
+                  "hover:shadow-blue-500/40 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98]",
+                  "disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none"
+                )}
               >
-                {/* Gradient hover overlay */}
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-indigo-600 opacity-0 group-enabled:group-hover:opacity-100 transition-opacity duration-300" />
-
-                <div className="relative z-10 flex items-center gap-2.5">
-                  {loading ? (
-                    <>
-                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      <span>Memproses...</span>
-                    </>
-                  ) : (
-                    <>
-                      <ShieldCheck size={16} className="text-slate-400 group-hover:text-blue-200 transition-colors" />
-                      <span>Masuk ke Dashboard</span>
-                      <ArrowRight size={15} className="translate-x-0 group-hover:translate-x-1 opacity-50 group-hover:opacity-100 transition-all" />
-                    </>
-                  )}
-                </div>
+                {loading ? (
+                  <>
+                    <svg
+                      className="animate-spin h-4 w-4 text-white shrink-0"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      />
+                    </svg>
+                    <span>Memverifikasi Akses...</span>
+                  </>
+                ) : (
+                  <>
+                    <LockKeyhole size={16} className="text-white/90" />
+                    <span>Masuk ke Dashboard</span>
+                    <ArrowRight size={15} className="text-white/90 group-hover:translate-x-0.5 transition-transform" />
+                  </>
+                )}
               </button>
-            </form>
-
-            {/* Footer strip */}
-            <div className="mt-6 pt-5 border-t border-slate-100 flex items-center justify-between text-[10px] font-black text-slate-400 uppercase tracking-widest">
-              <span className="flex items-center gap-1.5">
-                <CheckCircle2 size={11} className="text-emerald-400" />
-                Terenkripsi
-              </span>
-              <span className="flex items-center gap-1.5">
-                <ShieldCheck size={11} />
-                Khusus Internal
-              </span>
             </div>
-          </div>
+          </form>
 
-          {/* Bottom hint */}
-          <p className="text-center text-[11px] text-slate-400 font-semibold mt-5">
-            Butuh akses?{" "}
-            <span className="text-blue-500 font-bold cursor-pointer hover:underline">
-              Hubungi administrator
+          {/* ─── Security Footer Badges ─── */}
+          <div className="mt-6 pt-5 border-t border-zinc-200/80 dark:border-white/10 flex items-center justify-between text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+            <span className="flex items-center gap-1.5">
+              <CheckCircle2 size={13} className="text-emerald-500 shrink-0" />
+              Sistem Aktif
+            </span>
+            <span className="flex items-center gap-1.5">
+              <ShieldCheck size={13} className="text-blue-500 shrink-0" />
+              TLS 256-Bit
+            </span>
+          </div>
+        </div>
+
+        {/* ─── Bottom Support & Version Footer ─── */}
+        <div className="text-center mt-5 space-y-1.5">
+          <p className="text-xs text-zinc-500 dark:text-zinc-400 font-medium">
+            Mengalami kendala login?{" "}
+            <span className="text-blue-600 dark:text-blue-400 font-bold hover:underline cursor-pointer">
+              Hubungi Administrator
             </span>
           </p>
+          <p className="text-[10px] font-semibold text-zinc-400 dark:text-zinc-600 tracking-wider">
+            SIMED26 • Hospital Management System v2.6.0
+          </p>
         </div>
-      </div>
+      </main>
     </div>
   );
 }

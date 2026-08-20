@@ -120,8 +120,8 @@ export function AiLeaveImportModal({ isOpen, onClose, doctors, onSuccess }: Prop
         {/* Header */}
         <div className="px-6 py-5 border-b border-zinc-100 dark:border-zinc-800/60 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 clay-pill-violet rounded-[16px] text-white">
-              <Sparkles size={20} strokeWidth={2.5} />
+            <div className="h-10 w-10 clay-icon-violet rounded-[14px] flex items-center justify-center text-white shrink-0">
+              <Sparkles size={19} className="relative z-10" strokeWidth={2.5} />
             </div>
             <div>
               <h3 className="text-base font-black text-zinc-900 dark:text-zinc-100 tracking-tight">AI Smart Cuti Extractor</h3>

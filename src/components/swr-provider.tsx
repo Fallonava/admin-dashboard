@@ -68,6 +68,9 @@ export const SWRProvider = ({ children }: { children: React.ReactNode }) => {
                 revalidateOnFocus: false,
                 // Tetap fresh saat reconnect setelah offline
                 revalidateOnReconnect: true,
+                // Smooth transition tanpa flicker layout shift
+                keepPreviousData: true,
+                revalidateIfStale: false,
                 // Deduplicate request yang sama dalam 5 detik
                 dedupingInterval: 5000,
                 // Safety net: polling setiap 30 detik jika Socket.IO event miss

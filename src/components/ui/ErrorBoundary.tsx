@@ -46,24 +46,24 @@ export class ErrorBoundary extends Component<Props, State> {
 
       return (
         <div className={cn(
-          "w-full p-6 rounded-[28px] bg-red-50/50 border border-red-100 backdrop-blur-xl flex flex-col items-center justify-center gap-4 text-center animate-in fade-in duration-500",
+          "w-full p-6 rounded-[28px] clay-surface flex flex-col items-center justify-center gap-4 text-center animate-in fade-in duration-300",
           this.props.className
         )}>
-          <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center text-red-600">
-            <AlertCircle size={24} />
+          <div className="w-12 h-12 rounded-[16px] clay-icon-rose flex items-center justify-center text-white shrink-0">
+            <AlertCircle size={22} className="relative z-10" strokeWidth={2.5} />
           </div>
           <div className="space-y-1">
-            <h3 className="font-black text-red-900">Oops, Terjadi Kesalahan</h3>
-            <p className="text-xs text-red-600/80 font-medium max-w-[240px]">
+            <h3 className="font-black text-zinc-900 dark:text-zinc-100 text-sm">Oops, Terjadi Kesalahan</h3>
+            <p className="text-xs text-zinc-500 dark:text-zinc-400 font-bold max-w-[240px]">
               {this.props.name ? `Komponen "${this.props.name}"` : "Bagian ini"} gagal dimuat.
             </p>
           </div>
           <button
             onClick={this.handleReset}
-            className="flex items-center gap-2 px-4 py-2 rounded-full bg-white text-red-600 text-xs font-black shadow-sm border border-red-100 hover:bg-red-50 active:scale-95 transition-all"
+            className="flex items-center gap-2 px-4 py-2 rounded-[14px] clay-pill-rose text-white text-xs font-black shadow-sm active:scale-95 transition-all"
           >
-            <RefreshCcw size={14} />
-            Coba Lagi
+            <RefreshCcw size={13} strokeWidth={2.5} />
+            <span>Coba Lagi</span>
           </button>
         </div>
       );

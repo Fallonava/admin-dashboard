@@ -102,8 +102,7 @@ export function DoctorFormModal({ isOpen, onClose, doctor, onSuccess }: DoctorFo
 
     return createPortal(
         <div
-            className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4"
-            style={{ background: 'rgba(15, 23, 42, 0.5)', backdropFilter: 'blur(8px)' }}
+            className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
             onClick={onClose}
         >
             <div
@@ -111,44 +110,40 @@ export function DoctorFormModal({ isOpen, onClose, doctor, onSuccess }: DoctorFo
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby="doctor-modal-title"
-                className="bg-white rounded-t-[28px] sm:rounded-[24px] w-full max-w-md shadow-2xl flex flex-col max-h-[92vh] overflow-y-auto"
-                style={{ animation: 'slideUp 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)' }}
+                className="clay-surface rounded-t-[32px] sm:rounded-[32px] w-full max-w-md flex flex-col max-h-[92vh] overflow-y-auto animate-in zoom-in-95 duration-300"
                 onClick={e => e.stopPropagation()}
             >
                 {/* HEADER */}
-                <div className="flex items-center gap-4 px-6 pt-6 pb-5 border-b border-slate-100">
-                    <div className={cn(
-                        "w-11 h-11 rounded-2xl flex items-center justify-center flex-shrink-0",
-                        isEditing ? "bg-blue-50" : "bg-slate-900"
-                    )}>
+                <div className="flex items-center gap-4 px-6 pt-6 pb-5 border-b border-zinc-200/60 dark:border-[#222738]">
+                    <div className="w-12 h-12 rounded-[18px] clay-icon-blue text-white flex items-center justify-center flex-shrink-0">
                         {isEditing
-                            ? <Stethoscope className="h-5 w-5 text-blue-600" />
-                            : <Plus className="h-5 w-5 text-white" />
+                            ? <Stethoscope className="h-5 w-5 text-white relative z-10" strokeWidth={2.5} />
+                            : <Plus className="h-5 w-5 text-white relative z-10" strokeWidth={2.5} />
                         }
                     </div>
                     <div className="flex-1 min-w-0">
-                        <h3 id="doctor-modal-title" className="text-[15px] font-black text-slate-900">
-                            {isEditing ? 'Edit Dokter' : 'Tambah Dokter'}
+                        <h3 id="doctor-modal-title" className="text-[16px] font-black text-zinc-900 dark:text-zinc-100 tracking-tight">
+                            {isEditing ? 'Edit Profil Dokter' : 'Tambah Dokter Baru'}
                         </h3>
-                        <p className="text-[12px] text-slate-400 mt-0.5">
-                            {isEditing ? doctor?.name : 'Isi profil dokter di bawah ini'}
+                        <p className="text-[11.5px] text-zinc-500 dark:text-zinc-400 font-bold mt-0.5 truncate">
+                            {isEditing ? doctor?.name : 'Isi identitas dokter di bawah ini'}
                         </p>
                     </div>
                     <button
                         onClick={onClose}
                         aria-label="Tutup"
-                        className="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+                        className="p-2.5 rounded-[14px] clay-button text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-all active:scale-90"
                     >
-                        <X size={16} />
+                        <X size={16} strokeWidth={2.5} />
                     </button>
                 </div>
 
                 {/* FORM */}
-                <div className="p-6 space-y-5">
+                <div className="p-6 space-y-4">
                     {/* Nama */}
                     <div>
-                        <label htmlFor="doc-name" className="flex items-center gap-1.5 text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">
-                            <User size={10} /> Nama Lengkap
+                        <label htmlFor="doc-name" className="flex items-center gap-1.5 text-[10.5px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-1.5">
+                            <User size={12} /> Nama Lengkap
                         </label>
                         <input
                             id="doc-name"
@@ -156,54 +151,54 @@ export function DoctorFormModal({ isOpen, onClose, doctor, onSuccess }: DoctorFo
                             placeholder="dr. Ahmad Syauqi, Sp.B"
                             value={formData.name}
                             onChange={e => setFormData({ ...formData, name: e.target.value })}
-                            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-semibold text-slate-800 outline-none focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all placeholder:text-slate-300"
+                            className="w-full clay-inset rounded-[16px] px-4 py-3 text-xs font-bold text-zinc-900 dark:text-zinc-100 outline-none placeholder:text-zinc-400"
                         />
                     </div>
 
                     {/* Spesialisasi */}
                     <div>
-                        <label htmlFor="doc-specialty" className="flex items-center gap-1.5 text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">
-                            <Tag size={10} /> Spesialisasi
+                        <label htmlFor="doc-specialty" className="flex items-center gap-1.5 text-[10.5px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-1.5">
+                            <Tag size={12} /> Spesialisasi
                         </label>
                         <input
                             id="doc-specialty"
                             placeholder="Bedah Umum, Penyakit Dalam..."
                             value={formData.specialty}
                             onChange={e => setFormData({ ...formData, specialty: e.target.value })}
-                            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-semibold text-slate-800 outline-none focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all placeholder:text-slate-300"
+                            className="w-full clay-inset rounded-[16px] px-4 py-3 text-xs font-bold text-zinc-900 dark:text-zinc-100 outline-none placeholder:text-zinc-400"
                         />
                     </div>
 
                     {/* Kode Antrian */}
                     <div>
-                        <label htmlFor="doc-queue" className="flex items-center gap-1.5 text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">
-                            <Hash size={10} /> Kode Antrian
+                        <label htmlFor="doc-queue" className="flex items-center gap-1.5 text-[10.5px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-1.5">
+                            <Hash size={12} /> Kode Antrian
                         </label>
                         <input
                             id="doc-queue"
                             placeholder="A-01"
                             value={formData.queueCode}
                             onChange={e => setFormData({ ...formData, queueCode: e.target.value })}
-                            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-800 outline-none focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all text-center placeholder:text-slate-300 uppercase"
+                            className="w-full clay-inset rounded-[16px] px-4 py-3 text-xs font-black text-zinc-900 dark:text-zinc-100 outline-none text-center placeholder:text-zinc-400 uppercase"
                         />
                     </div>
 
                     {/* Kategori */}
                     <div>
-                        <label className="flex items-center gap-1.5 text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">
+                        <label className="flex items-center gap-1.5 text-[10.5px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-1.5">
                             Kategori
                         </label>
-                        <div className="grid grid-cols-2 gap-2">
+                        <div className="clay-inset p-1.5 rounded-[20px] grid grid-cols-2 gap-2">
                             {CATEGORY_OPTIONS.map(opt => (
                                 <button
                                     key={opt.value}
                                     type="button"
                                     onClick={() => setFormData({ ...formData, category: opt.value as any })}
                                     className={cn(
-                                        "py-3 rounded-xl text-[13px] font-bold transition-all shadow-sm",
+                                        "py-2.5 rounded-[16px] text-xs font-black transition-all",
                                         formData.category === opt.value
-                                            ? `${opt.selColor} shadow-md`
-                                            : "bg-slate-100 text-slate-500 hover:bg-slate-200"
+                                            ? opt.value === 'Bedah' ? "clay-pill-rose text-white" : "clay-pill-emerald text-white"
+                                            : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900"
                                     )}
                                 >
                                     {opt.label}
@@ -214,34 +209,41 @@ export function DoctorFormModal({ isOpen, onClose, doctor, onSuccess }: DoctorFo
 
                     {/* Status */}
                     <div>
-                        <label className="flex items-center gap-1.5 text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">
-                            <Activity size={10} /> Status Awal
+                        <label className="flex items-center gap-1.5 text-[10.5px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-1.5">
+                            <Activity size={12} /> Status Awal
                         </label>
-                        <div className="grid grid-cols-3 gap-1.5">
-                            {STATUS_OPTIONS.map(opt => (
-                                <button
-                                    key={opt.value}
-                                    type="button"
-                                    onClick={() => setFormData({ ...formData, status: opt.value })}
-                                    className={cn(
-                                        "py-2.5 rounded-xl text-[10px] font-black transition-all",
-                                        formData.status === opt.value
-                                            ? `${opt.activeBg} text-white shadow-sm`
-                                            : `bg-slate-100 ${opt.color} hover:bg-slate-200`
-                                    )}
-                                >
-                                    {opt.label}
-                                </button>
-                            ))}
+                        <div className="grid grid-cols-4 gap-1.5">
+                            {STATUS_OPTIONS.map(opt => {
+                                const isActive = formData.status === opt.value;
+                                return (
+                                    <button
+                                        key={opt.value}
+                                        type="button"
+                                        onClick={() => setFormData({ ...formData, status: opt.value })}
+                                        className={cn(
+                                            "py-2 px-1 rounded-[12px] text-[10px] font-black transition-all text-center",
+                                            isActive
+                                                ? opt.value === 'PRAKTEK' ? "clay-pill-blue text-white"
+                                                : opt.value === 'PENUH' ? "clay-pill-amber text-white"
+                                                : opt.value === 'OPERASI' || opt.value === 'CUTI' ? "clay-pill-rose text-white"
+                                                : opt.value === 'SELESAI' ? "clay-pill-emerald text-white"
+                                                : "clay-button text-zinc-900 dark:text-white"
+                                                : "clay-button text-zinc-600 dark:text-zinc-400"
+                                        )}
+                                    >
+                                        {opt.label}
+                                    </button>
+                                );
+                            })}
                         </div>
                     </div>
                 </div>
 
                 {/* FOOTER */}
-                <div className="px-6 pb-6 pt-0 flex gap-3">
+                <div className="px-6 pb-6 pt-2 flex gap-3">
                     <button
                         onClick={onClose}
-                        className="flex-1 py-3.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 text-sm font-bold transition-all"
+                        className="flex-1 py-3 rounded-[16px] clay-button text-zinc-700 dark:text-zinc-300 text-xs font-black transition-all"
                     >
                         Batal
                     </button>
@@ -249,25 +251,23 @@ export function DoctorFormModal({ isOpen, onClose, doctor, onSuccess }: DoctorFo
                         onClick={handleSubmit}
                         disabled={loading || !isValid}
                         className={cn(
-                            "flex-[2] py-3.5 rounded-xl text-sm font-black transition-all flex items-center justify-center gap-2",
+                            "flex-[2] py-3 rounded-[16px] text-xs font-black transition-all flex items-center justify-center gap-2",
                             !loading && isValid
-                                ? "bg-slate-900 hover:bg-slate-800 text-white shadow-lg shadow-slate-900/20 active:scale-[0.98]"
-                                : "bg-slate-100 text-slate-400 cursor-not-allowed"
+                                ? "clay-pill-blue text-white active:scale-[0.98]"
+                                : "clay-button text-zinc-400 opacity-50 cursor-not-allowed"
                         )}
                     >
                         {loading ? (
                             <span className="animate-pulse">Menyimpan...</span>
                         ) : (
                             <>
-                                {isEditing ? <Save size={15} /> : <Plus size={15} />}
+                                {isEditing ? <Save size={15} /> : <Plus size={15} strokeWidth={2.5} />}
                                 {isEditing ? 'Simpan Perubahan' : 'Tambah Dokter'}
                             </>
                         )}
                     </button>
                 </div>
             </div>
-
-            <style>{`@keyframes slideUp { from { transform: translateY(16px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }`}</style>
         </div>,
         document.body
     );

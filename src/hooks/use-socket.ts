@@ -67,7 +67,9 @@ export const useSocket = (room?: string) => {
     };
 
     const onConnectError = (err: Error) => {
-      console.error('[Socket.IO] Connect error:', err.message);
+      // Use warn to prevent Next.js dev overlay from interrupting UI
+      console.warn('[Socket.IO] Connection offline (falling back to REST):', err.message);
+      setIsConnected(false);
     };
 
     sock.on('connect', onConnect);

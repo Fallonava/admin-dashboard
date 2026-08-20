@@ -25,13 +25,12 @@ interface AnomalyData {
   audit_logs: AuditLog[];
   resolvedAt?: string;
   _id: string;
-  // Included from parent for context
   date: string;
   recapId: string;
 }
 
 interface AnomalyDashboardProps {
-  data: any[]; // The raw recap data from API
+  data: any[];
   onRefresh: () => void;
 }
 
@@ -58,7 +57,6 @@ export default function AnomalyDashboard({ data, onRefresh }: AnomalyDashboardPr
   const [isDeletingAll, setIsDeletingAll] = useState(false);
   const [formData, setFormData] = useState({ date: '', no_rm: '', nama: '', asuransi: '' });
 
-  // Flatten anomalies from all recaps
   const allAnomalies = useMemo(() => {
     let anomalies: AnomalyData[] = [];
     data.forEach(recap => {
@@ -72,7 +70,6 @@ export default function AnomalyDashboard({ data, onRefresh }: AnomalyDashboardPr
         });
       }
     });
-    // Sort so OPEN is top, then by date descending
     return anomalies.sort((a, b) => {
       if (a.status === 'OPEN' && b.status !== 'OPEN') return -1;
       if (a.status !== 'OPEN' && b.status === 'OPEN') return 1;
@@ -83,7 +80,6 @@ export default function AnomalyDashboard({ data, onRefresh }: AnomalyDashboardPr
   const filteredAnomalies = useMemo(() => {
     let result = allAnomalies;
     
-    // Tab filtering
     if (activeTab === 'PENDING') {
       result = result.filter(a => ['OPEN', 'PENDING_DOCTOR', 'PENDING_SYSTEM'].includes(a.status));
     } else if (activeTab === 'RESOLVED') {
@@ -92,7 +88,6 @@ export default function AnomalyDashboard({ data, onRefresh }: AnomalyDashboardPr
       result = result.filter(a => a.status === 'REJECTED');
     }
 
-    // Text filtering
     if (searchQuery) {
       const lowerQ = searchQuery.toLowerCase();
       result = result.filter(d => 
@@ -117,7 +112,6 @@ export default function AnomalyDashboard({ data, onRefresh }: AnomalyDashboardPr
   };
 
   const openAddModal = () => {
-    // Default date to today
     setFormData({ date: new Date().toISOString().split('T')[0], no_rm: '', nama: '', asuransi: '' });
     setIsAddModalOpen(true);
   };
@@ -139,7 +133,6 @@ export default function AnomalyDashboard({ data, onRefresh }: AnomalyDashboardPr
 
     setIsResolving(selectedAnomaly._id);
     try {
-      // In a real app with auth, "by" would be the actual logged-in user
       const currentUser = "System Admin";
 
       const res = await fetch('/api/recaps/resolve-anomaly', {
@@ -247,7 +240,6 @@ export default function AnomalyDashboard({ data, onRefresh }: AnomalyDashboardPr
     if (filteredAnomalies.length === 0) return;
     setIsDeletingAll(true);
     try {
-      // Delete all anomalies in the current filtered list one by one
       for (const anomaly of filteredAnomalies) {
         await fetch(`/api/recaps/crud-anomaly?recap_id=${anomaly.recapId}&no_rm=${anomaly.no_rm}`, {
           method: 'DELETE'
@@ -264,12 +256,12 @@ export default function AnomalyDashboard({ data, onRefresh }: AnomalyDashboardPr
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'OPEN': return <span className="text-[10px] font-extrabold uppercase px-2 py-1 rounded-md tracking-wider inline-flex items-center gap-1 border bg-amber-50 text-amber-700 border-amber-200"><Clock size={10} strokeWidth={3} /> Pending</span>;
-      case 'RESOLVED': return <span className="text-[10px] font-extrabold uppercase px-2 py-1 rounded-md tracking-wider inline-flex items-center gap-1 border bg-emerald-50 border-emerald-100 text-emerald-600"><CheckCircle2 size={10} strokeWidth={3} /> Selesai</span>;
-      case 'PENDING_DOCTOR': return <span className="text-[10px] font-extrabold uppercase px-2 py-1 rounded-md tracking-wider inline-flex items-center gap-1 border bg-blue-50 border-blue-200 text-blue-700"><Clock size={10} strokeWidth={3} /> Tunggu Dokter</span>;
-      case 'PENDING_SYSTEM': return <span className="text-[10px] font-extrabold uppercase px-2 py-1 rounded-md tracking-wider inline-flex items-center gap-1 border bg-purple-50 border-purple-200 text-purple-700"><ShieldAlert size={10} strokeWidth={3} /> Sistem Error</span>;
-      case 'REJECTED': return <span className="text-[10px] font-extrabold uppercase px-2 py-1 rounded-md tracking-wider inline-flex items-center gap-1 border bg-red-50 border-red-200 text-red-700"><X size={10} strokeWidth={3} /> Ditolak / Batal</span>;
-      case 'IGNORED': return <span className="text-[10px] font-extrabold uppercase px-2 py-1 rounded-md tracking-wider inline-flex items-center gap-1 border bg-slate-100 border-slate-300 text-slate-600"><Info size={10} strokeWidth={3} /> Diabaikan</span>;
+      case 'OPEN': return <span className="text-[10px] font-black uppercase px-2.5 py-1 rounded-full tracking-wider inline-flex items-center gap-1.5 clay-pill-amber text-white"><Clock size={10} strokeWidth={3} /> Pending</span>;
+      case 'RESOLVED': return <span className="text-[10px] font-black uppercase px-2.5 py-1 rounded-full tracking-wider inline-flex items-center gap-1.5 clay-pill-emerald text-white"><CheckCircle2 size={10} strokeWidth={3} /> Selesai</span>;
+      case 'PENDING_DOCTOR': return <span className="text-[10px] font-black uppercase px-2.5 py-1 rounded-full tracking-wider inline-flex items-center gap-1.5 clay-pill-blue text-white"><Clock size={10} strokeWidth={3} /> Tunggu Dokter</span>;
+      case 'PENDING_SYSTEM': return <span className="text-[10px] font-black uppercase px-2.5 py-1 rounded-full tracking-wider inline-flex items-center gap-1.5 clay-pill-violet text-white"><ShieldAlert size={10} strokeWidth={3} /> Sistem Error</span>;
+      case 'REJECTED': return <span className="text-[10px] font-black uppercase px-2.5 py-1 rounded-full tracking-wider inline-flex items-center gap-1.5 clay-pill-rose text-white"><X size={10} strokeWidth={3} /> Ditolak / Batal</span>;
+      case 'IGNORED': return <span className="text-[10px] font-black uppercase px-2.5 py-1 rounded-full tracking-wider inline-flex items-center gap-1.5 clay-button text-zinc-500"><Info size={10} strokeWidth={3} /> Diabaikan</span>;
       default: return null;
     }
   };
@@ -280,73 +272,69 @@ export default function AnomalyDashboard({ data, onRefresh }: AnomalyDashboardPr
     <>
     {/* Delete All Confirmation Modal */}
     {isDeleteAllModalOpen && (
-      <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setIsDeleteAllModalOpen(false)}>
-        <div className="bg-white rounded-2xl shadow-2xl p-6 max-w-sm w-full border border-rose-100" onClick={e => e.stopPropagation()}>
+      <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-md flex items-center justify-center p-4" onClick={() => setIsDeleteAllModalOpen(false)}>
+        <div className="clay-surface rounded-[32px] p-6 max-w-sm w-full shadow-2xl" onClick={e => e.stopPropagation()}>
           <div className="flex items-start gap-4">
-            <div className="p-3 bg-rose-100 text-rose-600 rounded-xl shrink-0"><Trash2 size={22}/></div>
+            <div className="p-3 clay-pill-rose text-white rounded-2xl shrink-0"><Trash2 size={22}/></div>
             <div>
-              <h3 className="font-black text-slate-800 text-lg">Hapus Semua Anomali?</h3>
-              <p className="text-sm text-slate-500 mt-1">
-                Tindakan ini akan menghapus <strong className="text-rose-600">{filteredAnomalies.length} anomali</strong> yang saat ini ditampilkan{activeTab !== 'ALL' ? ` (tab: ${activeTab})` : ''}. Data anomali yang dihapus <strong>tidak dapat dikembalikan</strong>.
+              <h3 className="font-black text-zinc-900 dark:text-zinc-100 text-lg">Hapus Semua Anomali?</h3>
+              <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1 font-bold">
+                Tindakan ini akan menghapus <strong className="text-rose-500">{filteredAnomalies.length} anomali</strong> yang saat ini ditampilkan. Data anomali yang dihapus <strong>tidak dapat dikembalikan</strong>.
               </p>
             </div>
           </div>
           <div className="flex gap-2 mt-5">
-            <button onClick={() => setIsDeleteAllModalOpen(false)} className="flex-1 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-sm transition-all">Batal</button>
-            <button onClick={handleDeleteAll} disabled={isDeletingAll} className="flex-1 px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl text-sm transition-all flex items-center justify-center gap-2 disabled:opacity-50">
+            <button onClick={() => setIsDeleteAllModalOpen(false)} className="flex-1 px-4 py-2.5 clay-button text-zinc-700 dark:text-zinc-300 font-black rounded-xl text-sm transition-all active:scale-95">Batal</button>
+            <button onClick={handleDeleteAll} disabled={isDeletingAll} className="flex-1 px-4 py-2.5 clay-pill-rose text-white font-black rounded-xl text-sm transition-all flex items-center justify-center gap-2 disabled:opacity-50 active:scale-95">
               {isDeletingAll ? <Loader2 size={14} className="animate-spin"/> : <Trash2 size={14}/>}
-              {isDeletingAll ? 'Menghapus...' : `Hapus ${filteredAnomalies.length} Data`}
+              {isDeletingAll ? 'Menghapus...' : `Hapus (${filteredAnomalies.length})`}
             </button>
           </div>
         </div>
       </div>
     )}
-    <div className="bg-white border border-slate-200/60 rounded-[2rem] shadow-sm flex flex-col overflow-hidden w-full">
-      
+
+    <div className="clay-surface rounded-[36px] shadow-2xl flex flex-col overflow-hidden w-full">
       {/* Header */}
-      <div className="p-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-50/50">
+      <div className="p-6 border-b border-zinc-200/60 dark:border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h3 className="font-bold text-slate-800 flex items-center gap-2 text-lg">
+          <h3 className="font-black text-zinc-900 dark:text-zinc-100 flex items-center gap-2 text-lg">
             <AlertCircle size={20} className={openCount > 0 ? "text-amber-500" : "text-emerald-500"} />
             Claim Aging & Anomali
           </h3>
-          <p className="text-sm text-slate-500 mt-1">
+          <p className="text-xs font-bold text-zinc-500 dark:text-zinc-400 mt-1">
             Pantau dan selesaikan pasien tanpa bukti SEP untuk mencegah gagal klaim.
           </p>
         </div>
         
-        <div className="flex items-center gap-2 flex-wrap">
+        <div className="flex items-center gap-2.5 flex-wrap">
           {openCount > 0 && (
-             <div className="px-3 py-1 bg-amber-100/50 border border-amber-200 text-amber-700 rounded-full text-xs font-bold flex items-center gap-1.5 shadow-sm shadow-amber-500/10">
-               <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
-               </span>
+             <div className="px-3.5 py-1.5 clay-pill-amber text-white rounded-full text-xs font-black flex items-center gap-1.5 shadow-sm">
+               <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
                {openCount} Pending Selesai
              </div>
           )}
           {filteredAnomalies.length > 0 && (
             <button
               onClick={() => setIsDeleteAllModalOpen(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-100 rounded-xl text-xs font-bold transition-all shadow-sm shrink-0"
+              className="flex items-center gap-1.5 px-3.5 py-2 clay-pill-rose text-white rounded-2xl text-xs font-black transition-all active:scale-95 shrink-0"
             >
-              <Trash2 size={13} strokeWidth={2.5}/> Hapus Semua
+              <Trash2 size={14} strokeWidth={2.5}/> Hapus Semua
             </button>
           )}
           <button 
              onClick={openAddModal}
-             className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 text-indigo-600 border border-indigo-100 hover:border-indigo-200 hover:bg-indigo-100/80 rounded-xl text-xs font-bold transition-all shadow-sm shrink-0"
+             className="flex items-center gap-1.5 px-4 py-2 clay-button text-blue-600 dark:text-blue-400 rounded-2xl text-xs font-black transition-all active:scale-95 shrink-0"
           >
              <Plus size={14} strokeWidth={2.5}/> Tambah Manual
           </button>
         </div>
       </div>
       
-      {/* Controls: Search & Premium Segmented Tabs */}
-      <div className="p-4 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white">
-        
+      {/* Controls: Search & Tabs */}
+      <div className="p-4 border-b border-zinc-200/60 dark:border-white/5 flex flex-col md:flex-row md:items-center justify-between gap-4">
         {/* Segmented Controls */}
-        <div className="flex bg-slate-100/50 p-1 rounded-xl w-full md:w-auto relative z-0 overflow-x-auto snap-x touch-pan-x hide-scrollbar backdrop-blur-sm border border-slate-200">
+        <div className="flex clay-inset p-1 rounded-2xl w-full md:w-auto overflow-x-auto hide-scrollbar">
           {[
             { id: 'ALL', label: 'Semua' },
             { id: 'PENDING', label: 'Pending' },
@@ -357,15 +345,12 @@ export default function AnomalyDashboard({ data, onRefresh }: AnomalyDashboardPr
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
                 className={cn(
-                  "shrink-0 flex-1 md:flex-none px-5 py-2 text-xs font-bold rounded-lg transition-all relative snap-center",
+                  "px-4 py-2 text-xs font-black rounded-xl transition-all",
                   activeTab === tab.id 
-                    ? "text-slate-800 shadow-sm"
-                    : "text-slate-500 hover:text-slate-700 hover:bg-slate-200/50"
+                    ? "clay-pill-blue text-white shadow-sm"
+                    : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200"
                 )}
              >
-                {activeTab === tab.id && (
-                  <div className="absolute inset-0 bg-white rounded-lg shadow-sm w-full h-full -z-10 animate-in fade-in duration-200" />
-                )}
                 {tab.label}
              </button>
           ))}
@@ -373,56 +358,57 @@ export default function AnomalyDashboard({ data, onRefresh }: AnomalyDashboardPr
 
         {/* Search */}
         <div className="relative w-full md:w-72 shrink-0">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Search size={14} className="text-slate-400" />
+          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+            <Search size={14} className="text-zinc-400" />
           </div>
           <input 
             type="text" 
             placeholder="Cari RM atau Nama Pasien..." 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full text-sm font-medium pl-9 pr-4 py-2 bg-white border border-slate-200 hover:border-slate-300 focus:border-indigo-400 focus:ring-4 focus:ring-indigo-500/10 rounded-xl transition-all outline-none text-slate-700 placeholder:text-slate-400"
+            className="w-full text-xs font-bold pl-9 pr-4 py-2.5 clay-inset rounded-2xl transition-all outline-none text-zinc-800 dark:text-zinc-200 placeholder:text-zinc-400"
           />
         </div>
       </div>
+
       {/* Table */}
       <div className="flex-1 overflow-auto custom-scrollbar max-h-[500px]">
         <table className="w-full text-left border-collapse min-w-[800px]">
-          <thead className="sticky top-0 bg-slate-50/95 backdrop-blur z-10 shadow-[0_1px_2px_rgba(0,0,0,0.05)]">
+          <thead className="sticky top-0 bg-white/80 dark:bg-zinc-900/80 backdrop-blur z-10 border-b border-zinc-200/60 dark:border-white/5">
             <tr>
-              <th className="px-5 py-3 text-[10px] font-black uppercase tracking-wider text-slate-500 border-b border-slate-200 w-32">Tgl Rekap</th>
-              <th className="px-5 py-3 text-[10px] font-black uppercase tracking-wider text-slate-500 border-b border-slate-200">Pasien & No RM</th>
-              <th className="px-5 py-3 text-[10px] font-black uppercase tracking-wider text-slate-500 border-b border-slate-200 w-32">Status</th>
-              <th className="px-5 py-3 text-[10px] font-black uppercase tracking-wider text-slate-500 border-b border-slate-200 text-right w-48">Aksi</th>
+              <th className="px-5 py-3 text-[10px] font-black uppercase tracking-wider text-zinc-500 dark:text-zinc-400 w-32">Tgl Rekap</th>
+              <th className="px-5 py-3 text-[10px] font-black uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Pasien & No RM</th>
+              <th className="px-5 py-3 text-[10px] font-black uppercase tracking-wider text-zinc-500 dark:text-zinc-400 w-32">Status</th>
+              <th className="px-5 py-3 text-[10px] font-black uppercase tracking-wider text-zinc-500 dark:text-zinc-400 text-right w-48">Aksi</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100 bg-white">
+          <tbody className="divide-y divide-zinc-200/40 dark:divide-white/5">
             {filteredAnomalies.length > 0 ? (
               filteredAnomalies.map((row) => (
-                <tr key={row._id + row.no_rm} className={cn("transition-colors group", ['OPEN', 'PENDING_DOCTOR', 'PENDING_SYSTEM'].includes(row.status) ? "hover:bg-amber-50/30" : "hover:bg-slate-50 opacity-80")}>
+                <tr key={row._id + row.no_rm} className="transition-colors group hover:bg-zinc-500/5">
                   <td className="px-5 py-3.5 whitespace-nowrap">
-                    <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-600">
-                      <Clock size={12} className="text-slate-400" />
+                    <div className="flex items-center gap-1.5 text-xs font-bold text-zinc-600 dark:text-zinc-300">
+                      <Clock size={12} className="text-zinc-400" />
                       {format(parseISO(row.date), 'dd MMM yyyy', { locale: id })}
                     </div>
                   </td>
                   <td className="px-5 py-3.5">
                     <div className="flex flex-col">
-                      <p className={cn("text-sm font-bold", ['OPEN', 'PENDING_DOCTOR', 'PENDING_SYSTEM'].includes(row.status) ? "text-slate-800" : "text-slate-600")}>{row.nama}</p>
+                      <p className="text-sm font-black text-zinc-900 dark:text-zinc-100">{row.nama}</p>
                       <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-                        <span className="text-[11px] font-mono text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">{row.no_rm}</span>
-                        <span className="text-[11px] font-medium text-slate-400 capitalize">{row.asuransi}</span>
+                        <span className="text-[11px] font-mono font-bold text-zinc-500 clay-button px-2 py-0.5 rounded-lg">{row.no_rm}</span>
+                        <span className="text-[11px] font-bold text-zinc-400 capitalize">{row.asuransi}</span>
                         {row.poli && row.poli !== '-' && (
-                          <span className="text-[10px] font-medium text-slate-400" title={row.poli}>📍 {row.poli}</span>
+                          <span className="text-[10px] font-bold text-zinc-400" title={row.poli}>📍 {row.poli}</span>
                         )}
                       </div>
                       {row.anomaly_reason && (
                         <div className="mt-1">
                           {row.anomaly_reason === 'rawat_bersama' && (
-                            <span className="text-[9px] font-bold text-blue-600 bg-blue-50 border border-blue-200 px-1.5 py-0.5 rounded">Rawat Bersama</span>
+                            <span className="text-[9px] font-black text-white clay-pill-blue px-2 py-0.5 rounded-md">Rawat Bersama</span>
                           )}
                           {row.anomaly_reason === 'terapi_gabung' && (
-                            <span className="text-[9px] font-bold text-purple-600 bg-purple-50 border border-purple-200 px-1.5 py-0.5 rounded">Terapi Gabung</span>
+                            <span className="text-[9px] font-black text-white clay-pill-violet px-2 py-0.5 rounded-md">Terapi Gabung</span>
                           )}
                         </div>
                       )}
@@ -432,37 +418,37 @@ export default function AnomalyDashboard({ data, onRefresh }: AnomalyDashboardPr
                     {getStatusBadge(row.status)}
                   </td>
                   <td className="px-5 py-3.5 text-right whitespace-nowrap">
-                    <div className="flex items-center justify-end gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                    <div className="flex items-center justify-end gap-1.5 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-200">
                       <button 
                         onClick={() => openLogModal(row)}
-                        className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors border border-transparent hover:border-indigo-100"
+                        className="p-2 text-zinc-500 hover:text-violet-600 clay-button rounded-xl transition-colors"
                         title="Lihat Audit Log"
                       >
-                        <History size={16} />
+                        <History size={15} />
                       </button>
                       
                       <button 
                         onClick={() => openEditModal(row)}
-                        className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border border-transparent hover:border-blue-100"
+                        className="p-2 text-zinc-500 hover:text-blue-600 clay-button rounded-xl transition-colors"
                         title="Edit Data"
                       >
-                        <Edit2 size={16} />
+                        <Edit2 size={15} />
                       </button>
 
                       <button 
                         onClick={() => openDeleteModal(row)}
-                        className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors border border-transparent hover:border-red-100 mr-2"
+                        className="p-2 text-zinc-500 hover:text-rose-600 clay-button rounded-xl transition-colors mr-1"
                         title="Hapus Anomali"
                       >
-                        <Trash2 size={16} />
+                        <Trash2 size={15} />
                       </button>
                       
                       {['OPEN', 'PENDING_DOCTOR', 'PENDING_SYSTEM'].includes(row.status) && (
                         <button 
                           onClick={() => openResolveModal(row)}
-                          className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 hover:border-slate-300 hover:bg-indigo-50 hover:text-indigo-700 hover:border-indigo-200 text-slate-700 rounded-xl text-xs font-bold transition-all shadow-sm"
+                          className="flex items-center gap-1.5 px-3 py-1.5 clay-button text-blue-600 dark:text-blue-400 rounded-xl text-xs font-black transition-all shadow-sm active:scale-95"
                         >
-                          <Edit2 size={14} className="text-indigo-500" /> Ubah Status
+                          <Edit2 size={13} className="text-blue-500" /> Ubah Status
                         </button>
                       )}
                     </div>
@@ -472,9 +458,9 @@ export default function AnomalyDashboard({ data, onRefresh }: AnomalyDashboardPr
             ) : (
               <tr>
                 <td colSpan={4} className="px-5 py-20 text-center">
-                  <div className="flex flex-col items-center justify-center gap-3 text-slate-400">
-                     <CheckCircle2 size={32} className="opacity-50 text-emerald-500" />
-                     <p className="text-sm font-medium">Bagus! Tidak ada antrian klaim anomali yang ditemukan.</p>
+                  <div className="flex flex-col items-center justify-center gap-3 text-zinc-400">
+                     <CheckCircle2 size={32} className="text-emerald-500" />
+                     <p className="text-sm font-bold">Bagus! Tidak ada antrian klaim anomali yang ditemukan.</p>
                   </div>
                 </td>
               </tr>
@@ -486,60 +472,60 @@ export default function AnomalyDashboard({ data, onRefresh }: AnomalyDashboardPr
       {/* Resolve Modal via Radix UI */}
       <Dialog.Root open={isResolveModalOpen} onOpenChange={setIsResolveModalOpen}>
         <Dialog.Portal>
-          <Dialog.Overlay className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 animate-in fade-in" />
-          <Dialog.Content className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white rounded-3xl p-6 shadow-2xl z-50 animate-in zoom-in-95 duration-200 border border-slate-100">
+          <Dialog.Overlay className="fixed inset-0 bg-black/60 backdrop-blur-md z-50 animate-in fade-in" />
+          <Dialog.Content className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md clay-surface rounded-[36px] p-6 shadow-2xl z-50 animate-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between mb-5">
-              <Dialog.Title className="text-lg font-black text-slate-800 flex items-center gap-2">
-                <Edit2 className="text-indigo-500" /> Ubah Status Anomali
+              <Dialog.Title className="text-lg font-black text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
+                <Edit2 className="text-violet-500" /> Ubah Status Anomali
               </Dialog.Title>
-              <Dialog.Close className="p-2 text-slate-400 hover:bg-slate-100 rounded-full transition-colors">
+              <Dialog.Close className="p-2 clay-button text-zinc-500 rounded-full transition-colors active:scale-95">
                 <X size={18} />
               </Dialog.Close>
             </div>
             
-            <div className="mb-6 p-4 bg-slate-50 rounded-2xl border border-slate-100 text-sm">
-              <p className="text-slate-500 mb-1">Pasien</p>
-              <p className="font-bold text-slate-800">{selectedAnomaly?.nama}</p>
-              <p className="font-mono text-slate-500 text-xs mt-0.5">{selectedAnomaly?.no_rm}</p>
+            <div className="mb-5 p-4 clay-inset rounded-2xl text-sm">
+              <p className="text-zinc-500 font-bold mb-0.5">Pasien</p>
+              <p className="font-black text-zinc-900 dark:text-zinc-100">{selectedAnomaly?.nama}</p>
+              <p className="font-mono text-zinc-500 text-xs mt-0.5 font-bold">{selectedAnomaly?.no_rm}</p>
             </div>
 
             <form onSubmit={handleResolve}>
               <div className="space-y-4">
                 <div>
-                  <label htmlFor="status" className="block text-sm font-bold text-slate-700 mb-1.5">Pilih Status Baru</label>
+                  <label htmlFor="status" className="block text-xs font-black uppercase tracking-wider text-zinc-500 mb-1.5">Pilih Status Baru</label>
                   <select
                     id="status"
                     value={resolveStatus}
                     onChange={(e) => setResolveStatus(e.target.value)}
-                    className="w-full p-2.5 mb-2 bg-white border border-slate-200 rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                    className="w-full p-3 clay-inset rounded-2xl text-sm font-black text-zinc-800 dark:text-zinc-200 outline-none"
                   >
-                    <option value="RESOLVED">Selesai (SEP Terbit / Beres)</option>
-                    <option value="PENDING_DOCTOR">Menunggu Dokter (Rujukan / TTD)</option>
-                    <option value="PENDING_SYSTEM">Sistem Error (V-Claim Maintenance)</option>
-                    <option value="REJECTED">Ditolak / Batal BPJS</option>
-                    <option value="IGNORED">Abaikan (Salah Catat / Umum)</option>
+                    <option value="RESOLVED" className="bg-white dark:bg-zinc-900">Selesai (SEP Terbit / Beres)</option>
+                    <option value="PENDING_DOCTOR" className="bg-white dark:bg-zinc-900">Menunggu Dokter (Rujukan / TTD)</option>
+                    <option value="PENDING_SYSTEM" className="bg-white dark:bg-zinc-900">Sistem Error (V-Claim Maintenance)</option>
+                    <option value="REJECTED" className="bg-white dark:bg-zinc-900">Ditolak / Batal BPJS</option>
+                    <option value="IGNORED" className="bg-white dark:bg-zinc-900">Abaikan (Salah Catat / Umum)</option>
                   </select>
                 </div>
                 <div>
-                  <label htmlFor="note" className="block text-sm font-bold text-slate-700 mb-1.5">Catatan Resolusi</label>
+                  <label htmlFor="note" className="block text-xs font-black uppercase tracking-wider text-zinc-500 mb-1.5">Catatan Resolusi</label>
                   <textarea 
                     id="note"
                     value={resolveNote}
                     onChange={(e) => setResolveNote(e.target.value)}
                     required
                     placeholder="Contoh: SEP sudah dibuat, sistem SIMRS sempat error..."
-                    className="w-full p-3 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-all resize-none h-24"
+                    className="w-full p-3 clay-inset rounded-2xl text-sm font-bold text-zinc-800 dark:text-zinc-200 outline-none resize-none h-24"
                   />
                 </div>
                 
                 <div className="flex items-center justify-end gap-3 pt-2">
-                  <Dialog.Close type="button" className="px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors">
+                  <Dialog.Close type="button" className="px-4 py-2.5 text-sm font-black clay-button text-zinc-600 dark:text-zinc-300 rounded-xl transition-colors active:scale-95">
                     Batal
                   </Dialog.Close>
                   <button 
                     type="submit" 
                     disabled={isResolving !== null || !resolveNote.trim()}
-                    className="flex items-center gap-2 px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_4px_14px_0_rgba(79,70,229,0.39)]"
+                    className="flex items-center gap-2 px-5 py-2.5 clay-pill-blue text-white rounded-xl text-sm font-black transition-all disabled:opacity-50 active:scale-95 shadow-md"
                   >
                     {isResolving === selectedAnomaly?._id ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
                     Simpan Perubahan
@@ -559,14 +545,14 @@ export default function AnomalyDashboard({ data, onRefresh }: AnomalyDashboardPr
         }
       }}>
         <Dialog.Portal>
-          <Dialog.Overlay className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 animate-in fade-in" />
-          <Dialog.Content className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white rounded-3xl p-6 shadow-2xl z-50 animate-in zoom-in-95 duration-200 border border-slate-100">
+          <Dialog.Overlay className="fixed inset-0 bg-black/60 backdrop-blur-md z-50 animate-in fade-in" />
+          <Dialog.Content className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md clay-surface rounded-[36px] p-6 shadow-2xl z-50 animate-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between mb-5">
-              <Dialog.Title className="text-lg font-black text-slate-800 flex items-center gap-2">
-                {isAddModalOpen ? <Plus className="text-indigo-500" /> : <Edit2 className="text-blue-500" />} 
+              <Dialog.Title className="text-lg font-black text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
+                {isAddModalOpen ? <Plus className="text-blue-500" /> : <Edit2 className="text-blue-500" />} 
                 {isAddModalOpen ? 'Tambah Anomali Manual' : 'Edit Data Pasien'}
               </Dialog.Title>
-              <Dialog.Close className="p-2 text-slate-400 hover:bg-slate-100 rounded-full transition-colors">
+              <Dialog.Close className="p-2 clay-button text-zinc-500 rounded-full transition-colors active:scale-95">
                 <X size={18} />
               </Dialog.Close>
             </div>
@@ -575,56 +561,56 @@ export default function AnomalyDashboard({ data, onRefresh }: AnomalyDashboardPr
               <div className="space-y-4">
                 {isAddModalOpen && (
                   <div>
-                    <label className="block text-sm font-bold text-slate-700 mb-1.5">Tanggal Rekap</label>
+                    <label className="block text-xs font-black uppercase tracking-wider text-zinc-500 mb-1.5">Tanggal Rekap</label>
                     <input 
                       type="date" 
                       required
                       value={formData.date}
                       onChange={e => setFormData(p => ({...p, date: e.target.value}))}
-                      className="w-full p-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                      className="w-full p-2.5 clay-inset rounded-2xl text-sm font-bold text-zinc-800 dark:text-zinc-200 outline-none"
                     />
                   </div>
                 )}
                 <div>
-                  <label className="block text-sm font-bold text-slate-700 mb-1.5">No. Rekam Medis</label>
+                  <label className="block text-xs font-black uppercase tracking-wider text-zinc-500 mb-1.5">No. Rekam Medis</label>
                   <input 
                     type="text" 
                     required
                     value={formData.no_rm}
                     onChange={e => setFormData(p => ({...p, no_rm: e.target.value}))}
-                    className="w-full p-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                    className="w-full p-2.5 clay-inset rounded-2xl text-sm font-bold text-zinc-800 dark:text-zinc-200 outline-none"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-bold text-slate-700 mb-1.5">Nama Pasien</label>
+                  <label className="block text-xs font-black uppercase tracking-wider text-zinc-500 mb-1.5">Nama Pasien</label>
                   <input 
                     type="text" 
                     required
                     value={formData.nama}
                     onChange={e => setFormData(p => ({...p, nama: e.target.value}))}
-                    className="w-full p-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                    className="w-full p-2.5 clay-inset rounded-2xl text-sm font-bold text-zinc-800 dark:text-zinc-200 outline-none"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-bold text-slate-700 mb-1.5">Jenis Asuransi</label>
+                  <label className="block text-xs font-black uppercase tracking-wider text-zinc-500 mb-1.5">Jenis Asuransi</label>
                   <input 
                     type="text" 
                     required
                     value={formData.asuransi}
                     onChange={e => setFormData(p => ({...p, asuransi: e.target.value}))}
                     placeholder="Contoh: BPJS KESEHATAN"
-                    className="w-full p-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                    className="w-full p-2.5 clay-inset rounded-2xl text-sm font-bold text-zinc-800 dark:text-zinc-200 outline-none"
                   />
                 </div>
                 
-                <div className="flex items-center justify-end gap-3 pt-4">
-                  <Dialog.Close type="button" className="px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors">
+                <div className="flex items-center justify-end gap-3 pt-3">
+                  <Dialog.Close type="button" className="px-4 py-2.5 text-sm font-black clay-button text-zinc-600 dark:text-zinc-300 rounded-xl transition-colors active:scale-95">
                     Batal
                   </Dialog.Close>
                   <button 
                     type="submit" 
                     disabled={isResolving !== null}
-                    className="flex items-center gap-2 px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-bold transition-all disabled:opacity-50"
+                    className="flex items-center gap-2 px-5 py-2.5 clay-pill-blue text-white rounded-xl text-sm font-black transition-all disabled:opacity-50 active:scale-95 shadow-md"
                   >
                     {(isResolving === 'add' || isResolving === 'edit') ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
                     Simpan
@@ -639,25 +625,25 @@ export default function AnomalyDashboard({ data, onRefresh }: AnomalyDashboardPr
       {/* Delete Confirmation Modal */}
       <Dialog.Root open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
         <Dialog.Portal>
-          <Dialog.Overlay className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 animate-in fade-in" />
-          <Dialog.Content className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-sm bg-white rounded-3xl p-6 shadow-2xl z-50 animate-in zoom-in-95 duration-200 border border-slate-100 text-center">
-            <div className="mx-auto w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mb-4">
+          <Dialog.Overlay className="fixed inset-0 bg-black/60 backdrop-blur-md z-50 animate-in fade-in" />
+          <Dialog.Content className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-sm clay-surface rounded-[36px] p-6 shadow-2xl z-50 animate-in zoom-in-95 duration-200 text-center">
+            <div className="mx-auto w-12 h-12 clay-pill-rose text-white rounded-2xl flex items-center justify-center mb-4">
               <ShieldAlert size={24} />
             </div>
-            <Dialog.Title className="text-lg font-black text-slate-800 mb-2">
+            <Dialog.Title className="text-lg font-black text-zinc-900 dark:text-zinc-100 mb-2">
               Hapus Data Anomali?
             </Dialog.Title>
-            <p className="text-sm text-slate-500 mb-6">
-              Data pasien <strong>{selectedAnomaly?.nama}</strong> ({selectedAnomaly?.no_rm}) akan dihapus secara permanen dari daftar anomali. Tindakan ini tidak dapat dibatalkan.
+            <p className="text-xs font-bold text-zinc-500 mb-6">
+              Data pasien <strong>{selectedAnomaly?.nama}</strong> ({selectedAnomaly?.no_rm}) akan dihapus secara permanen dari daftar anomali.
             </p>
             <div className="flex items-center justify-center gap-3">
-              <Dialog.Close type="button" className="px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors flex-1">
+              <Dialog.Close type="button" className="px-4 py-2.5 text-sm font-black clay-button text-zinc-600 dark:text-zinc-300 rounded-xl transition-colors flex-1 active:scale-95">
                 Batal
               </Dialog.Close>
               <button 
                 onClick={handleDelete}
                 disabled={isResolving === 'delete'}
-                className="flex items-center justify-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl text-sm font-bold transition-all disabled:opacity-50 flex-1"
+                className="flex items-center justify-center gap-2 px-4 py-2.5 clay-pill-rose text-white rounded-xl text-sm font-black transition-all disabled:opacity-50 flex-1 active:scale-95 shadow-md"
               >
                 {isResolving === 'delete' ? <Loader2 size={16} className="animate-spin" /> : <Trash2 size={16} />}
                 Hapus
@@ -670,61 +656,47 @@ export default function AnomalyDashboard({ data, onRefresh }: AnomalyDashboardPr
       {/* Audit Log Modal */}
       <Dialog.Root open={isLogModalOpen} onOpenChange={setIsLogModalOpen}>
         <Dialog.Portal>
-          <Dialog.Overlay className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 animate-in fade-in" />
-          <Dialog.Content className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg bg-white rounded-3xl p-6 shadow-2xl z-50 animate-in zoom-in-95 duration-200 border border-slate-100">
+          <Dialog.Overlay className="fixed inset-0 bg-black/60 backdrop-blur-md z-50 animate-in fade-in" />
+          <Dialog.Content className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg clay-surface rounded-[36px] p-6 shadow-2xl z-50 animate-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between mb-5">
-              <Dialog.Title className="text-lg font-black text-slate-800 flex items-center gap-2">
-                <History className="text-indigo-500" /> Jejak Audit (Audit Trail)
+              <Dialog.Title className="text-lg font-black text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
+                <History className="text-violet-500" /> Jejak Audit (Audit Trail)
               </Dialog.Title>
-              <Dialog.Close className="p-2 text-slate-400 hover:bg-slate-100 rounded-full transition-colors">
+              <Dialog.Close className="p-2 clay-button text-zinc-500 rounded-full transition-colors active:scale-95">
                 <X size={18} />
               </Dialog.Close>
             </div>
             
-            <div className="mb-6">
-              <h4 className="font-bold text-slate-800 text-sm mb-1">{selectedAnomaly?.nama}</h4>
-              <p className="text-xs font-mono text-slate-500 bg-slate-100 inline-block px-1.5 py-0.5 rounded">{selectedAnomaly?.no_rm}</p>
+            <div className="mb-5 clay-inset p-4 rounded-2xl">
+              <h4 className="font-black text-zinc-900 dark:text-zinc-100 text-sm mb-1">{selectedAnomaly?.nama}</h4>
+              <p className="text-xs font-mono font-bold text-zinc-500 bg-white/40 dark:bg-black/40 inline-block px-2 py-0.5 rounded-lg">{selectedAnomaly?.no_rm}</p>
             </div>
 
-            <div className="space-y-6 max-h-[60vh] overflow-auto custom-scrollbar pr-2 relative before:absolute before:inset-0 before:ml-[11px] before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-200 before:to-transparent">
-               
-               {/* Initial Upload State */}
-               <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                  <div className="flex items-center justify-center w-6 h-6 rounded-full border border-white bg-slate-200 text-slate-500 shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow-sm z-10">
-                     <Info size={12} />
+            <div className="space-y-4 max-h-[60vh] overflow-auto custom-scrollbar pr-2 relative">
+               <div className="p-4 rounded-2xl clay-button">
+                  <div className="flex items-center justify-between space-x-2 mb-1">
+                     <div className="font-black text-zinc-900 dark:text-zinc-100 text-xs">Sistem</div>
+                     <time className="text-[10px] font-black text-amber-500">{selectedAnomaly?.date && format(parseISO(selectedAnomaly.date), 'dd MMM yyyy, HH:mm')}</time>
                   </div>
-                  <div className="w-[calc(100%-2rem)] md:w-[calc(50%-1.5rem)] p-4 rounded-xl border border-slate-100 bg-white shadow-sm">
-                     <div className="flex items-center justify-between space-x-2 mb-1">
-                        <div className="font-bold text-slate-800 text-sm">Sistem</div>
-                        <time className="text-[10px] font-medium text-amber-500">{selectedAnomaly?.date && format(parseISO(selectedAnomaly.date), 'dd MMM yyyy, HH:mm')}</time>
-                     </div>
-                     <div className="text-slate-500 text-xs">Dicatat sebagai Anomali (Missing SEP) saat unggah Excel.</div>
-                  </div>
+                  <div className="text-zinc-500 dark:text-zinc-400 text-xs font-bold">Dicatat sebagai Anomali (Missing SEP) saat unggah Excel.</div>
                </div>
 
-               {/* Logs loop */}
                {selectedAnomaly?.audit_logs?.map((log, i) => (
-                 <div key={i} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                    <div className="flex items-center justify-center w-6 h-6 rounded-full border border-white bg-indigo-100 text-indigo-600 shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow-sm z-10">
-                       <CheckCircle2 size={12} />
-                    </div>
-                    <div className="w-[calc(100%-2rem)] md:w-[calc(50%-1.5rem)] p-4 rounded-xl border border-slate-100 bg-slate-50 shadow-sm">
-                       <div className="flex items-center justify-between space-x-2 mb-1">
-                          <div className="font-bold text-slate-800 text-sm flex items-center gap-1.5">
-                            {log.by}
-                            <span className="text-[9px] font-black uppercase tracking-wider bg-indigo-100 text-indigo-600 px-1.5 py-0.5 rounded">{log.action}</span>
-                          </div>
-                          <time className="text-[10px] font-medium text-slate-400">{format(new Date(log.timestamp), 'dd MMM, HH:mm')}</time>
+                 <div key={i} className="p-4 rounded-2xl clay-button">
+                    <div className="flex items-center justify-between space-x-2 mb-1">
+                       <div className="font-black text-zinc-900 dark:text-zinc-100 text-xs flex items-center gap-1.5">
+                         {log.by}
+                         <span className="text-[9px] font-black uppercase tracking-wider clay-pill-violet text-white px-2 py-0.5 rounded-md">{log.action}</span>
                        </div>
-                       <div className="text-slate-700 text-xs font-medium italic">"{log.note}"</div>
+                       <time className="text-[10px] font-bold text-zinc-400">{format(new Date(log.timestamp), 'dd MMM, HH:mm')}</time>
                     </div>
+                    <div className="text-zinc-700 dark:text-zinc-300 text-xs font-bold italic">"{log.note}"</div>
                  </div>
                ))}
                
                {(!selectedAnomaly?.audit_logs || selectedAnomaly.audit_logs.length === 0) && (
-                 <div className="py-4 text-center text-xs text-slate-400 w-full z-10 relative">Belum ada tindakan lanjut.</div>
+                 <div className="py-4 text-center text-xs text-zinc-400 w-full font-bold">Belum ada tindakan lanjut.</div>
                )}
-
             </div>
           </Dialog.Content>
         </Dialog.Portal>

@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from "react";
 import useSWR from "swr";
-import { Plus, Edit2, Trash2, Save, X } from "lucide-react";
+import { Plus, Edit2, Trash2, Save, X, Sparkles } from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger, DialogClose, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
+import { PageHeader } from "@/components/ui/PageHeader";
 
 interface AutomationRule {
     id: number;
@@ -18,7 +19,6 @@ interface AutomationRule {
 
 export default function AutomationRulesPage() {
     const { data: rulesData, mutate, isLoading, error } = useSWR<AutomationRule[]>('/api/automation-rules');
-    // Ensure rules is always an array
     const rules = Array.isArray(rulesData) ? rulesData : [];
     const [editing, setEditing] = useState<AutomationRule | null>(null);
     const [open, setOpen] = useState(false);
@@ -33,7 +33,6 @@ export default function AutomationRulesPage() {
         setOpen(false);
     };
 
-    // reset preview when editing item changes
     useEffect(() => {
         setPreview(null);
     }, [editing]);
@@ -59,66 +58,82 @@ export default function AutomationRulesPage() {
     };
 
     const deleteRule = async (id: number) => {
-        if (!confirm('Delete this rule?')) return;
+        if (!confirm('Hapus rule ini?')) return;
         await fetch(`/api/automation-rules?id=${id}`, { method: 'DELETE' });
         mutate();
     };
 
     return (
-        <div className="p-4 sm:p-6 max-w-4xl mx-auto">
-            <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5 sm:mb-6">
-                <h1 className="text-xl sm:text-2xl font-bold">Automation Rules</h1>
-                <button
-                    onClick={() => openEditor()}
-                    className="btn-gradient px-4 py-2 rounded-xl text-white flex items-center justify-center gap-2 text-sm sm:text-base w-full sm:w-auto"
-                >
-                    <Plus size={16} /> New Rule
-                </button>
-            </header>
+        <div className="p-2 sm:p-6 lg:p-8 max-w-5xl mx-auto text-zinc-900 dark:text-zinc-100">
+            <PageHeader
+                icon={<Sparkles size={22} className="text-white" strokeWidth={2.5} />}
+                title="Aturan Automasi"
+                accentWord="Automasi"
+                accentColor="text-violet-600 dark:text-violet-400"
+                subtitle="Konfigurasi aturan automasi sinkronisasi SIMED & TV Display"
+                iconClay="clay-icon-violet"
+                accentBarGradient="from-indigo-500 via-violet-500 to-purple-500"
+                actions={
+                    <button
+                        onClick={() => openEditor()}
+                        className="clay-pill-violet px-5 py-2.5 rounded-2xl text-white flex items-center justify-center gap-2 text-xs font-black w-full sm:w-auto active:scale-95 transition-all shadow-md"
+                    >
+                        <Plus size={16} strokeWidth={2.5} /> Aturan Baru
+                    </button>
+                }
+            />
             {error && (
-                <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded text-sm text-red-700">
-                    Failed to load rules. Please ensure you have admin access.
+                <div className="mb-4 p-4 clay-pill-rose text-white rounded-2xl text-xs font-bold">
+                    Gagal memuat rules. Pastikan Anda memiliki akses administrator.
                 </div>
             )}
-            <div className="space-y-4">
+            <div className="space-y-3">
                 {rules.map(rule => (
-                    <div key={rule.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border rounded-xl gap-4">
+                    <div key={rule.id} className="clay-surface flex flex-col sm:flex-row sm:items-center justify-between p-5 rounded-[24px] gap-4 shadow-md">
                         <div>
-                            <p className="font-semibold text-sm sm:text-base">{rule.name}</p>
-                            <p className="text-xs sm:text-sm text-slate-500">{rule.active ? 'Active' : 'Inactive'}</p>
+                            <p className="font-black text-sm text-zinc-900 dark:text-zinc-100">{rule.name}</p>
+                            <div className="flex items-center gap-2 mt-1">
+                                <span className={cn("text-[10px] font-black px-2.5 py-0.5 rounded-full", rule.active ? "clay-pill-emerald text-white" : "clay-button text-zinc-500")}>
+                                    {rule.active ? 'Aktif' : 'Nonaktif'}
+                                </span>
+                            </div>
                         </div>
-                        <div className="flex items-center justify-end gap-3 sm:gap-2 border-t sm:border-t-0 pt-3 sm:pt-0 mt-3 sm:mt-0">
-                            <button onClick={() => openEditor(rule)} className="text-blue-600 hover:text-blue-800 p-2 sm:p-0"><Edit2 size={18} className="sm:w-5 sm:h-5" /></button>
-                            <button onClick={() => deleteRule(rule.id)} className="text-red-600 hover:text-red-800 p-2 sm:p-0"><Trash2 size={18} className="sm:w-5 sm:h-5" /></button>
+                        <div className="flex items-center justify-end gap-2 border-t sm:border-t-0 pt-3 sm:pt-0 border-zinc-200/60 dark:border-white/5">
+                            <button onClick={() => openEditor(rule)} className="p-2.5 clay-button text-blue-600 dark:text-blue-400 rounded-xl active:scale-95 transition-all"><Edit2 size={16} /></button>
+                            <button onClick={() => deleteRule(rule.id)} className="p-2.5 clay-button text-rose-600 dark:text-rose-400 rounded-xl active:scale-95 transition-all"><Trash2 size={16} /></button>
                         </div>
                     </div>
                 ))}
-                {rules.length === 0 && <p className="text-center text-slate-400">No rules defined.</p>}
+                {rules.length === 0 && (
+                    <div className="clay-surface p-12 rounded-[28px] text-center text-zinc-400 font-bold text-xs">
+                        Belum ada rule yang dibuat.
+                    </div>
+                )}
             </div>
 
             {/* Editor dialog */}
             <Dialog open={open} onOpenChange={setOpen}>
-                <DialogContent className="max-w-lg">
+                <DialogContent className="max-w-lg clay-surface rounded-[36px] p-6 shadow-2xl">
                     <div className="flex justify-between items-center mb-4">
-                        <DialogTitle className="text-xl font-bold">{editing?.id ? 'Edit Rule' : 'New Rule'}</DialogTitle>
+                        <DialogTitle className="text-lg font-black text-zinc-900 dark:text-zinc-100">{editing?.id ? 'Edit Rule' : 'Aturan Baru'}</DialogTitle>
                         <DialogClose asChild>
-                            <button className="text-slate-500 hover:text-slate-800"><X /></button>
+                            <button className="p-2 clay-button text-zinc-500 rounded-full active:scale-95"><X size={16}/></button>
                         </DialogClose>
                     </div>
                     <div className="space-y-4">
                         <div>
-                            <label className="block text-sm font-medium">Name</label>
+                            <label className="block text-xs font-black uppercase tracking-wider text-zinc-500 mb-1.5">Nama Rule</label>
                             <input
                                 type="text"
-                                className="w-full border rounded px-3 py-2"
+                                className="w-full clay-inset rounded-2xl px-4 py-2.5 text-xs font-bold text-zinc-800 dark:text-zinc-200 outline-none"
                                 value={editing?.name || ''}
                                 onChange={e => setEditing(editing ? { ...editing, name: e.target.value } : null)}
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium">Condition (JSON)</label>
+                            <label className="block text-xs font-black uppercase tracking-wider text-zinc-500 mb-1.5">Condition (JSON)</label>
                             <textarea
-                                className="w-full border rounded px-3 py-2 font-mono text-sm"
+                                className="w-full clay-inset rounded-2xl p-3 font-mono text-xs text-zinc-800 dark:text-zinc-200 outline-none resize-none"
                                 rows={4}
                                 value={editing ? JSON.stringify(editing.condition, null, 2) : ''}
                                 onChange={e => {
@@ -130,9 +145,9 @@ export default function AutomationRulesPage() {
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium">Action (JSON)</label>
+                            <label className="block text-xs font-black uppercase tracking-wider text-zinc-500 mb-1.5">Action (JSON)</label>
                             <textarea
-                                className="w-full border rounded px-3 py-2 font-mono text-sm"
+                                className="w-full clay-inset rounded-2xl p-3 font-mono text-xs text-zinc-800 dark:text-zinc-200 outline-none resize-none"
                                 rows={4}
                                 value={editing ? JSON.stringify(editing.action, null, 2) : ''}
                                 onChange={e => {
@@ -146,13 +161,15 @@ export default function AutomationRulesPage() {
                         <div className="flex items-center gap-2">
                             <input
                                 type="checkbox"
+                                id="active_check"
                                 checked={editing?.active || false}
                                 onChange={e => setEditing(editing ? { ...editing, active: e.target.checked } : null)}
+                                className="rounded"
                             />
-                            <label className="text-sm">Active</label>
+                            <label htmlFor="active_check" className="text-xs font-black text-zinc-700 dark:text-zinc-300">Status Aktif</label>
                         </div>
                     </div>
-                    <div className="mt-6 flex flex-col sm:flex-row justify-end gap-3">
+                    <div className="mt-6 flex flex-col sm:flex-row justify-end gap-2.5">
                         <button
                             onClick={async () => {
                                 if (!editing) return;
@@ -168,22 +185,22 @@ export default function AutomationRulesPage() {
                                     alert('Preview failed');
                                 }
                             }}
-                            className="px-4 py-2 rounded-xl bg-yellow-500 text-white font-semibold text-sm w-full sm:w-auto text-center"
+                            className="px-4 py-2.5 rounded-xl clay-pill-amber text-white font-black text-xs w-full sm:w-auto text-center active:scale-95"
                         >Preview</button>
-                        <button onClick={closeEditor} className="px-4 py-2 rounded-xl bg-slate-200 font-semibold text-sm w-full sm:w-auto text-center">Cancel</button>
-                        <button onClick={saveRule} className="px-4 py-2 rounded-xl bg-blue-600 text-white font-semibold text-sm w-full sm:w-auto text-center">Save</button>
+                        <button onClick={closeEditor} className="px-4 py-2.5 rounded-xl clay-button text-zinc-600 dark:text-zinc-300 font-black text-xs w-full sm:w-auto text-center active:scale-95">Batal</button>
+                        <button onClick={saveRule} className="px-5 py-2.5 rounded-xl clay-pill-blue text-white font-black text-xs w-full sm:w-auto text-center active:scale-95 shadow-md">Simpan</button>
                     </div>
                     {preview && (
-                        <div className="mt-4 p-3 bg-gray-50 border rounded">
-                            <h3 className="font-semibold mb-2">Preview updates</h3>
+                        <div className="mt-4 p-4 clay-inset rounded-2xl">
+                            <h3 className="font-black text-xs mb-2">Preview Pembaruan</h3>
                             {preview.length > 0 ? (
-                                <ul className="list-disc pl-5 text-sm">
+                                <ul className="list-disc pl-5 text-xs font-mono">
                                     {preview.map((u: any, idx: number) => (
                                         <li key={idx}>{`id=${u.id} → status=${u.status}`}</li>
                                     ))}
                                 </ul>
                             ) : (
-                                <p className="text-sm text-slate-500">No updates would be applied.</p>
+                                <p className="text-xs text-zinc-400 font-bold">Tidak ada perubahan yang akan diterapkan.</p>
                             )}
                         </div>
                     )}

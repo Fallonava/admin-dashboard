@@ -8,9 +8,14 @@ import { SWRProvider } from "@/components/swr-provider";
 import { AuthProvider } from "@/lib/auth-context";
 import { AppShell } from "@/components/layouts/AppShell";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
-import AiChatWidget from "@/features/assistant/components/AiChatWidget";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+  preload: true,
+  adjustFontFallback: true,
+  fallback: ["-apple-system", "BlinkMacSystemFont", "SF Pro Text", "Segoe UI", "sans-serif"],
+});
 
 export const metadata: Metadata = {
   title: "MedCore26 Admin | Premium Hospital System",
@@ -78,7 +83,6 @@ export default function RootLayout({
           <SWRProvider>
             <AuthProvider>
               <AppShell>{children}</AppShell>
-              <AiChatWidget />
             </AuthProvider>
           </SWRProvider>
         </ErrorBoundary>

@@ -76,22 +76,22 @@ function TimePicker({ value, onChange, label }: { value: string; onChange: (v: s
     const [h, m] = (value || "08:00").split(":");
     return (
         <div>
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">{label}</p>
-            <div className="flex items-center bg-slate-50 border border-slate-200 rounded-xl h-11 px-3 gap-1 focus-within:border-blue-400 focus-within:ring-2 focus-within:ring-blue-100 transition-all">
+            <p className="text-[10px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-1.5">{label}</p>
+            <div className="flex items-center clay-inset rounded-[16px] h-11 px-3 gap-1">
                 <select
                     value={h || "08"}
                     onChange={e => onChange(`${e.target.value}:${m || "00"}`)}
-                    className="bg-transparent text-sm font-bold text-slate-800 outline-none w-9 text-center appearance-none cursor-pointer"
+                    className="bg-transparent text-xs font-black text-zinc-800 dark:text-zinc-100 outline-none w-9 text-center appearance-none cursor-pointer"
                 >
                     {Array.from({ length: 24 }).map((_, i) => (
                         <option key={i} value={i.toString().padStart(2, '0')}>{i.toString().padStart(2, '0')}</option>
                     ))}
                 </select>
-                <span className="text-slate-300 font-bold text-sm">:</span>
+                <span className="text-zinc-400 font-black text-xs">:</span>
                 <select
                     value={m || "00"}
                     onChange={e => onChange(`${h || "08"}:${e.target.value}`)}
-                    className="bg-transparent text-sm font-bold text-slate-800 outline-none w-9 text-center appearance-none cursor-pointer"
+                    className="bg-transparent text-xs font-black text-zinc-800 dark:text-zinc-100 outline-none w-9 text-center appearance-none cursor-pointer"
                 >
                     {["00", "15", "30", "45"].map(min => (
                         <option key={min} value={min}>{min}</option>
@@ -106,13 +106,13 @@ function TimePicker({ value, onChange, label }: { value: string; onChange: (v: s
 function InlineSelect({ value, onChange, options, label }: { value: string; onChange: (v: string) => void; options: { value: string; label: string }[]; label: string }) {
     return (
         <div>
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">{label}</p>
+            <p className="text-[10px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-1.5">{label}</p>
             <select
                 value={value}
                 onChange={e => onChange(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl h-11 px-3 text-sm font-semibold text-slate-700 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all appearance-none cursor-pointer"
+                className="w-full clay-inset rounded-[16px] h-11 px-3 text-xs font-black text-zinc-800 dark:text-zinc-100 outline-none appearance-none cursor-pointer"
             >
-                {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                {options.map(o => <option key={o.value} value={o.value} className="bg-white dark:bg-zinc-800">{o.label}</option>)}
             </select>
         </div>
     );
@@ -264,68 +264,69 @@ export function ScheduleModal({ doctor, shifts, isOpen, onClose, onUpdate }: Sch
 
     return createPortal(
         <div
-            className="fixed inset-0 z-[9999] flex items-center justify-center p-4 lg:p-8"
-            style={{ background: 'rgba(15, 23, 42, 0.6)', backdropFilter: 'blur(10px)' }}
+            className="fixed inset-0 z-[9999] flex items-center justify-center p-4 lg:p-8 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
             onClick={onClose}
         >
             <div
-                className="bg-white w-full max-w-2xl rounded-[20px] shadow-2xl flex flex-col overflow-hidden"
-                style={{ maxHeight: '88vh', animation: 'scaleIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)' }}
+                className="clay-surface w-full max-w-2xl rounded-[32px] flex flex-col overflow-hidden animate-in zoom-in-95 duration-300"
+                style={{ maxHeight: '88vh' }}
                 onClick={e => e.stopPropagation()}
             >
                 {/* ══ HEADER ══ */}
-                <div className="flex items-center gap-4 px-6 py-5 border-b border-slate-100 flex-shrink-0">
-                    <div className={cn("h-12 w-12 rounded-2xl bg-gradient-to-br flex items-center justify-center text-white text-base font-black shadow-md flex-shrink-0", gradient(doctor.name))}>
-                        {doctor.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
+                <div className="flex items-center gap-4 px-6 py-5 border-b border-zinc-200/60 dark:border-[#222738] flex-shrink-0">
+                    <div className="h-12 w-12 rounded-[18px] clay-icon-blue flex items-center justify-center text-white text-base font-black flex-shrink-0">
+                        <span className="relative z-10">{doctor.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}</span>
                     </div>
                     <div className="flex-1 min-w-0">
-                        <h2 className="text-[15px] font-bold text-slate-800 truncate">{doctor.name}</h2>
-                        <p className="text-[12px] text-slate-400 truncate">{doctor.specialty} · {allShifts.length} total shift</p>
+                        <h2 className="text-[16px] font-black text-zinc-900 dark:text-zinc-100 tracking-tight truncate">{doctor.name}</h2>
+                        <p className="text-[11.5px] text-zinc-500 dark:text-zinc-400 font-bold truncate">{doctor.specialty} · {allShifts.length} total shift</p>
                     </div>
-                    <button onClick={onClose} className="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors flex-shrink-0">
-                        <X size={18} />
+                    <button onClick={onClose} className="p-2.5 rounded-[14px] clay-button text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-all flex-shrink-0 active:scale-90">
+                        <X size={16} strokeWidth={2.5} />
                     </button>
                 </div>
 
-                {/* ══ DAY SELECTOR ══ */}
-                <div className="flex items-center gap-1 px-6 py-3 border-b border-slate-100 flex-shrink-0 overflow-x-auto">
-                    {DAYS.map((day, idx) => {
-                        const count = allShifts.filter(s => Number(s.dayIdx) === idx).length;
-                        const isToday = idx === tIdx;
-                        const isActive = idx === activeDay;
-                        return (
-                            <button
-                                key={day}
-                                onClick={() => { setActiveDay(idx); reset(); }}
-                                className={cn(
-                                    "flex-shrink-0 flex flex-col items-center justify-center min-w-[52px] py-2 px-2 rounded-xl text-[11px] font-bold transition-all relative",
-                                    isActive
-                                        ? "bg-slate-900 text-white shadow-md"
-                                        : "text-slate-400 hover:text-slate-600 hover:bg-slate-50"
-                                )}
-                            >
-                                <span>{day}</span>
-                                {isToday && (
-                                    <div className={cn("w-1 h-1 rounded-full mt-0.5", isActive ? "bg-blue-400" : "bg-blue-300")} />
-                                )}
-                                {count > 0 && (
-                                    <span className={cn(
-                                        "absolute -top-1 -right-1 w-4 h-4 rounded-full text-[8px] font-black flex items-center justify-center",
-                                        isActive ? "bg-blue-500 text-white" : "bg-slate-200 text-slate-600"
-                                    )}>{count}</span>
-                                )}
-                            </button>
-                        );
-                    })}
+                {/* ══ CLAY SEGMENTED DAY SELECTOR ══ */}
+                <div className="px-6 py-3 border-b border-zinc-200/60 dark:border-[#222738] flex-shrink-0">
+                    <div className="clay-inset p-1.5 rounded-[22px] flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+                        {DAYS.map((day, idx) => {
+                            const count = allShifts.filter(s => Number(s.dayIdx) === idx).length;
+                            const isToday = idx === tIdx;
+                            const isActive = idx === activeDay;
+                            return (
+                                <button
+                                    key={day}
+                                    onClick={() => { setActiveDay(idx); reset(); }}
+                                    className={cn(
+                                        "flex-1 flex flex-col items-center justify-center min-w-[50px] py-2 px-2 rounded-[16px] text-xs font-black transition-all relative shrink-0",
+                                        isActive
+                                            ? "clay-pill-blue text-white"
+                                            : "clay-button text-zinc-600 dark:text-zinc-400"
+                                    )}
+                                >
+                                    <span>{day}</span>
+                                    {isToday && (
+                                        <div className={cn("w-1.5 h-1.5 rounded-full mt-0.5", isActive ? "bg-white" : "bg-blue-500")} />
+                                    )}
+                                    {count > 0 && (
+                                        <span className={cn(
+                                            "absolute -top-1 -right-1 w-4 h-4 rounded-full text-[8px] font-black flex items-center justify-center shadow-sm",
+                                            isActive ? "bg-white text-blue-600" : "bg-blue-600 text-white"
+                                        )}>{count}</span>
+                                    )}
+                                </button>
+                            );
+                        })}
+                    </div>
                 </div>
 
                 {/* ══ CONTENT ══ */}
-                <div className="flex-1 overflow-y-auto">
+                <div className="flex-1 overflow-y-auto custom-scrollbar">
                     {/* Toast */}
                     {toast && (
                         <div className={cn(
-                            "mx-6 mt-4 flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold transition-all",
-                            toast.type === 'success' ? "bg-emerald-50 text-emerald-700 border border-emerald-200" : "bg-red-50 text-red-700 border border-red-200"
+                            "mx-6 mt-4 flex items-center gap-2 px-4 py-3 rounded-[16px] text-xs font-black transition-all",
+                            toast.type === 'success' ? "clay-pill-emerald text-white" : "clay-pill-rose text-white"
                         )}>
                             {toast.type === 'success' ? <Check size={14} /> : <AlertCircle size={14} />}
                             {toast.msg}
@@ -335,76 +336,70 @@ export function ScheduleModal({ doctor, shifts, isOpen, onClose, onUpdate }: Sch
                     {/* Day header */}
                     <div className="flex items-center justify-between px-6 pt-5 pb-3">
                         <div>
-                            <h3 className="text-[14px] font-bold text-slate-800">
+                            <h3 className="text-[14.5px] font-black text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
                                 {DAYS_FULL[activeDay]}
-                                {activeDay === tIdx && <span className="ml-2 text-[10px] font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">HARI INI</span>}
+                                {activeDay === tIdx && <span className="text-[9.5px] font-black clay-pill-blue text-white px-2.5 py-0.5 rounded-full">HARI INI</span>}
                             </h3>
-                            <p className="text-[11px] text-slate-400 mt-0.5">{dayShifts.length} shift terjadwal</p>
+                            <p className="text-[11px] text-zinc-500 dark:text-zinc-400 font-bold mt-0.5">{dayShifts.length} shift terjadwal</p>
                         </div>
                         {!isFormOpen && (
                             <button
                                 onClick={() => { setAdding(true); setForm(INIT_FORM); }}
-                                className="flex items-center gap-1.5 px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white text-[12px] font-bold rounded-xl transition-all active:scale-95 shadow-sm"
+                                className="flex items-center gap-1.5 px-4 py-2 clay-pill-blue text-white text-xs font-black rounded-[14px] transition-all active:scale-95 shadow-sm"
                             >
-                                <Plus size={13} /> Tambah Shift
+                                <Plus size={14} strokeWidth={2.5} /> Tambah Shift
                             </button>
                         )}
                     </div>
 
                     {/* Shift List */}
-                    <div className="px-6 pb-4 space-y-2">
+                    <div className="px-6 pb-4 space-y-3">
                         {dayShifts.length === 0 && !isFormOpen && (
-                            <div className="py-10 rounded-2xl border-2 border-dashed border-slate-150 text-center">
-                                <CalendarOff size={28} className="text-slate-200 mx-auto mb-2" />
-                                <p className="text-[13px] font-semibold text-slate-400">Belum ada shift</p>
-                                <p className="text-[11px] text-slate-300 mt-0.5">Klik "Tambah Shift" untuk menambahkan jadwal</p>
+                            <div className="py-12 rounded-[24px] clay-inset text-center">
+                                <CalendarOff size={30} className="text-zinc-400 mx-auto mb-2" />
+                                <p className="text-[13px] font-bold text-zinc-500">Belum ada shift terjadwal</p>
+                                <p className="text-[11px] text-zinc-400 mt-0.5">Klik "Tambah Shift" untuk menambahkan jadwal praktek</p>
                             </div>
                         )}
 
                         {dayShifts.map(s => {
                             const isDisabled = (s.disabledDates || []).includes(today);
                             const isEditing  = editId === s.id;
-                            const col = COLOR_MAP[s.color || 'blue'] || COLOR_MAP.blue;
 
                             return (
                                 <div key={s.id}>
                                     {/* Shift Card */}
                                     {!isEditing && (
                                         <div className={cn(
-                                            "flex items-center gap-3 px-4 py-3.5 rounded-2xl border transition-all",
-                                            isDisabled
-                                                ? "bg-slate-50 border-slate-200 opacity-60"
-                                                : `${col.light} border`
+                                            "flex items-center gap-3.5 px-4 py-3.5 rounded-[22px] clay-surface transition-all",
+                                            isDisabled && "opacity-60"
                                         )}>
-                                            <div className={cn("w-1 h-10 rounded-full flex-shrink-0", col.bar, isDisabled && "opacity-30")} />
+                                            <div className="w-1.5 h-10 rounded-full bg-blue-500 flex-shrink-0" />
                                             <div className="flex-1 min-w-0">
-                                                <p className={cn("text-[13px] font-bold truncate", isDisabled && "line-through text-slate-400")}>
+                                                <p className={cn("text-[13.5px] font-black text-zinc-900 dark:text-zinc-100 truncate", isDisabled && "line-through text-zinc-400")}>
                                                     {s.title}
                                                 </p>
-                                                <div className="flex items-center gap-3 mt-0.5">
-                                                    <span className="flex items-center gap-1 text-[11px] font-semibold opacity-70">
-                                                        <Clock size={10} /> {s.formattedTime}
+                                                <div className="flex items-center gap-2 mt-1 flex-wrap">
+                                                    <span className="flex items-center gap-1 text-[11px] font-black clay-inset px-2.5 py-0.5 rounded-lg text-blue-600 dark:text-blue-400">
+                                                        <Clock size={10} strokeWidth={2.5} /> {s.formattedTime}
                                                     </span>
                                                     {s.registrationTime && (
-                                                        <span className="text-[10px] opacity-50">Daftar: {s.registrationTime}</span>
+                                                        <span className="text-[10px] font-bold text-zinc-500 clay-button px-2 py-0.5 rounded-md">Reg: {s.registrationTime}</span>
                                                     )}
                                                     {s.extra === 'odd_weeks' && (
-                                                        <span className="text-[10px] font-bold text-violet-600 bg-violet-50 border border-violet-200 px-1.5 py-0.5 rounded-md">Ganjil</span>
+                                                        <span className="text-[9.5px] font-black text-white clay-pill-violet px-2 py-0.5 rounded-md">Ganjil</span>
                                                     )}
                                                     {s.extra === 'even_weeks' && (
-                                                        <span className="text-[10px] font-bold text-amber-600 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded-md">Genap</span>
+                                                        <span className="text-[9.5px] font-black text-white clay-pill-amber px-2 py-0.5 rounded-md">Genap</span>
                                                     )}
                                                     {s.statusOverride === 'PENUH' ? (
-                                                        <span className="text-[10px] font-bold text-white bg-red-500 px-1.5 py-0.5 rounded-md flex items-center gap-1 shadow-sm"><ShieldAlert size={10} /> PENUH</span>
+                                                        <span className="text-[9.5px] font-black text-white clay-pill-amber px-2 py-0.5 rounded-md flex items-center gap-1">PENUH</span>
                                                     ) : s.statusOverride && (
-                                                        <span className="text-[10px] font-bold opacity-70 uppercase">{s.statusOverride}</span>
-                                                    )}
-                                                    {activeDay === tIdx && isDisabled && (
-                                                        <span className="text-[10px] font-bold text-red-500 bg-red-50 px-1.5 py-0.5 rounded-md flex items-center gap-1"><Power size={10}/> Nonaktif</span>
+                                                        <span className="text-[9.5px] font-black uppercase clay-button px-2 py-0.5 rounded-md">{s.statusOverride}</span>
                                                     )}
                                                 </div>
                                             </div>
-                                            <div className="flex items-center gap-1 flex-shrink-0">
+                                            <div className="flex items-center gap-1.5 flex-shrink-0">
                                                 {/* Toggle today */}
                                                 {activeDay === tIdx && (
                                                     <>
@@ -413,26 +408,26 @@ export function ScheduleModal({ doctor, shifts, isOpen, onClose, onUpdate }: Sch
                                                             disabled={isToggling}
                                                             title={s.statusOverride === 'PENUH' ? "Buka Kembali Loket (Hapus Override)" : "Tutup Loket Paksa (Kuota Penuh)"}
                                                             className={cn(
-                                                                "p-2 rounded-xl border transition-all",
+                                                                "p-2 rounded-[12px] transition-all",
                                                                 s.statusOverride === 'PENUH'
-                                                                    ? "bg-red-500 border-red-600 text-white shadow-md hover:bg-red-600"
-                                                                    : "bg-white/60 border-transparent text-slate-400 hover:text-amber-500 hover:border-amber-100 hover:bg-amber-50"
+                                                                    ? "clay-pill-amber text-white"
+                                                                    : "clay-button text-zinc-400 hover:text-amber-500"
                                                             )}
                                                         >
-                                                            <ShieldAlert size={13} className={isToggling ? "animate-spin" : ""} />
+                                                            <ShieldAlert size={14} className={isToggling ? "animate-spin" : ""} />
                                                         </button>
                                                         <button
                                                             onClick={() => toggle(s)}
                                                             disabled={isToggling}
                                                             title={isDisabled ? "Aktifkan hari ini" : "Nonaktifkan hari ini"}
                                                             className={cn(
-                                                                "p-2 rounded-xl border transition-all",
+                                                                "p-2 rounded-[12px] transition-all",
                                                                 isDisabled
-                                                                    ? "bg-white border-slate-200 text-slate-400 hover:text-emerald-600 hover:border-emerald-200"
-                                                                    : "bg-white/60 border-transparent text-slate-400 hover:text-red-500 hover:border-red-100 hover:bg-red-50"
+                                                                    ? "clay-pill-rose text-white"
+                                                                    : "clay-button text-zinc-400 hover:text-emerald-600"
                                                             )}
                                                         >
-                                                            <Power size={13} className={isToggling ? "animate-spin" : ""} />
+                                                            <Power size={14} className={isToggling ? "animate-spin" : ""} />
                                                         </button>
                                                     </>
                                                 )}
@@ -443,16 +438,16 @@ export function ScheduleModal({ doctor, shifts, isOpen, onClose, onUpdate }: Sch
                                                         setEditId(s.id);
                                                         setAdding(false);
                                                     }}
-                                                    className="p-2 rounded-xl text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-all border border-transparent hover:border-blue-100"
+                                                    className="p-2 rounded-[12px] text-zinc-400 hover:text-blue-600 clay-button transition-all"
                                                 >
-                                                    <Save size={13} />
+                                                    <Save size={14} />
                                                 </button>
                                                 {/* Delete */}
                                                 <button
                                                     onClick={() => del(s.id)}
-                                                    className="p-2 rounded-xl text-slate-400 hover:text-red-600 hover:bg-red-50 transition-all border border-transparent hover:border-red-100"
+                                                    className="p-2 rounded-[12px] text-zinc-400 hover:text-rose-600 clay-button transition-all"
                                                 >
-                                                    <Trash2 size={13} />
+                                                    <Trash2 size={14} />
                                                 </button>
                                             </div>
                                         </div>
@@ -490,26 +485,19 @@ export function ScheduleModal({ doctor, shifts, isOpen, onClose, onUpdate }: Sch
                 </div>
 
                 {/* ══ FOOTER ══ */}
-                <div className="px-6 py-4 border-t border-slate-100 flex items-center justify-between flex-shrink-0 bg-slate-50/50">
-                    <div className="flex items-center gap-4 text-[11px] text-slate-400 font-medium">
-                        <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-emerald-400 inline-block" /> Aktif</span>
-                        <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-red-300 inline-block" /> Nonaktif hari ini</span>
+                <div className="px-6 py-4 border-t border-zinc-200/60 dark:border-[#222738] flex items-center justify-between flex-shrink-0">
+                    <div className="flex items-center gap-4 text-[11px] text-zinc-500 font-bold">
+                        <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-emerald-500 inline-block" /> Aktif</span>
+                        <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-rose-500 inline-block" /> Nonaktif</span>
                     </div>
                     <button
                         onClick={onClose}
-                        className="px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white text-[12px] font-bold rounded-xl transition-all"
+                        className="px-6 py-2.5 clay-button text-zinc-800 dark:text-zinc-200 text-xs font-black rounded-[14px] transition-all"
                     >
                         Tutup
                     </button>
                 </div>
             </div>
-
-            <style>{`
-                @keyframes scaleIn {
-                    from { transform: scale(0.96); opacity: 0; }
-                    to   { transform: scale(1); opacity: 1; }
-                }
-            `}</style>
         </div>,
         document.body
     );
@@ -532,11 +520,11 @@ function ShiftForm({
 
     return (
         <div className={cn(
-            "rounded-2xl border p-5 space-y-4",
-            isAdd ? "bg-slate-50 border-slate-200" : "bg-blue-50 border-blue-200"
+            "rounded-[24px] p-4 sm:p-5 space-y-4 clay-surface shadow-md",
+            isAdd ? "border border-zinc-200/50 dark:border-white/5" : "border-2 border-blue-500/40"
         )}>
             <div className="flex items-center justify-between">
-                <span className={cn("text-[10px] font-black uppercase tracking-widest", isAdd ? "text-slate-500" : "text-blue-600")}>
+                <span className={cn("text-[10px] font-black uppercase tracking-widest", isAdd ? "text-zinc-500 dark:text-zinc-400" : "text-blue-600 dark:text-blue-400")}>
                     {isAdd ? "Shift Baru" : "Edit Shift"}
                 </span>
             </div>
@@ -547,7 +535,7 @@ function ShiftForm({
                 placeholder="Nama shift (cth: Praktek Pagi)"
                 value={form.title || ""}
                 onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
-                className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm font-semibold text-slate-800 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all placeholder:text-slate-300"
+                className="w-full clay-inset rounded-[16px] px-4 py-3 text-xs sm:text-sm font-black text-zinc-800 dark:text-zinc-100 outline-none placeholder:text-zinc-400"
             />
 
             {/* Times */}
@@ -587,7 +575,7 @@ function ShiftForm({
 
             {/* Color */}
             <div className="flex items-center gap-3">
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Warna</span>
+                <span className="text-[10px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Warna</span>
                 <div className="flex gap-1.5">
                     {COLORS.map(c => (
                         <button
@@ -595,7 +583,7 @@ function ShiftForm({
                             type="button"
                             onClick={() => setForm(f => ({ ...f, color: c.value }))}
                             className={cn(
-                                "w-6 h-6 rounded-lg transition-all",
+                                "w-6 h-6 rounded-[8px] transition-all",
                                 c.bg,
                                 form.color === c.value ? `ring-2 ring-offset-1 ${c.ring} scale-110 shadow-md` : "opacity-40 hover:opacity-70"
                             )}
@@ -608,7 +596,7 @@ function ShiftForm({
             <div className="flex gap-2 pt-1">
                 <button
                     onClick={onCancel}
-                    className="flex-1 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-500 text-[12px] font-bold hover:bg-slate-50 transition-all"
+                    className="flex-1 py-2.5 rounded-[14px] clay-button text-zinc-600 dark:text-zinc-400 text-xs font-black transition-all active:scale-95"
                 >
                     Batal
                 </button>
@@ -616,16 +604,16 @@ function ShiftForm({
                     onClick={onSave}
                     disabled={!form.title?.trim() || saving}
                     className={cn(
-                        "flex-[2] py-2.5 rounded-xl text-[12px] font-bold flex items-center justify-center gap-1.5 transition-all active:scale-[0.98]",
+                        "flex-[2] py-2.5 rounded-[14px] text-xs font-black flex items-center justify-center gap-1.5 transition-all active:scale-95 shadow-sm",
                         form.title?.trim() && !saving
                             ? isAdd
-                                ? "bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm"
-                                : "bg-blue-600 hover:bg-blue-500 text-white shadow-sm"
-                            : "bg-slate-100 text-slate-400 cursor-not-allowed"
+                                ? "clay-pill-emerald text-white"
+                                : "clay-pill-blue text-white"
+                            : "clay-button text-zinc-400 cursor-not-allowed opacity-50"
                     )}
                 >
-                    <Save size={13} />
-                    {saving ? "Menyimpan..." : isAdd ? "Buat Shift" : "Simpan"}
+                    <Save size={13} strokeWidth={2.5} />
+                    <span>{saving ? "Menyimpan..." : isAdd ? "Buat Shift" : "Simpan"}</span>
                 </button>
             </div>
         </div>
