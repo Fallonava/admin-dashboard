@@ -20,22 +20,52 @@ export class LeaveService {
   }
 
   static async createBulk(dataArray: any[]) {
-    const newLeaves = await Promise.all(
+    const results = await Promise.all(
       dataArray.map(async (item) => {
         const { dates, doctor, doctorId, matchedDoctorId, ...rest } = item;
         const targetId = doctorId || matchedDoctorId;
         const doc = targetId 
           ? await prisma.doctor.findUnique({ where: { id: targetId } })
           : await prisma.doctor.findFirst({ where: { name: doctor } });
-        if (!doc) return;
+        if (!doc) return null;
+
+        const sDate = new Date(item.startDate);
+        const eDate = new Date(item.endDate);
+        const startOfDay = new Date(sDate.getFullYear(), sDate.getMonth(), sDate.getDate(), 0, 0, 0, 0);
+        const endOfDay = new Date(eDate.getFullYear(), eDate.getMonth(), eDate.getDate(), 23, 59, 59, 999);
+
+        // Check if leave already exists for this doctor on overlapping dates
+        const existingLeave = await prisma.leaveRequest.findFirst({
+          where: {
+            doctorId: doc.id,
+            startDate: { lte: endOfDay },
+            endDate: { gte: startOfDay },
+          }
+        });
+
+        if (existingLeave) {
+          // Update existing to prevent duplicates
+          return prisma.leaveRequest.update({
+            where: { id: existingLeave.id },
+            data: {
+              ...rest,
+              type: (item.type || existingLeave.type) as any,
+              status: 'Approved',
+              startDate: sDate,
+              endDate: eDate,
+              reason: item.reason || existingLeave.reason,
+            }
+          });
+        }
+
         return prisma.leaveRequest.create({
           data: {
             ...rest,
             type: item.type as any,
             doctorId: doc.id,
             status: 'Approved',
-            startDate: new Date(item.startDate),
-            endDate: new Date(item.endDate)
+            startDate: sDate,
+            endDate: eDate,
           }
         });
       })
@@ -44,7 +74,7 @@ export class LeaveService {
     getFullSnapshot().then(syncAdminData).catch(console.error);
     triggerSchedulerResync();
 
-    return newLeaves.filter(Boolean);
+    return results.filter(Boolean);
   }
 
   static async create(data: any) {
@@ -55,14 +85,46 @@ export class LeaveService {
       : await prisma.doctor.findFirst({ where: { name: doctor } });
     if (!doc) throw new Error('Doctor not found');
 
+    const sDate = new Date(data.startDate);
+    const eDate = new Date(data.endDate);
+    const startOfDay = new Date(sDate.getFullYear(), sDate.getMonth(), sDate.getDate(), 0, 0, 0, 0);
+    const endOfDay = new Date(eDate.getFullYear(), eDate.getMonth(), eDate.getDate(), 23, 59, 59, 999);
+
+    const existingLeave = await prisma.leaveRequest.findFirst({
+      where: {
+        doctorId: doc.id,
+        startDate: { lte: endOfDay },
+        endDate: { gte: startOfDay },
+      }
+    });
+
+    if (existingLeave) {
+      const updatedLeave = await prisma.leaveRequest.update({
+        where: { id: existingLeave.id },
+        data: {
+          ...rest,
+          type: (data.type || existingLeave.type) as any,
+          status: 'Approved',
+          startDate: sDate,
+          endDate: eDate,
+          reason: data.reason || existingLeave.reason,
+        }
+      });
+      notifyViaSocket('leave_updated', { id: updatedLeave.id });
+      notifyViaSocket('doctor_updated', { ids: [doc.id] });
+      getFullSnapshot().then(syncAdminData).catch(console.error);
+      triggerSchedulerResync();
+      return updatedLeave;
+    }
+
     const newLeave = await prisma.leaveRequest.create({
       data: {
         ...rest,
         type: data.type as any,
         doctorId: doc.id,
         status: 'Approved',
-        startDate: new Date(data.startDate),
-        endDate: new Date(data.endDate)
+        startDate: sDate,
+        endDate: eDate,
       }
     });
     

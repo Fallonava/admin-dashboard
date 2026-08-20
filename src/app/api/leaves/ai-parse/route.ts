@@ -315,7 +315,23 @@ Output WAJIB berupa JSON array murni:
       }
     }
 
-    return NextResponse.json({ success: true, items: parsedItems });
+    // ─── 3. IN-MEMORY DEDUPLICATION (JAMIN TIDAK ADA ITEM GANDA DI SATU TEKS) ──────────
+    const seenMap = new Map<string, ParsedLeaveItem>();
+    for (const item of parsedItems) {
+      const docKey = item.matchedDoctorId || item.doctorName;
+      const key = `${docKey}_${item.startDate}_${item.endDate}`;
+      if (!seenMap.has(key)) {
+        seenMap.set(key, item);
+      } else {
+        const existing = seenMap.get(key)!;
+        if (item.reason && item.reason.length > (existing.reason?.length || 0)) {
+          seenMap.set(key, item);
+        }
+      }
+    }
+    const deduplicatedItems = Array.from(seenMap.values());
+
+    return NextResponse.json({ success: true, items: deduplicatedItems });
   } catch (error: any) {
     console.error('AI Parse Leave Error:', error);
     return NextResponse.json({ error: error.message || 'Gagal memproses data cuti' }, { status: 500 });
