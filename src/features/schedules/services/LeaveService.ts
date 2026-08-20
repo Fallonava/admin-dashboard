@@ -3,6 +3,47 @@ import { notifyViaSocket, syncAdminData, triggerSchedulerResync } from '@/lib/au
 import { getFullSnapshot } from '@/lib/data-fetchers';
 
 export class LeaveService {
+  static async resolveDoctor(doctorId?: string | null, doctorName?: string | null) {
+    if (doctorId) {
+      const doc = await prisma.doctor.findUnique({ where: { id: doctorId } });
+      if (doc) return doc;
+    }
+
+    if (!doctorName) return null;
+
+    const trimmed = doctorName.trim();
+    // 1. Exact match
+    let doc = await prisma.doctor.findFirst({ where: { name: trimmed } });
+    if (doc) return doc;
+
+    // 2. Case-insensitive substring match
+    doc = await prisma.doctor.findFirst({
+      where: { name: { contains: trimmed, mode: 'insensitive' } }
+    });
+    if (doc) return doc;
+
+    // 3. Normalized nickname / token matching
+    const allDocs = await prisma.doctor.findMany();
+    const cleanTokens = (str: string) =>
+      str.toLowerCase()
+        .replace(/^(dr|drg|prof|drs)\.?\s+/gi, '')
+        .replace(/,\s*(sp\.[a-z]+|m\.kes|mars|subsp\.[a-z]+|ph\.d).*/gi, '')
+        .replace(/[^a-z0-9\s]/g, '')
+        .split(/\s+/)
+        .filter(t => t.length > 2);
+
+    const targetTokens = cleanTokens(trimmed);
+    for (const d of allDocs) {
+      const docTokens = cleanTokens(d.name);
+      const isMatch = targetTokens.some(t =>
+        docTokens.some(dt => dt.includes(t) || t.includes(dt))
+      );
+      if (isMatch) return d;
+    }
+
+    return null;
+  }
+
   static async getLeaves() {
     const leaves = await (prisma.leaveRequest as any).findMany({
       where: { doctorId: { not: "" } },
@@ -20,40 +61,55 @@ export class LeaveService {
   }
 
   static async createBulk(dataArray: any[]) {
+    const affectedDoctorIds = new Set<string>();
+
     const results = await Promise.all(
       dataArray.map(async (item) => {
         const { dates, doctor, doctorId, matchedDoctorId, ...rest } = item;
         const targetId = doctorId || matchedDoctorId;
-        const doc = targetId 
-          ? await prisma.doctor.findUnique({ where: { id: targetId } })
-          : await prisma.doctor.findFirst({ where: { name: doctor } });
-        if (!doc) return null;
+        const doc = await this.resolveDoctor(targetId, doctor);
+        if (!doc) {
+          console.warn(`[LeaveService] Could not resolve doctor for item:`, item);
+          return null;
+        }
+
+        affectedDoctorIds.add(doc.id);
 
         const sDate = new Date(item.startDate);
         const eDate = new Date(item.endDate);
         const startOfDay = new Date(sDate.getFullYear(), sDate.getMonth(), sDate.getDate(), 0, 0, 0, 0);
         const endOfDay = new Date(eDate.getFullYear(), eDate.getMonth(), eDate.getDate(), 23, 59, 59, 999);
 
-        // Check if leave already exists for this doctor on overlapping dates
-        const existingLeave = await prisma.leaveRequest.findFirst({
+        // Find ALL overlapping leaves for this doctor
+        const existingLeaves = await prisma.leaveRequest.findMany({
           where: {
             doctorId: doc.id,
             startDate: { lte: endOfDay },
             endDate: { gte: startOfDay },
-          }
+          },
+          orderBy: { startDate: 'desc' }
         });
 
-        if (existingLeave) {
-          // Update existing to prevent duplicates
+        if (existingLeaves.length > 0) {
+          const primaryLeave = existingLeaves[0];
+          // Delete extra duplicates if any exist
+          if (existingLeaves.length > 1) {
+            const extraIds = existingLeaves.slice(1).map(l => l.id);
+            await prisma.leaveRequest.deleteMany({
+              where: { id: { in: extraIds } }
+            });
+          }
+
+          // Update primary leave with latest data
           return prisma.leaveRequest.update({
-            where: { id: existingLeave.id },
+            where: { id: primaryLeave.id },
             data: {
               ...rest,
-              type: (item.type || existingLeave.type) as any,
+              type: (item.type || primaryLeave.type || 'Liburan') as any,
               status: 'Approved',
               startDate: sDate,
               endDate: eDate,
-              reason: item.reason || existingLeave.reason,
+              reason: item.reason || primaryLeave.reason,
             }
           });
         }
@@ -61,7 +117,7 @@ export class LeaveService {
         return prisma.leaveRequest.create({
           data: {
             ...rest,
-            type: item.type as any,
+            type: (item.type || 'Liburan') as any,
             doctorId: doc.id,
             status: 'Approved',
             startDate: sDate,
@@ -70,6 +126,10 @@ export class LeaveService {
         });
       })
     );
+
+    if (affectedDoctorIds.size > 0) {
+      notifyViaSocket('doctor_updated', { ids: Array.from(affectedDoctorIds) });
+    }
     
     getFullSnapshot().then(syncAdminData).catch(console.error);
     triggerSchedulerResync();
@@ -80,9 +140,7 @@ export class LeaveService {
   static async create(data: any) {
     const { dates, doctor, doctorId, matchedDoctorId, ...rest } = data;
     const targetId = doctorId || matchedDoctorId;
-    const doc = targetId
-      ? await prisma.doctor.findUnique({ where: { id: targetId } })
-      : await prisma.doctor.findFirst({ where: { name: doctor } });
+    const doc = await this.resolveDoctor(targetId, doctor);
     if (!doc) throw new Error('Doctor not found');
 
     const sDate = new Date(data.startDate);
@@ -90,51 +148,56 @@ export class LeaveService {
     const startOfDay = new Date(sDate.getFullYear(), sDate.getMonth(), sDate.getDate(), 0, 0, 0, 0);
     const endOfDay = new Date(eDate.getFullYear(), eDate.getMonth(), eDate.getDate(), 23, 59, 59, 999);
 
-    const existingLeave = await prisma.leaveRequest.findFirst({
+    // Find ALL overlapping leaves for this doctor
+    const existingLeaves = await prisma.leaveRequest.findMany({
       where: {
         doctorId: doc.id,
         startDate: { lte: endOfDay },
         endDate: { gte: startOfDay },
-      }
+      },
+      orderBy: { startDate: 'desc' }
     });
 
-    if (existingLeave) {
-      const updatedLeave = await prisma.leaveRequest.update({
-        where: { id: existingLeave.id },
+    let resultLeave;
+    if (existingLeaves.length > 0) {
+      const primaryLeave = existingLeaves[0];
+      if (existingLeaves.length > 1) {
+        const extraIds = existingLeaves.slice(1).map(l => l.id);
+        await prisma.leaveRequest.deleteMany({
+          where: { id: { in: extraIds } }
+        });
+      }
+
+      resultLeave = await prisma.leaveRequest.update({
+        where: { id: primaryLeave.id },
         data: {
           ...rest,
-          type: (data.type || existingLeave.type) as any,
+          type: (data.type || primaryLeave.type || 'Liburan') as any,
           status: 'Approved',
           startDate: sDate,
           endDate: eDate,
-          reason: data.reason || existingLeave.reason,
+          reason: data.reason || primaryLeave.reason,
         }
       });
-      notifyViaSocket('leave_updated', { id: updatedLeave.id });
-      notifyViaSocket('doctor_updated', { ids: [doc.id] });
-      getFullSnapshot().then(syncAdminData).catch(console.error);
-      triggerSchedulerResync();
-      return updatedLeave;
+    } else {
+      resultLeave = await prisma.leaveRequest.create({
+        data: {
+          ...rest,
+          type: (data.type || 'Liburan') as any,
+          doctorId: doc.id,
+          status: 'Approved',
+          startDate: sDate,
+          endDate: eDate,
+        }
+      });
     }
 
-    const newLeave = await prisma.leaveRequest.create({
-      data: {
-        ...rest,
-        type: data.type as any,
-        doctorId: doc.id,
-        status: 'Approved',
-        startDate: sDate,
-        endDate: eDate,
-      }
-    });
-    
-    notifyViaSocket('leave_updated', { id: newLeave.id });
-    notifyViaSocket('doctor_updated', { ids: [doc.id] }); 
-    
+    notifyViaSocket('leave_updated', { id: resultLeave.id });
+    notifyViaSocket('doctor_updated', { ids: [doc.id] });
     getFullSnapshot().then(syncAdminData).catch(console.error);
     triggerSchedulerResync();
 
-    return newLeave;
+    return resultLeave;
   }
 
   static async update(id: string, updates: any) {
@@ -163,5 +226,34 @@ export class LeaveService {
     triggerSchedulerResync();
 
     return true;
+  }
+
+  static async deduplicateAll() {
+    const allLeaves = await prisma.leaveRequest.findMany({
+      orderBy: [{ doctorId: 'asc' }, { startDate: 'asc' }]
+    });
+
+    let removedCount = 0;
+    const seen = new Map<string, string>(); // doctorId_dateKey -> id
+
+    for (const leave of allLeaves) {
+      const s = new Date(leave.startDate);
+      const sKey = `${s.getFullYear()}-${s.getMonth()}-${s.getDate()}`;
+      const uniqueKey = `${leave.doctorId}_${sKey}`;
+
+      if (seen.has(uniqueKey)) {
+        await prisma.leaveRequest.delete({ where: { id: leave.id } });
+        removedCount++;
+      } else {
+        seen.set(uniqueKey, leave.id);
+      }
+    }
+
+    if (removedCount > 0) {
+      getFullSnapshot().then(syncAdminData).catch(console.error);
+      triggerSchedulerResync();
+    }
+
+    return { removedCount, totalRemaining: seen.size };
   }
 }

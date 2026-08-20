@@ -22,7 +22,7 @@ import type { LeaveRequest, Doctor } from "@/lib/data-service";
 import { LeaveRequestModal } from "./LeaveRequestModal";
 import { AiLeaveImportModal } from "./AiLeaveImportModal";
 import { getIndonesianHoliday, formatDateKey } from "@/lib/holidays";
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 
 interface LeaveCalendarProps {
   leaves: LeaveRequest[];
@@ -611,7 +611,11 @@ export function LeaveCalendar({ leaves, onRefresh, onOpenAll, totalLeaves = 0 }:
         isOpen={isAiModalOpen}
         onClose={() => setIsAiModalOpen(false)}
         doctors={doctors}
-        onSuccess={() => onRefresh()}
+        onSuccess={async () => {
+          await onRefresh();
+          mutate('/api/doctors');
+          mutate('/api/shifts');
+        }}
       />
     </div>
   );

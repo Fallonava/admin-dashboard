@@ -68,6 +68,7 @@ export function AiLeaveImportModal({ isOpen, onClose, doctors, onSuccess }: Prop
         return {
           doctor: docName,
           doctorId: item.matchedDoctorId,
+          matchedDoctorId: item.matchedDoctorId,
           type: item.type || 'Liburan',
           startDate: item.startDate,
           endDate: item.endDate,
@@ -82,14 +83,20 @@ export function AiLeaveImportModal({ isOpen, onClose, doctors, onSuccess }: Prop
         body: JSON.stringify(payloads)
       });
 
+      const savedData = await res.json().catch(() => null);
+
       if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.error || 'Gagal menyimpan ke database');
+        throw new Error(savedData?.error || 'Gagal menyimpan ke database');
       }
 
-      onSuccess();
+      if (Array.isArray(savedData) && savedData.length === 0 && payloads.length > 0) {
+        throw new Error('Tidak ada dokter yang cocok di database. Mohon sesuaikan nama dokter pada daftar.');
+      }
+
+      await onSuccess();
       handleClose();
     } catch (err: any) {
+      console.error("[AiLeaveImportModal] Save Error:", err);
       setErrorMsg(err.message || 'Gagal menyimpan jadwal cuti.');
     } finally {
       setIsSaving(false);
@@ -189,13 +196,29 @@ export function AiLeaveImportModal({ isOpen, onClose, doctors, onSuccess }: Prop
                       <div className="flex items-center gap-2 flex-1">
                         <User size={15} className="text-zinc-400 shrink-0" />
                         <select
-                          value={item.matchedDoctorName || item.doctorName}
-                          onChange={(e) => updateItem(idx, 'matchedDoctorName', e.target.value)}
+                          value={item.matchedDoctorId || (doctors.find(d => d.name.toLowerCase() === (item.matchedDoctorName || item.doctorName).toLowerCase())?.id) || ""}
+                          onChange={(e) => {
+                            const selectedId = e.target.value;
+                            const foundDoc = doctors.find(d => d.id === selectedId);
+                            if (foundDoc) {
+                              setParsedItems(prev => prev.map((it, i) => i === idx ? {
+                                ...it,
+                                matchedDoctorId: foundDoc.id,
+                                matchedDoctorName: foundDoc.name
+                              } : it));
+                            } else {
+                              setParsedItems(prev => prev.map((it, i) => i === idx ? {
+                                ...it,
+                                matchedDoctorId: undefined,
+                                matchedDoctorName: undefined
+                              } : it));
+                            }
+                          }}
                           className="w-full text-xs font-black text-zinc-900 dark:text-zinc-100 clay-inset rounded-[12px] p-2 outline-none"
                         >
-                          <option value={item.doctorName}>{item.doctorName} (Hasil Chat)</option>
+                          <option value="">{item.doctorName} (Hasil Chat / Deteksi AI)</option>
                           {doctors.map(d => (
-                            <option key={d.id} value={d.name}>{d.name} ({d.specialty})</option>
+                            <option key={d.id} value={d.id}>{d.name} ({d.specialty})</option>
                           ))}
                         </select>
                       </div>

@@ -230,61 +230,73 @@ Output WAJIB berupa JSON array murni:
 
         if (!currentDoc) continue;
 
+        // Skip lines that are purely practice hours without leave/off indicators
+        if (/^\s*(senin|selasa|rabu|kamis|jum'?at|sabtu|minggu)\s*:\s*\d{1,2}[.:]\d{2}/i.test(raw) && !/cuti|libur|ijin|izin|tutup|off|merah/i.test(raw)) {
+          continue;
+        }
+
         // Tentukan Tipe Cuti
         let leaveType: ParsedLeaveItem['type'] = 'Liburan';
         if (/sakit|ijin sakit|izin sakit/i.test(raw)) leaveType = 'Sakit';
         else if (/ijin|izin/i.test(raw)) leaveType = 'Pribadi';
         else if (/konferensi|seminar|workshop/i.test(raw)) leaveType = 'Konferensi';
 
+        // Strip clock times (e.g. 13.30 - 15.30) to prevent date range collision
+        const cleanRaw = raw.replace(/\b\d{1,2}[.:]\d{2}(?:\s*-\s*\d{1,2}[.:]\d{2})?\b/g, '');
+
         // 1. Date Range: e.g. "3 - 8 Agustus 2026"
-        const rangeMatch = raw.match(/(\d{1,2})\s*-\s*(\d{1,2})(?:\s+([A-Za-z]+))?(?:\s+(\d{4}))?/);
+        const rangeMatch = cleanRaw.match(/\b(\d{1,2})\s*-\s*(\d{1,2})(?:\s+([A-Za-z]+))?(?:\s+(\d{4}))?/);
         if (rangeMatch) {
           const sDay = parseInt(rangeMatch[1]);
           const eDay = parseInt(rangeMatch[2]);
-          const mStr = rangeMatch[3]?.toLowerCase();
-          const rMonth = mStr && MONTHS_MAP[mStr] ? MONTHS_MAP[mStr] : defaultMonth;
-          const rYear = rangeMatch[4] ? parseInt(rangeMatch[4]) : defaultYear;
+          if (sDay >= 1 && sDay <= 31 && eDay >= 1 && eDay <= 31) {
+            const mStr = rangeMatch[3]?.toLowerCase();
+            const rMonth = mStr && MONTHS_MAP[mStr] ? MONTHS_MAP[mStr] : defaultMonth;
+            const rYear = rangeMatch[4] ? parseInt(rangeMatch[4]) : defaultYear;
 
-          const sDate = `${rYear}-${String(rMonth).padStart(2, '0')}-${String(sDay).padStart(2, '0')}`;
-          const eDate = `${rYear}-${String(rMonth).padStart(2, '0')}-${String(eDay).padStart(2, '0')}`;
+            const sDate = `${rYear}-${String(rMonth).padStart(2, '0')}-${String(sDay).padStart(2, '0')}`;
+            const eDate = `${rYear}-${String(rMonth).padStart(2, '0')}-${String(eDay).padStart(2, '0')}`;
 
-          parsedItems.push({
-            doctorName: currentDoc.name,
-            matchedDoctorId: currentDoc.id,
-            matchedDoctorName: currentDoc.name,
-            startDate: sDate,
-            endDate: eDate,
-            type: leaveType,
-            reason: raw,
-            confidence: 0.98,
-          });
-          continue;
+            parsedItems.push({
+              doctorName: currentDoc.name,
+              matchedDoctorId: currentDoc.id,
+              matchedDoctorName: currentDoc.name,
+              startDate: sDate,
+              endDate: eDate,
+              type: leaveType,
+              reason: raw,
+              confidence: 0.98,
+            });
+            continue;
+          }
         }
 
         // 2. Slash dates: e.g. "08/08/2026", "15/08/2027", "17/8/2026"
-        const slashMatches = Array.from(raw.matchAll(/(\d{1,2})\/(\d{1,2})\/(\d{4})/g));
+        const slashMatches = Array.from(cleanRaw.matchAll(/(\d{1,2})\/(\d{1,2})\/(\d{4})/g));
         if (slashMatches.length > 0) {
           for (const sm of slashMatches) {
             const d = parseInt(sm[1]);
             const m = parseInt(sm[2]);
             const y = parseInt(sm[3]);
-            const dStr = `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-            parsedItems.push({
-              doctorName: currentDoc.name,
-              matchedDoctorId: currentDoc.id,
-              matchedDoctorName: currentDoc.name,
-              startDate: dStr,
-              endDate: dStr,
-              type: leaveType,
-              reason: raw,
-              confidence: 0.95,
-            });
+            if (d >= 1 && d <= 31 && m >= 1 && m <= 12) {
+              const dStr = `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+              parsedItems.push({
+                doctorName: currentDoc.name,
+                matchedDoctorId: currentDoc.id,
+                matchedDoctorName: currentDoc.name,
+                startDate: dStr,
+                endDate: dStr,
+                type: leaveType,
+                reason: raw,
+                confidence: 0.95,
+              });
+            }
           }
           continue;
         }
 
         // 3. Multi-dates list: e.g. "17, 24, 25", "Tgl 15,17 & 29 Agustus", "17 dan 25 agustus"
-        const noYear = raw.replace(/\b20\d\d\b/g, '');
+        const noYear = cleanRaw.replace(/\b20\d\d\b/g, '');
         const digits = Array.from(noYear.matchAll(/\b(\d{1,2})\b/g))
           .map((m) => parseInt(m[1]))
           .filter((n) => n >= 1 && n <= 31);
@@ -292,7 +304,7 @@ Output WAJIB berupa JSON array murni:
         if (digits.length > 0) {
           let lineMonth = defaultMonth;
           for (const [mName, mNum] of Object.entries(MONTHS_MAP)) {
-            if (new RegExp(`\\b${mName}\\b`, 'i').test(raw)) {
+            if (new RegExp(`\\b${mName}\\b`, 'i').test(cleanRaw)) {
               lineMonth = mNum;
               break;
             }
@@ -315,9 +327,18 @@ Output WAJIB berupa JSON array murni:
       }
     }
 
-    // ─── 3. IN-MEMORY DEDUPLICATION (JAMIN TIDAK ADA ITEM GANDA DI SATU TEKS) ──────────
+    // ─── 3. IN-MEMORY DEDUPLICATION & VALIDATION ──────────
+    const isValidDateFormat = (dStr: string) => {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(dStr)) return false;
+      const d = new Date(dStr);
+      return !isNaN(d.getTime());
+    };
+
     const seenMap = new Map<string, ParsedLeaveItem>();
     for (const item of parsedItems) {
+      if (!isValidDateFormat(item.startDate) || !isValidDateFormat(item.endDate)) {
+        continue;
+      }
       const docKey = item.matchedDoctorId || item.doctorName;
       const key = `${docKey}_${item.startDate}_${item.endDate}`;
       if (!seenMap.has(key)) {

@@ -182,7 +182,10 @@ export default function LeavesPage() {
         <div className="flex-1 min-h-0">
           <LeaveCalendar
             leaves={filteredLeaves}
-            onRefresh={() => mutate('/api/leaves')}
+            onRefresh={async () => {
+              await mutate('/api/leaves');
+              await mutateLeaves();
+            }}
             onOpenAll={() => setIsAllLeavesOpen(true)}
             totalLeaves={totalLeaves}
           />

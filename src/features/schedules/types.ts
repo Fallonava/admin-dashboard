@@ -23,10 +23,12 @@ export type ShiftUpdateDTO = z.infer<typeof ShiftUpdateSchema>;
 
 // --- LEAVES ---
 export const LeaveCreateSchema = z.object({
-    doctor: z.string().min(1),
+    doctorId: z.string().optional().nullable(),
+    matchedDoctorId: z.string().optional().nullable(),
+    doctor: z.string().optional().nullable(),
     dates: z.any().optional(),
     specialty: z.string().optional().nullable(),
-    type: z.string().min(1),
+    type: z.string().min(1).default("Liburan"),
     startDate: z.union([z.string(), z.date()]),
     endDate: z.union([z.string(), z.date()]),
     reason: z.string().optional().nullable(),
