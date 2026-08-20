@@ -20,6 +20,72 @@ interface ParsedLeaveItem {
   confidence: number;
 }
 
+// ─── Normalizer & Nickname Matching Helpers ─────────────────────────
+
+function cleanWord(str: string): string {
+  return str.toLowerCase().replace(/[^a-z0-9]/g, '');
+}
+
+function normalizeName(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/\b(dr|drg|prof|rr|m)\b\.?/gi, ' ')
+    .replace(/\bsp\.[a-z\-,\. ]+/gi, ' ')
+    .replace(/\b(msi\.med|md|cips|finasim)\b\.?/gi, ' ')
+    .replace(/[,\.\(\)\*\-]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function getDoctorTokens(name: string): string[] {
+  const norm = normalizeName(name);
+  return norm.split(' ').filter((w) => w.length >= 3);
+}
+
+const NICKNAME_ALIASES: Record<string, string[]> = {
+  candra: ['chandra'],
+  chandra: ['candra'],
+  rifan: ['rifan', 'm. rifan', "rif'an"],
+  tanji: ['ahmad tanji', 'tanji'],
+  robby: ['robby', 'ramadhonie'],
+  fajar: ['fajar', 'nugroho'],
+  gatot: ['gatot', 'hananta'],
+  hepta: ['hepta', 'lidia'],
+  prita: ['pritasari', 'prita'],
+  irma: ['irma', 'rosyana'],
+  lita: ['lita', 'hati'],
+  rahageng: ['rahageng', 'wida'],
+  setyo: ['setyo', 'dirahayu'],
+  sigit: ['sigit', 'purnomohadi'],
+  eko: ['eko', 'subekti'],
+  luthfi: ['luthfi', 'muammar'],
+  wahid: ['wahid', 'heru'],
+  lirans: ['lirans', 'tia'],
+  endro: ['endro', 'wibowo'],
+  suroso: ['suroso'],
+  taufik: ['taufik', 'hidayanto'],
+  nova: ['nova', 'kurniasari'],
+  ajeng: ['ajeng', 'putri'],
+  wati: ['wati'],
+  oke: ['oke', 'viska'],
+  harimurti: ['harimurti', 'swastika'],
+};
+
+const MONTHS_MAP: Record<string, number> = {
+  januari: 1, jan: 1,
+  februari: 2, feb: 2,
+  maret: 3, mar: 3,
+  april: 4, apr: 4,
+  mei: 5, may: 5,
+  juni: 6, jun: 6,
+  juli: 7, jul: 7,
+  agustus: 8, agu: 8, agt: 8,
+  september: 9, sep: 9,
+  oktober: 10, okt: 10,
+  november: 11, nov: 11,
+  desember: 12, des: 12,
+};
+
 export async function POST(req: Request) {
   const authErr = await requirePermission(req, 'leaves', 'write');
   if (authErr) return authErr;
@@ -35,213 +101,215 @@ export async function POST(req: Request) {
       select: { id: true, name: true, specialty: true }
     });
 
-    const doctorListPrompt = doctors.map(d => `- ${d.name} (${d.specialty}) [ID: ${d.id}]`).join('\n');
+    const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Jakarta' }));
+    let defaultYear = now.getFullYear();
+    let defaultMonth = now.getMonth() + 1;
 
-    const now = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" }));
-    const currentYear = now.getFullYear();
-    const todayStr = `${currentYear}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-
-    const systemPrompt = `Anda adalah spesialis ekstraksi data cuti dokter RS Siaga Medika dari format pesan WhatsApp seperti berikut:
-Contoh Format WA:
-"REKAP JADWAL CUTI SPESIALIS BULAN AGUSTUS 2026
-*POLI ANAK*
-dr. Irma Sp.A 
-Tgl 17 Agustus ( merah )
-Tgl 24 Agustus ( geser merah tgl 25)
-
-dr. Rif'an Sp.A
-Tgl 17, 25 Agustus ( merah)
-
-*POLI BEDAH*
-dr Endro : 3 - 8 Agustus 2026 *(CUTI di gantikan dr Oki Sp. B )*
-dr Endro : 17 Agustus *(LIBUR)*"
-
-Tahun default: ${currentYear}
-Bulan jika tidak disebutkan di baris: sesuaikan dengan judul header rekap atau bulan berjalan.
-
-DAFTAR DOKTER RESMI RS:
-${doctorListPrompt}
-
-TUGAS ANDA:
-1. Ekstrak SETIAP entri cuti/libur/izin per dokter.
-2. Jika 1 dokter memiliki beberapa tanggal terpisah (misal: "17, 24, 25 Agustus" atau "Tgl 15,17 & 29 Agustus"), PECAH menjadi item terpisah untuk tiap tanggal, ATAU jika berupa rentang (misal "3 - 8 Agustus"), buat startDate="YYYY-08-03" dan endDate="YYYY-08-08".
-3. Cocokkan nama dokter dengan DAFTAR DOKTER RESMI RS di atas.
-4. Tentukan tipe cuti: 'Sakit', 'Liburan', 'Pribadi', 'Konferensi', atau 'Lainnya'.
-5. Format tanggal wajib YYYY-MM-DD.
-
-OUTPUT HARUS BERUPA ARRAY JSON MURNI TANPA MARKDOWN / TEKS PENJELAS:
-[
-  {
-    "doctorName": "dr Endro",
-    "matchedDoctorId": "cl...",
-    "matchedDoctorName": "dr. Endro Sp.B",
-    "startDate": "2026-08-03",
-    "endDate": "2026-08-08",
-    "type": "Liburan",
-    "reason": "CUTI di gantikan dr Oki Sp. B",
-    "confidence": 0.95
-  }
-]`;
+    // Deteksi Header Bulan & Tahun (misal: "REKAP JADWAL CUTI SPESIALIS BULAN *AGUSTUS* 2026")
+    const headerMatch = text.match(/BULAN\s+\*?([A-Za-z]+)\*?\s*(\d{4})?/i);
+    if (headerMatch) {
+      const mStr = headerMatch[1].toLowerCase();
+      if (MONTHS_MAP[mStr]) defaultMonth = MONTHS_MAP[mStr];
+      if (headerMatch[2]) defaultYear = parseInt(headerMatch[2]);
+    }
 
     let parsedItems: ParsedLeaveItem[] = [];
 
-    // ─── 1. INTEGRASI 9ROUTER / CLOUD LLM / OLLAMA ──────────
+    // ─── 1. INTEGRASI 9ROUTER / CLOUD LLM (JIKA TERSEDIA) ──────────
     try {
-      const routerUrl = process.env.NINEROUTER_URL || 'https://9router.fallonava.my.id/v1';
-      const routerKey = process.env.NINEROUTER_API_KEY || 'sk-8f213104862d5a9c-7qgfds-62839505';
+      const routerUrl = process.env.NINEROUTER_URL || 'http://127.0.0.1:20128/v1';
+      const routerKey = process.env.NINEROUTER_API_KEY || 'sk-local';
 
-      if (routerUrl && routerKey) {
-        const routerRes = await fetch(`${routerUrl}/chat/completions`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${routerKey}`
-          },
-          body: JSON.stringify({
-            model: process.env.NINEROUTER_MODEL || 'Navadha',
-            stream: false,
-            messages: [
-              { role: 'system', content: systemPrompt },
-              { role: 'user', content: `Teks Rekap Chat WhatsApp:\n\n"""\n${text}\n"""\n\nEkstrak seluruh entri cuti dokter dalam format JSON array murni:` }
-            ],
-            temperature: 0.1
-          }),
-          signal: AbortSignal.timeout(6000)
-        });
+      const doctorListPrompt = doctors.map(d => `- ${d.name} (${d.specialty}) [ID: ${d.id}]`).join('\n');
+      const systemPrompt = `Anda adalah spesialis ekstraksi data cuti dokter dari pesan WhatsApp.
+Tahun: ${defaultYear}, Bulan default: ${defaultMonth}
+DAFTAR DOKTER:
+${doctorListPrompt}
+TUGAS:
+Ekstrak semua tanggal cuti per dokter dan cocokkan ke DAFTAR DOKTER.
+Output WAJIB berupa JSON array murni:
+[{"doctorName":"...","matchedDoctorId":"...","matchedDoctorName":"...","startDate":"YYYY-MM-DD","endDate":"YYYY-MM-DD","type":"Liburan|Sakit|Pribadi","reason":"...","confidence":0.95}]`;
 
-        if (routerRes.ok) {
-          const rawText = await routerRes.text();
-          let aiContent = '';
-          if (rawText.startsWith('data:')) {
-            const lines = rawText.split('\n');
-            for (const line of lines) {
-              if (line.startsWith('data: ') && !line.includes('[DONE]')) {
-                try {
-                  const chunk = JSON.parse(line.slice(6));
-                  aiContent += chunk.choices?.[0]?.delta?.content || '';
-                } catch (_) {}
-              }
-            }
-          } else {
-            const jsonRes = JSON.parse(rawText);
-            aiContent = jsonRes.choices?.[0]?.message?.content || '';
-          }
+      const routerRes = await fetch(`${routerUrl}/chat/completions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${routerKey}`
+        },
+        body: JSON.stringify({
+          model: process.env.NINEROUTER_MODEL || 'default',
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: text }
+          ],
+          temperature: 0.1
+        }),
+        signal: AbortSignal.timeout(4000)
+      }).catch(() => null);
 
-          const jsonMatch = aiContent.match(/\[[\s\S]*\]/);
-          if (jsonMatch) {
-            parsedItems = JSON.parse(jsonMatch[0]);
-          }
-        }
-      } else {
-        // Coba baca konfigurasi AI dari Settings DB (Gemini / Groq / Ollama internal)
-        const aiConfig = await prisma.aiSettings.findUnique({ where: { id: 'singleton' } });
-        if (aiConfig?.aiEnabled) {
-          let aiModel: any = null;
-          let modelName = aiConfig.aiModel || 'qwen2.5:1.5b';
-
-          if (aiConfig.provider === 'ollama') {
-            const baseUrl = (aiConfig.ollamaUrl || 'http://localhost:11434').replace(/\/+$/, '');
-            const ollamaProvider = createOllama({ baseURL: `${baseUrl}/api` });
-            aiModel = ollamaProvider(modelName);
-          } else if (aiConfig.provider === 'gemini') {
-            const google = createGoogleGenerativeAI({ apiKey: aiConfig.geminiKey || aiConfig.apiKey || '' });
-            aiModel = google(modelName);
-          } else if (aiConfig.provider === 'groq') {
-            const groq = createGroq({ apiKey: aiConfig.groqKey || '' });
-            aiModel = groq(modelName);
-          } else if (aiConfig.provider === 'cohere') {
-            const cohere = createCohere({ apiKey: aiConfig.cohereKey || '' });
-            aiModel = cohere('command-r-plus-08-2024');
-          }
-
-          if (aiModel) {
-            const { text: aiResponseText } = await generateText({
-              model: aiModel,
-              system: systemPrompt,
-              prompt: `Teks Rekap Chat WhatsApp:\n\n"""\n${text}\n"""\n\nEkstrak seluruh entri cuti dokter dalam format JSON array murni:`,
-            });
-            const jsonMatch = aiResponseText.match(/\[[\s\S]*\]/);
-            if (jsonMatch) {
-              parsedItems = JSON.parse(jsonMatch[0]);
-            }
-          }
+      if (routerRes && routerRes.ok) {
+        const jsonRes = await routerRes.json().catch(() => null);
+        const aiContent = jsonRes?.choices?.[0]?.message?.content || '';
+        const jsonMatch = aiContent.match(/\[[\s\S]*\]/);
+        if (jsonMatch) {
+          parsedItems = JSON.parse(jsonMatch[0]);
         }
       }
-    } catch (llmErr) {
-      console.warn('LLM parsing error, falling back to rule-based parser:', llmErr);
+    } catch (_) {
+      // LLM bypassed smoothly to Deterministic Engine
     }
 
-    // ─── 2. INSTANT RULE-BASED REGEX ENGINE (100% OFFLINE, CEPAT & TEPAT) ──────────
+    // ─── 2. HIGH-PRECISION MEDICAL NICKNAME & MULTI-TOKEN PARSER ──────────
     if (parsedItems.length === 0) {
+      const docIndex = doctors.map((d) => ({
+        doctor: d,
+        tokens: getDoctorTokens(d.name),
+        specialtyTokens: getDoctorTokens(d.specialty),
+      }));
+
       const lines = text.split('\n');
       let currentDoc: any = null;
-      let month = now.getMonth() + 1; // default current month
-      
-      const monthMatch = text.match(/BULAN\s+\*?([A-Za-z]+)\*?\s*(\d{4})?/i);
-      if (monthMatch) {
-        const mStr = monthMatch[1].toLowerCase();
-        const monthsMap: Record<string, number> = {
-          januari: 1, februari: 2, maret: 3, april: 4, mei: 5, juni: 6,
-          juli: 7, agustus: 8, september: 9, oktober: 10, november: 11, desember: 12
-        };
-        if (monthsMap[mStr]) month = monthsMap[mStr];
-      }
+      let currentPoli: string = '';
 
-      for (const line of lines) {
-        const trimmed = line.trim();
-        if (!trimmed || trimmed.startsWith('*POLI') || trimmed.startsWith('REKAP')) continue;
+      for (let i = 0; i < lines.length; i++) {
+        const raw = lines[i].trim();
+        if (!raw) continue;
 
-        // Cek apakah ada dokter di baris ini
-        const matchedDoctor = doctors.find(d => {
-          const cleanDoc = d.name.replace(/dr\.?|drg\.?|Sp\.[A-Za-z, ]+/gi, '').trim().toLowerCase();
-          const cleanLine = trimmed.toLowerCase();
-          return cleanDoc.length > 2 && cleanLine.includes(cleanDoc);
-        });
-
-        if (matchedDoctor) {
-          currentDoc = matchedDoctor;
+        // Check header POLI (e.g. *POLI ANAK*, *POLI OBGYN*)
+        const poliMatch = raw.match(/^\*POLI\s+([^*]+)\*/i);
+        if (poliMatch) {
+          currentPoli = poliMatch[1].trim().toLowerCase();
+          currentDoc = null;
+          continue;
         }
 
-        // Cek angka tanggal di baris
-        if (currentDoc && trimmed.match(/\d+/)) {
-          const rangeMatch = trimmed.match(/(\d{1,2})\s*-\s*(\d{1,2})/);
-          if (rangeMatch) {
-            const startDay = parseInt(rangeMatch[1]);
-            const endDay = parseInt(rangeMatch[2]);
-            const sDate = `${currentYear}-${String(month).padStart(2, '0')}-${String(startDay).padStart(2, '0')}`;
-            const eDate = `${currentYear}-${String(month).padStart(2, '0')}-${String(endDay).padStart(2, '0')}`;
+        // Try to match doctor on this line
+        let bestMatch: any = null;
+        let highestScore = 0;
+        const lineNorm = normalizeName(raw);
+        const lineTokens = lineNorm.split(' ').filter((w) => w.length >= 2);
+
+        for (const entry of docIndex) {
+          let score = 0;
+          for (const lt of lineTokens) {
+            for (const dt of entry.tokens) {
+              if (lt === dt || cleanWord(lt) === cleanWord(dt)) score += 10;
+              else if (NICKNAME_ALIASES[lt]?.includes(dt) || NICKNAME_ALIASES[dt]?.includes(lt)) score += 9;
+              else if (dt.startsWith(lt) && lt.length >= 4) score += 6;
+            }
+          }
+
+          // Poli affinity boost
+          if (currentPoli) {
+            const spec = entry.doctor.specialty.toLowerCase();
+            if (currentPoli.includes('anak') && spec.includes('anak')) score += 5;
+            if (currentPoli.includes('obgyn') && (spec.includes('kandungan') || spec.includes('obgyn'))) score += 5;
+            if (currentPoli.includes('dalam') && spec.includes('dalam')) score += 5;
+            if (currentPoli.includes('bedah') && spec.includes('bedah')) score += 5;
+            if (currentPoli.includes('saraf') && spec.includes('saraf')) score += 5;
+            if (currentPoli.includes('jiwa') && spec.includes('jiwa')) score += 5;
+            if (currentPoli.includes('urologi') && spec.includes('urologi')) score += 5;
+            if (currentPoli.includes('tht') && spec.includes('tht')) score += 5;
+            if (currentPoli.includes('paru') && spec.includes('paru')) score += 5;
+            if (currentPoli.includes('mata') && spec.includes('mata')) score += 5;
+            if (currentPoli.includes('jantung') && spec.includes('jantung')) score += 5;
+            if (currentPoli.includes('rehab') && spec.includes('rehab')) score += 5;
+            if (currentPoli.includes('ortho') && spec.includes('ortho')) score += 5;
+            if (currentPoli.includes('mulut') && spec.includes('mulut')) score += 5;
+          }
+
+          if (score > highestScore && score >= 9) {
+            highestScore = score;
+            bestMatch = entry.doctor;
+          }
+        }
+
+        if (bestMatch && (raw.toLowerCase().includes('dr') || lineTokens.length >= 1)) {
+          currentDoc = bestMatch;
+        }
+
+        if (!currentDoc) continue;
+
+        // Tentukan Tipe Cuti
+        let leaveType: ParsedLeaveItem['type'] = 'Liburan';
+        if (/sakit|ijin sakit|izin sakit/i.test(raw)) leaveType = 'Sakit';
+        else if (/ijin|izin/i.test(raw)) leaveType = 'Pribadi';
+        else if (/konferensi|seminar|workshop/i.test(raw)) leaveType = 'Konferensi';
+
+        // 1. Date Range: e.g. "3 - 8 Agustus 2026"
+        const rangeMatch = raw.match(/(\d{1,2})\s*-\s*(\d{1,2})(?:\s+([A-Za-z]+))?(?:\s+(\d{4}))?/);
+        if (rangeMatch) {
+          const sDay = parseInt(rangeMatch[1]);
+          const eDay = parseInt(rangeMatch[2]);
+          const mStr = rangeMatch[3]?.toLowerCase();
+          const rMonth = mStr && MONTHS_MAP[mStr] ? MONTHS_MAP[mStr] : defaultMonth;
+          const rYear = rangeMatch[4] ? parseInt(rangeMatch[4]) : defaultYear;
+
+          const sDate = `${rYear}-${String(rMonth).padStart(2, '0')}-${String(sDay).padStart(2, '0')}`;
+          const eDate = `${rYear}-${String(rMonth).padStart(2, '0')}-${String(eDay).padStart(2, '0')}`;
+
+          parsedItems.push({
+            doctorName: currentDoc.name,
+            matchedDoctorId: currentDoc.id,
+            matchedDoctorName: currentDoc.name,
+            startDate: sDate,
+            endDate: eDate,
+            type: leaveType,
+            reason: raw,
+            confidence: 0.98,
+          });
+          continue;
+        }
+
+        // 2. Slash dates: e.g. "08/08/2026", "15/08/2027", "17/8/2026"
+        const slashMatches = Array.from(raw.matchAll(/(\d{1,2})\/(\d{1,2})\/(\d{4})/g));
+        if (slashMatches.length > 0) {
+          for (const sm of slashMatches) {
+            const d = parseInt(sm[1]);
+            const m = parseInt(sm[2]);
+            const y = parseInt(sm[3]);
+            const dStr = `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
             parsedItems.push({
               doctorName: currentDoc.name,
               matchedDoctorId: currentDoc.id,
               matchedDoctorName: currentDoc.name,
-              startDate: sDate,
-              endDate: eDate,
-              type: trimmed.toLowerCase().includes('sakit') ? 'Sakit' : 'Liburan',
-              reason: trimmed,
-              confidence: 0.95
+              startDate: dStr,
+              endDate: dStr,
+              type: leaveType,
+              reason: raw,
+              confidence: 0.95,
             });
-          } else {
-            // Ambil semua angka tanggal yang dipisahkan koma / spasi / &
-            const cleanDigits = trimmed.replace(/\b20\d\d\b/g, ''); // abaikan tahun (misal 2026)
-            const dayNumbers = cleanDigits.match(/\b\d{1,2}\b/g);
-            if (dayNumbers) {
-              for (const dNum of dayNumbers) {
-                const dayInt = parseInt(dNum);
-                if (dayInt >= 1 && dayInt <= 31) {
-                  const dateStr = `${currentYear}-${String(month).padStart(2, '0')}-${String(dayInt).padStart(2, '0')}`;
-                  parsedItems.push({
-                    doctorName: currentDoc.name,
-                    matchedDoctorId: currentDoc.id,
-                    matchedDoctorName: currentDoc.name,
-                    startDate: dateStr,
-                    endDate: dateStr,
-                    type: trimmed.toLowerCase().includes('sakit') ? 'Sakit' : 'Liburan',
-                    reason: trimmed,
-                    confidence: 0.9
-                  });
-                }
-              }
+          }
+          continue;
+        }
+
+        // 3. Multi-dates list: e.g. "17, 24, 25", "Tgl 15,17 & 29 Agustus", "17 dan 25 agustus"
+        const noYear = raw.replace(/\b20\d\d\b/g, '');
+        const digits = Array.from(noYear.matchAll(/\b(\d{1,2})\b/g))
+          .map((m) => parseInt(m[1]))
+          .filter((n) => n >= 1 && n <= 31);
+
+        if (digits.length > 0) {
+          let lineMonth = defaultMonth;
+          for (const [mName, mNum] of Object.entries(MONTHS_MAP)) {
+            if (new RegExp(`\\b${mName}\\b`, 'i').test(raw)) {
+              lineMonth = mNum;
+              break;
             }
+          }
+
+          for (const day of digits) {
+            const dStr = `${defaultYear}-${String(lineMonth).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            parsedItems.push({
+              doctorName: currentDoc.name,
+              matchedDoctorId: currentDoc.id,
+              matchedDoctorName: currentDoc.name,
+              startDate: dStr,
+              endDate: dStr,
+              type: leaveType,
+              reason: raw,
+              confidence: 0.95,
+            });
           }
         }
       }

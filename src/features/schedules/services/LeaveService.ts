@@ -22,8 +22,11 @@ export class LeaveService {
   static async createBulk(dataArray: any[]) {
     const newLeaves = await Promise.all(
       dataArray.map(async (item) => {
-        const { dates, doctor, ...rest } = item;
-        const doc = await prisma.doctor.findFirst({ where: { name: doctor } });
+        const { dates, doctor, doctorId, matchedDoctorId, ...rest } = item;
+        const targetId = doctorId || matchedDoctorId;
+        const doc = targetId 
+          ? await prisma.doctor.findUnique({ where: { id: targetId } })
+          : await prisma.doctor.findFirst({ where: { name: doctor } });
         if (!doc) return;
         return prisma.leaveRequest.create({
           data: {
@@ -45,8 +48,11 @@ export class LeaveService {
   }
 
   static async create(data: any) {
-    const { dates, doctor, ...rest } = data;
-    const doc = await prisma.doctor.findFirst({ where: { name: doctor } });
+    const { dates, doctor, doctorId, matchedDoctorId, ...rest } = data;
+    const targetId = doctorId || matchedDoctorId;
+    const doc = targetId
+      ? await prisma.doctor.findUnique({ where: { id: targetId } })
+      : await prisma.doctor.findFirst({ where: { name: doctor } });
     if (!doc) throw new Error('Doctor not found');
 
     const newLeave = await prisma.leaveRequest.create({

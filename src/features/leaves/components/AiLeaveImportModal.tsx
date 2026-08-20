@@ -67,7 +67,8 @@ export function AiLeaveImportModal({ isOpen, onClose, doctors, onSuccess }: Prop
         const docName = item.matchedDoctorName || item.doctorName;
         return {
           doctor: docName,
-          type: item.type || 'Sakit',
+          doctorId: item.matchedDoctorId,
+          type: item.type || 'Liburan',
           startDate: item.startDate,
           endDate: item.endDate,
           reason: item.reason || 'Pengajuan via WA',
