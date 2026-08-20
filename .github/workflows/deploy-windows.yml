@@ -19,7 +19,7 @@ jobs:
       PROD_DIR: 'C:\simed-production'
       NODE_NO_WARNINGS: '1'
       ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: 'true'
-      PATH: 'C:\Users\ANTRIAN 1\AppData\Roaming\npm;C:\Program Files\nodejs;C:\Windows\system32;C:\Windows'
+      PATH: 'C:\Users\ANTRIAN 1\AppData\Roaming\npm;C:\Program Files\nodejs;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem'
 
     steps:
       # ── Step 0: Safe Pre-Cleanup ─────────────────────────────────────────────
@@ -29,14 +29,14 @@ jobs:
           $ErrorActionPreference = "SilentlyContinue"
           Write-Host "Membersihkan proses gantung & lock..."
 
-          # Matikan zombie node selain runner
+          # Hanya matikan proses zombie di folder workspace runner (_work)
+          # JANGAN pernah mematikan proses node di C:\simed-production atau PM2!
           Get-Process node -ErrorAction SilentlyContinue | Where-Object { 
-            $_.Path -notlike "*actions-runner*" -and $_.Path -notlike "*_work*" 
+            $_.Path -like "*_work*" 
           } | Stop-Process -Force -ErrorAction SilentlyContinue
 
-          # Matikan zombie git selain runner
           Get-Process git -ErrorAction SilentlyContinue | Where-Object { 
-            $_.Path -notlike "*actions-runner*" -and $_.Path -notlike "*_work*" 
+            $_.Path -like "*_work*" 
           } | Stop-Process -Force -ErrorAction SilentlyContinue
 
           # Matikan zombie chrome (Puppeteer)
