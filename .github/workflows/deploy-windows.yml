@@ -18,6 +18,7 @@ jobs:
       PM2_HOME: 'C:\Users\ANTRIAN 1\.pm2'
       PROD_DIR: 'C:\simed-production'
       NODE_NO_WARNINGS: 1
+      ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: 'true'
 
     steps:
       # ── Step 1: Checkout ─────────────────────────────────────────────────────
