@@ -49,8 +49,11 @@ interface RealtimeCalendarProps {
 export function RealtimeCalendar({ selectedDate, onDateChange, onOpenDoctorSchedule }: RealtimeCalendarProps) {
   const dateKey = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;
 
-  const { data: shifts = [] } = useSWR<Shift[]>(`/api/shifts?include=leaves&date=${dateKey}`);
-  const { data: doctors = [] } = useSWR<Doctor[]>('/api/doctors');
+  const { data: rawShifts } = useSWR<Shift[]>(`/api/shifts?include=leaves&date=${dateKey}`);
+  const { data: rawDoctors } = useSWR<Doctor[]>('/api/doctors');
+
+  const shifts = Array.isArray(rawShifts) ? rawShifts : [];
+  const doctors = Array.isArray(rawDoctors) ? rawDoctors : [];
 
   // ─── Real-time Updates via Socket.IO ───
   const { lastUpdate } = useSocket('schedules');
@@ -361,12 +364,22 @@ export function RealtimeCalendar({ selectedDate, onDateChange, onOpenDoctorSched
                     <div className="p-2.5 sm:p-3 relative">
                       <div className="flex flex-wrap items-center gap-2.5 relative z-10">
                         {cellShifts.map((shift: any) => {
-                          const doc = doctors.find((d) => d.id === shift.doctorId || d.name === shift.doctor);
+                          const doc: Doctor = doctors.find((d) => (shift.doctorId && d.id === shift.doctorId) || (shift.doctor && d.name.toLowerCase() === shift.doctor.toLowerCase())) || {
+                            id: shift.doctorId || shift.id || 'unknown',
+                            name: shift.doctor || 'Dokter',
+                            specialty: shift.title || 'Spesialis',
+                            category: 'NonBedah',
+                            status: 'LIBUR',
+                            startTime: '08:00',
+                            endTime: '12:00',
+                            queueCode: '',
+                            order: 0,
+                          };
                           const isBedah = doc?.category === 'Bedah';
                           const avatarClay = isBedah ? "clay-icon-rose" : "clay-icon-blue";
                           const initials =
                             doc?.queueCode ||
-                            (shift.doctorName || shift.doctor || 'DR')
+                            (shift.doctor || 'DR')
                               .replace(/^dr\.\s*/i, '')
                               .split(' ')
                               .filter(Boolean)
@@ -378,7 +391,7 @@ export function RealtimeCalendar({ selectedDate, onDateChange, onOpenDoctorSched
                           return (
                             <div
                               key={shift.id}
-                              onClick={() => doc && onOpenDoctorSchedule && onOpenDoctorSchedule(doc)}
+                              onClick={() => onOpenDoctorSchedule && onOpenDoctorSchedule(doc)}
                               className="group/card flex-1 min-w-[200px] max-w-[320px] p-3 rounded-[20px] clay-button relative overflow-hidden transition-all hover:-translate-y-0.5 cursor-pointer"
                             >
                               <div className="flex items-start justify-between gap-2 mb-2 relative z-10">
@@ -488,27 +501,43 @@ export function RealtimeCalendar({ selectedDate, onDateChange, onOpenDoctorSched
                             Tidak ada shift
                           </div>
                         ) : (
-                          dayShifts.map((shift: any) => (
-                            <div
-                              key={shift.id}
-                              className="p-2 rounded-[14px] clay-button text-left text-xs relative group"
-                            >
-                              <div className="flex items-center justify-between">
-                                <p className="font-black text-zinc-900 dark:text-zinc-100 truncate text-[11.5px]">
-                                  {shift.doctorName || shift.doctor}
+                          dayShifts.map((shift: any) => {
+                            const doc: Doctor = doctors.find((d) => (shift.doctorId && d.id === shift.doctorId) || (shift.doctor && d.name.toLowerCase() === shift.doctor.toLowerCase())) || {
+                              id: shift.doctorId || shift.id || 'unknown',
+                              name: shift.doctor || 'Dokter',
+                              specialty: shift.title || 'Spesialis',
+                              category: 'NonBedah',
+                              status: 'LIBUR',
+                              startTime: '08:00',
+                              endTime: '12:00',
+                              queueCode: '',
+                              order: 0,
+                            };
+
+                            return (
+                              <div
+                                key={shift.id}
+                                onClick={() => onOpenDoctorSchedule && onOpenDoctorSchedule(doc)}
+                                className="p-2 rounded-[14px] clay-button text-left text-xs relative group cursor-pointer hover:-translate-y-0.5 transition-all"
+                              >
+                                <div className="flex items-center justify-between">
+                                  <p className="font-black text-zinc-900 dark:text-zinc-100 truncate text-[11.5px] group-hover:text-blue-600 transition-colors">
+                                    {shift.doctor || 'Dokter'}
+                                  </p>
+                                  <button
+                                    onClick={(e) => handleDelete(e, shift.id)}
+                                    className="opacity-0 group-hover:opacity-100 text-zinc-400 hover:text-rose-600 p-1"
+                                    title="Hapus Jadwal"
+                                  >
+                                    <Trash2 size={11} />
+                                  </button>
+                                </div>
+                                <p className="text-[10px] text-blue-600 dark:text-blue-400 font-bold mt-0.5">
+                                  {shift.formattedTime}
                                 </p>
-                                <button
-                                  onClick={(e) => handleDelete(e, shift.id)}
-                                  className="opacity-0 group-hover:opacity-100 text-zinc-400 hover:text-rose-600"
-                                >
-                                  <Trash2 size={11} />
-                                </button>
                               </div>
-                              <p className="text-[10px] text-blue-600 dark:text-blue-400 font-bold mt-0.5">
-                                {shift.formattedTime}
-                              </p>
-                            </div>
-                          ))
+                            );
+                          })
                         )}
                       </div>
 

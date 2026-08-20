@@ -147,6 +147,8 @@ export function ScheduleModal({ doctor, shifts, isOpen, onClose, onUpdate }: Sch
         setTimeout(() => setToast(null), 3000);
     }, []);
 
+    const reset = () => { setForm(INIT_FORM); setEditId(null); setAdding(false); };
+
     useEffect(() => {
         if (!isOpen) return;
         const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') { if (adding || editId) reset(); else onClose(); } };
@@ -160,15 +162,20 @@ export function ScheduleModal({ doctor, shifts, isOpen, onClose, onUpdate }: Sch
 
     if (!isOpen || !doctor || !mounted) return null;
 
-    const allShifts = shifts.filter(s => String(s.doctorId) === String(doctor.id));
-    const dayShifts = allShifts.filter(s => Number(s.dayIdx) === Number(activeDay));
+    const safeShifts = Array.isArray(shifts) ? shifts : [];
+    const allShifts = safeShifts.filter(s => {
+        if (!s || !doctor) return false;
+        const matchId = s.doctorId && doctor.id && String(s.doctorId) === String(doctor.id);
+        const matchName = s.doctor && doctor.name && String(s.doctor).toLowerCase() === String(doctor.name).toLowerCase();
+        return matchId || matchName;
+    });
+    const dayShifts = allShifts.filter(s => s && Number(s.dayIdx) === Number(activeDay));
 
-    const parseTimes = (formatted: string) => {
-        const [s, e] = (formatted || "08:00-12:00").split("-").map(t => t.trim());
-        return { start: s || "08:00", end: e || "12:00" };
+    const parseTimes = (formatted?: string | null) => {
+        if (!formatted || typeof formatted !== 'string') return { start: "08:00", end: "12:00" };
+        const parts = formatted.split("-").map(t => t?.trim() || "");
+        return { start: parts[0] || "08:00", end: parts[1] || "12:00" };
     };
-
-    const reset = () => { setForm(INIT_FORM); setEditId(null); setAdding(false); };
 
     const save = async () => {
         if (!form.title?.trim() || !form.formattedTime) return;
@@ -275,11 +282,11 @@ export function ScheduleModal({ doctor, shifts, isOpen, onClose, onUpdate }: Sch
                 {/* ══ HEADER ══ */}
                 <div className="flex items-center gap-4 px-6 py-5 border-b border-zinc-200/60 dark:border-[#222738] flex-shrink-0">
                     <div className="h-12 w-12 rounded-[18px] clay-icon-blue flex items-center justify-center text-white text-base font-black flex-shrink-0">
-                        <span className="relative z-10">{doctor.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}</span>
+                        <span className="relative z-10">{(doctor?.name || 'Dokter').replace(/^dr\.\s*/i, '').split(' ').filter(Boolean).map(n => n[0]).join('').slice(0, 2).toUpperCase() || 'DR'}</span>
                     </div>
                     <div className="flex-1 min-w-0">
-                        <h2 className="text-[16px] font-black text-zinc-900 dark:text-zinc-100 tracking-tight truncate">{doctor.name}</h2>
-                        <p className="text-[11.5px] text-zinc-500 dark:text-zinc-400 font-bold truncate">{doctor.specialty} · {allShifts.length} total shift</p>
+                        <h2 className="text-[16px] font-black text-zinc-900 dark:text-zinc-100 tracking-tight truncate">{doctor?.name || 'Dokter'}</h2>
+                        <p className="text-[11.5px] text-zinc-500 dark:text-zinc-400 font-bold truncate">{doctor?.specialty || '-'} · {allShifts.length} total shift</p>
                     </div>
                     <button onClick={onClose} className="p-2.5 rounded-[14px] clay-button text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-all flex-shrink-0 active:scale-90">
                         <X size={16} strokeWidth={2.5} />
@@ -363,7 +370,13 @@ export function ScheduleModal({ doctor, shifts, isOpen, onClose, onUpdate }: Sch
                         )}
 
                         {dayShifts.map(s => {
-                            const isDisabled = (s.disabledDates || []).includes(today);
+                            const rawDisabled = s?.disabledDates;
+                            const disabledList: string[] = Array.isArray(rawDisabled)
+                                ? rawDisabled
+                                : typeof rawDisabled === 'string'
+                                    ? (() => { try { const p = JSON.parse(rawDisabled); return Array.isArray(p) ? p : [rawDisabled]; } catch { return [rawDisabled]; } })()
+                                    : [];
+                            const isDisabled = disabledList.includes(today);
                             const isEditing  = editId === s.id;
 
                             return (

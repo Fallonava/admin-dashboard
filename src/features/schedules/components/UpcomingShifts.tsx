@@ -17,17 +17,28 @@ export function UpcomingShifts({ selectedDate = new Date(), onOpenScheduleModal 
   const weekOfMonth = Math.ceil(selectedDate.getDate() / 7);
   const dateKey = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;
 
-  const { data: shifts = [] } = useSWR<Shift[]>(`/api/shifts?include=leaves&date=${dateKey}`);
-  const { data: doctors = [] } = useSWR<Doctor[]>('/api/doctors');
+  const { data: rawShifts } = useSWR<Shift[]>(`/api/shifts?include=leaves&date=${dateKey}`);
+  const { data: rawDoctors } = useSWR<Doctor[]>('/api/doctors');
+
+  const shifts = Array.isArray(rawShifts) ? rawShifts : [];
+  const doctors = Array.isArray(rawDoctors) ? rawDoctors : [];
 
   const [selectedDocForModal, setSelectedDocForModal] = useState<Doctor | null>(null);
 
   // Doctors on duty for the selected date
   const activeDoctorsOnDuty = useMemo(() => {
     const dayShifts = shifts.filter((s) => {
-      if (!s.formattedTime || s.formattedTime === '-' || !s.formattedTime.includes(':')) return false;
-      if (s.dayIdx !== currentDayIdx) return false;
-      if ((s.disabledDates || []).includes(dateKey)) return false;
+      if (!s || !s.formattedTime || s.formattedTime === '-' || typeof s.formattedTime !== 'string' || !s.formattedTime.includes(':')) return false;
+      if (Number(s.dayIdx) !== currentDayIdx) return false;
+      
+      const rawDisabled = s.disabledDates;
+      const disabledList: string[] = Array.isArray(rawDisabled)
+        ? rawDisabled
+        : typeof rawDisabled === 'string'
+          ? (() => { try { const p = JSON.parse(rawDisabled); return Array.isArray(p) ? p : [rawDisabled]; } catch { return [rawDisabled]; } })()
+          : [];
+      if (disabledList.includes(dateKey)) return false;
+
       if (s.extra === 'odd_weeks' && weekOfMonth % 2 === 0) return false;
       if (s.extra === 'even_weeks' && weekOfMonth % 2 !== 0) return false;
       return true;
@@ -36,13 +47,22 @@ export function UpcomingShifts({ selectedDate = new Date(), onOpenScheduleModal 
     const docMap = new Map<string, { doctor: Doctor; shifts: Shift[] }>();
 
     dayShifts.forEach((shift) => {
-      const doc = doctors.find((d) => d.id === shift.doctorId || d.name === shift.doctor);
-      if (doc) {
-        if (!docMap.has(doc.id)) {
-          docMap.set(doc.id, { doctor: doc, shifts: [] });
-        }
-        docMap.get(doc.id)!.shifts.push(shift);
+      const doc: Doctor = doctors.find((d) => (shift.doctorId && d.id === shift.doctorId) || (shift.doctor && d.name.toLowerCase() === shift.doctor.toLowerCase())) || {
+        id: shift.doctorId || shift.id || 'unknown',
+        name: shift.doctor || 'Dokter',
+        specialty: shift.title || 'Spesialis',
+        category: 'NonBedah',
+        status: 'LIBUR',
+        startTime: '08:00',
+        endTime: '12:00',
+        queueCode: '',
+        order: 0,
+      };
+
+      if (!docMap.has(doc.id)) {
+        docMap.set(doc.id, { doctor: doc, shifts: [] });
       }
+      docMap.get(doc.id)!.shifts.push(shift);
     });
 
     return Array.from(docMap.values());

@@ -16,7 +16,8 @@ export default function SchedulesPage() {
     const [isSheetOpen, setIsSheetOpen] = useState(false);
     const [selectedDoctorForModal, setSelectedDoctorForModal] = useState<Doctor | null>(null);
 
-    const { data: shifts = [] } = useSWR<Shift[]>('/api/shifts');
+    const { data: rawShifts } = useSWR<Shift[]>('/api/shifts');
+    const shifts = Array.isArray(rawShifts) ? rawShifts : [];
 
     // Close sheet on Escape key
     useEffect(() => {
