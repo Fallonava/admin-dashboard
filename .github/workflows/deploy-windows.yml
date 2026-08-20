@@ -17,21 +17,31 @@ jobs:
     env:
       PM2_HOME: 'C:\Users\ANTRIAN 1\.pm2'
       PROD_DIR: 'C:\simed-production'
-      NODE_NO_WARNINGS: 1
+      NODE_NO_WARNINGS: '1'
       ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: 'true'
 
     steps:
-      # ── Step 0: Pre-Checkout Cleanup (Kill hanging processes) ───────────────
-      - name: Kill Hanging Processes
+      # ── Step 0: Safe Pre-Checkout Cleanup ────────────────────────────────────
+      - name: Safe Process Cleanup
         shell: powershell
         run: |
-          try {
-            taskkill /F /IM git.exe /T 2>$null
-            taskkill /F /IM node.exe /T 2>$null
-            Write-Host "Pembersihan proses gantung selesai."
-          } catch {
-            Write-Host "Tidak ada proses yang perlu dibersihkan."
-          }
+          $ErrorActionPreference = "SilentlyContinue"
+          Write-Host "Membersihkan proses hantu tanpa mematikan Runner..."
+          
+          # Matikan zombie node selain runner
+          Get-Process node -ErrorAction SilentlyContinue | Where-Object { 
+            $_.Path -notlike "*actions-runner*" -and $_.Path -notlike "*_work*" 
+          } | Stop-Process -Force -ErrorAction SilentlyContinue
+
+          # Matikan zombie git selain runner
+          Get-Process git -ErrorAction SilentlyContinue | Where-Object { 
+            $_.Path -notlike "*actions-runner*" -and $_.Path -notlike "*_work*" 
+          } | Stop-Process -Force -ErrorAction SilentlyContinue
+
+          # Matikan zombie chrome (WhatsApp Web Puppeteer)
+          taskkill /F /IM chrome.exe /T 2>$null
+
+          Write-Host "Proses hantu dibersihkan dengan aman."
           exit 0
 
       # ── Step 1: Checkout ─────────────────────────────────────────────────────
@@ -44,8 +54,9 @@ jobs:
       - name: Fix Git Safe Directory
         shell: powershell
         run: |
+          git config --global --add safe.directory "*"
           git config --global --add safe.directory $env:GITHUB_WORKSPACE
-          Write-Host "Safe directory added: $env:GITHUB_WORKSPACE"
+          Write-Host "Safe directory dikonfigurasi: $env:GITHUB_WORKSPACE"
 
       # ── Step 2: Create .env ──────────────────────────────────────────────────
       - name: Create Server Environment (.env)
@@ -66,43 +77,46 @@ jobs:
             'HOSTNAME=0.0.0.0',
             'NODE_ENV=production',
             'PORT=3000',
-            'AGENT_EXEC_TOKEN=ac-7928-df91-4e8a-8db4-314a4d467736-mc-secure-gate-2026-gravity',
-            '# Redis & MongoDB (LEGACY) - Removed to prevent crashes'
+            'AGENT_EXEC_TOKEN=ac-7928-df91-4e8a-8db4-314a4d467736-mc-secure-gate-2026-gravity'
           )
           $lines | Set-Content -Path ".env" -Encoding UTF8
-          Write-Host ".env created."
+          Write-Host ".env berhasil dibuat."
 
       # ── Step 3: Install Dependencies ────────────────────────────────────────
       - name: Install Dependencies
         shell: powershell
         run: |
+          $ProgressPreference = "SilentlyContinue"
           npm ci
           Write-Host "npm ci selesai."
 
-      # ── Step 4: Database Migration ──────────────────────────────────────────
-      - name: Sync Database Schema
+      # ── Step 4: Generate Prisma Client & Migrate ────────────────────────────
+      - name: Sync Database & Generate Client
         shell: powershell
         run: |
-          npx prisma migrate deploy
-          Write-Host "Database schema synced."
-
-      # ── Step 5: Generate Prisma Client ──────────────────────────────────────
-      - name: Generate Prisma Client
-        shell: powershell
-        run: |
+          $ErrorActionPreference = "Continue"
+          Write-Host "Menjalankan Prisma Generate..."
           npx prisma generate
-          Write-Host "Prisma client generated."
 
-      # ── Step 6: Build Application ────────────────────────────────────────────
+          Write-Host "Menjalankan Database Migration..."
+          try {
+            npx prisma migrate deploy
+            Write-Host "Database migration selesai."
+          } catch {
+            Write-Warning "Prisma migrate deploy gagal. Mencoba sync via db push..."
+            npx prisma db push --skip-generate
+          }
+
+      # ── Step 5: Build Application ────────────────────────────────────────────
       - name: Build Application
         shell: powershell
         env:
-          NODE_OPTIONS: "--max-old-space-size=2048" # Cegah build memakan seluruh RAM server
+          NODE_OPTIONS: "--max-old-space-size=2048"
         run: |
           npm run build
-          Write-Host "Build selesai."
+          Write-Host "Build Next.js selesai sukses."
 
-      # ── Step 8: Prepare Production Directory ─────────────────────────────────
+      # ── Step 6: Prepare Production Directory ─────────────────────────────────
       - name: Prepare Production Directory
         shell: powershell
         run: |
@@ -110,44 +124,44 @@ jobs:
           if (-not (Test-Path $ProdDir)) {
             New-Item -ItemType Directory -Path $ProdDir -Force | Out-Null
             Write-Host "Direktori $ProdDir dibuat."
-          } else {
-            Write-Host "Direktori $ProdDir sudah ada."
+          }
+          if (-not (Test-Path "$ProdDir\logs")) {
+            New-Item -ItemType Directory -Path "$ProdDir\logs" -Force | Out-Null
+          }
+          if (-not (Test-Path "$ProdDir\sessions")) {
+            New-Item -ItemType Directory -Path "$ProdDir\sessions" -Force | Out-Null
           }
 
-      # ── Step 9: Stop PM2 Safely (BEFORE touching files) ──────────────────────
+      # ── Step 7: Stop PM2 Safely ──────────────────────────────────────────────
       - name: Stop PM2 Safely
         shell: powershell
         run: |
           $env:PM2_HOME = "C:\Users\ANTRIAN 1\.pm2"
-
-          # Gunakan try/catch agar NativeCommandError dari PowerShell tidak menggagalkan workflow
           try {
             cmd.exe /c "pm2 stop all" 2>$null
             cmd.exe /c "pm2 delete all" 2>$null
-            
-            # Paksa matikan sisa chrome dan node agar RAM bersih (Zombie killer)
-            taskkill /F /IM chrome.exe /T 2>$null
-            taskkill /F /IM node.exe /T 2>$null
           } catch {
-            # Abaikan error jika PM2 belum ada proses yang berjalan
+            Write-Host "Tidak ada PM2 aktif."
           }
 
-          # Beri waktu file locks dilepas sebelum Robocopy
-          Start-Sleep -Seconds 5
-          Write-Host "PM2 dihentikan (atau sudah dalam keadaan berhenti)."
-
-          # Wajib ada agar GitHub Actions menganggap step ini sukses meskipun kosong
+          # Beri waktu 3 detik agar file locks lepas
+          Start-Sleep -Seconds 3
+          Write-Host "PM2 siap untuk file sync."
           exit 0
 
-      # ── Step 10: Robocopy Build → Production ─────────────────────────────────
+      # ── Step 8: Robocopy Build → Production (Safe Preserve) ─────────────────
       - name: Sync Files to Production Directory
         shell: powershell
         run: |
-          $Src     = $env:GITHUB_WORKSPACE
-          $Dst     = $env:PROD_DIR
-          # Mirror semua file, kecuali git artifacts dan source node_modules dev
-          robocopy $Src $Dst /MIR /XD .git .github /R:2 /W:2 /NP /NFL /NJH /NDL
-          # Robocopy exit code <= 7 = sukses (0=no change, 1=copied, 2=extra, 4=mismatch, etc.)
+          $Src = $env:GITHUB_WORKSPACE
+          $Dst = $env:PROD_DIR
+          
+          # /MIR = Mirror
+          # /XD = Exclude direktori agar WA Sessions, Logs, & Git tidak terhapus
+          # /XF = Exclude file agar .env & status bot lokal tidak ditimpa kosong
+          robocopy $Src $Dst /MIR /XD .git .github sessions logs /XF .env .wa-status.json /R:3 /W:2 /NP /NFL /NJH /NDL
+          
+          # Robocopy exit code <= 7 = sukses
           if ($LASTEXITCODE -le 7) {
             Write-Host "Robocopy selesai sukses (exit code: $LASTEXITCODE)"
             exit 0
@@ -156,31 +170,24 @@ jobs:
             exit 1
           }
 
-      # ── Step 10.5: Global PM2 Optimization ──────────────────────────────────
+      # ── Step 9: Optimize Global PM2 (Logrotate) ──────────────────────────────
       - name: Optimize Global PM2 (Logrotate)
         shell: cmd
         run: |
           set PM2_HOME=C:\Users\ANTRIAN 1\.pm2
           echo Mengonfigurasi pm2-logrotate...
-
-          :: Cek apakah modul sudah ada di list untuk menghindari EBUSY
           call pm2.cmd list | findstr "pm2-logrotate" > nul
           if errorlevel 1 (
             echo Memasang pm2-logrotate...
             call pm2.cmd install pm2-logrotate
-          ) else (
-            echo pm2-logrotate sudah terpasang, melewati instalasi.
           )
-
-          :: Tetap jalankan konfigurasi
           call pm2.cmd set pm2-logrotate:max_size 10M
           call pm2.cmd set pm2-logrotate:retain 7
           call pm2.cmd set pm2-logrotate:compress true
           call pm2.cmd set pm2-logrotate:workerInterval 60
+          echo Logrotate siap.
 
-          echo Logrotate dikonfigurasi sukses.
-
-      # ── Step 11: Start PM2 from Production Directory ──────────────────────────
+      # ── Step 10: Start PM2 from Production Directory ─────────────────────────
       - name: Start PM2 from Production
         shell: powershell
         run: |
@@ -188,54 +195,32 @@ jobs:
           $ProdDir = $env:PROD_DIR
           Set-Location $ProdDir
 
-          # Pastikan folder log ada agar PM2 tidak error saat menulis log
-          if (-not (Test-Path "$ProdDir\logs")) {
-            New-Item -ItemType Directory -Path "$ProdDir\logs" -Force | Out-Null
-          }
-
-          if (-not (Test-Path "ecosystem.config.js")) {
-            Write-Error "ecosystem.config.js tidak ditemukan di $ProdDir!"
-            exit 1
-          }
-
-          Write-Host "Menjalankan aplikasi menggunakan ecosystem.config.js..."
-          # Pastikan ErrorActionPreference tidak memutus alur untuk peringatan non-kritikal
+          Write-Host "Menjalankan PM2 dari $ProdDir..."
           $ErrorActionPreference = "Continue"
 
-          # Jalankan via pm2.cmd eksplisit untuk melihat pesan eror aslinya
           & pm2.cmd flush
           & pm2.cmd start ecosystem.config.js --update-env
           
           if ($LASTEXITCODE -ne 0) {
-            Write-Error "PM2 (pm2.cmd) start GAGAL dengan exit code $LASTEXITCODE. Menghentikan workflow."
+            Write-Error "PM2 start GAGAL dengan exit code $LASTEXITCODE."
             exit 1
           }
           
           & pm2.cmd save --force
           Write-Host "State PM2 disimpan."
 
-      # ── Step 11.5: Eksekusi Backdoor (Cek IP & Cloudflare) ───────────────────
-      - name: Lacak IP Address Asli
-        shell: powershell
-        run: |
-          Write-Host "=== DAFTAR IP LOKAL KOMPUTER INI ==="
-          ipconfig
-          Write-Host "Silakan cek baris 'IPv4 Address' pada log di atas!"
-
+      # ── Step 11: Service Health Checks ───────────────────────────────────────
       - name: Paksa Nyalakan Cloudflare Tunnel
         shell: powershell
         run: |
-          Write-Host "=== MENCOBA MENGHIDUPKAN CLOUDFLARED ==="
-          # Menggunakan try-catch agar workflow tidak gagal jika nama service berbeda
           try {
             Start-Service -Name "cloudflared" -ErrorAction Stop
-            Write-Host "✅ Service 'cloudflared' berhasil di-start kembali!"
+            Write-Host "Service cloudflared aktif."
           } catch {
-            Write-Host "⚠️ Service bernama 'cloudflared' tidak ditemukan atau sudah berjalan."
-            Write-Host "Pesan sistem: $($_.Exception.Message)"
+            Write-Host "Service cloudflared sudah aktif atau tidak ditemukan."
           }
 
-      # ── Step 12: Verify ───────────────────────────────────────────────────────
+      # ── Step 12: Verify Deployment ───────────────────────────────────────────
       - name: Verify Deployment
         shell: powershell
         run: |
@@ -247,18 +232,17 @@ jobs:
           
           $errored = $pm2Status | Select-String "errored"
           if ($errored) {
-            Write-Error "ADA PROSES YANG ERROR! Cek pm2 logs."
+            Write-Error "ADA PROSES YANG ERROR DI PM2!"
             exit 1
           }
           
-          # HARSH CHECK: Pastikan admin-dashboard benar-benar masuk daftar
           $adminExists = $pm2Status | Select-String "admin-dashboard"
           if (-not $adminExists) {
-            Write-Error "SILENT FAILURE DETECTED: admin-dashboard tidak ditemukan di PM2!"
+            Write-Error "admin-dashboard tidak ditemukan di PM2!"
             exit 1
           }
           
-          Write-Host "✅ Semua proses berjalan normal dan terdaftar di PM2!"
+          Write-Host "✅ Deployment sukses 100%! Semua proses berjalan."
           exit 0
 
       # ── Step 13: Diagnostic on Failure ────────────────────────────────────────
@@ -276,12 +260,9 @@ jobs:
           Write-Host "--- [ADMIN ERROR LOG] ---"
           if (Test-Path "$ProdDir\logs\admin-error.log") {
             Get-Content "$ProdDir\logs\admin-error.log" -Tail 50
-          } else {
-             Write-Host "Log admin-error.log tidak ditemukan."
           }
 
           Write-Host "--- [WA-WORKER ERROR LOG] ---"
           if (Test-Path "$ProdDir\logs\wa-worker-error.log") {
             Get-Content "$ProdDir\logs\wa-worker-error.log" -Tail 50
           }
-          
