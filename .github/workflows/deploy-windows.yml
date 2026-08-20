@@ -19,6 +19,7 @@ jobs:
       PROD_DIR: 'C:\simed-production'
       NODE_NO_WARNINGS: '1'
       ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: 'true'
+      PATH: 'C:\Users\ANTRIAN 1\AppData\Roaming\npm;C:\Program Files\nodejs;C:\Windows\system32;C:\Windows'
 
     steps:
       # ── Step 0: Safe Pre-Cleanup ─────────────────────────────────────────────
