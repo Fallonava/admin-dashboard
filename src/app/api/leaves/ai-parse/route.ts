@@ -105,7 +105,8 @@ OUTPUT HARUS BERUPA ARRAY JSON MURNI TANPA MARKDOWN / TEKS PENJELAS:
               { role: 'user', content: `Teks Rekap Chat WhatsApp:\n\n"""\n${text}\n"""\n\nEkstrak seluruh entri cuti dokter dalam format JSON array murni:` }
             ],
             temperature: 0.1
-          })
+          }),
+          signal: AbortSignal.timeout(6000)
         });
 
         if (routerRes.ok) {
