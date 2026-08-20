@@ -29,7 +29,7 @@ interface PageHeaderProps {
 }
 
 /**
- * Premium 3D Claymorphic Page Header — unified design language across MedCore.
+ * Premium 3D Claymorphic Page Header — unified design language across SIMED.
  * Features:
  * - Dual-layer 3D tactile icon frame
  * - Bold title with vibrant typography accents

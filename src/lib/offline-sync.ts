@@ -1,6 +1,6 @@
 import { openDB } from 'idb';
 
-const DB_NAME = 'medcore-offline-db';
+const DB_NAME = 'simed-offline-db';
 const STORE_NAME = 'offline-shifts';
 
 export async function initDB() {

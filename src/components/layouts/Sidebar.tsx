@@ -180,7 +180,7 @@ export function Sidebar() {
         </div>
         <div className="min-w-0">
           <h1 className="text-[15px] font-black tracking-tight text-zinc-900 dark:text-zinc-100 leading-none">
-            MedCore<span className="text-[9px] align-top text-blue-600 dark:text-blue-400 font-black ml-0.5">26</span>
+            SIMED<span className="text-[9px] align-top text-blue-600 dark:text-blue-400 font-black ml-0.5">26</span>
           </h1>
           <p className="text-[9px] text-zinc-400 dark:text-zinc-500 font-semibold uppercase tracking-widest mt-0.5">
             Admin Console

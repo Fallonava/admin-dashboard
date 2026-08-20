@@ -38,9 +38,9 @@ if (-not (Test-Path $serverJs)) {
 }
 Write-Host "[2/5] Server: $serverJs (Socket.IO enabled)" -ForegroundColor Gray
 
-# 4. Start admin-dashboard
-Write-Host "[3/5] Start admin-dashboard..." -ForegroundColor Yellow
-pm2 start $serverJs --name "admin-dashboard" --update-env
+# 4. Start simed
+Write-Host "[3/5] Start simed..." -ForegroundColor Yellow
+pm2 start $serverJs --name "simed" --update-env
 
 # 5. Start wa-worker
 Write-Host "[4/5] Start wa-worker..." -ForegroundColor Yellow

@@ -18,8 +18,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "MedCore26 Admin | Premium Hospital System",
-  description: "Advanced Hospital Administration System with Real-time Monitoring and Modern UI",
+  title: "SIMED26 | Sistem Informasi Manajemen Medis & TV Display",
+  description: "Sistem Informasi Manajemen Jadwal Dokter, Cuti, dan Integrasi Smart TV Display Rumah Sakit",
   icons: {
     icon: [
       { url: "/icon.svg", type: "image/svg+xml" },

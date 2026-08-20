@@ -36,7 +36,7 @@ async function backup() {
   const backupDir = path.join(process.cwd(), 'backups', timestamp);
   fs.mkdirSync(backupDir, { recursive: true });
 
-  console.log('\n📦  MedCore Database Backup');
+  console.log('\n📦  SIMED Database Backup');
   console.log(`🗄️   DB  : medcoredb @ 192.168.1.12:5433`);
   console.log(`📁  Out : ${backupDir}\n`);
 

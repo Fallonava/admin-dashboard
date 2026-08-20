@@ -257,7 +257,7 @@ export function generateSchedulePDF(
     <div class="header">
       <div class="header-left">
         <h1>Jadwal Petugas <span>TPPRJ</span></h1>
-        <p>Rekam Medis &amp; Pendaftaran — Sistem MedCore<sup style="font-size:7px">26</sup></p>
+        <p>Rekam Medis &amp; Pendaftaran — Sistem SIMED<sup style="font-size:7px">26</sup></p>
       </div>
       <div class="header-right">
         <div class="month-badge">${monthLabel}</div>
@@ -316,8 +316,8 @@ export function generateSchedulePDF(
 
     <!-- FOOTER -->
     <div class="footer">
-      <span>© ${new Date().getFullYear()} MedCore Admin — Dokumen internal, jangan disebarluaskan</span>
-      <div class="footer-logo">MedCore<span>26</span></div>
+      <span>© ${new Date().getFullYear()} SIMED Admin — Dokumen internal, jangan disebarluaskan</span>
+      <div class="footer-logo">SIMED<span>26</span></div>
       <span>Jadwal bersifat deterministik &amp; dapat berubah sesuai kebijakan</span>
     </div>
   </div>

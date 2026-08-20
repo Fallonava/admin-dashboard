@@ -89,14 +89,14 @@ export function MobileMenu() {
         <div className="px-5 pb-3 pt-1 shrink-0 flex items-center justify-between border-b border-zinc-200/60 dark:border-white/5">
           <div className="flex items-center gap-3">
             <div className="clay-icon-blue h-9 w-9 rounded-[12px] flex items-center justify-center text-white shrink-0">
-              <span className="font-black text-xs relative z-10">M26</span>
+              <span className="font-black text-xs relative z-10">S26</span>
             </div>
             <div>
               <h2 className="text-[15px] font-black tracking-tight text-zinc-900 dark:text-zinc-100 leading-tight">
                 Menu Utama
               </h2>
               <p className="text-[10.5px] text-zinc-500 dark:text-zinc-400 font-bold">
-                Pilih modul navigasi MedCore
+                Pilih modul navigasi SIMED
               </p>
             </div>
           </div>
@@ -212,8 +212,8 @@ export function MobileMenu() {
                 {user?.name?.charAt(0)?.toUpperCase() || "?"}
               </div>
               <div className="min-w-0">
-                <p className="text-xs font-black text-zinc-900 dark:text-zinc-100 truncate leading-tight">
-                  {user?.name || "Petugas MedCore"}
+                <p className="text-xs font-black text-zinc-800 dark:text-zinc-200 truncate">
+                  {user?.name || "Petugas SIMED"}
                 </p>
                 <p className="text-[9.5px] text-blue-600 dark:text-blue-400 font-black uppercase tracking-wider truncate">
                   {user?.roleName || "User"}

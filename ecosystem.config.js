@@ -1,7 +1,7 @@
 module.exports = {
   apps: [
     {
-      name: 'admin-dashboard',
+      name: 'simed',
       script: 'server.js',
       cwd: 'C:\\simed-production',
       instances: 2,                   // Reduced from 'max' to stabilize 8GB RAM usage
@@ -34,8 +34,8 @@ module.exports = {
       },
 
       // ── Logging Config ─────────────────────────────────────────────────────
-      error_file: 'C:\\simed-production\\logs\\admin-error.log',
-      out_file: 'C:\\simed-production\\logs\\admin-out.log',
+      error_file: 'C:\\simed-production\\logs\\simed-error.log',
+      out_file: 'C:\\simed-production\\logs\\simed-out.log',
       log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
       merge_logs: true,               // Aggregate all cluster worker logs into one file
       time: true,                     // Prefix logs with standardized timestamp

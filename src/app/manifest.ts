@@ -2,9 +2,9 @@ import { type MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'MedCore Admin Dashboard',
-    short_name: 'MedCore',
-    description: 'Sistem Manajemen Rumah Sakit Terintegrasi',
+    name: 'SIMED — Sistem Manajemen Medis & TV Display',
+    short_name: 'SIMED',
+    description: 'Sistem Informasi Manajemen Jadwal Medis dan Smart TV Display Terintegrasi',
     start_url: '/',
     display: 'standalone',
     background_color: '#ffffff',
