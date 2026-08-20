@@ -156,33 +156,38 @@ Buka di browser: `http://localhost:3000`
 
 ## 🌐 Deployment & Production
 
-### Build & Type-Check
+Panduan lengkap, otomatisasi redeploy, dan penanganan kegagalan service terdokumentasi di **[DEPLOY_AND_TROUBLESHOOT.md](DEPLOY_AND_TROUBLESHOOT.md)**.
+
+### 1. Cara Cepat Redeploy ke Windows Server (Otomatis)
+```powershell
+# Jalankan di PowerShell Windows Server:
+cd C:\simed-production
+powershell -ExecutionPolicy Bypass -File scripts\deploy-production.ps1
+```
+
+### 2. Manual Build & Reload PM2
 ```bash
 # Validasi TypeScript
 npx tsc --noEmit
 
-# Build production
+# Build production Next.js
 npm run build
 
-# Jalankan server production
-npm run start
+# Zero-downtime cluster reload
+pm2 reload ecosystem.config.js --update-env
+pm2 save
 ```
 
-### Production dengan PM2
+### 3. Monitoring & Diagnosa Cepat
 ```bash
-# Start aplikasi via PM2
-pm2 start ecosystem.config.js
+# Cek status proses
+pm2 status
 
-# Cek log server
-pm2 logs simed
+# Cek live error logs
+pm2 logs simed --lines 50 --err
 
-# Monitor performa
+# Dashboard interaktif CPU/RAM
 pm2 monit
-```
-
-### Sinkronisasi Server Rumah (Home Server / CasaOS)
-```bash
-bash scripts/sync-home.sh
 ```
 
 ---
