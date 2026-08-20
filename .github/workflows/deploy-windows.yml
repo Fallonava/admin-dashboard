@@ -146,23 +146,7 @@ jobs:
             New-Item -ItemType Directory -Path "$ProdDir\sessions" -Force | Out-Null
           }
 
-      # ── Step 7: Stop PM2 Safely ──────────────────────────────────────────────
-      - name: Stop PM2 Safely
-        shell: powershell
-        run: |
-          $env:PM2_HOME = "C:\Users\ANTRIAN 1\.pm2"
-          try {
-            cmd.exe /c "pm2 stop all" 2>$null
-            cmd.exe /c "pm2 delete all" 2>$null
-          } catch {
-            Write-Host "Tidak ada PM2 aktif."
-          }
-
-          Start-Sleep -Seconds 3
-          Write-Host "PM2 siap untuk file sync."
-          exit 0
-
-      # ── Step 8: Robocopy Build → Production (Safe Preserve) ─────────────────
+      # ── Step 7: Robocopy Build → Production (Zero-Downtime Sync) ────────────
       - name: Sync Files to Production Directory
         shell: powershell
         run: |
@@ -182,7 +166,7 @@ jobs:
             exit 1
           }
 
-      # ── Step 9: Optimize Global PM2 (Logrotate) ──────────────────────────────
+      # ── Step 8: Optimize Global PM2 (Logrotate) ──────────────────────────────
       - name: Optimize Global PM2 (Logrotate)
         shell: cmd
         run: |
@@ -199,22 +183,28 @@ jobs:
           call pm2.cmd set pm2-logrotate:workerInterval 60
           echo Logrotate siap.
 
-      # ── Step 10: Start PM2 from Production Directory ─────────────────────────
-      - name: Start PM2 from Production
+      # ── Step 9: Zero-Downtime Rolling Reload ─────────────────────────────────
+      - name: Zero-Downtime Rolling Reload
         shell: powershell
         run: |
           $env:PM2_HOME = "C:\Users\ANTRIAN 1\.pm2"
           $ProdDir = $env:PROD_DIR
           Set-Location $ProdDir
 
-          Write-Host "Menjalankan PM2 dari $ProdDir..."
+          Write-Host "Mengecek status PM2 untuk Zero-Downtime Rolling Reload..."
           $ErrorActionPreference = "Continue"
 
-          & pm2.cmd flush
-          & pm2.cmd start ecosystem.config.js --update-env
+          $pm2List = cmd.exe /c "pm2 list"
+          if ($pm2List -match "admin-dashboard") {
+            Write-Host "🔄 Melakukan Rolling Reload (0 detik downtime)..."
+            & pm2.cmd reload ecosystem.config.js --update-env
+          } else {
+            Write-Host "🚀 Menjalankan PM2 Cluster baru dari $ProdDir..."
+            & pm2.cmd start ecosystem.config.js --update-env
+          }
           
           if ($LASTEXITCODE -ne 0) {
-            Write-Error "PM2 start GAGAL dengan exit code $LASTEXITCODE."
+            Write-Error "PM2 reload/start GAGAL dengan exit code $LASTEXITCODE."
             exit 1
           }
           
