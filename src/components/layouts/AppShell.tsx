@@ -6,7 +6,7 @@ import { BottomNav } from "@/components/layouts/BottomNav";
 import { MobileMenu } from "@/components/layouts/MobileMenu";
 import { AutomationRunner } from "@/components/AutomationRunner";
 
-const AUTH_ROUTES = ["/login", "/publik"];
+const AUTH_ROUTES = ["/login"];
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();

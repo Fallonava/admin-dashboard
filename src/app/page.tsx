@@ -1,14 +1,14 @@
 import { Suspense } from "react";
 import { Skeleton, DoctorCardSkeleton, StatsSkeleton } from "@/components/ui/Skeleton";
-import { WingDashboardClient } from "@/features/dashboard/components/WingDashboardClient";
+import { DashboardClient } from "@/features/dashboard/components/DashboardClient";
 
 /**
- * Dashboard Page — Server Component (Live-Wing View)
+ * Dashboard Page — Server Component (Kontrol Status Utama)
  */
 export default function DashboardPage() {
   return (
     <Suspense fallback={<DashboardSkeleton />}>
-      <WingDashboardClient />
+      <DashboardClient />
     </Suspense>
   );
 }

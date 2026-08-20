@@ -1,7 +1,7 @@
 /**
  * Rate Limiter Tests
- *
-// Test the in-memory rate limiter logic
+ * Test the in-memory rate limiter logic
+ */
 
 import { checkRateLimit } from '@/lib/rate-limit';
 

@@ -37,9 +37,7 @@ export const menuConfig = [
     title: "Operasional & Pelayanan",
     icon: Activity,
     items: [
-      { name: "Denah Live", href: "/", icon: LayoutDashboard, resource: "denah_live" },
-      { name: "Kontrol Status", href: "/control", icon: Zap, resource: "kontrol_status" },
-      { name: "Rekap Harian", href: "/rekap-harian", icon: FileSpreadsheet, resource: "rekap_harian" },
+      { name: "Kontrol Status", href: "/", icon: Zap, resource: "kontrol_status" },
     ]
   },
   {
@@ -47,7 +45,6 @@ export const menuConfig = [
     title: "Manajemen SDM",
     icon: Users,
     items: [
-      { name: "Jadwal Petugas", href: "/jadwal-petugas", icon: CalendarDays, resource: "schedules" },
       { name: "Jadwal Dokter", href: "/schedules", icon: Calendar, resource: "schedules" },
       { name: "List Dokter", href: "/doctors", icon: UserRound, resource: "doctors" },
       { name: "Jadwal Cuti", href: "/leaves", icon: Umbrella, resource: "leaves" },
@@ -60,7 +57,6 @@ export const menuConfig = [
     items: [
       { name: "Otomatisasi", href: "/automation", icon: Cpu, resource: "automation" },
       { name: "FAKT-Bot", href: "/broadcast", icon: MessageSquare, resource: "automation" },
-      { name: "Bot Studio", href: "/bot-studio", icon: BrainCircuit, resource: "automation" },
     ]
   },
   {
@@ -68,8 +64,6 @@ export const menuConfig = [
     title: "Layar & Publikasi",
     icon: Tv,
     items: [
-      { name: "Portal Publik (Admin)", href: "/portal-manager", icon: Globe, resource: "settings" },
-      { name: "Portal Publik (Landing)", href: "/publik", icon: Sparkles, external: true, resource: "display_tv" },
       { name: "Layar TV Lama", href: "/tv.html", icon: MonitorPlay, external: true, resource: "display_tv" },
     ]
   },

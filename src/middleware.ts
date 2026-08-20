@@ -16,10 +16,8 @@ const PUBLIC_PATHS = [
   '/api/stream/live',     // SSE live stream for TV displays
   '/api/automation',      // Broadcast rules for TV display (GET is public)
   '/api/seed',            // Database seeding
-  '/publik',              // Public Patient Portal
   '/api/settings/ai',     // AI Settings (for public assistant)
   '/api/assistant',       // AI Chat Assistant (public)
-  '/api/publik',          // Public data APIs (dokter, jadwal, etc.)
   '/tv.html',             // Main TV display page
   '/tv-lama.html',        // TV display (Legacy version) 
   '/tv-modern.html',      // TV display (Modern version)
@@ -37,10 +35,6 @@ const PUBLIC_PREFIXES = [
 function isPublicRoute(pathname: string): boolean {
   // Exact match
   if (PUBLIC_PATHS.includes(pathname)) return true;
-  // Allow all /publik/* sub-routes (dokter, fasilitas, etc.)
-  if (pathname.startsWith('/publik/')) return true;
-  // Allow all /api/publik/* (public data APIs)
-  if (pathname.startsWith('/api/publik/')) return true;
   // Prefix match (static assets, Next internals)
   if (PUBLIC_PREFIXES.some((prefix) => pathname.startsWith(prefix))) return true;
   // File extensions (images, fonts, etc.)

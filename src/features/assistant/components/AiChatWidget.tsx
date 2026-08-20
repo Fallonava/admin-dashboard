@@ -9,20 +9,16 @@ import { useState } from 'react';
 
 export default function AiChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
-  const pathname = usePathname() || '';
-  const role = pathname.startsWith('/publik') ? 'public' : 'admin';
   const endRef = useRef<HTMLDivElement>(null);
 
   const { messages, input, setInput, isLoading, append, handleSubmit, handleInputChange } = useStreamChat({
     api: '/api/assistant',
-    body: { role },
+    body: { role: 'admin' },
     initialMessages: [
       {
         id: 'welcome',
         role: 'assistant',
-        content: role === 'admin'
-          ? 'Halo Komandan! 🫡 Saya siap membantu.\nTanya soal jadwal dokter, rekap harian, status broadcast WA, atau informasi RS lainnya.'
-          : 'Halo! Selamat datang di Asisten Virtual RS. 🏥\nTanyakan jadwal dokter, cara daftar BPJS, atau info layanan kami.',
+        content: 'Halo Komandan! 🫡 Saya siap membantu.\nTanya soal jadwal dokter, status broadcast WA, atau informasi RS lainnya.',
       }
     ],
   });
@@ -39,12 +35,12 @@ export default function AiChatWidget() {
         : <span key={i}>{part}</span>
     );
 
-  const smartPrompts = role === 'admin'
-    ? ["📊 Rekap kunjungan hari ini", "📱 Status broadcast WA", "🏖️ Siapa dokter yang cuti?", "📅 Jadwal dokter hari ini"]
-    : ["📅 Jadwal Spesialis Anak", "💊 Ingin berobat Poli Dalam", "🕒 Kapan dr. Budi cuti?", "❓ Cara daftar BPJS"];
-
-  // Jangan tampilkan widget mengapung di beranda publik. Lakukan early return setelah semua hook di atas dieksekusi (!)
-  if (pathname.startsWith('/publik')) return null;
+  const smartPrompts = [
+    "📱 Status broadcast WA",
+    "🏖️ Siapa dokter yang cuti?",
+    "📅 Jadwal dokter hari ini",
+    "🩺 Cari spesialis poli"
+  ];
 
   return (
     <>
