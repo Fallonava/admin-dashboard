@@ -27,12 +27,12 @@ const HOURS = [
 ];
 
 const SHIFT_COLORS = [
-    { bg: "bg-blue-500/10 backdrop-blur-md", border: "border-blue-500/20 text-blue-700", text: "text-blue-800", dot: "bg-blue-500", innerBg: "bg-white/40", timeText: "text-blue-700", dotIcon: "text-blue-500" },
-    { bg: "bg-emerald-500/10 backdrop-blur-md", border: "border-emerald-500/20 text-emerald-700", text: "text-emerald-800", dot: "bg-emerald-500", innerBg: "bg-white/40", timeText: "text-emerald-700", dotIcon: "text-emerald-500" },
-    { bg: "bg-violet-500/10 backdrop-blur-md", border: "border-violet-500/20 text-violet-700", text: "text-violet-800", dot: "bg-violet-500", innerBg: "bg-white/40", timeText: "text-violet-700", dotIcon: "text-violet-500" },
-    { bg: "bg-amber-500/10 backdrop-blur-md", border: "border-amber-500/20 text-amber-700", text: "text-amber-800", dot: "bg-amber-500", innerBg: "bg-white/40", timeText: "text-amber-700", dotIcon: "text-amber-500" },
-    { bg: "bg-rose-500/10 backdrop-blur-md", border: "border-rose-500/20 text-rose-700", text: "text-rose-800", dot: "bg-rose-500", innerBg: "bg-white/40", timeText: "text-rose-700", dotIcon: "text-rose-500" },
-    { bg: "bg-cyan-500/10 backdrop-blur-md", border: "border-cyan-500/20 text-cyan-700", text: "text-cyan-800", dot: "bg-cyan-500", innerBg: "bg-white/40", timeText: "text-cyan-700", dotIcon: "text-cyan-500" },
+    { bg: "bg-blue-50 dark:bg-blue-950/40", border: "border-blue-200 dark:border-blue-800/50", text: "text-blue-900 dark:text-blue-100", dot: "bg-blue-500", innerBg: "bg-white dark:bg-[#131620]", timeText: "text-blue-700 dark:text-blue-300", dotIcon: "text-blue-500" },
+    { bg: "bg-emerald-50 dark:bg-emerald-950/40", border: "border-emerald-200 dark:border-emerald-800/50", text: "text-emerald-900 dark:text-emerald-100", dot: "bg-emerald-500", innerBg: "bg-white dark:bg-[#131620]", timeText: "text-emerald-700 dark:text-emerald-300", dotIcon: "text-emerald-500" },
+    { bg: "bg-violet-50 dark:bg-violet-950/40", border: "border-violet-200 dark:border-violet-800/50", text: "text-violet-900 dark:text-violet-100", dot: "bg-violet-500", innerBg: "bg-white dark:bg-[#131620]", timeText: "text-violet-700 dark:text-violet-300", dotIcon: "text-violet-500" },
+    { bg: "bg-amber-50 dark:bg-amber-950/40", border: "border-amber-200 dark:border-amber-800/50", text: "text-amber-900 dark:text-amber-100", dot: "bg-amber-500", innerBg: "bg-white dark:bg-[#131620]", timeText: "text-amber-700 dark:text-amber-300", dotIcon: "text-amber-500" },
+    { bg: "bg-rose-50 dark:bg-rose-950/40", border: "border-rose-200 dark:border-rose-800/50", text: "text-rose-900 dark:text-rose-100", dot: "bg-rose-500", innerBg: "bg-white dark:bg-[#131620]", timeText: "text-rose-700 dark:text-rose-300", dotIcon: "text-rose-500" },
+    { bg: "bg-cyan-50 dark:bg-cyan-950/40", border: "border-cyan-200 dark:border-cyan-800/50", text: "text-cyan-900 dark:text-cyan-100", dot: "bg-cyan-500", innerBg: "bg-white dark:bg-[#131620]", timeText: "text-cyan-700 dark:text-cyan-300", dotIcon: "text-cyan-500" },
 ];
 
 interface RealtimeCalendarProps {

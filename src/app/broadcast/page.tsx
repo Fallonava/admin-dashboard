@@ -24,10 +24,10 @@ interface QueueItem {
 type FilterStatus = "ALL" | "PENDING" | "PROCESSING" | "SENT" | "FAILED";
 
 const STATUS_CONFIG = {
-  PENDING:    { label: "Menunggu", color: "text-amber-600",   bg: "bg-amber-50",   border: "border-amber-200",  dot: "bg-amber-400" },
-  PROCESSING: { label: "Proses",   color: "text-blue-600",    bg: "bg-blue-50",    border: "border-blue-200",   dot: "bg-blue-400 animate-pulse" },
-  SENT:       { label: "Terkirim", color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-200",dot: "bg-emerald-400" },
-  FAILED:     { label: "Gagal",    color: "text-rose-600",    bg: "bg-rose-50",    border: "border-rose-200",   dot: "bg-rose-400" },
+  PENDING:    { label: "Menunggu", color: "text-amber-600 dark:text-amber-400",   bg: "bg-amber-50 dark:bg-amber-950/40",   border: "border-amber-200 dark:border-amber-800/50",  dot: "bg-amber-400" },
+  PROCESSING: { label: "Proses",   color: "text-blue-600 dark:text-blue-400",    bg: "bg-blue-50 dark:bg-blue-950/40",    border: "border-blue-200 dark:border-blue-800/50",   dot: "bg-blue-400 animate-pulse" },
+  SENT:       { label: "Terkirim", color: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-50 dark:bg-emerald-950/40", border: "border-emerald-200 dark:border-emerald-800/50",dot: "bg-emerald-400" },
+  FAILED:     { label: "Gagal",    color: "text-rose-600 dark:text-rose-400",    bg: "bg-rose-50 dark:bg-rose-950/40",    border: "border-rose-200 dark:border-rose-800/50",   dot: "bg-rose-400" },
 };
 
 export default function BroadcastPage() {

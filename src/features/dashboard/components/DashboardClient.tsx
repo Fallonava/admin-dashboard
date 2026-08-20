@@ -183,12 +183,25 @@ export function DashboardClient() {
     }
   }, [todayDoctors.length, activeDocs.length]);
 
+  const [statusFilter, setStatusFilter] = useState<string>("SEMUA");
+
+  const STATUS_FILTERS = useMemo(() => [
+    { id: "SEMUA", label: "Semua", count: todayDoctors.length },
+    { id: "PRAKTEK", label: "Praktek", count: todayDoctors.filter(d => d.status === 'PRAKTEK').length },
+    { id: "OPERASI", label: "Operasi", count: todayDoctors.filter(d => d.status === 'OPERASI').length },
+    { id: "PENUH", label: "Penuh", count: todayDoctors.filter(d => d.status === 'PENUH').length },
+    { id: "CUTI", label: "Cuti", count: todayDoctors.filter(d => d.status === 'CUTI').length },
+    { id: "SELESAI", label: "Selesai", count: todayDoctors.filter(d => d.status === 'SELESAI').length },
+  ], [todayDoctors]);
+
   const filteredDoctors = useMemo(() => {
-    return todayDoctors.filter(doc =>
-      doc.name.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
-      doc.specialty.toLowerCase().includes(debouncedSearch.toLowerCase())
-    );
-  }, [todayDoctors, debouncedSearch]);
+    return todayDoctors.filter(doc => {
+      const matchSearch = doc.name.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+        doc.specialty.toLowerCase().includes(debouncedSearch.toLowerCase());
+      const matchStatus = statusFilter === "SEMUA" || doc.status === statusFilter;
+      return matchSearch && matchStatus;
+    });
+  }, [todayDoctors, debouncedSearch, statusFilter]);
 
   // Dynamic greeting
   const hour = now.getHours();
@@ -199,7 +212,7 @@ export function DashboardClient() {
   const todayLabel = now.toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
 
   return (
-    <div className="w-full h-full flex flex-col overflow-hidden relative bg-[#0B0D13] text-zinc-100">
+    <div className="w-full h-full flex flex-col overflow-hidden relative bg-[#F4F4F6] dark:bg-[#0B0D13] text-zinc-900 dark:text-zinc-100">
       <div className="relative z-10 w-full flex-none">
       {/* ═══════════════════ UNIFIED PAGE HEADER ═══════════════════ */}
       <PageHeader
@@ -366,6 +379,37 @@ export function DashboardClient() {
                 {automationEnabled ? "AI Active" : "Online"}
               </div>
             </div>
+          </div>
+
+          {/* ═══════════ iOS SEGMENTED FILTER PILLS (HORIZONTAL SCROLL ON MOBILE) ═══════════ */}
+          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1 -mx-4 px-4 sm:mx-0 sm:px-0">
+            {STATUS_FILTERS.map(f => {
+              const isSelected = statusFilter === f.id;
+              return (
+                <button
+                  key={f.id}
+                  onClick={() => setStatusFilter(f.id)}
+                  className={cn(
+                    "flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all duration-150 active:scale-95 shrink-0 border",
+                    isSelected
+                      ? "bg-zinc-900 text-white border-zinc-900 dark:bg-white dark:text-zinc-900 dark:border-white shadow-sm"
+                      : "bg-white dark:bg-[#131620] text-zinc-600 dark:text-zinc-400 border-zinc-200 dark:border-[#232736] hover:border-zinc-300 dark:hover:border-zinc-700"
+                  )}
+                >
+                  <span>{f.label}</span>
+                  {f.count > 0 && (
+                    <span className={cn(
+                      "text-[10px] font-black px-1.5 py-0.5 rounded-full",
+                      isSelected
+                        ? "bg-zinc-700 text-white dark:bg-zinc-200 dark:text-zinc-900"
+                        : "bg-zinc-100 dark:bg-[#1A1E2B] text-zinc-500 dark:text-zinc-400"
+                    )}>
+                      {f.count}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
           </div>
 
           <ErrorBoundary name="Doctor Grid" className="min-h-[400px]">

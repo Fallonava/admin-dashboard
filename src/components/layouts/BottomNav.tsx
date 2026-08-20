@@ -2,8 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { usePathname } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   Calendar,
@@ -11,9 +10,9 @@ import {
   Menu,
   Plus,
   CalendarPlus,
-  Palmtree,
+  Umbrella,
   X,
-  Zap,
+  Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/auth-context";
@@ -25,11 +24,11 @@ export function BottomNav() {
   const [sheetOpen, setSheetOpen] = useState(false);
 
   const navItems = [
-    { name: "Beranda",  href: "/",        icon: LayoutDashboard, resource: "denah_live" },
-    { name: "Kontrol",  href: "/control", icon: Zap,             resource: "kontrol_status" },
-    { name: "Tambah",   href: "#",        icon: Plus,            isCenter: true, resource: null },
-    { name: "Jadwal",   href: "/schedules", icon: Calendar,      resource: "schedules" },
-    { name: "Menu",     href: "#",        icon: Menu,            isMenu: true, resource: null },
+    { name: "Beranda", href: "/", icon: LayoutDashboard, resource: "denah_live" },
+    { name: "Jadwal", href: "/schedules", icon: Calendar, resource: "schedules" },
+    { name: "Tambah", href: "#", icon: Plus, isCenter: true, resource: null },
+    { name: "Cuti", href: "/leaves", icon: Umbrella, resource: "leaves" },
+    { name: "Menu", href: "#", icon: Menu, isMenu: true, resource: null },
   ];
 
   const filterByPermission = (items: any[]) => {
@@ -46,7 +45,7 @@ export function BottomNav() {
 
   const handleCenterClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    setSheetOpen(true);
+    setSheetOpen(!sheetOpen);
   };
 
   const handleSheetNav = (href: string) => {
@@ -54,100 +53,95 @@ export function BottomNav() {
     router.push(href);
   };
 
-  // Quick add action definitions — permission-gated
   const quickAddActions = [
     {
-      label: "Tambah Shift",
-      sub: "Jadwal praktek dokter",
+      label: "Jadwal Shift",
+      sub: "Atur jam praktek",
       href: "/schedules",
       resource: "schedules",
-      gradient: "from-indigo-500 to-violet-600",
-      bg: "from-indigo-50 to-violet-50",
-      border: "border-indigo-100 hover:border-indigo-200 hover:shadow-indigo-100",
+      gradient: "from-blue-600 to-indigo-600",
       Icon: CalendarPlus,
-      shadow: "shadow-[0_6px_16px_rgba(99,102,241,0.35)] group-hover:shadow-[0_8px_20px_rgba(99,102,241,0.45)]",
     },
     {
       label: "Ajukan Cuti",
-      sub: "Kelola cuti dokter",
+      sub: "Input cuti dokter",
       href: "/leaves",
       resource: "leaves",
-      gradient: "from-emerald-500 to-teal-600",
-      bg: "from-emerald-50 to-teal-50",
-      border: "border-emerald-100 hover:border-emerald-200 hover:shadow-emerald-100",
-      Icon: Palmtree,
-      shadow: "shadow-[0_6px_16px_rgba(16,185,129,0.35)] group-hover:shadow-[0_8px_20px_rgba(16,185,129,0.45)]",
+      gradient: "from-emerald-600 to-teal-600",
+      Icon: Umbrella,
     },
     {
       label: "Data Dokter",
       sub: "Kelola profil dokter",
       href: "/doctors",
       resource: "doctors",
-      gradient: "from-sky-500 to-blue-600",
-      bg: "from-sky-50 to-blue-50",
-      border: "border-sky-100 hover:border-sky-200 hover:shadow-sky-100",
+      gradient: "from-violet-600 to-purple-600",
       Icon: Users,
-      shadow: "shadow-[0_6px_16px_rgba(14,165,233,0.35)] group-hover:shadow-[0_8px_20px_rgba(14,165,233,0.45)]",
     },
-  ].filter(a => !a.resource || isSuperAdmin || canRead(a.resource));
+  ].filter((a) => !a.resource || isSuperAdmin || canRead(a.resource));
 
   return (
     <>
-      {/* ══════ BOTTOM SHEET OVERLAY ══════ */}
+      {/* ══════ iOS ACTION SHEET OVERLAY ══════ */}
       {sheetOpen && (
         <div
-          className="lg:hidden fixed inset-0 z-[110] bg-black/30 backdrop-blur-sm animate-in fade-in duration-200"
+          className="lg:hidden fixed inset-0 z-[110] bg-black/50 animate-in fade-in duration-200"
           onClick={() => setSheetOpen(false)}
         />
       )}
 
-      {/* ══════ QUICK ADD BOTTOM SHEET ══════ */}
+      {/* ══════ iOS ACTION SHEET MODAL ══════ */}
       <div
         className={cn(
           "lg:hidden fixed bottom-0 left-0 right-0 z-[120] transition-transform duration-300 ease-out",
           sheetOpen ? "translate-y-0" : "translate-y-full"
         )}
       >
-        <div className="bg-[#131620] rounded-t-[24px] border-t border-[#232736] shadow-2xl px-5 pt-5 pb-[calc(env(safe-area-inset-bottom,0px)+6rem)]">
-          {/* Handle bar */}
-          <div className="w-10 h-1 bg-[#232736] rounded-full mx-auto mb-5" />
+        <div className="bg-white dark:bg-[#131620] rounded-t-[28px] border-t border-zinc-200 dark:border-[#232736] shadow-2xl px-5 pt-4 pb-[calc(max(env(safe-area-inset-bottom),16px)+5rem)]">
+          {/* iOS Grabber Handle */}
+          <div className="w-10 h-1.5 bg-zinc-300 dark:bg-zinc-700 rounded-full mx-auto mb-4 cursor-grab active:cursor-grabbing" />
 
           {/* Header */}
-          <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center justify-between mb-4 px-1">
             <div>
-              <h3 className="font-black text-zinc-100 text-base">Tambah Cepat</h3>
-              <p className="text-zinc-400 text-xs font-medium mt-0.5">Pilih jenis data yang ingin ditambahkan</p>
+              <h3 className="font-black text-zinc-900 dark:text-zinc-100 text-base tracking-tight">
+                Menu Aksi Cepat
+              </h3>
+              <p className="text-zinc-500 dark:text-zinc-400 text-xs font-medium">
+                Pilih menu untuk menambahkan data baru
+              </p>
             </div>
             <button
               onClick={() => setSheetOpen(false)}
-              className="w-8 h-8 rounded-full bg-[#1A1E2B] border border-[#2B3145] flex items-center justify-center text-zinc-400 transition-colors"
+              className="w-8 h-8 rounded-full bg-zinc-100 dark:bg-[#1A1E2B] border border-zinc-200 dark:border-[#2B3145] flex items-center justify-center text-zinc-500 dark:text-zinc-400 active:scale-95"
             >
-              <X size={16} />
+              <X size={15} strokeWidth={2.5} />
             </button>
           </div>
 
-          {/* Actions — dynamic grid based on count */}
-          <div className={cn(
-            "grid gap-3",
-            quickAddActions.length === 1 ? "grid-cols-1" :
-            quickAddActions.length === 2 ? "grid-cols-2" :
-            "grid-cols-3"
-          )}>
+          {/* Actions Grid */}
+          <div className="grid grid-cols-3 gap-2.5">
             {quickAddActions.map((action) => (
               <button
                 key={action.href}
                 onClick={() => handleSheetNav(action.href)}
-                className="group flex flex-col items-center justify-center gap-2.5 p-4 rounded-[16px] bg-[#1A1E2B] border border-[#2B3145] hover:border-[#3A425C] active:scale-95 transition-all duration-200"
+                className="group flex flex-col items-center justify-center gap-2 p-3.5 rounded-[18px] bg-zinc-50 dark:bg-[#161924] border border-zinc-200 dark:border-[#232736] active:scale-[0.96] transition-all duration-150"
               >
-                <div className={cn(
-                  "w-11 h-11 rounded-xl flex items-center justify-center shadow-sm",
-                  action.gradient
-                )}>
-                  <action.Icon size={20} className="text-white" strokeWidth={2} />
+                <div
+                  className={cn(
+                    "w-11 h-11 rounded-[14px] bg-gradient-to-br flex items-center justify-center shadow-sm text-white",
+                    action.gradient
+                  )}
+                >
+                  <action.Icon size={20} strokeWidth={2.5} />
                 </div>
                 <div className="text-center">
-                  <p className="font-black text-zinc-100 text-[12px] leading-tight">{action.label}</p>
-                  <p className="text-zinc-400 text-[10px] font-medium mt-0.5 hidden sm:block">{action.sub}</p>
+                  <p className="font-black text-zinc-900 dark:text-zinc-100 text-[11.5px] leading-tight">
+                    {action.label}
+                  </p>
+                  <p className="text-zinc-500 dark:text-zinc-400 text-[9.5px] font-medium mt-0.5">
+                    {action.sub}
+                  </p>
                 </div>
               </button>
             ))}
@@ -155,13 +149,11 @@ export function BottomNav() {
         </div>
       </div>
 
-      {/* ══════ BOTTOM NAV BAR ══════ */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-[100] pointer-events-none">
-        <div className="relative pointer-events-auto">
-          {/* Solid plate */}
-          <div className="absolute inset-x-0 bottom-0 top-0 bg-[#10121A] border-t border-[#1E2230] shadow-xl rounded-t-[24px]" />
-
-          <nav className="relative flex items-center justify-between px-6 h-18 pb-[env(safe-area-inset-bottom,16px)]">
+      {/* ══════ iOS NATIVE BOTTOM TAB BAR ══════ */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-[100] pointer-events-none px-3 pb-[max(env(safe-area-inset-bottom),10px)] pt-1">
+        <div className="relative pointer-events-auto max-w-md mx-auto">
+          {/* iOS Floating Pill Plate */}
+          <nav className="relative flex items-center justify-around h-[62px] px-2 rounded-[24px] bg-white/95 dark:bg-[#10121A]/95 border border-zinc-200/90 dark:border-[#232736] shadow-[0_8px_32px_rgba(0,0,0,0.12)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
             {visibleItems.map((item) => {
               const isActive =
                 pathname === item.href ||
@@ -173,32 +165,20 @@ export function BottomNav() {
                   <button
                     key={item.name}
                     onClick={handleCenterClick}
-                    className="relative flex flex-col items-center justify-center flex-1 transition-all active:scale-90 mt-1 min-h-[44px]"
+                    className="relative flex flex-col items-center justify-center -mt-6 active:scale-[0.92] transition-transform duration-150 outline-none"
+                    aria-label="Aksi Cepat"
                   >
-                    <div className="h-[40px] w-[40px] flex items-center justify-center">
-                      <div
-                        className={cn(
-                          "absolute -top-5 h-14 w-14 rounded-full flex items-center justify-center transition-all duration-300 shadow-md border",
-                          sheetOpen
-                            ? "bg-blue-600 text-white border-blue-400 scale-110"
-                            : "bg-blue-600 text-white border-blue-500 hover:scale-105"
-                        )}
-                      >
-                        <Icon
-                          size={24}
-                          className={cn(
-                            "transition-transform duration-300",
-                            sheetOpen && "rotate-45"
-                          )}
-                        />
-                      </div>
-                    </div>
-                    <span
+                    <div
                       className={cn(
-                        "text-[10px] font-black mt-1 uppercase tracking-wider transition-all duration-200",
-                        sheetOpen ? "text-blue-400 opacity-100" : "text-zinc-500"
+                        "w-12 h-12 rounded-full flex items-center justify-center text-white shadow-lg border-2 border-white dark:border-[#10121A] transition-all duration-200",
+                        sheetOpen
+                          ? "bg-zinc-800 dark:bg-zinc-700 rotate-45 scale-105"
+                          : "bg-blue-600 hover:bg-blue-500"
                       )}
                     >
+                      <Icon size={22} strokeWidth={2.5} />
+                    </div>
+                    <span className="text-[9.5px] font-bold text-zinc-500 dark:text-zinc-400 mt-1">
                       {item.name}
                     </span>
                   </button>
@@ -206,24 +186,28 @@ export function BottomNav() {
               }
 
               const content = (
-                <>
+                <div className="flex flex-col items-center justify-center py-1 px-2.5 rounded-[14px] transition-all duration-150">
                   <div
                     className={cn(
-                      "p-1.5 rounded-xl transition-all duration-200",
-                      isActive ? "bg-[#1A1E2B] text-blue-400 border border-[#2B3145]" : "text-zinc-500"
+                      "p-1 rounded-lg transition-colors duration-150",
+                      isActive
+                        ? "text-blue-600 dark:text-blue-400"
+                        : "text-zinc-400 dark:text-zinc-500"
                     )}
                   >
-                    <Icon size={20} strokeWidth={isActive ? 2.5 : 2} />
+                    <Icon size={21} strokeWidth={isActive ? 2.5 : 2} />
                   </div>
                   <span
                     className={cn(
-                      "text-[10px] font-bold mt-1 uppercase tracking-wider transition-all duration-200",
-                      isActive ? "text-blue-400 opacity-100" : "text-zinc-500"
+                      "text-[10px] font-bold tracking-tight transition-colors duration-150",
+                      isActive
+                        ? "text-blue-600 dark:text-blue-400 font-black"
+                        : "text-zinc-500 dark:text-zinc-400"
                     )}
                   >
                     {item.name}
                   </span>
-                </>
+                </div>
               );
 
               if (item.isMenu) {
@@ -231,7 +215,7 @@ export function BottomNav() {
                   <button
                     key={item.name}
                     onClick={handleMenuClick}
-                    className="flex flex-col items-center justify-center flex-1 transition-all active:scale-90 outline-none mt-1 min-h-[44px]"
+                    className="flex-1 flex items-center justify-center active:scale-[0.92] transition-transform duration-150 outline-none min-h-[48px]"
                   >
                     {content}
                   </button>
@@ -242,7 +226,7 @@ export function BottomNav() {
                 <Link
                   key={item.name}
                   href={item.href}
-                  className="flex flex-col items-center justify-center flex-1 transition-all active:scale-90 mt-1 min-h-[44px]"
+                  className="flex-1 flex items-center justify-center active:scale-[0.92] transition-transform duration-150 min-h-[48px]"
                 >
                   {content}
                 </Link>

@@ -155,14 +155,15 @@ jobs:
           
           # /MIR = Mirror
           # /XD = Exclude direktori agar WA Sessions, Logs, & Git tidak terhapus
-          # /XF = Exclude file agar .env & status bot lokal tidak ditimpa kosong
-          robocopy $Src $Dst /MIR /XD .git .github sessions logs /XF .env .wa-status.json /R:3 /W:2 /NP /NFL /NJH /NDL
+          # /XF = Exclude file agar .env, locked runtime binaries (*.node, *.dll), & log tidak ditimpa
+          robocopy $Src $Dst /MIR /XD .git .github sessions logs /XF .env .wa-status.json *.node *.dll *.log /R:2 /W:1 /NP /NFL /NJH /NDL
           
-          if ($LASTEXITCODE -le 7) {
+          # Robocopy Bitmask: <= 7 = Murni sukses; 8..11 = Sukses dengan locked binaries tetap aman di memori
+          if ($LASTEXITCODE -le 11) {
             Write-Host "Robocopy selesai sukses (exit code: $LASTEXITCODE)"
             exit 0
           } else {
-            Write-Error "Robocopy GAGAL dengan exit code: $LASTEXITCODE"
+            Write-Error "Robocopy GAGAL dengan exit code fatal: $LASTEXITCODE"
             exit 1
           }
 

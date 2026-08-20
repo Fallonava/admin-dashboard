@@ -8,37 +8,30 @@ import { PageHeader } from "@/components/ui/PageHeader";
 
 export default function AutomationPage() {
     return (
-        <div className="flex-1 w-full flex flex-col h-[calc(100vh-1rem)] overflow-hidden relative bg-slate-50/30">
-            {/* 2026 Enhanced Ambient Multi-Color Glows */}
-            <div className="absolute top-[-15%] left-[-10%] h-[600px] w-[600px] rounded-full bg-gradient-to-br from-blue-300/40 to-indigo-200/40 blur-[120px] pointer-events-none mix-blend-multiply animate-pulse" style={{ animationDuration: '8s' }} />
-            <div className="absolute bottom-[-10%] right-[-5%] h-[500px] w-[500px] rounded-full bg-gradient-to-tl from-violet-300/30 to-fuchsia-200/30 blur-[100px] pointer-events-none mix-blend-multiply animate-pulse" style={{ animationDuration: '10s' }} />
-            <div className="absolute top-[30%] left-[40%] h-[400px] w-[400px] rounded-full bg-gradient-to-tr from-cyan-200/20 to-blue-200/20 blur-[80px] pointer-events-none mix-blend-multiply transition-all duration-1000 ease-in-out" />
-
+        <div className="flex-1 w-full flex flex-col h-[calc(100vh-1rem)] overflow-hidden relative bg-[#F4F4F6] dark:bg-[#0B0D13] text-zinc-900 dark:text-zinc-100">
             {/* Header Area using Unified PageHeader */}
             <PageHeader 
                 icon={<Sparkles size={20} className="text-white" />}
                 title="Automasi"
-                accentWord="& Siaran"
-                accentColor="bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent"
                 subtitle="Pusat kontrol jadwal real-time dan TV"
                 iconGradient="from-indigo-500 to-violet-600"
                 badge={
-                    <div className="flex items-center gap-2 bg-gradient-to-r from-emerald-50 to-emerald-100 border border-emerald-200/60 px-3 py-1.5 rounded-full shadow-sm">
+                    <div className="flex items-center gap-2 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/50 px-3 py-1.5 rounded-full shadow-sm">
                         <div className="relative flex h-2 w-2">
                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                             <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                         </div>
-                        <span className="text-[10px] sm:text-xs font-black text-emerald-700 tracking-widest uppercase">
+                        <span className="text-[10px] sm:text-xs font-black text-emerald-700 dark:text-emerald-400 tracking-widest uppercase">
                             System Online
                         </span>
                     </div>
                 }
                 actions={
                     <>
-                        <Link href="/automation/rules" className="hidden sm:inline-flex items-center px-5 py-2.5 bg-indigo-600 text-white text-[13px] font-bold rounded-full shadow-[0_8px_20px_-6px_rgba(79,70,229,0.5)] hover:bg-indigo-500 hover:shadow-[0_8px_25px_-6px_rgba(79,70,229,0.6)] hover:-translate-y-0.5 transition-all duration-300 whitespace-nowrap border border-indigo-500/50">
+                        <Link href="/automation/rules" className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-xs font-bold rounded-xl shadow-sm hover:bg-indigo-500 active:scale-95 transition-all">
                             Rules
                         </Link>
-                        <Link href="/automation/logs" className="hidden sm:inline-flex items-center px-5 py-2.5 bg-white/80 backdrop-blur-md text-slate-700 text-[13px] font-bold rounded-full shadow-sm border border-slate-200/80 hover:bg-white hover:text-indigo-600 hover:border-indigo-200 transition-all duration-300 whitespace-nowrap">
+                        <Link href="/automation/logs" className="inline-flex items-center px-4 py-2 bg-white dark:bg-[#131620] text-zinc-700 dark:text-zinc-300 text-xs font-bold rounded-xl shadow-sm border border-zinc-200 dark:border-[#232736] hover:bg-zinc-50 dark:hover:bg-[#1A1E2B] active:scale-95 transition-all">
                             Logs
                         </Link>
                     </>

@@ -38,18 +38,18 @@ const CustomDropdown = ({ value, options, onChange, icon }: any) => {
                 type="button"
                 onClick={() => setOpen(!open)}
                 className={cn(
-                    "w-full sm:w-auto flex items-center justify-between gap-1.5 sm:gap-2.5 bg-white/40 backdrop-blur-xl rounded-[20px] px-4 py-2.5 text-xs font-bold text-slate-700 outline-none shadow-sm hover:text-slate-900 border border-white/60 hover:border-white/80 hover:bg-white/60 transition-all duration-300 whitespace-nowrap",
-                    open && "ring-4 ring-indigo-500/10 border-indigo-200 bg-white/80 shadow-[0_8px_24px_-8px_rgba(79,70,229,0.15)] text-slate-900"
+                    "w-full sm:w-auto flex items-center justify-between gap-1.5 sm:gap-2.5 bg-white dark:bg-[#131620] rounded-xl px-3.5 py-2 text-xs font-bold text-zinc-700 dark:text-zinc-300 outline-none shadow-sm hover:text-zinc-900 dark:hover:text-zinc-100 border border-zinc-200 dark:border-[#232736] transition-all whitespace-nowrap active:scale-95",
+                    open && "border-blue-500 ring-2 ring-blue-500/20 text-zinc-900 dark:text-zinc-100"
                 )}
                 aria-haspopup="listbox"
                 aria-expanded={open}
             >
                 <span className="flex items-center gap-1.5 sm:gap-2 truncate">{icon} {selectedLabel}</span>
-                <ChevronDown className={cn("w-3.5 h-3.5 text-slate-400 transition-transform duration-300 flex-shrink-0", open && "rotate-180")} />
+                <ChevronDown className={cn("w-3.5 h-3.5 text-zinc-400 transition-transform duration-200 flex-shrink-0", open && "rotate-180")} />
             </button>
             
             <div className={cn(
-                "absolute top-[calc(100%+12px)] left-0 w-full min-w-[200px] bg-white/80 backdrop-blur-[30px] rounded-[24px] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.15)] border border-white/80 p-2 border-t-white/100 transition-all duration-300 origin-top-left z-50 overflow-y-auto max-h-[300px] custom-scrollbar ring-1 ring-black/5",
+                "absolute top-[calc(100%+8px)] left-0 w-full min-w-[200px] bg-white dark:bg-[#131620] rounded-xl shadow-xl border border-zinc-200 dark:border-[#232736] p-1.5 transition-all duration-150 origin-top-left z-50 overflow-y-auto max-h-[280px] custom-scrollbar",
                 open ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-95 -translate-y-2 pointer-events-none"
             )}>
                 {options.map((opt: any) => (
@@ -58,10 +58,10 @@ const CustomDropdown = ({ value, options, onChange, icon }: any) => {
                         type="button"
                         onClick={() => { onChange(opt.value); setOpen(false); }}
                         className={cn(
-                            "w-full text-left px-3.5 py-2.5 rounded-[16px] text-xs font-bold transition-all duration-300 flex items-center justify-between group/item",
+                            "w-full text-left px-3 py-2 rounded-lg text-xs font-bold transition-all flex items-center justify-between",
                             value === opt.value 
-                                ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-[0_4px_12px_-4px_rgba(79,70,229,0.4)] scale-[0.98]" 
-                                : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 scale-100"
+                                ? "bg-blue-600 text-white shadow-sm" 
+                                : "text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-[#1A1E2B] hover:text-zinc-900 dark:hover:text-zinc-100"
                         )}
                     >
                         <span>{opt.label}</span>
@@ -261,14 +261,7 @@ export default function DoctorsPage() {
     };
 
     return (
-        <div className="flex-1 w-full flex flex-col h-[calc(100vh-1rem)] overflow-hidden relative">
-            {/* Ambient Animated Glowing Background */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-                <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-300/30 rounded-full mix-blend-multiply filter blur-[80px] opacity-70 animate-blob" />
-                <div className="absolute top-[20%] right-[-10%] w-[40%] h-[40%] bg-indigo-300/30 rounded-full mix-blend-multiply filter blur-[80px] opacity-70 animate-blob animation-delay-2000" />
-                <div className="absolute bottom-[-10%] left-[20%] w-[50%] h-[50%] bg-emerald-300/20 rounded-full mix-blend-multiply filter blur-[80px] opacity-70 animate-blob animation-delay-4000" />
-            </div>
-
+        <div className="flex-1 w-full flex flex-col h-[calc(100vh-1rem)] overflow-hidden relative bg-[#F4F4F6] dark:bg-[#0B0D13] text-zinc-900 dark:text-zinc-100">
             <div className="relative z-10 w-full flex-none">
             <PageHeader
               icon={<Users size={20} className="text-white" />}
