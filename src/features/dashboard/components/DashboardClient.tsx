@@ -129,7 +129,6 @@ export function DashboardClient() {
     const dates = shift.disabledDates || [];
     const isDisabledToday = dates.includes(todayStr);
     const newDates = isDisabledToday ? dates.filter(d => d !== todayStr) : [...dates, todayStr];
-    const previousShifts = shifts;
     setShifts(curr => curr?.map(s => s.id === shiftId ? { ...s, disabledDates: newDates } : s));
     try {
       const res = await fetch('/api/shifts', {
@@ -140,16 +139,15 @@ export function DashboardClient() {
       if (!res.ok) throw new Error('API Error');
     } catch (e) {
       console.error('Failed to toggle shift', e);
-      setShifts(previousShifts);
+      setShifts(curr => curr?.map(s => s.id === shiftId ? { ...s, disabledDates: dates } : s)); // rollback
     }
-  }, [todayStr, shifts]);
+  }, [todayStr]);
 
   // ── Manual Status Update ──
   const manualUpdateStatus = useCallback(async (id: string, status: Doctor['status']) => {
     const nowLocal = new Date();
     const timeString = nowLocal.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false }).replace('.', ':');
     const timestamp = nowLocal.getTime();
-    const previousDoctors = doctors;
     setDoctors(docs => docs?.map(d =>
       d.id === id ? {
         ...d,
@@ -172,9 +170,8 @@ export function DashboardClient() {
       if (!res.ok) throw new Error('API Error');
     } catch (e) {
       console.error('Failed to update doctor status', e);
-      setDoctors(previousDoctors);
     }
-  }, [doctors]);
+  }, []);
   
   const activeDocs = useMemo(() => todayDoctors.filter(d => d.status === 'PRAKTEK' || d.status === 'PENUH'), [todayDoctors]);
   const [efficiency, setEfficiency] = useState(0);
