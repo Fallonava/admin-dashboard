@@ -65,16 +65,37 @@ export async function fetchSettings() {
     };
 }
 
+// In-memory cache for full snapshot to prevent DB stampede during simultaneous client connections
+let cachedSnapshot: any = null;
+let lastCacheTime = 0;
+const CACHE_TTL_MS = 5000; // 5 seconds cache
+
+/**
+ * Invalidates the in-memory snapshot cache (call after data mutations).
+ */
+export function invalidateSnapshotCache() {
+    cachedSnapshot = null;
+    lastCacheTime = 0;
+}
+
 /**
  * Returns the full data snapshot for broadcasting to admin clients.
- * This is the single source of truth for all admin dashboard data.
+ * Uses a short in-memory cache to prevent DB connection exhaustion during multi-client sync.
  */
-export async function getFullSnapshot() {
+export async function getFullSnapshot(forceFresh = false) {
+    const now = Date.now();
+    if (!forceFresh && cachedSnapshot && (now - lastCacheTime < CACHE_TTL_MS)) {
+        return cachedSnapshot;
+    }
+
     const [doctors, shifts, leaves, settings] = await Promise.all([
         fetchDoctors(),
         fetchShifts(),
         fetchLeaves(),
         fetchSettings(),
     ]);
-    return { doctors, shifts, leaves, settings };
+
+    cachedSnapshot = { doctors, shifts, leaves, settings };
+    lastCacheTime = now;
+    return cachedSnapshot;
 }

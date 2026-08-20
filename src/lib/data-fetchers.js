@@ -51,6 +51,7 @@ exports.fetchDoctors = fetchDoctors;
 exports.fetchShifts = fetchShifts;
 exports.fetchLeaves = fetchLeaves;
 exports.fetchSettings = fetchSettings;
+exports.invalidateSnapshotCache = invalidateSnapshotCache;
 exports.getFullSnapshot = getFullSnapshot;
 var prisma_1 = require("./prisma");
 /**
@@ -135,24 +136,43 @@ function fetchSettings() {
         });
     });
 }
+// In-memory cache for full snapshot to prevent DB stampede during simultaneous client connections
+var cachedSnapshot = null;
+var lastCacheTime = 0;
+var CACHE_TTL_MS = 5000; // 5 seconds cache
+/**
+ * Invalidates the in-memory snapshot cache (call after data mutations).
+ */
+function invalidateSnapshotCache() {
+    cachedSnapshot = null;
+    lastCacheTime = 0;
+}
 /**
  * Returns the full data snapshot for broadcasting to admin clients.
- * This is the single source of truth for all admin dashboard data.
+ * Uses a short in-memory cache to prevent DB connection exhaustion during multi-client sync.
  */
 function getFullSnapshot() {
-    return __awaiter(this, void 0, void 0, function () {
-        var _a, doctors, shifts, leaves, settings;
+    return __awaiter(this, arguments, void 0, function (forceFresh) {
+        var now, _a, doctors, shifts, leaves, settings;
+        if (forceFresh === void 0) { forceFresh = false; }
         return __generator(this, function (_b) {
             switch (_b.label) {
-                case 0: return [4 /*yield*/, Promise.all([
-                        fetchDoctors(),
-                        fetchShifts(),
-                        fetchLeaves(),
-                        fetchSettings(),
-                    ])];
+                case 0:
+                    now = Date.now();
+                    if (!forceFresh && cachedSnapshot && (now - lastCacheTime < CACHE_TTL_MS)) {
+                        return [2 /*return*/, cachedSnapshot];
+                    }
+                    return [4 /*yield*/, Promise.all([
+                            fetchDoctors(),
+                            fetchShifts(),
+                            fetchLeaves(),
+                            fetchSettings(),
+                        ])];
                 case 1:
                     _a = _b.sent(), doctors = _a[0], shifts = _a[1], leaves = _a[2], settings = _a[3];
-                    return [2 /*return*/, { doctors: doctors, shifts: shifts, leaves: leaves, settings: settings }];
+                    cachedSnapshot = { doctors: doctors, shifts: shifts, leaves: leaves, settings: settings };
+                    lastCacheTime = now;
+                    return [2 /*return*/, cachedSnapshot];
             }
         });
     });

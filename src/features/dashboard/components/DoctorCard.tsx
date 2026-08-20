@@ -66,6 +66,16 @@ function getStatusBadgeStyle(status: Doctor['status']) {
   }
 }
 
+function getCardGlowClass(status: Doctor['status']) {
+  switch (status) {
+    case 'PRAKTEK': return "border-blue-300/80 shadow-[0_4px_24px_-4px_rgba(59,130,246,0.18)]";
+    case 'OPERASI': return "border-red-300/80 shadow-[0_4px_24px_-4px_rgba(239,68,68,0.2)]";
+    case 'PENUH': return "border-orange-300/80 shadow-[0_4px_24px_-4px_rgba(249,115,22,0.18)]";
+    case 'PENDAFTARAN': return "border-indigo-300/80 shadow-[0_4px_24px_-4px_rgba(99,102,241,0.18)]";
+    default: return "border-white/60 shadow-[0_8px_32px_rgba(0,0,0,0.04)]";
+  }
+}
+
 interface DoctorCardProps {
   doc: Doctor;
   shifts: Shift[];
@@ -75,6 +85,7 @@ interface DoctorCardProps {
   currentTimeMinutes: number;
   weekOfMonth: number;
   automationEnabled: boolean;
+  density?: 'comfortable' | 'compact';
   onStatusChange: (id: string, status: Doctor['status']) => void;
   onToggleShift: (shiftId: string, shift: Shift) => void;
 }
@@ -87,7 +98,7 @@ interface DoctorCardProps {
 export const DoctorCard = memo(function DoctorCard({
   doc, shifts, todayDayIdx, todayStr,
   currentTimeMinutes, weekOfMonth,
-  automationEnabled, onStatusChange, onToggleShift
+  automationEnabled, density = 'comfortable', onStatusChange, onToggleShift
 }: DoctorCardProps) {
 
   // Hanya tampilkan shift yang tidak di-disable hari ini
@@ -112,9 +123,13 @@ export const DoctorCard = memo(function DoctorCard({
     s.registrationTime
   ), [shifts, doc.id, todayDayIdx, todayStr]);
 
+  const isCompact = density === 'compact';
+
   return (
     <div className={cn(
-      "super-glass-card bg-white/40 backdrop-blur-3xl p-4 sm:p-5 rounded-[28px] group relative overflow-hidden border border-white/60 shadow-[0_8px_32px_rgba(0,0,0,0.04)] hover:shadow-[0_20px_60px_-15px_rgba(99,102,241,0.15)] hover:border-white/80 hover:bg-white/60 hover:-translate-y-1 transition-all duration-500",
+      "super-glass-card bg-white/40 backdrop-blur-3xl group relative overflow-hidden transition-all duration-500 hover:-translate-y-1 hover:bg-white/60",
+      isCompact ? "p-3 sm:p-3.5 rounded-[22px]" : "p-4 sm:p-5 rounded-[28px]",
+      getCardGlowClass(doc.status),
       automationEnabled && "hover:opacity-100"
     )}>
       {/* Inner glass highlight */}
@@ -124,23 +139,29 @@ export const DoctorCard = memo(function DoctorCard({
       )}
 
       {/* Status dot */}
-      <div className={cn("absolute top-4 right-4 w-3 h-3 rounded-full z-20 shadow-sm", getStatusDotColor(doc.status))} />
+      <div className={cn("absolute top-4 right-4 w-3 h-3 rounded-full z-20 shadow-sm transition-all duration-300", getStatusDotColor(doc.status))} />
 
       {/* Doctor info */}
-      <div className="flex items-start gap-3 mb-4 relative z-10">
-        <Avatar className="h-12 w-12 shadow-sm border-[3px] border-white/80 ring-1 ring-black/5 group-hover:scale-105 transition-transform duration-300">
-          <AvatarFallback className={cn("text-sm font-black text-white", getAvatarGradient(doc.status))}>
+      <div className={cn("flex items-start gap-3 relative z-10", isCompact ? "mb-2" : "mb-4")}>
+        <Avatar className={cn(
+          "shadow-sm border-[3px] border-white/80 ring-1 ring-black/5 group-hover:scale-105 transition-transform duration-300 shrink-0",
+          isCompact ? "h-9 w-9" : "h-12 w-12"
+        )}>
+          <AvatarFallback className={cn("text-xs font-black text-white", getAvatarGradient(doc.status))}>
             {doc.queueCode || doc.name.charAt(4)}
           </AvatarFallback>
         </Avatar>
         <div className="min-w-0 flex-1">
-          <h4 className="font-black text-[15px] sm:text-[16px] tracking-tight text-slate-800 leading-tight group-hover:text-blue-600 transition-colors line-clamp-1">{doc.name}</h4>
-          <div className="flex items-center gap-2 mt-1.5 flex-wrap">
-            <p className="text-[11.5px] tracking-wide text-slate-500 font-bold line-clamp-1">{doc.specialty}</p>
+          <h4 className={cn(
+            "font-black tracking-tight text-slate-800 leading-tight group-hover:text-blue-600 transition-colors line-clamp-1",
+            isCompact ? "text-[13.5px]" : "text-[15px] sm:text-[16px]"
+          )}>{doc.name}</h4>
+          <div className="flex items-center gap-2 mt-1 flex-wrap">
+            <p className="text-[11px] tracking-wide text-slate-500 font-bold line-clamp-1">{doc.specialty}</p>
             {activeShift?.registrationTime && (
-              <div className="flex items-center gap-1 bg-white/60 backdrop-blur-md text-blue-600 px-2 py-0.5 rounded-[10px] border border-white/80 shadow-sm">
-                <Clock size={10} strokeWidth={2.5} />
-                <span className="text-[10px] font-black">{activeShift.registrationTime}</span>
+              <div className="flex items-center gap-1 bg-white/60 backdrop-blur-md text-blue-600 px-1.5 py-0.5 rounded-[8px] border border-white/80 shadow-sm">
+                <Clock size={9} strokeWidth={2.5} />
+                <span className="text-[9.5px] font-black">{activeShift.registrationTime}</span>
               </div>
             )}
           </div>
@@ -148,7 +169,7 @@ export const DoctorCard = memo(function DoctorCard({
       </div>
 
       {/* Status badge */}
-      <div className="mb-4 relative z-10">
+      <div className={cn("relative z-10", isCompact ? "mb-2" : "mb-3.5")}>
         <div className={cn("inline-flex px-3 py-1.5 rounded-[12px] text-[10px] font-black uppercase tracking-widest shadow-sm backdrop-blur-md", 
           getStatusBadgeStyle(doc.status).replace('bg-', 'bg-white/60 border border-white/80 '))}
         >

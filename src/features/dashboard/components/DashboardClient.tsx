@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { Activity, Search, Zap, Power, Wifi, WifiOff, Loader2, LayoutDashboard } from "lucide-react";
+import { Activity, Search, Zap, Power, Wifi, WifiOff, Loader2, LayoutDashboard, LayoutGrid, StretchHorizontal } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Doctor, LeaveRequest, Shift, Settings } from "@/lib/data-service";
 import { LiveClock } from "@/components/LiveClock";
@@ -19,6 +19,7 @@ export function DashboardClient() {
   const { logout } = useAuth();
   const [mounted, setMounted] = useState(false);
   const [now, setNow] = useState(new Date());
+  const [density, setDensity] = useState<'comfortable' | 'compact'>('comfortable');
 
   useEffect(() => {
     setMounted(true);
@@ -57,6 +58,23 @@ export function DashboardClient() {
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedSearch = useDebounce(searchQuery, 400);
   const isSearching = searchQuery !== debouncedSearch;
+
+  // Keyboard shortcut Ctrl+K to search
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        const searchInput = document.getElementById('admin-search-input');
+        if (searchInput) {
+          searchInput.focus();
+        } else {
+          setIsMobileSearchOpen(true);
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
 
@@ -252,7 +270,7 @@ export function DashboardClient() {
               )}
             </button>
 
-            {/* Search (desktop) */}
+            {/* Search (desktop) with Ctrl+K badge */}
             <div className="relative group hidden lg:block shrink-0">
               <div className="absolute -inset-0.5 bg-gradient-to-r from-violet-500/20 to-blue-500/20 rounded-full blur opacity-0 group-focus-within:opacity-100 transition duration-500" />
               <div className="relative flex items-center">
@@ -261,13 +279,41 @@ export function DashboardClient() {
                   : <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 h-4 w-4 shrink-0" />
                 }
                 <input
+                  id="admin-search-input"
                   type="text"
                   placeholder="Cari dokter..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 pr-4 py-2.5 rounded-full bg-white/40 backdrop-blur-xl hover:bg-white/60 focus:bg-white text-sm w-44 xl:w-52 outline-none border border-white/60 hover:border-white/80 focus:border-violet-300 focus:ring-4 focus:ring-violet-500/10 transition-all duration-300 font-black text-slate-700 placeholder:text-slate-400 shadow-[0_2px_10px_-2px_rgba(0,0,0,0.05)] focus:shadow-[0_8px_30px_rgba(139,92,246,0.15)]"
+                  className="pl-10 pr-12 py-2.5 rounded-full bg-white/40 backdrop-blur-xl hover:bg-white/60 focus:bg-white text-sm w-48 xl:w-56 outline-none border border-white/60 hover:border-white/80 focus:border-violet-300 focus:ring-4 focus:ring-violet-500/10 transition-all duration-300 font-black text-slate-700 placeholder:text-slate-400 shadow-[0_2px_10px_-2px_rgba(0,0,0,0.05)] focus:shadow-[0_8px_30px_rgba(139,92,246,0.15)]"
                 />
+                <kbd className="absolute right-3 top-1/2 -translate-y-1/2 hidden xl:inline-flex items-center px-1.5 py-0.5 text-[9px] font-black text-slate-400 bg-white/80 border border-slate-200 rounded-md shadow-xs pointer-events-none">
+                  ⌘K
+                </kbd>
               </div>
+            </div>
+
+            {/* Density Toggle (Comfortable vs Compact) */}
+            <div className="hidden sm:flex items-center bg-white/50 backdrop-blur-md p-1 rounded-full border border-white/80 shadow-xs shrink-0">
+              <button
+                onClick={() => setDensity('comfortable')}
+                className={cn(
+                  "p-1.5 rounded-full transition-all text-xs",
+                  density === 'comfortable' ? "bg-white text-indigo-600 shadow-xs font-bold" : "text-slate-400 hover:text-slate-600"
+                )}
+                title="Tampilan Nyaman (Detail)"
+              >
+                <StretchHorizontal size={15} />
+              </button>
+              <button
+                onClick={() => setDensity('compact')}
+                className={cn(
+                  "p-1.5 rounded-full transition-all text-xs",
+                  density === 'compact' ? "bg-white text-indigo-600 shadow-xs font-bold" : "text-slate-400 hover:text-slate-600"
+                )}
+                title="Tampilan Kompak (Grid Padat)"
+              >
+                <LayoutGrid size={15} />
+              </button>
             </div>
 
             {/* Logout */}
@@ -336,7 +382,12 @@ export function DashboardClient() {
           </div>
 
           <ErrorBoundary name="Doctor Grid" className="min-h-[400px]">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3 lg:gap-4">
+            <div className={cn(
+              "grid gap-3 lg:gap-4 transition-all duration-300",
+              density === 'compact'
+                ? "grid-cols-2 sm:grid-cols-3 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5"
+                : "grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"
+            )}>
               {filteredDoctors.map(doc => (
                 <DoctorCard
                   key={doc.id}
@@ -347,6 +398,7 @@ export function DashboardClient() {
                   currentTimeMinutes={currentTimeMinutes}
                   weekOfMonth={weekOfMonth}
                   automationEnabled={automationEnabled}
+                  density={density}
                   onStatusChange={manualUpdateStatus}
                   onToggleShift={toggleShiftDisabled}
                 />
