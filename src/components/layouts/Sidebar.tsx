@@ -60,6 +60,14 @@ export const menuConfig = [
     ]
   },
   {
+    id: "layar",
+    title: "Layar & Publikasi",
+    icon: Tv,
+    items: [
+      { name: "Layar Smart TV", href: "/tv.html", icon: MonitorPlay, external: true, resource: "display_tv" },
+    ]
+  },
+  {
     id: "admin",
     title: "Administrator",
     icon: Shield,
