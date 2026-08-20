@@ -206,7 +206,7 @@ export default function AccessManagementPage() {
   }
 
   return (
-    <div className="flex-1 w-full flex flex-col h-[calc(100vh-1rem)] overflow-hidden relative text-zinc-900 dark:text-zinc-100">
+    <div className="flex-1 w-full flex flex-col h-full min-h-0 overflow-hidden relative text-zinc-900 dark:text-zinc-100">
       <div className="relative z-10 flex-none">
         <PageHeader
           icon={<Shield size={20} className="text-white" strokeWidth={2.5} />}
@@ -225,7 +225,7 @@ export default function AccessManagementPage() {
         />
       </div>
 
-      <div className="flex-1 overflow-y-auto custom-scrollbar px-4 sm:px-6 lg:px-8 pb-8 space-y-5 relative z-10 pt-4">
+      <div className="flex-1 overflow-y-auto custom-scrollbar px-4 sm:px-6 lg:px-8 pb-32 lg:pb-8 space-y-5 relative z-10 pt-4">
 
         {/* Feedback Toast */}
         {(error || success) && (

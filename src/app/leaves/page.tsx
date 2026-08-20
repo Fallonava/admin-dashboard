@@ -70,7 +70,7 @@ export default function LeavesPage() {
   );
 
   return (
-    <div className="flex-1 w-full flex flex-col h-[calc(100vh-1rem)] overflow-hidden relative bg-[#EDF2F8] dark:bg-[#0B0E14] text-zinc-900 dark:text-zinc-100">
+    <div className="flex-1 w-full flex flex-col h-full min-h-0 overflow-hidden relative bg-[#EDF2F8] dark:bg-[#0B0E14] text-zinc-900 dark:text-zinc-100">
       <div className="relative z-10 flex flex-col h-full w-full">
         {/* Page Header */}
         <PageHeader

@@ -326,7 +326,7 @@ export function DashboardClient() {
       </div>
 
       {/* ═══════════ SCROLLABLE CONTENT ═══════════ */}
-      <div className="flex-1 overflow-y-auto custom-scrollbar px-4 sm:px-6 lg:px-8 pb-8 space-y-6 pt-3 relative z-10">
+      <div className="flex-1 overflow-y-auto custom-scrollbar px-4 sm:px-6 lg:px-8 pb-32 lg:pb-8 space-y-6 pt-3 relative z-10">
 
         <DashboardStats
           todayDoctors={todayDoctors}

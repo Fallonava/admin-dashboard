@@ -51,7 +51,7 @@ export default function AutomationPage() {
   };
 
   return (
-    <div className="flex-1 w-full flex flex-col h-[calc(100vh-1rem)] overflow-hidden relative bg-[#EDF2F8] dark:bg-[#0B0E14] text-zinc-900 dark:text-zinc-100">
+    <div className="flex-1 w-full flex flex-col h-full min-h-0 overflow-hidden relative bg-[#EDF2F8] dark:bg-[#0B0E14] text-zinc-900 dark:text-zinc-100">
       <div className="relative z-10 flex flex-col h-full w-full">
         {/* Page Header */}
         <PageHeader
@@ -219,7 +219,7 @@ export default function AutomationPage() {
         </div>
 
         {/* ═══ TAB BODY CONTENT ═══ */}
-        <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar pb-10 pr-1">
+        <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar pb-32 lg:pb-10 pr-1">
           {activeTab === "broadcast" && <BroadcastControl />}
           {activeTab === "dynamic_island" && <DynamicIslandSettings />}
           {activeTab === "rules" && <AutomationRulesTab />}

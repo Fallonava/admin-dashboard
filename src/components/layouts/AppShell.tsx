@@ -19,7 +19,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <>
       <AutomationRunner />
-      <div className="flex h-screen bg-[#F4F4F6] dark:bg-[#0B0D13] text-zinc-900 dark:text-zinc-100 overflow-hidden relative selection:bg-blue-500/30">
+      <div className="flex h-screen h-[100dvh] bg-[#F4F4F6] dark:bg-[#0B0D13] text-zinc-900 dark:text-zinc-100 overflow-hidden relative selection:bg-blue-500/30">
         <a
           href="#main-content"
           className="sr-only focus:not-sr-only focus:absolute focus:z-[100] focus:top-4 focus:left-4 focus:bg-blue-600 focus:text-white focus:px-4 focus:py-2 focus:rounded-xl focus:shadow-xl focus:outline-none focus:ring-4 focus:ring-blue-500/50 transition-all font-bold"

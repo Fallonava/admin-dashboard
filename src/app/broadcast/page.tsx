@@ -222,7 +222,7 @@ export default function BroadcastPage() {
   ];
 
   return (
-    <main className="p-2 sm:p-6 lg:p-8 space-y-6 max-w-[1600px] mx-auto pb-24 text-zinc-900 dark:text-zinc-100">
+    <div className="p-2 sm:p-6 lg:p-8 space-y-6 max-w-[1600px] mx-auto pb-32 lg:pb-8 text-zinc-900 dark:text-zinc-100">
 
       {/* ─── UNIFIED PAGE HEADER ─── */}
       <PageHeader
@@ -538,6 +538,6 @@ export default function BroadcastPage() {
           </div>
         )}
       </section>
-    </main>
+    </div>
   );
 }

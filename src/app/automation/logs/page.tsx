@@ -46,7 +46,7 @@ export default function AutomationLogsPage() {
     const types = Array.from(new Set(logs.map(l => l.type)));
 
     return (
-        <div className="p-2 sm:p-6 lg:p-8 max-w-5xl mx-auto text-zinc-900 dark:text-zinc-100">
+        <div className="p-2 sm:p-6 lg:p-8 max-w-5xl mx-auto pb-32 lg:pb-8 text-zinc-900 dark:text-zinc-100">
             <PageHeader
                 icon={<Clock size={22} className="text-white" strokeWidth={2.5} />}
                 title="Log &amp; Metrik Automasi"

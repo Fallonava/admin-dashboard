@@ -46,7 +46,7 @@ export default function SchedulesPage() {
     };
 
     return (
-        <div className="flex-1 w-full flex flex-col h-[calc(100vh-1rem)] overflow-hidden relative bg-[#EDF2F8] dark:bg-[#0B0E14] text-zinc-900 dark:text-zinc-100">
+        <div className="flex-1 w-full flex flex-col h-full min-h-0 overflow-hidden relative bg-[#EDF2F8] dark:bg-[#0B0E14] text-zinc-900 dark:text-zinc-100">
             {/* ─── PAGE HEADER ─── */}
             <div className="relative z-10 w-full flex-none">
                 <PageHeader
@@ -75,7 +75,7 @@ export default function SchedulesPage() {
             </div>
 
             {/* ─── MAIN CONTENT AREA ─── */}
-            <div className="flex flex-col lg:flex-row flex-1 gap-3 lg:gap-5 px-3 sm:px-6 lg:px-8 py-2 lg:py-3 overflow-y-auto lg:overflow-hidden min-h-0 relative z-10 custom-scrollbar">
+            <div className="flex flex-col lg:flex-row flex-1 gap-3 lg:gap-5 px-3 sm:px-6 lg:px-8 pt-2 pb-32 lg:py-3 overflow-y-auto lg:overflow-hidden min-h-0 relative z-10 custom-scrollbar">
 
                 {/* ── LEFT: Calendar & Timeline Column ────────────────────── */}
                 <div className="flex-none lg:flex-1 w-full flex flex-col lg:min-h-0 lg:overflow-hidden space-y-2.5 lg:space-y-3">

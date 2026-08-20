@@ -199,7 +199,7 @@ export function LeaveCalendar({ leaves, onRefresh, onOpenAll, totalLeaves = 0 }:
   });
 
   return (
-    <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 h-full overflow-y-auto lg:overflow-hidden pb-6 lg:pb-0 custom-scrollbar pr-1 lg:pr-0">
+    <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 h-full overflow-y-auto lg:overflow-hidden pb-32 lg:pb-0 custom-scrollbar pr-1 lg:pr-0">
       {/* ══════════ KIRI: KALENDER INTERAKTIF & TOOLBAR ══════════ */}
       <div className="w-full lg:w-[380px] xl:w-[420px] flex-shrink-0 flex flex-col gap-3 lg:overflow-y-auto lg:custom-scrollbar lg:pb-4 lg:pr-1">
         <div className="rounded-[28px] lg:rounded-[32px] p-4 sm:p-5 lg:p-6 clay-surface flex-shrink-0 shadow-lg border border-zinc-200/50 dark:border-white/5">

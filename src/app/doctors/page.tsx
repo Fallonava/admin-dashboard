@@ -284,7 +284,7 @@ export default function DoctorsPage() {
   };
 
   return (
-    <div className="flex-1 w-full flex flex-col h-[calc(100vh-1rem)] overflow-hidden relative bg-[#EDF2F8] dark:bg-[#0B0E14] text-zinc-900 dark:text-zinc-100">
+    <div className="flex-1 w-full flex flex-col h-full min-h-0 overflow-hidden relative bg-[#EDF2F8] dark:bg-[#0B0E14] text-zinc-900 dark:text-zinc-100">
       {/* ─── UNIFIED PAGE HEADER ─── */}
       <div className="relative z-10 w-full flex-none">
         <PageHeader
@@ -437,7 +437,7 @@ export default function DoctorsPage() {
 
         {/* ─── MAIN DOCTOR LIST / GRID ─── */}
         {isLoading ? (
-          <div className="flex-1 w-full min-h-0 mb-2 overflow-y-auto custom-scrollbar pb-28">
+          <div className="flex-1 w-full min-h-0 mb-2 overflow-y-auto custom-scrollbar pb-32 lg:pb-8">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4 sm:gap-5">
               {[1, 2, 3, 4, 5, 6, 7, 8].map(i => <DoctorCardSkeleton key={i} />)}
             </div>
@@ -456,7 +456,7 @@ export default function DoctorsPage() {
             onDragStart={handleDragStart}
             onDragEnd={isReorderEnabled ? handleDragEnd : undefined}
           >
-            <div className="flex-1 w-full min-h-0 mb-2 overflow-y-auto custom-scrollbar pb-28">
+            <div className="flex-1 w-full min-h-0 mb-2 overflow-y-auto custom-scrollbar pb-32 lg:pb-8">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4 sm:gap-5">
                 <SortableContext items={filteredDoctors.map(d => d.id)} strategy={rectSortingStrategy}>
                   {filteredDoctors.map((doc, idx) => (
@@ -499,7 +499,7 @@ export default function DoctorsPage() {
           </DndContext>
         ) : (
           /* ── TABLE LIST MODE ── */
-          <div className="flex-1 w-full min-h-0 mb-2 overflow-y-auto custom-scrollbar pb-28">
+          <div className="flex-1 w-full min-h-0 mb-2 overflow-y-auto custom-scrollbar pb-32 lg:pb-8">
             <div className="clay-surface rounded-[26px] overflow-hidden shadow-lg border border-zinc-200/50 dark:border-white/5">
               <table className="w-full text-left text-xs">
                 <thead className="border-b border-zinc-200/60 dark:border-white/5 text-zinc-500 dark:text-zinc-400 font-black uppercase text-[10px] tracking-wider bg-zinc-500/5">
