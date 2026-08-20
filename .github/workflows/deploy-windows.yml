@@ -21,11 +21,25 @@ jobs:
       ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: 'true'
 
     steps:
+      # ── Step 0: Pre-Checkout Cleanup (Kill hanging processes) ───────────────
+      - name: Kill Hanging Processes
+        shell: powershell
+        run: |
+          try {
+            taskkill /F /IM git.exe /T 2>$null
+            taskkill /F /IM node.exe /T 2>$null
+            Write-Host "Pembersihan proses gantung selesai."
+          } catch {
+            Write-Host "Tidak ada proses yang perlu dibersihkan."
+          }
+          exit 0
+
       # ── Step 1: Checkout ─────────────────────────────────────────────────────
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
           clean: false
+          fetch-depth: 1
 
       - name: Fix Git Safe Directory
         shell: powershell
