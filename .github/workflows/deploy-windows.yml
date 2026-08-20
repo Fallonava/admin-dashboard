@@ -21,13 +21,13 @@ jobs:
       ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: 'true'
 
     steps:
-      # ── Step 0: Safe Pre-Checkout Cleanup ────────────────────────────────────
-      - name: Safe Process Cleanup
+      # ── Step 0: Safe Pre-Cleanup ─────────────────────────────────────────────
+      - name: Safe Process & Lock Cleanup
         shell: powershell
         run: |
           $ErrorActionPreference = "SilentlyContinue"
-          Write-Host "Membersihkan proses hantu tanpa mematikan Runner..."
-          
+          Write-Host "Membersihkan proses gantung & lock..."
+
           # Matikan zombie node selain runner
           Get-Process node -ErrorAction SilentlyContinue | Where-Object { 
             $_.Path -notlike "*actions-runner*" -and $_.Path -notlike "*_work*" 
@@ -38,25 +38,38 @@ jobs:
             $_.Path -notlike "*actions-runner*" -and $_.Path -notlike "*_work*" 
           } | Stop-Process -Force -ErrorAction SilentlyContinue
 
-          # Matikan zombie chrome (WhatsApp Web Puppeteer)
+          # Matikan zombie chrome (Puppeteer)
           taskkill /F /IM chrome.exe /T 2>$null
 
-          Write-Host "Proses hantu dibersihkan dengan aman."
+          # Hapus semua file lock git jika ada
+          Get-ChildItem -Path ".git" -Filter "*.lock" -Recurse -ErrorAction SilentlyContinue | Remove-Item -Force
+
+          Write-Host "Pembersihan aman selesai."
           exit 0
 
-      # ── Step 1: Checkout ─────────────────────────────────────────────────────
-      - name: Checkout Code
-        uses: actions/checkout@v4
-        with:
-          clean: false
-          fetch-depth: 1
-
-      - name: Fix Git Safe Directory
+      # ── Step 1: Self-Healing Native Git Sync (Bypass actions/checkout) ────────
+      - name: Self-Healing Git Sync
         shell: powershell
         run: |
+          $ErrorActionPreference = "Continue"
           git config --global --add safe.directory "*"
-          git config --global --add safe.directory $env:GITHUB_WORKSPACE
-          Write-Host "Safe directory dikonfigurasi: $env:GITHUB_WORKSPACE"
+          git config --global core.longpaths true
+
+          $repoUrl = "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+
+          if (-not (Test-Path ".git")) {
+            Write-Host "Clone repositori baru..."
+            git clone $repoUrl .
+          } else {
+            Write-Host "Sinkronisasi repositori..."
+            git remote set-url origin $repoUrl
+            git fetch origin master --prune
+            git reset --hard origin/master
+            git clean -fd
+          }
+
+          Write-Host "Git Sync sukses. Commit aktif:"
+          git log -1 --oneline
 
       # ── Step 2: Create .env ──────────────────────────────────────────────────
       - name: Create Server Environment (.env)
@@ -144,7 +157,6 @@ jobs:
             Write-Host "Tidak ada PM2 aktif."
           }
 
-          # Beri waktu 3 detik agar file locks lepas
           Start-Sleep -Seconds 3
           Write-Host "PM2 siap untuk file sync."
           exit 0
@@ -161,7 +173,6 @@ jobs:
           # /XF = Exclude file agar .env & status bot lokal tidak ditimpa kosong
           robocopy $Src $Dst /MIR /XD .git .github sessions logs /XF .env .wa-status.json /R:3 /W:2 /NP /NFL /NJH /NDL
           
-          # Robocopy exit code <= 7 = sukses
           if ($LASTEXITCODE -le 7) {
             Write-Host "Robocopy selesai sukses (exit code: $LASTEXITCODE)"
             exit 0
