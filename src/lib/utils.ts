@@ -35,3 +35,28 @@ export function getRelevantShift(doc: Doctor, currentTimeMinutes: number, nowMs:
   
   return upcoming || todayShifts[todayShifts.length - 1];
 }
+
+/**
+ * Centralized calculation of remaining shift time.
+ */
+export function calculateRemainingTime(endTime?: string | null, status?: string | null): string {
+  if (!endTime || status === "LIBUR" || status === "SELESAI" || status === "CUTI") {
+    return "";
+  }
+
+  const now = new Date();
+  const [endHour, endMin] = (endTime || "00:00").split(':').map(Number);
+  if (isNaN(endHour) || isNaN(endMin)) return "";
+
+  const endDate = new Date();
+  endDate.setHours(endHour, endMin, 0, 0);
+
+  const diff = endDate.getTime() - now.getTime();
+  if (diff <= 0) {
+    return "Selesai";
+  }
+
+  const hours = Math.floor(diff / (1000 * 60 * 60));
+  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  return `Berakhir ${hours > 0 ? `${hours}j ` : ''}${minutes}m lagi`;
+}

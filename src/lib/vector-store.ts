@@ -1,41 +1,38 @@
 // /src/lib/vector-store.ts
-import { pipeline } from '@xenova/transformers';
 import cosineSimilarity from 'cosine-similarity';
-
-// Gunakan singleton untuk memastikan model hanya dimuat sekali di memori Node.js
-class PipelineSingleton {
-  static task = 'feature-extraction';
-  static model = 'Xenova/all-MiniLM-L6-v2';
-  static instance: any = null;
-
-  static async getInstance(progress_callback?: Function) {
-    if (this.instance === null) {
-      // Lazy load pipeline
-      this.instance = await pipeline(this.task as any, this.model, { 
-        progress_callback 
-      });
-    }
-    return this.instance;
-  }
-}
-
-export async function generateEmbedding(text: string): Promise<number[]> {
-  try {
-    const extractor = await PipelineSingleton.getInstance();
-    
-    // Generate embeddings
-    const output = await extractor(text, { pooling: 'mean', normalize: true });
-    
-    // Output berbentuk Float32Array, kita jadikan array standar
-    return Array.from(output.data);
-  } catch (error) {
-    console.error("Embedding generation failed:", error);
-    // Kembalikan array kosong jika gagal (fallback)
-    return new Array(384).fill(0); 
-  }
-}
-
 import lunr from 'lunr';
+
+const VOCAB_SIZE = 128;
+
+/**
+ * Lightweight Zero-Dependency In-Memory Vectorizer (0MB Overhead).
+ * Hashes word tokens to produce a normalized 128-dimensional term frequency vector.
+ */
+export async function generateEmbedding(text: string): Promise<number[]> {
+  const vec = new Array(VOCAB_SIZE).fill(0);
+  if (!text || typeof text !== 'string') return vec;
+
+  const tokens = text.toLowerCase().replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter(Boolean);
+  if (tokens.length === 0) return vec;
+
+  for (const token of tokens) {
+    let hash = 0;
+    for (let i = 0; i < token.length; i++) {
+      hash = (hash << 5) - hash + token.charCodeAt(i);
+      hash |= 0;
+    }
+    const idx = Math.abs(hash) % VOCAB_SIZE;
+    vec[idx] += 1;
+  }
+
+  // L2 Normalize vector
+  const mag = Math.sqrt(vec.reduce((sum, val) => sum + val * val, 0));
+  if (mag > 0) {
+    for (let i = 0; i < VOCAB_SIZE; i++) vec[i] /= mag;
+  }
+
+  return vec;
+}
 
 export function findMostSimilar(
   query: string,

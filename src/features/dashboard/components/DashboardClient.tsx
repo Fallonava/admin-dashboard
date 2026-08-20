@@ -14,6 +14,7 @@ import { MobileSearchSheet } from "@/components/ui/MobileSearchSheet";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { isShiftActiveForDate } from "@/lib/schedule-utils";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 export function DashboardClient() {
   const { logout } = useAuth();

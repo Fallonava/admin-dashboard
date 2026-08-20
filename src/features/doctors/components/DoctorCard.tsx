@@ -2,36 +2,34 @@
 
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import Tilt from "react-parallax-tilt";
 import { UserRound, Edit2, Trash2, Activity, Clock, Check } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, calculateRemainingTime } from "@/lib/utils";
 import type { Doctor } from "@/lib/data-service";
 import { useEffect, useState } from "react";
 
 // Palet warna avatar berdasarkan indeks
-// Vibrant Apple System Colors for avatars
 const avatarGradients = [
-    "from-blue-500 to-cyan-400",      // System Blue
-    "from-indigo-500 to-purple-400",  // System Purple
-    "from-rose-500 to-pink-400",      // System Pink
-    "from-emerald-500 to-teal-400",   // System Green
-    "from-orange-500 to-amber-400",   // System Orange
+    "from-blue-600 to-indigo-600",
+    "from-indigo-600 to-purple-600",
+    "from-rose-600 to-pink-600",
+    "from-emerald-600 to-teal-600",
+    "from-amber-600 to-orange-600",
 ];
 
 const statusConfig: Record<string, { label: string; color: string; bg: string; dot?: string; pulse?: boolean }> = {
-    'PRAKTEK':     { label: 'Praktek', color: 'text-emerald-600', bg: 'bg-emerald-50', dot: 'bg-emerald-500' },
-    'OPERASI':     { label: 'Operasi', color: 'text-rose-600', bg: 'bg-rose-50', dot: 'bg-rose-500', pulse: true },
-    'PENUH':       { label: 'Penuh', color: 'text-amber-600', bg: 'bg-amber-50' },
-    'CUTI':        { label: 'Cuti', color: 'text-slate-500', bg: 'bg-slate-100' },
-    'SELESAI':     { label: 'Selesai', color: 'text-blue-600', bg: 'bg-blue-50' },
-    'TERJADWAL':   { label: 'Terjadwal', color: 'text-sky-600', bg: 'bg-sky-50', dot: 'bg-sky-400' },
-    'PENDAFTARAN': { label: 'Pendaftaran', color: 'text-indigo-600', bg: 'bg-indigo-50', dot: 'bg-indigo-400' },
-    'LIBUR':       { label: 'Libur', color: 'text-slate-400', bg: 'bg-slate-50' },
+    'PRAKTEK':     { label: 'Praktek', color: 'text-blue-600 dark:text-blue-400', bg: 'bg-blue-50 dark:bg-blue-950/40 border-blue-200 dark:border-blue-800/50', dot: 'bg-blue-500' },
+    'OPERASI':     { label: 'Operasi', color: 'text-rose-600 dark:text-rose-400', bg: 'bg-rose-50 dark:bg-rose-950/40 border-rose-200 dark:border-rose-800/50', dot: 'bg-rose-500', pulse: true },
+    'PENUH':       { label: 'Penuh', color: 'text-amber-600 dark:text-amber-400', bg: 'bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-800/50' },
+    'CUTI':        { label: 'Cuti', color: 'text-zinc-500 dark:text-zinc-400', bg: 'bg-zinc-100 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700' },
+    'SELESAI':     { label: 'Selesai', color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800/50' },
+    'TERJADWAL':   { label: 'Terjadwal', color: 'text-sky-600 dark:text-sky-400', bg: 'bg-sky-50 dark:bg-sky-950/40 border-sky-200 dark:border-sky-800/50', dot: 'bg-sky-400' },
+    'PENDAFTARAN': { label: 'Pendaftaran', color: 'text-indigo-600 dark:text-indigo-400', bg: 'bg-indigo-50 dark:bg-indigo-950/40 border-indigo-200 dark:border-indigo-800/50', dot: 'bg-indigo-400' },
+    'LIBUR':       { label: 'Libur', color: 'text-zinc-400 dark:text-zinc-500', bg: 'bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800' },
 };
 
 export function getStatusConfig(status?: string | null) {
-    if (!status) return { label: 'Auto', color: 'text-slate-400', bg: 'bg-slate-50' };
-    return statusConfig[status] || { label: status, color: 'text-slate-400', bg: 'bg-slate-50' };
+    if (!status) return { label: 'Auto', color: 'text-zinc-400', bg: 'bg-zinc-50 dark:bg-zinc-900' };
+    return statusConfig[status] || { label: status, color: 'text-zinc-400', bg: 'bg-zinc-50 dark:bg-zinc-900' };
 }
 
 interface DoctorCardProps {
@@ -57,41 +55,11 @@ export function DoctorCard({ doctor, index, isSelected, onToggleSelect, onEdit, 
     const gradientClass = avatarGradients[index % avatarGradients.length];
     const status = getStatusConfig(doctor.status);
 
-    // Deteksi mobile — nonaktifkan Tilt 3D untuk performa 60fps di perangkat low-mid
-    const [isMobile, setIsMobile] = useState(false);
-    useEffect(() => {
-        const check = () => setIsMobile(window.innerWidth <= 768);
-        check();
-        window.addEventListener('resize', check, { passive: true });
-        return () => window.removeEventListener('resize', check);
-    }, []);
-
-    // Countdown Logic
-    const [timeRemaining, setTimeRemaining] = useState<string>("Buka");
+    // Centralized Countdown Logic
+    const [timeRemaining, setTimeRemaining] = useState<string>(() => calculateRemainingTime(doctor.endTime, doctor.status));
 
     useEffect(() => {
-        if (doctor.status === "LIBUR" || doctor.status === "SELESAI" || doctor.status === "CUTI") {
-            setTimeRemaining("");
-            return;
-        }
-
-        const updateTime = () => {
-            const now = new Date();
-            const [endHour, endMin] = (doctor.endTime || "00:00").split(':').map(Number);
-            
-            const endDate = new Date();
-            endDate.setHours(endHour, endMin, 0, 0);
-
-            const diff = endDate.getTime() - now.getTime();
-            if (diff <= 0) {
-                setTimeRemaining("Selesai");
-            } else {
-                const hours = Math.floor(diff / (1000 * 60 * 60));
-                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                setTimeRemaining(`Berakhir ${hours > 0 ? `${hours}j ` : ''}${minutes}m lagi`);
-            }
-        };
-
+        const updateTime = () => setTimeRemaining(calculateRemainingTime(doctor.endTime, doctor.status));
         updateTime();
         const interval = setInterval(updateTime, 60000);
         return () => clearInterval(interval);
@@ -99,11 +67,11 @@ export function DoctorCard({ doctor, index, isSelected, onToggleSelect, onEdit, 
 
     const cardContent = (
         <div className={cn(
-            "group bg-white/40 backdrop-blur-2xl p-5 sm:p-6 rounded-[32px] flex flex-col min-h-[180px] cursor-grab active:cursor-grabbing border transition-all duration-500 relative overflow-hidden",
+            "group bg-white dark:bg-[#131620] p-5 sm:p-6 rounded-[20px] flex flex-col min-h-[175px] cursor-grab active:cursor-grabbing border transition-all duration-200 relative overflow-hidden",
             isSelected 
-                ? "border-blue-400/80 shadow-[0_12px_40px_-12px_rgba(59,130,246,0.25)] ring-1 ring-blue-400/50 scale-[1.02] bg-white/60" 
-                : "border-white/60 shadow-[0_8px_32px_rgba(0,0,0,0.04)] hover:border-white/80 hover:bg-white/60 hover:shadow-[0_16px_48px_rgba(0,0,0,0.08)] hover:-translate-y-1",
-            isOverlay && "rotate-2 shadow-2xl scale-105 bg-white/80 backdrop-blur-[40px] border-white ring-1 ring-black/5"
+                ? "border-blue-500 shadow-md ring-1 ring-blue-400 scale-[1.01]" 
+                : "border-zinc-200 dark:border-[#232736] shadow-sm hover:border-zinc-300 dark:hover:border-[#3A425C]",
+            isOverlay && "rotate-2 shadow-2xl scale-105 bg-white dark:bg-[#131620] border-blue-500 ring-1 ring-black/5"
         )}
             {...attributes} {...listeners}
         >
@@ -113,20 +81,20 @@ export function DoctorCard({ doctor, index, isSelected, onToggleSelect, onEdit, 
                 onClick={(e) => { e.stopPropagation(); onToggleSelect(doctor.id); }}
                 onPointerDown={(e) => e.stopPropagation()}
                 className={cn(
-                    "absolute top-5 right-5 h-6 w-6 rounded-full border flex items-center justify-center transition-all duration-300 z-30 cursor-pointer shadow-sm",
+                    "absolute top-4 right-4 h-6 w-6 rounded-full border flex items-center justify-center transition-all duration-200 z-30 cursor-pointer shadow-sm",
                     isSelected 
-                        ? "bg-gradient-to-br from-blue-500 to-indigo-600 border-transparent text-white scale-110" 
-                        : "border-white/80 bg-white/40 backdrop-blur-md opacity-100 lg:opacity-0 lg:group-hover:opacity-100 hover:border-blue-400 hover:bg-white"
+                        ? "bg-blue-600 border-transparent text-white scale-110" 
+                        : "border-zinc-300 dark:border-[#2B3145] bg-zinc-50 dark:bg-[#1A1E2B] opacity-100 lg:opacity-0 lg:group-hover:opacity-100 hover:border-blue-500"
                 )}
             >
                 {isSelected && <Check size={12} strokeWidth={3} />}
             </button>
 
             {/* Avatar & Main Info */}
-            <div className="flex items-start gap-4 mb-4 relative z-10">
+            <div className="flex items-start gap-3.5 mb-4 relative z-10">
                 <div className="relative flex-shrink-0">
                     <div className={cn(
-                        "h-14 w-14 rounded-2xl bg-gradient-to-br flex items-center justify-center text-white font-bold text-xl shadow-md ring-1 ring-white/20 transition-transform duration-300 group-hover:scale-105",
+                        "h-12 w-12 rounded-xl bg-gradient-to-br flex items-center justify-center text-white font-black text-lg shadow-sm border border-white/10 shrink-0",
                         gradientClass
                     )}>
                         {doctor.queueCode || doctor.name.charAt(0)}
@@ -134,34 +102,37 @@ export function DoctorCard({ doctor, index, isSelected, onToggleSelect, onEdit, 
                 </div>
 
                 <div className="flex-1 min-w-0 pr-6">
-                    <h3 className="font-black text-slate-800 text-[16px] sm:text-[17px] tracking-tight leading-tight line-clamp-1 group-hover:text-slate-900 transition-colors">
+                    <h3 className="font-black text-zinc-900 dark:text-zinc-100 text-[15px] sm:text-[16px] tracking-tight leading-tight line-clamp-1">
                         {doctor.name}
                     </h3>
-                    <p className="text-[11.5px] font-bold text-slate-400/90 mt-1 line-clamp-1 tracking-wide">
+                    <p className="text-[11px] font-medium text-zinc-500 dark:text-zinc-400 mt-1 line-clamp-1 tracking-wide">
                         {doctor.specialty}
                     </p>
                     {timeRemaining && (
-                        <div className="flex items-center gap-1.5 mt-2.5 bg-white/60 backdrop-blur-md self-start px-2.5 py-1 rounded-[12px] border border-white/80 shadow-sm">
-                            <Clock size={12} className="text-blue-500" strokeWidth={2.5} />
-                            <span className="text-[10px] font-black text-blue-600/90 tracking-wide">{timeRemaining}</span>
+                        <div className="flex items-center gap-1.5 mt-2 bg-zinc-100 dark:bg-[#1A1E2B] self-start px-2 py-0.5 rounded-[6px] border border-zinc-200 dark:border-[#2B3145]">
+                            <Clock size={11} className="text-blue-600 dark:text-blue-400" strokeWidth={2.5} />
+                            <span className="text-[9.5px] font-bold text-blue-600 dark:text-blue-400 tracking-wide">{timeRemaining}</span>
                         </div>
                     )}
                 </div>
             </div>
 
             {/* Bottom Section: Category & Status */}
-            <div className="mt-auto flex items-center justify-between gap-2 pt-4 border-t border-slate-200/30">
+            <div className="mt-auto flex items-center justify-between gap-2 pt-3.5 border-t border-zinc-100 dark:border-[#1E2230]">
                 <div className={cn(
-                    "flex items-center gap-1.5 px-3 py-1.5 rounded-[12px] text-[10px] font-black tracking-wider uppercase border shadow-sm backdrop-blur-md",
-                    doctor.category === 'Bedah' ? "text-rose-600 bg-white/60 border-white/80" : "text-emerald-600 bg-white/60 border-white/80"
+                    "flex items-center gap-1 px-2.5 py-1 rounded-[6px] text-[9.5px] font-bold tracking-wider uppercase border",
+                    doctor.category === 'Bedah'
+                      ? "text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/40 border-rose-200 dark:border-rose-800/50"
+                      : "text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800/50"
                 )}>
-                    <Activity size={12} strokeWidth={2.5} />
+                    <Activity size={11} strokeWidth={2.5} />
                     {doctor.category === 'NonBedah' ? 'Non Bedah' : doctor.category}
                 </div>
 
                 <div className={cn(
-                    "flex items-center gap-1.5 px-3 py-1.5 rounded-[12px] text-[10px] font-black tracking-wider uppercase bg-white/60 border border-white/80 shadow-sm backdrop-blur-md",
-                    status.color
+                    "flex items-center gap-1.5 px-2.5 py-1 rounded-[6px] text-[9.5px] font-bold tracking-wider uppercase border",
+                    status.color,
+                    status.bg
                 )}>
                     {status.dot && (
                         <span className="relative flex h-1.5 w-1.5">
@@ -173,23 +144,23 @@ export function DoctorCard({ doctor, index, isSelected, onToggleSelect, onEdit, 
                 </div>
             </div>
 
-            {/* Action Buttons (Appears on Hover or Mobile) - Clean & Minimalist */}
-            <div className="absolute top-5 left-5 flex gap-2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300 z-20 pointer-events-auto">
+            {/* Action Buttons (Appears on Hover or Mobile) */}
+            <div className="absolute top-4 left-4 flex gap-1.5 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-200 z-20 pointer-events-auto">
                 <button
                     onClick={(e) => { e.stopPropagation(); onEdit(doctor); }}
                     onPointerDown={(e) => e.stopPropagation()}
-                    className="h-9 w-9 flex items-center justify-center rounded-[12px] bg-white/80 backdrop-blur-md shadow-sm border border-white/80 text-slate-400 hover:text-blue-600 hover:border-blue-200 hover:bg-white transition-all active:scale-95"
+                    className="h-8 w-8 flex items-center justify-center rounded-[8px] bg-white dark:bg-[#1A1E2B] shadow-sm border border-zinc-200 dark:border-[#2B3145] text-zinc-600 dark:text-zinc-400 hover:text-blue-600 hover:border-blue-300 dark:hover:text-blue-400 transition-all active:scale-95"
                     title="Edit"
                 >
-                    <Edit2 size={14} strokeWidth={2.5} />
+                    <Edit2 size={13} strokeWidth={2.5} />
                 </button>
                 <button
                     onClick={(e) => { e.stopPropagation(); onDelete(doctor.id); }}
                     onPointerDown={(e) => e.stopPropagation()}
-                    className="h-9 w-9 flex items-center justify-center rounded-[12px] bg-white/80 backdrop-blur-md shadow-sm border border-white/80 text-slate-400 hover:text-rose-600 hover:border-rose-200 hover:bg-white transition-all active:scale-95"
+                    className="h-8 w-8 flex items-center justify-center rounded-[8px] bg-white dark:bg-[#1A1E2B] shadow-sm border border-zinc-200 dark:border-[#2B3145] text-zinc-600 dark:text-zinc-400 hover:text-rose-600 hover:border-rose-300 dark:hover:text-rose-400 transition-all active:scale-95"
                     title="Hapus"
                 >
-                    <Trash2 size={14} strokeWidth={2.5} />
+                    <Trash2 size={13} strokeWidth={2.5} />
                 </button>
             </div>
         </div>
@@ -197,26 +168,9 @@ export function DoctorCard({ doctor, index, isSelected, onToggleSelect, onEdit, 
 
     if (isOverlay) return cardContent;
 
-    if (isMobile) {
-        return (
-            <div ref={setNodeRef} style={style} className="h-full">
-                {cardContent}
-            </div>
-        );
-    }
-
     return (
-        <div ref={setNodeRef} style={style}>
-            <Tilt 
-                tiltMaxAngleX={isDragging ? 0 : 4} 
-                tiltMaxAngleY={isDragging ? 0 : 4} 
-                scale={isDragging ? 1 : 1.01} 
-                transitionSpeed={2000} 
-                className="h-full"
-                glareEnable={false}
-            >
-                {cardContent}
-            </Tilt>
+        <div ref={setNodeRef} style={style} className="h-full">
+            {cardContent}
         </div>
     );
 }
