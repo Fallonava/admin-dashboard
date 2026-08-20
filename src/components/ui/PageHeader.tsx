@@ -63,7 +63,7 @@ export function PageHeader({
         "flex-none z-50",
         "m-2 sm:m-4 lg:m-6 lg:mb-2",
         "rounded-[20px] lg:rounded-[24px]",
-        "bg-[#131620] border border-[#232736]",
+        "bg-white dark:bg-[#131620] border border-zinc-200 dark:border-[#232736]",
         "shadow-sm",
         className
       )}
@@ -77,7 +77,7 @@ export function PageHeader({
           <div className="relative shrink-0">
             <div
               className={cn(
-                "relative w-10 h-10 lg:w-11 lg:h-11 rounded-xl flex items-center justify-center bg-gradient-to-br border border-white/10 shadow-sm",
+                "relative w-10 h-10 lg:w-11 lg:h-11 rounded-xl flex items-center justify-center bg-gradient-to-br border border-black/5 dark:border-white/10 shadow-sm",
                 iconGradient
               )}
             >
@@ -88,13 +88,13 @@ export function PageHeader({
           {/* Title block */}
           <div className="min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <h1 className="text-lg lg:text-xl font-black text-zinc-100 tracking-tight leading-tight truncate">
+              <h1 className="text-lg lg:text-xl font-black text-zinc-900 dark:text-zinc-100 tracking-tight leading-tight truncate">
                 {renderTitle()}
               </h1>
               {badge}
             </div>
             {subtitle && (
-              <p className="text-[11px] lg:text-xs text-zinc-400 font-medium mt-0.5 truncate">
+              <p className="text-[11px] lg:text-xs text-zinc-500 dark:text-zinc-400 font-medium mt-0.5 truncate">
                 {subtitle}
               </p>
             )}

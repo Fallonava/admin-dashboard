@@ -111,13 +111,13 @@ export function Sidebar() {
     const linkClassName = cn(
       "relative flex items-center gap-3 rounded-[12px] px-3 py-2.5 text-xs font-bold transition-all duration-200 group/sub border",
       isActive
-        ? "bg-[#1A1E2B] text-zinc-100 shadow-sm border-[#2B3145]"
-        : "hover:bg-[#151822] hover:text-zinc-100 text-zinc-400 border-transparent"
+        ? "bg-zinc-100 text-zinc-900 shadow-sm border-zinc-200 dark:bg-[#1A1E2B] dark:text-zinc-100 dark:border-[#2B3145]"
+        : "hover:bg-zinc-100 hover:text-zinc-900 text-zinc-600 border-transparent dark:hover:bg-[#151822] dark:hover:text-zinc-100 dark:text-zinc-400"
     );
 
     const iconClassName = cn(
       "h-[16px] w-[16px] transition-all duration-200",
-      isActive ? "text-blue-400 scale-110" : "text-zinc-500 group-hover/sub:text-blue-400"
+      isActive ? "text-blue-600 dark:text-blue-400 scale-110" : "text-zinc-400 group-hover/sub:text-blue-600 dark:text-zinc-500 dark:group-hover/sub:text-blue-400"
     );
 
     const content = (
@@ -161,13 +161,13 @@ export function Sidebar() {
             className={cn(
             "w-12 h-12 flex items-center justify-center rounded-[14px] transition-all cursor-pointer border relative z-20 group/peek",
             hasActiveChild 
-              ? "bg-[#1A1E2B] text-zinc-100 shadow-sm border-[#2B3145]" 
-              : "bg-transparent text-zinc-400 hover:bg-[#151822] hover:text-zinc-100 border-transparent"
+              ? "bg-zinc-100 text-zinc-900 shadow-sm border-zinc-200 dark:bg-[#1A1E2B] dark:text-zinc-100 dark:border-[#2B3145]" 
+              : "bg-transparent text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 border-transparent dark:text-zinc-400 dark:hover:bg-[#151822] dark:hover:text-zinc-100"
           )}>
-            <folder.icon className={cn("h-5 w-5 transition-transform", hasActiveChild ? "text-blue-400 scale-110" : "")} strokeWidth={hasActiveChild ? 2.5 : 2} />
+            <folder.icon className={cn("h-5 w-5 transition-transform", hasActiveChild ? "text-blue-600 dark:text-blue-400 scale-110" : "")} strokeWidth={hasActiveChild ? 2.5 : 2} />
             
             {/* Tooltip Hover Murni */}
-            <div className="absolute left-full ml-4 px-3 py-2 bg-[#1A1E2B] border border-[#2B3145] text-zinc-100 text-xs font-bold rounded-xl opacity-0 invisible group-hover/peek:opacity-100 group-hover/peek:visible transition-all whitespace-nowrap shadow-xl z-50 pointer-events-none">
+            <div className="absolute left-full ml-4 px-3 py-2 bg-zinc-900 text-white border border-zinc-800 dark:bg-[#1A1E2B] dark:border-[#2B3145] dark:text-zinc-100 text-xs font-bold rounded-xl opacity-0 invisible group-hover/peek:opacity-100 group-hover/peek:visible transition-all whitespace-nowrap shadow-xl z-50 pointer-events-none">
                {folder.title}
             </div>
           </div>
@@ -181,14 +181,14 @@ export function Sidebar() {
           onClick={() => toggleMenu(folder.id)}
           className={cn(
             "w-full flex items-center justify-between px-3 py-2.5 rounded-[12px] transition-colors group/parent",
-            hasActiveChild && !isOpen ? "bg-[#1A1E2B]/50" : "hover:bg-[#151822]"
+            hasActiveChild && !isOpen ? "bg-zinc-100/70 dark:bg-[#1A1E2B]/50" : "hover:bg-zinc-100 dark:hover:bg-[#151822]"
           )}
         >
           <div className="flex items-center gap-3 whitespace-nowrap overflow-hidden">
-            <folder.icon className={cn("h-[18px] w-[18px] flex-shrink-0", hasActiveChild ? "text-blue-400" : "text-zinc-500 group-hover/parent:text-zinc-300")} strokeWidth={hasActiveChild ? 2.5 : 2} />
-            <span className={cn("text-xs font-bold truncate", hasActiveChild ? "text-zinc-100" : "text-zinc-400")}>{folder.title}</span>
+            <folder.icon className={cn("h-[18px] w-[18px] flex-shrink-0", hasActiveChild ? "text-blue-600 dark:text-blue-400" : "text-zinc-400 group-hover/parent:text-zinc-700 dark:text-zinc-500 dark:group-hover/parent:text-zinc-300")} strokeWidth={hasActiveChild ? 2.5 : 2} />
+            <span className={cn("text-xs font-bold truncate", hasActiveChild ? "text-zinc-900 dark:text-zinc-100" : "text-zinc-600 dark:text-zinc-400")}>{folder.title}</span>
           </div>
-          <ChevronDown className={cn("h-4 w-4 flex-shrink-0 text-zinc-500 transition-transform duration-300", isOpen ? "rotate-180" : "")} />
+          <ChevronDown className={cn("h-4 w-4 flex-shrink-0 text-zinc-400 dark:text-zinc-500 transition-transform duration-300", isOpen ? "rotate-180" : "")} />
         </button>
 
         {/* Accordion Content */}
@@ -198,7 +198,7 @@ export function Sidebar() {
             isOpen ? "grid-rows-[1fr] opacity-100 mt-1" : "grid-rows-[0fr] opacity-0"
           )}
         >
-          <div className="overflow-hidden flex flex-col gap-0.5 relative pl-4 ml-3 border-l border-[#222738]">
+          <div className="overflow-hidden flex flex-col gap-0.5 relative pl-4 ml-3 border-l border-zinc-200 dark:border-[#222738]">
             {visibleItems.map(renderSubItem)}
           </div>
         </div>
@@ -217,10 +217,10 @@ export function Sidebar() {
           </div>
           {!effectivelyCollapsed && (
             <div className="flex flex-col min-w-0 transition-opacity duration-300 whitespace-nowrap overflow-hidden">
-              <h1 className="text-lg font-black tracking-tight text-zinc-100 truncate">
-                MedCore<span className="text-[10px] align-top text-blue-400 font-black ml-0.5">26</span>
+              <h1 className="text-lg font-black tracking-tight text-zinc-900 dark:text-zinc-100 truncate">
+                MedCore<span className="text-[10px] align-top text-blue-600 dark:text-blue-400 font-black ml-0.5">26</span>
               </h1>
-              <p className="text-[9px] text-zinc-400 font-bold uppercase tracking-widest truncate">Admin Console</p>
+              <p className="text-[9px] text-zinc-500 dark:text-zinc-400 font-bold uppercase tracking-widest truncate">Admin Console</p>
             </div>
           )}
         </div>
@@ -230,24 +230,24 @@ export function Sidebar() {
         </div>
       </div>
 
-      <div className="mt-auto pt-4 border-t border-[#1E2230] pb-1 relative z-20">
+      <div className="mt-auto pt-4 border-t border-zinc-200 dark:border-[#1E2230] pb-1 relative z-20">
         <div className={cn(
-          "flex items-center rounded-[18px] bg-[#141722] border border-[#222738] shadow-sm transition-all duration-200",
+          "flex items-center rounded-[18px] bg-zinc-50 dark:bg-[#141722] border border-zinc-200 dark:border-[#222738] shadow-sm transition-all duration-200",
           effectivelyCollapsed ? "justify-center p-2 mx-auto w-fit" : "justify-between p-3"
         )}>
           <div className={cn("flex items-center min-w-0 px-1", effectivelyCollapsed ? "gap-0" : "gap-3 flex-1")}>
-            <div className="h-9 w-9 rounded-full bg-[#1F2433] border border-[#2E354B] flex-shrink-0 flex items-center justify-center text-zinc-100 font-black text-sm">
+            <div className="h-9 w-9 rounded-full bg-zinc-200 dark:bg-[#1F2433] border border-zinc-300 dark:border-[#2E354B] flex-shrink-0 flex items-center justify-center text-zinc-800 dark:text-zinc-100 font-black text-sm">
               {user?.name?.charAt(0)?.toUpperCase() || "?"}
             </div>
             {!effectivelyCollapsed && (
               <div className="min-w-0 flex-1 whitespace-nowrap overflow-hidden">
-                <p className="text-[13px] font-black text-zinc-100 truncate leading-tight tracking-tight">{user?.name || "Memuat..."}</p>
-                <p className="text-[10px] text-zinc-400 font-bold uppercase truncate tracking-wider mt-0.5">{user?.roleName || ""}</p>
+                <p className="text-[13px] font-black text-zinc-900 dark:text-zinc-100 truncate leading-tight tracking-tight">{user?.name || "Memuat..."}</p>
+                <p className="text-[10px] text-zinc-500 dark:text-zinc-400 font-bold uppercase truncate tracking-wider mt-0.5">{user?.roleName || ""}</p>
               </div>
             )}
           </div>
           {!effectivelyCollapsed && (
-            <button onClick={handleLogout} className="p-2 text-zinc-400 hover:text-red-400 hover:bg-red-950/40 rounded-[12px] transition-all flex-shrink-0" title="Logout">
+            <button onClick={handleLogout} className="p-2 text-zinc-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-[12px] transition-all flex-shrink-0" title="Logout">
               <LogOut size={16} strokeWidth={2.5} />
             </button>
           )}
@@ -263,9 +263,9 @@ export function Sidebar() {
       )}
       
       <div className={cn(
-        "hidden lg:flex h-[calc(100vh-2rem)] my-4 ml-4 flex-col justify-between bg-[#10121A] rounded-[24px] border border-[#1E2230] shadow-sm z-20 relative flex-shrink-0 transition-all duration-300",
+        "hidden lg:flex h-[calc(100vh-2rem)] my-4 ml-4 flex-col justify-between bg-white dark:bg-[#10121A] rounded-[24px] border border-zinc-200 dark:border-[#1E2230] shadow-sm z-20 relative flex-shrink-0 transition-all duration-300",
         effectivelyCollapsed ? "w-[80px] p-3 items-center" : "w-68 p-4",
-        isPeeking ? "shadow-2xl border-[#2E354B]" : ""
+        isPeeking ? "shadow-2xl border-zinc-300 dark:border-[#2E354B]" : ""
       )}>
         {/* Toggle Button */}
         <button 
@@ -277,7 +277,7 @@ export function Sidebar() {
                setIsCollapsed(!isCollapsed);
             }
           }}
-          className="absolute -right-3 top-16 h-6 w-6 bg-[#161924] border border-[#2B3145] rounded-full flex items-center justify-center shadow-sm hover:scale-110 transition-all duration-200 z-50 text-zinc-400 hover:text-zinc-100 focus:outline-none"
+          className="absolute -right-3 top-16 h-6 w-6 bg-white dark:bg-[#161924] border border-zinc-200 dark:border-[#2B3145] rounded-full flex items-center justify-center shadow-sm hover:scale-110 transition-all duration-200 z-50 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 focus:outline-none"
         >
           {effectivelyCollapsed ? <ChevronRight size={14} strokeWidth={2.5} /> : <ChevronLeft size={14} strokeWidth={2.5} />}
         </button>

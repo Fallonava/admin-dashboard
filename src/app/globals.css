@@ -30,7 +30,46 @@
 
 @layer base {
   :root {
-    /* Obsidian Titanium 2026 Luxe Palette (Solid Matte, Zero Blur) */
+    /* Swiss Alabaster 2026 Luxe (Light Mode — Solid Matte, Zero Blur) */
+    --background: 240 5% 96%;    /* #F4F4F6 - Crisp Alabaster */
+    --foreground: 240 10% 8%;    /* #141417 - Jet Charcoal */
+
+    --card: 0 0% 100%;           /* #FFFFFF - Pure Solid White */
+    --card-foreground: 240 10% 8%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 8%;
+
+    --primary: 217 91% 55%;      /* #2563EB - Electric Cobalt */
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 240 5% 90%;    /* #E4E4E7 */
+    --secondary-foreground: 240 10% 8%;
+
+    --muted: 240 5% 92%;        /* #ECECEF */
+    --muted-foreground: 240 4% 46%; /* #71717A */
+
+    --accent: 217 91% 95%;
+    --accent-foreground: 217 91% 50%;
+
+    --destructive: 0 84% 60%;    /* #EF4444 */
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 240 6% 88%;       /* #DFDFE3 - 1px Crisp Hairline */
+    --input: 240 6% 88%;
+    --ring: 217 91% 55%;
+    --radius: 1rem;
+
+    /* Domain Colors */
+    --color-domain-dashboard: 217 91% 55%;
+    --color-domain-schedules: 250 89% 65%;
+    --color-domain-leaves: 158 84% 40%;
+    --color-domain-doctors: 199 89% 45%;
+    --color-domain-recaps: 330 81% 60%;
+  }
+
+  .dark {
+    /* Obsidian Titanium 2026 Luxe (Dark Mode — Solid Matte, Zero Blur) */
     --background: 228 26% 6%;    /* #0B0D13 - Deep Obsidian */
     --foreground: 220 14% 96%;   /* #F1F3F9 - Crisp Platinum White */
 
@@ -55,10 +94,9 @@
     --destructive: 0 84% 60%;    /* #EF4444 */
     --destructive-foreground: 0 0% 100%;
 
-    --border: 228 20% 18%;       /* #232736 - 1px Crisp Hairline Border */
+    --border: 228 20% 18%;       /* #232736 - 1px Crisp Hairline */
     --input: 228 20% 18%;
     --ring: 217 91% 60%;
-    --radius: 1rem;
 
     /* Domain Colors */
     --color-domain-dashboard: 217 91% 60%;
@@ -101,20 +139,20 @@
   }
 }
 
-/* Base UI Components — Solid Titanium Surface (Anti-Glass / Anti-Blur) */
+/* Base UI Components — Solid Precision Surfaces (Anti-Glass / Anti-Blur Dual Mode) */
 .glass-panel {
-  @apply bg-[#10121A] border border-[#1E2230] shadow-sm;
+  @apply bg-white border border-zinc-200 dark:bg-[#10121A] dark:border-[#1E2230] shadow-sm;
   will-change: auto;
 }
 
 .super-glass-card {
-  @apply relative overflow-hidden bg-[#131620] border border-[#232736] shadow-sm hover:border-[#353D56] transition-all duration-300 ease-out z-10;
+  @apply relative overflow-hidden bg-white border border-zinc-200 dark:bg-[#131620] dark:border-[#232736] shadow-sm hover:border-zinc-300 dark:hover:border-[#353D56] transition-all duration-200 ease-out z-10;
   contain: layout paint;
   will-change: auto;
 }
 
 .super-glass {
-  @apply bg-[#10121A] border border-[#1E2230] shadow-sm;
+  @apply bg-white border border-zinc-200 dark:bg-[#10121A] dark:border-[#1E2230] shadow-sm;
   will-change: auto;
 }
 

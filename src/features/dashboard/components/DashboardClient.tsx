@@ -202,26 +202,21 @@ export function DashboardClient() {
       <div className="relative z-10 w-full flex-none">
       {/* ═══════════════════ UNIFIED PAGE HEADER ═══════════════════ */}
       <PageHeader
-        icon={<LayoutDashboard size={20} className="text-white" />}
-        title={`${greeting}, Admin`}
-        subtitle={todayLabel}
+        title="Dashboard Utama"
+        subtitle="Sistem Manajemen Operasional Dokter & Antrean"
+        icon={<Activity size={22} className="text-white" strokeWidth={2.5} />}
         iconGradient="from-blue-600 to-indigo-600"
-        accentBarGradient="from-blue-500 via-indigo-500 to-purple-500"
         badge={
           <>
-            {/* Efficiency Pill */}
-            {efficiency > 0 && (
-              <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-[#141722] border border-[#2B3145] rounded-full text-[10px] font-bold text-zinc-300 shrink-0">
-                <Activity size={10} className="shrink-0 text-emerald-400" />
-                {efficiency}% Efisiensi
-              </span>
-            )}
-            {/* SSE Status Pill */}
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-950/40 dark:text-blue-400 dark:border-blue-800/50 shrink-0">
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
+              Live Monitor
+            </span>
             <span className={cn(
               "hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold border shrink-0",
-              sseStatus === 'connected' ? "bg-emerald-950/40 text-emerald-400 border-emerald-800/50"
-              : sseStatus === 'reconnecting' ? "bg-amber-950/40 text-amber-400 border-amber-800/50 animate-pulse"
-              : "bg-zinc-800 text-zinc-400 border-zinc-700"
+              sseStatus === 'connected' ? "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-400 dark:border-emerald-800/50"
+              : sseStatus === 'reconnecting' ? "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-400 dark:border-amber-800/50 animate-pulse"
+              : "bg-zinc-100 text-zinc-600 border-zinc-200 dark:bg-zinc-800 dark:text-zinc-400 dark:border-zinc-700"
             )}>
               {sseStatus === 'connected'
                 ? <><Wifi size={10} strokeWidth={2.5} className="shrink-0" /> Live</>
@@ -238,7 +233,7 @@ export function DashboardClient() {
             <div className="hidden lg:flex shrink-0">
               <LiveClock />
             </div>
-            <div className="hidden lg:block h-5 w-px bg-[#2B3145] mx-1" />
+            <div className="hidden lg:block h-5 w-px bg-zinc-200 dark:bg-[#2B3145] mx-1" />
 
             {/* Automation Toggle */}
             <button
@@ -247,7 +242,7 @@ export function DashboardClient() {
                 "flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all active:scale-[0.97] border shrink-0",
                 automationEnabled
                   ? "bg-violet-600 text-white border-violet-500 shadow-sm"
-                  : "bg-[#141722] text-zinc-400 hover:text-zinc-200 border-[#2B3145]"
+                  : "bg-white text-zinc-700 hover:text-zinc-900 border-zinc-200 dark:bg-[#141722] dark:text-zinc-400 dark:hover:text-zinc-200 dark:border-[#2B3145]"
               )}
             >
               <Zap size={13} className={cn("shrink-0", automationEnabled ? "fill-white text-white" : "text-zinc-400")} />
@@ -264,8 +259,8 @@ export function DashboardClient() {
             <div className="relative group hidden lg:block shrink-0">
               <div className="relative flex items-center">
                 {isSearching
-                  ? <Loader2 className="absolute left-3.5 top-1/2 -translate-y-1/2 text-blue-400 h-4 w-4 animate-spin shrink-0" />
-                  : <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 h-4 w-4 shrink-0" />
+                  ? <Loader2 className="absolute left-3.5 top-1/2 -translate-y-1/2 text-blue-500 h-4 w-4 animate-spin shrink-0" />
+                  : <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-zinc-500 h-4 w-4 shrink-0" />
                 }
                 <input
                   id="admin-search-input"
@@ -273,21 +268,21 @@ export function DashboardClient() {
                   placeholder="Cari dokter..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-9 pr-12 py-2 rounded-xl bg-[#141722] text-zinc-100 text-xs w-44 xl:w-52 outline-none border border-[#2B3145] hover:border-[#3A425C] focus:border-blue-500 transition-all font-bold placeholder:text-zinc-500"
+                  className="pl-9 pr-12 py-2 rounded-xl bg-white dark:bg-[#141722] text-zinc-900 dark:text-zinc-100 text-xs w-44 xl:w-52 outline-none border border-zinc-200 dark:border-[#2B3145] hover:border-zinc-300 dark:hover:border-[#3A425C] focus:border-blue-500 transition-all font-bold placeholder:text-zinc-400 dark:placeholder:text-zinc-500"
                 />
-                <kbd className="absolute right-2.5 top-1/2 -translate-y-1/2 hidden xl:inline-flex items-center px-1.5 py-0.5 text-[9px] font-bold text-zinc-500 bg-[#1A1E2B] border border-[#2B3145] rounded-md pointer-events-none">
+                <kbd className="absolute right-2.5 top-1/2 -translate-y-1/2 hidden xl:inline-flex items-center px-1.5 py-0.5 text-[9px] font-bold text-zinc-400 dark:text-zinc-500 bg-zinc-100 dark:bg-[#1A1E2B] border border-zinc-200 dark:border-[#2B3145] rounded-md pointer-events-none">
                   ⌘K
                 </kbd>
               </div>
             </div>
 
             {/* Density Toggle (Comfortable vs Compact) */}
-            <div className="hidden sm:flex items-center bg-[#141722] p-1 rounded-xl border border-[#2B3145] shrink-0">
+            <div className="hidden sm:flex items-center bg-zinc-100 dark:bg-[#141722] p-1 rounded-xl border border-zinc-200 dark:border-[#2B3145] shrink-0">
               <button
                 onClick={() => setDensity('comfortable')}
                 className={cn(
                   "p-1.5 rounded-lg transition-all text-xs",
-                  density === 'comfortable' ? "bg-[#1F2433] text-blue-400 font-bold border border-[#2E354B]" : "text-zinc-500 hover:text-zinc-300"
+                  density === 'comfortable' ? "bg-white dark:bg-[#1F2433] text-blue-600 dark:text-blue-400 font-bold border border-zinc-200 dark:border-[#2E354B] shadow-sm" : "text-zinc-500 hover:text-zinc-700 dark:text-zinc-500 dark:hover:text-zinc-300"
                 )}
                 title="Tampilan Nyaman (Detail)"
               >
@@ -297,7 +292,7 @@ export function DashboardClient() {
                 onClick={() => setDensity('compact')}
                 className={cn(
                   "p-1.5 rounded-lg transition-all text-xs",
-                  density === 'compact' ? "bg-[#1F2433] text-blue-400 font-bold border border-[#2E354B]" : "text-zinc-500 hover:text-zinc-300"
+                  density === 'compact' ? "bg-white dark:bg-[#1F2433] text-blue-600 dark:text-blue-400 font-bold border border-zinc-200 dark:border-[#2E354B] shadow-sm" : "text-zinc-500 hover:text-zinc-700 dark:text-zinc-500 dark:hover:text-zinc-300"
                 )}
                 title="Tampilan Kompak (Grid Padat)"
               >
@@ -305,10 +300,13 @@ export function DashboardClient() {
               </button>
             </div>
 
+            {/* Theme Toggle (Light / Dark Switcher) */}
+            <ThemeToggle />
+
             {/* Logout */}
             <button
               onClick={() => logout()}
-              className="p-2 text-zinc-400 hover:text-red-400 hover:bg-red-950/40 rounded-xl transition-all border border-transparent shrink-0"
+              className="p-2 text-zinc-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-xl transition-all border border-transparent shrink-0"
               title="Keluar"
             >
               <Power size={16} strokeWidth={2.5} />
@@ -316,12 +314,11 @@ export function DashboardClient() {
           </div>
         }
       />
-      </div>{/* End Header Wrapper */}
+      </div>
 
       {/* ═══════════ SCROLLABLE CONTENT ═══════════ */}
       <div className="flex-1 overflow-y-auto custom-scrollbar px-4 sm:px-6 lg:px-8 pb-6 space-y-6 pt-3 relative z-10">
 
-        {/* Stats Cards */}
         <DashboardStats
           todayDoctors={todayDoctors}
           shifts={shifts}
@@ -332,7 +329,7 @@ export function DashboardClient() {
         {/* Live Control Panel */}
         <div className="w-full space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-base font-bold text-zinc-100 flex items-center gap-2">
+            <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
               <span className="w-1.5 h-4 rounded-full bg-blue-500" />
               Kontrol Status Langsung
             </h3>
@@ -341,7 +338,7 @@ export function DashboardClient() {
               {/* Mobile Search Button */}
               <button
                 onClick={() => setIsMobileSearchOpen(true)}
-                className="lg:hidden flex items-center gap-2 px-3 py-1.5 bg-[#141722] border border-[#2B3145] rounded-xl text-zinc-400 hover:text-zinc-200"
+                className="lg:hidden flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-[#141722] border border-zinc-200 dark:border-[#2B3145] rounded-xl text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 shadow-sm"
                 title="Cari Dokter"
               >
                 <Search size={14} strokeWidth={2.5} />
@@ -352,8 +349,8 @@ export function DashboardClient() {
               <div className={cn(
                 "px-3 py-1.5 rounded-xl text-[11px] font-bold tracking-wider uppercase flex items-center gap-2 border",
                 automationEnabled
-                  ? "bg-violet-950/40 text-violet-400 border-violet-800/50"
-                  : "bg-emerald-950/40 text-emerald-400 border-emerald-800/50"
+                  ? "bg-violet-50 text-violet-700 border-violet-200 dark:bg-violet-950/40 dark:text-violet-400 dark:border-violet-800/50"
+                  : "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-400 dark:border-emerald-800/50"
               )}>
                 <span className="relative flex h-2 w-2">
                   <span className={cn(

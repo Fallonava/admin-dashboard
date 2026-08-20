@@ -55,24 +55,24 @@ function getAvatarGradient(status: Doctor['status']) {
 
 function getStatusBadgeStyle(status: Doctor['status']) {
   switch (status) {
-    case 'PRAKTEK': return "bg-blue-950/60 text-blue-400 border border-blue-800/60";
-    case 'PENUH': return "bg-amber-950/60 text-amber-400 border border-amber-800/60";
-    case 'CUTI': return "bg-rose-950/60 text-rose-400 border border-rose-800/60";
-    case 'OPERASI': return "bg-red-950/60 text-red-400 border border-red-800/60";
-    case 'SELESAI': return "bg-emerald-950/60 text-emerald-400 border border-emerald-800/60";
-    case 'PENDAFTARAN': return "bg-indigo-950/60 text-indigo-400 border border-indigo-800/60";
-    case 'TERJADWAL': return "bg-zinc-800/80 text-zinc-300 border border-zinc-700";
-    default: return "bg-zinc-800/80 text-zinc-400 border border-zinc-700";
+    case 'PRAKTEK': return "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/60 dark:text-blue-400 dark:border-blue-800/60";
+    case 'PENUH': return "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/60 dark:text-amber-400 dark:border-amber-800/60";
+    case 'CUTI': return "bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/60 dark:text-rose-400 dark:border-rose-800/60";
+    case 'OPERASI': return "bg-red-50 text-red-700 border-red-200 dark:bg-red-950/60 dark:text-red-400 dark:border-red-800/60";
+    case 'SELESAI': return "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-400 dark:border-emerald-800/60";
+    case 'PENDAFTARAN': return "bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-950/60 dark:text-indigo-400 dark:border-indigo-800/60";
+    case 'TERJADWAL': return "bg-zinc-100 text-zinc-600 border-zinc-200 dark:bg-zinc-800/80 dark:text-zinc-300 dark:border-zinc-700";
+    default: return "bg-zinc-100 text-zinc-600 border-zinc-200 dark:bg-zinc-800/80 dark:text-zinc-400 dark:border-zinc-700";
   }
 }
 
 function getCardGlowClass(status: Doctor['status']) {
   switch (status) {
-    case 'PRAKTEK': return "border-blue-500/80";
-    case 'OPERASI': return "border-red-500/80";
-    case 'PENUH': return "border-amber-500/80";
-    case 'PENDAFTARAN': return "border-indigo-500/80";
-    default: return "border-[#232736]";
+    case 'PRAKTEK': return "border-blue-400/80 dark:border-blue-500/80";
+    case 'OPERASI': return "border-red-400/80 dark:border-red-500/80";
+    case 'PENUH': return "border-amber-400/80 dark:border-amber-500/80";
+    case 'PENDAFTARAN': return "border-indigo-400/80 dark:border-indigo-500/80";
+    default: return "border-zinc-200 dark:border-[#232736]";
   }
 }
 
@@ -92,7 +92,7 @@ interface DoctorCardProps {
 
 /**
  * DoctorCard — Memoized for performance.
- * Solid Titanium Luxe UI (Zero Blur, Zero Ambient Blob).
+ * Solid Dual-Mode Precision UI (Zero Blur, Zero Ambient Blob).
  */
 export const DoctorCard = memo(function DoctorCard({
   doc, shifts, todayDayIdx, todayStr,
@@ -126,7 +126,7 @@ export const DoctorCard = memo(function DoctorCard({
 
   return (
     <div className={cn(
-      "bg-[#131620] border hover:border-[#3A425C] shadow-sm relative overflow-hidden transition-all duration-200",
+      "bg-white dark:bg-[#131620] border hover:border-zinc-300 dark:hover:border-[#3A425C] shadow-sm relative overflow-hidden transition-all duration-200",
       isCompact ? "p-3 sm:p-3.5 rounded-[16px]" : "p-4 sm:p-5 rounded-[20px]",
       getCardGlowClass(doc.status)
     )}>
@@ -136,7 +136,7 @@ export const DoctorCard = memo(function DoctorCard({
       {/* Doctor info */}
       <div className={cn("flex items-start gap-3 relative z-10", isCompact ? "mb-2" : "mb-3.5")}>
         <Avatar className={cn(
-          "shadow-sm border border-[#2B3145] shrink-0",
+          "shadow-sm border border-zinc-200 dark:border-[#2B3145] shrink-0",
           isCompact ? "h-9 w-9" : "h-11 w-11"
         )}>
           <AvatarFallback className={cn("text-xs font-black text-white", getAvatarGradient(doc.status))}>
@@ -145,13 +145,13 @@ export const DoctorCard = memo(function DoctorCard({
         </Avatar>
         <div className="min-w-0 flex-1">
           <h4 className={cn(
-            "font-black tracking-tight text-zinc-100 leading-tight line-clamp-1",
+            "font-black tracking-tight text-zinc-900 dark:text-zinc-100 leading-tight line-clamp-1",
             isCompact ? "text-[13px]" : "text-[14.5px] sm:text-[15px]"
           )}>{doc.name}</h4>
           <div className="flex items-center gap-1.5 mt-1 flex-wrap">
-            <p className="text-[11px] text-zinc-400 font-medium line-clamp-1">{doc.specialty}</p>
+            <p className="text-[11px] text-zinc-500 dark:text-zinc-400 font-medium line-clamp-1">{doc.specialty}</p>
             {activeShift?.registrationTime && (
-              <div className="flex items-center gap-1 bg-[#1A1E2B] text-blue-400 px-1.5 py-0.5 rounded-[6px] border border-[#2B3145]">
+              <div className="flex items-center gap-1 bg-zinc-100 dark:bg-[#1A1E2B] text-blue-600 dark:text-blue-400 px-1.5 py-0.5 rounded-[6px] border border-zinc-200 dark:border-[#2B3145]">
                 <Clock size={8} strokeWidth={2.5} />
                 <span className="text-[9px] font-bold">{activeShift.registrationTime}</span>
               </div>
@@ -162,7 +162,7 @@ export const DoctorCard = memo(function DoctorCard({
 
       {/* Status badge */}
       <div className={cn("relative z-10", isCompact ? "mb-2" : "mb-3")}>
-        <div className={cn("inline-flex px-2.5 py-1 rounded-[8px] text-[10px] font-bold uppercase tracking-wider", 
+        <div className={cn("inline-flex px-2.5 py-1 rounded-[8px] text-[10px] font-bold uppercase tracking-wider border", 
           getStatusBadgeStyle(doc.status))}
         >
           {STATUS_LABELS[doc.status] || doc.status}
@@ -185,16 +185,16 @@ export const DoctorCard = memo(function DoctorCard({
                 className={cn(
                   "flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[9px] font-semibold transition-all border",
                   isDisabledToday
-                    ? "bg-red-950/40 text-red-400 border-red-800/50 line-through"
+                    ? "bg-red-50 text-red-500 border-red-200 dark:bg-red-950/40 dark:text-red-400 dark:border-red-800/50 line-through"
                     : isActive
-                      ? "bg-emerald-950/40 text-emerald-400 border-emerald-800/60"
-                      : "bg-[#1A1E2B] text-zinc-400 border-[#2B3145] hover:border-[#3A425C]"
+                      ? "bg-emerald-50 text-emerald-700 border-emerald-300 dark:bg-emerald-950/40 dark:text-emerald-400 dark:border-emerald-800/60"
+                      : "bg-zinc-50 text-zinc-600 border-zinc-200 hover:border-zinc-300 dark:bg-[#1A1E2B] dark:text-zinc-400 dark:border-[#2B3145] dark:hover:border-[#3A425C]"
                 )}
                 title={isDisabledToday ? 'Klik untuk aktifkan hari ini' : 'Klik untuk nonaktifkan hari ini'}
               >
                 <Clock size={8} />
                 {shift.formattedTime}
-                {isDisabledToday && <span className="text-red-400 ml-0.5">✕</span>}
+                {isDisabledToday && <span className="text-red-500 dark:text-red-400 ml-0.5">✕</span>}
                 {isActive && <span className="relative flex h-1.5 w-1.5 ml-0.5"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" /><span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500" /></span>}
               </button>
             );
@@ -205,10 +205,10 @@ export const DoctorCard = memo(function DoctorCard({
       {/* Status change buttons or AI status rendering */}
       <div className="relative z-10 w-full mt-1">
         {automationEnabled ? (
-          <div className="w-full flex flex-col items-center justify-center py-3.5 px-3 rounded-[14px] bg-[#161924] border border-[#262C3E]">
+          <div className="w-full flex flex-col items-center justify-center py-3.5 px-3 rounded-[14px] bg-zinc-50 dark:bg-[#161924] border border-zinc-200 dark:border-[#262C3E]">
             <div className="flex items-center gap-1.5 mb-1.5">
-              <Zap size={11} className="text-violet-400 fill-violet-400" />
-              <span className="text-[9.5px] font-bold text-zinc-400 uppercase tracking-wider">Otomasi Pintar Aktif</span>
+              <Zap size={11} className="text-violet-500 dark:text-violet-400 fill-violet-500 dark:fill-violet-400" />
+              <span className="text-[9.5px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Otomasi Pintar Aktif</span>
             </div>
             
             <div className={cn(
@@ -230,7 +230,7 @@ export const DoctorCard = memo(function DoctorCard({
                     "py-2 px-1 rounded-[10px] text-[9.5px] font-bold transition-all disabled:opacity-50 text-center min-h-[38px] flex items-center justify-center tracking-tight border",
                     doc.status === action.id
                       ? `${action.bg} text-white shadow-sm border-transparent`
-                      : "bg-[#1A1E2B] text-zinc-400 border-[#2B3145] hover:text-zinc-200 hover:border-[#3A425C]",
+                      : "bg-zinc-50 hover:bg-zinc-100 text-zinc-600 border-zinc-200 dark:bg-[#1A1E2B] dark:text-zinc-400 dark:border-[#2B3145] dark:hover:text-zinc-200 dark:hover:border-[#3A425C]",
                   )}
                 >
                   {action.label}
@@ -248,7 +248,7 @@ export const DoctorCard = memo(function DoctorCard({
                     "py-1.5 px-1 flex-1 min-w-[28px] rounded-[8px] text-[9.5px] font-bold transition-all disabled:opacity-50 truncate text-center border",
                     doc.status === action.id
                       ? `${action.bg} text-white shadow-sm border-transparent`
-                      : "bg-[#1A1E2B] text-zinc-400 border-[#2B3145] hover:text-zinc-200 hover:border-[#3A425C]",
+                      : "bg-zinc-50 hover:bg-zinc-100 text-zinc-600 border-zinc-200 dark:bg-[#1A1E2B] dark:text-zinc-400 dark:border-[#2B3145] dark:hover:text-zinc-200 dark:hover:border-[#3A425C]",
                   )}
                 >
                   {action.label}

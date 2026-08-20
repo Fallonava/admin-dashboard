@@ -45,25 +45,26 @@ export default function RootLayout({
         <link rel="preconnect" href="https://images.unsplash.com" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        {/* Low-end device detection — runs before paint to avoid FOUC */}
+        {/* Theme & Low-end device detection — runs before paint to avoid FOUC */}
         <script dangerouslySetInnerHTML={{
           __html: `
           (function(){
             try {
+              var theme = localStorage.getItem('theme');
+              if (theme === 'light') {
+                document.documentElement.classList.remove('dark');
+              } else {
+                document.documentElement.classList.add('dark');
+              }
               var ua = navigator.userAgent || '';
-              // Smart TV / TV Browser
               var isTV = /WebOS|Tizen|SMART-TV|SmartTV|NetCast|BRAVIA|Viera/i.test(ua);
-              // Memori rendah (≤4GB mencakup sebagian besar mid-range lemah)
               var lowMem = navigator.deviceMemory && navigator.deviceMemory <= 4;
-              // CPU inti sedikit (≤4 core = low-to-mid)
               var lowCPU = navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4;
-              // Koneksi lambat (2G/3G — device cenderung juga GPU lemah)
               var slowNet = false;
               try {
                 var conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
                 if (conn) slowNet = conn.effectiveType === '2g' || conn.effectiveType === 'slow-2g';
               } catch(e) {}
-              // Aktifkan reduce-effects jika terdeteksi mid-range lemah
               if (isTV || (lowMem && lowCPU) || slowNet) {
                 document.documentElement.classList.add('reduce-effects');
               }
