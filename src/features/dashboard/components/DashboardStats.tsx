@@ -18,74 +18,70 @@ export function DashboardStats({ todayDoctors, shifts, todayDayIdx, efficiency }
   const activePercent = todayDoctors.length > 0 ? (activeDocs.length / todayDoctors.length) * 100 : 0;
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-5">
+    <div className="grid grid-cols-2 md:grid-cols-2 xl:grid-cols-4 gap-3.5 md:gap-4">
       {/* Stat 1: Dokter Bertugas */}
-      <div className="super-glass-card bg-white/40 backdrop-blur-3xl p-5 sm:p-6 rounded-[32px] shadow-[0_8px_32px_rgba(0,0,0,0.04)] hover:shadow-[0_24px_60px_-12px_rgba(59,130,246,0.15)] relative overflow-hidden group border border-white/60 hover:border-white/80 hover:bg-white/50 hover:-translate-y-1 transition-all duration-500">
-        <div className="absolute top-0 right-0 w-32 h-32 bg-blue-400/20 rounded-full blur-[40px] -mr-8 -mt-8 group-hover:bg-blue-400/30 group-hover:scale-110 transition-all duration-700 ease-out" />
+      <div className="bg-[#131620] border border-[#232736] hover:border-[#353D56] p-5 rounded-[20px] shadow-sm relative overflow-hidden group transition-all duration-300">
         <div className="flex justify-between items-start mb-4 relative z-10">
-          <div className="p-3 bg-white/60 text-blue-600 rounded-[20px] shadow-sm border border-white/80 backdrop-blur-md">
-            <BriefcaseMedical size={22} strokeWidth={2.5} />
+          <div className="p-2.5 bg-[#1A1E2B] text-blue-400 rounded-[14px] border border-[#2B3145]">
+            <BriefcaseMedical size={20} strokeWidth={2.5} />
           </div>
-          <span className="flex items-center gap-1.5 text-[10px] sm:text-[11px] font-black text-emerald-600 bg-white/80 backdrop-blur-md px-2.5 py-1 rounded-[12px] border border-white shadow-sm ring-1 ring-emerald-500/10 uppercase tracking-widest hover:scale-105 transition-transform">
-            <TrendingUp size={12} strokeWidth={3} />
+          <span className="flex items-center gap-1 text-[10px] font-bold text-emerald-400 bg-emerald-950/40 px-2 py-0.5 rounded-full border border-emerald-800/50 uppercase tracking-wider">
+            <TrendingUp size={11} strokeWidth={3} />
             Live
           </span>
         </div>
-        <h3 className="text-[11.5px] font-black text-slate-500/90 uppercase tracking-[0.2em] mb-1.5 relative z-10 transition-colors group-hover:text-blue-500">Bertugas</h3>
-        <div className="flex items-baseline gap-2 relative z-10">
-          <span className="text-4xl font-black text-slate-800 tracking-tighter drop-shadow-sm">{activeDocs.length}</span>
-          <span className="text-[13px] font-bold text-slate-400">/ {todayDoctors.length}</span>
+        <h3 className="text-[11px] font-bold text-zinc-400 uppercase tracking-widest mb-1">Bertugas</h3>
+        <div className="flex items-baseline gap-2">
+          <span className="text-3xl font-black text-zinc-100 tracking-tight">{activeDocs.length}</span>
+          <span className="text-xs font-semibold text-zinc-500">/ {todayDoctors.length}</span>
         </div>
-        <div className="mt-5 h-2 w-full bg-white/50 rounded-full overflow-hidden relative z-10 shadow-inner border border-black/5">
-          <div className="h-full rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 shadow-[0_0_10px_rgba(59,130,246,0.5)] transition-all duration-1000 ease-out" style={{ width: `${activePercent}%` }} />
+        <div className="mt-4 h-1.5 w-full bg-[#1A1E2B] rounded-full overflow-hidden border border-[#2B3145]">
+          <div className="h-full rounded-full bg-blue-500 transition-all duration-700 ease-out" style={{ width: `${activePercent}%` }} />
         </div>
       </div>
 
       {/* Stat 2: Cuti */}
-      <div className="super-glass-card bg-white/40 backdrop-blur-3xl p-5 sm:p-6 rounded-[32px] shadow-[0_8px_32px_rgba(0,0,0,0.04)] hover:shadow-[0_24px_60px_-12px_rgba(139,92,246,0.15)] relative overflow-hidden group border border-white/60 hover:border-white/80 hover:bg-white/50 hover:-translate-y-1 transition-all duration-500">
-        <div className="absolute top-0 right-0 w-32 h-32 bg-violet-400/20 rounded-full blur-[40px] -mr-8 -mt-8 group-hover:bg-violet-400/30 group-hover:scale-110 transition-all duration-700 ease-out" />
+      <div className="bg-[#131620] border border-[#232736] hover:border-[#353D56] p-5 rounded-[20px] shadow-sm relative overflow-hidden group transition-all duration-300">
         <div className="flex justify-between items-start mb-4 relative z-10">
-          <div className="p-3 bg-white/60 text-violet-600 rounded-[20px] shadow-sm border border-white/80 backdrop-blur-md">
-            <FileClock size={22} strokeWidth={2.5} />
+          <div className="p-2.5 bg-[#1A1E2B] text-rose-400 rounded-[14px] border border-[#2B3145]">
+            <FileClock size={20} strokeWidth={2.5} />
           </div>
         </div>
-        <h3 className="text-[11.5px] font-black text-slate-500/90 uppercase tracking-[0.2em] mb-1.5 relative z-10 transition-colors group-hover:text-violet-500">Cuti</h3>
-        <div className="flex items-baseline gap-2 relative z-10">
-          <span className="text-4xl font-black text-slate-800 tracking-tighter drop-shadow-sm">{onLeaveDocs.length}</span>
-          <span className="text-[13px] font-bold text-slate-400">dokter</span>
+        <h3 className="text-[11px] font-bold text-zinc-400 uppercase tracking-widest mb-1">Cuti</h3>
+        <div className="flex items-baseline gap-2">
+          <span className="text-3xl font-black text-zinc-100 tracking-tight">{onLeaveDocs.length}</span>
+          <span className="text-xs font-semibold text-zinc-500">dokter</span>
         </div>
       </div>
 
       {/* Stat 3: Efisiensi */}
-      <div className="super-glass-card bg-white/40 backdrop-blur-3xl p-5 sm:p-6 rounded-[32px] shadow-[0_8px_32px_rgba(0,0,0,0.04)] hover:shadow-[0_24px_60px_-12px_rgba(16,185,129,0.15)] relative overflow-hidden group border border-white/60 hover:border-white/80 hover:bg-white/50 hover:-translate-y-1 transition-all duration-500">
-        <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-400/20 rounded-full blur-[40px] -mr-8 -mt-8 group-hover:bg-emerald-400/30 group-hover:scale-110 transition-all duration-700 ease-out" />
+      <div className="bg-[#131620] border border-[#232736] hover:border-[#353D56] p-5 rounded-[20px] shadow-sm relative overflow-hidden group transition-all duration-300">
         <div className="flex justify-between items-start mb-4 relative z-10">
-          <div className="p-3 bg-white/60 text-emerald-600 rounded-[20px] shadow-sm border border-white/80 backdrop-blur-md">
-            <CheckCircle2 size={22} strokeWidth={2.5} />
+          <div className="p-2.5 bg-[#1A1E2B] text-emerald-400 rounded-[14px] border border-[#2B3145]">
+            <CheckCircle2 size={20} strokeWidth={2.5} />
           </div>
-          <span className="flex items-center gap-1.5 text-[10px] sm:text-[11px] font-black text-emerald-600 bg-white/80 backdrop-blur-md px-2.5 py-1 rounded-[12px] border border-white shadow-sm ring-1 ring-emerald-500/10 uppercase tracking-widest hover:scale-105 transition-transform">
-            <TrendingUp size={12} strokeWidth={3} />
+          <span className="flex items-center gap-1 text-[10px] font-bold text-emerald-400 bg-emerald-950/40 px-2 py-0.5 rounded-full border border-emerald-800/50 uppercase tracking-wider">
+            <TrendingUp size={11} strokeWidth={3} />
             +2.4%
           </span>
         </div>
-        <h3 className="text-[11.5px] font-black text-slate-500/90 uppercase tracking-[0.2em] mb-1.5 relative z-10 transition-colors group-hover:text-emerald-500">Efisiensi</h3>
-        <div className="flex items-baseline gap-2 relative z-10">
-          <span className="text-4xl font-black text-slate-800 tracking-tighter drop-shadow-sm">{efficiency}%</span>
+        <h3 className="text-[11px] font-bold text-zinc-400 uppercase tracking-widest mb-1">Efisiensi</h3>
+        <div className="flex items-baseline gap-2">
+          <span className="text-3xl font-black text-zinc-100 tracking-tight">{efficiency}%</span>
         </div>
       </div>
 
       {/* Stat 4: Total Shift */}
-      <div className="super-glass-card bg-white/40 backdrop-blur-3xl p-5 sm:p-6 rounded-[32px] shadow-[0_8px_32px_rgba(0,0,0,0.04)] hover:shadow-[0_24px_60px_-12px_rgba(245,158,11,0.15)] relative overflow-hidden group border border-white/60 hover:border-white/80 hover:bg-white/50 hover:-translate-y-1 transition-all duration-500">
-        <div className="absolute top-0 right-0 w-32 h-32 bg-amber-400/20 rounded-full blur-[40px] -mr-8 -mt-8 group-hover:bg-amber-400/30 group-hover:scale-110 transition-all duration-700 ease-out" />
+      <div className="bg-[#131620] border border-[#232736] hover:border-[#353D56] p-5 rounded-[20px] shadow-sm relative overflow-hidden group transition-all duration-300">
         <div className="flex justify-between items-start mb-4 relative z-10">
-          <div className="p-3 bg-white/60 text-amber-500 rounded-[20px] shadow-sm border border-white/80 backdrop-blur-md">
-            <BarChart3 size={22} strokeWidth={2.5} />
+          <div className="p-2.5 bg-[#1A1E2B] text-amber-400 rounded-[14px] border border-[#2B3145]">
+            <BarChart3 size={20} strokeWidth={2.5} />
           </div>
         </div>
-        <h3 className="text-[11.5px] font-black text-slate-500/90 uppercase tracking-[0.2em] mb-1.5 relative z-10 transition-colors group-hover:text-amber-500">Shift Hari Ini</h3>
-        <div className="flex items-baseline gap-2 relative z-10">
-          <span className="text-4xl font-black text-slate-800 tracking-tighter drop-shadow-sm">{todayShiftCount}</span>
-          <span className="text-[13px] font-bold text-slate-400">sesi</span>
+        <h3 className="text-[11px] font-bold text-zinc-400 uppercase tracking-widest mb-1">Shift Hari Ini</h3>
+        <div className="flex items-baseline gap-2">
+          <span className="text-3xl font-black text-zinc-100 tracking-tight">{todayShiftCount}</span>
+          <span className="text-xs font-semibold text-zinc-500">sesi</span>
         </div>
       </div>
     </div>

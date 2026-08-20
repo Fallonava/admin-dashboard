@@ -55,24 +55,24 @@ function getAvatarGradient(status: Doctor['status']) {
 
 function getStatusBadgeStyle(status: Doctor['status']) {
   switch (status) {
-    case 'PRAKTEK': return "bg-blue-50 text-blue-600 border border-blue-100";
-    case 'PENUH': return "bg-orange-50 text-orange-600 border border-orange-100";
-    case 'CUTI': return "bg-pink-50 text-pink-600 border border-pink-100";
-    case 'OPERASI': return "bg-red-50 text-red-600 border border-red-100";
-    case 'SELESAI': return "bg-emerald-50 text-emerald-600 border border-emerald-100";
-    case 'PENDAFTARAN': return "bg-indigo-50 text-indigo-600 border border-indigo-100";
-    case 'TERJADWAL': return "bg-sky-50 text-sky-600 border border-sky-100";
-    default: return "bg-slate-50 text-slate-500 border border-slate-100";
+    case 'PRAKTEK': return "bg-blue-950/60 text-blue-400 border border-blue-800/60";
+    case 'PENUH': return "bg-amber-950/60 text-amber-400 border border-amber-800/60";
+    case 'CUTI': return "bg-rose-950/60 text-rose-400 border border-rose-800/60";
+    case 'OPERASI': return "bg-red-950/60 text-red-400 border border-red-800/60";
+    case 'SELESAI': return "bg-emerald-950/60 text-emerald-400 border border-emerald-800/60";
+    case 'PENDAFTARAN': return "bg-indigo-950/60 text-indigo-400 border border-indigo-800/60";
+    case 'TERJADWAL': return "bg-zinc-800/80 text-zinc-300 border border-zinc-700";
+    default: return "bg-zinc-800/80 text-zinc-400 border border-zinc-700";
   }
 }
 
 function getCardGlowClass(status: Doctor['status']) {
   switch (status) {
-    case 'PRAKTEK': return "border-blue-300/80 shadow-[0_4px_24px_-4px_rgba(59,130,246,0.18)]";
-    case 'OPERASI': return "border-red-300/80 shadow-[0_4px_24px_-4px_rgba(239,68,68,0.2)]";
-    case 'PENUH': return "border-orange-300/80 shadow-[0_4px_24px_-4px_rgba(249,115,22,0.18)]";
-    case 'PENDAFTARAN': return "border-indigo-300/80 shadow-[0_4px_24px_-4px_rgba(99,102,241,0.18)]";
-    default: return "border-white/60 shadow-[0_8px_32px_rgba(0,0,0,0.04)]";
+    case 'PRAKTEK': return "border-blue-500/80";
+    case 'OPERASI': return "border-red-500/80";
+    case 'PENUH': return "border-amber-500/80";
+    case 'PENDAFTARAN': return "border-indigo-500/80";
+    default: return "border-[#232736]";
   }
 }
 
@@ -92,8 +92,7 @@ interface DoctorCardProps {
 
 /**
  * DoctorCard — Memoized for performance.
- * Refrains from re-rendering unless core data changes.
- * Logic calculations moved to props to reduce per-item overhead.
+ * Solid Titanium Luxe UI (Zero Blur, Zero Ambient Blob).
  */
 export const DoctorCard = memo(function DoctorCard({
   doc, shifts, todayDayIdx, todayStr,
@@ -127,25 +126,18 @@ export const DoctorCard = memo(function DoctorCard({
 
   return (
     <div className={cn(
-      "super-glass-card bg-white/40 backdrop-blur-3xl group relative overflow-hidden transition-all duration-500 hover:-translate-y-1 hover:bg-white/60",
-      isCompact ? "p-3 sm:p-3.5 rounded-[22px]" : "p-4 sm:p-5 rounded-[28px]",
-      getCardGlowClass(doc.status),
-      automationEnabled && "hover:opacity-100"
+      "bg-[#131620] border hover:border-[#3A425C] shadow-sm relative overflow-hidden transition-all duration-200",
+      isCompact ? "p-3 sm:p-3.5 rounded-[16px]" : "p-4 sm:p-5 rounded-[20px]",
+      getCardGlowClass(doc.status)
     )}>
-      {/* Inner glass highlight */}
-      <div className="absolute inset-0 bg-gradient-to-br from-white/60 to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-0" />
-      {automationEnabled && (
-        <div className="absolute inset-0 bg-violet-500/5 pointer-events-none z-0" />
-      )}
-
       {/* Status dot */}
-      <div className={cn("absolute top-4 right-4 w-3 h-3 rounded-full z-20 shadow-sm transition-all duration-300", getStatusDotColor(doc.status))} />
+      <div className={cn("absolute top-3.5 right-3.5 w-2.5 h-2.5 rounded-full z-20", getStatusDotColor(doc.status))} />
 
       {/* Doctor info */}
-      <div className={cn("flex items-start gap-3 relative z-10", isCompact ? "mb-2" : "mb-4")}>
+      <div className={cn("flex items-start gap-3 relative z-10", isCompact ? "mb-2" : "mb-3.5")}>
         <Avatar className={cn(
-          "shadow-sm border-[3px] border-white/80 ring-1 ring-black/5 group-hover:scale-105 transition-transform duration-300 shrink-0",
-          isCompact ? "h-9 w-9" : "h-12 w-12"
+          "shadow-sm border border-[#2B3145] shrink-0",
+          isCompact ? "h-9 w-9" : "h-11 w-11"
         )}>
           <AvatarFallback className={cn("text-xs font-black text-white", getAvatarGradient(doc.status))}>
             {doc.queueCode || doc.name.charAt(4)}
@@ -153,15 +145,15 @@ export const DoctorCard = memo(function DoctorCard({
         </Avatar>
         <div className="min-w-0 flex-1">
           <h4 className={cn(
-            "font-black tracking-tight text-slate-800 leading-tight group-hover:text-blue-600 transition-colors line-clamp-1",
-            isCompact ? "text-[13.5px]" : "text-[15px] sm:text-[16px]"
+            "font-black tracking-tight text-zinc-100 leading-tight line-clamp-1",
+            isCompact ? "text-[13px]" : "text-[14.5px] sm:text-[15px]"
           )}>{doc.name}</h4>
-          <div className="flex items-center gap-2 mt-1 flex-wrap">
-            <p className="text-[11px] tracking-wide text-slate-500 font-bold line-clamp-1">{doc.specialty}</p>
+          <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+            <p className="text-[11px] text-zinc-400 font-medium line-clamp-1">{doc.specialty}</p>
             {activeShift?.registrationTime && (
-              <div className="flex items-center gap-1 bg-white/60 backdrop-blur-md text-blue-600 px-1.5 py-0.5 rounded-[8px] border border-white/80 shadow-sm">
-                <Clock size={9} strokeWidth={2.5} />
-                <span className="text-[9.5px] font-black">{activeShift.registrationTime}</span>
+              <div className="flex items-center gap-1 bg-[#1A1E2B] text-blue-400 px-1.5 py-0.5 rounded-[6px] border border-[#2B3145]">
+                <Clock size={8} strokeWidth={2.5} />
+                <span className="text-[9px] font-bold">{activeShift.registrationTime}</span>
               </div>
             )}
           </div>
@@ -169,9 +161,9 @@ export const DoctorCard = memo(function DoctorCard({
       </div>
 
       {/* Status badge */}
-      <div className={cn("relative z-10", isCompact ? "mb-2" : "mb-3.5")}>
-        <div className={cn("inline-flex px-3 py-1.5 rounded-[12px] text-[10px] font-black uppercase tracking-widest shadow-sm backdrop-blur-md", 
-          getStatusBadgeStyle(doc.status).replace('bg-', 'bg-white/60 border border-white/80 '))}
+      <div className={cn("relative z-10", isCompact ? "mb-2" : "mb-3")}>
+        <div className={cn("inline-flex px-2.5 py-1 rounded-[8px] text-[10px] font-bold uppercase tracking-wider", 
+          getStatusBadgeStyle(doc.status))}
         >
           {STATUS_LABELS[doc.status] || doc.status}
         </div>
@@ -191,12 +183,12 @@ export const DoctorCard = memo(function DoctorCard({
                 key={shift.id}
                 onClick={() => onToggleShift(shift.id, shift)}
                 className={cn(
-                  "flex items-center gap-1 px-1.5 py-0.5 rounded-lg text-[9px] font-semibold transition-all border",
+                  "flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[9px] font-semibold transition-all border",
                   isDisabledToday
-                    ? "bg-red-50 text-red-400 border-red-100 line-through hover:bg-red-100"
+                    ? "bg-red-950/40 text-red-400 border-red-800/50 line-through"
                     : isActive
-                      ? "bg-emerald-50 text-emerald-600 border-emerald-200 ring-1 ring-emerald-200"
-                      : "bg-slate-50 text-slate-500 border-slate-100 hover:bg-slate-100"
+                      ? "bg-emerald-950/40 text-emerald-400 border-emerald-800/60"
+                      : "bg-[#1A1E2B] text-zinc-400 border-[#2B3145] hover:border-[#3A425C]"
                 )}
                 title={isDisabledToday ? 'Klik untuk aktifkan hari ini' : 'Klik untuk nonaktifkan hari ini'}
               >
@@ -213,54 +205,32 @@ export const DoctorCard = memo(function DoctorCard({
       {/* Status change buttons or AI status rendering */}
       <div className="relative z-10 w-full mt-1">
         {automationEnabled ? (
-          <div className="w-full flex flex-col items-center justify-center py-4 px-3 rounded-[20px] bg-gradient-to-br from-slate-50/50 to-slate-100/30 border border-slate-200/50 shadow-inner relative overflow-hidden group/ai">
-            {/* Subtle tech background */}
-            <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.1)_1px,transparent_1px)] bg-[size:10px_10px] opacity-20" />
-            
-            <div className="flex items-center gap-1.5 mb-2 relative z-10">
-              <Zap size={12} className="text-violet-500 fill-violet-500 animate-pulse drop-shadow-sm" />
-              <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Otomasi Pintar Aktif</span>
+          <div className="w-full flex flex-col items-center justify-center py-3.5 px-3 rounded-[14px] bg-[#161924] border border-[#262C3E]">
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <Zap size={11} className="text-violet-400 fill-violet-400" />
+              <span className="text-[9.5px] font-bold text-zinc-400 uppercase tracking-wider">Otomasi Pintar Aktif</span>
             </div>
             
             <div className={cn(
-              "px-6 py-2.5 rounded-[14px] text-[13px] font-black uppercase tracking-widest shadow-md border-2 transition-all duration-500 relative z-10 group-hover/ai:scale-[1.03]",
-              getStatusBadgeStyle(doc.status).replace('text-', 'text-white border-transparent shadow-').replace('bg-', 'bg-')
-            )}
-            style={{ backgroundColor: getStatusDotColor(doc.status).split(' ')[0].replace('bg-', 'var(--') /* fallback */ }}
-            >
-              <div className={cn("absolute inset-0 opacity-20 rounded-[12px]", getStatusDotColor(doc.status))} />
-              <span className="relative z-10 text-slate-800 drop-shadow-sm">
-                 {STATUS_LABELS[doc.status] || doc.status}
-              </span>
+              "px-4 py-1.5 rounded-[10px] text-[11px] font-bold uppercase tracking-wider border",
+              getStatusBadgeStyle(doc.status)
+            )}>
+               {STATUS_LABELS[doc.status] || doc.status}
             </div>
           </div>
         ) : (
           <>
             {/* Mobile: 2 rows × 4 buttons grid */}
             <div className="lg:hidden grid grid-cols-4 gap-1">
-              {STATUS_BUTTONS.slice(0, 4).map((action) => (
+              {STATUS_BUTTONS.map((action) => (
                 <button
                   key={action.id}
                   onClick={() => onStatusChange(doc.id, action.id as Doctor['status'])}
                   className={cn(
-                    "py-2.5 px-1 rounded-[14px] text-[10px] font-black transition-all disabled:opacity-50 text-center min-h-[44px] flex items-center justify-center tracking-wide",
+                    "py-2 px-1 rounded-[10px] text-[9.5px] font-bold transition-all disabled:opacity-50 text-center min-h-[38px] flex items-center justify-center tracking-tight border",
                     doc.status === action.id
-                      ? `${action.bg} text-white shadow-md ${action.hover}`
-                      : "bg-white/60 hover:bg-white backdrop-blur-md text-slate-500 border border-white/80 hover:border-white shadow-sm",
-                  )}
-                >
-                  {action.label}
-                </button>
-              ))}
-              {STATUS_BUTTONS.slice(4).map((action) => (
-                <button
-                  key={action.id}
-                  onClick={() => onStatusChange(doc.id, action.id as Doctor['status'])}
-                  className={cn(
-                    "py-2.5 px-1 rounded-[14px] text-[10px] font-black transition-all disabled:opacity-50 text-center min-h-[44px] flex items-center justify-center tracking-wide",
-                    doc.status === action.id
-                      ? `${action.bg} text-white shadow-md ${action.hover}`
-                      : "bg-white/60 hover:bg-white backdrop-blur-md text-slate-500 border border-white/80 hover:border-white shadow-sm",
+                      ? `${action.bg} text-white shadow-sm border-transparent`
+                      : "bg-[#1A1E2B] text-zinc-400 border-[#2B3145] hover:text-zinc-200 hover:border-[#3A425C]",
                   )}
                 >
                   {action.label}
@@ -268,17 +238,17 @@ export const DoctorCard = memo(function DoctorCard({
               ))}
             </div>
 
-            {/* Desktop: Original flex-wrap layout */}
+            {/* Desktop: Flex-wrap layout */}
             <div className="hidden lg:flex lg:flex-wrap gap-1 w-full">
               {STATUS_BUTTONS.map((action) => (
                 <button
                   key={action.id}
                   onClick={() => onStatusChange(doc.id, action.id as Doctor['status'])}
                   className={cn(
-                    "py-2 px-1 flex-1 min-w-[32px] rounded-[12px] text-[10px] tracking-wide font-black transition-all disabled:opacity-50 line-clamp-1 truncate text-center",
+                    "py-1.5 px-1 flex-1 min-w-[28px] rounded-[8px] text-[9.5px] font-bold transition-all disabled:opacity-50 truncate text-center border",
                     doc.status === action.id
-                      ? `${action.bg} text-white shadow-md ${action.hover}`
-                      : "bg-white/60 hover:bg-white backdrop-blur-md text-slate-600 border border-white/80 hover:border-white shadow-sm scale-95 hover:scale-100",
+                      ? `${action.bg} text-white shadow-sm border-transparent`
+                      : "bg-[#1A1E2B] text-zinc-400 border-[#2B3145] hover:text-zinc-200 hover:border-[#3A425C]",
                   )}
                 >
                   {action.label}

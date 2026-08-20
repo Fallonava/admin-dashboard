@@ -30,69 +30,50 @@
 
 @layer base {
   :root {
-    /* Apple Modern 2026 Aesthetic Variables */
-    --background: 240 10% 97%; /* #f5f5f7 - Apple classic light gray */
-    --foreground: 240 10% 12%; /* #1c1c1e - Dark text, highly readable */
+    /* Obsidian Titanium 2026 Luxe Palette (Solid Matte, Zero Blur) */
+    --background: 228 26% 6%;    /* #0B0D13 - Deep Obsidian */
+    --foreground: 220 14% 96%;   /* #F1F3F9 - Crisp Platinum White */
 
-    --card: 0 0% 100%; /* Pure white */
-    --card-foreground: 240 10% 12%;
+    --card: 228 24% 10%;         /* #131620 - Solid Titanium Slate */
+    --card-foreground: 220 14% 96%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 12%;
+    --popover: 228 24% 10%;
+    --popover-foreground: 220 14% 96%;
 
-    --primary: 219 100% 50%; /* #005cff - Apple vivid blue */
+    --primary: 217 91% 60%;      /* #3B82F6 - Electric Blue */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 240 5% 90%; /* #e5e5ea */
-    --secondary-foreground: 240 10% 12%;
+    --secondary: 228 20% 16%;    /* #212636 */
+    --secondary-foreground: 220 14% 90%;
 
-    --muted: 240 5% 94%; /* #f2f2f7 */
-    --muted-foreground: 240 5% 45%; /* #8e8e93 */
+    --muted: 228 20% 14%;        /* #1A1E2B */
+    --muted-foreground: 220 10% 60%; /* #9398A7 */
 
-    --accent: 219 100% 95%; /* Soft blue background for active */
-    --accent-foreground: 219 100% 40%;
+    --accent: 228 24% 18%;       /* #252B3E */
+    --accent-foreground: 217 91% 65%;
 
-    --destructive: 348 100% 54%; /* #ff2d55 - Apple vivid pink/red */
+    --destructive: 0 84% 60%;    /* #EF4444 */
     --destructive-foreground: 0 0% 100%;
 
-    --border: 240 5% 96%; /* Extremely soft border, like Apple's thin lines */
-    --input: 240 5% 96%;
-    --ring: 219 100% 50%;
-    --radius: 1.25rem; /* Smooth Apple-like squircle radius */
+    --border: 228 20% 18%;       /* #232736 - 1px Crisp Hairline Border */
+    --input: 228 20% 18%;
+    --ring: 217 91% 60%;
+    --radius: 1rem;
 
     /* Domain Colors */
-    --color-domain-dashboard: 219 100% 50%; /* Blue */
-    --color-domain-schedules: 260 100% 60%; /* Violet */
-    --color-domain-leaves: 160 100% 40%;    /* Emerald */
-    --color-domain-doctors: 200 100% 45%;   /* Sky */
-    --color-domain-recaps: 320 100% 60%;    /* Pink/Fuchsia */
+    --color-domain-dashboard: 217 91% 60%;
+    --color-domain-schedules: 250 89% 65%;
+    --color-domain-leaves: 158 84% 45%;
+    --color-domain-doctors: 199 89% 48%;
+    --color-domain-recaps: 330 81% 60%;
   }
 }
 
 @layer base {
   body {
-    /* Base background color + Elegant Soft Mesh Gradient Overlay */
-    /* background-attachment: scroll — mencegah repaint saat scroll di mobile/mid-range */
+    /* Pure Solid Obsidian Matte Background (Zero Blur, Zero Blob) */
     background-color: hsl(var(--background));
-    background-image:
-      radial-gradient(
-        at 10% 0%,
-        hsla(219, 100%, 75%, 0.15) 0px,
-        transparent 50%
-      ),
-      /* Soft Blue */
-        radial-gradient(
-          at 90% 10%,
-          hsla(320, 100%, 80%, 0.12) 0px,
-          transparent 50%
-        ),
-      /* Soft Pink */
-        radial-gradient(
-          at 50% 100%,
-          hsla(260, 100%, 80%, 0.1) 0px,
-          transparent 50%
-        ); /* Soft Purple */
-    background-attachment: scroll;
+    background-image: none;
     color: hsl(var(--foreground));
     font-family:
       -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", sans-serif;
@@ -120,26 +101,20 @@
   }
 }
 
-/* Base UI Components — Blur dikurangi untuk 60fps di mid-range */
+/* Base UI Components — Solid Titanium Surface (Anti-Glass / Anti-Blur) */
 .glass-panel {
-  @apply bg-white/60 backdrop-blur-[24px] saturate-150 shadow-[4px_0_24px_-8px_rgba(0,0,0,0.05)];
+  @apply bg-[#10121A] border border-[#1E2230] shadow-sm;
   will-change: auto;
 }
 
 .super-glass-card {
-  @apply relative overflow-hidden bg-white/55 backdrop-blur-[16px] saturate-[1.15] shadow-[0_8px_32px_-8px_rgba(0,0,0,0.08),inset_0_1px_1px_rgba(255,255,255,0.8)] hover:shadow-[0_16px_48px_-12px_rgba(0,0,0,0.12),inset_0_1px_1px_rgba(255,255,255,0.9)] transition-shadow duration-300 ease-out z-10;
+  @apply relative overflow-hidden bg-[#131620] border border-[#232736] shadow-sm hover:border-[#353D56] transition-all duration-300 ease-out z-10;
   contain: layout paint;
   will-change: auto;
 }
 
-.super-glass-card::before {
-  content: "";
-  @apply absolute inset-0 bg-gradient-to-br from-blue-500/[0.03] via-purple-500/[0.03] to-pink-500/[0.03] opacity-0 hover:opacity-100 transition-opacity duration-300 ease-out -z-10;
-  pointer-events: none;
-}
-
 .super-glass {
-  @apply bg-white/40 backdrop-blur-[30px] saturate-150 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),0_8px_32px_rgba(0,0,0,0.06)];
+  @apply bg-[#10121A] border border-[#1E2230] shadow-sm;
   will-change: auto;
 }
 

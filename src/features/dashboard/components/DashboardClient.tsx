@@ -198,37 +198,30 @@ export function DashboardClient() {
   const todayLabel = now.toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
 
   return (
-    <div className="w-full h-full flex flex-col overflow-hidden relative bg-slate-50/50">
-      {/* Ambient Animated Glowing Background */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-300/30 rounded-full mix-blend-multiply filter blur-[80px] opacity-70 animate-blob" />
-        <div className="absolute top-[20%] right-[-10%] w-[40%] h-[40%] bg-indigo-300/30 rounded-full mix-blend-multiply filter blur-[80px] opacity-70 animate-blob animation-delay-2000" />
-        <div className="absolute bottom-[-10%] left-[20%] w-[50%] h-[50%] bg-emerald-300/20 rounded-full mix-blend-multiply filter blur-[80px] opacity-70 animate-blob animation-delay-4000" />
-      </div>
-
+    <div className="w-full h-full flex flex-col overflow-hidden relative bg-[#0B0D13] text-zinc-100">
       <div className="relative z-10 w-full flex-none">
       {/* ═══════════════════ UNIFIED PAGE HEADER ═══════════════════ */}
       <PageHeader
         icon={<LayoutDashboard size={20} className="text-white" />}
         title={`${greeting}, Admin`}
         subtitle={todayLabel}
-        iconGradient="from-violet-500 to-blue-600"
-        accentBarGradient="from-violet-500 via-blue-500 to-indigo-500"
+        iconGradient="from-blue-600 to-indigo-600"
+        accentBarGradient="from-blue-500 via-indigo-500 to-purple-500"
         badge={
           <>
             {/* Efficiency Pill */}
             {efficiency > 0 && (
-              <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-violet-50 border border-violet-200 rounded-full text-[10px] font-bold text-violet-700 shrink-0">
-                <Activity size={10} className="shrink-0" />
+              <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-[#141722] border border-[#2B3145] rounded-full text-[10px] font-bold text-zinc-300 shrink-0">
+                <Activity size={10} className="shrink-0 text-emerald-400" />
                 {efficiency}% Efisiensi
               </span>
             )}
             {/* SSE Status Pill */}
             <span className={cn(
               "hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold border shrink-0",
-              sseStatus === 'connected' ? "bg-emerald-50 text-emerald-600 border-emerald-200"
-              : sseStatus === 'reconnecting' ? "bg-amber-50 text-amber-600 border-amber-200 animate-pulse"
-              : "bg-slate-100 text-slate-500 border-slate-200"
+              sseStatus === 'connected' ? "bg-emerald-950/40 text-emerald-400 border-emerald-800/50"
+              : sseStatus === 'reconnecting' ? "bg-amber-950/40 text-amber-400 border-amber-800/50 animate-pulse"
+              : "bg-zinc-800 text-zinc-400 border-zinc-700"
             )}>
               {sseStatus === 'connected'
                 ? <><Wifi size={10} strokeWidth={2.5} className="shrink-0" /> Live</>
@@ -245,19 +238,19 @@ export function DashboardClient() {
             <div className="hidden lg:flex shrink-0">
               <LiveClock />
             </div>
-            <div className="hidden lg:block h-6 w-px bg-slate-200 mx-1" />
+            <div className="hidden lg:block h-5 w-px bg-[#2B3145] mx-1" />
 
             {/* Automation Toggle */}
             <button
               onClick={toggleAutomation}
               className={cn(
-                "flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-black transition-all active:scale-[0.97] relative overflow-hidden border shrink-0",
+                "flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all active:scale-[0.97] border shrink-0",
                 automationEnabled
-                  ? "bg-gradient-to-r from-violet-600 to-indigo-700 text-white shadow-[0_8px_20px_-6px_rgba(99,102,241,0.5)] border-violet-400/50"
-                  : "bg-white text-slate-600 hover:bg-slate-50 border-slate-200 shadow-sm"
+                  ? "bg-violet-600 text-white border-violet-500 shadow-sm"
+                  : "bg-[#141722] text-zinc-400 hover:text-zinc-200 border-[#2B3145]"
               )}
             >
-              <Zap size={14} className={cn("shrink-0 transition-all", automationEnabled ? "fill-white text-white drop-shadow-[0_0_4px_rgba(167,139,250,0.8)]" : "text-slate-400")} />
+              <Zap size={13} className={cn("shrink-0", automationEnabled ? "fill-white text-white" : "text-zinc-400")} />
               <span>{automationEnabled ? "AI Aktif" : "AI Pasif"}</span>
               {automationEnabled && (
                 <span className="flex h-1.5 w-1.5 shrink-0 ml-0.5">
@@ -269,11 +262,10 @@ export function DashboardClient() {
 
             {/* Search (desktop) with Ctrl+K badge */}
             <div className="relative group hidden lg:block shrink-0">
-              <div className="absolute -inset-0.5 bg-gradient-to-r from-violet-500/20 to-blue-500/20 rounded-full blur opacity-0 group-focus-within:opacity-100 transition duration-500" />
               <div className="relative flex items-center">
                 {isSearching
-                  ? <Loader2 className="absolute left-3.5 top-1/2 -translate-y-1/2 text-violet-500 h-4 w-4 animate-spin shrink-0" />
-                  : <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 h-4 w-4 shrink-0" />
+                  ? <Loader2 className="absolute left-3.5 top-1/2 -translate-y-1/2 text-blue-400 h-4 w-4 animate-spin shrink-0" />
+                  : <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 h-4 w-4 shrink-0" />
                 }
                 <input
                   id="admin-search-input"
@@ -281,45 +273,45 @@ export function DashboardClient() {
                   placeholder="Cari dokter..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 pr-12 py-2.5 rounded-full bg-white/40 backdrop-blur-xl hover:bg-white/60 focus:bg-white text-sm w-48 xl:w-56 outline-none border border-white/60 hover:border-white/80 focus:border-violet-300 focus:ring-4 focus:ring-violet-500/10 transition-all duration-300 font-black text-slate-700 placeholder:text-slate-400 shadow-[0_2px_10px_-2px_rgba(0,0,0,0.05)] focus:shadow-[0_8px_30px_rgba(139,92,246,0.15)]"
+                  className="pl-9 pr-12 py-2 rounded-xl bg-[#141722] text-zinc-100 text-xs w-44 xl:w-52 outline-none border border-[#2B3145] hover:border-[#3A425C] focus:border-blue-500 transition-all font-bold placeholder:text-zinc-500"
                 />
-                <kbd className="absolute right-3 top-1/2 -translate-y-1/2 hidden xl:inline-flex items-center px-1.5 py-0.5 text-[9px] font-black text-slate-400 bg-white/80 border border-slate-200 rounded-md shadow-xs pointer-events-none">
+                <kbd className="absolute right-2.5 top-1/2 -translate-y-1/2 hidden xl:inline-flex items-center px-1.5 py-0.5 text-[9px] font-bold text-zinc-500 bg-[#1A1E2B] border border-[#2B3145] rounded-md pointer-events-none">
                   ⌘K
                 </kbd>
               </div>
             </div>
 
             {/* Density Toggle (Comfortable vs Compact) */}
-            <div className="hidden sm:flex items-center bg-white/50 backdrop-blur-md p-1 rounded-full border border-white/80 shadow-xs shrink-0">
+            <div className="hidden sm:flex items-center bg-[#141722] p-1 rounded-xl border border-[#2B3145] shrink-0">
               <button
                 onClick={() => setDensity('comfortable')}
                 className={cn(
-                  "p-1.5 rounded-full transition-all text-xs",
-                  density === 'comfortable' ? "bg-white text-indigo-600 shadow-xs font-bold" : "text-slate-400 hover:text-slate-600"
+                  "p-1.5 rounded-lg transition-all text-xs",
+                  density === 'comfortable' ? "bg-[#1F2433] text-blue-400 font-bold border border-[#2E354B]" : "text-zinc-500 hover:text-zinc-300"
                 )}
                 title="Tampilan Nyaman (Detail)"
               >
-                <StretchHorizontal size={15} />
+                <StretchHorizontal size={14} />
               </button>
               <button
                 onClick={() => setDensity('compact')}
                 className={cn(
-                  "p-1.5 rounded-full transition-all text-xs",
-                  density === 'compact' ? "bg-white text-indigo-600 shadow-xs font-bold" : "text-slate-400 hover:text-slate-600"
+                  "p-1.5 rounded-lg transition-all text-xs",
+                  density === 'compact' ? "bg-[#1F2433] text-blue-400 font-bold border border-[#2E354B]" : "text-zinc-500 hover:text-zinc-300"
                 )}
                 title="Tampilan Kompak (Grid Padat)"
               >
-                <LayoutGrid size={15} />
+                <LayoutGrid size={14} />
               </button>
             </div>
 
             {/* Logout */}
             <button
               onClick={() => logout()}
-              className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all border border-transparent hover:border-red-100 shrink-0"
+              className="p-2 text-zinc-400 hover:text-red-400 hover:bg-red-950/40 rounded-xl transition-all border border-transparent shrink-0"
               title="Keluar"
             >
-              <Power size={17} strokeWidth={2.5} />
+              <Power size={16} strokeWidth={2.5} />
             </button>
           </div>
         }
@@ -327,7 +319,7 @@ export function DashboardClient() {
       </div>{/* End Header Wrapper */}
 
       {/* ═══════════ SCROLLABLE CONTENT ═══════════ */}
-      <div className="flex-1 overflow-y-auto custom-scrollbar px-4 sm:px-6 lg:px-8 pb-6 space-y-6 pt-5 relative z-10 animate-in fade-in duration-700 ease-out">
+      <div className="flex-1 overflow-y-auto custom-scrollbar px-4 sm:px-6 lg:px-8 pb-6 space-y-6 pt-3 relative z-10">
 
         {/* Stats Cards */}
         <DashboardStats
@@ -338,10 +330,10 @@ export function DashboardClient() {
         />
 
         {/* Live Control Panel */}
-        <div className="w-full space-y-5">
+        <div className="w-full space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-black text-slate-800 flex items-center gap-2.5">
-              <span className="w-1.5 h-6 rounded-full bg-gradient-to-b from-blue-500 to-indigo-600" />
+            <h3 className="text-base font-bold text-zinc-100 flex items-center gap-2">
+              <span className="w-1.5 h-4 rounded-full bg-blue-500" />
               Kontrol Status Langsung
             </h3>
 
@@ -349,19 +341,19 @@ export function DashboardClient() {
               {/* Mobile Search Button */}
               <button
                 onClick={() => setIsMobileSearchOpen(true)}
-                className="lg:hidden flex items-center gap-2 px-3 py-2 min-h-[40px] bg-white/40 backdrop-blur-xl hover:bg-white border border-white/60 hover:border-white/80 rounded-[14px] shadow-sm transition-all duration-300 active:scale-95 text-slate-600 hover:text-indigo-600"
+                className="lg:hidden flex items-center gap-2 px-3 py-1.5 bg-[#141722] border border-[#2B3145] rounded-xl text-zinc-400 hover:text-zinc-200"
                 title="Cari Dokter"
               >
-                <Search size={16} strokeWidth={2.5} />
-                <span className="text-[13px] font-black tracking-wide">Cari</span>
+                <Search size={14} strokeWidth={2.5} />
+                <span className="text-xs font-bold">Cari</span>
               </button>
 
               {/* Status Indicator */}
               <div className={cn(
-                "px-3.5 py-2 rounded-[14px] text-[11px] font-black tracking-widest uppercase flex items-center gap-2 transition-all shadow-[0_4px_12px_-4px_rgba(0,0,0,0.1)] border backdrop-blur-md",
+                "px-3 py-1.5 rounded-xl text-[11px] font-bold tracking-wider uppercase flex items-center gap-2 border",
                 automationEnabled
-                  ? "bg-violet-50/80 text-violet-700 border-violet-200"
-                  : "bg-emerald-50/80 text-emerald-700 border-emerald-200"
+                  ? "bg-violet-950/40 text-violet-400 border-violet-800/50"
+                  : "bg-emerald-950/40 text-emerald-400 border-emerald-800/50"
               )}>
                 <span className="relative flex h-2 w-2">
                   <span className={cn(

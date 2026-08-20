@@ -62,10 +62,9 @@ export function PageHeader({
         "animate-in fade-in slide-in-from-top-4 duration-500 ease-out",
         "flex-none z-50",
         "m-2 sm:m-4 lg:m-6 lg:mb-2",
-        "rounded-[24px] lg:rounded-[32px]",
-        "bg-white/80 backdrop-blur-3xl saturate-150",
-        "border border-white/60",
-        "shadow-[0_8px_30px_rgb(0,0,0,0.04),inset_0_1px_1px_rgba(255,255,255,0.9)]",
+        "rounded-[20px] lg:rounded-[24px]",
+        "bg-[#131620] border border-[#232736]",
+        "shadow-sm",
         className
       )}
     >
@@ -74,19 +73,11 @@ export function PageHeader({
         {/* Left: Icon + Title + Subtitle */}
         <div className="flex items-center gap-3.5 lg:gap-4 min-w-0">
 
-          {/* Icon Badge with glow */}
+          {/* Solid Icon Badge */}
           <div className="relative shrink-0">
-            {/* Glow */}
             <div
               className={cn(
-                "absolute inset-0 rounded-2xl blur-md opacity-50 scale-110 bg-gradient-to-br",
-                iconGradient
-              )}
-            />
-            {/* Badge */}
-            <div
-              className={cn(
-                "relative w-10 h-10 lg:w-11 lg:h-11 rounded-2xl flex items-center justify-center bg-gradient-to-br shadow-[0_4px_16px_rgba(0,0,0,0.15)]",
+                "relative w-10 h-10 lg:w-11 lg:h-11 rounded-xl flex items-center justify-center bg-gradient-to-br border border-white/10 shadow-sm",
                 iconGradient
               )}
             >
@@ -97,13 +88,13 @@ export function PageHeader({
           {/* Title block */}
           <div className="min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <h1 className="text-lg lg:text-xl font-black text-slate-900 tracking-tight leading-tight truncate">
+              <h1 className="text-lg lg:text-xl font-black text-zinc-100 tracking-tight leading-tight truncate">
                 {renderTitle()}
               </h1>
               {badge}
             </div>
             {subtitle && (
-              <p className="text-[11px] lg:text-xs text-slate-500 font-medium mt-0.5 truncate">
+              <p className="text-[11px] lg:text-xs text-zinc-400 font-medium mt-0.5 truncate">
                 {subtitle}
               </p>
             )}

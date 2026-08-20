@@ -108,19 +108,19 @@ export function BottomNav() {
           sheetOpen ? "translate-y-0" : "translate-y-full"
         )}
       >
-        <div className="bg-white/95 backdrop-blur-3xl rounded-t-[32px] border-t border-white/60 shadow-[0_-20px_60px_rgba(0,0,0,0.12)] px-5 pt-5 pb-[calc(env(safe-area-inset-bottom,0px)+6rem)]">
+        <div className="bg-[#131620] rounded-t-[24px] border-t border-[#232736] shadow-2xl px-5 pt-5 pb-[calc(env(safe-area-inset-bottom,0px)+6rem)]">
           {/* Handle bar */}
-          <div className="w-10 h-1 bg-slate-200 rounded-full mx-auto mb-5" />
+          <div className="w-10 h-1 bg-[#232736] rounded-full mx-auto mb-5" />
 
           {/* Header */}
           <div className="flex items-center justify-between mb-5">
             <div>
-              <h3 className="font-black text-slate-800 text-base">Tambah Cepat</h3>
-              <p className="text-slate-400 text-xs font-semibold mt-0.5">Pilih jenis data yang ingin ditambahkan</p>
+              <h3 className="font-black text-zinc-100 text-base">Tambah Cepat</h3>
+              <p className="text-zinc-400 text-xs font-medium mt-0.5">Pilih jenis data yang ingin ditambahkan</p>
             </div>
             <button
               onClick={() => setSheetOpen(false)}
-              className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 transition-colors"
+              className="w-8 h-8 rounded-full bg-[#1A1E2B] border border-[#2B3145] flex items-center justify-center text-zinc-400 transition-colors"
             >
               <X size={16} />
             </button>
@@ -137,22 +137,17 @@ export function BottomNav() {
               <button
                 key={action.href}
                 onClick={() => handleSheetNav(action.href)}
-                className={cn(
-                  "group flex flex-col items-center justify-center gap-2.5 p-4 rounded-[20px]",
-                  `bg-gradient-to-br ${action.bg}`,
-                  `border ${action.border}`,
-                  "hover:shadow-md active:scale-95 transition-all duration-200"
-                )}
+                className="group flex flex-col items-center justify-center gap-2.5 p-4 rounded-[16px] bg-[#1A1E2B] border border-[#2B3145] hover:border-[#3A425C] active:scale-95 transition-all duration-200"
               >
                 <div className={cn(
-                  "w-11 h-11 bg-gradient-to-br rounded-2xl flex items-center justify-center shadow transition-shadow",
-                  action.gradient, action.shadow
+                  "w-11 h-11 rounded-xl flex items-center justify-center shadow-sm",
+                  action.gradient
                 )}>
                   <action.Icon size={20} className="text-white" strokeWidth={2} />
                 </div>
                 <div className="text-center">
-                  <p className="font-black text-slate-800 text-[12px] leading-tight">{action.label}</p>
-                  <p className="text-slate-400 text-[10px] font-semibold mt-0.5 hidden sm:block">{action.sub}</p>
+                  <p className="font-black text-zinc-100 text-[12px] leading-tight">{action.label}</p>
+                  <p className="text-zinc-400 text-[10px] font-medium mt-0.5 hidden sm:block">{action.sub}</p>
                 </div>
               </button>
             ))}
@@ -163,10 +158,10 @@ export function BottomNav() {
       {/* ══════ BOTTOM NAV BAR ══════ */}
       <div className="lg:hidden fixed bottom-0 left-0 right-0 z-[100] pointer-events-none">
         <div className="relative pointer-events-auto">
-          {/* Glass plate */}
-          <div className="absolute inset-x-0 bottom-0 top-0 bg-white/80 backdrop-blur-3xl border-t border-white/50 shadow-[0_-10px_40px_rgba(0,0,0,0.08)] ring-1 ring-black/5 rounded-t-[32px]" />
+          {/* Solid plate */}
+          <div className="absolute inset-x-0 bottom-0 top-0 bg-[#10121A] border-t border-[#1E2230] shadow-xl rounded-t-[24px]" />
 
-          <nav className="relative flex items-center justify-between px-6 h-20 pb-[env(safe-area-inset-bottom,16px)]">
+          <nav className="relative flex items-center justify-between px-6 h-18 pb-[env(safe-area-inset-bottom,16px)]">
             {visibleItems.map((item) => {
               const isActive =
                 pathname === item.href ||
@@ -183,14 +178,14 @@ export function BottomNav() {
                     <div className="h-[40px] w-[40px] flex items-center justify-center">
                       <div
                         className={cn(
-                          "absolute -top-6 h-16 w-16 rounded-full flex items-center justify-center transition-all duration-500 shadow-xl",
+                          "absolute -top-5 h-14 w-14 rounded-full flex items-center justify-center transition-all duration-300 shadow-md border",
                           sheetOpen
-                            ? "btn-gradient text-white shadow-blue-500/40 scale-110"
-                            : "bg-slate-900 text-white shadow-slate-900/30 hover:scale-105"
+                            ? "bg-blue-600 text-white border-blue-400 scale-110"
+                            : "bg-blue-600 text-white border-blue-500 hover:scale-105"
                         )}
                       >
                         <Icon
-                          size={28}
+                          size={24}
                           className={cn(
                             "transition-transform duration-300",
                             sheetOpen && "rotate-45"
@@ -200,8 +195,8 @@ export function BottomNav() {
                     </div>
                     <span
                       className={cn(
-                        "text-[10px] font-black mt-1 uppercase tracking-tighter transition-all duration-300",
-                        sheetOpen ? "text-blue-600 opacity-100" : "text-slate-400 opacity-70"
+                        "text-[10px] font-black mt-1 uppercase tracking-wider transition-all duration-200",
+                        sheetOpen ? "text-blue-400 opacity-100" : "text-zinc-500"
                       )}
                     >
                       {item.name}
@@ -214,16 +209,16 @@ export function BottomNav() {
                 <>
                   <div
                     className={cn(
-                      "p-2 rounded-2xl transition-all duration-300",
-                      isActive ? "bg-blue-600/10 text-blue-600 scale-110" : "text-slate-400"
+                      "p-1.5 rounded-xl transition-all duration-200",
+                      isActive ? "bg-[#1A1E2B] text-blue-400 border border-[#2B3145]" : "text-zinc-500"
                     )}
                   >
-                    <Icon size={24} strokeWidth={isActive ? 2.5 : 2} />
+                    <Icon size={20} strokeWidth={isActive ? 2.5 : 2} />
                   </div>
                   <span
                     className={cn(
-                      "text-[10px] font-black mt-1 uppercase tracking-tighter transition-all duration-300",
-                      isActive ? "text-blue-600 opacity-100" : "text-slate-400 opacity-70"
+                      "text-[10px] font-bold mt-1 uppercase tracking-wider transition-all duration-200",
+                      isActive ? "text-blue-400 opacity-100" : "text-zinc-500"
                     )}
                   >
                     {item.name}
