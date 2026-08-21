@@ -21,6 +21,7 @@ const PUBLIC_PATHS = [
   '/tv.html',             // Main TV display page
   '/tv-backup.html',      // Backup copy of main TV display
   '/tvmod.html',          // Super Premium Claymorphism TV Display with QR & Hotline
+  '/tvmode.html',         // Mobile First Ultra Native Apple iOS 2026 Display
   '/tv-lama.html',        // TV display (Legacy version) 
   '/tv-modern.html',      // TV display (Modern version)
 ];

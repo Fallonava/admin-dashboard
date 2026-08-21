@@ -2268,6 +2268,157 @@
         .status-pill { font-size: 8px; padding: 2px 6px; }
         .status-pill .material-icons-round { font-size: 9px !important; margin-right: 2px; }
       }
+    
+      /* ===== DYNAMIC QR & HIGHLIGHTED HOSPITAL HOTLINE ===== */
+      .sidebar-qr-hotline {
+        padding: clamp(10px, 1.2vw, 14px);
+        border-top: 1px solid var(--border-light);
+        background: var(--card-bg, rgba(255, 255, 255, 0.05));
+        display: flex;
+        flex-direction: column;
+        gap: clamp(8px, 1vh, 12px);
+        flex-shrink: 0;
+      }
+
+      .qr-flex-row {
+        display: flex;
+        align-items: center;
+        gap: clamp(10px, 1.2vw, 14px);
+      }
+
+      .dynamic-qr-box {
+        width: clamp(70px, 7.5vw, 110px);
+        height: clamp(70px, 7.5vw, 110px);
+        aspect-ratio: 1 / 1;
+        border-radius: 12px;
+        background: #FFFFFF;
+        padding: 5px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1), inset 0 0 0 1px rgba(0, 0, 0, 0.06);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+
+      .dynamic-qr-box img,
+      .dynamic-qr-box canvas {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: contain;
+        border-radius: 6px;
+      }
+
+      .qr-meta-col {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+        min-width: 0;
+      }
+
+      .qr-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 3px 8px;
+        border-radius: 6px;
+        background: rgba(10, 132, 255, 0.15);
+        color: var(--accent-blue, #007AFF);
+        font-size: clamp(8.5px, 0.8vw, 10.5px);
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        width: fit-content;
+      }
+
+      .qr-title {
+        font-size: clamp(10.5px, 1vw, 12.5px);
+        font-weight: 800;
+        line-height: 1.25;
+        color: var(--text-primary);
+      }
+
+      .qr-sub {
+        font-size: clamp(8.5px, 0.75vw, 10px);
+        font-weight: 600;
+        line-height: 1.3;
+        color: var(--text-secondary);
+      }
+
+      /* HIGHLIGHTED HOTLINE PILL 0823-2344-6076 */
+      .hotline-highlight-box {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: clamp(8px, 1vh, 12px) clamp(10px, 1.2vw, 14px);
+        border-radius: 12px;
+        background: linear-gradient(135deg, #059669 0%, #047857 100%);
+        color: #FFFFFF !important;
+        text-decoration: none;
+        box-shadow: 0 4px 14px rgba(5, 150, 105, 0.35);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .hotline-icon-wrap {
+        width: clamp(30px, 2.8vw, 38px);
+        height: clamp(30px, 2.8vw, 38px);
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+
+      .hotline-icon-wrap .material-icons-round {
+        font-size: clamp(18px, 1.6vw, 22px);
+        color: #FFFFFF;
+      }
+
+      .hotline-details {
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+        min-width: 0;
+        flex: 1;
+      }
+
+      .hotline-tag {
+        font-size: clamp(7.5px, 0.7vw, 9px);
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #D1FAE5;
+      }
+
+      .hotline-num {
+        font-family: "JetBrains Mono", monospace, sans-serif;
+        font-size: clamp(13px, 1.3vw, 17px);
+        font-weight: 900;
+        letter-spacing: 0.03em;
+        color: #FFFFFF !important;
+        line-height: 1.15;
+      }
+
+      .sidebar-info-ticker {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 8px;
+        border-radius: 8px;
+        background: rgba(125, 125, 125, 0.08);
+      }
+
+      .sidebar-info-ticker p {
+        font-size: clamp(8.5px, 0.75vw, 10px);
+        line-height: 1.3;
+        color: var(--text-secondary);
+        margin: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
     </style>
   </head>
 
@@ -2413,48 +2564,38 @@
             ></div>
           </div>
 
-          <!-- Info Cards (Bottom pinned or scroll) -->
-          <div
-            style="
-              padding: 12px 16px;
-              border-top: 1px solid var(--border-light);
-              background: rgba(0, 0, 0, 0.05);
-            "
-          >
-            <div
-              style="
-                display: flex;
-                gap: 8px;
-                align-items: center;
-                margin-bottom: 6px;
-              "
-            >
-              <span
-                class="material-icons-round"
-                style="color: var(--accent-blue); font-size: 16px"
-                >info</span
-              >
-              <span
-                style="
-                  font-size: 10px;
-                  font-weight: 700;
-                  text-transform: uppercase;
-                  color: var(--text-secondary);
-                "
-                >Pesan Informasi</span
-              >
+          <!-- Dynamic QR Code & Highlighted Hotline Number -->
+          <div class="sidebar-qr-hotline">
+            <div class="qr-flex-row">
+              <div class="dynamic-qr-box">
+                <div id="tvQrCode" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;"></div>
+              </div>
+              <div class="qr-meta-col">
+                <span class="qr-badge">
+                  <span class="material-icons-round" style="font-size: 12px;">qr_code_scanner</span>
+                  <span>Scan di HP</span>
+                </span>
+                <span class="qr-title">Jadwal Live Pasien</span>
+                <span class="qr-sub">Scan untuk membuka jadwal & nomor antrian langsung di smartphone Anda</span>
+              </div>
             </div>
-            <p
-              id="dynamicInfoBox"
-              style="
-                font-size: 10px;
-                line-height: 1.4;
-                color: var(--text-secondary);
-                transition: opacity 0.3s ease;
-              "
-            >
-              Memuat informasi terbaru...
-            </p>
+
+            <!-- Highlighted Hospital Information Number 0823-2344-6076 -->
+            <a href="https://wa.me/6282323446076" target="_blank" class="hotline-highlight-box">
+              <div class="hotline-icon-wrap">
+                <span class="material-icons-round">phone_in_talk</span>
+              </div>
+              <div class="hotline-details">
+                <span class="hotline-tag">INFORMASI & PENDAFTARAN RS</span>
+                <span class="hotline-num">0823-2344-6076</span>
+              </div>
+            </a>
+
+            <!-- Compact Dynamic Info Ticker -->
+            <div class="sidebar-info-ticker">
+              <span class="material-icons-round" style="color: var(--accent-blue); font-size: 14px;">campaign</span>
+              <p id="dynamicInfoBox">Memuat informasi terbaru...</p>
+            </div>
           </div>
 
 
@@ -4058,5 +4199,39 @@
 
       App.init();
     </script>
+  
+    <!-- QRCode.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script>
+      (function initTvQR() {
+        try {
+          const qrContainer = document.getElementById("tvQrCode");
+          if (qrContainer) {
+            qrContainer.innerHTML = "";
+            const currentUrl = window.location.href || "https://simed.fallonava.my.id/tv.html";
+            if (typeof QRCode !== "undefined") {
+              new QRCode(qrContainer, {
+                text: currentUrl,
+                width: 100,
+                height: 100,
+                colorDark: "#0F172A",
+                colorLight: "#FFFFFF",
+                correctLevel: QRCode.CorrectLevel.M
+              });
+            } else {
+              const qrImg = document.createElement("img");
+              qrImg.src = "https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=" + encodeURIComponent(currentUrl);
+              qrImg.style.width = "100%";
+              qrImg.style.height = "100%";
+              qrImg.style.objectFit = "contain";
+              qrContainer.appendChild(qrImg);
+            }
+          }
+        } catch (e) {
+          console.error("TV QR Code init error:", e);
+        }
+      })();
+    </script>
+
   </body>
 </html>
