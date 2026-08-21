@@ -84,6 +84,17 @@ export async function GET() {
 
     return NextResponse.json({
         doctors,
+        shifts: (shifts as any[]).map((s: any) => ({
+            id: s.id,
+            doctorId: s.doctorId,
+            dayIdx: s.dayIdx,
+            time: s.time,
+            formattedTime: s.formattedTime,
+            registrationTime: s.registrationTime,
+            title: s.title,
+            extra: s.extra,
+            disabledDates: s.disabledDates,
+        })),
         settings: { ...settings, id: String(settings.id) }
     }, {
         headers: {
