@@ -725,16 +725,106 @@
       }
 
     
+      
       /* =========================================================================
-         10. iOS JADWAL CUTI DOKTER STYLING
+         10. iOS JADWAL CUTI DOKTER & FULL CALENDAR CLONING
          ========================================================================= */
       .ios-leaves-container {
-        display: none; flex-direction: column; gap: 12px;
+        display: none; flex-direction: column; gap: 14px;
       }
       .ios-leaves-container.active {
         display: flex;
       }
 
+      /* Calendar Surface Card */
+      .leaves-cal-card {
+        background: #FFFFFF; border-radius: 24px; padding: 16px;
+        box-shadow: 6px 6px 18px rgba(166, 178, 195, 0.25), -4px -4px 12px #FFFFFF, inset 1px 1px 2px rgba(255, 255, 255, 0.95);
+        border: 1.5px solid #F1F5F9; display: flex; flex-direction: column; gap: 12px;
+      }
+
+      .cal-nav-row {
+        display: flex; align-items: center; justify-content: space-between; gap: 8px;
+      }
+      .cal-month-title {
+        font-size: 15px; font-weight: 900; color: #0F172A; letter-spacing: -0.01em;
+      }
+      .cal-nav-btn-group {
+        display: flex; align-items: center; gap: 4px; background: #F1F5F9; padding: 3px; border-radius: 14px;
+      }
+      .cal-nav-btn {
+        width: 32px; height: 32px; border-radius: 11px; border: none; background: #FFFFFF;
+        box-shadow: 2px 2px 6px rgba(166, 178, 195, 0.25), -1px -1px 4px #FFFFFF;
+        display: flex; align-items: center; justify-content: center; color: #0F172A;
+        cursor: pointer; transition: transform 0.15s ease;
+      }
+      .cal-nav-btn:active { transform: scale(0.92); }
+      .cal-today-btn {
+        padding: 0 10px; height: 32px; border-radius: 11px; border: none;
+        background: #059669; color: #FFFFFF; font-size: 10.5px; font-weight: 800;
+        cursor: pointer; transition: transform 0.15s ease;
+      }
+      .cal-today-btn:active { transform: scale(0.94); }
+
+      /* Calendar Days & Grid */
+      .cal-weekdays {
+        display: grid; grid-template-columns: repeat(7, 1fr); text-align: center;
+        font-size: 10.5px; font-weight: 800; color: #94A3B8; text-transform: uppercase; margin-bottom: -4px;
+      }
+      .cal-weekdays span:first-child { color: #E11D48; }
+
+      .cal-grid {
+        display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px;
+      }
+      .cal-day-cell {
+        aspect-ratio: 1; border-radius: 14px; border: 1px solid transparent; background: transparent;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        font-family: "JetBrains Mono", monospace; font-size: 12.5px; font-weight: 800; color: #1E293B;
+        cursor: pointer; position: relative; transition: all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      .cal-day-cell:active { transform: scale(0.92); }
+      .cal-day-cell.empty { pointer-events: none; }
+      .cal-day-cell.sunday { color: #E11D48; }
+      
+      .cal-day-cell.today {
+        border-color: #059669; color: #059669; background: #ECFDF5;
+      }
+      .cal-day-cell.selected {
+        background: #059669 !important; color: #FFFFFF !important;
+        box-shadow: 0 4px 12px rgba(5, 150, 105, 0.35); transform: scale(1.04);
+      }
+
+      .cal-dot-container {
+        display: flex; gap: 2px; position: absolute; bottom: 3px;
+      }
+      .cal-dot-leave {
+        width: 4.5px; height: 4.5px; border-radius: 50%; background: #D97706;
+      }
+      .cal-day-cell.selected .cal-dot-leave { background: #FEF08A; }
+
+      /* Calendar Legend */
+      .cal-legend {
+        display: flex; align-items: center; justify-content: space-around; padding-top: 8px;
+        border-top: 1px solid #F1F5F9; font-size: 10px; font-weight: 700; color: #64748B;
+      }
+      .cal-legend-item { display: flex; align-items: center; gap: 5px; }
+      .cal-legend-dot { width: 7px; height: 7px; border-radius: 50%; }
+
+      /* Sub Tab Switcher: Tanggal Terpilih vs Semua Agenda */
+      .leaves-subtab-bar {
+        display: flex; gap: 4px; background: #E2E8F0; padding: 3px; border-radius: 14px;
+      }
+      .leaves-subtab-btn {
+        flex: 1; padding: 7px 10px; border-radius: 11px; border: none; background: transparent;
+        font-family: "Plus Jakarta Sans", sans-serif; font-size: 11px; font-weight: 800; color: #64748B;
+        cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; gap: 5px;
+      }
+      .leaves-subtab-btn.active {
+        background: #FFFFFF; color: #0F172A; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+      }
+      .leaves-subtab-btn:active { transform: scale(0.96); }
+
+      /* Leave Card Component */
       .leave-card {
         background: #FFFFFF; border-radius: 20px; padding: 14px 16px;
         box-shadow: 6px 6px 16px rgba(166, 178, 195, 0.22), -4px -4px 12px #FFFFFF, inset 1px 1px 2px rgba(255, 255, 255, 0.95);
@@ -1084,18 +1174,78 @@
 
       </div><!-- /#viewWeekly -->
 
-      <!-- ─── JADWAL CUTI DOKTER (LEAVES SCHEDULE) ─── -->
+      <!-- ─── JADWAL CUTI DOKTER (FULL CALENDAR CLONE) ─── -->
       <div id="viewLeaves" class="ios-leaves-container">
         
-        <!-- Search Spotlight Leaves -->
-        <div class="ios-search-wrapper">
+        <!-- 1. FULL INTERACTIVE CALENDAR SURFACE -->
+        <div class="leaves-cal-card">
+          <div class="cal-nav-row">
+            <span class="cal-month-title" id="calMonthTitle">Agustus 2026</span>
+            <div class="cal-nav-btn-group">
+              <button class="cal-nav-btn" onclick="prevCalMonth()" title="Bulan Sebelumnya">
+                <span class="material-icons-round" style="font-size: 18px;">chevron_left</span>
+              </button>
+              <button class="cal-today-btn" onclick="jumpCalToday()">Hari Ini</button>
+              <button class="cal-nav-btn" onclick="nextCalMonth()" title="Bulan Berikutnya">
+                <span class="material-icons-round" style="font-size: 18px;">chevron_right</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Weekday Labels -->
+          <div class="cal-weekdays">
+            <span>Min</span>
+            <span>Sen</span>
+            <span>Sel</span>
+            <span>Rab</span>
+            <span>Kam</span>
+            <span>Jum</span>
+            <span>Sab</span>
+          </div>
+
+          <!-- Days Grid -->
+          <div class="cal-grid" id="calDaysGrid">
+            <!-- Rendered by JS -->
+          </div>
+
+          <!-- Legend -->
+          <div class="cal-legend">
+            <div class="cal-legend-item">
+              <span class="cal-legend-dot" style="background: #E11D48;"></span>
+              <span>Minggu / Libur</span>
+            </div>
+            <div class="cal-legend-item">
+              <span class="cal-legend-dot" style="background: #D97706;"></span>
+              <span>Ada Cuti</span>
+            </div>
+            <div class="cal-legend-item">
+              <span class="cal-legend-dot" style="background: #059669;"></span>
+              <span>Terpilih</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. SUB TAB SWITCHER -->
+        <nav class="leaves-subtab-bar">
+          <button id="btnSubTabDay" class="leaves-subtab-btn active" onclick="switchLeavesSubTab('selected_day')">
+            <span class="material-icons-round" style="font-size: 15px;">event_available</span>
+            <span id="labelSelectedDayTitle">Tanggal Terpilih</span>
+          </button>
+          <button id="btnSubTabAgenda" class="leaves-subtab-btn" onclick="switchLeavesSubTab('all_agenda')">
+            <span class="material-icons-round" style="font-size: 15px;">view_agenda</span>
+            <span>Semua Agenda</span>
+          </button>
+        </nav>
+
+        <!-- 3. SEARCH SPOTLIGHT FOR AGENDA (Shown when in all_agenda or searching) -->
+        <div class="ios-search-wrapper" id="leavesSearchWrapper" style="display: none;">
           <div class="ios-search-bar">
-            <span class="material-icons-round ios-search-icon" style="color: var(--ios-rose);">search</span>
+            <span class="material-icons-round ios-search-icon" style="color: var(--ios-emerald);">search</span>
             <input
               type="text"
               id="leavesSearchInput"
               class="ios-search-input"
-              placeholder="Cari dokter cuti atau spesialisasi..."
+              placeholder="Cari nama dokter cuti atau spesialisasi..."
               oninput="onLeavesSearchInput(this.value)"
               autocomplete="off"
             />
@@ -1105,23 +1255,16 @@
           </div>
         </div>
 
-        <!-- Filter Status Chips -->
-        <div class="spec-chips-bar" id="leavesFilterChips">
-          <button class="spec-chip active" data-filter="all" onclick="switchLeavesFilter('all')">Semua Cuti</button>
-          <button class="spec-chip" data-filter="active" onclick="switchLeavesFilter('active')">🔴 Sedang Berlangsung</button>
-          <button class="spec-chip" data-filter="upcoming" onclick="switchLeavesFilter('upcoming')">📅 Akan Datang</button>
-        </div>
-
-        <!-- Result Counter Header -->
+        <!-- 4. SECTION HEADER & COUNTER -->
         <div class="ios-section-header" style="margin-top: 2px;">
           <div class="ios-sec-title">
-            <span class="material-icons-round" style="font-size: 16px; color: var(--ios-rose);">beach_access</span>
-            <span id="leavesResultTitle">Daftar Cuti & Izin Dokter</span>
+            <span class="material-icons-round" style="font-size: 16px; color: var(--ios-emerald);" id="leavesSecIcon">event_note</span>
+            <span id="leavesResultTitle">Dokter Cuti Tanggal Terpilih</span>
           </div>
-          <span class="ios-sec-badge" id="leavesResultCount" style="color: var(--ios-rose);">0 Dokter</span>
+          <span class="ios-sec-badge" id="leavesResultCount" style="color: var(--ios-emerald);">0 Dokter</span>
         </div>
 
-        <!-- Leaves List Cards -->
+        <!-- 5. LEAVES LIST CARDS -->
         <div class="scroller" id="leavesListContainer">
           <div style="text-align: center; padding: 24px; color: #94A3B8; font-weight: 700;">Memuat jadwal cuti dokter...</div>
         </div>
@@ -2884,7 +3027,8 @@
         } else if (mode === "leaves") {
           if (btnLeaves) btnLeaves.classList.add("active");
           if (viewLeaves) { viewLeaves.classList.remove("hidden"); viewLeaves.classList.add("active"); }
-          renderLeavesSchedule();
+          renderCalendarGrid();
+          renderLeavesList();
         } else {
           if (btnLive) btnLive.classList.add("active");
           if (viewLive) { viewLive.classList.remove("hidden"); viewLive.classList.add("active"); }
@@ -3059,25 +3203,131 @@
 
       
       // ═════════════════════════════════════════════════════════════════════════
-      // JADWAL CUTI DOKTER CONTROLLER
+      // JADWAL CUTI DOKTER - FULL INTERACTIVE CALENDAR ENGINE
       // ═════════════════════════════════════════════════════════════════════════
       window.masterLeaves = [];
-      window.selectedLeavesFilter = "all"; // "all" | "active" | "upcoming"
+      window.calCurrentDate = new Date();
+      window.calSelectedDate = new Date();
+      window.leavesSubTab = "selected_day"; // "selected_day" | "all_agenda"
       window.leavesSearchQuery = "";
 
-      function switchLeavesFilter(filter) {
-        window.selectedLeavesFilter = filter;
-        document.querySelectorAll("#leavesFilterChips .spec-chip").forEach(chip => {
-          chip.classList.toggle("active", chip.dataset.filter === filter);
-        });
-        renderLeavesSchedule();
+      const MONTHS_ID_FULL = [
+        "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+        "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+      ];
+
+      function isDateInLeave(checkDate, leave) {
+        if (!leave.startDate) return false;
+        const target = new Date(checkDate);
+        target.setHours(0, 0, 0, 0);
+
+        const start = new Date(leave.startDate);
+        const end = leave.endDate ? new Date(leave.endDate) : new Date(leave.startDate);
+        start.setHours(0, 0, 0, 0);
+        end.setHours(0, 0, 0, 0);
+
+        return target >= start && target <= end;
+      }
+
+      function prevCalMonth() {
+        window.calCurrentDate = new Date(window.calCurrentDate.getFullYear(), window.calCurrentDate.getMonth() - 1, 1);
+        renderCalendarGrid();
+      }
+
+      function nextCalMonth() {
+        window.calCurrentDate = new Date(window.calCurrentDate.getFullYear(), window.calCurrentDate.getMonth() + 1, 1);
+        renderCalendarGrid();
+      }
+
+      function jumpCalToday() {
+        window.calCurrentDate = new Date();
+        window.calSelectedDate = new Date();
+        renderCalendarGrid();
+        renderLeavesList();
+      }
+
+      function selectCalDate(year, month, day) {
+        window.calSelectedDate = new Date(year, month, day);
+        renderCalendarGrid();
+        if (window.leavesSubTab !== "selected_day") {
+          switchLeavesSubTab("selected_day");
+        } else {
+          renderLeavesList();
+        }
+      }
+
+      function switchLeavesSubTab(tab) {
+        window.leavesSubTab = tab;
+        const btnDay = document.getElementById("btnSubTabDay");
+        const btnAgenda = document.getElementById("btnSubTabAgenda");
+        const searchWrap = document.getElementById("leavesSearchWrapper");
+
+        if (tab === "all_agenda") {
+          btnDay.classList.remove("active");
+          btnAgenda.classList.add("active");
+          if (searchWrap) searchWrap.style.display = "block";
+        } else {
+          btnAgenda.classList.remove("active");
+          btnDay.classList.add("active");
+          if (searchWrap) searchWrap.style.display = "none";
+        }
+        renderLeavesList();
+      }
+
+      function renderCalendarGrid() {
+        const gridEl = document.getElementById("calDaysGrid");
+        const titleEl = document.getElementById("calMonthTitle");
+        if (!gridEl || !titleEl) return;
+
+        const cur = window.calCurrentDate;
+        const sel = window.calSelectedDate;
+        const now = new Date();
+        const year = cur.getFullYear();
+        const month = cur.getMonth();
+
+        titleEl.textContent = MONTHS_ID_FULL[month] + " " + year;
+
+        const firstDay = new Date(year, month, 1).getDay(); // 0 = Min, 1 = Sen
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+        const leaves = window.masterLeaves || [];
+
+        let html = "";
+
+        // Empty cells before day 1
+        for (let i = 0; i < firstDay; i++) {
+          html += '<div class="cal-day-cell empty"></div>';
+        }
+
+        // Days of current month
+        for (let day = 1; day <= daysInMonth; day++) {
+          const dateObj = new Date(year, month, day);
+          const dayOfWeek = dateObj.getDay();
+          const isSunday = dayOfWeek === 0;
+          const isToday = dateObj.toDateString() === now.toDateString();
+          const isSelected = dateObj.toDateString() === sel.toDateString();
+
+          const hasLeave = leaves.some(l => isDateInLeave(dateObj, l));
+
+          let cellClass = "cal-day-cell";
+          if (isSunday) cellClass += " sunday";
+          if (isToday) cellClass += " today";
+          if (isSelected) cellClass += " selected";
+
+          html += '<button class="' + cellClass + '" onclick="selectCalDate(' + year + ',' + month + ',' + day + ')">' +
+            '<span>' + day + '</span>' +
+            (hasLeave ? '<div class="cal-dot-container"><span class="cal-dot-leave"></span></div>' : '') +
+          '</button>';
+        }
+
+        gridEl.innerHTML = html;
       }
 
       function onLeavesSearchInput(val) {
         const clearBtn = document.getElementById("leavesSearchClearBtn");
         if (clearBtn) clearBtn.style.display = val && val.trim() ? "flex" : "none";
         window.leavesSearchQuery = (val || "").trim().toLowerCase();
-        renderLeavesSchedule();
+        renderLeavesList();
       }
 
       function clearLeavesSearch() {
@@ -3093,7 +3343,8 @@
         if (Array.isArray(leaves)) {
           window.masterLeaves = leaves;
           if (window.mainViewMode === "leaves") {
-            renderLeavesSchedule();
+            renderCalendarGrid();
+            renderLeavesList();
           }
         }
       }
@@ -3108,54 +3359,58 @@
         }
       }
 
-      function renderLeavesSchedule() {
+      function renderLeavesList() {
         const container = document.getElementById("leavesListContainer");
+        const titleEl = document.getElementById("leavesResultTitle");
+        const countEl = document.getElementById("leavesResultCount");
+        const labelSelectedDay = document.getElementById("labelSelectedDayTitle");
         if (!container) return;
 
         const leaves = window.masterLeaves || [];
-        const filter = window.selectedLeavesFilter || "all";
+        const subTab = window.leavesSubTab;
+        const sel = window.calSelectedDate;
+        const todayStr = new Date().toISOString().slice(0, 10);
         const query = (window.leavesSearchQuery || "").toLowerCase();
 
-        const todayStr = new Date().toISOString().slice(0, 10);
+        const selFormatted = sel.toLocaleDateString("id-ID", { weekday: "short", day: "numeric", month: "short" });
+        if (labelSelectedDay) labelSelectedDay.textContent = selFormatted;
 
-        let filtered = leaves.filter(l => {
-          const start = (l.startDate || "").slice(0, 10);
-          const end = (l.endDate || l.startDate || "").slice(0, 10);
+        let filtered = [];
 
-          const isActive = start <= todayStr && todayStr <= end;
-          const isUpcoming = start > todayStr;
-          const isPast = end < todayStr;
-
-          if (filter === "active" && !isActive) return false;
-          if (filter === "upcoming" && !isUpcoming) return false;
-
-          if (query) {
-            const docName = (l.doctorName || "").toLowerCase();
-            const docSpec = (l.specialty || "").toLowerCase();
-            const reason = (l.reason || "").toLowerCase();
-            const repl = (l.replacementDoctor || "").toLowerCase();
-            const combined = docName + " " + docSpec + " " + reason + " " + repl;
-            if (!combined.includes(query)) return false;
+        if (subTab === "selected_day") {
+          if (titleEl) {
+            titleEl.textContent = sel.toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
           }
+          filtered = leaves.filter(l => isDateInLeave(sel, l));
+        } else {
+          if (titleEl) {
+            titleEl.textContent = "Semua Agenda Cuti Dokter";
+          }
+          filtered = leaves.filter(l => {
+            if (query) {
+              const docName = (l.doctorName || "").toLowerCase();
+              const docSpec = (l.specialty || "").toLowerCase();
+              const reason = (l.reason || "").toLowerCase();
+              const repl = (l.replacementDoctor || "").toLowerCase();
+              return (docName + " " + docSpec + " " + reason + " " + repl).includes(query);
+            }
+            return true;
+          });
+          // Sort upcoming first
+          filtered.sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime());
+        }
 
-          return true;
-        });
-
-        // Sort: Active first, then upcoming by startDate asc
-        filtered.sort((a, b) => {
-          const aStart = (a.startDate || "").slice(0, 10);
-          const bStart = (b.startDate || "").slice(0, 10);
-          return aStart.localeCompare(bStart);
-        });
-
-        const countEl = document.getElementById("leavesResultCount");
         if (countEl) countEl.textContent = filtered.length + " Dokter";
 
         if (filtered.length === 0) {
-          container.innerHTML = '<div style="text-align: center; padding: 36px 16px; background: #FFFFFF; border-radius: 20px; border: 1.5px solid #F1F5F9; box-shadow: 4px 4px 12px rgba(166,178,195,0.2);">' +
-            '<span class="material-icons-round" style="font-size: 38px; color: #10B981; margin-bottom: 8px;">verified</span>' +
+          const emptyMsg = subTab === "selected_day"
+            ? "Tidak ada dokter yang cuti pada tanggal ini. Seluruh jadwal beroperasi reguler."
+            : "Tidak ditemukan agenda cuti dokter yang sesuai pencarian.";
+          
+          container.innerHTML = '<div style="text-align: center; padding: 32px 16px; background: #FFFFFF; border-radius: 20px; border: 1.5px solid #F1F5F9; box-shadow: 4px 4px 12px rgba(166,178,195,0.2);">' +
+            '<span class="material-icons-round" style="font-size: 36px; color: #10B981; margin-bottom: 6px;">verified</span>' +
             '<p style="font-size: 13px; font-weight: 800; color: #0F172A; margin: 0;">Tidak Ada Jadwal Cuti</p>' +
-            '<p style="font-size: 11px; font-weight: 600; color: #64748B; margin-top: 4px;">Semua dokter spesialis berpraktek sesuai jadwal reguler.</p>' +
+            '<p style="font-size: 11px; font-weight: 600; color: #64748B; margin-top: 4px;">' + esc(emptyMsg) + '</p>' +
             '</div>';
           return;
         }
