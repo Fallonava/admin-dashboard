@@ -39,8 +39,8 @@ function isPublicRoute(pathname: string): boolean {
   if (PUBLIC_PATHS.includes(pathname)) return true;
   // Prefix match (static assets, Next internals)
   if (PUBLIC_PREFIXES.some((prefix) => pathname.startsWith(prefix))) return true;
-  // File extensions (images, fonts, etc.)
-  if (/\.(svg|png|jpg|jpeg|gif|ico|webp|woff2?|ttf|eot|css|js|map)$/i.test(pathname)) return true;
+  // File extensions (images, fonts, html, etc.)
+  if (/\.(html|svg|png|jpg|jpeg|gif|ico|webp|woff2?|ttf|eot|css|js|map)$/i.test(pathname)) return true;
   return false;
 }
 
