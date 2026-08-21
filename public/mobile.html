@@ -797,7 +797,21 @@
     <!-- MAIN SCROLLABLE MOBILE CONTENT -->
     <main class="ios-main-content">
       
-      <!-- 1. BENTO STATS TILES -->
+      <!-- TOP MODE SWITCHER -->
+      <nav class="ios-mode-switcher" aria-label="Mode Tampilan Jadwal">
+        <button id="btnViewLive" class="ios-mode-btn active" onclick="switchMainView('live')">
+          <span class="material-icons-round" style="font-size: 17px; color: var(--ios-emerald);">bolt</span>
+          <span>Jadwal Hari Ini</span>
+        </button>
+        <button id="btnViewWeekly" class="ios-mode-btn" onclick="switchMainView('weekly')">
+          <span class="material-icons-round" style="font-size: 17px; color: var(--ios-blue);">calendar_month</span>
+          <span>Jadwal Keseluruhan</span>
+        </button>
+      </nav>
+
+      <!-- ─── LIVE CONTAINER (JADWAL HARI INI) ─── -->
+      <div id="viewLive" class="ios-live-container">
+        <!-- 1. BENTO STATS TILES -->
       <section class="ios-bento-stats">
         <div class="ios-bento-tile buka" onclick="switchTab('all')">
           <span class="bento-num" id="statBuka" style="color: var(--ios-emerald);">0</span>
@@ -924,7 +938,85 @@
           <p id="dynamicInfoBox">Memuat informasi layanan rumah sakit...</p>
         </div>
       </section>
+      </div>
 
+      <!-- ─── JADWAL KESELURUHAN (WEEKLY MASTER SCHEDULE) ─── -->
+      <div id="viewWeekly" class="ios-weekly-container">
+        
+        <!-- Search Spotlight Weekly -->
+        <div class="ios-search-wrapper">
+          <div class="ios-search-bar">
+            <span class="material-icons-round ios-search-icon">search</span>
+            <input
+              type="text"
+              id="weeklySearchInput"
+              class="ios-search-input"
+              placeholder="Cari dokter, poli, atau spesialisasi..."
+              oninput="onWeeklySearchInput(this.value)"
+              autocomplete="off"
+            />
+            <button id="weeklySearchClearBtn" class="ios-search-clear" onclick="clearWeeklySearch()" style="display: none;" title="Hapus">
+              <span class="material-icons-round" style="font-size: 18px;">cancel</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Day Strip Selector -->
+        <div class="weekly-day-bar" id="weeklyDayBar">
+          <button class="weekly-day-btn" data-day="all" onclick="switchWeeklyDay('all')">
+            <span class="day-title">Semua</span>
+            <span class="day-badge" id="badgeAllDays">0</span>
+          </button>
+          <button class="weekly-day-btn" data-day="0" onclick="switchWeeklyDay(0)">
+            <span class="day-title">Senin</span>
+            <span class="day-badge" id="badgeDay0">0</span>
+          </button>
+          <button class="weekly-day-btn" data-day="1" onclick="switchWeeklyDay(1)">
+            <span class="day-title">Selasa</span>
+            <span class="day-badge" id="badgeDay1">0</span>
+          </button>
+          <button class="weekly-day-btn" data-day="2" onclick="switchWeeklyDay(2)">
+            <span class="day-title">Rabu</span>
+            <span class="day-badge" id="badgeDay2">0</span>
+          </button>
+          <button class="weekly-day-btn" data-day="3" onclick="switchWeeklyDay(3)">
+            <span class="day-title">Kamis</span>
+            <span class="day-badge" id="badgeDay3">0</span>
+          </button>
+          <button class="weekly-day-btn" data-day="4" onclick="switchWeeklyDay(4)">
+            <span class="day-title">Jumat</span>
+            <span class="day-badge" id="badgeDay4">0</span>
+          </button>
+          <button class="weekly-day-btn" data-day="5" onclick="switchWeeklyDay(5)">
+            <span class="day-title">Sabtu</span>
+            <span class="day-badge" id="badgeDay5">0</span>
+          </button>
+          <button class="weekly-day-btn" data-day="6" onclick="switchWeeklyDay(6)">
+            <span class="day-title">Minggu</span>
+            <span class="day-badge" id="badgeDay6">0</span>
+          </button>
+        </div>
+
+        <!-- Specialty Filter Chips -->
+        <div class="spec-chips-bar" id="weeklySpecChips">
+          <button class="spec-chip active" data-spec="all" onclick="switchWeeklySpec('all')">Semua Poli</button>
+        </div>
+
+        <!-- Result Counter Header -->
+        <div class="ios-section-header" style="margin-top: 2px;">
+          <div class="ios-sec-title">
+            <span class="material-icons-round" style="font-size: 16px; color: var(--ios-blue);">event_note</span>
+            <span id="weeklyResultTitle">Daftar Jadwal Dokter</span>
+          </div>
+          <span class="ios-sec-badge" id="weeklyResultCount">0 Jadwal</span>
+        </div>
+
+        <!-- Weekly List Cards -->
+        <div class="scroller" id="weeklyListContainer">
+          <div style="text-align: center; padding: 24px; color: #94A3B8; font-weight: 700;">Memuat jadwal dokter...</div>
+        </div>
+
+      </div><!-- /#viewWeekly -->
     </main>
 
     <!-- FLOATING iOS BOTTOM BAR -->
