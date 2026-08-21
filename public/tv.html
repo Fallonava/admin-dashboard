@@ -4201,14 +4201,10 @@
     </script>
   
     <!-- QRCode.js Library -->
-    
-    
 
-  
-    
     <!-- ZERO-DEPENDENCY INLINE SVG QR CODE GENERATOR -->
     <script>
-      const QRCodeLib = (function() {
+      var QRCodeLib = (function() {
         function QR8bitByte(data) { this.mode = 4; this.data = data; }
         QR8bitByte.prototype = {
           getLength: function() { return this.data.length; },
@@ -4576,16 +4572,16 @@
             qr.make();
             var count = qr.getModuleCount();
             var size = count + margin * 2;
-            var svg = "<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 " + size + " " + size + "" width="100%" height="100%" style="display:block; shape-rendering:crispEdges;">";
-            svg += "<rect width="100%" height="100%" fill="#FFFFFF" rx="1"/>";
+            var svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + size + ' ' + size + '" width="100%" height="100%" style="display:block; shape-rendering:crispEdges;">';
+            svg += '<rect width="100%" height="100%" fill="#FFFFFF" rx="1"/>';
             for (var r = 0; r < count; r++) {
               for (var c = 0; c < count; c++) {
                 if (qr.isDark(r, c)) {
-                  svg += "<rect x="" + (c + margin) + "" y="" + (r + margin) + "" width="1" height="1" fill="#0F172A"/>";
+                  svg += '<rect x="' + (c + margin) + '" y="' + (r + margin) + '" width="1" height="1" fill="#0F172A"/>';
                 }
               }
             }
-            svg += "</svg>";
+            svg += '</svg>';
             return svg;
           }
         };
@@ -4612,6 +4608,5 @@
         }
       })();
     </script>
-
   </body>
 </html>
