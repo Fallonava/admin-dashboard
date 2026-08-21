@@ -578,6 +578,35 @@
       .broadcast-zone { font-size: 11px; font-weight: 700; color: #64748B; }
 
       .st-libur { display: none !important; }
+    
+      /* ===== 🚀 ULTRA SMOOTH 120Hz PERFORMANCE OPTIMIZATIONS ===== */
+      .scroller {
+        contain: content;
+        scroll-behavior: smooth;
+      }
+
+      .platter {
+        contain: layout style paint;
+        content-visibility: auto;
+        contain-intrinsic-size: 0 76px;
+        transform: translateZ(0);
+        -webkit-transform: translateZ(0);
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+        will-change: transform;
+      }
+
+      .ios-bento-tile, .hotline-clay-pill, .ios-icon-btn, .ios-seg-btn {
+        transform: translateZ(0);
+        -webkit-transform: translateZ(0);
+        backface-visibility: hidden;
+      }
+
+      /* Reduce Paint in Scrolling Areas */
+      .scroll-mask {
+        contain: strict;
+      }
+
     </style>
   </head>
   <body>
@@ -879,45 +908,47 @@
       }
 
       function applyDoctorFilterAndSearch() {
-        const query = (window.searchQuery || "").toLowerCase();
-        const activeTab = window.activeTab || "all";
+        requestAnimationFrame(() => {
+          const query = (window.searchQuery || "").toLowerCase();
+          const activeTab = window.activeTab || "all";
 
-        const allPlatters = document.querySelectorAll(".platter");
-        allPlatters.forEach(card => {
-          const text = (card.textContent || "").toLowerCase();
-          const matchesSearch = !query || text.includes(query);
-          
-          let matchesTab = true;
-          const parentSection = card.closest(".ios-section");
-          if (parentSection) {
-            const secId = parentSection.id;
-            if (activeTab === "bedah" && secId !== "bedahSection") matchesTab = false;
-            else if (activeTab === "nonbedah" && secId !== "nonBedahSection") matchesTab = false;
-            else if (activeTab === "khusus" && secId !== "sidebarSection") matchesTab = false;
-          }
-
-          if (matchesSearch && matchesTab) {
-            card.style.display = "flex";
-          } else {
-            card.style.display = "none";
-          }
-        });
-
-        // Toggle section headers
-        ["bedahSection", "nonBedahSection", "sidebarSection"].forEach(secId => {
-          const sec = document.getElementById(secId);
-          if (sec) {
-            if (activeTab === "all") {
-              const hasVisible = Array.from(sec.querySelectorAll(".platter")).some(p => p.style.display !== "none");
-              sec.style.display = hasVisible ? "flex" : (query ? "none" : "flex");
-            } else if (activeTab === "bedah") {
-              sec.style.display = secId === "bedahSection" ? "flex" : "none";
-            } else if (activeTab === "nonbedah") {
-              sec.style.display = secId === "nonBedahSection" ? "flex" : "none";
-            } else if (activeTab === "khusus") {
-              sec.style.display = secId === "sidebarSection" ? "flex" : "none";
+          const allPlatters = document.querySelectorAll(".platter");
+          allPlatters.forEach(card => {
+            const text = (card.textContent || "").toLowerCase();
+            const matchesSearch = !query || text.includes(query);
+            
+            let matchesTab = true;
+            const parentSection = card.closest(".ios-section");
+            if (parentSection) {
+              const secId = parentSection.id;
+              if (activeTab === "bedah" && secId !== "bedahSection") matchesTab = false;
+              else if (activeTab === "nonbedah" && secId !== "nonBedahSection") matchesTab = false;
+              else if (activeTab === "khusus" && secId !== "sidebarSection") matchesTab = false;
             }
-          }
+
+            if (matchesSearch && matchesTab) {
+              card.style.display = "flex";
+            } else {
+              card.style.display = "none";
+            }
+          });
+
+          // Toggle section headers
+          ["bedahSection", "nonBedahSection", "sidebarSection"].forEach(secId => {
+            const sec = document.getElementById(secId);
+            if (sec) {
+              if (activeTab === "all") {
+                const hasVisible = Array.from(sec.querySelectorAll(".platter")).some(p => p.style.display !== "none");
+                sec.style.display = hasVisible ? "flex" : (query ? "none" : "flex");
+              } else if (activeTab === "bedah") {
+                sec.style.display = secId === "bedahSection" ? "flex" : "none";
+              } else if (activeTab === "nonbedah") {
+                sec.style.display = secId === "nonBedahSection" ? "flex" : "none";
+              } else if (activeTab === "khusus") {
+                sec.style.display = secId === "sidebarSection" ? "flex" : "none";
+              }
+            }
+          });
         });
       }
 
@@ -926,7 +957,7 @@
           navigator.share({
             title: "Jadwal Praktik Dokter RSU Siaga Medika Purbalingga",
             text: "Cek jadwal live & ketersediaan dokter spesialis di RSU Siaga Medika Purbalingga:",
-            url: window.location.href
+            url: (window.location.origin || "https://simed.fallonava.my.id") + "/jadwal"
           }).catch(() => {});
         } else {
           navigator.clipboard.writeText(window.location.href);
@@ -2865,7 +2896,7 @@
           try {
             var container = document.getElementById("patientQrCode");
             if (container) {
-              var targetUrl = window.location.origin + "/mobile";
+              var targetUrl = (window.location.origin || "https://simed.fallonava.my.id") + "/jadwal";
               container.innerHTML = QRCodeLib.generateSVG(targetUrl, 2);
             }
           } catch(e) {
@@ -2885,7 +2916,7 @@
           modal.classList.add("active");
           var bigContainer = document.getElementById("modalBigQrCode");
           if (bigContainer && !bigContainer.hasChildNodes()) {
-            var targetUrl = window.location.origin + "/mobile";
+            var targetUrl = (window.location.origin || "https://simed.fallonava.my.id") + "/jadwal";
             bigContainer.innerHTML = QRCodeLib.generateSVG(targetUrl, 2);
           }
         }
