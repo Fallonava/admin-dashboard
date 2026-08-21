@@ -3,9 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Jadwal Dokter - Spatial Glass (VisionOS Light 2026)</title>
+    <title>Jadwal Dokter - Claymorphism Ultra Modern (Pinterest 2026)</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&family=Outfit:wght@500;600;700;800;900&family=JetBrains+Mono:wght@600;700;800&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet" />
     <style>
       .material-icons-round {
@@ -15,209 +15,233 @@
       }
 
       :root {
-        --bg-body: #F0F4F9;
+        --bg-body: #EEF2F7;
         --text-primary: #0F172A;
-        --text-secondary: #475569;
+        --text-secondary: #334155;
         --text-muted: #64748B;
-        --border-light: rgba(0, 0, 0, 0.05);
 
-        --accent-blue: #0284C7;
-        --accent-purple: #7C3AED;
-        --accent-green: #059669;
-        --accent-orange: #EA580C;
-        --accent-amber: #D97706;
-        --accent-red: #E11D48;
+        /* Premium Clay Palette */
+        --clay-blue: #0284C7;
+        --clay-indigo: #4F46E5;
+        --clay-emerald: #059669;
+        --clay-rose: #E11D48;
+        --clay-amber: #D97706;
+        --clay-purple: #7C3AED;
 
         --st-praktek: #059669;
-        --st-praktek-bg: rgba(16, 185, 129, 0.14);
+        --st-praktek-bg: #ECFDF5;
+        --st-praktek-shadow: rgba(16, 185, 129, 0.25);
+
         --st-pendaftaran: #EA580C;
-        --st-pendaftaran-bg: rgba(249, 115, 22, 0.14);
+        --st-pendaftaran-bg: #FFF7ED;
+        --st-pendaftaran-shadow: rgba(249, 115, 22, 0.25);
+
         --st-terjadwal: #0284C7;
-        --st-terjadwal-bg: rgba(14, 165, 233, 0.14);
+        --st-terjadwal-bg: #F0F9FF;
+        --st-terjadwal-shadow: rgba(2, 132, 199, 0.25);
+
         --st-penuh: #D97706;
-        --st-penuh-bg: rgba(245, 158, 11, 0.14);
+        --st-penuh-bg: #FFFBEB;
+        --st-penuh-shadow: rgba(217, 119, 6, 0.25);
+
         --st-operasi: #7C3AED;
-        --st-operasi-bg: rgba(139, 92, 246, 0.14);
+        --st-operasi-bg: #F5F3FF;
+        --st-operasi-shadow: rgba(124, 58, 237, 0.25);
+
         --st-cuti: #E11D48;
-        --st-cuti-bg: rgba(239, 68, 68, 0.14);
-        --st-selesai: #64748B;
-        --st-selesai-bg: rgba(100, 116, 139, 0.12);
+        --st-cuti-bg: #FFF1F2;
+        --st-cuti-shadow: rgba(225, 29, 72, 0.25);
+
+        --st-selesai: #475569;
+        --st-selesai-bg: #F8FAFC;
+        --st-selesai-shadow: rgba(71, 85, 105, 0.2);
       }
 
       * { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
       html, body {
         width: 100%; height: 100%; overflow: hidden;
-        font-family: "Plus Jakarta Sans", "Inter", sans-serif;
-        background: #F0F4F9; color: var(--text-primary);
+        font-family: "Plus Jakarta Sans", "Outfit", sans-serif;
+        background: #EEF2F7; color: var(--text-primary);
         user-select: none; cursor: none;
       }
 
-      .ambient-bg {
-        position: fixed; inset: 0; z-index: 0; pointer-events: none;
-        background: radial-gradient(circle at 10% 15%, rgba(186, 230, 253, 0.65) 0%, transparent 45%),
-                    radial-gradient(circle at 90% 85%, rgba(221, 214, 254, 0.55) 0%, transparent 45%),
-                    radial-gradient(circle at 50% 50%, rgba(167, 243, 208, 0.35) 0%, transparent 50%),
-                    #F0F4F9;
-      }
+      .ambient-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; background: #EEF2F7; }
 
+      /* FLUSH TOP - ZERO ANNOYING TOP SPACE */
       .app-container {
         position: relative; z-index: 1; width: 100%; height: 100%;
-        display: flex; flex-direction: column; padding: clamp(10px, 1.4vw, 20px); gap: clamp(10px, 1.2vw, 18px);
+        display: flex; flex-direction: column;
+        padding: 4px clamp(10px, 1.2vw, 18px) clamp(8px, 1vw, 14px) clamp(10px, 1.2vw, 18px);
+        gap: clamp(8px, 1vw, 14px);
       }
 
-      .content { flex: 1; display: flex; gap: clamp(12px, 1.4vw, 20px); min-height: 0; }
+      .content { flex: 1; display: flex; gap: clamp(10px, 1.2vw, 18px); min-height: 0; }
 
+      /* TACTILE 3D CLAY ISLAND */
       .island {
         display: flex; flex-direction: column;
-        background: rgba(255, 255, 255, 0.72);
-        backdrop-filter: blur(36px) saturate(180%); -webkit-backdrop-filter: blur(36px) saturate(180%);
-        border-radius: clamp(18px, 1.8vw, 28px); border: 1px solid rgba(255, 255, 255, 0.95);
-        box-shadow: 0 20px 48px rgba(148, 163, 184, 0.22), inset 0 1px 0 rgba(255, 255, 255, 1);
+        background: #FFFFFF; border-radius: clamp(16px, 1.8vw, 26px);
+        box-shadow: 10px 10px 28px rgba(166, 178, 195, 0.35), -8px -8px 22px #FFFFFF, inset 1px 1px 2px rgba(255, 255, 255, 0.8);
+        border: 1.5px solid rgba(255, 255, 255, 0.9);
         overflow: hidden; position: relative;
       }
 
-      .sidebar-panel { flex: 0 0 clamp(270px, 24vw, 360px); max-width: 380px; min-width: 270px; }
+      .sidebar-panel { flex: 0 0 clamp(280px, 24vw, 360px); max-width: 380px; min-width: 280px; }
       
       .header {
-        padding: clamp(12px, 1.5vw, 20px) clamp(14px, 1.6vw, 22px); display: flex; align-items: flex-start; gap: 14px;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        padding: clamp(10px, 1.1vw, 15px) clamp(14px, 1.4vw, 20px); display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+        border-bottom: 1.5px solid #E2E8F0; background: #FAFCFE;
       }
       .brand { display: flex; align-items: center; gap: 12px; }
       .logo-box {
-        width: clamp(38px, 3.2vw, 48px); height: clamp(38px, 3.2vw, 48px); border-radius: 14px; background: #FFFFFF;
+        width: clamp(38px, 3.2vw, 46px); height: clamp(38px, 3.2vw, 46px); border-radius: 14px; background: #FFFFFF;
         display: flex; align-items: center; justify-content: center;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06); border: 1px solid rgba(0, 0, 0, 0.06); overflow: hidden;
+        box-shadow: 5px 5px 12px rgba(166, 178, 195, 0.35), -3px -3px 8px #FFFFFF; overflow: hidden; flex-shrink: 0;
       }
       .logo-box img { width: 85%; height: 85%; object-fit: contain; }
-      .title-group h1 { font-size: clamp(13px, 1.2vw, 16px); font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; color: #0F172A; }
-      .title-group span { font-size: clamp(9px, 0.8vw, 11px); font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--accent-blue); }
+      .title-group h1 { font-size: clamp(13.5px, 1.15vw, 16.5px); font-weight: 900; letter-spacing: -0.02em; line-height: 1.15; color: #0F172A; }
+      .title-group span { font-size: clamp(9px, 0.75vw, 10.5px); font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; color: var(--clay-blue); }
 
+      .header > div:last-child {
+        display: flex; flex-direction: column; align-items: flex-end; justify-content: center;
+      }
+      .clock { font-family: "JetBrains Mono", monospace; font-size: clamp(22px, 2.2vw, 34px); font-weight: 900; letter-spacing: -0.03em; line-height: 1; color: #0F172A; }
+      .date { font-family: "Plus Jakarta Sans", sans-serif; font-size: clamp(9.5px, 0.85vw, 11.5px); font-weight: 800; color: var(--text-secondary); text-transform: uppercase; text-align: right; line-height: 1.35; }
+
+      /* TACTILE CLAY KPI TILES */
       .stat-panel {
         display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 10px 14px;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        border-bottom: 1.5px solid #E2E8F0; background: #F8FAFC;
       }
       .stat-item {
-        background: rgba(255, 255, 255, 0.85); border-radius: 14px; padding: 8px 6px;
+        background: #FFFFFF; border-radius: 16px; padding: 6px 4px;
         display: flex; flex-direction: column; align-items: center; text-align: center;
-        border: 1px solid rgba(255, 255, 255, 0.95); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+        box-shadow: 4px 4px 10px rgba(166, 178, 195, 0.25), -3px -3px 8px #FFFFFF;
+        border: 1.5px solid #F1F5F9;
       }
-      .stat-count { font-size: clamp(18px, 1.6vw, 24px); font-weight: 900; line-height: 1; }
-      .stat-label { font-size: clamp(8px, 0.7vw, 10px); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); margin-top: 4px; }
+      .stat-item:nth-child(1) { border-top: 3.5px solid var(--clay-emerald); }
+      .stat-item:nth-child(2) { border-top: 3.5px solid var(--clay-amber); }
+      .stat-item:nth-child(3) { border-top: 3.5px solid var(--clay-rose); }
+      .stat-count { font-family: "JetBrains Mono", monospace; font-size: clamp(17px, 1.7vw, 24px); font-weight: 900; line-height: 1; }
+      .stat-label { font-size: clamp(8px, 0.7vw, 9.5px); font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); margin-top: 3px; }
 
-      .clock { font-size: clamp(22px, 2.2vw, 34px); font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: -0.03em; line-height: 1; color: #0F172A; }
-      .date { font-size: clamp(9.5px, 0.85vw, 11.5px); font-weight: 700; color: var(--text-secondary); text-transform: uppercase; text-align: right; line-height: 1.3; }
-
+      /* CLAYMORPHIC COLUMN HEADERS */
       .island-header {
-        height: clamp(44px, 4vw, 54px); display: flex; align-items: center; justify-content: space-between; padding: 0 clamp(14px, 1.6vw, 22px);
-        flex-shrink: 0; border-bottom: 1px solid rgba(0, 0, 0, 0.05); background: rgba(255, 255, 255, 0.45);
+        height: clamp(46px, 4vw, 54px); display: flex; align-items: center; justify-content: space-between; padding: 0 clamp(14px, 1.6vw, 22px);
+        flex-shrink: 0; border-bottom: 1.5px solid #E2E8F0; background: #FAFCFE;
       }
-      .island-title { font-size: clamp(12px, 1.1vw, 15px); font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; color: #0F172A; }
+      .island-title { font-size: clamp(12.5px, 1.1vw, 15.5px); font-weight: 900; text-transform: uppercase; letter-spacing: 0.06em; color: #0F172A; }
       .island-badge {
-        font-size: clamp(10px, 0.85vw, 12px); font-weight: 800; padding: 3px 10px; border-radius: 20px;
-        background: rgba(2, 132, 199, 0.12); color: var(--accent-blue);
+        font-family: "JetBrains Mono", monospace; font-size: clamp(10px, 0.85vw, 12px); font-weight: 900; padding: 3px 10px; border-radius: 20px;
+        background: #FFFFFF; color: var(--clay-blue); box-shadow: 3px 3px 8px rgba(166, 178, 195, 0.3), -2px -2px 6px #FFFFFF;
+        border: 1px solid #E2E8F0;
       }
 
-      .scroll-mask {
-        flex: 1; overflow: hidden; position: relative;
-        mask-image: linear-gradient(to bottom, transparent, black 16px, black calc(100% - 16px), transparent);
-        -webkit-mask-image: linear-gradient(to bottom, transparent, black 16px, black calc(100% - 16px), transparent);
-      }
-      .scroller { padding: clamp(10px, 1.2vw, 18px); display: flex; flex-direction: column; gap: clamp(8px, 0.9vw, 12px); }
+      .scroll-mask { flex: 1; overflow: hidden; position: relative; }
+      .scroller { padding: clamp(10px, 1.2vw, 16px); display: flex; flex-direction: column; gap: clamp(8px, 0.9vw, 12px); }
 
+      /* 3D TACTILE CLAY DOCTOR PLATTER CARD */
       .platter {
         display: flex; flex-direction: column; padding: clamp(10px, 1.1vw, 16px) clamp(12px, 1.3vw, 18px);
-        background: rgba(255, 255, 255, 0.72); border-radius: clamp(14px, 1.4vw, 20px);
-        border: 1px solid rgba(255, 255, 255, 0.95);
-        box-shadow: 0 8px 24px rgba(148, 163, 184, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+        background: #FFFFFF; border-radius: clamp(14px, 1.4vw, 18px);
+        box-shadow: 5px 5px 14px rgba(166, 178, 195, 0.25), -4px -4px 10px #FFFFFF;
+        border: 1px solid #F1F5F9;
         position: relative; overflow: hidden; transition: all 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
       }
       .platter::before {
-        content: ""; position: absolute; left: 0; top: 10px; bottom: 10px; width: 4.5px;
-        border-radius: 0 6px 6px 0; background: var(--status-color, var(--accent-blue));
-        box-shadow: 0 0 12px var(--status-color, var(--accent-blue));
+        content: ""; position: absolute; left: 0; top: 10px; bottom: 10px; width: 5px;
+        border-radius: 0 8px 8px 0; background: var(--status-color, var(--clay-blue));
+        box-shadow: 0 0 10px var(--status-color, var(--clay-blue));
       }
 
       .platter-main { display: flex; align-items: center; gap: clamp(10px, 1vw, 14px); width: 100%; }
       .initials {
-        width: clamp(34px, 2.8vw, 42px); height: clamp(34px, 2.8vw, 42px); border-radius: 12px; background: #FFFFFF;
-        border: 1px solid rgba(0, 0, 0, 0.06); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-        display: flex; align-items: center; justify-content: center; font-size: clamp(11.5px, 1vw, 14px); font-weight: 800;
+        width: clamp(36px, 3.2vw, 44px); height: clamp(36px, 3.2vw, 44px); border-radius: 14px; background: #FAFCFE;
+        box-shadow: 4px 4px 10px rgba(166, 178, 195, 0.3), -3px -3px 8px #FFFFFF;
+        border: 1.5px solid #F1F5F9; display: flex; align-items: center; justify-content: center;
+        font-family: "Outfit", sans-serif; font-size: clamp(12px, 1.1vw, 15px); font-weight: 900;
         color: var(--status-color, #0F172A); flex-shrink: 0;
       }
       .info-col { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
-      .doc-spec { font-size: clamp(13px, 1.15vw, 16px); font-weight: 800; color: #0F172A; text-transform: uppercase; letter-spacing: 0.01em; line-height: 1.15; }
+      .doc-spec { font-size: clamp(13.5px, 1.2vw, 17px); font-weight: 900; color: #0F172A; text-transform: uppercase; letter-spacing: 0.01em; line-height: 1.15; }
       .doc-name {
-        font-size: clamp(11px, 0.95vw, 13px); font-weight: 600; color: var(--text-secondary);
-        display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.3;
+        font-size: clamp(11.5px, 1vw, 14px); font-weight: 600; color: var(--text-secondary);
+        display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.35;
       }
-      .meta-col { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
+      .meta-col { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; flex-shrink: 0; }
       .status-pill {
-        padding: 4px 10px; border-radius: 20px; font-size: clamp(8.5px, 0.75vw, 10.5px); font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em;
-        background: var(--status-bg, rgba(2, 132, 199, 0.12)); color: var(--status-color, #0F172A);
-        display: flex; align-items: center; gap: 5px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        padding: 4px 10px; border-radius: 12px; font-size: clamp(8.5px, 0.75vw, 10.5px); font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em;
+        background: var(--status-bg, #F1F5F9); color: var(--status-color, #0F172A);
+        box-shadow: 3px 3px 8px var(--status-shadow, rgba(0,0,0,0.06)), -2px -2px 6px #FFFFFF;
+        display: flex; align-items: center; gap: 5px;
       }
-      .jam-val { font-size: clamp(11.5px, 1vw, 14px); font-weight: 800; color: #0F172A; font-variant-numeric: tabular-nums; }
+      .jam-val { font-family: "JetBrains Mono", monospace; font-size: clamp(12px, 1.05vw, 14.5px); font-weight: 800; color: #0F172A; }
 
-      /* ACTIVE HERO GLASS CARD */
+      /* ACTIVE HERO CLAY TILE */
       .platter.active {
-        background: rgba(255, 255, 255, 0.96) !important;
-        border-color: var(--status-color) !important;
-        box-shadow: 0 16px 36px rgba(16, 185, 129, 0.22), 0 0 0 1.5px var(--status-color) !important;
-        transform: scale(1.015);
+        background: #ECFDF5 !important; border: 1.5px solid #A7F3D0 !important;
+        box-shadow: 8px 8px 24px rgba(16, 185, 129, 0.22), -6px -6px 16px #FFFFFF !important;
+        transform: scale(1.02);
       }
-      .platter.active .doc-spec { font-size: clamp(14.5px, 1.25vw, 18px); color: #0F172A !important; }
-      .platter.active .doc-name { color: var(--status-color) !important; font-weight: 700; }
-      .platter.active::before { width: 6px; box-shadow: 0 0 16px var(--status-color); }
+      .platter.active .doc-spec { font-size: clamp(15px, 1.3vw, 18.5px); color: #065F46 !important; }
+      .platter.active .doc-name { color: #047857 !important; font-weight: 700; }
+      .platter.active .initials {
+        background: #FFFFFF !important; box-shadow: 4px 4px 10px rgba(16, 185, 129, 0.2), -3px -3px 8px #FFFFFF !important;
+      }
+      .platter.active::before { width: 7px; }
 
       .platter-detail {
-        max-height: 0; opacity: 0; overflow: hidden; transition: all 0.45s ease;
-        border-top: 1px solid transparent; margin-top: 0; padding-top: 0;
+        max-height: 0; opacity: 0; overflow: hidden; transition: all 0.4s ease;
+        border-top: 1.5px solid transparent; margin-top: 0; padding-top: 0;
       }
       .platter.active .platter-detail {
-        max-height: 80px; opacity: 1; margin-top: 10px; padding-top: 10px;
-        border-top: 1px solid rgba(0, 0, 0, 0.06); display: flex; justify-content: space-between; align-items: center;
+        max-height: 75px; opacity: 1; margin-top: 8px; padding-top: 8px;
+        border-top: 1.5px dashed rgba(16, 185, 129, 0.3); display: flex; justify-content: space-between; align-items: center;
       }
       .detail-label { font-size: clamp(8px, 0.7vw, 9.5px); font-weight: 800; text-transform: uppercase; color: var(--text-muted); }
-      .detail-time { font-size: clamp(13px, 1.15vw, 16px); font-weight: 800; color: #0F172A; }
+      .detail-time { font-family: "JetBrains Mono", monospace; font-size: clamp(13.5px, 1.15vw, 16.5px); font-weight: 900; color: #0F172A; }
       .live-status {
-        display: flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 20px;
-        background: var(--status-bg, rgba(16, 185, 129, 0.15)); color: var(--status-color);
-        font-size: clamp(9px, 0.8vw, 11px); font-weight: 800; text-transform: uppercase;
+        display: flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 10px;
+        background: #10B981; color: #FFFFFF; font-size: clamp(9px, 0.8vw, 11px); font-weight: 900; text-transform: uppercase;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
       }
       .pulse-dot {
-        width: 7px; height: 7px; border-radius: 50%; background: currentColor; box-shadow: 0 0 8px currentColor; animation: pulse-glass 1.8s infinite;
+        width: 7px; height: 7px; border-radius: 50%; background: #FFFFFF; animation: pulse-clay 1.4s infinite;
       }
-      @keyframes pulse-glass { 0%, 100% { transform: scale(0.9); opacity: 0.7; } 50% { transform: scale(1.2); opacity: 1; } }
+      @keyframes pulse-clay { 0%, 100% { transform: scale(0.9); opacity: 0.7; } 50% { transform: scale(1.2); opacity: 1; } }
 
-      .sidebar-panel .platter { padding: 8px 10px; margin: 3px 6px; border-radius: 12px; }
-      .sidebar-panel .initials { width: 28px; height: 28px; font-size: 11px; }
+      .sidebar-panel .platter { padding: 6px 10px; margin: 3px 5px; border-radius: 12px; }
+      .sidebar-panel .initials { width: 28px; height: 28px; font-size: 11px; border-radius: 8px; }
       .sidebar-panel .doc-name { font-size: 11px; font-weight: 700; color: #0F172A; }
-      .sidebar-panel .doc-spec { font-size: 9.5px; color: var(--text-muted); }
+      .sidebar-panel .doc-spec { font-size: 9px; color: var(--text-muted); }
 
+      /* TACTILE CLAY FOOTER BAR */
       .footer {
-        height: clamp(42px, 3.8vw, 52px); background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(24px); border-radius: 18px;
-        border: 1px solid rgba(255, 255, 255, 0.95); box-shadow: 0 10px 30px rgba(148, 163, 184, 0.15);
+        height: clamp(44px, 4vw, 54px); background: #FFFFFF; border-radius: clamp(14px, 1.4vw, 18px);
+        box-shadow: 8px 8px 20px rgba(166, 178, 195, 0.3), -6px -6px 16px #FFFFFF;
         display: flex; align-items: center; justify-content: space-between; padding: 0 clamp(12px, 1.4vw, 20px); flex-shrink: 0;
+        border: 1.5px solid rgba(255, 255, 255, 0.9);
       }
-      .legend { display: flex; gap: clamp(8px, 1vw, 14px); padding-right: 14px; border-right: 1px solid rgba(0, 0, 0, 0.06); }
-      .lg-item { display: flex; align-items: center; gap: 5px; font-size: clamp(9px, 0.8vw, 11px); font-weight: 700; color: var(--text-secondary); }
-      .dot { width: 7px; height: 7px; border-radius: 50%; }
+      .legend { display: flex; gap: clamp(8px, 1vw, 14px); padding-right: 14px; border-right: 1.5px solid #E2E8F0; }
+      .lg-item { display: flex; align-items: center; gap: 5px; font-size: clamp(9px, 0.8vw, 11px); font-weight: 800; color: var(--text-secondary); }
+      .dot { width: 8px; height: 8px; border-radius: 50%; }
       .ticker { flex: 1; margin: 0 clamp(10px, 1.2vw, 18px); overflow: hidden; position: relative; }
       .ticker-inner {
-        white-space: nowrap; animation: marquee 30s linear infinite; font-size: clamp(11px, 0.95vw, 13px); font-weight: 600; color: #0F172A;
+        white-space: nowrap; animation: marquee 30s linear infinite; font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: clamp(11px, 0.95vw, 13.5px); font-weight: 700; color: #0F172A;
       }
       @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
       .status-pill-lg {
-        display: flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 20px;
-        background: rgba(16, 185, 129, 0.12); font-size: clamp(9px, 0.8vw, 11px); font-weight: 800; color: var(--accent-green);
+        display: flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 10px;
+        background: #ECFDF5; font-size: clamp(9px, 0.8vw, 11px); font-weight: 900; color: var(--clay-emerald);
+        box-shadow: 3px 3px 8px rgba(16, 185, 129, 0.15), -2px -2px 6px #FFFFFF;
       }
-      .live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent-green); }
+      .live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--clay-emerald); }
 
       .dynamic-island {
-        position: absolute; top: 16px; left: 50%; transform: translateX(-50%) scale(0); height: 48px;
-        background: rgba(15, 23, 42, 0.92); backdrop-filter: blur(20px); border-radius: 24px;
-        z-index: 999; display: flex; align-items: center; justify-content: center;
-        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35); opacity: 0;
+        position: absolute; top: 6px; left: 50%; transform: translateX(-50%) scale(0); height: 46px;
+        background: #0F172A; border-radius: 23px; z-index: 999; display: flex; align-items: center; justify-content: center;
+        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); box-shadow: 0 12px 32px rgba(15, 23, 42, 0.35); opacity: 0;
       }
       .dynamic-island.expanded { transform: translateX(-50%) scale(1); opacity: 1; min-width: 320px; padding: 0 20px; }
       .di-content { display: flex; align-items: center; gap: 12px; }
@@ -226,27 +250,27 @@
       .di-title { font-size: 10px; font-weight: 800; color: rgba(255, 255, 255, 0.6); text-transform: uppercase; }
       .di-msg { font-size: 12px; font-weight: 700; color: #FFF; }
 
-      .st-praktek { --status-color: #059669; --status-bg: rgba(16, 185, 129, 0.14); }
-      .st-pendaftaran { --status-color: #EA580C; --status-bg: rgba(249, 115, 22, 0.14); }
-      .st-terjadwal { --status-color: #0284C7; --status-bg: rgba(14, 165, 233, 0.14); }
-      .st-penuh { --status-color: #D97706; --status-bg: rgba(245, 158, 11, 0.14); }
-      .st-operasi { --status-color: #7C3AED; --status-bg: rgba(139, 92, 246, 0.14); }
-      .st-cuti { --status-color: #E11D48; --status-bg: rgba(239, 68, 68, 0.14); }
-      .st-selesai { --status-color: #64748B; --status-bg: rgba(100, 116, 139, 0.12); }
+      .st-praktek { --status-color: #059669; --status-bg: #ECFDF5; --status-shadow: rgba(16, 185, 129, 0.25); }
+      .st-pendaftaran { --status-color: #EA580C; --status-bg: #FFF7ED; --status-shadow: rgba(249, 115, 22, 0.25); }
+      .st-terjadwal { --status-color: #0284C7; --status-bg: #F0F9FF; --status-shadow: rgba(2, 132, 199, 0.25); }
+      .st-penuh { --status-color: #D97706; --status-bg: #FFFBEB; --status-shadow: rgba(217, 119, 6, 0.25); }
+      .st-operasi { --status-color: #7C3AED; --status-bg: #F5F3FF; --status-shadow: rgba(124, 58, 237, 0.25); }
+      .st-cuti { --status-color: #E11D48; --status-bg: #FFF1F2; --status-shadow: rgba(225, 29, 72, 0.25); }
+      .st-selesai { --status-color: #475569; --status-bg: #F8FAFC; --status-shadow: rgba(71, 85, 105, 0.2); }
       .st-libur { display: none; }
-      .st-buka { --status-color: #059669; --status-bg: rgba(16, 185, 129, 0.14); }
-      .st-buka.st-terjadwal { --status-color: #0284C7; --status-bg: rgba(14, 165, 233, 0.14); }
+      .st-buka { --status-color: #059669; --status-bg: #ECFDF5; --status-shadow: rgba(16, 185, 129, 0.25); }
+      .st-buka.st-terjadwal { --status-color: #0284C7; --status-bg: #F0F9FF; --status-shadow: rgba(2, 132, 199, 0.25); }
 
       /* Smart TV / 960x540 / 720p Responsive */
       @media (max-width: 1024px), (max-height: 600px) {
-        .app-container { gap: 8px; padding: 6px 10px 10px 10px; }
-        .header { padding: 8px 10px 6px; gap: 8px; }
+        .app-container { gap: 6px; padding: 2px 8px 8px 8px; }
+        .header { padding: 6px 8px 4px; gap: 6px; }
         .sidebar-panel { flex: 0 0 240px; min-width: 220px; }
-        .clock { font-size: 18px !important; }
-        .platter { padding: 6px 8px; border-radius: 10px; gap: 4px; }
-        .initials { width: 28px; height: 28px; font-size: 10.5px; }
+        .clock { font-size: 20px !important; }
+        .platter { padding: 5px 6px; border-radius: 10px; gap: 3px; }
+        .initials { width: 26px; height: 26px; font-size: 10px; }
         .doc-spec { font-size: 12px; }
-        .doc-name { font-size: 10.5px; }
+        .doc-name { font-size: 10px; }
         .jam-val { font-size: 11px; }
         .footer { height: 36px; padding: 0 10px; }
       }
@@ -254,7 +278,7 @@
       /* Mobile Responsive */
       @media (max-width: 768px) {
         html, body { overflow-y: auto !important; height: auto !important; }
-        .app-container { height: auto !important; min-height: 100vh; flex-direction: column; overflow: visible; }
+        .app-container { height: auto !important; min-height: 100vh; flex-direction: column; overflow: visible; padding-top: 8px; }
         .content { flex-direction: column; height: auto !important; overflow: visible; }
         .sidebar-panel { flex: none; width: 100%; max-width: none; }
         .island { flex: none; height: auto !important; overflow: visible; }
