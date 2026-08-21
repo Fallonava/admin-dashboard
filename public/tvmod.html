@@ -937,6 +937,1543 @@
       }
     </script>
 
+<script>
+      // ===== CONFIGURATION =====
+      const CFG = {
+        API_MAIN: "/api/display",
+        POLL_MS: 3000, // Reduced for faster dev/test feedback, can be restored later
+        // Scroll Profesional: Item-by-Item
+        SCROLL_ITEM_PAUSE: 3000, // Jeda antar item (ms) — waktu baca per kartu
+        SCROLL_EDGE_PAUSE: 6000, // Jeda di ujung atas/bawah (ms)
+        SCROLL_DURATION: 800, // Durasi animasi geser per item (ms)
+      };
+
+      // ===== CORE ENGINE =====
+      const $ = (id) => document.getElementById(id);
+      const esc = (t) => {
+        const d = document.createElement("div");
+        d.textContent = t || "";
+        return d.innerHTML;
+      };
+      const initials = (n) =>
+        n
+          ? n
+              .split(" ")
+              .map((w) => w[0])
+              .join("")
+              .slice(0, 2)
+              .toUpperCase()
+          : "DR";
+
+      const getSpecialistIcon = (spec) => {
+        const s = (spec || "").toLowerCase();
+        if (s.includes("urologi")) return `<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24" fill="currentColor"><path d="M480-120q-33 0-56.5-23.5T400-200q0-33 23.5-56.5T480-280q33 0 56.5 23.5T560-200q0 33-23.5 56.5T480-120Zm0-240q-48 0-83.5-31.5T352-472q-3-22-10-41t-18-35q-23-40-75-52.5T128-636q-14 8-29 6.5T72-646q-12-11-13.5-27t8.5-29q40-45 96.5-66.5T280-790q53 0 100 24t78 66q4 6 10.5 9t11.5 3q5 0 11.5-3t10.5-9q31-42 78-66t100-24q60 0 116.5 21.5T893-702q10 13 8.5 29t-13.5 27q-12 11-27 6.5T832-636q-68 40-120 52.5T637-548q-11 16-18 35t-10 41q-9 48-44.5 79T480-360Z"/></svg>`;
+        if (s.includes("bedah mulut")) return "medical_services";
+        if (s.includes("anak")) return "child_care";
+        if (s.includes("gigi") || s.includes("konservasi") || s.includes("dental") || s.includes("mulut")) return `<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24" fill="currentColor"><path d="M480-120q-48 0-84-30t-48-76q-30 11-61.5 16T224-204q-26 0-45-19t-19-45v-92q0-109 72.5-188.5T408-644v24q0 30 21 51t51 21q30 0 51-21t21-51v-24q103 16 175.5 95.5T800-360v92q0 26-19 45t-45 19q-31 0-62.5-5.5T612-226q-12 46-48 76t-84 30Zm0-80q23 0 45-12.5t33-35.5l14-40 40 10q23 6 49 8.5t55 2.5v-53q0-82-55.5-141.5T528-525q-11 25-33.5 45T440-460q0-8 2-15t4-15q12-40 43.5-72T564-604q-32-15-68-23t-76-8q2 6 3 12t1 13q0 39-24 67.5T334-514q-14 30-36 71.5T260-360v120q29 0 55-2.5t49-8.5l40-10 14 40q11 23 33 35.5T480-200Zm0-300Z"/></svg>`;
+        if (s.includes("kandungan") || s.includes("obgyn")) return "pregnant_woman";
+        if (s.includes("mata")) return "visibility";
+        if (s.includes("saraf") || s.includes("neurologi")) return "psychology";
+        if (s.includes("dalam")) return "monitor_heart";
+        if (s.includes("jantung")) return "favorite";
+        if (s.includes("bedah")) return "medical_services";
+        if (s.includes("kulit") || s.includes("kelamin")) return "face_retouching_natural";
+        if (s.includes("tht") || s.includes("tth")) return "hearing";
+        if (s.includes("paru") || s.includes("pulmo")) return "air";
+        if (s.includes("ortopedi") || s.includes("orthopaedi")) return "accessible_forward";
+        if (s.includes("jiwa") || s.includes("psikiatri")) return "self_improvement";
+        if (s.includes("rehab")) return "accessibility_new";
+        return "health_and_safety";
+      };
+
+      // Helper: Tentukan apakah dokter dalam status "aktif" (sedang melayani/bisa daftar)
+      // Satu definisi tunggal dipakai di _detectChanges DAN render()
+      const isActive = (st) =>
+        ["PRAKTEK", "PENDAFTARAN"].includes(st) || st.includes("PENUH");
+
+      // #6: Format Jam Konsisten
+      const formatJam = (j) => {
+        if (!j || j === "-") return "-";
+        return j
+          .replace(/\./g, ":")
+          .replace(/\s*[-–]\s*/g, " — ")
+          .replace(/\s*s\/d\s*/gi, " — ");
+      };
+
+      // ===== CARD HTML BUILDER (Satu Fungsi untuk render() & _renderSidebar()) =====
+      const buildCardHTML = (d, avatarText, statusIcon, statusLabel, labelJam, labelLive) => {
+        const jamTampil = d.JamDaftar !== "-"
+          ? esc(d.JamDaftar)
+          : formatJam((d.JamPraktek || "").split("-")[0]);
+          
+        const isCPO = ["CUTI", "PENUH", "OPERASI"].some(st => (d.Status || "").toUpperCase().includes(st));
+
+        return `
+          <div class="platter-main">
+            <div class="initials">${avatarText}</div>
+            <div class="info-col">
+              <div class="doc-spec">${esc(d.Spesialis)}</div>
+              <div class="doc-name">${esc(d.Dokter)}</div>
+            </div>
+            <div class="meta-col">
+              <div class="status-pill" style="background:var(--status-bg);color:var(--status-color)">
+                <span class="material-icons-round" style="font-size:12px">${statusIcon}</span>${statusLabel}
+              </div>
+              ${!isCPO && d.JamPraktek && d.JamPraktek !== "-" ? `
+              <div class="jam-box">
+                <span class="jam-val jam-val-daftar" style="color:var(--status-color)">${jamTampil}</span>
+              </div>` : ""}
+            </div>
+          </div>
+          <div class="platter-detail">
+            <div class="detail-info">
+              <span class="detail-label">${labelJam}</span>
+              <span class="detail-time" style="font-size:15px">${jamTampil}</span>
+            </div>
+            <div class="live-status">
+              <div class="pulse-dot"></div>
+              <span class="live-text">${labelLive}</span>
+            </div>
+          </div>`;
+      };
+
+      const buildSidebarCardHTML = (d, avatarText, statusIcon, statusLabel) => {
+        const jamTampil = d.JamDaftar !== "-"
+          ? esc(d.JamDaftar)
+          : formatJam((d.JamPraktek || "").split("-")[0]);
+          
+        return `
+          <div class="platter-mini-grid" style="position:relative; z-index:1; display:flex; flex-direction:column; gap:8px; width:100%;">
+            <div class="mini-top-row" style="display:flex; justify-content:space-between; align-items:flex-start; width:100%;">
+              <div class="initials">${avatarText}</div>
+              <div class="meta-col" style="flex-shrink:0;">
+                <div class="status-pill" style="background:var(--status-bg);color:var(--status-color)">
+                  <span class="material-icons-round" style="font-size:10px; margin-right:2px;">${statusIcon}</span>${statusLabel}
+                </div>
+                <div class="jam-sidebar" style="display:none; align-items:center; gap:4px; background:rgba(125,125,125,0.08); padding:3px 8px; border-radius:6px; box-shadow:var(--neo-inset-dark), var(--neo-inset-light);">
+                  <span class="material-icons-round" style="font-size:12px; color:var(--text-secondary);">schedule</span>
+                  <span class="jam-val-daftar" style="font-size:12px; font-weight:800; color:var(--text-primary); font-variant-numeric: tabular-nums;">${jamTampil}</span>
+                </div>
+              </div>
+            </div>
+            <div class="info-col" style="display:flex; flex-direction:column; gap:4px; margin-top:2px;">
+              <div class="doc-name" style="font-size:11.5px; font-weight:700;">${esc(d.Dokter)}</div>
+              <div class="doc-spec" style="font-size:9.5px; opacity:0.75;">${esc(d.Spesialis)}</div>
+            </div>
+          </div>`;
+      };
+
+
+      // ===== PROFESSIONAL SCROLLER (Item-by-Item with Easing) =====
+      // Pola: Scroll satu item → pause → scroll item berikutnya → ... → sampai bawah → pause lama → fade reset ke atas → ulangi
+      class SmoothScroller {
+        constructor(id) {
+          this.el = $(id);
+          this.y = 0;
+          this.targetY = 0;
+          this.currentItem = 0;
+          this.itemOffsets = []; // Posisi Y setiap item (kartu)
+          this.active = true;
+          this.animating = false;
+          this.h = 0; // scrollHeight
+          this.vh = 0; // viewportHeight
+          this.timer = null;
+
+          window.addEventListener("resize", () => this.updateMetrics());
+        }
+
+        // Hitung posisi setiap item kartu
+        updateMetrics() {
+          if (!this.el) return;
+          this.h = this.el.scrollHeight;
+          this.vh = this.el.parentElement.clientHeight;
+
+          // Bangun array offset posisi tiap item
+          this.itemOffsets = [];
+          const children = this.el.children;
+          for (let i = 0; i < children.length; i++) {
+            this.itemOffsets.push(children[i].offsetTop);
+          }
+
+          // Jika konten tidak perlu scroll, reset
+          if (this.h <= this.vh) {
+            this.y = 0;
+            this.targetY = 0;
+            this.currentItem = 0;
+            this.el.style.transform = "translate3d(0,0,0)";
+            this.el.style.opacity = "1";
+          }
+        }
+
+        // Easing: Cubic ease-in-out — pelan di awal & akhir, cepat di tengah
+        _ease(t) {
+          return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+        }
+
+        // Animasi scroll dari posisi saat ini ke target
+        _animateTo(target, duration, callback) {
+          if (this.animating) return;
+          this.animating = true;
+          const startY = this.y;
+          const delta = target - startY;
+
+          if (Math.abs(delta) < 1) {
+            this.animating = false;
+            if (callback) callback();
+            return;
+          }
+
+          let startTime = null;
+          const step = (timestamp) => {
+            if (!this.active) {
+              this.animating = false;
+              return;
+            }
+            if (!startTime) startTime = timestamp;
+
+            const elapsed = timestamp - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            const easedProgress = this._ease(progress);
+
+            this.y = startY + delta * easedProgress;
+            this.el.style.transform = `translate3d(0, -${this.y}px, 0)`;
+
+            if (progress < 1) {
+              // Jika mode tv optimized, pelankan simulasi ke ~30FPS untuk mendinginkan CPU
+              if (document.body.classList.contains("tv-optimized")) {
+                setTimeout(() => step(performance.now()), 33);
+              } else {
+                requestAnimationFrame(step);
+              }
+            } else {
+              this.y = target;
+              this.el.style.transform = `translate3d(0, -${this.y}px, 0)`;
+              this.animating = false;
+              if (callback) callback();
+            }
+          };
+          requestAnimationFrame(step);
+        }
+
+        // Fade out → reset ke atas → fade in (loop seamless)
+        _fadeResetToTop(callback) {
+          // Fade out
+          this.el.style.transition = "opacity 0.5s ease";
+          this.el.style.opacity = "0";
+
+          setTimeout(() => {
+            // Snap ke atas (tersembunyi)
+            this.y = 0;
+            this.targetY = 0;
+            this.currentItem = 0;
+            this.el.style.transition = "none";
+            this.el.style.transform = "translate3d(0, 0, 0)";
+
+            // Force reflow
+            void this.el.offsetHeight;
+
+            // Fade in
+            this.el.style.transition = "opacity 0.5s ease";
+            this.el.style.opacity = "1";
+
+            setTimeout(() => {
+              this.el.style.transition = "";
+              if (callback) callback();
+            }, 500);
+          }, 500);
+        }
+
+        // Loop utama: scroll item demi item
+        _scheduleNext() {
+          if (!this.active) return;
+          if (this.h <= this.vh) return; // Tidak perlu scroll
+
+          const maxScroll = this.h - this.vh;
+
+          // Hitung berapa item yang masih bisa di-scroll
+          // Cari item berikutnya yang offset-nya masih dalam batas
+          let nextItem = this.currentItem + 1;
+
+          // Pastikan ada item berikutnya
+          if (nextItem < this.itemOffsets.length) {
+            // Scroll ke item berikutnya — clamp ke maxScroll agar tidak overshoot
+            this.currentItem = nextItem;
+            // Jika item terakhir atau offset melebihi maxScroll, scroll ke maxScroll
+            // agar konten paling bawah terlihat sepenuhnya
+            this.targetY = Math.min(this.itemOffsets[nextItem], maxScroll);
+            if (this.y >= maxScroll - 1) {
+              // Sudah di posisi paling bawah, tidak perlu scroll lagi
+              this.timer = setTimeout(() => {
+                this._fadeResetToTop(() => {
+                  this.timer = setTimeout(
+                    () => this._scheduleNext(),
+                    CFG.SCROLL_EDGE_PAUSE,
+                  );
+                });
+              }, CFG.SCROLL_EDGE_PAUSE);
+              return;
+            }
+
+            this._animateTo(this.targetY, CFG.SCROLL_DURATION, () => {
+              // Pause setelah sampai, lalu lanjut
+              this.timer = setTimeout(
+                () => this._scheduleNext(),
+                CFG.SCROLL_ITEM_PAUSE,
+              );
+            });
+          } else {
+            // Sudah melewati semua item — scroll ke maxScroll jika belum
+            if (this.y < maxScroll - 1) {
+              this._animateTo(maxScroll, CFG.SCROLL_DURATION, () => {
+                this.timer = setTimeout(() => {
+                  this._fadeResetToTop(() => {
+                    this.timer = setTimeout(
+                      () => this._scheduleNext(),
+                      CFG.SCROLL_EDGE_PAUSE,
+                    );
+                  });
+                }, CFG.SCROLL_EDGE_PAUSE);
+              });
+            } else {
+              // Sudah di ujung bawah — pause lama, lalu fade reset
+              this.timer = setTimeout(() => {
+                this._fadeResetToTop(() => {
+                  // Pause di atas, lalu mulai scroll lagi
+                  this.timer = setTimeout(
+                    () => this._scheduleNext(),
+                    CFG.SCROLL_EDGE_PAUSE,
+                  );
+                });
+              }, CFG.SCROLL_EDGE_PAUSE);
+            }
+          }
+        }
+
+        start() {
+          // Pause awal di posisi atas sebelum mulai scroll
+          this.timer = setTimeout(
+            () => this._scheduleNext(),
+            CFG.SCROLL_EDGE_PAUSE,
+          );
+        }
+
+        reset() {
+          // Bersihkan semua timer dan state
+          if (this.timer) clearTimeout(this.timer);
+          this.animating = false;
+          this.y = 0;
+          this.targetY = 0;
+          this.currentItem = 0;
+          if (this.el) {
+            this.el.style.transition = "none";
+            this.el.style.transform = "translate3d(0, 0, 0)";
+            this.el.style.opacity = "1";
+          }
+          // Restart cycle setelah metrics diupdate
+          this.timer = setTimeout(
+            () => this._scheduleNext(),
+            CFG.SCROLL_EDGE_PAUSE,
+          );
+        }
+      }
+
+      const isMobile = window.innerWidth <= 768;
+
+      let s1, s2, s3;
+
+      if (!isMobile) {
+        s1 = new SmoothScroller("scrollBedah");
+        s2 = new SmoothScroller("scrollNonBedah");
+        s3 = new SmoothScroller("scrollSidebar");
+      }
+
+      // Dynamic Island Controller (with Queue)
+      // Dynamic Island Controller (with Queue & Idle Cycle)
+      const Island = {
+        _el: null,
+        _icon: null,
+        _queue: [],
+        _isAnimating: false,
+        _idleTimer: null,
+
+        init() {
+          this._el = $("dynamicIsland");
+          this._icon = $("diIcon");
+          // #2 & #4: Mulai cycle idle message (sapaan / info)
+          this.startIdleCycle();
+        },
+
+        // #2: Sapaan Waktu Otomatis
+        getGreeting() {
+          const h = new Date().getHours();
+          if (h < 10) return "Selamat Pagi, Semangat Sehat! ☀️";
+          if (h < 15) return "Selamat Siang, Mohon Menunggu 🌤️";
+          if (h < 18) return "Selamat Sore 👋";
+          return "Selamat Malam 🌙";
+        },
+
+        // #4: Rotasi Info Edukasi
+        getIdleMessage() {
+          const msgs = [
+            this.getGreeting(),
+            "Dilarang Merokok di Area RS 🚭",
+            "Jagalah Kebersihan Ruang Tunggu 🗑️",
+            "Gunakan Masker Jika Batuk 😷",
+            "Antri Dengan Tertib 🚶‍♂️🚶‍♀️",
+            "Siapkan KTP & BPJS Anda 🆔",
+          ];
+          return msgs[Math.floor(Math.random() * msgs.length)];
+        },
+
+        startIdleCycle() {
+          // Diambil alih oleh Master Clock di App.init()
+        },
+
+        // show(title, msg, type, [icon], [duration])
+        async show(title, msg, type = "info", arg4 = null, arg5 = null) {
+          let duration = 8000;
+          let icon = null;
+
+          // Overload handling
+          if (typeof arg4 === "number") {
+            duration = arg4;
+          } else if (typeof arg4 === "string") {
+            icon = arg4;
+            if (typeof arg5 === "number") duration = arg5;
+          }
+
+          // Default icons
+          if (!icon) {
+            if (type === "success") icon = "check_circle";
+            else if (type === "warn") icon = "warning";
+            else if (type === "error") icon = "error";
+            else if (type === "info") icon = "info";
+            else if (type === "idle") icon = "notifications";
+          }
+
+          this._queue.push({ title, msg, type, icon, duration });
+          this.processQueue();
+        },
+
+        async processQueue() {
+          if (this._isAnimating || this._queue.length === 0) return;
+
+          this._isAnimating = true;
+          const item = this._queue.shift();
+
+          // 1. Reset Classes
+          this._el.className = `dynamic-island ${item.type}`;
+
+          // 2. Set Content
+          $("diTitle").textContent = item.title;
+          $("diMsg").textContent = item.msg;
+          // 3. Set Icon
+          const iconEl = this._icon;
+          if (iconEl) {
+            iconEl.textContent = item.icon || "info";
+            // Fix: Reset class to remove spinner
+            iconEl.className = "material-icons-round di-icon";
+          }
+
+          // Force layout recalc to restart transitions cleanly
+          void this._el.offsetWidth;
+
+          // 4. Expand Animation (in next frame for smoothness)
+          requestAnimationFrame(() => {
+            this._el.classList.add("expanded");
+          });
+
+          // 5. Wait Notification Duration
+          await new Promise((r) => setTimeout(r, item.duration));
+
+          // 5. Collapse Animation
+          this._el.classList.remove("expanded");
+
+          // 6. Cleanup & Next
+          setTimeout(() => {
+            this._isAnimating = false;
+            this._el.className = "dynamic-island"; // Reset to base
+            this.processQueue();
+          }, 600); // 0.6s match CSS liquid render
+        },
+      };
+
+      // Main App Logic
+      const App = {
+        _data: { doctors: [], shifts: [], leaves: [], settings: {} },
+        _prevDoctors: {}, // Track previous doctor states for change detection
+        _greetSent: {}, // Track which greetings have been sent today
+
+        _operasiDoctors: [], // Melacak dokter-dokter spesifik yang berada di Ruang Operasi
+        _opCycleIdx: 0,
+
+        // Jadwal Sholat Statis (Purbalingga) untuk Hitung Mundur
+        _prayTimes: [
+          { id: "Dzuhur", h: 12, m: 2 },
+          { id: "Ashar", h: 15, m: 18 },
+          { id: "Maghrib", h: 18, m: 3 },
+        ],
+        _activePrayCountdown: null,
+
+        _customMsgIdx: 0,
+        _customMsgs: [
+          { title: "Info", text: "Terimakasih sudah menunggu 🙏" },
+          { title: "Info", text: "Terimakasih sudah tertib 🌟" },
+          { title: "Antrian", text: "Belum online? Yo ambil antrian 🎫" },
+          { title: "Info", text: "Terimakasih sudah mengantri 😊" },
+        ],
+
+        _isFetching: false, // Network lock
+        _infoMsgIdx: 0,
+        _infoMsgs: [
+          "Pasien dengan status <strong>PENUH</strong> mohon mendaftar di hari lain.",
+          "Silakan siapkan <strong>KTP & Kartu BPJS</strong> sebelum ke loket pendaftaran.",
+          "Gunakan aplikasi <strong>MOBILE JKN</strong> untuk pendaftaran online.",
+          "Harap datang <strong>30 menit</strong> sebelum jam praktek dimulai.",
+          "Pasien <strong>BPJS</strong> wajib membawa surat rujukan dari Faskes tingkat 1.",
+          "Pastikan data diri Anda sudah sesuai dengan kartu identitas.",
+          "Informasi lebih lanjut hubungi <strong>INFORMASI</strong> atau <strong>0823-2344-6076</strong>.",
+        ],
+
+        async init() {
+          Island.init(); // Initialize Dynamic Island
+
+          // --- SMART TV OPTIMIZATION DETECTOR ---
+          const ua = navigator.userAgent.toLowerCase();
+          if (
+            ua.includes("webos") ||
+            ua.includes("tizen") ||
+            ua.includes("smarttv") ||
+            ua.includes("netcast")
+          ) {
+            document.body.classList.add("tv-optimized");
+          }
+
+          // Greeting based on time
+          const h = new Date().getHours();
+          const greeting =
+            h < 11
+              ? "Selamat Pagi"
+              : h < 15
+                ? "Selamat Siang"
+                : h < 18
+                  ? "Selamat Sore"
+                  : "Selamat Malam";
+          Island.show("PETUGAS PENDAFTARAN", greeting + " 👋", "success", 3000);
+
+          // --- MASTER CLOCK LOOP ---
+          // Menyatukan semua interval aplikasi (Clock, Fetch, Idle Island, Operasi, Theme) ke dalam satu timer agar lebih sinkron dan ringan di memori
+          let tick = 0;
+          setInterval(() => {
+            this.clock();
+            tick++;
+
+            if (tick % 8 === 0) this.updateInfoBox(); // Info box setiap 8 detik
+            if (tick % 60 === 0) this.updateTheme(); // Tema setiap 60 detik (1 menit)
+            // Diganti: this.fetch() dinonaktifkan karena sekarang pakai SSE realtime
+            if (tick % 10 === 0) this.checkBroadcast(); // Emergency broadcast polling setiap 10 detik
+
+            // Island Idle Cycle (setiap 180 detik / 3 menit)
+            if (
+              tick % 180 === 0 &&
+              Island._queue.length === 0 &&
+              !Island._isAnimating
+            ) {
+              Island.show(
+                "Info",
+                Island.getIdleMessage(),
+                "idle",
+                "tips_and_updates",
+                6000,
+              );
+            }
+
+            // Notifikasi Ruang Operasi (setiap 300 detik / 5 menit)
+            if (
+              tick % 300 === 0 &&
+              this._operasiDoctors.length > 0 &&
+              !Island._isAnimating
+            ) {
+              const dr = this._operasiDoctors[this._opCycleIdx];
+              Island.show(
+                "Ruang Operasi",
+                `${dr} sedang dalam tindakan operasi`,
+                "warn",
+                "local_hospital",
+                8000,
+              );
+              this._opCycleIdx =
+                (this._opCycleIdx + 1) % this._operasiDoctors.length;
+            }
+          }, 1000);
+
+          this.clock();
+          this.updateTheme();
+          this.skel();
+
+          // Start SSE Realtime Connection
+          this.connectRealtime();
+
+          this.checkBroadcast(); // Initial broadcast check
+          this.updateInfoBox();
+          if (!isMobile) {
+            s1.start();
+            s2.start();
+            s3.start();
+          }
+
+          // Watchdog: Auto-reload every 1 hour to clear memory (3600 detik)
+          setTimeout(() => window.location.reload(), 3600000);
+        },
+
+        clock() {
+          const d = new Date();
+
+          // Cache DOM updates untuk mencegah reflow tiap detik di TV low end
+          const clockVal = d.toLocaleTimeString("id-ID", {
+            hour: "2-digit",
+            minute: "2-digit",
+          });
+          const clockEl = $("clock");
+          if (clockEl && clockEl.textContent !== clockVal)
+            clockEl.textContent = clockVal;
+
+          const dateVal = d
+            .toLocaleDateString("id-ID", {
+              weekday: "long",
+              day: "numeric",
+              month: "long",
+            })
+            .toUpperCase();
+          const dateEl = $("date");
+          if (dateEl && dateEl.textContent !== dateVal)
+            dateEl.textContent = dateVal;
+
+          const h = d.getHours();
+          const m = d.getMinutes();
+          const s = d.getSeconds();
+
+          // Custom Rotating Notification every 5 minutes (avoid clash with break time at 12:00)
+          if (m % 5 === 0 && s === 0 && h !== 12) {
+            const msg = this._customMsgs[this._customMsgIdx];
+            Island.show(msg.title, msg.text, "info", 6000);
+            this._customMsgIdx =
+              (this._customMsgIdx + 1) % this._customMsgs.length;
+          }
+
+          // Sholat Countdown Logic (15 menit sebelum masuknya waktu)
+          const currentTotalMins = h * 60 + m;
+          let prayCountdownActive = false;
+
+          for (const p of this._prayTimes) {
+            const prayMins = p.h * 60 + p.m;
+            const diffMins = prayMins - currentTotalMins;
+
+            // Jika berada di rentang 1 hingga 15 menit SEBELUM masuk sholat
+            if (diffMins > 0 && diffMins <= 15) {
+              prayCountdownActive = true;
+              if (s === 0 && this._activePrayCountdown !== p.id) {
+                this._activePrayCountdown = p.id;
+                Island.show(
+                  "Waktu Sholat",
+                  `${diffMins} Menit Menuju Waktu ${p.id} 🕌`,
+                  "info",
+                  "access_time",
+                  6000,
+                );
+              }
+
+              // Hitung mundur visual di bottom left
+              const remainingSeconds = 60 - s;
+              const displayMins = diffMins - 1; // contoh: dif 15m, di menit 14:59 kita tampilkan 14.
+
+              const mm = displayMins.toString().padStart(2, "0");
+              const ss =
+                remainingSeconds === 60
+                  ? "00"
+                  : remainingSeconds.toString().padStart(2, "0");
+              this.status(
+                `[${mm}:${ss}] MENUJU WAKTU ${p.id.toUpperCase()} 🕌`,
+                true,
+              );
+              break;
+            }
+            // Tepat saat Waktu Sholat Tiba
+            else if (diffMins === 0 && s === 0) {
+              this._activePrayCountdown = null;
+              this.status("LIVE STREAM", false);
+              Island.show(
+                "Waktu Sholat",
+                `Waktu ${p.id} Telah Tiba 🕌`,
+                "success",
+                "access_time",
+                8000,
+              );
+
+              // Audio dibuang sepenuhnya untuk performa memori Smart TV yang lebih baik
+            }
+          }
+
+          if (!prayCountdownActive && this._activePrayCountdown) {
+            this._activePrayCountdown = null;
+            if (!this._isFetching) this.status("LIVE STREAM", false);
+          }
+
+          // Time-based Greetings (fire once at the exact hour)
+          if (s === 0 && m === 0) {
+            const key = "greet_" + h;
+            if (!this._greetSent[key]) {
+              this._greetSent[key] = true;
+              if (h === 6) Island.show("Pagi", "Selamat Pagi 🌅", "info", 4000);
+              if (h === 12)
+                Island.show("Siang", "Selamat Siang ☀️", "info", 4000);
+              if (h === 18)
+                Island.show("Sore", "Selamat Sore 🌇", "info", 4000);
+            }
+          }
+        },
+
+        updateTheme() { document.documentElement.setAttribute("data-theme", "light"); return;
+          const h = new Date().getHours();
+          // Light Theme: 06:00 - 17:59 | Dark Theme: 18:00 - 05:59
+          const isLight = h >= 6 && h < 18;
+          document.documentElement.setAttribute(
+            "data-theme",
+            isLight ? "light" : "dark",
+          );
+        },
+
+        skel() {
+          const make = () =>
+            Array(4)
+              .fill(0)
+              .map(
+                () =>
+                  `<div class="platter" style="height:48px; opacity:0.6"><div class="skel" style="width:32px;height:32px;border-radius:10px"></div><div class="skel" style="width:60%;height:14px"></div></div>`,
+              )
+              .join("");
+          $("scrollBedah").innerHTML = make();
+          $("scrollNonBedah").innerHTML = make();
+        },
+
+        connectRealtime() {
+          const es = new EventSource("/api/stream/live");
+
+          // Legacy/Initial snapshot (unnamed)
+          es.onmessage = (e) => {
+            try {
+              const res = JSON.parse(e.data);
+              if (res && res.doctors) this.processData(res);
+            } catch (err) {
+              console.error("Snapshot Error:", err);
+            }
+          };
+
+          // Modern named events
+          const events = ["doctors", "shifts", "leaves", "settings"];
+          events.forEach((eventName) => {
+            es.addEventListener(eventName, (e) => {
+              try {
+                const data = JSON.parse(e.data);
+                this.processData({ [eventName]: data });
+              } catch (err) {
+                console.error(`SSE ${eventName} Error:`, err);
+              }
+            });
+          });
+
+          es.onerror = () => {
+            Island.show(
+              "Koneksi",
+              "Mencoba menyambung kembali...",
+              "warn",
+              5000,
+            );
+            this.status("OFFLINE MODE", true);
+          };
+        },
+
+        processData(partial) {
+          if (!partial) return;
+          this._data = { ...this._data, ...partial };
+          const res = this._data;
+
+          this._isFetching = true;
+
+          try {
+            const doctors = res.doctors || [];
+            const shifts = res.shifts || [];
+            const leaves = res.leaves || [];
+
+            // Get today's info
+            const now = new Date();
+            const todayDayIdx = now.getDay() === 0 ? 6 : now.getDay() - 1; // 0=Mon, 6=Sun
+            const todayStr = now.toISOString().split("T")[0];
+
+            // Map standard format to legacy format needed by TV UI
+            const mappedData = [];
+
+            // Helper inline untuk cek ganjil/genap
+            const isShiftActiveForDate = (extra, date) => {
+              if (!extra) return true;
+              const weekOfMonth = Math.ceil(date.getDate() / 7);
+              if (extra === 'odd_weeks' && weekOfMonth % 2 === 0) return false;
+              if (extra === 'even_weeks' && weekOfMonth % 2 !== 0) return false;
+              return true;
+            };
+
+            // Find shifts for today
+            const todayShifts = shifts.filter(
+              (s) => s.dayIdx === todayDayIdx && isShiftActiveForDate(s.extra, now)
+            );
+
+            todayShifts.forEach((shift, index) => {
+              const doc = doctors.find((d) => d.id === shift.doctorId);
+              if (!doc) return;
+
+              const jamStr = shift.formattedTime || shift.title || "-";
+
+              // Status dasar yang diputuskan server secara global untuk dokter
+              let status = (doc.status || "").toUpperCase();
+
+              // Cek apakah dokter cuti/tidak praktek hari ini
+              const isLeaveToday = (shift.disabledDates || []).includes(todayStr) || 
+                                   leaves.some(l => l.doctorId === doc.id && l.startDate <= todayStr && l.endDate >= todayStr);
+
+              if (isLeaveToday) {
+                status = "CUTI";
+              }
+              
+              const isPriorityStatus = ["CUTI", "PENUH", "OPERASI"].some(s => status.includes(s));
+
+              // --- MULTI-SHIFT BUG FIX ---
+              if (jamStr !== "-") {
+                const parts = jamStr.replace(/\s/g, "").replace(/\./g, ":").toLowerCase().match(/(\d{1,2}:\d{2})/g);
+                if (parts && parts.length > 0) {
+                  const parseMins = (t) => {
+                    const [h, m] = t.split(":").map(Number);
+                    return h * 60 + m;
+                  };
+                  const startMins = parseMins(parts[0]);
+                  let endMins = null;
+                  
+                  if (parts.length >= 2) {
+                    endMins = parseMins(parts[1]);
+                    if (endMins < startMins) endMins += 24 * 60; // crossover midnight
+                  } else if (jamStr.toLowerCase().includes("selesai")) {
+                    endMins = startMins + 240; // Default 4 jam jika "sampai selesai"
+                  }
+
+                  let regMins = startMins - 30; // default 30 min buka loket
+                  const rTime = shift.registrationTime || doc.registrationTime;
+                  if (rTime && rTime !== "-") {
+                    const rParts = rTime.replace(/\./g, ":").split(":");
+                    if (rParts.length >= 2) regMins = Number(rParts[0]) * 60 + Number(rParts[1]);
+                  }
+
+                  const now = new Date();
+                  const curMins = now.getHours() * 60 + now.getMinutes();
+
+                  if (endMins !== null && curMins >= endMins) {
+                    // Shift ini sudah sepenuhnya lewat (berlaku untuk SEMUA dokter, termasuk Cuti/Penuh/Operasi)
+                    status = "SELESAI";
+                  } else if (!isPriorityStatus) {
+                    // Jika belum habis, dan BUKAN status prioritas, evaluasi Terjadwal/Praktek
+                    if (curMins < regMins) {
+                      // Shift ini belum mulai dan loket belum buka
+                      status = "TERJADWAL";
+                    } else {
+                      // Shift sedang berjalan
+                      if (!["PRAKTEK", "PENDAFTARAN"].includes(status)) {
+                         status = "PRAKTEK";
+                      }
+                    }
+                  }
+                }
+              }
+
+              mappedData.push({
+                Dokter: doc.name,
+                Spesialis: doc.specialty,
+                Status: status,
+                Jam: jamStr,
+                JamPraktek: jamStr,
+                JamDaftar:
+                  shift.registrationTime || doc.registrationTime || "-",
+                Jenis: doc.category,
+                "Code Antrian": doc.queueCode,
+                _shiftId: shift.id || index,
+              });
+            });
+
+            // Detect doctor status changes before render
+            this._detectChanges(mappedData);
+
+            this.render(mappedData);
+            this.status("LIVE STREAM", false);
+          } catch (e) {
+            console.error("TV ProcessData Error:", e);
+            Island.show(
+              "Data Error",
+              "Gagal memproses data realtime",
+              "error",
+              8000,
+            );
+          } finally {
+            this._isFetching = false;
+          }
+        },
+
+        _detectChanges(data) {
+          if (!data) return;
+          const now = {}; // { status: string, active: boolean }
+          const ops = [];
+
+          data.forEach((d) => {
+            const name = (d.Dokter || "").trim();
+            const st = (d.Status || "").toUpperCase();
+            // Gunakan kombinasi nama + shift sebagai key agar dokter multi-shift dilacak terpisah
+            const key = `${name}_${d._shiftId || d.Jam || ""}`;
+            // Active logic: Inside time AND (BUKA or PENUH)
+            const isNowActive = isActive(st);
+
+            // Daftarkan ke list Ruang Operasi jika cocok
+            if (st.includes("OPERASI")) ops.push(name);
+
+            const prev = this._prevDoctors[key]; // { status, active } or undefined
+
+            // Store current state
+            now[key] = { status: st, active: isNowActive };
+
+            if (prev && prev.status !== st) {
+              if (st === "PENDAFTARAN") {
+                Island.show("Loket Dibuka", `Pendaftaran poli ${name} telah dimulai`, "info", "assignment", 8000);
+              } else if (st === "PRAKTEK") {
+                Island.show("Praktek Dimulai", `${name} Mulai Melayani Pasien`, "success", "door_front", 8000);
+              } else if (st === "PENUH") {
+                 Island.show("Kuota Penuh", `Poli ${name} telah memenuhi kuota maksimal`, "warn", "front_hand", 10000);
+              } else if (st === "SELESAI") {
+                 Island.show("Praktek Selesai", `Pelayanan ${name} telah purna`, "info", "check_circle", 8000);
+              } else if (st === "OPERASI") {
+                 Island.show("Tindakan Operasi", `${name} sedang dalam tindakan operasi`, "warn", "local_hospital", 10000);
+              }
+            }
+          });
+
+          this._operasiDoctors = ops;
+          this._prevDoctors = now;
+        },
+
+        _lastBroadcastId: null, // Track to avoid re-rendering same popup
+
+        async checkBroadcast() {
+          try {
+            const res = await fetch("/api/automation");
+            if (!res.ok) return; // Silent guard
+            const rules = await res.json();
+
+            // Filter rules that are active (assuming the backend returns true boolean)
+            const active = rules.find(
+              (r) => r.active === true || r.active === 1 || r.active === "true",
+            );
+            const overlay = $("broadcastOverlay");
+            if (!overlay) return;
+
+            if (active) {
+              // Only update DOM if broadcast changed
+              if (this._lastBroadcastId !== active.id) {
+                this._lastBroadcastId = active.id;
+
+                // Stop any closing animation if it was happening
+                overlay.classList.remove("closing");
+
+                // Set level class on overlay
+                overlay.className = `broadcast-overlay active broadcast-level-${active.alertLevel}`;
+
+                // Icon
+                const iconMap = {
+                  Information: "info",
+                  Warning: "warning",
+                  Critical: "error",
+                };
+                const iconEl = overlay.querySelector(
+                  ".broadcast-icon-ring .material-icons-round",
+                );
+                if (iconEl)
+                  iconEl.textContent = iconMap[active.alertLevel] || "campaign";
+
+                // Label
+                const labelEl = $("broadcastLevelLabel");
+                if (labelEl)
+                  labelEl.textContent = active.alertLevel.toUpperCase();
+
+                // Message
+                const msgEl = $("broadcastMessage");
+                if (msgEl) msgEl.textContent = active.message;
+
+                // Zone
+                const zoneEl = $("broadcastZone");
+                if (zoneEl)
+                  zoneEl.textContent =
+                    active.targetZone.replace("_", " ") +
+                    " • " +
+                    active.duration +
+                    " menit";
+
+                // Also show on Dynamic Island (debounce/protect multiple calls)
+                Island.show(
+                  "EMERGENCY BROADCAST",
+                  active.message,
+                  active.alertLevel === "Critical" ? "error" : "warn",
+                  "campaign",
+                  10000,
+                );
+              }
+            } else {
+              // No active broadcast — hide overlay with animation
+              if (
+                overlay.classList.contains("active") &&
+                !overlay.classList.contains("closing")
+              ) {
+                this._lastBroadcastId = null;
+                overlay.classList.add("closing");
+
+                // Wait for CSS animation to finish before removing 'active' class (display:none)
+                setTimeout(() => {
+                  // Double check if it wasn't re-activated during the closing animation
+                  if (overlay.classList.contains("closing")) {
+                    overlay.classList.remove("active", "closing");
+                    // Reset class back to base to purge level colors
+                    overlay.className = "broadcast-overlay";
+                  }
+                }, 450); // Slightly larger than the 0.4s animation duration
+              }
+            }
+          } catch (e) {
+            console.error("Broadcast check failed:", e);
+          }
+        },
+
+        updateInfoBox() {
+          const el = $("dynamicInfoBox");
+          if (!el) return;
+          el.style.opacity = "0";
+          setTimeout(() => {
+            el.innerHTML = this._infoMsgs[this._infoMsgIdx];
+            el.style.opacity = "1";
+            this._infoMsgIdx = (this._infoMsgIdx + 1) % this._infoMsgs.length;
+          }, 300);
+        },
+
+        status(msg, warn) {
+          const elTxt = $("liveText");
+          if (elTxt && elTxt.textContent !== msg) elTxt.textContent = msg;
+
+          const elDot = $("liveDot");
+          const newClass = warn ? "live-dot warn" : "live-dot";
+          if (elDot && elDot.className !== newClass) elDot.className = newClass;
+        },
+
+        render(data) {
+          if (!data) return;
+
+          // 0. Calculate Stats
+          let countBuka = 0,
+            countPenuh = 0,
+            countCuti = 0;
+          data.forEach((d) => {
+            const s = (d.Status || "").toUpperCase();
+            if (["PRAKTEK", "PENDAFTARAN", "TERJADWAL"].includes(s)) countBuka++;
+              else if (s === "PENUH") countPenuh++;
+            else if (s.includes("CUTI")) countCuti++;
+          });
+          $("statBuka").textContent = countBuka;
+          $("statPenuh").textContent = countPenuh;
+          $("statCuti").textContent = countCuti;
+
+          const group = { Bedah: [], NonBedah: [], Sidebar: [] };
+
+          // 1. ACTIVE List (Main Display) - Exclude Penuh, Cuti, Selesai, Tidak Praktek, Operasi
+          const mainData = data.filter((d) => {
+            const s = (d.Status || "").toUpperCase();
+            if (
+              s.includes("SELESAI") ||
+              s.includes("TIDAK") ||
+              s.includes("LIBUR")
+            )
+              return false;
+            // Move Penuh, Cuti, Operasi to Sidebar
+            if (
+              s.includes("PENUH") ||
+              s.includes("CUTI") ||
+              s.includes("OPERASI")
+            )
+              return false;
+            return true;
+          });
+
+          // 2. SIDEBAR List - Only Penuh, Cuti, Operasi
+          const sidebarData = data.filter((d) => {
+            const s = (d.Status || "").toUpperCase();
+            if (
+              s.includes("SELESAI") ||
+              s.includes("TIDAK") ||
+              s.includes("LIBUR")
+            )
+              return false;
+            return (
+              s.includes("PENUH") || s.includes("CUTI") || s.includes("OPERASI")
+            );
+          });
+
+          [...mainData, ...sidebarData].forEach((d) => {
+            const s = (d.Status || "").toUpperCase();
+            d._isActive = isActive(s);
+          });
+
+          // Sorting: AKTIF (Top) -> PRAKTEK/PNDF (4) -> PENUH (3) -> TERJADWAL (2.5) -> OPERASI (2) -> CUTI (1)
+          const score = (s) => {
+            const u = s.toUpperCase();
+            if (["PRAKTEK", "PENDAFTARAN"].includes(u)) return 4;
+            if (u.includes("PENUH")) return 3;
+            if (u === "TERJADWAL") return 2.5;
+            if (u.includes("OPERASI")) return 2;
+            if (u.includes("CUTI")) return 1;
+            return 0;
+          };
+
+          const sortFn = (a, b) => {
+            // Priority 1: Active
+            if (a._isActive && !b._isActive) return -1;
+            if (!a._isActive && b._isActive) return 1;
+            // Priority 2: Status Score
+            const diff = score(b.Status) - score(a.Status);
+            if (diff !== 0) return diff;
+            // Priority 3: Specialty (Poliklinik)
+            if (a.Spesialis < b.Spesialis) return -1;
+            if (a.Spesialis > b.Spesialis) return 1;
+            // Priority 4: Doctor Name
+            if (a.Dokter < b.Dokter) return -1;
+            if (a.Dokter > b.Dokter) return 1;
+            return 0;
+          };
+
+          mainData.sort(sortFn);
+          sidebarData.sort(sortFn);
+
+          // Group Main Data
+          mainData.forEach((d) => {
+            const g = d.Jenis === "Bedah" ? "Bedah" : "NonBedah";
+            if (group[g]) group[g].push(d);
+          });
+
+          // Group Sidebar Data — terpisah per status
+          group.SidebarOperasi = sidebarData.filter((d) =>
+            (d.Status || "").toUpperCase().includes("OPERASI"),
+          );
+          group.SidebarPenuh = sidebarData.filter((d) =>
+            (d.Status || "").toUpperCase().includes("PENUH"),
+          );
+          group.SidebarCuti = sidebarData.filter((d) =>
+            (d.Status || "").toUpperCase().includes("CUTI"),
+          );
+
+          // --- DOM RECYCLING ENGINE ---
+          const updateList = (containerId, list) => {
+            const container = $(containerId);
+            
+            // Handle Empty State 3D Animation
+            if (list.length === 0) {
+              const emptyStateHTML = `
+                <div class="neo-empty-state">
+                  <div class="neo-orb"></div>
+                  <div class="neo-empty-text">TIDAK ADA JADWAL</div>
+                </div>
+              `;
+              if (container.innerHTML !== emptyStateHTML) {
+                container.innerHTML = emptyStateHTML;
+                return true; // signal scroller refresh
+              }
+              return false;
+            }
+
+            const oldMap = new Map();
+            // Map existing elements by Doctor Name
+            Array.from(container.children).forEach((el) => {
+              if (el.dataset.id) oldMap.set(el.dataset.id, el);
+            });
+
+            let hasLayoutChange = false;
+            const newElements = list.map((d) => {
+              // Unique ID: Name + Shift Time so duplicate doctors don't overwrite each other
+              const shiftJam = d.Jam && d.Jam !== "-" ? d.Jam : "no-time";
+              const id = `${d.Dokter}_${shiftJam}`;
+              const hash = `${d.Status}|${d.Jam}|${d._isActive}|${d["Code Antrian"] || ""}|${d.JamDaftar}`;
+
+              // Helpers for styles
+              const st = d.Status.toUpperCase();
+              let c = "st-nopoli",
+                i = "block",
+                l = d.Status;
+              if (st === "PRAKTEK" || st === "PENDAFTARAN") {
+                c = "st-buka";
+                i = "check_circle";
+                l = "BUKA";
+              } else if (st === "TERJADWAL") {
+                c = "st-buka st-terjadwal";
+                i = "schedule";
+                l = "TERJADWAL";
+              } else if (st.includes("PENUH")) {
+                c = "st-penuh";
+                i = "front_hand";
+                l = "PENUH";
+              } else if (st.includes("OPERASI")) {
+                c = "st-operasi";
+                i = "local_hospital";
+                l = "OPERASI";
+              } else if (st.includes("CUTI")) {
+                c = "st-cuti";
+                i = "flight";
+                l = "CUTI";
+              }
+              const avatarIcon = getSpecialistIcon(d.Spesialis);
+              const avatarText = avatarIcon.startsWith("<svg") ? avatarIcon : `<span class="material-icons-round" style="font-size:24px;">${avatarIcon}</span>`;
+              if (d._isActive) c += " active";
+
+              let labelJam = "REGISTRASI DIBUKA";
+              let labelLive = "SEDANG MELAYANI";
+              if (st.includes("OPERASI")) {
+                labelJam = "TINDAKAN MEDIS";
+                labelLive = "SEDANG OPERASI";
+              } else if (st.includes("PENUH")) {
+                labelJam = "STATUS KUOTA";
+                labelLive = "TELAH PENUH";
+              } else if (st.includes("CUTI")) {
+                labelJam = "JADWAL CUTI";
+                labelLive = "TIDAK MELAYANI";
+              } else if (st === "TERJADWAL") {
+                labelJam = "MENUNGGU SHIFT";
+                labelLive = "BELUM MULAI";
+              }
+
+
+              let el = oldMap.get(id);
+
+              if (el) {
+                // RECYCLE: Only update if Hash changed
+                if (el.dataset.hash !== hash) {
+                  el.className = `platter ${c}`;
+
+                  // IN-PLACE DOM Update (Menghindari innerHTML untuk performa)
+                  const dName = el.querySelector(".doc-name");
+                  if (dName) dName.textContent = d.Dokter;
+
+                  const dSpec = el.querySelector(".doc-spec");
+                  if (dSpec) dSpec.textContent = d.Spesialis.toUpperCase();
+
+                  const stPill = el.querySelector(".status-pill");
+                  if (stPill) {
+                    stPill.style.background = `var(--status-bg)`;
+                    stPill.style.color = `var(--status-color)`;
+                    stPill.innerHTML = `<span class="material-icons-round" style="font-size:12px">${i}</span>${l}`;
+                  }
+
+                  const jValDaftar = el.querySelector(".jam-val-daftar");
+                  if (jValDaftar)
+                    jValDaftar.textContent =
+                      d.JamDaftar !== "-"
+                        ? d.JamDaftar
+                        : formatJam(d.JamPraktek.split("-")[0]);
+
+                  const jValPraktek = el.querySelector(".jam-val-praktek");
+                  if (jValPraktek && d.JamPraktek)
+                    jValPraktek.textContent = d.JamPraktek;
+
+                  const dtTime = el.querySelector(".detail-time");
+                  if (dtTime)
+                    dtTime.textContent =
+                      d.JamDaftar !== "-"
+                        ? d.JamDaftar
+                        : formatJam(d.JamPraktek.split("-")[0]);
+
+                  const dtLabel = el.querySelector(".detail-label");
+                  if (dtLabel) dtLabel.textContent = labelJam;
+
+                  const lText = el.querySelector(".live-text");
+                  if (lText) lText.textContent = labelLive;
+
+                  el.dataset.hash = hash;
+                }
+                // Hapus class animasi lama
+                el.classList.remove("platter-new");
+                oldMap.delete(id); // Mark handled
+              } else {
+                // CREATE: New element dengan animasi slide-in
+                el = document.createElement("div");
+                el.className = `platter ${c} platter-new`;
+                el.dataset.id = id;
+                el.dataset.hash = hash;
+                el.innerHTML = buildCardHTML(d, avatarText, i, l, labelJam, labelLive);
+
+                hasLayoutChange = true;
+                // Hapus class animasi setelah selesai
+                el.addEventListener(
+                  "animationend",
+                  () => el.classList.remove("platter-new"),
+                  { once: true },
+                );
+              }
+              return el;
+            });
+
+            // If items removed, we need layout update
+            if (oldMap.size > 0) hasLayoutChange = true;
+
+            // Check if order changed
+            if (!hasLayoutChange) {
+              for (let i = 0; i < newElements.length; i++) {
+                if (container.children[i] !== newElements[i]) {
+                  hasLayoutChange = true;
+                  break;
+                }
+              }
+            }
+
+            // Apply to DOM only if structural change occurred
+            if (hasLayoutChange) {
+              container.replaceChildren(...newElements);
+              return true; // Signal scroller to reset
+            }
+
+            return false; // No scroll reset needed
+          };
+
+          const changed1 = updateList("scrollBedah", group.Bedah);
+          const changed2 = updateList("scrollNonBedah", group.NonBedah);
+
+          // --- SIDEBAR: Grouped Render (OPERASI + PENUH + CUTI terpisah) ---
+          const changed3 = this._renderSidebar(
+            group.SidebarOperasi,
+            group.SidebarPenuh,
+            group.SidebarCuti,
+            updateList,
+          );
+
+          $("countBedah").textContent = group.Bedah.length;
+          $("countNonBedah").textContent = group.NonBedah.length;
+          $("countSidebar").textContent =
+            group.SidebarPenuh.length + group.SidebarCuti.length;
+
+          // Only reset scroller if list structure changed (avoid jumpiness on simple updates)
+          if (!isMobile) {
+            if (changed1) {
+              s1.reset();
+              requestAnimationFrame(() => s1.updateMetrics());
+            }
+            if (changed2) {
+              s2.reset();
+              requestAnimationFrame(() => s2.updateMetrics());
+            }
+            if (changed3) {
+              s3.reset();
+              requestAnimationFrame(() => s3.updateMetrics());
+            }
+          }
+        },
+
+        // Render sidebar dengan section header terpisah
+        _renderSidebar(operasiList, penuhList, cutiList, updateList) {
+          const container = $("scrollSidebar");
+          const oldMap = new Map();
+          Array.from(container.children).forEach((el) => {
+            if (el.dataset.id) oldMap.set(el.dataset.id, el);
+          });
+
+          const allElements = [];
+          let hasLayoutChange = false;
+
+          // Helper: Buat section header
+          const makeSectionHeader = (label, color, count, id) => {
+            let el = container.querySelector(`[data-section="${id}"]`);
+            if (!el) {
+              el = document.createElement("div");
+              el.className = "sidebar-section-header";
+              el.dataset.section = id;
+              hasLayoutChange = true;
+            }
+            el.innerHTML = `
+                        <div class="sidebar-section-dot" style="background:${color}"></div>
+                        <span class="sidebar-section-label">${label}</span>
+                        <div class="sidebar-section-line"></div>
+                        <span class="sidebar-section-count">${count}</span>
+                    `;
+            return el;
+          };
+
+          // Helper: Buat platter card (reuse dari updateList logic)
+          const makeCard = (d) => {
+            // Unique ID: Name + Shift Time
+            const shiftJam = d.Jam && d.Jam !== "-" ? d.Jam : "no-time";
+            const id = `${d.Dokter}_${shiftJam}`;
+            const hash = `${d.Status}|${d.Jam}|${d._isActive}|${d["Code Antrian"] || ""}|${d.JamDaftar}`;
+            const st = d.Status.toUpperCase();
+            let c = "st-nopoli", i = "block", l = d.Status;
+            if (st === "PRAKTEK") { c = "st-praktek"; i = "check_circle"; l = "PRAKTEK"; }
+            else if (st === "PENDAFTARAN") { c = "st-pendaftaran"; i = "assignment"; l = "PENDAFTARAN"; }
+            else if (st === "TERJADWAL") { c = "st-terjadwal"; i = "schedule"; l = "TERJADWAL"; }
+            else if (st === "SELESAI") { c = "st-selesai"; i = "done_all"; l = "SELESAI"; }
+            else if (st === "PENUH") { c = "st-penuh"; i = "front_hand"; l = "PENUH"; }
+            else if (st === "OPERASI") { c = "st-operasi"; i = "local_hospital"; l = "OPERASI"; }
+            else if (st === "CUTI") { c = "st-cuti"; i = "flight"; l = "CUTI"; }
+            else if (st === "LIBUR") { c = "st-libur"; i = "block"; l = "LIBUR"; }
+            const avatarIcon = getSpecialistIcon(d.Spesialis);
+            const avatarText = avatarIcon.startsWith("<svg") ? avatarIcon : `<span class="material-icons-round" style="font-size:24px;">${avatarIcon}</span>`;
+            if (d._isActive) c += " active";
+
+            let labelJam = "REGISTRASI DIBUKA";
+            let labelLive = "SEDANG MELAYANI";
+            if (st.includes("OPERASI")) {
+              labelJam = "TINDAKAN MEDIS";
+              labelLive = "SEDANG OPERASI";
+            } else if (st.includes("PENUH")) {
+              labelJam = "STATUS KUOTA";
+              labelLive = "TELAH PENUH";
+            } else if (st.includes("CUTI")) {
+              labelJam = "JADWAL CUTI";
+              labelLive = "TIDAK MELAYANI";
+            } else if (st === "TERJADWAL") {
+              labelJam = "MENUNGGU SHIFT";
+              labelLive = "BELUM MULAI";
+            }
+
+            let el = oldMap.get(id);
+
+            if (el) {
+              if (el.dataset.hash !== hash) {
+                el.className = `platter platter-mini ${c}`;
+
+                // IN-PLACE DOM Update Sidebar
+                const dName = el.querySelector(".doc-name");
+                if (dName) dName.textContent = d.Dokter;
+
+                const dSpec = el.querySelector(".doc-spec");
+                if (dSpec) dSpec.textContent = d.Spesialis.toUpperCase();
+
+                const stPill = el.querySelector(".status-pill");
+                if (stPill) {
+                  stPill.style.background = `var(--status-bg)`;
+                  stPill.style.color = `var(--status-color)`;
+                  stPill.innerHTML = `<span class="material-icons-round" style="font-size:12px">${i}</span>${l}`;
+                }
+
+                const jValDaftar = el.querySelector(".jam-val-daftar");
+                if (jValDaftar)
+                  jValDaftar.textContent =
+                    d.JamDaftar !== "-"
+                      ? d.JamDaftar
+                      : formatJam(d.JamPraktek.split("-")[0]);
+
+                const jValPraktek = el.querySelector(".jam-val-praktek");
+                if (jValPraktek && d.JamPraktek)
+                  jValPraktek.textContent = d.JamPraktek;
+
+                const dtTime = el.querySelector(".detail-time");
+                if (dtTime)
+                  dtTime.textContent =
+                    d.JamDaftar !== "-"
+                      ? d.JamDaftar
+                      : formatJam(d.JamPraktek.split("-")[0]);
+
+                const dtLabel = el.querySelector(".detail-label");
+                if (dtLabel) dtLabel.textContent = labelJam;
+
+                const lText = el.querySelector(".live-text");
+                if (lText) lText.textContent = labelLive;
+
+                el.dataset.hash = hash;
+              }
+              el.classList.remove("platter-new");
+              oldMap.delete(id);
+            } else {
+              el = document.createElement("div");
+              el.className = `platter platter-mini ${c} platter-new`;
+              el.dataset.id = id;
+              el.dataset.hash = hash;
+              el.innerHTML = buildSidebarCardHTML(d, avatarText, i, l);
+              hasLayoutChange = true;
+              el.addEventListener(
+                "animationend",
+                () => el.classList.remove("platter-new"),
+                { once: true },
+              );
+            }
+            return el;
+          };
+
+          // --- Build grouped layout ---
+          if (operasiList.length > 0) {
+            allElements.push(
+              makeSectionHeader(
+                "Tindakan Operasi",
+                "#BF5AF2",
+                operasiList.length,
+                "sec-operasi",
+              ),
+            );
+            operasiList.forEach((d) => allElements.push(makeCard(d)));
+          }
+
+          if (penuhList.length > 0) {
+            allElements.push(
+              makeSectionHeader(
+                "Kuota Penuh",
+                "#FF9F0A",
+                penuhList.length,
+                "sec-penuh",
+              ),
+            );
+            penuhList.forEach((d) => allElements.push(makeCard(d)));
+          }
+
+          if (cutiList.length > 0) {
+            allElements.push(
+              makeSectionHeader(
+                "Sedang Cuti",
+                "#FF453A",
+                cutiList.length,
+                "sec-cuti",
+              ),
+            );
+            cutiList.forEach((d) => allElements.push(makeCard(d)));
+          }
+
+          // Deteksi perubahan
+          if (oldMap.size > 0) hasLayoutChange = true;
+          if (!hasLayoutChange) {
+            const currentChildren = Array.from(container.children);
+            if (currentChildren.length !== allElements.length) {
+              hasLayoutChange = true;
+            } else {
+              for (let i = 0; i < allElements.length; i++) {
+                if (currentChildren[i] !== allElements[i]) {
+                  hasLayoutChange = true;
+                  break;
+                }
+              }
+            }
+          }
+
+          if (hasLayoutChange) {
+            container.replaceChildren(...allElements);
+            return true;
+          }
+          return false;
+        },
+      };
+
+      App.init();
+    </script>
+
     <!-- ZERO-DEPENDENCY INLINE SVG QR CODE GENERATOR -->
     <script>
       var QRCodeLib = (function() {
@@ -1322,7 +2859,6 @@
         };
       })();
     </script>
-
     <script>
       (function renderPatientSvgQR() {
         function doRender() {
