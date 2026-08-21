@@ -724,6 +724,67 @@
         background: #F1F5F9; color: #475569; font-size: 10px; font-weight: 800; text-transform: uppercase;
       }
 
+    
+      /* =========================================================================
+         10. iOS JADWAL CUTI DOKTER STYLING
+         ========================================================================= */
+      .ios-leaves-container {
+        display: none; flex-direction: column; gap: 12px;
+      }
+      .ios-leaves-container.active {
+        display: flex;
+      }
+
+      .leave-card {
+        background: #FFFFFF; border-radius: 20px; padding: 14px 16px;
+        box-shadow: 6px 6px 16px rgba(166, 178, 195, 0.22), -4px -4px 12px #FFFFFF, inset 1px 1px 2px rgba(255, 255, 255, 0.95);
+        border: 1.5px solid #F1F5F9; display: flex; flex-direction: column; gap: 10px;
+        position: relative; overflow: hidden; transition: transform 0.15s ease;
+      }
+      .leave-card:active { transform: scale(0.98); }
+      .leave-card::before {
+        content: ""; position: absolute; left: 0; top: 12px; bottom: 12px; width: 4.5px;
+        border-radius: 0 6px 6px 0; background: var(--leave-accent, #E11D48);
+        box-shadow: 0 0 8px var(--leave-accent, #E11D48);
+      }
+
+      .leave-head { display: flex; align-items: center; gap: 12px; }
+      .leave-avatar {
+        width: 44px; height: 44px; border-radius: 14px; background: #FFF1F2;
+        border: 1.5px solid #FECDD3; display: flex; align-items: center; justify-content: center;
+        font-family: "Outfit", sans-serif; font-size: 14px; font-weight: 900; color: #E11D48; flex-shrink: 0;
+      }
+      .leave-doc-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+      .leave-doc-name { font-size: 13.5px; font-weight: 900; color: #0F172A; line-height: 1.25; }
+      .leave-doc-spec { font-size: 11px; font-weight: 700; color: #E11D48; text-transform: uppercase; }
+
+      .leave-badge-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+      
+      .leave-status-pill {
+        display: inline-flex; align-items: center; gap: 4px; padding: 4px 9px; border-radius: 9px;
+        font-size: 9.5px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em;
+      }
+      .leave-status-pill.active { background: #FFF1F2; color: #E11D48; border: 1px solid #FECDD3; }
+      .leave-status-pill.upcoming { background: #EFF6FF; color: #1D4ED8; border: 1px solid #BFDBFE; }
+      .leave-status-pill.past { background: #F8FAFC; color: #64748B; border: 1px solid #E2E8F0; }
+
+      .leave-date-pill {
+        display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 9px;
+        background: #F8FAFC; color: #334155; font-family: "JetBrains Mono", monospace; font-size: 11px; font-weight: 800;
+        border: 1px solid #E2E8F0;
+      }
+
+      .leave-reason-box {
+        display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 12px;
+        background: #F8FAFC; border: 1px solid #E2E8F0; font-size: 11px; font-weight: 600; color: #475569;
+      }
+      .leave-reason-box .material-icons-round { font-size: 16px; color: #94A3B8; flex-shrink: 0; }
+
+      .leave-replacement {
+        display: flex; align-items: center; gap: 6px; font-size: 10.5px; font-weight: 700; color: #059669;
+        padding: 4px 8px; border-radius: 8px; background: #ECFDF5; border: 1px solid #A7F3D0; width: fit-content;
+      }
+
     </style>
   </head>
   <body>
@@ -798,14 +859,19 @@
     <main class="ios-main-content">
       
       <!-- TOP MODE SWITCHER -->
+      <!-- TOP MODE SWITCHER -->
       <nav class="ios-mode-switcher" aria-label="Mode Tampilan Jadwal">
         <button id="btnViewLive" class="ios-mode-btn active" onclick="switchMainView('live')">
-          <span class="material-icons-round" style="font-size: 17px; color: var(--ios-emerald);">bolt</span>
-          <span>Jadwal Hari Ini</span>
+          <span class="material-icons-round" style="font-size: 16px; color: var(--ios-emerald);">bolt</span>
+          <span>Hari Ini</span>
         </button>
         <button id="btnViewWeekly" class="ios-mode-btn" onclick="switchMainView('weekly')">
-          <span class="material-icons-round" style="font-size: 17px; color: var(--ios-blue);">calendar_month</span>
-          <span>Jadwal Keseluruhan</span>
+          <span class="material-icons-round" style="font-size: 16px; color: var(--ios-blue);">calendar_month</span>
+          <span>Keseluruhan</span>
+        </button>
+        <button id="btnViewLeaves" class="ios-mode-btn" onclick="switchMainView('leaves')">
+          <span class="material-icons-round" style="font-size: 16px; color: var(--ios-rose);">beach_access</span>
+          <span>Jadwal Cuti</span>
         </button>
       </nav>
 
@@ -1017,6 +1083,51 @@
         </div>
 
       </div><!-- /#viewWeekly -->
+
+      <!-- ─── JADWAL CUTI DOKTER (LEAVES SCHEDULE) ─── -->
+      <div id="viewLeaves" class="ios-leaves-container">
+        
+        <!-- Search Spotlight Leaves -->
+        <div class="ios-search-wrapper">
+          <div class="ios-search-bar">
+            <span class="material-icons-round ios-search-icon" style="color: var(--ios-rose);">search</span>
+            <input
+              type="text"
+              id="leavesSearchInput"
+              class="ios-search-input"
+              placeholder="Cari dokter cuti atau spesialisasi..."
+              oninput="onLeavesSearchInput(this.value)"
+              autocomplete="off"
+            />
+            <button id="leavesSearchClearBtn" class="ios-search-clear" onclick="clearLeavesSearch()" style="display: none;" title="Hapus">
+              <span class="material-icons-round" style="font-size: 18px;">cancel</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Filter Status Chips -->
+        <div class="spec-chips-bar" id="leavesFilterChips">
+          <button class="spec-chip active" data-filter="all" onclick="switchLeavesFilter('all')">Semua Cuti</button>
+          <button class="spec-chip" data-filter="active" onclick="switchLeavesFilter('active')">🔴 Sedang Berlangsung</button>
+          <button class="spec-chip" data-filter="upcoming" onclick="switchLeavesFilter('upcoming')">📅 Akan Datang</button>
+        </div>
+
+        <!-- Result Counter Header -->
+        <div class="ios-section-header" style="margin-top: 2px;">
+          <div class="ios-sec-title">
+            <span class="material-icons-round" style="font-size: 16px; color: var(--ios-rose);">beach_access</span>
+            <span id="leavesResultTitle">Daftar Cuti & Izin Dokter</span>
+          </div>
+          <span class="ios-sec-badge" id="leavesResultCount" style="color: var(--ios-rose);">0 Dokter</span>
+        </div>
+
+        <!-- Leaves List Cards -->
+        <div class="scroller" id="leavesListContainer">
+          <div style="text-align: center; padding: 24px; color: #94A3B8; font-weight: 700;">Memuat jadwal cuti dokter...</div>
+        </div>
+
+      </div><!-- /#viewLeaves -->
+
     </main>
 
     <!-- FLOATING iOS BOTTOM BAR -->
@@ -1686,6 +1797,7 @@
               } else if (data && (data.doctors || data.shifts)) {
                 this.processData(data);
               if (typeof updateWeeklyData === "function" && data.doctors) updateWeeklyData(data.doctors, data.shifts);
+              if (typeof updateLeavesData === "function" && data.leaves) updateLeavesData(data.leaves);
               }
             }
           } catch (err) {
@@ -1957,6 +2069,7 @@
           if (!partial) return;
           this._data = { ...this._data, ...partial };
           if (typeof updateWeeklyData === "function") updateWeeklyData(this._data.doctors, this._data.shifts);
+          if (typeof updateLeavesData === "function" && this._data.leaves) updateLeavesData(this._data.leaves);
           const res = this._data;
 
           this._isFetching = true;
@@ -2749,27 +2862,32 @@
         window.mainViewMode = mode;
         const btnLive = document.getElementById("btnViewLive");
         const btnWeekly = document.getElementById("btnViewWeekly");
+        const btnLeaves = document.getElementById("btnViewLeaves");
+        
         const viewLive = document.getElementById("viewLive");
         const viewWeekly = document.getElementById("viewWeekly");
+        const viewLeaves = document.getElementById("viewLeaves");
+
+        // Reset active buttons
+        [btnLive, btnWeekly, btnLeaves].forEach(b => { if (b) b.classList.remove("active"); });
+        [viewLive, viewWeekly, viewLeaves].forEach(v => { if (v) { v.classList.remove("active"); v.classList.add("hidden"); } });
 
         if (mode === "weekly") {
-          btnLive.classList.remove("active");
-          btnWeekly.classList.add("active");
-          viewLive.classList.add("hidden");
-          viewWeekly.classList.add("active");
-
-          // Set default day to today on first open
+          if (btnWeekly) btnWeekly.classList.add("active");
+          if (viewWeekly) { viewWeekly.classList.remove("hidden"); viewWeekly.classList.add("active"); }
           if (window.selectedWeeklyDay === "all") {
             const todayIdx = (new Date().getDay() + 6) % 7;
             switchWeeklyDay(todayIdx);
           } else {
             renderWeeklySchedule();
           }
+        } else if (mode === "leaves") {
+          if (btnLeaves) btnLeaves.classList.add("active");
+          if (viewLeaves) { viewLeaves.classList.remove("hidden"); viewLeaves.classList.add("active"); }
+          renderLeavesSchedule();
         } else {
-          btnWeekly.classList.remove("active");
-          btnLive.classList.add("active");
-          viewWeekly.classList.remove("active");
-          viewLive.classList.remove("hidden");
+          if (btnLive) btnLive.classList.add("active");
+          if (viewLive) { viewLive.classList.remove("hidden"); viewLive.classList.add("active"); }
         }
       }
 
@@ -2933,6 +3051,147 @@
               '<span class="weekly-time-pill"><span class="material-icons-round" style="font-size: 13px;">schedule</span>' + esc(s.formattedTime) + '</span>' +
               (s.registrationTime ? '<span class="weekly-reg-pill"><span class="material-icons-round" style="font-size: 12px;">how_to_reg</span>Reg ' + esc(s.registrationTime) + '</span>' : '') +
             '</div>' +
+          '</div>';
+        });
+
+        container.innerHTML = htmlCards;
+      }
+
+      
+      // ═════════════════════════════════════════════════════════════════════════
+      // JADWAL CUTI DOKTER CONTROLLER
+      // ═════════════════════════════════════════════════════════════════════════
+      window.masterLeaves = [];
+      window.selectedLeavesFilter = "all"; // "all" | "active" | "upcoming"
+      window.leavesSearchQuery = "";
+
+      function switchLeavesFilter(filter) {
+        window.selectedLeavesFilter = filter;
+        document.querySelectorAll("#leavesFilterChips .spec-chip").forEach(chip => {
+          chip.classList.toggle("active", chip.dataset.filter === filter);
+        });
+        renderLeavesSchedule();
+      }
+
+      function onLeavesSearchInput(val) {
+        const clearBtn = document.getElementById("leavesSearchClearBtn");
+        if (clearBtn) clearBtn.style.display = val && val.trim() ? "flex" : "none";
+        window.leavesSearchQuery = (val || "").trim().toLowerCase();
+        renderLeavesSchedule();
+      }
+
+      function clearLeavesSearch() {
+        const input = document.getElementById("leavesSearchInput");
+        if (input) {
+          input.value = "";
+          onLeavesSearchInput("");
+          input.focus();
+        }
+      }
+
+      function updateLeavesData(leaves) {
+        if (Array.isArray(leaves)) {
+          window.masterLeaves = leaves;
+          if (window.mainViewMode === "leaves") {
+            renderLeavesSchedule();
+          }
+        }
+      }
+
+      function formatDateIndo(dateStr) {
+        if (!dateStr) return "-";
+        try {
+          const d = new Date(dateStr);
+          return d.toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" });
+        } catch(e) {
+          return dateStr;
+        }
+      }
+
+      function renderLeavesSchedule() {
+        const container = document.getElementById("leavesListContainer");
+        if (!container) return;
+
+        const leaves = window.masterLeaves || [];
+        const filter = window.selectedLeavesFilter || "all";
+        const query = (window.leavesSearchQuery || "").toLowerCase();
+
+        const todayStr = new Date().toISOString().slice(0, 10);
+
+        let filtered = leaves.filter(l => {
+          const start = (l.startDate || "").slice(0, 10);
+          const end = (l.endDate || l.startDate || "").slice(0, 10);
+
+          const isActive = start <= todayStr && todayStr <= end;
+          const isUpcoming = start > todayStr;
+          const isPast = end < todayStr;
+
+          if (filter === "active" && !isActive) return false;
+          if (filter === "upcoming" && !isUpcoming) return false;
+
+          if (query) {
+            const docName = (l.doctorName || "").toLowerCase();
+            const docSpec = (l.specialty || "").toLowerCase();
+            const reason = (l.reason || "").toLowerCase();
+            const repl = (l.replacementDoctor || "").toLowerCase();
+            const combined = docName + " " + docSpec + " " + reason + " " + repl;
+            if (!combined.includes(query)) return false;
+          }
+
+          return true;
+        });
+
+        // Sort: Active first, then upcoming by startDate asc
+        filtered.sort((a, b) => {
+          const aStart = (a.startDate || "").slice(0, 10);
+          const bStart = (b.startDate || "").slice(0, 10);
+          return aStart.localeCompare(bStart);
+        });
+
+        const countEl = document.getElementById("leavesResultCount");
+        if (countEl) countEl.textContent = filtered.length + " Dokter";
+
+        if (filtered.length === 0) {
+          container.innerHTML = '<div style="text-align: center; padding: 36px 16px; background: #FFFFFF; border-radius: 20px; border: 1.5px solid #F1F5F9; box-shadow: 4px 4px 12px rgba(166,178,195,0.2);">' +
+            '<span class="material-icons-round" style="font-size: 38px; color: #10B981; margin-bottom: 8px;">verified</span>' +
+            '<p style="font-size: 13px; font-weight: 800; color: #0F172A; margin: 0;">Tidak Ada Jadwal Cuti</p>' +
+            '<p style="font-size: 11px; font-weight: 600; color: #64748B; margin-top: 4px;">Semua dokter spesialis berpraktek sesuai jadwal reguler.</p>' +
+            '</div>';
+          return;
+        }
+
+        let htmlCards = "";
+        filtered.forEach(l => {
+          const start = (l.startDate || "").slice(0, 10);
+          const end = (l.endDate || l.startDate || "").slice(0, 10);
+          const isActive = start <= todayStr && todayStr <= end;
+          const isUpcoming = start > todayStr;
+
+          const docName = l.doctorName || "Dokter Spesialis";
+          const docSpec = l.specialty || "Spesialis";
+          const avatarInitials = initials(docName);
+
+          const statusClass = isActive ? "active" : (isUpcoming ? "upcoming" : "past");
+          const statusText = isActive ? "Sedang Cuti" : (isUpcoming ? "Akan Datang" : "Selesai");
+          const statusIcon = isActive ? "radio_button_checked" : (isUpcoming ? "schedule" : "check_circle");
+          const accentColor = isActive ? "#E11D48" : (isUpcoming ? "#1D4ED8" : "#64748B");
+
+          const dateDisplay = start === end ? formatDateIndo(start) : (formatDateIndo(start) + " - " + formatDateIndo(end));
+
+          htmlCards += '<div class="leave-card" style="--leave-accent: ' + accentColor + ';">' +
+            '<div class="leave-head">' +
+              '<div class="leave-avatar" style="color: ' + accentColor + '; border-color: ' + accentColor + '40; background: ' + accentColor + '15;">' + esc(avatarInitials) + '</div>' +
+              '<div class="leave-doc-info">' +
+                '<span class="leave-doc-name">' + esc(docName) + '</span>' +
+                '<span class="leave-doc-spec" style="color: ' + accentColor + ';">' + esc(docSpec) + '</span>' +
+              '</div>' +
+            '</div>' +
+            '<div class="leave-badge-row">' +
+              '<span class="leave-status-pill ' + statusClass + '"><span class="material-icons-round" style="font-size: 11px;">' + statusIcon + '</span>' + statusText + '</span>' +
+              '<span class="leave-date-pill"><span class="material-icons-round" style="font-size: 12px; color: var(--ios-blue);">date_range</span>' + esc(dateDisplay) + '</span>' +
+            '</div>' +
+            (l.reason ? '<div class="leave-reason-box"><span class="material-icons-round">info</span><span>' + esc(l.reason) + '</span></div>' : '') +
+            (l.replacementDoctor ? '<div class="leave-replacement"><span class="material-icons-round" style="font-size: 13px;">person</span><span>Pengganti: ' + esc(l.replacementDoctor) + '</span></div>' : '') +
           '</div>';
         });
 

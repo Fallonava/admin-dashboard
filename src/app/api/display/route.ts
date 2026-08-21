@@ -17,6 +17,11 @@ export async function GET() {
         ]
     });
     const shifts = await prisma.shift.findMany();
+    const leaves = await (prisma.leaveRequest as any).findMany({
+        where: { doctorId: { not: "" } },
+        include: { doctor: true },
+        orderBy: { startDate: 'desc' }
+    });
 
     const now = new Date();
     const wibNow = new Date(now.getTime() + (7 * 60 * 60 * 1000));
@@ -94,6 +99,18 @@ export async function GET() {
             title: s.title,
             extra: s.extra,
             disabledDates: s.disabledDates,
+        })),
+        leaves: (leaves as any[]).map((l: any) => ({
+            id: l.id,
+            doctorId: l.doctorId,
+            doctorName: l.doctor?.name || l.doctorName || 'Dokter',
+            specialty: l.doctor?.specialty || '',
+            startDate: l.startDate,
+            endDate: l.endDate,
+            reason: l.reason || '',
+            status: l.status || 'APPROVED',
+            type: l.type || 'CUTI',
+            replacementDoctor: l.replacementDoctor || null
         })),
         settings: { ...settings, id: String(settings.id) }
     }, {
