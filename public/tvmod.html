@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Jadwal Dokter - Claymorphism Super Premium (Smart TV 2026)</title>
+    <title>Jadwal Dokter - Apple iOS Claymorphism Ultra Premium (Smart TV 2026)</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&family=Outfit:wght@500;600;700;800;900&family=JetBrains+Mono:wght@600;700;800&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet" />
@@ -22,38 +22,38 @@
         --text-secondary: #334155;
         --text-muted: #64748B;
 
-        /* Super Premium Clay Palette */
+        /* Ultra Premium Clinical Clay Palette */
         --clay-blue: #0284C7;
         --clay-indigo: #4F46E5;
         --clay-emerald: #059669;
-        --clay-emerald-glow: rgba(16, 185, 129, 0.35);
+        --clay-emerald-glow: rgba(16, 185, 129, 0.4);
         --clay-rose: #E11D48;
         --clay-amber: #D97706;
         --clay-purple: #7C3AED;
 
         --st-praktek: #059669;
         --st-praktek-bg: #ECFDF5;
-        --st-praktek-shadow: rgba(16, 185, 129, 0.25);
+        --st-praktek-shadow: rgba(16, 185, 129, 0.28);
 
         --st-pendaftaran: #EA580C;
         --st-pendaftaran-bg: #FFF7ED;
-        --st-pendaftaran-shadow: rgba(249, 115, 22, 0.25);
+        --st-pendaftaran-shadow: rgba(249, 115, 22, 0.28);
 
         --st-terjadwal: #0284C7;
         --st-terjadwal-bg: #F0F9FF;
-        --st-terjadwal-shadow: rgba(2, 132, 199, 0.25);
+        --st-terjadwal-shadow: rgba(2, 132, 199, 0.28);
 
         --st-penuh: #D97706;
         --st-penuh-bg: #FFFBEB;
-        --st-penuh-shadow: rgba(217, 119, 6, 0.25);
+        --st-penuh-shadow: rgba(217, 119, 6, 0.28);
 
         --st-operasi: #7C3AED;
         --st-operasi-bg: #F5F3FF;
-        --st-operasi-shadow: rgba(124, 58, 237, 0.25);
+        --st-operasi-shadow: rgba(124, 58, 237, 0.28);
 
         --st-cuti: #E11D48;
         --st-cuti-bg: #FFF1F2;
-        --st-cuti-shadow: rgba(225, 29, 72, 0.25);
+        --st-cuti-shadow: rgba(225, 29, 72, 0.28);
 
         --st-selesai: #475569;
         --st-selesai-bg: #F8FAFC;
@@ -63,14 +63,97 @@
       * { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
       html, body {
         width: 100%; height: 100%; overflow: hidden;
-        font-family: "Plus Jakarta Sans", "Outfit", sans-serif;
+        font-family: "Plus Jakarta Sans", "Outfit", -apple-system, sans-serif;
         background: #EEF2F7; color: var(--text-primary);
         user-select: none; cursor: none;
       }
 
       .ambient-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; background: #EEF2F7; }
 
-      /* FLUSH TOP - ZERO ANNOYING TOP DEAD SPACE */
+      /* =========================================================================
+         APPLE DYNAMIC ISLAND (iOS 2026 LUXURY MORPHING CAPSULE)
+         ========================================================================= */
+      .dynamic-island {
+        position: absolute; top: 8px; left: 50%;
+        transform: translateX(-50%) scale(0.85);
+        height: 48px; min-width: 220px;
+        background: rgba(15, 23, 42, 0.96);
+        backdrop-filter: blur(24px) saturate(180%);
+        border: 1.5px solid rgba(255, 255, 255, 0.18);
+        border-radius: 28px; z-index: 9999;
+        display: flex; align-items: center; justify-content: center;
+        transition: all 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+        box-shadow: 0 16px 36px rgba(0, 0, 0, 0.38), inset 0 1px 1px rgba(255, 255, 255, 0.35);
+        opacity: 0; pointer-events: none;
+      }
+
+      .dynamic-island.expanded {
+        transform: translateX(-50%) scale(1);
+        opacity: 1; pointer-events: auto;
+        min-width: clamp(340px, 32vw, 480px);
+        padding: 0 clamp(16px, 1.6vw, 24px);
+      }
+
+      .di-surface {
+        width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 14px;
+      }
+      .di-left { display: flex; align-items: center; gap: 12px; min-width: 0; }
+      
+      .di-icon-box {
+        width: 32px; height: 32px; border-radius: 12px;
+        background: #10B981;
+        box-shadow: 0 4px 14px rgba(16, 185, 129, 0.45), inset 0 1px 2px rgba(255, 255, 255, 0.5);
+        display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        transition: background 0.3s ease;
+      }
+      .di-icon-box .material-icons-round { font-size: 18px; color: #FFFFFF; }
+
+      .di-text { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+      .di-title {
+        font-size: clamp(8.5px, 0.75vw, 10px); font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em;
+        color: #A7F3D0;
+      }
+      .di-msg {
+        font-size: clamp(11.5px, 0.95vw, 13.5px); font-weight: 700; color: #FFFFFF;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      }
+
+      .di-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+      
+      .di-soundwave { display: flex; align-items: center; gap: 2.5px; height: 16px; }
+      .di-soundwave .bar {
+        width: 3px; background: #10B981; border-radius: 2px;
+        animation: iosEqBar 1s ease-in-out infinite alternate;
+      }
+      .di-soundwave .bar-1 { height: 6px; animation-delay: 0.1s; }
+      .di-soundwave .bar-2 { height: 14px; animation-delay: 0.25s; }
+      .di-soundwave .bar-3 { height: 10px; animation-delay: 0.4s; }
+      .di-soundwave .bar-4 { height: 8px; animation-delay: 0.15s; }
+      @keyframes iosEqBar { 0% { height: 4px; } 100% { height: 16px; } }
+
+      .di-live-indicator {
+        display: flex; align-items: center; gap: 5px; padding: 3px 8px; border-radius: 12px;
+        background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+      .di-live-dot {
+        width: 6px; height: 6px; border-radius: 50%; background: #10B981;
+        box-shadow: 0 0 8px #10B981; animation: iosBreathe 1.5s infinite;
+      }
+      .di-live-text { font-family: "JetBrains Mono", monospace; font-size: 9px; font-weight: 900; color: #FFFFFF; letter-spacing: 0.05em; }
+
+      .dynamic-island.warn .di-icon-box { background: #D97706; box-shadow: 0 4px 14px rgba(217, 119, 6, 0.45); }
+      .dynamic-island.warn .di-title { color: #FDE68A; }
+      .dynamic-island.warn .di-soundwave .bar { background: #F59E0B; }
+      .dynamic-island.warn .di-live-dot { background: #F59E0B; box-shadow: 0 0 8px #F59E0B; }
+
+      .dynamic-island.error .di-icon-box { background: #E11D48; box-shadow: 0 4px 14px rgba(225, 29, 72, 0.45); }
+      .dynamic-island.error .di-title { color: #FECDD3; }
+      .dynamic-island.error .di-soundwave .bar { background: #F43F5E; }
+      .dynamic-island.error .di-live-dot { background: #F43F5E; box-shadow: 0 0 8px #F43F5E; }
+
+      /* =========================================================================
+         LAYOUT FLUSH TOP (ZERO DEAD SPACE FOR SMART TV)
+         ========================================================================= */
       .app-container {
         position: relative; z-index: 1; width: 100%; height: 100%;
         display: flex; flex-direction: column;
@@ -80,7 +163,7 @@
 
       .content { flex: 1; display: flex; gap: clamp(10px, 1.2vw, 18px); min-height: 0; }
 
-      /* TACTILE 3D CLAY ISLAND */
+      /* TACTILE 3D CLAY CONTAINER */
       .island {
         display: flex; flex-direction: column;
         background: #FFFFFF; border-radius: clamp(18px, 1.8vw, 26px);
@@ -91,15 +174,19 @@
 
       .sidebar-panel { flex: 0 0 clamp(290px, 25vw, 370px); max-width: 390px; min-width: 290px; }
       
+      /* 3D CLAY HEADER */
       .header {
-        padding: clamp(10px, 1.1vw, 15px) clamp(14px, 1.4vw, 20px); display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+        padding: clamp(10px, 1.1vw, 14px) clamp(14px, 1.4vw, 20px); display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
         border-bottom: 1.5px solid #E2E8F0; background: #FAFCFE;
       }
       .brand { display: flex; align-items: center; gap: 12px; }
+      
+      /* 3D Clay Hospital Logo Token */
       .logo-box {
-        width: clamp(38px, 3.2vw, 46px); height: clamp(38px, 3.2vw, 46px); border-radius: 14px; background: #FFFFFF;
+        width: clamp(40px, 3.4vw, 48px); height: clamp(40px, 3.4vw, 48px); border-radius: 16px; background: #FFFFFF;
         display: flex; align-items: center; justify-content: center;
-        box-shadow: 5px 5px 12px rgba(166, 178, 195, 0.35), -3px -3px 8px #FFFFFF; overflow: hidden; flex-shrink: 0;
+        box-shadow: 5px 5px 12px rgba(166, 178, 195, 0.35), -3px -3px 8px #FFFFFF, inset 1px 1px 2px rgba(255, 255, 255, 0.9);
+        border: 1.5px solid #F1F5F9; overflow: hidden; flex-shrink: 0;
       }
       .logo-box img { width: 85%; height: 85%; object-fit: contain; }
       .title-group h1 { font-size: clamp(13.5px, 1.15vw, 16.5px); font-weight: 900; letter-spacing: -0.02em; line-height: 1.15; color: #0F172A; }
@@ -111,7 +198,7 @@
       .clock { font-family: "JetBrains Mono", monospace; font-size: clamp(22px, 2.2vw, 34px); font-weight: 900; letter-spacing: -0.03em; line-height: 1; color: #0F172A; }
       .date { font-family: "Plus Jakarta Sans", sans-serif; font-size: clamp(9.5px, 0.85vw, 11.5px); font-weight: 800; color: var(--text-secondary); text-transform: uppercase; text-align: right; line-height: 1.35; }
 
-      /* TACTILE CLAY KPI TILES */
+      /* TACTILE 3D CLAY KPI TILES */
       .stat-panel {
         display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 10px 14px;
         border-bottom: 1.5px solid #E2E8F0; background: #F8FAFC;
@@ -120,15 +207,16 @@
         background: #FFFFFF; border-radius: 16px; padding: 6px 4px;
         display: flex; flex-direction: column; align-items: center; text-align: center;
         box-shadow: 4px 4px 10px rgba(166, 178, 195, 0.25), -3px -3px 8px #FFFFFF;
-        border: 1.5px solid #F1F5F9;
+        border: 1.5px solid #F1F5F9; transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
       }
+      .stat-item:hover { transform: translateY(-2px); }
       .stat-item:nth-child(1) { border-top: 3.5px solid var(--clay-emerald); }
       .stat-item:nth-child(2) { border-top: 3.5px solid var(--clay-amber); }
       .stat-item:nth-child(3) { border-top: 3.5px solid var(--clay-rose); }
       .stat-count { font-family: "JetBrains Mono", monospace; font-size: clamp(17px, 1.7vw, 24px); font-weight: 900; line-height: 1; }
       .stat-label { font-size: clamp(8px, 0.7vw, 9.5px); font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); margin-top: 3px; }
 
-      /* CLAYMORPHIC COLUMN HEADERS */
+      /* 3D CLAY COLUMN HEADERS */
       .island-header {
         height: clamp(46px, 4vw, 54px); display: flex; align-items: center; justify-content: space-between; padding: 0 clamp(14px, 1.6vw, 22px);
         flex-shrink: 0; border-bottom: 1.5px solid #E2E8F0; background: #FAFCFE;
@@ -143,14 +231,23 @@
       .scroll-mask { flex: 1; overflow: hidden; position: relative; }
       .scroller { padding: clamp(10px, 1.2vw, 16px); display: flex; flex-direction: column; gap: clamp(8px, 0.9vw, 12px); }
 
-      /* 3D TACTILE CLAY DOCTOR PLATTER CARD */
+      /* =========================================================================
+         3D TACTILE CLAY DOCTOR PLATTER CARD & MICRO ANIMATIONS
+         ========================================================================= */
       .platter {
         display: flex; flex-direction: column; padding: clamp(10px, 1.1vw, 16px) clamp(12px, 1.3vw, 18px);
-        background: #FFFFFF; border-radius: clamp(14px, 1.4vw, 18px);
-        box-shadow: 5px 5px 14px rgba(166, 178, 195, 0.25), -4px -4px 10px #FFFFFF;
+        background: #FFFFFF; border-radius: clamp(16px, 1.5vw, 20px);
+        box-shadow: 5px 5px 14px rgba(166, 178, 195, 0.25), -4px -4px 10px #FFFFFF, inset 1px 1px 2px rgba(255, 255, 255, 0.9);
         border: 1px solid #F1F5F9;
-        position: relative; overflow: hidden; transition: all 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+        position: relative; overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        animation: iosCardIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) backwards;
       }
+      @keyframes iosCardIn {
+        0% { opacity: 0; transform: translateY(12px) scale(0.97); }
+        100% { opacity: 1; transform: translateY(0) scale(1); }
+      }
+
       .platter::before {
         content: ""; position: absolute; left: 0; top: 10px; bottom: 10px; width: 5px;
         border-radius: 0 8px 8px 0; background: var(--status-color, var(--clay-blue));
@@ -158,11 +255,13 @@
       }
 
       .platter-main { display: flex; align-items: center; gap: clamp(10px, 1vw, 14px); width: 100%; }
+      
+      /* 3D Clay Initial Avatar Token */
       .initials {
-        width: clamp(36px, 3.2vw, 44px); height: clamp(36px, 3.2vw, 44px); border-radius: 14px; background: #FAFCFE;
-        box-shadow: 4px 4px 10px rgba(166, 178, 195, 0.3), -3px -3px 8px #FFFFFF;
+        width: clamp(38px, 3.2vw, 46px); height: clamp(38px, 3.2vw, 46px); border-radius: 14px; background: #FAFCFE;
+        box-shadow: 4px 4px 10px rgba(166, 178, 195, 0.3), -3px -3px 8px #FFFFFF, inset 1px 1px 2px rgba(255, 255, 255, 0.9);
         border: 1.5px solid #F1F5F9; display: flex; align-items: center; justify-content: center;
-        font-family: "Outfit", sans-serif; font-size: clamp(12px, 1.1vw, 15px); font-weight: 900;
+        font-family: "Outfit", sans-serif; font-size: clamp(12.5px, 1.1vw, 15px); font-weight: 900;
         color: var(--status-color, #0F172A); flex-shrink: 0;
       }
       .info-col { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
@@ -172,20 +271,30 @@
         display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.35;
       }
       .meta-col { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; flex-shrink: 0; }
+      
+      /* 3D Clay Status Pill */
       .status-pill {
         padding: 4px 10px; border-radius: 12px; font-size: clamp(8.5px, 0.75vw, 10.5px); font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em;
         background: var(--status-bg, #F1F5F9); color: var(--status-color, #0F172A);
         box-shadow: 3px 3px 8px var(--status-shadow, rgba(0,0,0,0.06)), -2px -2px 6px #FFFFFF;
+        border: 1px solid rgba(255, 255, 255, 0.6);
         display: flex; align-items: center; gap: 5px;
       }
       .jam-val { font-family: "JetBrains Mono", monospace; font-size: clamp(12px, 1.05vw, 14.5px); font-weight: 800; color: #0F172A; }
 
-      /* ACTIVE HERO CLAY TILE */
+      /* ACTIVE HERO DOCTOR CLAY BANNER */
       .platter.active {
         background: #ECFDF5 !important; border: 1.5px solid #A7F3D0 !important;
-        box-shadow: 8px 8px 24px rgba(16, 185, 129, 0.22), -6px -6px 16px #FFFFFF !important;
+        box-shadow: 8px 8px 24px rgba(16, 185, 129, 0.25), -6px -6px 16px #FFFFFF !important;
         transform: scale(1.02);
       }
+      .platter.active::after {
+        content: ""; position: absolute; inset: 0;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+        animation: iosShimmer 3.5s infinite; pointer-events: none;
+      }
+      @keyframes iosShimmer { 0% { transform: translateX(-100%) skewX(-15deg); } 100% { transform: translateX(200%) skewX(-15deg); } }
+
       .platter.active .doc-spec { font-size: clamp(15px, 1.3vw, 18.5px); color: #065F46 !important; }
       .platter.active .doc-name { color: #047857 !important; font-weight: 700; }
       .platter.active .initials {
@@ -206,12 +315,12 @@
       .live-status {
         display: flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 10px;
         background: #10B981; color: #FFFFFF; font-size: clamp(9px, 0.8vw, 11px); font-weight: 900; text-transform: uppercase;
-        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
       }
       .pulse-dot {
-        width: 7px; height: 7px; border-radius: 50%; background: #FFFFFF; animation: pulse-clay 1.4s infinite;
+        width: 7px; height: 7px; border-radius: 50%; background: #FFFFFF; animation: iosBreathe 1.4s infinite;
       }
-      @keyframes pulse-clay { 0%, 100% { transform: scale(0.9); opacity: 0.7; } 50% { transform: scale(1.2); opacity: 1; } }
+      @keyframes iosBreathe { 0%, 100% { transform: scale(0.9); opacity: 0.7; } 50% { transform: scale(1.3); opacity: 1; } }
 
       /* SIDEBAR MINI PLATTER */
       .sidebar-panel .platter { padding: 6px 10px; margin: 3px 5px; border-radius: 12px; }
@@ -220,13 +329,13 @@
       .sidebar-panel .doc-spec { font-size: 9px; color: var(--text-muted); }
 
       /* =========================================================================
-         PATIENT SERVICE CLAY WIDGET (QR CODE & HOTLINE HIGHLIGHT 0823-2344-6076)
+         APPLE STYLE iOS CLAYMORPHISM PATIENT SERVICE CARD
          ========================================================================= */
       .patient-service-clay {
         padding: clamp(10px, 1vw, 14px) clamp(12px, 1.2vw, 16px);
-        margin: 6px 10px 10px; border-radius: clamp(14px, 1.4vw, 18px);
+        margin: 6px 10px 10px; border-radius: clamp(16px, 1.5vw, 20px);
         background: #FFFFFF;
-        box-shadow: 6px 6px 16px rgba(166, 178, 195, 0.3), -4px -4px 12px #FFFFFF;
+        box-shadow: 6px 6px 18px rgba(166, 178, 195, 0.3), -4px -4px 12px #FFFFFF, inset 1px 1px 2px rgba(255, 255, 255, 0.9);
         border: 1.5px solid #F1F5F9;
         display: flex; flex-direction: column; gap: 8px;
       }
@@ -234,39 +343,55 @@
       .patient-qr-row {
         display: flex; align-items: center; gap: 12px;
       }
+      
+      /* 3D Inset Clay QR Squircle */
       .qr-container-clay {
-        width: 78px; height: 78px; border-radius: 12px; background: #FFFFFF;
-        padding: 4px; box-shadow: inset 2px 2px 6px rgba(166, 178, 195, 0.25), inset -2px -2px 6px #FFFFFF;
-        border: 1px solid #E2E8F0; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        width: 80px; height: 80px; border-radius: 14px; background: #FFFFFF;
+        padding: 4px; box-shadow: inset 3px 3px 8px rgba(166, 178, 195, 0.3), inset -2px -2px 6px #FFFFFF;
+        border: 1.5px solid #E2E8F0; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
       }
-      .qr-container-clay img, .qr-container-clay canvas { width: 100% !important; height: 100% !important; border-radius: 6px; }
+      .qr-container-clay img, .qr-container-clay canvas { width: 100% !important; height: 100% !important; border-radius: 8px; }
 
-      .qr-label-group { display: flex; flex-direction: column; gap: 3px; }
+      .qr-label-group { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
       .qr-badge-pill {
-        display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 8px;
-        background: #E0F2FE; color: var(--clay-blue); font-size: 10px; font-weight: 900; text-transform: uppercase;
+        display: inline-flex; align-items: center; gap: 5px; padding: 3px 9px; border-radius: 8px;
+        background: #E0F2FE; color: var(--clay-blue); font-size: 9.5px; font-weight: 900; text-transform: uppercase;
+        box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.8);
       }
-      .qr-desc { font-size: 10.5px; font-weight: 700; line-height: 1.25; color: var(--text-secondary); }
+      .qr-desc { font-size: 10.5px; font-weight: 700; line-height: 1.3; color: var(--text-secondary); }
 
-      /* HIGHLIGHT NOMOR INFORMASI HOTLINE */
+      /* 3D TACTILE CLAY HOTLINE BUTTON (0823-2344-6076) */
       .hotline-clay-pill {
-        display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 14px;
-        background: #059669; text-decoration: none;
-        box-shadow: 0 4px 14px rgba(5, 150, 105, 0.35);
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 16px;
+        background: linear-gradient(135deg, #059669, #047857); text-decoration: none;
+        box-shadow: 0 6px 18px rgba(5, 150, 105, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.4);
+        transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
       }
+      .hotline-clay-pill:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(5, 150, 105, 0.45); }
+      
       .hotline-icon-box {
-        width: 32px; height: 32px; border-radius: 10px; background: rgba(255, 255, 255, 0.2);
+        width: 34px; height: 34px; border-radius: 12px; background: rgba(255, 255, 255, 0.22);
+        display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.5);
+      }
+      .hotline-icon-box .material-icons-round { font-size: 19px; color: #FFFFFF; }
+      
+      .hotline-text-col { display: flex; flex-direction: column; gap: 1px; min-width: 0; flex: 1; }
+      .hotline-label { font-size: 8px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: #D1FAE5; }
+      .hotline-number { font-family: "JetBrains Mono", monospace; font-size: clamp(13px, 1.15vw, 15.5px); font-weight: 900; color: #FFFFFF; letter-spacing: 0.02em; }
+      .hotline-chevron { color: rgba(255, 255, 255, 0.7); font-size: 20px; }
+
+      /* 3D CLAY DYNAMIC INFO TICKER BOX */
+      .dynamic-info-clay {
+        display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 12px;
+        background: #F8FAFC; border: 1px solid #E2E8F0;
+        box-shadow: inset 1px 1px 3px rgba(166, 178, 195, 0.15);
+      }
+      .info-icon-coin {
+        width: 22px; height: 22px; border-radius: 8px; background: #E0F2FE;
         display: flex; align-items: center; justify-content: center; flex-shrink: 0;
       }
-      .hotline-text-col { display: flex; flex-direction: column; gap: 1px; }
-      .hotline-label { font-size: 8.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: #D1FAE5; }
-      .hotline-number { font-family: "JetBrains Mono", monospace; font-size: clamp(13px, 1.15vw, 15.5px); font-weight: 900; color: #FFFFFF; letter-spacing: 0.02em; }
-
-      .dynamic-info-clay {
-        display: flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 10px;
-        background: #F8FAFC; border: 1px solid #E2E8F0;
-      }
+      .info-icon-coin .material-icons-round { font-size: 14px; color: var(--clay-blue); }
       .dynamic-info-clay p {
         font-size: 9.5px; font-weight: 700; color: var(--text-secondary); margin: 0; line-height: 1.3;
         white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
@@ -274,14 +399,14 @@
 
       /* TACTILE CLAY FOOTER BAR */
       .footer {
-        height: clamp(44px, 4vw, 54px); background: #FFFFFF; border-radius: clamp(14px, 1.4vw, 18px);
-        box-shadow: 8px 8px 20px rgba(166, 178, 195, 0.3), -6px -6px 16px #FFFFFF;
+        height: clamp(44px, 4vw, 54px); background: #FFFFFF; border-radius: clamp(16px, 1.5vw, 20px);
+        box-shadow: 8px 8px 22px rgba(166, 178, 195, 0.3), -6px -6px 16px #FFFFFF, inset 1px 1px 2px rgba(255, 255, 255, 0.9);
         display: flex; align-items: center; justify-content: space-between; padding: 0 clamp(12px, 1.4vw, 20px); flex-shrink: 0;
         border: 1.5px solid rgba(255, 255, 255, 0.9);
       }
       .legend { display: flex; gap: clamp(8px, 1vw, 14px); padding-right: 14px; border-right: 1.5px solid #E2E8F0; }
       .lg-item { display: flex; align-items: center; gap: 5px; font-size: clamp(9px, 0.8vw, 11px); font-weight: 800; color: var(--text-secondary); }
-      .dot { width: 8px; height: 8px; border-radius: 50%; }
+      .dot { width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 0 6px currentColor; }
       .ticker { flex: 1; margin: 0 clamp(10px, 1.2vw, 18px); overflow: hidden; position: relative; }
       .ticker-inner {
         white-space: nowrap; animation: marquee 30s linear infinite; font-family: "Plus Jakarta Sans", sans-serif;
@@ -289,30 +414,13 @@
       }
       @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
 
-      .footer-hotline-badge {
-        display: flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 10px;
-        background: #ECFDF5; border: 1.5px solid #A7F3D0; margin-right: 10px; flex-shrink: 0;
-      }
-      .footer-hotline-badge span { font-family: "JetBrains Mono", monospace; font-size: 11px; font-weight: 900; color: #065F46; }
-
       .status-pill-lg {
-        display: flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 10px;
+        display: flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 12px;
         background: #ECFDF5; font-size: clamp(9px, 0.8vw, 11px); font-weight: 900; color: var(--clay-emerald);
         box-shadow: 3px 3px 8px rgba(16, 185, 129, 0.15), -2px -2px 6px #FFFFFF;
+        border: 1px solid #A7F3D0;
       }
-      .live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--clay-emerald); }
-
-      .dynamic-island {
-        position: absolute; top: 6px; left: 50%; transform: translateX(-50%) scale(0); height: 46px;
-        background: #0F172A; border-radius: 23px; z-index: 999; display: flex; align-items: center; justify-content: center;
-        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); box-shadow: 0 12px 32px rgba(15, 23, 42, 0.35); opacity: 0;
-      }
-      .dynamic-island.expanded { transform: translateX(-50%) scale(1); opacity: 1; min-width: 320px; padding: 0 20px; }
-      .di-content { display: flex; align-items: center; gap: 12px; }
-      .di-spinner { width: 16px; height: 16px; border: 2px solid rgba(255, 255, 255, 0.2); border-top: 2px solid #10B981; border-radius: 50%; animation: spin 1s linear infinite; }
-      @keyframes spin { 100% { transform: rotate(360deg); } }
-      .di-title { font-size: 10px; font-weight: 800; color: rgba(255, 255, 255, 0.6); text-transform: uppercase; }
-      .di-msg { font-size: 12px; font-weight: 700; color: #FFF; }
+      .live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--clay-emerald); animation: iosBreathe 1.5s infinite; }
 
       .st-praktek { --status-color: #059669; --status-bg: #ECFDF5; --status-shadow: rgba(16, 185, 129, 0.25); }
       .st-pendaftaran { --status-color: #EA580C; --status-bg: #FFF7ED; --status-shadow: rgba(249, 115, 22, 0.25); }
@@ -338,7 +446,7 @@
         .jam-val { font-size: 11px; }
         .footer { height: 36px; padding: 0 10px; }
         .patient-service-clay { margin: 4px 6px 6px; padding: 8px 10px; }
-        .qr-container-clay { width: 60px; height: 60px; }
+        .qr-container-clay { width: 64px; height: 64px; }
       }
 
       /* Mobile Responsive */
@@ -356,12 +464,29 @@
   </head>
 <body>
     <!-- DYNAMIC ISLAND PRE-MOUNT -->
+        <!-- ULTRA PREMIUM APPLE DYNAMIC ISLAND (iOS 2026 LUXURY) -->
     <div id="dynamicIsland" class="dynamic-island">
-      <div class="di-content">
-        <div id="diIcon" class="di-spinner"></div>
-        <div class="di-text">
-          <span id="diTitle" class="di-title">System</span>
-          <span id="diMsg" class="di-msg">Loading...</span>
+      <div class="di-surface">
+        <div class="di-left">
+          <div id="diIconBox" class="di-icon-box">
+            <span id="diIcon" class="material-icons-round">radar</span>
+          </div>
+          <div class="di-text">
+            <span id="diTitle" class="di-title">SISTEM SIAGA MEDIKA</span>
+            <span id="diMsg" class="di-msg">Memuat data jadwal real-time...</span>
+          </div>
+        </div>
+        <div class="di-right">
+          <div class="di-soundwave">
+            <span class="bar bar-1"></span>
+            <span class="bar bar-2"></span>
+            <span class="bar bar-3"></span>
+            <span class="bar bar-4"></span>
+          </div>
+          <div class="di-live-indicator">
+            <span class="di-live-dot"></span>
+            <span class="di-live-text">LIVE</span>
+          </div>
         </div>
       </div>
     </div>
@@ -496,32 +621,38 @@
             ></div>
           </div>
 
-          <!-- Claymorphism QR Code & Hotline Info Widget -->
+                    <!-- Apple Style iOS Claymorphism Patient Service Card -->
           <div class="patient-service-clay">
             <div class="patient-qr-row">
               <div class="qr-container-clay">
                 <div id="patientQrCode"></div>
               </div>
               <div class="qr-label-group">
-                <span class="qr-badge-pill">📱 Scan di HP</span>
-                <span class="qr-desc">Buka jadwal & antrian langsung lewat smartphone</span>
+                <div class="qr-badge-pill">
+                  <span class="material-icons-round" style="font-size: 13px;">smartphone</span>
+                  <span>SCAN DI HP PASIEN</span>
+                </div>
+                <span class="qr-desc">Buka jadwal & nomor antrian live langsung dari smartphone Anda</span>
               </div>
             </div>
             
             <a href="https://wa.me/6282323446076" target="_blank" class="hotline-clay-pill">
               <div class="hotline-icon-box">
-                <span class="material-icons-round" style="font-size: 18px; color: #FFFFFF;">call</span>
+                <span class="material-icons-round">phone_in_talk</span>
               </div>
               <div class="hotline-text-col">
-                <span class="hotline-label">Informasi & Bantuan</span>
+                <span class="hotline-label">LAYANAN INFORMASI & PENDAFTARAN</span>
                 <span class="hotline-number">0823-2344-6076</span>
               </div>
+              <span class="material-icons-round hotline-chevron">chevron_right</span>
             </a>
 
             <!-- Dynamic Info Ticker Box -->
             <div class="dynamic-info-clay">
-              <span class="material-icons-round" style="color: var(--clay-blue); font-size: 14px;">campaign</span>
-              <p id="dynamicInfoBox">Memuat informasi layanan...</p>
+              <div class="info-icon-coin">
+                <span class="material-icons-round">campaign</span>
+              </div>
+              <p id="dynamicInfoBox">Memuat informasi layanan terbaru...</p>
             </div>
           </div>
         </aside>
@@ -2137,18 +2268,17 @@
             if (typeof QRCode !== "undefined") {
               new QRCode(qrContainer, {
                 text: currentUrl,
-                width: 70,
-                height: 70,
+                width: 72,
+                height: 72,
                 colorDark: "#0F172A",
                 colorLight: "#FFFFFF",
                 correctLevel: QRCode.CorrectLevel.M
               });
             } else {
-              // Fallback SVG QR
               const qrImg = document.createElement("img");
-              qrImg.src = "https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=" + encodeURIComponent(currentUrl);
-              qrImg.style.width = "70px";
-              qrImg.style.height = "70px";
+              qrImg.src = "https://api.qrserver.com/v1/create-qr-code/?size=144x144&data=" + encodeURIComponent(currentUrl);
+              qrImg.style.width = "72px";
+              qrImg.style.height = "72px";
               qrImg.style.borderRadius = "8px";
               qrContainer.appendChild(qrImg);
             }
