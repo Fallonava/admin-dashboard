@@ -1,0 +1,541 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Jadwal Dokter - Modern Bento Clay (Stripe & Apple Health Style)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet" />
+    <style>
+      .material-icons-round {
+        font-family: "Material Icons Round";
+        font-weight: normal;
+        font-style: normal;
+        font-size: 22px;
+        display: inline-block;
+        line-height: 1;
+        text-transform: none;
+        letter-spacing: normal;
+        word-wrap: normal;
+        white-space: nowrap;
+        direction: ltr;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      :root {
+        --bg-bento: #0B1120;
+        --bento-card: #151F32;
+        --bento-card-subtle: #1A263D;
+        --bento-border: rgba(255, 255, 255, 0.08);
+        
+        --text-primary: #F8FAFC;
+        --text-secondary: #94A3B8;
+        --text-muted: #64748B;
+        
+        --color-emerald: #10B981;
+        --color-teal: #14B8A6;
+        --color-sky: #0EA5E9;
+        --color-amber: #F59E0B;
+        --color-orange: #F97316;
+        --color-rose: #F43F5E;
+        --color-indigo: #6366F1;
+
+        --st-praktek: #10B981;
+        --st-pendaftaran: #F97316;
+        --st-terjadwal: #0EA5E9;
+        --st-penuh: #F59E0B;
+        --st-operasi: #8B5CF6;
+        --st-cuti: #F43F5E;
+        --st-selesai: #64748B;
+      }
+
+      * { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
+      html, body {
+        width: 100%; height: 100%; overflow: hidden;
+        font-family: "Outfit", "Plus Jakarta Sans", sans-serif;
+        background: var(--bg-bento); color: var(--text-primary);
+        user-select: none; cursor: none;
+      }
+
+      .app-container {
+        position: relative; z-index: 1; width: 100%; height: 100%;
+        display: flex; flex-direction: column; padding: 16px 20px; gap: 16px;
+      }
+
+      .content { flex: 1; display: flex; gap: 18px; min-height: 0; }
+
+      /* Bento Section Container */
+      .bento-island {
+        display: flex; flex-direction: column;
+        background: var(--bento-card);
+        border-radius: 26px; border: 1px solid var(--bento-border);
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+        overflow: hidden; position: relative;
+      }
+
+      .sidebar-panel { flex: 0 0 330px; max-width: 350px; min-width: 310px; }
+      .sidebar-header { padding: 18px 20px 14px; border-bottom: 1px solid var(--bento-border); }
+      .brand { display: flex; align-items: center; gap: 14px; }
+      .logo-bento {
+        width: 48px; height: 48px; border-radius: 16px; background: #FFFFFF;
+        display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.25); overflow: hidden;
+      }
+      .logo-bento img { width: 85%; height: 85%; object-fit: contain; }
+      .title-group h1 { font-size: 15px; font-weight: 800; letter-spacing: -0.01em; line-height: 1.15; color: #FFFFFF; }
+      .title-group span { font-size: 10px; font-weight: 700; color: var(--color-sky); text-transform: uppercase; }
+
+      .stat-grid {
+        display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 12px 16px;
+        border-bottom: 1px solid var(--bento-border);
+      }
+      .stat-card {
+        background: var(--bento-card-subtle); border-radius: 18px; padding: 10px 8px;
+        display: flex; flex-direction: column; align-items: center; text-align: center;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+      }
+      .stat-count { font-size: 22px; font-weight: 900; line-height: 1; }
+      .stat-label { font-size: 9.5px; font-weight: 700; text-transform: uppercase; color: var(--text-secondary); margin-top: 4px; }
+
+      .clock-row {
+        padding: 12px 20px; display: flex; justify-content: space-between; align-items: center;
+        border-bottom: 1px solid var(--bento-border); background: rgba(0, 0, 0, 0.15);
+      }
+      .clock-val { font-size: 32px; font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; line-height: 1; color: #FFFFFF; }
+      .date-val { font-size: 11px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; text-align: right; line-height: 1.3; }
+
+      .main-island { flex: 1; }
+      .island-header {
+        height: 56px; display: flex; align-items: center; justify-content: space-between; padding: 0 22px;
+        flex-shrink: 0; border-bottom: 1px solid var(--bento-border); background: rgba(0, 0, 0, 0.1);
+      }
+      .island-title-box { display: flex; align-items: center; gap: 10px; }
+      .island-icon {
+        width: 34px; height: 34px; border-radius: 12px; display: flex; align-items: center; justify-content: center;
+        font-size: 18px; color: #FFF;
+      }
+      .island-title { font-size: 15px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; color: #FFFFFF; }
+      .island-badge {
+        font-size: 11px; font-weight: 800; padding: 4px 12px; border-radius: 20px;
+        background: rgba(255, 255, 255, 0.08); color: #FFFFFF;
+      }
+
+      .scroll-mask { flex: 1; overflow: hidden; position: relative; }
+      .scroller { padding: 16px 18px 22px; display: flex; flex-direction: column; gap: 10px; }
+
+      /* BENTO TACTILE CARD */
+      .platter {
+        display: flex; flex-direction: column; padding: 14px 18px;
+        background: var(--bento-card-subtle); border-radius: 20px; border: 1px solid var(--bento-border);
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        position: relative; overflow: hidden; transition: all 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+      }
+      .platter::before {
+        content: ""; position: absolute; left: 0; top: 12px; bottom: 12px; width: 4.5px;
+        border-radius: 0 6px 6px 0; background: var(--status-color, var(--color-sky));
+      }
+
+      .platter-main { display: flex; align-items: center; gap: 14px; width: 100%; }
+      .avatar-clay {
+        width: 42px; height: 42px; border-radius: 14px; background: rgba(0, 0, 0, 0.25);
+        border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 900;
+        color: var(--status-color, #FFF); flex-shrink: 0;
+      }
+      .info-col { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+      .doc-spec { font-size: 16px; font-weight: 800; color: #FFFFFF; text-transform: uppercase; letter-spacing: 0.01em; line-height: 1.15; }
+      .doc-name {
+        font-size: 13px; font-weight: 600; color: var(--text-secondary);
+        display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.3;
+      }
+      .meta-col { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0; }
+      .status-pill {
+        padding: 5px 12px; border-radius: 12px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em;
+        background: var(--status-bg, rgba(255, 255, 255, 0.06)); color: var(--status-color, #FFF);
+        display: flex; align-items: center; gap: 5px;
+      }
+      .jam-val { font-size: 14px; font-weight: 800; color: #FFFFFF; font-variant-numeric: tabular-nums; }
+
+      /* ACTIVE HERO BENTO CARD */
+      .platter.active {
+        background: #1E2D4A !important; border-color: rgba(255, 255, 255, 0.2) !important;
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4), 0 0 24px var(--status-bg, rgba(16, 185, 129, 0.25)) !important;
+      }
+      .platter.active .doc-spec { font-size: 18px; color: #FFFFFF !important; }
+      .platter.active .doc-name { color: var(--status-color) !important; font-weight: 700; }
+      .platter.active::before { width: 6px; }
+
+      .platter-detail {
+        max-height: 0; opacity: 0; overflow: hidden; transition: all 0.45s ease;
+        border-top: 1px solid transparent; margin-top: 0; padding-top: 0;
+      }
+      .platter.active .platter-detail {
+        max-height: 75px; opacity: 1; margin-top: 10px; padding-top: 10px;
+        border-top: 1px solid rgba(255, 255, 255, 0.08); display: flex; justify-content: space-between; align-items: center;
+      }
+      .detail-label { font-size: 9.5px; font-weight: 800; text-transform: uppercase; color: var(--text-muted); }
+      .detail-time { font-size: 16px; font-weight: 800; color: #FFFFFF; }
+      .live-badge {
+        display: flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 12px;
+        background: var(--status-bg, rgba(16, 185, 129, 0.2)); color: var(--status-color);
+        font-size: 10.5px; font-weight: 800; text-transform: uppercase;
+      }
+      .pulse-dot {
+        width: 7px; height: 7px; border-radius: 50%; background: currentColor; box-shadow: 0 0 8px currentColor; animation: pulse-bento 1.6s infinite;
+      }
+      @keyframes pulse-bento { 0%, 100% { transform: scale(0.9); opacity: 0.7; } 50% { transform: scale(1.15); opacity: 1; } }
+
+      .platter-mini { padding: 10px 14px; }
+      .platter-mini .avatar-clay { width: 32px; height: 32px; border-radius: 10px; font-size: 12px; }
+      .platter-mini .doc-name { font-size: 12px; }
+      .platter-mini .doc-spec { font-size: 10px; color: var(--text-muted); }
+      .platter-mini .status-pill { padding: 3px 8px; font-size: 9px; }
+
+      .footer {
+        height: 52px; background: var(--bento-card); border-radius: 20px;
+        border: 1px solid var(--bento-border); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        display: flex; align-items: center; justify-content: space-between; padding: 0 20px; flex-shrink: 0;
+      }
+      .legend { display: flex; gap: 14px; padding-right: 16px; border-right: 1px solid var(--bento-border); }
+      .lg-item { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; color: var(--text-secondary); }
+      .dot { width: 8px; height: 8px; border-radius: 50%; }
+      .ticker { flex: 1; margin: 0 18px; overflow: hidden; position: relative; }
+      .ticker-inner {
+        white-space: nowrap; animation: marquee 30s linear infinite; font-size: 13px; font-weight: 600; color: var(--text-primary);
+      }
+      @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
+      .connection-pill {
+        display: flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 14px;
+        background: rgba(255, 255, 255, 0.06); font-size: 10.5px; font-weight: 800; color: var(--color-emerald);
+      }
+
+      .st-praktek { --status-color: #10B981; --status-bg: rgba(16, 185, 129, 0.15); }
+      .st-pendaftaran { --status-color: #F97316; --status-bg: rgba(249, 115, 22, 0.15); }
+      .st-terjadwal { --status-color: #0EA5E9; --status-bg: rgba(14, 165, 233, 0.15); }
+      .st-penuh { --status-color: #F59E0B; --status-bg: rgba(245, 158, 11, 0.15); }
+      .st-operasi { --status-color: #8B5CF6; --status-bg: rgba(139, 92, 246, 0.15); }
+      .st-cuti { --status-color: #F43F5E; --status-bg: rgba(244, 63, 94, 0.15); }
+      .st-selesai { --status-color: #64748B; --status-bg: rgba(100, 116, 139, 0.15); }
+      .st-libur { display: none; }
+    </style>
+  </head>
+  <body>
+    <div class="app-container">
+      <main class="content">
+        <aside class="bento-island sidebar-panel">
+          <div class="sidebar-header">
+            <div class="brand">
+              <div class="logo-bento"><img src="/logo-rs.png" alt="Logo RS" /></div>
+              <div class="title-group">
+                <h1>RSU SIAGA MEDIKA</h1>
+                <span>Informasi Rawat Jalan</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="stat-grid">
+            <div class="stat-card">
+              <span class="stat-count" id="statBuka" style="color: var(--color-emerald)">0</span>
+              <span class="stat-label">Buka</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-count" id="statPenuh" style="color: var(--color-amber)">0</span>
+              <span class="stat-label">Penuh</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-count" id="statCuti" style="color: var(--color-rose)">0</span>
+              <span class="stat-label">Cuti</span>
+            </div>
+          </div>
+
+          <div class="clock-row">
+            <div class="clock-val" id="clock">00:00</div>
+            <div class="date-val" id="date">-</div>
+          </div>
+
+          <div class="island-header" style="height: 42px; padding: 0 18px;">
+            <div class="island-title-box">
+              <span class="island-title" style="font-size: 11px;">Status Khusus</span>
+            </div>
+            <span class="island-badge" id="countSidebar">0</span>
+          </div>
+
+          <div class="scroll-mask" id="maskSidebar">
+            <div class="scroller" id="scrollSidebar" style="padding: 10px 14px; gap: 8px;"></div>
+          </div>
+        </aside>
+
+        <section class="bento-island main-island">
+          <div class="island-header">
+            <div class="island-title-box">
+              <div class="island-icon" style="background: rgba(14, 165, 233, 0.2); color: var(--color-sky);">
+                <span class="material-icons-round">local_hospital</span>
+              </div>
+              <span class="island-title">Spesialis Bedah</span>
+            </div>
+            <span class="island-badge" id="countBedah">0 Dokter</span>
+          </div>
+          <div class="scroll-mask" id="maskBedah">
+            <div class="scroller" id="scrollBedah"></div>
+          </div>
+        </section>
+
+        <section class="bento-island main-island">
+          <div class="island-header">
+            <div class="island-title-box">
+              <div class="island-icon" style="background: rgba(99, 102, 241, 0.2); color: var(--color-indigo);">
+                <span class="material-icons-round">medical_services</span>
+              </div>
+              <span class="island-title">Spesialis Non-Bedah</span>
+            </div>
+            <span class="island-badge" id="countNonBedah">0 Dokter</span>
+          </div>
+          <div class="scroll-mask" id="maskNonBedah">
+            <div class="scroller" id="scrollNonBedah"></div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="footer">
+        <div class="legend">
+          <div class="lg-item"><span class="dot" style="background: var(--color-emerald)"></span>Praktek</div>
+          <div class="lg-item"><span class="dot" style="background: var(--color-orange)"></span>Pendaftaran</div>
+          <div class="lg-item"><span class="dot" style="background: var(--color-sky)"></span>Terjadwal</div>
+          <div class="lg-item"><span class="dot" style="background: var(--color-amber)"></span>Penuh</div>
+          <div class="lg-item"><span class="dot" style="background: var(--st-operasi)"></span>Operasi</div>
+          <div class="lg-item"><span class="dot" style="background: var(--color-rose)"></span>Cuti</div>
+        </div>
+
+        <div class="ticker">
+          <div class="ticker-inner" id="runningText">
+            RSU Siaga Medika Purbalingga • Kami Siap Melayani Anda dengan Sepenuh Hati • Harap Menunggu Giliran Nomor Antrian
+          </div>
+        </div>
+
+        <div class="connection-pill">
+          <span class="pulse-dot"></span>
+          <span>BENTO V3.0</span>
+        </div>
+      </footer>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      const CFG = { API_MAIN: "/api/display", POLL_MS: 4000, SCROLL_ITEM_PAUSE: 3500 };
+      const $ = (id) => document.getElementById(id);
+      const esc = (t) => {
+        const d = document.createElement("div");
+        d.textContent = t || "";
+        return d.innerHTML;
+      };
+      const initials = (n) =>
+        n ? n.replace(/^dr.s*/i, "").split(" ").filter(Boolean).slice(0, 2).map((w) => w[0]).join("").toUpperCase() : "DR";
+      const formatJam = (j) => {
+        if (!j || j === "-") return "-";
+        return j.replace(/\./g, ":").replace(/\s*[-–]\s*/g, " — ");
+      };
+
+      const buildCardHTML = (d) => {
+        const status = (d.Status || "TERJADWAL").toUpperCase();
+        let stClass = "st-terjadwal";
+        let statusIcon = "schedule";
+        let statusLabel = "Terjadwal";
+        let isActiveCard = false;
+
+        if (status === "PRAKTEK") {
+          stClass = "st-praktek";
+          statusIcon = "how_to_reg";
+          statusLabel = "Praktek";
+          isActiveCard = true;
+        } else if (status === "PENDAFTARAN") {
+          stClass = "st-pendaftaran";
+          statusIcon = "app_registration";
+          statusLabel = "Pendaftaran";
+          isActiveCard = true;
+        } else if (status.includes("PENUH")) {
+          stClass = "st-penuh";
+          statusIcon = "lock";
+          statusLabel = "Penuh";
+        } else if (status === "OPERASI") {
+          stClass = "st-operasi";
+          statusIcon = "medical_services";
+          statusLabel = "Operasi";
+        } else if (status === "CUTI" || status === "LIBUR") {
+          stClass = "st-cuti";
+          statusIcon = "event_busy";
+          statusLabel = "Cuti";
+        } else if (status === "SELESAI") {
+          stClass = "st-selesai";
+          statusIcon = "check_circle";
+          statusLabel = "Selesai";
+        }
+
+        const jamTampil = d.JamDaftar && d.JamDaftar !== "-" ? esc(d.JamDaftar) : formatJam((d.JamPraktek || "").split("-")[0]);
+        const avatar = d.QueueCode || initials(d.Dokter);
+
+        return `
+          <div class="platter ${stClass} ${isActiveCard ? active : }">
+            <div class="platter-main">
+              <div class="avatar-clay">${avatar}</div>
+              <div class="info-col">
+                <div class="doc-spec">${esc(d.Spesialis)}</div>
+                <div class="doc-name">${esc(d.Dokter)}</div>
+              </div>
+              <div class="meta-col">
+                <div class="status-pill">
+                  <span class="material-icons-round" style="font-size:12px">${statusIcon}</span>
+                  ${statusLabel}
+                </div>
+                ${!isActiveCard && d.JamPraktek && d.JamPraktek !== "-" ? `
+                <div class="jam-val">${jamTampil}</div>` : ""}
+              </div>
+            </div>
+            ${isActiveCard ? `
+            <div class="platter-detail">
+              <div>
+                <div class="detail-label">Mulai Praktek</div>
+                <div class="detail-time">${jamTampil}</div>
+              </div>
+              <div class="live-badge">
+                <span class="pulse-dot"></span>
+                <span>Sedang Melayani</span>
+              </div>
+            </div>` : ""}
+          </div>
+        `;
+      };
+
+      const buildSidebarCardHTML = (d) => {
+        const status = (d.Status || "CUTI").toUpperCase();
+        const stClass = status.includes("PENUH") ? "st-penuh" : "st-cuti";
+        const statusLabel = status.includes("PENUH") ? "Penuh" : "Cuti";
+        const statusIcon = status.includes("PENUH") ? "lock" : "event_busy";
+        const avatar = d.QueueCode || initials(d.Dokter);
+
+        return `
+          <div class="platter platter-mini ${stClass}">
+            <div class="platter-main">
+              <div class="avatar-clay">${avatar}</div>
+              <div class="info-col">
+                <div class="doc-name">${esc(d.Dokter)}</div>
+                <div class="doc-spec">${esc(d.Spesialis)}</div>
+              </div>
+              <div class="meta-col">
+                <div class="status-pill">
+                  <span class="material-icons-round" style="font-size:10px">${statusIcon}</span>
+                  ${statusLabel}
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      };
+
+      class SmoothScroller {
+        constructor(id) {
+          this.el = $(id);
+          this.y = 0;
+          this.active = true;
+          this.timer = null;
+        }
+
+        updateMetrics() {
+          if (!this.el) return;
+          this.h = this.el.scrollHeight;
+          this.vh = this.el.parentElement.clientHeight;
+        }
+
+        start() {
+          this.updateMetrics();
+          if (this.h > this.vh) this.scrollLoop();
+        }
+
+        scrollLoop() {
+          if (!this.active || this.h <= this.vh) return;
+          const maxScroll = this.h - this.vh;
+          
+          this.timer = setTimeout(() => {
+            this.el.style.transition = "transform 0.8s ease-in-out";
+            this.y += 90;
+            if (this.y >= maxScroll + 40) {
+              this.el.style.transition = "opacity 0.4s ease";
+              this.el.style.opacity = "0";
+              setTimeout(() => {
+                this.y = 0;
+                this.el.style.transform = "translate3d(0, 0, 0)";
+                this.el.style.opacity = "1";
+                this.scrollLoop();
+              }, 500);
+            } else {
+              this.el.style.transform = `translate3d(0, -${this.y}px, 0)`;
+              this.scrollLoop();
+            }
+          }, CFG.SCROLL_ITEM_PAUSE);
+        }
+      }
+
+      const scrollerBedah = new SmoothScroller("scrollBedah");
+      const scrollerNonBedah = new SmoothScroller("scrollNonBedah");
+      const scrollerSidebar = new SmoothScroller("scrollSidebar");
+
+      const updateClock = () => {
+        const now = new Date();
+        const hrs = String(now.getHours()).padStart(2, "0");
+        const mins = String(now.getMinutes()).padStart(2, "0");
+        $("clock").textContent = `${hrs}:${mins}`;
+
+        const days = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+        const months = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+        $("date").innerHTML = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+      };
+      setInterval(updateClock, 1000);
+      updateClock();
+
+      async function fetchData() {
+        try {
+          const res = await fetch(CFG.API_MAIN);
+          if (!res.ok) return;
+          const data = await res.json();
+
+          const bedahDocs = (data.bedah || []).filter(d => (d.Status || "").toUpperCase() !== "LIBUR");
+          const nonBedahDocs = (data.nonBedah || []).filter(d => (d.Status || "").toUpperCase() !== "LIBUR");
+          const sidebarDocs = (data.sidebar || []).filter(d => (d.Status || "").toUpperCase() !== "LIBUR");
+
+          $("countBedah").textContent = `${bedahDocs.length} Dokter`;
+          $("countNonBedah").textContent = `${nonBedahDocs.length} Dokter`;
+          $("countSidebar").textContent = `${sidebarDocs.length}`;
+
+          $("scrollBedah").innerHTML = bedahDocs.map(buildCardHTML).join("");
+          $("scrollNonBedah").innerHTML = nonBedahDocs.map(buildCardHTML).join("");
+          $("scrollSidebar").innerHTML = sidebarDocs.map(buildSidebarCardHTML).join("");
+
+          const all = [...bedahDocs, ...nonBedahDocs, ...sidebarDocs];
+          const bukaCount = all.filter(d => ["PRAKTEK", "PENDAFTARAN", "TERJADWAL"].includes((d.Status || "").toUpperCase())).length;
+          const penuhCount = all.filter(d => (d.Status || "").toUpperCase().includes("PENUH")).length;
+          const cutiCount = all.filter(d => ["CUTI", "OPERASI"].includes((d.Status || "").toUpperCase())).length;
+
+          $("statBuka").textContent = bukaCount;
+          $("statPenuh").textContent = penuhCount;
+          $("statCuti").textContent = cutiCount;
+
+          scrollerBedah.start();
+          scrollerNonBedah.start();
+          scrollerSidebar.start();
+        } catch (e) {
+          console.error("Fetch error:", e);
+        }
+      }
+
+      fetchData();
+      setInterval(fetchData, CFG.POLL_MS);
+
+      try {
+        const socket = io({ path: "/socket.io", transports: ["polling", "websocket"] });
+        socket.on("admin_sync_all", () => fetchData());
+        socket.on("doctor_updated", () => fetchData());
+        socket.on("schedule_updated", () => fetchData());
+      } catch (_) {}
+    </script>
+  </body>
+</html>

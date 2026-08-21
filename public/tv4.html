@@ -1,0 +1,527 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Jadwal Dokter - Pure OLED Flight Board (FIDS Style)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Inter:wght@500;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet" />
+    <style>
+      .material-icons-round {
+        font-family: "Material Icons Round";
+        font-weight: normal;
+        font-style: normal;
+        font-size: 20px;
+        display: inline-block;
+        line-height: 1;
+        text-transform: none;
+        letter-spacing: normal;
+        word-wrap: normal;
+        white-space: nowrap;
+        direction: ltr;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      :root {
+        --bg-oled: #000000;
+        --panel-oled: #080808;
+        --card-oled: #111111;
+        --card-oled-alt: #161616;
+        --border-oled: #222222;
+        
+        --text-primary: #FFFFFF;
+        --text-secondary: #A0A0A0;
+        --text-muted: #666666;
+        
+        --oled-green: #00FF66;
+        --oled-cyan: #00E5FF;
+        --oled-amber: #FFB800;
+        --oled-orange: #FF6600;
+        --oled-rose: #FF0055;
+        --oled-magenta: #D900FF;
+
+        --st-praktek: #00FF66;
+        --st-pendaftaran: #FF6600;
+        --st-terjadwal: #00E5FF;
+        --st-penuh: #FFB800;
+        --st-operasi: #D900FF;
+        --st-cuti: #FF0055;
+        --st-selesai: #888888;
+      }
+
+      * { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
+      html, body {
+        width: 100%; height: 100%; overflow: hidden;
+        font-family: "JetBrains Mono", monospace;
+        background: var(--bg-oled); color: var(--text-primary);
+        user-select: none; cursor: none;
+      }
+
+      .app-container {
+        position: relative; z-index: 1; width: 100%; height: 100%;
+        display: flex; flex-direction: column; padding: 12px 16px; gap: 12px;
+      }
+
+      .content { flex: 1; display: flex; gap: 12px; min-height: 0; }
+
+      .oled-panel {
+        display: flex; flex-direction: column;
+        background: var(--panel-oled);
+        border-radius: 8px; border: 1px solid var(--border-oled);
+        overflow: hidden; position: relative;
+      }
+
+      .sidebar-panel { flex: 0 0 310px; max-width: 330px; min-width: 290px; }
+      .sidebar-header { padding: 14px 16px 12px; border-bottom: 1px solid var(--border-oled); }
+      .brand { display: flex; align-items: center; gap: 12px; }
+      .logo-box {
+        width: 40px; height: 40px; border-radius: 6px; background: #FFFFFF;
+        display: flex; align-items: center; justify-content: center; overflow: hidden;
+      }
+      .logo-box img { width: 85%; height: 85%; object-fit: contain; }
+      .title-group h1 { font-family: "Inter", sans-serif; font-size: 13.5px; font-weight: 800; letter-spacing: -0.01em; line-height: 1.2; color: #FFFFFF; }
+      .title-group span { font-size: 9.5px; font-weight: 700; color: var(--oled-amber); text-transform: uppercase; }
+
+      .stat-grid {
+        display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border-oled);
+        border-bottom: 1px solid var(--border-oled);
+      }
+      .stat-card {
+        background: var(--bg-oled); padding: 10px 6px; display: flex; flex-direction: column; align-items: center; text-align: center;
+      }
+      .stat-count { font-size: 22px; font-weight: 800; line-height: 1; }
+      .stat-label { font-size: 8.5px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-top: 4px; }
+
+      .clock-row {
+        padding: 10px 16px; display: flex; justify-content: space-between; align-items: center;
+        border-bottom: 1px solid var(--border-oled); background: #000000;
+      }
+      .clock-val { font-size: 32px; font-weight: 800; letter-spacing: -0.02em; line-height: 1; color: var(--oled-amber); }
+      .date-val { font-size: 10px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; text-align: right; line-height: 1.3; }
+
+      .main-island { flex: 1; }
+      .island-header {
+        height: 46px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px;
+        flex-shrink: 0; border-bottom: 1px solid var(--border-oled); background: #000000;
+      }
+      .island-title-box { display: flex; align-items: center; gap: 8px; }
+      .island-title { font-family: "Inter", sans-serif; font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: #FFFFFF; }
+      .island-badge {
+        font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 4px;
+        background: #111111; border: 1px solid var(--border-oled); color: var(--oled-amber);
+      }
+
+      .scroll-mask { flex: 1; overflow: hidden; position: relative; }
+      .scroller { padding: 8px 10px 14px; display: flex; flex-direction: column; gap: 6px; }
+
+      /* FLIGHT BOARD ROW CARD */
+      .platter {
+        display: flex; flex-direction: column; padding: 10px 14px;
+        background: var(--card-oled); border-radius: 6px; border: 1px solid var(--border-oled);
+        position: relative; overflow: hidden; transition: all 0.25s ease;
+      }
+      .platter:nth-child(even) { background: var(--card-oled-alt); }
+      .platter::before {
+        content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+        background: var(--status-color, var(--oled-cyan));
+      }
+
+      .platter-main { display: flex; align-items: center; gap: 10px; width: 100%; }
+      .avatar-box {
+        width: 34px; height: 34px; border-radius: 4px; background: #000000;
+        border: 1px solid var(--border-oled); display: flex; align-items: center; justify-content: center;
+        font-size: 12px; font-weight: 800; color: var(--status-color, #FFF); flex-shrink: 0;
+      }
+      .info-col { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+      .doc-spec { font-family: "Inter", sans-serif; font-size: 14.5px; font-weight: 800; color: #FFFFFF; text-transform: uppercase; letter-spacing: 0.02em; line-height: 1.15; }
+      .doc-name {
+        font-size: 12px; font-weight: 600; color: var(--text-secondary);
+        display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.3;
+      }
+      .meta-col { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
+      .status-pill {
+        padding: 3px 8px; border-radius: 3px; font-size: 9.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em;
+        background: #000000; border: 1px solid var(--status-color, var(--oled-cyan));
+        color: var(--status-color, #FFF); display: flex; align-items: center; gap: 4px;
+      }
+      .jam-val { font-size: 13px; font-weight: 700; color: #FFFFFF; }
+
+      /* ACTIVE HERO FLIGHT CARD */
+      .platter.active {
+        background: #051A10 !important; border-color: var(--oled-green) !important;
+      }
+      .platter.active .doc-spec { font-size: 16px; color: #FFFFFF !important; }
+      .platter.active .doc-name { color: var(--oled-green) !important; font-weight: 700; }
+      .platter.active::before { width: 5px; background: var(--oled-green); box-shadow: 0 0 10px var(--oled-green); }
+
+      .platter-detail {
+        max-height: 0; opacity: 0; overflow: hidden; transition: all 0.3s ease;
+        border-top: 1px solid transparent; margin-top: 0; padding-top: 0;
+      }
+      .platter.active .platter-detail {
+        max-height: 65px; opacity: 1; margin-top: 8px; padding-top: 8px;
+        border-top: 1px dotted var(--border-oled); display: flex; justify-content: space-between; align-items: center;
+      }
+      .detail-label { font-size: 8.5px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); }
+      .detail-time { font-size: 15px; font-weight: 800; color: #FFFFFF; }
+      .live-badge {
+        display: flex; align-items: center; gap: 5px; padding: 3px 8px; border-radius: 3px;
+        background: #002B14; border: 1px solid var(--oled-green);
+        color: var(--oled-green); font-size: 9.5px; font-weight: 800; text-transform: uppercase;
+      }
+      .pulse-dot {
+        width: 5px; height: 5px; border-radius: 50%; background: currentColor; box-shadow: 0 0 6px currentColor; animation: pulse-oled 1.2s infinite;
+      }
+      @keyframes pulse-oled { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+
+      .platter-mini { padding: 6px 10px; }
+      .platter-mini .avatar-box { width: 26px; height: 26px; font-size: 10px; }
+      .platter-mini .doc-name { font-size: 11px; }
+      .platter-mini .doc-spec { font-size: 9px; color: var(--text-muted); }
+      .platter-mini .status-pill { padding: 2px 5px; font-size: 8px; }
+
+      /* FOOTER */
+      .footer {
+        height: 44px; background: var(--panel-oled); border-radius: 6px;
+        border: 1px solid var(--border-oled); display: flex; align-items: center; justify-content: space-between; padding: 0 14px; flex-shrink: 0;
+      }
+      .legend { display: flex; gap: 10px; padding-right: 12px; border-right: 1px solid var(--border-oled); }
+      .lg-item { display: flex; align-items: center; gap: 4px; font-size: 9.5px; font-weight: 700; color: var(--text-secondary); }
+      .dot { width: 5px; height: 5px; border-radius: 1px; }
+      .ticker { flex: 1; margin: 0 14px; overflow: hidden; position: relative; }
+      .ticker-inner {
+        white-space: nowrap; animation: marquee 30s linear infinite; font-family: "Inter", sans-serif; font-size: 12px; font-weight: 600; color: var(--text-primary);
+      }
+      @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
+      .connection-pill {
+        display: flex; align-items: center; gap: 5px; padding: 3px 8px; border-radius: 3px;
+        background: #000000; border: 1px solid var(--border-oled);
+        font-size: 9.5px; font-weight: 800; color: var(--oled-green);
+      }
+
+      .st-praktek { --status-color: #00FF66; }
+      .st-pendaftaran { --status-color: #FF6600; }
+      .st-terjadwal { --status-color: #00E5FF; }
+      .st-penuh { --status-color: #FFB800; }
+      .st-operasi { --status-color: #D900FF; }
+      .st-cuti { --status-color: #FF0055; }
+      .st-selesai { --status-color: #888888; }
+      .st-libur { display: none; }
+    </style>
+  </head>
+  <body>
+    <div class="app-container">
+      <main class="content">
+        <aside class="oled-panel sidebar-panel">
+          <div class="sidebar-header">
+            <div class="brand">
+              <div class="logo-box"><img src="/logo-rs.png" alt="Logo RS" /></div>
+              <div class="title-group">
+                <h1>RSU SIAGA MEDIKA</h1>
+                <span>FIDS RAWAT JALAN</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="stat-grid">
+            <div class="stat-card">
+              <span class="stat-count" id="statBuka" style="color: var(--oled-green)">0</span>
+              <span class="stat-label">BUKA</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-count" id="statPenuh" style="color: var(--oled-amber)">0</span>
+              <span class="stat-label">PENUH</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-count" id="statCuti" style="color: var(--oled-rose)">0</span>
+              <span class="stat-label">CUTI</span>
+            </div>
+          </div>
+
+          <div class="clock-row">
+            <div class="clock-val" id="clock">00:00</div>
+            <div class="date-val" id="date">-</div>
+          </div>
+
+          <div class="island-header" style="height: 38px; padding: 0 14px;">
+            <div class="island-title-box">
+              <span class="island-title" style="font-size: 10.5px;">STATUS KHUSUS</span>
+            </div>
+            <span class="island-badge" id="countSidebar">0</span>
+          </div>
+
+          <div class="scroll-mask" id="maskSidebar">
+            <div class="scroller" id="scrollSidebar" style="padding: 6px 8px; gap: 4px;"></div>
+          </div>
+        </aside>
+
+        <section class="oled-panel main-island">
+          <div class="island-header">
+            <div class="island-title-box">
+              <span class="material-icons-round" style="color: var(--oled-cyan)">local_hospital</span>
+              <span class="island-title">POLI BEDAH</span>
+            </div>
+            <span class="island-badge" id="countBedah">0 DOKTER</span>
+          </div>
+          <div class="scroll-mask" id="maskBedah">
+            <div class="scroller" id="scrollBedah"></div>
+          </div>
+        </section>
+
+        <section class="oled-panel main-island">
+          <div class="island-header">
+            <div class="island-title-box">
+              <span class="material-icons-round" style="color: var(--oled-magenta)">medical_services</span>
+              <span class="island-title">POLI NON-BEDAH</span>
+            </div>
+            <span class="island-badge" id="countNonBedah">0 DOKTER</span>
+          </div>
+          <div class="scroll-mask" id="maskNonBedah">
+            <div class="scroller" id="scrollNonBedah"></div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="footer">
+        <div class="legend">
+          <div class="lg-item"><span class="dot" style="background: var(--oled-green)"></span>PRAKTEK</div>
+          <div class="lg-item"><span class="dot" style="background: var(--oled-orange)"></span>PENDAFTARAN</div>
+          <div class="lg-item"><span class="dot" style="background: var(--oled-cyan)"></span>TERJADWAL</div>
+          <div class="lg-item"><span class="dot" style="background: var(--oled-amber)"></span>PENUH</div>
+          <div class="lg-item"><span class="dot" style="background: var(--oled-magenta)"></span>OPERASI</div>
+          <div class="lg-item"><span class="dot" style="background: var(--oled-rose)"></span>CUTI</div>
+        </div>
+
+        <div class="ticker">
+          <div class="ticker-inner" id="runningText">
+            RSU Siaga Medika Purbalingga • Flight Information Display System • Mohon Perhatikan Nomor Antrian Anda
+          </div>
+        </div>
+
+        <div class="connection-pill">
+          <span class="pulse-dot"></span>
+          <span>OLED V4.0</span>
+        </div>
+      </footer>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      const CFG = { API_MAIN: "/api/display", POLL_MS: 4000, SCROLL_ITEM_PAUSE: 3500 };
+      const $ = (id) => document.getElementById(id);
+      const esc = (t) => {
+        const d = document.createElement("div");
+        d.textContent = t || "";
+        return d.innerHTML;
+      };
+      const initials = (n) =>
+        n ? n.replace(/^dr.s*/i, "").split(" ").filter(Boolean).slice(0, 2).map((w) => w[0]).join("").toUpperCase() : "DR";
+      const formatJam = (j) => {
+        if (!j || j === "-") return "-";
+        return j.replace(/\./g, ":").replace(/\s*[-–]\s*/g, " — ");
+      };
+
+      const buildCardHTML = (d) => {
+        const status = (d.Status || "TERJADWAL").toUpperCase();
+        let stClass = "st-terjadwal";
+        let statusIcon = "schedule";
+        let statusLabel = "TERJADWAL";
+        let isActiveCard = false;
+
+        if (status === "PRAKTEK") {
+          stClass = "st-praktek";
+          statusIcon = "how_to_reg";
+          statusLabel = "PRAKTEK";
+          isActiveCard = true;
+        } else if (status === "PENDAFTARAN") {
+          stClass = "st-pendaftaran";
+          statusIcon = "app_registration";
+          statusLabel = "PENDAFTARAN";
+          isActiveCard = true;
+        } else if (status.includes("PENUH")) {
+          stClass = "st-penuh";
+          statusIcon = "lock";
+          statusLabel = "PENUH";
+        } else if (status === "OPERASI") {
+          stClass = "st-operasi";
+          statusIcon = "medical_services";
+          statusLabel = "OPERASI";
+        } else if (status === "CUTI" || status === "LIBUR") {
+          stClass = "st-cuti";
+          statusIcon = "event_busy";
+          statusLabel = "CUTI";
+        } else if (status === "SELESAI") {
+          stClass = "st-selesai";
+          statusIcon = "check_circle";
+          statusLabel = "SELESAI";
+        }
+
+        const jamTampil = d.JamDaftar && d.JamDaftar !== "-" ? esc(d.JamDaftar) : formatJam((d.JamPraktek || "").split("-")[0]);
+        const avatar = d.QueueCode || initials(d.Dokter);
+
+        return `
+          <div class="platter ${stClass} ${isActiveCard ? active : }">
+            <div class="platter-main">
+              <div class="avatar-box">${avatar}</div>
+              <div class="info-col">
+                <div class="doc-spec">${esc(d.Spesialis)}</div>
+                <div class="doc-name">${esc(d.Dokter)}</div>
+              </div>
+              <div class="meta-col">
+                <div class="status-pill">
+                  <span class="material-icons-round" style="font-size:10px">${statusIcon}</span>
+                  ${statusLabel}
+                </div>
+                ${!isActiveCard && d.JamPraktek && d.JamPraktek !== "-" ? `
+                <div class="jam-val">${jamTampil}</div>` : ""}
+              </div>
+            </div>
+            ${isActiveCard ? `
+            <div class="platter-detail">
+              <div>
+                <div class="detail-label">WAKTU PELAYANAN</div>
+                <div class="detail-time">${jamTampil}</div>
+              </div>
+              <div class="live-badge">
+                <span class="pulse-dot"></span>
+                <span>SEDANG MELAYANI</span>
+              </div>
+            </div>` : ""}
+          </div>
+        `;
+      };
+
+      const buildSidebarCardHTML = (d) => {
+        const status = (d.Status || "CUTI").toUpperCase();
+        const stClass = status.includes("PENUH") ? "st-penuh" : "st-cuti";
+        const statusLabel = status.includes("PENUH") ? "PENUH" : "CUTI";
+        const statusIcon = status.includes("PENUH") ? "lock" : "event_busy";
+        const avatar = d.QueueCode || initials(d.Dokter);
+
+        return `
+          <div class="platter platter-mini ${stClass}">
+            <div class="platter-main">
+              <div class="avatar-box">${avatar}</div>
+              <div class="info-col">
+                <div class="doc-name">${esc(d.Dokter)}</div>
+                <div class="doc-spec">${esc(d.Spesialis)}</div>
+              </div>
+              <div class="meta-col">
+                <div class="status-pill">
+                  <span class="material-icons-round" style="font-size:9px">${statusIcon}</span>
+                  ${statusLabel}
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      };
+
+      class SmoothScroller {
+        constructor(id) {
+          this.el = $(id);
+          this.y = 0;
+          this.active = true;
+          this.timer = null;
+        }
+
+        updateMetrics() {
+          if (!this.el) return;
+          this.h = this.el.scrollHeight;
+          this.vh = this.el.parentElement.clientHeight;
+        }
+
+        start() {
+          this.updateMetrics();
+          if (this.h > this.vh) this.scrollLoop();
+        }
+
+        scrollLoop() {
+          if (!this.active || this.h <= this.vh) return;
+          const maxScroll = this.h - this.vh;
+          
+          this.timer = setTimeout(() => {
+            this.el.style.transition = "transform 0.7s ease-in-out";
+            this.y += 80;
+            if (this.y >= maxScroll + 40) {
+              this.el.style.transition = "opacity 0.3s ease";
+              this.el.style.opacity = "0";
+              setTimeout(() => {
+                this.y = 0;
+                this.el.style.transform = "translate3d(0, 0, 0)";
+                this.el.style.opacity = "1";
+                this.scrollLoop();
+              }, 400);
+            } else {
+              this.el.style.transform = `translate3d(0, -${this.y}px, 0)`;
+              this.scrollLoop();
+            }
+          }, CFG.SCROLL_ITEM_PAUSE);
+        }
+      }
+
+      const scrollerBedah = new SmoothScroller("scrollBedah");
+      const scrollerNonBedah = new SmoothScroller("scrollNonBedah");
+      const scrollerSidebar = new SmoothScroller("scrollSidebar");
+
+      const updateClock = () => {
+        const now = new Date();
+        const hrs = String(now.getHours()).padStart(2, "0");
+        const mins = String(now.getMinutes()).padStart(2, "0");
+        $("clock").textContent = `${hrs}:${mins}`;
+
+        const days = ["MINGGU", "SENIN", "SELASA", "RABU", "KAMIS", "JUMAT", "SABTU"];
+        const months = ["JAN", "FEB", "MAR", "APR", "MEI", "JUN", "JUL", "AGU", "SEP", "OKT", "NOV", "DES"];
+        $("date").innerHTML = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+      };
+      setInterval(updateClock, 1000);
+      updateClock();
+
+      async function fetchData() {
+        try {
+          const res = await fetch(CFG.API_MAIN);
+          if (!res.ok) return;
+          const data = await res.json();
+
+          const bedahDocs = (data.bedah || []).filter(d => (d.Status || "").toUpperCase() !== "LIBUR");
+          const nonBedahDocs = (data.nonBedah || []).filter(d => (d.Status || "").toUpperCase() !== "LIBUR");
+          const sidebarDocs = (data.sidebar || []).filter(d => (d.Status || "").toUpperCase() !== "LIBUR");
+
+          $("countBedah").textContent = `${bedahDocs.length} DOKTER`;
+          $("countNonBedah").textContent = `${nonBedahDocs.length} DOKTER`;
+          $("countSidebar").textContent = `${sidebarDocs.length}`;
+
+          $("scrollBedah").innerHTML = bedahDocs.map(buildCardHTML).join("");
+          $("scrollNonBedah").innerHTML = nonBedahDocs.map(buildCardHTML).join("");
+          $("scrollSidebar").innerHTML = sidebarDocs.map(buildSidebarCardHTML).join("");
+
+          const all = [...bedahDocs, ...nonBedahDocs, ...sidebarDocs];
+          const bukaCount = all.filter(d => ["PRAKTEK", "PENDAFTARAN", "TERJADWAL"].includes((d.Status || "").toUpperCase())).length;
+          const penuhCount = all.filter(d => (d.Status || "").toUpperCase().includes("PENUH")).length;
+          const cutiCount = all.filter(d => ["CUTI", "OPERASI"].includes((d.Status || "").toUpperCase())).length;
+
+          $("statBuka").textContent = bukaCount;
+          $("statPenuh").textContent = penuhCount;
+          $("statCuti").textContent = cutiCount;
+
+          scrollerBedah.start();
+          scrollerNonBedah.start();
+          scrollerSidebar.start();
+        } catch (e) {
+          console.error("Fetch error:", e);
+        }
+      }
+
+      fetchData();
+      setInterval(fetchData, CFG.POLL_MS);
+
+      try {
+        const socket = io({ path: "/socket.io", transports: ["polling", "websocket"] });
+        socket.on("admin_sync_all", () => fetchData());
+        socket.on("doctor_updated", () => fetchData());
+        socket.on("schedule_updated", () => fetchData());
+      } catch (_) {}
+    </script>
+  </body>
+</html>
