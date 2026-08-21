@@ -2865,7 +2865,7 @@
           try {
             var container = document.getElementById("patientQrCode");
             if (container) {
-              var targetUrl = window.location.href || "https://simed.fallonava.my.id/tvmod.html";
+              var targetUrl = window.location.origin + "/mobile";
               container.innerHTML = QRCodeLib.generateSVG(targetUrl, 2);
             }
           } catch(e) {
@@ -2885,7 +2885,7 @@
           modal.classList.add("active");
           var bigContainer = document.getElementById("modalBigQrCode");
           if (bigContainer && !bigContainer.hasChildNodes()) {
-            var targetUrl = window.location.href || "https://simed.fallonava.my.id/tvmod.html";
+            var targetUrl = window.location.origin + "/mobile";
             bigContainer.innerHTML = QRCodeLib.generateSVG(targetUrl, 2);
           }
         }
@@ -2903,7 +2903,7 @@
       }
 
       function copyScheduleLink() {
-        var url = window.location.href || "https://simed.fallonava.my.id/tvmod.html";
+        var url = window.location.origin + "/mobile";
         navigator.clipboard.writeText(url).then(function() {
           if (typeof Island !== "undefined") {
             Island.show("Link Disalin", "Tautan jadwal berhasil disalin ke clipboard", "success", "check_circle", 3000);

@@ -4594,7 +4594,7 @@
           try {
             var container = document.getElementById("tvQrCode");
             if (container) {
-              var targetUrl = window.location.href || "https://simed.fallonava.my.id/tv.html";
+              var targetUrl = window.location.origin + "/mobile";
               container.innerHTML = QRCodeLib.generateSVG(targetUrl, 2);
             }
           } catch(e) {

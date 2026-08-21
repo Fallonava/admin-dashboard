@@ -45,6 +45,15 @@ const nextConfig: NextConfig = {
       { protocol: 'https', hostname: '**.fallonava.my.id', pathname: '/**' },
     ],
   },
+  async rewrites() {
+    return [
+      { source: '/mobile', destination: '/mobile.html' },
+      { source: '/jadwal', destination: '/mobile.html' },
+      { source: '/tv', destination: '/tv.html' },
+      { source: '/tvmod', destination: '/mobile.html' },
+      { source: '/tvmode', destination: '/mobile.html' },
+    ];
+  },
   async headers() {
     return [
       {
