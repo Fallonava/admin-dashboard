@@ -19,10 +19,11 @@ const PUBLIC_PATHS = [
   '/api/settings/ai',     // AI Settings (for public assistant)
   '/api/assistant',       // AI Chat Assistant (public)
   '/tv.html',             // Main TV display page
-  '/tv1.html',            // Spatial VisionOS style
-  '/tv2.html',            // Swiss Medical Grid style
-  '/tv3.html',            // Bento Clay style
-  '/tv4.html',            // OLED Flight Board style
+  '/tv-backup.html',      // Backup copy of main TV display
+  '/tv1.html',            // Spatial VisionOS style (Light Theme)
+  '/tv2.html',            // Swiss Medical Grid style (Light Theme)
+  '/tv3.html',            // Bento Clay style (Light Theme)
+  '/tv4.html',            // Scandinavian Telemetry style (Light Theme)
   '/tv-lama.html',        // TV display (Legacy version) 
   '/tv-modern.html',      // TV display (Modern version)
 ];
