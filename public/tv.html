@@ -2269,101 +2269,116 @@
         .status-pill .material-icons-round { font-size: 9px !important; margin-right: 2px; }
       }
     
-      /* ===== DYNAMIC QR & HIGHLIGHTED HOSPITAL HOTLINE ===== */
+      /* ===== 🚀 REDESIGNED HIGH-VISIBILITY SMART TV QR HERO ===== */
       .sidebar-qr-hotline {
-        padding: clamp(10px, 1.2vw, 14px);
-        border-top: 1px solid var(--border-light);
-        background: var(--card-bg, rgba(255, 255, 255, 0.05));
+        padding: clamp(10px, 1.2vh, 14px) clamp(10px, 1vw, 14px);
+        border-top: 1.5px solid var(--border-light, rgba(226, 232, 240, 0.8));
+        background: var(--card-bg, #FFFFFF);
         display: flex;
         flex-direction: column;
+        align-items: center;
+        text-align: center;
         gap: clamp(8px, 1vh, 12px);
         flex-shrink: 0;
+        box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.04);
       }
 
-      .qr-flex-row {
-        display: flex;
-        align-items: center;
-        gap: clamp(10px, 1.2vw, 14px);
-      }
-
-      .dynamic-qr-box {
-        width: clamp(70px, 7.5vw, 110px);
-        height: clamp(70px, 7.5vw, 110px);
-        aspect-ratio: 1 / 1;
-        border-radius: 12px;
+      .tv-qr-hero-card {
+        width: 100%;
         background: #FFFFFF;
-        padding: 5px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1), inset 0 0 0 1px rgba(0, 0, 0, 0.06);
+        border-radius: 18px;
+        padding: clamp(8px, 1vh, 12px) clamp(8px, 0.8vw, 12px);
+        border: 2px solid #E2E8F0;
+        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08), inset 0 0 0 1px #FFFFFF;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: clamp(6px, 0.8vh, 8px);
+      }
+
+      .tv-qr-header-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 10px;
+        border-radius: 10px;
+        background: #EFF6FF;
+        color: #007AFF;
+        border: 1px solid #BFDBFE;
+      }
+      .tv-qr-header-badge .radar-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #007AFF;
+        animation: radarPulse 1.4s infinite;
+      }
+      @keyframes radarPulse { 0%, 100% { transform: scale(0.9); opacity: 0.7; } 50% { transform: scale(1.4); opacity: 1; } }
+
+      .tv-qr-header-badge span {
+        font-size: clamp(9px, 0.85vw, 11px);
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      /* EXTRA LARGE SHARP TV QR BOX */
+      .dynamic-qr-box {
+        width: clamp(140px, 11.5vw, 185px);
+        height: clamp(140px, 11.5vw, 185px);
+        aspect-ratio: 1 / 1;
+        border-radius: 14px;
+        background: #FFFFFF;
+        padding: 6px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08), inset 0 0 0 1.5px #E2E8F0;
         display: flex;
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
       }
 
-      .dynamic-qr-box img,
-      .dynamic-qr-box canvas {
+      .dynamic-qr-box svg {
         width: 100% !important;
         height: 100% !important;
-        object-fit: contain;
+        display: block;
+        shape-rendering: crispEdges !important;
         border-radius: 6px;
       }
 
-      .qr-meta-col {
+      .tv-qr-url-pill {
         display: flex;
-        flex-direction: column;
-        gap: 3px;
-        min-width: 0;
-      }
-
-      .qr-badge {
-        display: inline-flex;
         align-items: center;
-        gap: 4px;
-        padding: 3px 8px;
-        border-radius: 6px;
-        background: rgba(10, 132, 255, 0.15);
-        color: var(--accent-blue, #007AFF);
-        font-size: clamp(8.5px, 0.8vw, 10.5px);
+        gap: 5px;
+        padding: 3px 10px;
+        border-radius: 8px;
+        background: #F8FAFC;
+        border: 1px solid #E2E8F0;
+        font-family: "JetBrains Mono", monospace;
+        font-size: clamp(9px, 0.8vw, 11px);
         font-weight: 800;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-        width: fit-content;
-      }
-
-      .qr-title {
-        font-size: clamp(10.5px, 1vw, 12.5px);
-        font-weight: 800;
-        line-height: 1.25;
-        color: var(--text-primary);
-      }
-
-      .qr-sub {
-        font-size: clamp(8.5px, 0.75vw, 10px);
-        font-weight: 600;
-        line-height: 1.3;
-        color: var(--text-secondary);
+        color: #0F172A;
       }
 
       /* HIGHLIGHTED HOTLINE PILL 0823-2344-6076 */
       .hotline-highlight-box {
+        width: 100%;
         display: flex;
         align-items: center;
         gap: 10px;
-        padding: clamp(8px, 1vh, 12px) clamp(10px, 1.2vw, 14px);
-        border-radius: 12px;
+        padding: clamp(8px, 0.9vh, 11px) clamp(10px, 1vw, 14px);
+        border-radius: 14px;
         background: linear-gradient(135deg, #059669 0%, #047857 100%);
         color: #FFFFFF !important;
         text-decoration: none;
         box-shadow: 0 4px 14px rgba(5, 150, 105, 0.35);
-        position: relative;
-        overflow: hidden;
+        box-sizing: border-box;
       }
 
       .hotline-icon-wrap {
-        width: clamp(30px, 2.8vw, 38px);
-        height: clamp(30px, 2.8vw, 38px);
-        border-radius: 10px;
-        background: rgba(255, 255, 255, 0.2);
+        width: clamp(32px, 2.5vw, 38px);
+        height: clamp(32px, 2.5vw, 38px);
+        border-radius: 11px;
+        background: rgba(255, 255, 255, 0.22);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -2371,7 +2386,7 @@
       }
 
       .hotline-icon-wrap .material-icons-round {
-        font-size: clamp(18px, 1.6vw, 22px);
+        font-size: clamp(18px, 1.5vw, 22px);
         color: #FFFFFF;
       }
 
@@ -2381,32 +2396,35 @@
         gap: 1px;
         min-width: 0;
         flex: 1;
+        text-align: left;
       }
 
       .hotline-tag {
         font-size: clamp(7.5px, 0.7vw, 9px);
         font-weight: 800;
         text-transform: uppercase;
-        letter-spacing: 0.06em;
+        letter-spacing: 0.05em;
         color: #D1FAE5;
       }
 
       .hotline-num {
-        font-family: "JetBrains Mono", monospace, sans-serif;
-        font-size: clamp(13px, 1.3vw, 17px);
+        font-family: "JetBrains Mono", monospace;
+        font-size: clamp(13px, 1.25vw, 16.5px);
         font-weight: 900;
-        letter-spacing: 0.03em;
+        letter-spacing: 0.02em;
         color: #FFFFFF !important;
         line-height: 1.15;
       }
 
       .sidebar-info-ticker {
+        width: 100%;
         display: flex;
         align-items: center;
         gap: 6px;
         padding: 5px 8px;
         border-radius: 8px;
         background: rgba(125, 125, 125, 0.08);
+        box-sizing: border-box;
       }
 
       .sidebar-info-ticker p {
@@ -2417,6 +2435,7 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        text-align: left;
       }
 
     </style>
@@ -2566,17 +2585,19 @@
 
           <!-- Dynamic QR Code & Highlighted Hotline Number -->
           <div class="sidebar-qr-hotline">
-            <div class="qr-flex-row">
+            
+            <!-- Large High-Visibility TV QR Hero Card -->
+            <div class="tv-qr-hero-card">
+              <div class="tv-qr-header-badge">
+                <span class="radar-dot"></span>
+                <span>Scan Jadwal di HP</span>
+              </div>
               <div class="dynamic-qr-box">
                 <div id="tvQrCode" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;"></div>
               </div>
-              <div class="qr-meta-col">
-                <span class="qr-badge">
-                  <span class="material-icons-round" style="font-size: 12px;">qr_code_scanner</span>
-                  <span>Scan di HP</span>
-                </span>
-                <span class="qr-title">Jadwal Live Pasien</span>
-                <span class="qr-sub">Scan untuk membuka jadwal & nomor antrian langsung di smartphone Anda</span>
+              <div class="tv-qr-url-pill">
+                <span class="material-icons-round" style="font-size: 13px; color: #007AFF;">public</span>
+                <span>simed.fallonava.my.id/jadwal</span>
               </div>
             </div>
 
@@ -2589,6 +2610,7 @@
                 <span class="hotline-tag">INFORMASI & PENDAFTARAN RS</span>
                 <span class="hotline-num">0823-2344-6076</span>
               </div>
+              <span class="material-icons-round" style="color: rgba(255,255,255,0.7); font-size: 18px;">chevron_right</span>
             </a>
 
             <!-- Compact Dynamic Info Ticker -->
