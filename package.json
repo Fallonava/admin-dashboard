@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "cross-env PORT=3005 NODE_ENV=development tsx server.ts",
-    "build": "next build && tsc server.ts --outDir . --module commonjs --esModuleInterop --skipLibCheck",
+    "build": "next build && esbuild server.ts --platform=node --bundle --packages=external --outfile=server.js",
     "start": "cross-env NODE_ENV=production node server.js",
     "lint": "eslint",
     "test": "jest",
