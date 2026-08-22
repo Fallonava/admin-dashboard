@@ -1775,20 +1775,105 @@
         position: relative;
       }
       .cal-day-cell.empty { pointer-events: none; }
-      .cal-day-cell.sunday { color: var(--ios-rose); }
+      .cal-day-cell.sunday, .cal-day-cell.tanggal-merah {
+        color: #E11D48 !important;
+        font-weight: 900;
+      }
       .cal-day-cell.today {
         background: rgba(16, 185, 129, 0.15); border: 2px solid rgba(16, 185, 129, 0.5); color: #16A34A; font-weight: 900;
       }
       .cal-day-cell.selected {
         background: #16A34A;
-        box-shadow: 0 4px 12px rgba(22, 163, 74, 0.45); color: #FFFFFF; transform: scale(1.06);
+        box-shadow: 0 4px 12px rgba(22, 163, 74, 0.45); color: #FFFFFF !important; transform: scale(1.06);
       }
-      .cal-dot-container { position: absolute; bottom: 4px; display: flex; gap: 2px; }
+      .cal-day-cell.selected.tanggal-merah {
+        background: #E11D48 !important;
+        box-shadow: 0 4px 12px rgba(225, 29, 72, 0.45) !important;
+        color: #FFFFFF !important;
+      }
+      .cal-dot-container { position: absolute; bottom: 3px; display: flex; gap: 2px; align-items: center; justify-content: center; }
       .cal-dot-leave { width: 4px; height: 4px; border-radius: 50%; background: #D97706; }
+      .cal-dot-holiday { width: 4px; height: 4px; border-radius: 50%; background: #E11D48; }
 
-      .cal-legend { display: flex; align-items: center; justify-content: center; gap: 14px; font-size: 9px; font-weight: 800; color: var(--text-sub); }
+      .cal-legend { display: flex; align-items: center; justify-content: center; gap: 12px; font-size: 9px; font-weight: 800; color: var(--text-sub); flex-wrap: wrap; }
       .cal-legend-item { display: flex; align-items: center; gap: 4px; }
       .cal-legend-dot { width: 6px; height: 6px; border-radius: 50%; }
+
+      /* National Holiday Banner (Claymorphism Apple 2026) */
+      .cal-holiday-banner {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 14px;
+        border-radius: 20px;
+        background: linear-gradient(135deg, rgba(225, 29, 72, 0.08) 0%, rgba(244, 63, 94, 0.03) 100%);
+        border: 1.5px solid rgba(225, 29, 72, 0.25);
+        box-shadow: var(--shadow-card);
+        margin-top: 4px;
+        position: relative;
+        overflow: hidden;
+        animation: holidaySlideIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+      [data-theme="dark"] .cal-holiday-banner {
+        background: linear-gradient(135deg, rgba(225, 29, 72, 0.18) 0%, rgba(15, 23, 42, 0.6) 100%);
+        border-color: rgba(225, 29, 72, 0.4);
+      }
+      .cal-holiday-banner.is-cuti-bersama {
+        background: linear-gradient(135deg, rgba(217, 119, 6, 0.08) 0%, rgba(245, 158, 11, 0.03) 100%);
+        border-color: rgba(217, 119, 6, 0.25);
+      }
+      [data-theme="dark"] .cal-holiday-banner.is-cuti-bersama {
+        background: linear-gradient(135deg, rgba(217, 119, 6, 0.18) 0%, rgba(15, 23, 42, 0.6) 100%);
+        border-color: rgba(217, 119, 6, 0.4);
+      }
+      .cal-holiday-banner.is-sunday {
+        background: linear-gradient(135deg, rgba(225, 29, 72, 0.05) 0%, rgba(244, 63, 94, 0.02) 100%);
+        border-color: rgba(225, 29, 72, 0.18);
+      }
+      @keyframes holidaySlideIn {
+        from { opacity: 0; transform: translateY(-4px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      .holiday-banner-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 12px;
+        background: var(--surface-card-solid);
+        box-shadow: var(--shadow-btn);
+        border: 1px solid var(--border-card);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #E11D48;
+        flex-shrink: 0;
+      }
+      .cal-holiday-banner.is-cuti-bersama .holiday-banner-icon {
+        color: #D97706;
+      }
+      .holiday-banner-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+      .holiday-badge {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 8.5px;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #E11D48;
+      }
+      .cal-holiday-banner.is-cuti-bersama .holiday-badge {
+        color: #D97706;
+      }
+      .holiday-name {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 13px;
+        font-weight: 800;
+        color: var(--text-main);
+        line-height: 1.25;
+      }
 
       .leaves-subtab-bar {
         display: flex; background: var(--surface-well); box-shadow: var(--shadow-inset);
@@ -2639,6 +2724,17 @@
             <span>Semua Agenda</span>
           </button>
         </nav>
+
+        <!-- National Holiday & Tanggal Merah Banner -->
+        <div id="calHolidayBanner" class="cal-holiday-banner" style="display: none;">
+          <div class="holiday-banner-icon">
+            <span class="material-icons-round" id="calHolidayIcon" style="font-size: 20px;">event_busy</span>
+          </div>
+          <div class="holiday-banner-content">
+            <span class="holiday-badge" id="calHolidayBadge">HARI LIBUR NASIONAL</span>
+            <span class="holiday-name" id="calHolidayName">Nama Hari Libur</span>
+          </div>
+        </div>
 
         <div class="ios-search-wrapper" id="leavesSearchWrapper" style="display: none;">
           <div class="ios-search-bar">
@@ -3832,8 +3928,100 @@
       }
 
       // ═════════════════════════════════════════════════════════════════════════
-      // JADWAL CUTI DOKTER (CALENDAR ENGINE)
+      // JADWAL CUTI DOKTER & KALENDER NASIONAL INDONESIA (SKB 3 MENTERI)
       // ═════════════════════════════════════════════════════════════════════════
+      const HOLIDAYS_DATA = {
+        // ── 2025 ──
+        "2025-01-01": { name: "Tahun Baru 2025 Masehi" },
+        "2025-01-27": { name: "Isra Mi'raj Nabi Muhammad SAW" },
+        "2025-01-28": { name: "Cuti Bersama Tahun Baru Imlek 2576 Kongzili", isCutiBersama: true },
+        "2025-01-29": { name: "Tahun Baru Imlek 2576 Kongzili" },
+        "2025-03-28": { name: "Cuti Bersama Hari Suci Nyepi", isCutiBersama: true },
+        "2025-03-29": { name: "Hari Suci Nyepi (Tahun Baru Saka 1947)" },
+        "2025-03-31": { name: "Hari Raya Idul Fitri 1446 H" },
+        "2025-04-01": { name: "Hari Raya Idul Fitri 1446 H" },
+        "2025-04-02": { name: "Cuti Bersama Idul Fitri 1446 H", isCutiBersama: true },
+        "2025-04-03": { name: "Cuti Bersama Idul Fitri 1446 H", isCutiBersama: true },
+        "2025-04-04": { name: "Cuti Bersama Idul Fitri 1446 H", isCutiBersama: true },
+        "2025-04-07": { name: "Cuti Bersama Idul Fitri 1446 H", isCutiBersama: true },
+        "2025-04-18": { name: "Wafat Yesus Kristus" },
+        "2025-04-20": { name: "Kebangkitan Yesus Kristus (Paskah)" },
+        "2025-05-01": { name: "Hari Buruh Internasional" },
+        "2025-05-12": { name: "Hari Raya Waisak 2569 BE" },
+        "2025-05-13": { name: "Cuti Bersama Hari Raya Waisak", isCutiBersama: true },
+        "2025-05-29": { name: "Kenaikan Yesus Kristus" },
+        "2025-05-30": { name: "Cuti Bersama Kenaikan Yesus Kristus", isCutiBersama: true },
+        "2025-06-01": { name: "Hari Lahir Pancasila" },
+        "2025-06-06": { name: "Hari Raya Idul Adha 1446 H" },
+        "2025-06-09": { name: "Cuti Bersama Idul Adha 1446 H", isCutiBersama: true },
+        "2025-06-27": { name: "Tahun Baru Islam 1447 H" },
+        "2025-08-17": { name: "Proklamasi Kemerdekaan RI (HUT RI ke-80)" },
+        "2025-09-05": { name: "Maulid Nabi Muhammad SAW" },
+        "2025-12-25": { name: "Kelahiran Yesus Kristus (Hari Raya Natal)" },
+        "2025-12-26": { name: "Cuti Bersama Hari Raya Natal", isCutiBersama: true },
+
+        // ── 2026 (Tahun Berjalan) ──
+        "2026-01-01": { name: "Tahun Baru 2026 Masehi" },
+        "2026-01-16": { name: "Isra Mi'raj Nabi Muhammad SAW" },
+        "2026-02-16": { name: "Cuti Bersama Tahun Baru Imlek", isCutiBersama: true },
+        "2026-02-17": { name: "Tahun Baru Imlek 2577 Kongzili" },
+        "2026-03-19": { name: "Hari Suci Nyepi (Tahun Baru Saka 1948)" },
+        "2026-03-20": { name: "Hari Raya Idul Fitri 1447 H / Cuti Bersama Nyepi" },
+        "2026-03-21": { name: "Hari Raya Idul Fitri 1447 H" },
+        "2026-03-23": { name: "Cuti Bersama Idul Fitri 1447 H", isCutiBersama: true },
+        "2026-03-24": { name: "Cuti Bersama Idul Fitri 1447 H", isCutiBersama: true },
+        "2026-04-03": { name: "Wafat Yesus Kristus (Jumat Agung)" },
+        "2026-04-05": { name: "Kebangkitan Yesus Kristus (Paskah)" },
+        "2026-05-01": { name: "Hari Buruh Internasional" },
+        "2026-05-14": { name: "Kenaikan Yesus Kristus" },
+        "2026-05-27": { name: "Hari Raya Idul Adha 1447 H" },
+        "2026-05-31": { name: "Hari Raya Waisak 2570 BE" },
+        "2026-06-01": { name: "Hari Lahir Pancasila" },
+        "2026-06-16": { name: "Tahun Baru Islam 1448 H" },
+        "2026-08-17": { name: "Proklamasi Kemerdekaan RI (HUT RI ke-81)" },
+        "2026-08-25": { name: "Maulid Nabi Muhammad SAW" },
+        "2026-12-25": { name: "Kelahiran Yesus Kristus (Hari Raya Natal)" },
+        "2026-12-26": { name: "Cuti Bersama Hari Raya Natal", isCutiBersama: true },
+
+        // ── 2027 ──
+        "2027-01-01": { name: "Tahun Baru 2027 Masehi" },
+        "2027-01-05": { name: "Isra Mi'raj Nabi Muhammad SAW" },
+        "2027-02-06": { name: "Tahun Baru Imlek 2578 Kongzili" },
+        "2027-03-09": { name: "Hari Raya Idul Fitri 1448 H" },
+        "2027-03-10": { name: "Hari Raya Idul Fitri 1448 H" },
+        "2027-03-26": { name: "Wafat Yesus Kristus" },
+        "2027-04-07": { name: "Hari Suci Nyepi (Tahun Baru Saka 1949)" },
+        "2027-05-01": { name: "Hari Buruh Internasional" },
+        "2027-05-06": { name: "Kenaikan Yesus Kristus" },
+        "2027-05-16": { name: "Hari Raya Idul Adha 1448 H" },
+        "2027-05-20": { name: "Hari Raya Waisak 2571 BE" },
+        "2027-06-01": { name: "Hari Lahir Pancasila" },
+        "2027-06-06": { name: "Tahun Baru Islam 1449 H" },
+        "2027-08-15": { name: "Maulid Nabi Muhammad SAW" },
+        "2027-08-17": { name: "Proklamasi Kemerdekaan RI (HUT RI ke-82)" },
+        "2027-12-25": { name: "Kelahiran Yesus Kristus (Hari Raya Natal)" }
+      };
+
+      function getIndonesianHoliday(d) {
+        if (!d) return { isHoliday: false, isSunday: false, isTanggalMerah: false };
+        const dateObj = new Date(d);
+        const y = dateObj.getFullYear();
+        const m = String(dateObj.getMonth() + 1).padStart(2, "0");
+        const day = String(dateObj.getDate()).padStart(2, "0");
+        const key = `${y}-${m}-${day}`;
+        const holiday = HOLIDAYS_DATA[key];
+        const isSunday = dateObj.getDay() === 0;
+        const isHoliday = Boolean(holiday);
+        const isTanggalMerah = isSunday || isHoliday;
+        return {
+          isHoliday,
+          name: holiday ? holiday.name : (isSunday ? "Hari Minggu" : null),
+          isCutiBersama: holiday ? Boolean(holiday.isCutiBersama) : false,
+          isSunday,
+          isTanggalMerah
+        };
+      }
+
       window.masterLeaves = [];
       window.calCurrentDate = new Date();
       window.calSelectedDate = new Date();
@@ -3919,19 +4107,26 @@
 
         for (let day = 1; day <= daysInMonth; day++) {
           const dateObj = new Date(year, month, day);
-          const isSunday = dateObj.getDay() === 0;
+          const holiday = getIndonesianHoliday(dateObj);
           const isToday = dateObj.toDateString() === now.toDateString();
           const isSelected = dateObj.toDateString() === sel.toDateString();
           const hasLeave = leaves.some(l => isDateInLeave(dateObj, l));
 
           let cellClass = "cal-day-cell";
-          if (isSunday) cellClass += " sunday";
+          if (holiday.isTanggalMerah) cellClass += " tanggal-merah";
+          if (holiday.isHoliday) cellClass += " national-holiday";
           if (isToday) cellClass += " today";
           if (isSelected) cellClass += " selected";
 
-          html += '<button class="' + cellClass + '" onclick="selectCalDate(' + year + ',' + month + ',' + day + ')">' +
+          let dots = "";
+          if (holiday.isHoliday) dots += '<span class="cal-dot-holiday"></span>';
+          if (hasLeave) dots += '<span class="cal-dot-leave"></span>';
+
+          const titleAttr = holiday.name ? (holiday.name + (hasLeave ? ' • Ada Dokter Cuti' : '')) : (hasLeave ? 'Ada Dokter Cuti' : '');
+
+          html += '<button class="' + cellClass + '" onclick="selectCalDate(' + year + ',' + month + ',' + day + ')" title="' + esc(titleAttr) + '">' +
             '<span>' + day + '</span>' +
-            (hasLeave ? '<div class="cal-dot-container"><span class="cal-dot-leave"></span></div>' : '') +
+            (dots ? '<div class="cal-dot-container">' + dots + '</div>' : '') +
           '</button>';
         }
 
@@ -3988,6 +4183,33 @@
         const selFormatted = sel.toLocaleDateString("id-ID", { weekday: "short", day: "numeric", month: "short" });
         if (labelSelectedDay) labelSelectedDay.textContent = selFormatted;
 
+        const holiday = getIndonesianHoliday(sel);
+        const bannerEl = document.getElementById("calHolidayBanner");
+        const badgeEl = document.getElementById("calHolidayBadge");
+        const nameEl = document.getElementById("calHolidayName");
+        const iconEl = document.getElementById("calHolidayIcon");
+
+        if (subTab === "selected_day" && (holiday.isHoliday || holiday.isSunday)) {
+          if (bannerEl) {
+            bannerEl.style.display = "flex";
+            bannerEl.className = "cal-holiday-banner" + 
+              (holiday.isCutiBersama ? " is-cuti-bersama" : (holiday.isSunday && !holiday.isHoliday ? " is-sunday" : ""));
+          }
+          if (badgeEl) {
+            badgeEl.textContent = holiday.isCutiBersama 
+              ? "CUTI BERSAMA RESMI" 
+              : (holiday.isHoliday ? "HARI LIBUR NASIONAL" : "HARI MINGGU");
+          }
+          if (nameEl) {
+            nameEl.textContent = holiday.name || "Pelayanan Poliklinik Tutup / Libur Mingguan";
+          }
+          if (iconEl) {
+            iconEl.textContent = holiday.isCutiBersama ? "beach_access" : (holiday.isHoliday ? "event_busy" : "wb_sunny");
+          }
+        } else {
+          if (bannerEl) bannerEl.style.display = "none";
+        }
+
         let filtered = [];
         if (subTab === "selected_day") {
           if (titleEl) titleEl.textContent = sel.toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
@@ -4007,17 +4229,26 @@
         if (countEl) countEl.textContent = filtered.length + " Dokter";
 
         if (filtered.length === 0) {
-          const emptyMsg = subTab === "selected_day"
+          let emptyTitle = "Tidak Ada Jadwal Cuti";
+          let emptyMsg = subTab === "selected_day"
             ? "Tidak ada dokter yang cuti pada tanggal ini. Seluruh jadwal beroperasi reguler."
             : "Tidak ditemukan agenda cuti dokter yang sesuai pencarian.";
           
+          if (subTab === "selected_day" && holiday.isHoliday) {
+            emptyTitle = holiday.name;
+            emptyMsg = "Hari Libur Nasional resmi (" + (holiday.isCutiBersama ? "Cuti Bersama" : "Tanggal Merah") + "). Poliklinik reguler tidak beroperasi.";
+          } else if (subTab === "selected_day" && holiday.isSunday) {
+            emptyTitle = "Hari Minggu (Libur Pelayanan)";
+            emptyMsg = "Poliklinik reguler tutup setiap hari Minggu. Pelayanan darurat IGD tetap buka 24 jam.";
+          }
+          
           container.innerHTML = `
             <div class="empty-state-clay">
-              <div class="clay-empty-coin green">
+              <div class="clay-empty-coin ${holiday.isTanggalMerah ? 'amber' : 'green'}">
                 <div class="clay-pulse-ring"></div>
-                <span class="material-icons-round">verified</span>
+                <span class="material-icons-round">${holiday.isTanggalMerah ? 'event_busy' : 'verified'}</span>
               </div>
-              <h4>Tidak Ada Jadwal Cuti</h4>
+              <h4>${esc(emptyTitle)}</h4>
               <p>${esc(emptyMsg)}</p>
             </div>`;
           return;
