@@ -6,8 +6,8 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="Siaga Medika" />
-    <meta name="theme-color" content="#F2F5F9" />
-    <title>Jadwal Dokter - RSU Siaga Medika (Apple iOS 2026 Native)</title>
+    <meta name="theme-color" content="#EDF2F7" />
+    <title>Jadwal Dokter - RSU Siaga Medika (NextGen Claymorphism 2026)</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -876,348 +876,781 @@
       }
 
     /* ═══════════════════════════════════════════════════════════════
-       CLAYMORPHISM NEXT-GEN OVERRIDE — Selaras admin dashboard RSU
-       Design tokens: clay-surface, clay-button, clay-inset, clay-icon-*
-       Porcelain Light dual-mode
+       💎 HYPER-PREMIUM CLAYMORPHISM NEXT-GEN DESIGN SYSTEM
+       RSU Siaga Medika — 2026 Swiss Porcelain & Obsidian Titanium
+       Tactile 3D Cushions, Ceramic Insets, Glowing Badges & Spring Physics
        ═══════════════════════════════════════════════════════════════ */
 
     :root {
-      --clay-bg: #F0F4F9;
+      /* Ceramic Porcelain Base Palette */
+      --clay-bg: #EDF2F7;
       --clay-surface: #FFFFFF;
-      --clay-surface-subtle: #F4F6FA;
-      --clay-inset: #EEF2F7;
-      --clay-shadow-outer: 8px 8px 20px rgba(160,175,200,0.35), -6px -6px 16px rgba(255,255,255,0.95), inset 1.5px 1.5px 2px rgba(255,255,255,1), inset -2px -2px 4px rgba(160,175,200,0.12);
-      --clay-shadow-btn: 4px 4px 10px rgba(160,175,200,0.25), -3px -3px 8px rgba(255,255,255,0.9), inset 1px 1px 2px rgba(255,255,255,0.95), inset -1px -1px 2px rgba(160,175,200,0.12);
-      --clay-shadow-inset: inset 3px 3px 6px rgba(160,175,200,0.28), inset -3px -3px 6px rgba(255,255,255,0.9);
-      --clay-border: 1px solid rgba(255,255,255,0.85);
-      --clay-border-subtle: 1px solid rgba(226,232,240,0.6);
-      --radius-card: 20px;
-      --radius-icon: 14px;
-      --radius-tab: 14px;
-      --radius-pill: 12px;
+      --clay-surface-elevated: #F8FAFD;
+      --clay-inset: #E5ECF4;
+      --clay-border: rgba(255, 255, 255, 0.95);
+      --clay-border-subtle: rgba(226, 232, 240, 0.7);
+
+      /* Master Tactile 3D Shadows */
+      --clay-shadow-card: 
+        10px 14px 28px rgba(150, 168, 195, 0.38),
+        -8px -8px 22px rgba(255, 255, 255, 0.98),
+        inset 1.5px 1.5px 2.5px rgba(255, 255, 255, 1),
+        inset -2.5px -2.5px 5px rgba(150, 168, 195, 0.16);
+
+      --clay-shadow-btn: 
+        5px 6px 14px rgba(150, 168, 195, 0.32),
+        -4px -4px 10px rgba(255, 255, 255, 0.95),
+        inset 1.2px 1.2px 2px rgba(255, 255, 255, 1),
+        inset -1.5px -1.5px 3px rgba(150, 168, 195, 0.14);
+
+      --clay-shadow-inset: 
+        inset 4px 4px 8px rgba(150, 168, 195, 0.32),
+        inset -4px -4px 8px rgba(255, 255, 255, 0.95),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.4);
+
+      --clay-shadow-pill:
+        3px 4px 10px rgba(150, 168, 195, 0.25),
+        -2px -2px 6px rgba(255, 255, 255, 0.9),
+        inset 1px 1px 2px rgba(255, 255, 255, 0.9);
+
+      --radius-card: 22px;
+      --radius-icon: 16px;
+      --radius-tab: 15px;
+      --radius-pill: 13px;
     }
 
+    /* ─── AMBIENT ATMOSPHERIC BACKGROUND ─── */
     .ambient-bg {
       background:
-        radial-gradient(circle at 20% 10%, rgba(59,130,246,0.06), transparent 40%),
-        radial-gradient(circle at 80% 80%, rgba(16,185,129,0.06), transparent 40%),
-        radial-gradient(circle at 50% 50%, rgba(139,92,246,0.04), transparent 50%),
-        #F0F4F9 !important;
+        radial-gradient(circle at 15% 15%, rgba(37, 99, 235, 0.09), transparent 42%),
+        radial-gradient(circle at 85% 75%, rgba(16, 185, 129, 0.08), transparent 45%),
+        radial-gradient(circle at 50% 45%, rgba(139, 92, 246, 0.06), transparent 50%),
+        radial-gradient(circle at 90% 10%, rgba(245, 158, 11, 0.05), transparent 35%),
+        #EDF2F7 !important;
     }
-    html, body { background: var(--clay-bg) !important; }
+    html, body { 
+      background: var(--clay-bg) !important;
+      color: #0F172A !important;
+    }
 
+    /* ─── 1. TOP NAV HEADER (Ceramic Frosted Bar) ─── */
     .ios-nav-header {
-      background: rgba(240,244,249,0.92) !important;
-      backdrop-filter: blur(20px) saturate(180%) !important;
-      -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
-      border-bottom: 1px solid rgba(226,232,240,0.5) !important;
-      box-shadow: 0 2px 16px rgba(160,175,200,0.12) !important;
+      background: rgba(237, 242, 247, 0.94) !important;
+      backdrop-filter: blur(24px) saturate(190%) !important;
+      -webkit-backdrop-filter: blur(24px) saturate(190%) !important;
+      border-bottom: 1.5px solid rgba(255, 255, 255, 0.9) !important;
+      box-shadow: 0 4px 20px rgba(150, 168, 195, 0.16) !important;
+      padding: 11px 16px !important;
     }
+
     .ios-logo-coin {
+      width: 44px !important; height: 44px !important;
       border-radius: 16px !important;
-      background: var(--clay-surface) !important;
+      background: linear-gradient(145deg, #FFFFFF, #F1F5F9) !important;
       box-shadow: var(--clay-shadow-btn) !important;
-      border: var(--clay-border-subtle) !important;
+      border: 1.5px solid #FFFFFF !important;
+      position: relative;
     }
+    .ios-logo-coin::after {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 45%;
+      background: linear-gradient(180deg, rgba(255,255,255,0.7) 0%, transparent 100%);
+      border-radius: 16px 16px 50% 50%; pointer-events: none;
+    }
+
+    .ios-title-group h1 {
+      font-family: "Plus Jakarta Sans", sans-serif !important;
+      font-weight: 900 !important;
+      font-size: 15.5px !important;
+      letter-spacing: -0.025em !important;
+      color: #0F172A !important;
+    }
+    .ios-title-group span {
+      font-family: "Plus Jakarta Sans", sans-serif !important;
+      font-weight: 800 !important;
+      font-size: 10px !important;
+      letter-spacing: 0.05em !important;
+      color: #2563EB !important;
+    }
+
     .ios-icon-btn {
+      width: 38px !important; height: 38px !important;
       border-radius: var(--radius-icon) !important;
-      background: var(--clay-surface-subtle) !important;
+      background: linear-gradient(145deg, #FFFFFF, #F4F7FB) !important;
       box-shadow: var(--clay-shadow-btn) !important;
-      border: var(--clay-border) !important;
-      transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1) !important;
+      border: 1.5px solid rgba(255, 255, 255, 0.95) !important;
+      color: #334155 !important;
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+      position: relative;
+    }
+    .ios-icon-btn::after {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 40%;
+      background: linear-gradient(180deg, rgba(255,255,255,0.6) 0%, transparent 100%);
+      border-radius: var(--radius-icon) var(--radius-icon) 50% 50%; pointer-events: none;
     }
     .ios-icon-btn:active {
-      transform: scale(0.93) translateY(1px) !important;
-      box-shadow: inset 2px 2px 4px rgba(160,175,200,0.35), inset -2px -2px 4px rgba(255,255,255,0.9) !important;
+      transform: scale(0.92) translateY(1.5px) !important;
+      box-shadow: inset 2.5px 2.5px 5px rgba(150, 168, 195, 0.4), inset -2px -2px 4px rgba(255, 255, 255, 0.9) !important;
     }
     .ios-icon-btn.primary { color: #2563EB !important; }
 
+    /* Time Banner */
     .ios-time-banner {
-      border-radius: 16px !important;
-      background: var(--clay-surface) !important;
+      border-radius: 18px !important;
+      background: linear-gradient(145deg, #FFFFFF, #F6F9FD) !important;
       box-shadow: var(--clay-shadow-btn) !important;
-      border: var(--clay-border-subtle) !important;
+      border: 1.5px solid rgba(255, 255, 255, 0.95) !important;
       margin-top: 10px !important;
+      padding: 7px 14px !important;
     }
-
-    .ios-bento-tile {
-      border-radius: var(--radius-card) !important;
-      background: var(--clay-surface) !important;
-      box-shadow: var(--clay-shadow-outer) !important;
-      border: none !important;
-      border-top: none !important;
-      padding: 12px 10px !important;
-      position: relative;
-      overflow: hidden;
+    .ios-clock {
+      font-family: "JetBrains Mono", monospace !important;
+      font-weight: 900 !important;
+      font-size: 18px !important;
+      letter-spacing: -0.03em !important;
+      color: #0F172A !important;
     }
-    .ios-bento-tile::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 3.5px;
-      border-radius: 20px 20px 0 0;
-    }
-    .ios-bento-tile.buka::before { background: linear-gradient(90deg,#34d399,#059669); }
-    .ios-bento-tile.penuh::before { background: linear-gradient(90deg,#fbbf24,#d97706); }
-    .ios-bento-tile.cuti::before { background: linear-gradient(90deg,#fb7185,#e11d48); }
-    .ios-bento-tile:active { transform: scale(0.96) !important; }
-    .bento-num { font-family: "JetBrains Mono",monospace !important; font-weight: 900 !important; font-size: 24px !important; letter-spacing: -0.04em !important; }
-
-    .ios-search-bar {
-      border-radius: 18px !important;
-      background: var(--clay-inset) !important;
-      box-shadow: var(--clay-shadow-inset) !important;
-      border: 1px solid rgba(255,255,255,0.5) !important;
-    }
-    .ios-search-bar:focus-within {
-      border-color: rgba(37,99,235,0.35) !important;
-      box-shadow: inset 3px 3px 6px rgba(160,175,200,0.28),inset -3px -3px 6px rgba(255,255,255,0.9),0 0 0 3px rgba(37,99,235,0.1) !important;
-    }
-    .ios-search-icon { color: #2563EB !important; }
-
-    .ios-segmented-bar {
-      background: var(--clay-inset) !important;
-      box-shadow: var(--clay-shadow-inset) !important;
-      border-radius: 18px !important;
-      padding: 4px !important;
-      border: 1px solid rgba(255,255,255,0.5) !important;
-    }
-    .ios-seg-btn {
-      border-radius: var(--radius-tab) !important;
-      font-size: 11.5px !important;
+    .ios-date {
+      font-size: 10.5px !important;
       font-weight: 800 !important;
       color: #64748B !important;
-      transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1) !important;
+      letter-spacing: 0.04em !important;
     }
-    .ios-seg-btn.active {
-      background: var(--clay-surface) !important;
-      color: #0F172A !important;
-      box-shadow: var(--clay-shadow-btn) !important;
-      border: var(--clay-border) !important;
-    }
-    .ios-seg-btn:active { transform: scale(0.95) !important; }
 
+    /* ─── 2. MAIN MODE SWITCHER (Hari Ini / Keseluruhan / Cuti) ─── */
     .ios-mode-switcher {
       background: var(--clay-inset) !important;
       box-shadow: var(--clay-shadow-inset) !important;
-      border-radius: 18px !important;
-      padding: 4px !important;
-      border: 1px solid rgba(255,255,255,0.5) !important;
-      margin: 2px 0 12px !important;
+      border-radius: 20px !important;
+      padding: 5px !important;
+      border: 1px solid rgba(255, 255, 255, 0.7) !important;
+      margin: 4px 0 12px !important;
+      gap: 5px !important;
     }
     .ios-mode-btn {
-      border-radius: 14px !important;
+      border-radius: 15px !important;
+      font-family: "Plus Jakarta Sans", sans-serif !important;
       font-size: 12px !important;
       font-weight: 800 !important;
       color: #64748B !important;
-      transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1) !important;
+      padding: 9px 12px !important;
+      transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+      position: relative;
     }
     .ios-mode-btn.active {
-      background: var(--clay-surface) !important;
+      background: linear-gradient(145deg, #FFFFFF, #F8FAFD) !important;
       color: #0F172A !important;
-      box-shadow: var(--clay-shadow-btn) !important;
+      box-shadow: 4px 5px 12px rgba(150, 168, 195, 0.35), -3px -3px 8px rgba(255, 255, 255, 0.95), inset 1.5px 1.5px 2px #FFF !important;
+      border: 1.5px solid rgba(255, 255, 255, 0.95) !important;
+      transform: translateY(-1px);
     }
-    .ios-mode-btn:active { transform: scale(0.96) !important; }
+    .ios-mode-btn.active::after {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 42%;
+      background: linear-gradient(180deg, rgba(255,255,255,0.7) 0%, transparent 100%);
+      border-radius: 15px 15px 50% 50%; pointer-events: none;
+    }
+    .ios-mode-btn:active { transform: scale(0.95) translateY(1px) !important; }
 
-    .ios-sec-title { font-size: 11px !important; font-weight: 900 !important; color: #64748B !important; letter-spacing: 0.07em !important; }
+    /* ─── 3. BENTO HEALTH STATS TILES (Extruded 3D Cushions) ─── */
+    .ios-bento-stats {
+      gap: 12px !important;
+      margin-bottom: 4px !important;
+    }
+    .ios-bento-tile {
+      border-radius: var(--radius-card) !important;
+      background: linear-gradient(145deg, #FFFFFF, #F6F9FD) !important;
+      box-shadow: var(--clay-shadow-card) !important;
+      border: 1.5px solid rgba(255, 255, 255, 0.95) !important;
+      padding: 13px 10px 11px !important;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+    }
+    .ios-bento-tile::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0;
+      height: 4px; border-radius: 20px 20px 0 0;
+    }
+    .ios-bento-tile::after {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 38%;
+      background: linear-gradient(180deg, rgba(255,255,255,0.6) 0%, transparent 100%);
+      border-radius: 20px 20px 50% 50%; pointer-events: none;
+    }
+    .ios-bento-tile.buka::before { background: linear-gradient(90deg, #34D399, #059669); }
+    .ios-bento-tile.penuh::before { background: linear-gradient(90deg, #FBBF24, #D97706); }
+    .ios-bento-tile.cuti::before { background: linear-gradient(90deg, #FB7185, #E11D48); }
+    .ios-bento-tile:active {
+      transform: scale(0.94) translateY(2px) !important;
+      box-shadow: inset 3px 3px 6px rgba(150, 168, 195, 0.35), inset -2px -2px 4px rgba(255, 255, 255, 0.9) !important;
+    }
+    .bento-num {
+      font-family: "JetBrains Mono", monospace !important;
+      font-weight: 900 !important;
+      font-size: 26px !important;
+      line-height: 1.1 !important;
+      letter-spacing: -0.04em !important;
+    }
+    .bento-lbl {
+      font-family: "Plus Jakarta Sans", sans-serif !important;
+      font-size: 10px !important;
+      font-weight: 800 !important;
+      letter-spacing: 0.05em !important;
+      color: #64748B !important;
+      margin-top: 4px !important;
+    }
+
+    /* ─── 4. SPOTLIGHT SEARCH (Sunken Ceramic Well) ─── */
+    .ios-search-bar {
+      border-radius: 20px !important;
+      background: var(--clay-inset) !important;
+      box-shadow: var(--clay-shadow-inset) !important;
+      border: 1.5px solid rgba(255, 255, 255, 0.7) !important;
+      padding: 9px 16px !important;
+      transition: all 0.25s ease !important;
+    }
+    .ios-search-bar:focus-within {
+      border-color: rgba(37, 99, 235, 0.5) !important;
+      box-shadow: 
+        inset 4px 4px 8px rgba(150, 168, 195, 0.32),
+        inset -4px -4px 8px rgba(255, 255, 255, 0.95),
+        0 0 0 3.5px rgba(37, 99, 235, 0.15) !important;
+      background: #E8EFF8 !important;
+    }
+    .ios-search-icon { color: #2563EB !important; font-size: 21px !important; }
+    .ios-search-input {
+      font-family: "Plus Jakarta Sans", sans-serif !important;
+      font-size: 13px !important;
+      font-weight: 700 !important;
+      color: #0F172A !important;
+    }
+    .ios-search-clear {
+      width: 22px; height: 22px; border-radius: 50%;
+      background: #CBD5E1; color: #FFFFFF !important;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+    }
+
+    /* ─── 5. SEGMENTED TABS (Tactile Switcher Bar) ─── */
+    .ios-segmented-bar {
+      background: var(--clay-inset) !important;
+      box-shadow: var(--clay-shadow-inset) !important;
+      border-radius: 19px !important;
+      padding: 4px !important;
+      border: 1px solid rgba(255, 255, 255, 0.7) !important;
+      gap: 4px !important;
+    }
+    .ios-seg-btn {
+      border-radius: var(--radius-tab) !important;
+      font-family: "Plus Jakarta Sans", sans-serif !important;
+      font-size: 11.5px !important;
+      font-weight: 800 !important;
+      color: #64748B !important;
+      padding: 8px 12px !important;
+      transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+      position: relative;
+    }
+    .ios-seg-btn.active {
+      background: linear-gradient(145deg, #FFFFFF, #F8FAFD) !important;
+      color: #0F172A !important;
+      box-shadow: 3px 4px 10px rgba(150, 168, 195, 0.3), -2px -2px 6px rgba(255, 255, 255, 0.95), inset 1px 1px 2px #FFF !important;
+      border: 1.5px solid rgba(255, 255, 255, 0.95) !important;
+    }
+    .ios-seg-btn.active::after {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 42%;
+      background: linear-gradient(180deg, rgba(255,255,255,0.7) 0%, transparent 100%);
+      border-radius: var(--radius-tab) var(--radius-tab) 50% 50%; pointer-events: none;
+    }
+    .ios-seg-btn:active { transform: scale(0.94) !important; }
+
+    /* ─── 6. SECTION TITLES & BADGES ─── */
+    .ios-sec-title {
+      font-family: "Plus Jakarta Sans", sans-serif !important;
+      font-size: 11.5px !important;
+      font-weight: 900 !important;
+      letter-spacing: 0.06em !important;
+      color: #475569 !important;
+      text-transform: uppercase !important;
+    }
     .ios-sec-badge {
-      background: var(--clay-surface) !important;
+      background: linear-gradient(145deg, #FFFFFF, #F1F5F9) !important;
       color: #2563EB !important;
-      border: 1px solid rgba(37,99,235,0.15) !important;
+      border: 1.5px solid rgba(255, 255, 255, 0.95) !important;
       box-shadow: var(--clay-shadow-btn) !important;
       border-radius: 12px !important;
-      font-family: "JetBrains Mono",monospace !important;
-      font-size: 10px !important;
+      font-family: "JetBrains Mono", monospace !important;
+      font-size: 10.5px !important;
+      font-weight: 900 !important;
+      padding: 3px 9px !important;
+    }
+
+    /* ─── 7. DOCTOR PLATTER CARDS (3D Porcelain Platters) ─── */
+    .platter {
+      border-radius: var(--radius-card) !important;
+      background: linear-gradient(145deg, #FFFFFF 0%, #F7FAFD 100%) !important;
+      box-shadow: var(--clay-shadow-card) !important;
+      border: 1.5px solid rgba(255, 255, 255, 0.95) !important;
+      padding: 14px 16px !important;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+    }
+    .platter::after {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 35%;
+      background: linear-gradient(180deg, rgba(255,255,255,0.7) 0%, transparent 100%);
+      border-radius: var(--radius-card) var(--radius-card) 50% 50%; pointer-events: none;
+    }
+    .platter:active {
+      transform: scale(0.97) translateY(1.5px) !important;
+      box-shadow: 4px 6px 14px rgba(150, 168, 195, 0.3), inset 2px 2px 4px rgba(150, 168, 195, 0.15) !important;
+    }
+    .platter::before {
+      top: 12px !important; bottom: 12px !important;
+      width: 4.5px !important;
+      border-radius: 0 8px 8px 0 !important;
+    }
+
+    /* Doctor Initials Avatar (Embossed Ceramic Coin) */
+    .initials {
+      width: 44px !important; height: 44px !important;
+      border-radius: 16px !important;
+      background: linear-gradient(145deg, #FFFFFF, #EEF3F8) !important;
+      box-shadow: var(--clay-shadow-btn) !important;
+      border: 1.5px solid rgba(255, 255, 255, 0.95) !important;
+      font-family: "Outfit", sans-serif !important;
+      font-size: 14.5px !important;
+      font-weight: 900 !important;
+      position: relative;
+    }
+    .initials::after {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 45%;
+      background: linear-gradient(180deg, rgba(255,255,255,0.8) 0%, transparent 100%);
+      border-radius: 16px 16px 50% 50%; pointer-events: none;
+    }
+
+    .doc-spec {
+      font-family: "Plus Jakarta Sans", sans-serif !important;
+      font-weight: 900 !important;
+      font-size: 13.5px !important;
+      color: #0F172A !important;
+      letter-spacing: -0.01em !important;
+      line-height: 1.25 !important;
+    }
+    .doc-name {
+      font-family: "Plus Jakarta Sans", sans-serif !important;
+      font-size: 11.5px !important;
+      font-weight: 700 !important;
+      color: #475569 !important;
+      line-height: 1.35 !important;
+    }
+
+    /* Status Pills (Tactile Mini 3D Beads) */
+    .status-pill {
+      border-radius: var(--radius-pill) !important;
+      box-shadow: var(--clay-shadow-pill) !important;
+      font-family: "Plus Jakarta Sans", sans-serif !important;
+      font-size: 9.5px !important;
+      font-weight: 900 !important;
+      letter-spacing: 0.04em !important;
+      padding: 4px 10px !important;
+      border: 1px solid rgba(255, 255, 255, 0.6) !important;
+    }
+
+    .jam-val {
+      font-family: "JetBrains Mono", monospace !important;
+      font-weight: 900 !important;
+      font-size: 12px !important;
+    }
+
+    /* ─── 8. ACTIVE HERO CONSULTATION CARD (Dokter Praktek Sekarang) ─── */
+    .platter.active {
+      background: linear-gradient(145deg, #ECFDF5 0%, #E6FBF0 100%) !important;
+      border: 1.5px solid rgba(16, 185, 129, 0.4) !important;
+      box-shadow: 
+        10px 14px 28px rgba(16, 185, 129, 0.22),
+        -6px -6px 18px rgba(255, 255, 255, 0.98),
+        inset 1.5px 1.5px 2px rgba(255, 255, 255, 1) !important;
+    }
+    .platter.active .initials {
+      background: #FFFFFF !important;
+      box-shadow: 3px 4px 10px rgba(16, 185, 129, 0.25) !important;
+      color: #059669 !important;
+    }
+    .platter.active .doc-spec { color: #065F46 !important; font-size: 14px !important; }
+    .platter.active .doc-name { color: #047857 !important; font-weight: 800 !important; }
+
+    .live-status {
+      border-radius: 11px !important;
+      background: linear-gradient(135deg, #10B981, #059669) !important;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4), inset 1px 1px 2px rgba(255,255,255,0.4) !important;
+      border: 1px solid rgba(255, 255, 255, 0.2) !important;
       font-weight: 900 !important;
     }
 
-    .platter {
-      border-radius: var(--radius-card) !important;
-      background: var(--clay-surface) !important;
-      box-shadow: var(--clay-shadow-outer) !important;
-      border: var(--clay-border) !important;
-      padding: 14px 16px !important;
-    }
-    .platter:active { transform: scale(0.975) !important; }
-    .platter::before { top: 12px !important; bottom: 12px !important; width: 4px !important; border-radius: 0 8px 8px 0 !important; }
-    .platter.active {
-      background: linear-gradient(135deg,#ECFDF5 0%,#F0FDF4 100%) !important;
-      border: 1.5px solid rgba(16,185,129,0.3) !important;
-      box-shadow: 8px 8px 22px rgba(16,185,129,0.2),-5px -5px 14px rgba(255,255,255,0.95),inset 1.5px 1.5px 2px rgba(255,255,255,1) !important;
-    }
-
-    .initials {
-      border-radius: var(--radius-icon) !important;
-      background: var(--clay-surface-subtle) !important;
-      box-shadow: var(--clay-shadow-btn) !important;
-      border: var(--clay-border-subtle) !important;
-    }
-    .status-pill { border-radius: var(--radius-pill) !important; box-shadow: var(--clay-shadow-btn) !important; font-size: 9px !important; font-weight: 900 !important; }
-
+    /* ─── 9. PATIENT SERVICE WIDGET & HOTLINE CTA ─── */
     .patient-service-clay {
-      border-radius: 24px !important;
-      background: var(--clay-surface) !important;
-      box-shadow: var(--clay-shadow-outer) !important;
-      border: var(--clay-border) !important;
+      border-radius: 26px !important;
+      background: linear-gradient(145deg, #FFFFFF, #F7FAFD) !important;
+      box-shadow: var(--clay-shadow-card) !important;
+      border: 1.5px solid rgba(255, 255, 255, 0.95) !important;
+      padding: 16px !important;
+      gap: 12px !important;
     }
+
     .qr-container-clay {
-      border-radius: var(--radius-icon) !important;
-      background: var(--clay-surface) !important;
+      border-radius: 18px !important;
+      background: linear-gradient(145deg, #FFFFFF, #F6F9FC) !important;
       box-shadow: var(--clay-shadow-btn) !important;
-      border: var(--clay-border-subtle) !important;
+      border: 1.5px solid rgba(255, 255, 255, 0.95) !important;
     }
     .qr-tap-badge {
-      background: linear-gradient(145deg,#60a5fa,#2563eb) !important;
-      box-shadow: 0 3px 10px rgba(37,99,235,0.4) !important;
+      background: linear-gradient(145deg, #60A5FA, #2563EB) !important;
+      box-shadow: 0 3px 10px rgba(37, 99, 235, 0.45) !important;
+      border: 2px solid #FFFFFF !important;
+    }
+    .qr-badge-pill {
+      border-radius: 10px !important;
+      background: #E0F2FE !important;
+      color: #0284C7 !important;
+      box-shadow: var(--clay-shadow-pill) !important;
+      border: 1px solid #BAE6FD !important;
     }
 
+    /* Hotline Emerald Gem Pill */
     .hotline-clay-pill {
-      border-radius: 18px !important;
-      background: linear-gradient(135deg,#10b981,#059669) !important;
-      box-shadow: 4px 4px 14px rgba(5,150,105,0.4),-2px -2px 8px rgba(255,255,255,0.3),inset 1.5px 1.5px 3px rgba(255,255,255,0.35),inset -1.5px -1.5px 3px rgba(0,0,0,0.2) !important;
-      border: 1px solid rgba(255,255,255,0.2) !important;
+      border-radius: 20px !important;
+      background: linear-gradient(135deg, #10B981 0%, #059669 100%) !important;
+      box-shadow: 
+        6px 8px 20px rgba(5, 150, 105, 0.42),
+        -3px -3px 10px rgba(255, 255, 255, 0.4),
+        inset 1.5px 1.5px 3px rgba(255, 255, 255, 0.4),
+        inset -1.5px -1.5px 3px rgba(0, 0, 0, 0.25) !important;
+      border: 1.5px solid rgba(255, 255, 255, 0.3) !important;
+      padding: 11px 16px !important;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
     }
-    .hotline-icon-box { border-radius: 12px !important; background: rgba(255,255,255,0.2) !important; }
-
-    .dynamic-info-clay {
+    .hotline-clay-pill::after {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 42%;
+      background: linear-gradient(180deg, rgba(255,255,255,0.3) 0%, transparent 100%);
+      border-radius: 20px 20px 50% 50%; pointer-events: none;
+    }
+    .hotline-clay-pill:active {
+      transform: scale(0.96) translateY(2px) !important;
+      box-shadow: inset 3px 3px 6px rgba(0,0,0,0.3) !important;
+    }
+    .hotline-icon-box {
       border-radius: 14px !important;
+      background: rgba(255, 255, 255, 0.25) !important;
+      box-shadow: inset 1px 1px 2px rgba(255, 255, 255, 0.4) !important;
+    }
+    .hotline-number {
+      font-family: "JetBrains Mono", monospace !important;
+      font-weight: 900 !important;
+      font-size: 15px !important;
+    }
+
+    /* Dynamic Info Capsule */
+    .dynamic-info-clay {
+      border-radius: 16px !important;
       background: var(--clay-inset) !important;
       box-shadow: var(--clay-shadow-inset) !important;
-      border: 1px solid rgba(255,255,255,0.5) !important;
+      border: 1px solid rgba(255, 255, 255, 0.7) !important;
+      padding: 7px 12px !important;
     }
-    .info-icon-coin { border-radius: 10px !important; background: rgba(37,99,235,0.1) !important; }
+    .info-icon-coin {
+      border-radius: 11px !important;
+      background: rgba(37, 99, 235, 0.12) !important;
+      box-shadow: var(--clay-shadow-btn) !important;
+    }
     .info-icon-coin .material-icons-round { color: #2563EB !important; }
 
+    /* ─── 10. WEEKLY MASTER SCHEDULE (Keseluruhan) ─── */
     .weekly-day-btn {
-      border-radius: 16px !important;
-      background: var(--clay-surface) !important;
+      border-radius: 18px !important;
+      background: linear-gradient(145deg, #FFFFFF, #F4F7FB) !important;
       box-shadow: var(--clay-shadow-btn) !important;
-      border: var(--clay-border-subtle) !important;
-      transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1) !important;
+      border: 1.5px solid rgba(255, 255, 255, 0.95) !important;
+      min-width: 62px !important;
+      padding: 9px 12px !important;
+      transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+      position: relative;
+    }
+    .weekly-day-btn::after {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 42%;
+      background: linear-gradient(180deg, rgba(255,255,255,0.7) 0%, transparent 100%);
+      border-radius: 18px 18px 50% 50%; pointer-events: none;
     }
     .weekly-day-btn.active {
-      background: linear-gradient(145deg,#60a5fa,#2563eb) !important;
-      border-color: rgba(37,99,235,0.4) !important;
-      box-shadow: 4px 4px 14px rgba(37,99,235,0.4),-2px -2px 8px rgba(255,255,255,0.3),inset 1.5px 1.5px 3px rgba(255,255,255,0.35) !important;
+      background: linear-gradient(145deg, #60A5FA 0%, #2563EB 100%) !important;
+      border-color: rgba(96, 165, 250, 0.6) !important;
+      box-shadow: 
+        5px 7px 18px rgba(37, 99, 235, 0.45),
+        -2px -2px 8px rgba(255, 255, 255, 0.35),
+        inset 1.5px 1.5px 3px rgba(255, 255, 255, 0.45) !important;
+      color: #FFFFFF !important;
+      transform: translateY(-1.5px);
     }
-    .weekly-day-btn .day-badge { border-radius: 8px !important; background: var(--clay-inset) !important; }
-    .weekly-day-btn.active .day-badge { background: rgba(255,255,255,0.22) !important; }
+    .weekly-day-btn.active::after {
+      background: linear-gradient(180deg, rgba(255,255,255,0.4) 0%, transparent 100%);
+    }
+    .weekly-day-btn .day-badge {
+      border-radius: 9px !important;
+      background: var(--clay-inset) !important;
+      box-shadow: var(--clay-shadow-inset) !important;
+      font-weight: 900 !important;
+    }
+    .weekly-day-btn.active .day-badge {
+      background: rgba(255, 255, 255, 0.25) !important;
+      box-shadow: inset 1px 1px 2px rgba(255,255,255,0.3) !important;
+      color: #FFFFFF !important;
+    }
 
     .spec-chip {
-      border-radius: 12px !important;
-      background: var(--clay-surface) !important;
+      border-radius: 14px !important;
+      background: linear-gradient(145deg, #FFFFFF, #F4F7FB) !important;
       box-shadow: var(--clay-shadow-btn) !important;
-      border: var(--clay-border-subtle) !important;
-      transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1) !important;
+      border: 1.5px solid rgba(255, 255, 255, 0.95) !important;
+      font-weight: 800 !important;
+      font-size: 11px !important;
+      padding: 7px 14px !important;
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
     }
     .spec-chip.active {
       background: #0F172A !important;
       color: #FFFFFF !important;
-      box-shadow: 4px 4px 14px rgba(15,23,42,0.35),-2px -2px 8px rgba(255,255,255,0.15),inset 1.5px 1.5px 3px rgba(255,255,255,0.1) !important;
+      box-shadow: 4px 6px 16px rgba(15, 23, 42, 0.38), inset 1.5px 1.5px 2px rgba(255, 255, 255, 0.15) !important;
+      border-color: rgba(255, 255, 255, 0.1) !important;
     }
 
     .weekly-shift-card {
       border-radius: var(--radius-card) !important;
-      background: var(--clay-surface) !important;
-      box-shadow: var(--clay-shadow-outer) !important;
-      border: var(--clay-border) !important;
+      background: linear-gradient(145deg, #FFFFFF, #F7FAFD) !important;
+      box-shadow: var(--clay-shadow-card) !important;
+      border: 1.5px solid rgba(255, 255, 255, 0.95) !important;
+      padding: 14px 16px !important;
     }
     .weekly-shift-initials {
-      border-radius: var(--radius-icon) !important;
-      background: var(--clay-surface-subtle) !important;
+      border-radius: 16px !important;
+      background: linear-gradient(145deg, #FFFFFF, #EEF3F8) !important;
       box-shadow: var(--clay-shadow-btn) !important;
-      border: var(--clay-border-subtle) !important;
+      border: 1.5px solid rgba(255, 255, 255, 0.95) !important;
       color: #2563EB !important;
+      font-weight: 900 !important;
     }
-    .weekly-time-pill { border-radius: 10px !important; background: rgba(37,99,235,0.08) !important; color: #2563EB !important; border: 1px solid rgba(37,99,235,0.15) !important; }
-    .weekly-reg-pill { border-radius: 10px !important; background: rgba(234,88,12,0.08) !important; color: #EA580C !important; border: 1px solid rgba(234,88,12,0.15) !important; }
+    .weekly-day-tag {
+      border-radius: 10px !important;
+      background: var(--clay-inset) !important;
+      box-shadow: var(--clay-shadow-inset) !important;
+      font-weight: 800 !important;
+    }
+    .weekly-time-pill {
+      border-radius: 11px !important;
+      background: rgba(37, 99, 235, 0.08) !important;
+      color: #2563EB !important;
+      border: 1px solid rgba(37, 99, 235, 0.2) !important;
+      box-shadow: var(--clay-shadow-pill) !important;
+      font-family: "JetBrains Mono", monospace !important;
+      font-weight: 900 !important;
+    }
+    .weekly-reg-pill {
+      border-radius: 11px !important;
+      background: rgba(234, 88, 12, 0.08) !important;
+      color: #EA580C !important;
+      border: 1px solid rgba(234, 88, 12, 0.2) !important;
+      box-shadow: var(--clay-shadow-pill) !important;
+      font-weight: 800 !important;
+    }
 
+    /* ─── 11. CALENDAR LEAVES ENGINE (Jadwal Cuti) ─── */
     .leaves-cal-card {
-      border-radius: 24px !important;
-      background: var(--clay-surface) !important;
-      box-shadow: var(--clay-shadow-outer) !important;
-      border: var(--clay-border) !important;
+      border-radius: 26px !important;
+      background: linear-gradient(145deg, #FFFFFF, #F7FAFD) !important;
+      box-shadow: var(--clay-shadow-card) !important;
+      border: 1.5px solid rgba(255, 255, 255, 0.95) !important;
+      padding: 18px !important;
     }
-    .cal-nav-btn-group { background: var(--clay-inset) !important; box-shadow: var(--clay-shadow-inset) !important; border-radius: 14px !important; padding: 3px !important; }
-    .cal-nav-btn { border-radius: 11px !important; background: var(--clay-surface) !important; box-shadow: var(--clay-shadow-btn) !important; border: none !important; }
+    .cal-nav-btn-group {
+      background: var(--clay-inset) !important;
+      box-shadow: var(--clay-shadow-inset) !important;
+      border-radius: 16px !important;
+      padding: 4px !important;
+    }
+    .cal-nav-btn {
+      border-radius: 12px !important;
+      background: linear-gradient(145deg, #FFFFFF, #F6F9FD) !important;
+      box-shadow: var(--clay-shadow-btn) !important;
+      border: 1px solid rgba(255,255,255,0.9) !important;
+    }
     .cal-nav-btn:active { transform: scale(0.92) !important; }
-    .cal-today-btn { border-radius: 11px !important; background: linear-gradient(135deg,#34d399,#059669) !important; box-shadow: 0 3px 10px rgba(5,150,105,0.3) !important; }
-    .cal-day-cell { border-radius: 14px !important; font-family: "JetBrains Mono",monospace !important; }
-    .cal-day-cell.today { background: rgba(5,150,105,0.1) !important; border-color: rgba(5,150,105,0.3) !important; color: #059669 !important; }
-    .cal-day-cell.selected { background: linear-gradient(145deg,#34d399,#059669) !important; box-shadow: 0 4px 14px rgba(5,150,105,0.4) !important; }
+    .cal-today-btn {
+      border-radius: 12px !important;
+      background: linear-gradient(135deg, #34D399, #059669) !important;
+      box-shadow: 0 4px 12px rgba(5, 150, 105, 0.35), inset 1px 1px 2px rgba(255,255,255,0.4) !important;
+      border: 1px solid rgba(255, 255, 255, 0.25) !important;
+      font-weight: 800 !important;
+    }
+    .cal-day-cell {
+      border-radius: 15px !important;
+      font-family: "JetBrains Mono", monospace !important;
+      font-weight: 800 !important;
+      transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+    }
+    .cal-day-cell.today {
+      background: rgba(5, 150, 105, 0.12) !important;
+      border: 1.5px solid rgba(5, 150, 105, 0.4) !important;
+      color: #059669 !important;
+    }
+    .cal-day-cell.selected {
+      background: linear-gradient(145deg, #34D399 0%, #059669 100%) !important;
+      box-shadow: 0 6px 16px rgba(5, 150, 105, 0.45), inset 1px 1px 2px rgba(255,255,255,0.4) !important;
+      color: #FFFFFF !important;
+      transform: scale(1.06) !important;
+    }
 
     .leaves-subtab-bar {
       background: var(--clay-inset) !important;
       box-shadow: var(--clay-shadow-inset) !important;
-      border-radius: 18px !important;
+      border-radius: 19px !important;
       padding: 4px !important;
+      border: 1px solid rgba(255, 255, 255, 0.7) !important;
     }
-    .leaves-subtab-btn { border-radius: 14px !important; font-weight: 800 !important; }
-    .leaves-subtab-btn.active { background: var(--clay-surface) !important; color: #0F172A !important; box-shadow: var(--clay-shadow-btn) !important; }
+    .leaves-subtab-btn {
+      border-radius: 15px !important;
+      font-family: "Plus Jakarta Sans", sans-serif !important;
+      font-weight: 800 !important;
+      color: #64748B !important;
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+    }
+    .leaves-subtab-btn.active {
+      background: linear-gradient(145deg, #FFFFFF, #F8FAFD) !important;
+      color: #0F172A !important;
+      box-shadow: var(--clay-shadow-btn) !important;
+      border: 1.5px solid rgba(255, 255, 255, 0.95) !important;
+    }
 
     .leave-card {
       border-radius: var(--radius-card) !important;
-      background: var(--clay-surface) !important;
-      box-shadow: var(--clay-shadow-outer) !important;
-      border: var(--clay-border) !important;
+      background: linear-gradient(145deg, #FFFFFF, #F7FAFD) !important;
+      box-shadow: var(--clay-shadow-card) !important;
+      border: 1.5px solid rgba(255, 255, 255, 0.95) !important;
+      padding: 14px 16px !important;
     }
-    .leave-card::before { width: 4px !important; border-radius: 0 8px 8px 0 !important; top: 14px !important; bottom: 14px !important; }
-    .leave-avatar { border-radius: var(--radius-icon) !important; background: rgba(225,29,72,0.08) !important; border: 1px solid rgba(225,29,72,0.15) !important; box-shadow: var(--clay-shadow-btn) !important; }
-    .leave-reason-box { border-radius: 12px !important; background: var(--clay-inset) !important; box-shadow: var(--clay-shadow-inset) !important; border: 1px solid rgba(255,255,255,0.5) !important; }
-    .leave-replacement { border-radius: 10px !important; background: rgba(5,150,105,0.08) !important; border: 1px solid rgba(5,150,105,0.2) !important; }
+    .leave-avatar {
+      border-radius: 16px !important;
+      box-shadow: var(--clay-shadow-btn) !important;
+      font-weight: 900 !important;
+    }
+    .leave-status-pill {
+      border-radius: var(--radius-pill) !important;
+      box-shadow: var(--clay-shadow-pill) !important;
+      font-weight: 900 !important;
+      border: 1px solid rgba(255, 255, 255, 0.6) !important;
+    }
+    .leave-date-pill {
+      border-radius: var(--radius-pill) !important;
+      background: var(--clay-inset) !important;
+      box-shadow: var(--clay-shadow-inset) !important;
+      border: 1px solid rgba(255, 255, 255, 0.6) !important;
+      font-weight: 800 !important;
+    }
+    .leave-reason-box {
+      border-radius: 14px !important;
+      background: var(--clay-inset) !important;
+      box-shadow: var(--clay-shadow-inset) !important;
+      border: 1px solid rgba(255, 255, 255, 0.7) !important;
+    }
+    .leave-replacement {
+      border-radius: 12px !important;
+      background: rgba(5, 150, 105, 0.1) !important;
+      border: 1px solid rgba(5, 150, 105, 0.25) !important;
+      box-shadow: var(--clay-shadow-pill) !important;
+    }
 
+    /* ─── 12. FLOATING DOCK (Frosted Clay Capsule) ─── */
     .ios-floating-dock {
-      border-radius: 20px !important;
-      background: rgba(240,244,249,0.92) !important;
-      backdrop-filter: blur(20px) saturate(180%) !important;
-      -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
-      border: 1px solid rgba(255,255,255,0.9) !important;
-      box-shadow: 0 8px 28px rgba(160,175,200,0.25),0 2px 8px rgba(0,0,0,0.04),inset 1px 1px 2px rgba(255,255,255,0.95) !important;
+      border-radius: 22px !important;
+      background: rgba(237, 242, 247, 0.94) !important;
+      backdrop-filter: blur(24px) saturate(190%) !important;
+      -webkit-backdrop-filter: blur(24px) saturate(190%) !important;
+      border: 1.5px solid rgba(255, 255, 255, 0.95) !important;
+      box-shadow: 0 10px 32px rgba(150, 168, 195, 0.3), 0 2px 8px rgba(0,0,0,0.05), inset 1.5px 1.5px 2px rgba(255,255,255,0.95) !important;
+      padding: 0 14px !important;
+      height: 54px !important;
     }
     .dock-wa-btn {
-      border-radius: 12px !important;
-      background: linear-gradient(135deg,#34d399,#059669) !important;
-      box-shadow: 4px 4px 12px rgba(5,150,105,0.35),inset 1.5px 1.5px 3px rgba(255,255,255,0.3) !important;
-      transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1) !important;
+      border-radius: 14px !important;
+      background: linear-gradient(135deg, #34D399, #059669) !important;
+      box-shadow: 0 4px 14px rgba(5, 150, 105, 0.42), inset 1.2px 1.2px 2px rgba(255,255,255,0.4) !important;
+      border: 1px solid rgba(255, 255, 255, 0.25) !important;
+      padding: 7px 14px !important;
+      font-weight: 800 !important;
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
     }
-    .dock-wa-btn:active { transform: scale(0.93) !important; }
+    .dock-wa-btn:active { transform: scale(0.93) translateY(1px) !important; }
 
+    /* ─── 13. DYNAMIC ISLAND (Obsidian Morphing Capsule) ─── */
     .dynamic-island {
-      background: rgba(10,13,22,0.97) !important;
+      background: rgba(11, 15, 25, 0.97) !important;
+      backdrop-filter: blur(28px) saturate(200%) !important;
+      -webkit-backdrop-filter: blur(28px) saturate(200%) !important;
       border-radius: 28px !important;
-      box-shadow: 0 16px 40px rgba(0,0,0,0.4),inset 0 1px 1px rgba(255,255,255,0.12) !important;
+      border: 1.5px solid rgba(255, 255, 255, 0.15) !important;
+      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.15) !important;
     }
 
-    .ios-modal-card { border-radius: 28px !important; background: var(--clay-surface) !important; box-shadow: var(--clay-shadow-outer),0 24px 60px rgba(15,23,42,0.25) !important; border: var(--clay-border) !important; }
-    .modal-close-btn { border-radius: 50% !important; background: var(--clay-inset) !important; box-shadow: var(--clay-shadow-btn) !important; border: none !important; }
-    .modal-qr-section { border-radius: 20px !important; background: var(--clay-inset) !important; box-shadow: var(--clay-shadow-inset) !important; border: 1px solid rgba(255,255,255,0.5) !important; }
-    .modal-action-btn { border-radius: 14px !important; }
-    .modal-action-btn.copy { background: var(--clay-surface-subtle) !important; box-shadow: var(--clay-shadow-btn) !important; border: var(--clay-border-subtle) !important; }
-    .modal-action-btn.share { background: linear-gradient(145deg,#60a5fa,#2563eb) !important; box-shadow: 4px 4px 14px rgba(37,99,235,0.4),inset 1.5px 1.5px 3px rgba(255,255,255,0.35) !important; }
-    .modal-hotline-card { border-radius: 18px !important; background: linear-gradient(135deg,#10b981,#059669) !important; box-shadow: 4px 4px 14px rgba(5,150,105,0.4),inset 1.5px 1.5px 3px rgba(255,255,255,0.3) !important; }
+    /* ─── 14. MODAL SHEET CARD ─── */
+    .ios-modal-card {
+      border-radius: 30px !important;
+      background: linear-gradient(145deg, #FFFFFF, #F8FAFD) !important;
+      box-shadow: 0 28px 70px rgba(15, 23, 42, 0.28), var(--clay-shadow-card) !important;
+      border: 1.5px solid rgba(255, 255, 255, 0.95) !important;
+    }
+    .modal-close-btn {
+      border-radius: 50% !important;
+      background: var(--clay-inset) !important;
+      box-shadow: var(--clay-shadow-btn) !important;
+    }
+    .modal-qr-section {
+      border-radius: 22px !important;
+      background: var(--clay-inset) !important;
+      box-shadow: var(--clay-shadow-inset) !important;
+      border: 1px solid rgba(255, 255, 255, 0.7) !important;
+    }
+    .modal-action-btn {
+      border-radius: 16px !important;
+      font-weight: 800 !important;
+    }
+    .modal-action-btn.copy {
+      background: linear-gradient(145deg, #FFFFFF, #F1F5F9) !important;
+      box-shadow: var(--clay-shadow-btn) !important;
+      border: 1.5px solid rgba(255, 255, 255, 0.9) !important;
+    }
+    .modal-action-btn.share {
+      background: linear-gradient(145deg, #60A5FA, #2563EB) !important;
+      box-shadow: 4px 6px 16px rgba(37, 99, 235, 0.42), inset 1.5px 1.5px 3px rgba(255, 255, 255, 0.4) !important;
+      border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    }
+    .modal-hotline-card {
+      border-radius: 20px !important;
+      background: linear-gradient(135deg, #10B981, #059669) !important;
+      box-shadow: 5px 7px 18px rgba(5, 150, 105, 0.42), inset 1.5px 1.5px 3px rgba(255, 255, 255, 0.35) !important;
+    }
 
-    .broadcast-panel { border-radius: 28px !important; background: var(--clay-surface) !important; box-shadow: var(--clay-shadow-outer) !important; border: 2px solid rgba(251,113,133,0.4) !important; }
-
-    @keyframes clayCardIn {
-      0% { opacity: 0; transform: translateY(14px) scale(0.96); }
+    /* ─── 15. GPU LAYER ACCELERATION & SPRING ENTRANCE ─── */
+    @keyframes clayCardSpring {
+      0% { opacity: 0; transform: translateY(16px) scale(0.96); }
+      70% { transform: translateY(-2px) scale(1.005); }
       100% { opacity: 1; transform: translateY(0) scale(1); }
     }
-    .platter, .weekly-shift-card, .leave-card { animation: clayCardIn 0.35s cubic-bezier(0.16,1,0.3,1) backwards !important; }
-
-    .ios-title-group h1 { font-weight: 900 !important; letter-spacing: -0.025em !important; }
-    .ios-title-group span { font-weight: 800 !important; color: #2563EB !important; }
-    .doc-spec { font-weight: 900 !important; font-size: 13px !important; color: #0F172A !important; }
-    .doc-name { font-size: 11.5px !important; font-weight: 600 !important; color: #475569 !important; }
-    .jam-val { font-family: "JetBrains Mono",monospace !important; font-weight: 800 !important; }
-    .weekly-shift-spec { color: #2563EB !important; font-weight: 800 !important; font-size: 10.5px !important; }
-    .leave-doc-spec { color: #E11D48 !important; font-weight: 800 !important; }
+    .platter, .weekly-shift-card, .leave-card {
+      animation: clayCardSpring 0.38s cubic-bezier(0.16, 1, 0.3, 1) backwards !important;
+      contain: layout paint;
+    }
 
     .platter, .ios-bento-tile, .weekly-shift-card, .leave-card,
     .ios-icon-btn, .ios-seg-btn, .ios-mode-btn, .weekly-day-btn, .spec-chip {
       transform: translateZ(0) !important;
       backface-visibility: hidden !important;
       -webkit-backface-visibility: hidden !important;
-      will-change: transform !important;
     }
 
     </style>
