@@ -747,7 +747,7 @@
         padding: 7px 14px;
         white-space: nowrap;
         cursor: pointer;
-        transition: transform 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s ease;
+        transition: transform 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s ease, background 0.2s ease, color 0.18s ease;
         color: var(--text-sub);
         touch-action: manipulation;
         user-select: none;
@@ -757,10 +757,11 @@
         box-shadow: var(--shadow-inset) !important;
       }
       .spec-chip.active {
-        background: var(--text-main);
-        color: var(--bg-page);
-        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
-        border-color: transparent;
+        background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%) !important;
+        color: #FFFFFF !important;
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.38), inset 1px 1px 2px rgba(255, 255, 255, 0.35) !important;
+        border: 1.5px solid rgba(147, 197, 253, 0.6) !important;
+        transform: translateY(-1px);
       }
 
       .ios-segmented-bar {
