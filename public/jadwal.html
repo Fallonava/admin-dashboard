@@ -656,34 +656,81 @@
       /* ═══════════════════════════════════════════════════════════════
          6. DOCTOR PLATTER CARDS (100% PURE SOLID CLAY)
          ═══════════════════════════════════════════════════════════════ */
-      .ios-section { display: flex; flex-direction: column; gap: 9px; }
+      /* ═══════════════════════════════════════════════════════════════
+         5.1 MODERN 3D CLAY SECTION HEADERS
+         ═══════════════════════════════════════════════════════════════ */
+      .ios-section { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
       .ios-section-header {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 2px 4px;
+        padding: 8px 12px;
+        border-radius: 18px;
+        background: #FFFFFF;
+        border: 2px solid #FFFFFF;
+        box-shadow: 
+          0 4px 14px rgba(148, 163, 184, 0.16),
+          -3px -3px 8px #FFFFFF,
+          inset 1.2px 1.2px 2px #FFFFFF;
       }
       .ios-sec-title {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 11.5px;
+        font-size: 12px;
         font-weight: 900;
-        letter-spacing: 0.06em;
-        color: var(--text-secondary);
+        letter-spacing: 0.03em;
+        color: #0F172A;
         text-transform: uppercase;
         display: flex;
         align-items: center;
-        gap: 6px;
+        gap: 8px;
       }
+      .sec-icon-coin {
+        width: 28px;
+        height: 28px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 2px 3px 6px rgba(148, 163, 184, 0.2), inset 1px 1px 1.5px #FFFFFF;
+        flex-shrink: 0;
+      }
+      .sec-icon-coin.bedah {
+        background: #EFF6FF;
+        border: 1.5px solid #BFDBFE;
+        color: #1D4ED8;
+      }
+      .sec-icon-coin.nonbedah {
+        background: #ECFDF5;
+        border: 1.5px solid #86EFAC;
+        color: #15803D;
+      }
+      .sec-icon-coin.khusus {
+        background: #FFFBEB;
+        border: 1.5px solid #FCD34D;
+        color: #D97706;
+      }
+      .sec-icon-coin .material-icons-round { font-size: 16px; }
+
       .ios-sec-badge {
-        background: #FFFFFF;
-        color: var(--ios-blue);
-        border: 1.5px solid #CBD5E1;
-        box-shadow: 2px 3px 6px rgba(150, 168, 195, 0.25);
-        border-radius: 12px;
+        background: var(--clay-inset);
+        color: #0F172A;
+        border: 1.5px solid #E2E8F0;
+        box-shadow: inset 1.5px 1.5px 3px rgba(148, 163, 184, 0.25), inset -1.5px -1.5px 3px #FFFFFF;
+        border-radius: 10px;
         font-family: "JetBrains Mono", monospace;
-        font-size: 10.5px;
+        font-size: 11px;
         font-weight: 900;
         padding: 3px 9px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+      .ios-sec-badge::after {
+        content: 'DOKTER';
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-size: 8px;
+        font-weight: 800;
+        color: #64748B;
       }
 
       /* ═══════════════════════════════════════════════════════════════
@@ -1575,7 +1622,9 @@
         <section class="ios-section" id="bedahSection">
           <div class="ios-section-header">
             <div class="ios-sec-title">
-              <span class="material-icons-round" style="font-size: 16px; color: var(--ios-blue);">local_hospital</span>
+              <div class="sec-icon-coin bedah">
+                <span class="material-icons-round">medical_services</span>
+              </div>
               <span>Poli Bedah</span>
             </div>
             <span class="ios-sec-badge" id="countBedah">0</span>
@@ -1587,8 +1636,10 @@
         <section class="ios-section" id="nonBedahSection">
           <div class="ios-section-header">
             <div class="ios-sec-title">
-              <span class="material-icons-round" style="font-size: 16px; color: var(--ios-indigo);">medical_services</span>
-              <span>Poli Non Bedah</span>
+              <div class="sec-icon-coin nonbedah">
+                <span class="material-icons-round">monitor_heart</span>
+              </div>
+              <span>Poli Non-Bedah</span>
             </div>
             <span class="ios-sec-badge" id="countNonBedah">0</span>
           </div>
@@ -1599,7 +1650,9 @@
         <section class="ios-section" id="sidebarSection">
           <div class="ios-section-header">
             <div class="ios-sec-title">
-              <span class="material-icons-round" style="font-size: 16px; color: var(--ios-amber);">info</span>
+              <div class="sec-icon-coin khusus">
+                <span class="material-icons-round">stars</span>
+              </div>
               <span>Status Khusus (Cuti / Penuh)</span>
             </div>
             <span class="ios-sec-badge" id="countSidebar">0</span>
