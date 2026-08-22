@@ -1,8 +1,5 @@
-/**
- * Type-safe environment variable validation using Zod.
- * Imported ONCE in `src/lib/prisma.ts` and key server entry points.
- * Throws a clear error at startup if any required variable is missing.
- */
+import dotenv from 'dotenv';
+dotenv.config();
 import { z } from 'zod';
 
 const serverSchema = z.object({
