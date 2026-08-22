@@ -5,11 +5,13 @@ export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
   try {
-    const { searchParams } = new URL(req.url);
-    const days = parseInt(searchParams.get("days") || "7", 10);
+    const searchParams = req.nextUrl.searchParams;
+    const daysParam = searchParams.get("days");
+    const parsedDays = daysParam ? parseInt(daysParam, 10) : 7;
+    const days = isNaN(parsedDays) ? 7 : parsedDays;
     const path = searchParams.get("path") || undefined;
 
-    const stats = await TrafficService.getStats(isNaN(days) ? 7 : days, path);
+    const stats = await TrafficService.getStats(days, path);
     return NextResponse.json(stats, { status: 200 });
   } catch (error: any) {
     console.error("[Traffic API] Stats error:", error);

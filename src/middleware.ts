@@ -39,6 +39,7 @@ const PUBLIC_PREFIXES = [
 ];
 
 function isPublicRoute(pathname: string): boolean {
+  if (pathname.startsWith('/api/traffic/track')) return true;
   // Exact match
   if (PUBLIC_PATHS.includes(pathname)) return true;
   // Prefix match (static assets, Next internals)
