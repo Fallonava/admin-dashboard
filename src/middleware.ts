@@ -54,11 +54,8 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Clean professional URL rewrites
-  if (pathname === '/jadwal') {
+  if (pathname === '/jadwal' || pathname === '/mobile' || pathname === '/tvmod' || pathname === '/tvmode') {
     return NextResponse.rewrite(new URL('/jadwal.html', request.url));
-  }
-  if (pathname === '/mobile' || pathname === '/tvmod' || pathname === '/tvmode') {
-    return NextResponse.rewrite(new URL('/mobile.html', request.url));
   }
   if (pathname === '/tv' || pathname === '/display') {
     return NextResponse.rewrite(new URL('/tv.html', request.url));

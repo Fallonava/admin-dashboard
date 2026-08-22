@@ -48,10 +48,10 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return [
       { source: '/jadwal', destination: '/jadwal.html' },
-      { source: '/mobile', destination: '/mobile.html' },
+      { source: '/mobile', destination: '/jadwal.html' },
       { source: '/tv', destination: '/tv.html' },
-      { source: '/tvmod', destination: '/mobile.html' },
-      { source: '/tvmode', destination: '/mobile.html' },
+      { source: '/tvmod', destination: '/jadwal.html' },
+      { source: '/tvmode', destination: '/jadwal.html' },
     ];
   },
   async headers() {
