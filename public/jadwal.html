@@ -1349,6 +1349,71 @@
         flex-shrink: 0;
       }
 
+      /* 1-Tap Doctor Favorite Star Button */
+      .btn-fav-doc {
+        width: 28px;
+        height: 28px;
+        border-radius: 9px;
+        border: none;
+        background: transparent;
+        color: var(--text-mute);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.2s ease, background 0.2s ease;
+        padding: 0;
+        margin-left: 2px;
+        touch-action: manipulation;
+        flex-shrink: 0;
+      }
+      .btn-fav-doc:active {
+        transform: scale(0.8);
+      }
+      .btn-fav-doc .material-icons-round {
+        font-size: 19px;
+        transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      .btn-fav-doc.is-fav {
+        color: #F59E0B !important;
+        background: rgba(245, 158, 11, 0.12);
+        box-shadow: inset 0 1px 2px rgba(245, 158, 11, 0.2);
+      }
+      .btn-fav-doc.is-fav .material-icons-round {
+        transform: scale(1.08);
+      }
+      .platter.is-favorite-doctor {
+        border-color: rgba(245, 158, 11, 0.4) !important;
+      }
+      .platter.is-favorite-doctor .btn-fav-doc {
+        color: #F59E0B;
+      }
+
+      /* Relief / Replacement Doctor Pill */
+      .relief-doctor-pill {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        padding: 6px 10px;
+        border-radius: 12px;
+        background: rgba(16, 185, 129, 0.1);
+        border: 1px dashed rgba(16, 185, 129, 0.4);
+        color: #047857;
+        font-size: 10.5px;
+        font-weight: 800;
+        margin-top: 4px;
+        animation: holidaySlideIn 0.2s ease-out;
+      }
+      [data-theme="dark"] .relief-doctor-pill {
+        background: rgba(16, 185, 129, 0.18);
+        border-color: rgba(16, 185, 129, 0.45);
+        color: #34D399;
+      }
+      .relief-doctor-pill strong {
+        font-weight: 900;
+        color: var(--text-main);
+      }
+
       /* Smooth Tactile Pill */
       .status-pill {
         display: inline-flex;
@@ -3018,6 +3083,7 @@
         const container = document.getElementById("liveSpecChips");
         if (!container || !Array.isArray(data)) return;
 
+        const favs = getFavDoctors();
         const specMap = new Map();
         data.forEach(d => {
           if (d.Spesialis && !["CUTI", "SELESAI"].includes((d.Status || "").toUpperCase())) {
@@ -3026,11 +3092,14 @@
         });
 
         const sortedSpecs = Array.from(specMap.keys()).sort();
-        const chipsHash = JSON.stringify(sortedSpecs) + "_" + (window.selectedLiveSpec || "all");
+        const chipsHash = JSON.stringify(sortedSpecs) + "_" + (window.selectedLiveSpec || "all") + "_" + favs.length;
         if (_lastLiveChipsHash === chipsHash) return;
         _lastLiveChipsHash = chipsHash;
 
         let html = `<button class="spec-chip ${window.selectedLiveSpec === 'all' ? 'active' : ''}" data-spec="all" onclick="switchLiveSpec('all')"><span>✨ Semua Poli</span></button>`;
+        if (favs.length > 0) {
+          html += `<button class="spec-chip ${window.selectedLiveSpec === 'favorites' ? 'active' : ''}" data-spec="favorites" onclick="switchLiveSpec('favorites')"><span>⭐ Favorit (${favs.length})</span></button>`;
+        }
         sortedSpecs.forEach(spec => {
           const shortSpec = spec.replace(/Spesialis\s*/i, "Sp. ").replace(/Poli\s*/i, "");
           const isActive = window.selectedLiveSpec === spec;
@@ -3044,6 +3113,7 @@
           const query = (window.searchQuery || "").toLowerCase();
           const activeTab = window.activeTab || "all";
           const activeSpec = window.selectedLiveSpec || "all";
+          const favs = getFavDoctors();
 
           let anyCardVisible = false;
           const allPlatters = document.querySelectorAll(".platter");
@@ -3053,7 +3123,9 @@
             const text = (card.textContent || "").toLowerCase();
             
             const matchesSearch = !query || text.includes(query);
-            const matchesSpec = activeSpec === "all" || rawDocSpec.toLowerCase() === activeSpec.toLowerCase();
+            const matchesSpec = activeSpec === "all"
+              ? true
+              : (activeSpec === "favorites" ? favs.includes(rawDocName) : rawDocSpec.toLowerCase() === activeSpec.toLowerCase());
             
             let matchesTab = true;
             const parentSection = card.closest(".ios-section");
@@ -3201,13 +3273,53 @@
           .replace(/\s*s\/d\s*/gi, " — ");
       };
 
+      function getFavDoctors() {
+        try {
+          const raw = localStorage.getItem("simed_fav_doctors");
+          return raw ? JSON.parse(raw) : [];
+        } catch(e) { return []; }
+      }
+
+      function toggleFavDoctor(docName, evt) {
+        if (evt) evt.stopPropagation();
+        triggerHaptic("medium");
+        try {
+          let favs = getFavDoctors();
+          const idx = favs.indexOf(docName);
+          let isAdded = false;
+          if (idx >= 0) {
+            favs.splice(idx, 1);
+          } else {
+            favs.push(docName);
+            isAdded = true;
+          }
+          localStorage.setItem("simed_fav_doctors", JSON.stringify(favs));
+          
+          if (typeof Island !== "undefined") {
+            if (isAdded) {
+              Island.show("Dokter Favorit", `${docName} disematkan ke daftar favorit ⭐`, "success", "star", 3500);
+            } else {
+              Island.show("Favorit Diperbarui", `${docName} dihapus dari favorit`, "info", "star_border", 3000);
+            }
+          }
+          if (App && App._lastDataHash) {
+            App._lastDataHash = "";
+            App.fetchInitialData();
+          }
+        } catch(e) {
+          console.error("toggleFavDoctor error:", e);
+        }
+      }
+
       const buildCardHTML = (d, avatarText, statusIcon, statusLabel, labelJam, labelLive) => {
         const jamTampil = d.JamDaftar !== "-"
           ? esc(d.JamDaftar)
           : formatJam((d.JamPraktek || "").split("-")[0]);
           
         const isCPO = ["CUTI", "PENUH", "OPERASI"].some(st => (d.Status || "").toUpperCase().includes(st));
-        const waText = encodeURIComponent(`Halo RSU Siaga Medika, saya ingin tanya informasi jadwal/pendaftaran untuk ${d.Dokter} (${d.Spesialis})`);
+        const favs = getFavDoctors();
+        const isFav = favs.includes(d.Dokter);
+        const repDoc = d.DokterPengganti || d.replacementDoctor || null;
 
         return `
           <div class="platter-main">
@@ -3215,6 +3327,11 @@
             <div class="info-col">
               <div class="doc-spec">${esc(d.Spesialis)}</div>
               <div class="doc-name">${esc(d.Dokter)}</div>
+              ${repDoc ? `
+              <div class="relief-doctor-pill" title="Dokter Pengganti Selama Cuti">
+                <span class="material-icons-round" style="font-size:12px;">swap_horiz</span>
+                <span>Digantikan: <strong>${esc(repDoc)}</strong></span>
+              </div>` : ""}
             </div>
             <div class="meta-col">
               <div class="status-pill">
@@ -3226,6 +3343,9 @@
                 <span class="jam-val jam-val-daftar">${jamTampil}</span>
               </div>` : ""}
             </div>
+            <button class="btn-fav-doc ${isFav ? 'is-fav' : ''}" onclick="toggleFavDoctor('${esc(d.Dokter)}', event)" title="${isFav ? 'Hapus dari Dokter Favorit' : 'Jadikan Dokter Favorit'}">
+              <span class="material-icons-round">${isFav ? 'star' : 'star_border'}</span>
+            </button>
             <div class="card-expand-indicator" title="Buka Menu Pendaftaran">
               <span class="material-icons-round">expand_more</span>
             </div>
@@ -3502,8 +3622,11 @@
               const jamStr = shift.formattedTime || shift.title || "-";
               let status = (doc.status || "").toUpperCase();
 
-              const isLeaveToday = (shift.disabledDates || []).includes(todayStr) || 
-                                   leaves.some(l => l.doctorId === doc.id && l.startDate <= todayStr && l.endDate >= todayStr);
+              const matchingLeave = leaves.find(l => 
+                (l.doctorId === doc.id || (l.doctorName && l.doctorName === doc.name) || (l.doctor && l.doctor === doc.name)) && 
+                isDateInLeave(now, l)
+              );
+              const isLeaveToday = (shift.disabledDates || []).includes(todayStr) || Boolean(matchingLeave);
 
               if (isLeaveToday) status = "CUTI";
               
@@ -3559,6 +3682,7 @@
                 Jenis: doc.category,
                 "Code Antrian": doc.queueCode,
                 _shiftId: shift.id || index,
+                DokterPengganti: matchingLeave ? (matchingLeave.replacementDoctor || null) : null,
               });
             });
 
@@ -3603,7 +3727,7 @@
         render(data) {
           if (!data) return;
 
-          const currentHash = JSON.stringify(data);
+          const currentHash = JSON.stringify(data) + "_" + JSON.stringify(getFavDoctors());
           if (this._lastDataHash === currentHash) return;
           this._lastDataHash = currentHash;
 
@@ -3634,6 +3758,15 @@
             if (s.includes("SELESAI") || s.includes("TIDAK") || s.includes("LIBUR")) return false;
             return s.includes("PENUH") || s.includes("CUTI") || s.includes("OPERASI");
           });
+
+          const favs = getFavDoctors();
+          const sortByFav = (a, b) => {
+            const aFav = favs.includes(a.Dokter) ? 1 : 0;
+            const bFav = favs.includes(b.Dokter) ? 1 : 0;
+            return bFav - aFav;
+          };
+          mainData.sort(sortByFav);
+          sidebarData.sort(sortByFav);
 
           [...mainData, ...sidebarData].forEach((d) => {
             d._isActive = isActive((d.Status || "").toUpperCase());
@@ -3696,6 +3829,7 @@
                 const avatarIcon = getSpecialistIcon(d.Spesialis);
                 const avatarText = avatarIcon.startsWith("<svg") ? avatarIcon : `<span class="material-icons-round" style="font-size:24px;">${avatarIcon}</span>`;
                 if (d._isActive) c += " active";
+                if (favs.includes(d.Dokter)) c += " is-favorite-doctor";
 
                 let labelJam = "REGISTRASI DIBUKA";
                 let labelLive = "SEDANG MELAYANI";

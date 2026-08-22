@@ -514,6 +514,13 @@ export function LeaveCalendar({ leaves, onRefresh, onOpenAll, totalLeaves = 0 }:
                             &quot;{leave.reason}&quot;
                           </p>
                         )}
+
+                        {leave.replacementDoctor && (
+                          <div className="mt-1.5 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[10px] bg-emerald-500/10 dark:bg-emerald-500/15 border border-emerald-500/20 text-emerald-700 dark:text-emerald-300 text-[10px] font-black">
+                            <span>🔄</span>
+                            <span>Digantikan: <strong className="font-black underline">{leave.replacementDoctor}</strong></span>
+                          </div>
+                        )}
                       </div>
 
                       {/* Action Delete */}

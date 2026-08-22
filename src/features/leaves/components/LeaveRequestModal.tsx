@@ -30,6 +30,7 @@ export function LeaveRequestModal({ isOpen, onClose, onSubmit }: Props) {
     startDate: "",
     endDate: "",
     reason: "",
+    replacementDoctor: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -78,9 +79,10 @@ export function LeaveRequestModal({ isOpen, onClose, onSubmit }: Props) {
         startDate: form.startDate,
         endDate: form.endDate,
         reason: form.reason,
+        replacementDoctor: form.replacementDoctor || null,
         avatar: "/avatars/default.png",
       });
-      setForm({ doctor: "", doctorId: "", type: "Sakit", startDate: "", endDate: "", reason: "" });
+      setForm({ doctor: "", doctorId: "", type: "Sakit", startDate: "", endDate: "", reason: "", replacementDoctor: "" });
       onClose();
     } finally {
       setIsSubmitting(false);
@@ -138,6 +140,29 @@ export function LeaveRequestModal({ isOpen, onClose, onSubmit }: Props) {
               if (doc) {
                 setForm({ ...form, doctorId: doc.id, doctor: doc.name });
               }
+            }}
+          />
+
+          {/* Dokter Pengganti (Relief Doctor) */}
+          <SearchableSelect
+            label="Dokter Pengganti (Opsional)"
+            placeholder="Pilih Dokter Pengganti (jika ada)..."
+            searchPlaceholder="Cari dokter pengganti..."
+            noResultsText="Tidak ada dokter"
+            options={[
+              { value: "", label: "— Tanpa Dokter Pengganti —", sublabel: "Jadwal kosong / diliburkan" },
+              ...doctors
+                .filter((d) => d.id !== form.doctorId)
+                .map((d) => ({
+                  value: d.name,
+                  label: d.name,
+                  sublabel: d.specialty,
+                  image: d.image,
+                })),
+            ]}
+            value={form.replacementDoctor}
+            onChange={(repName: string) => {
+              setForm({ ...form, replacementDoctor: repName });
             }}
           />
 

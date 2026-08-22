@@ -94,6 +94,11 @@ export function AllLeavesModal({ isOpen, onClose, leaves, onDelete }: Props) {
                                             <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 truncate">
                                                 {dateLabel}
                                             </span>
+                                            {leave.replacementDoctor && (
+                                                <span className="text-[9.5px] font-black text-emerald-600 dark:text-emerald-400 mt-0.5 flex items-center gap-1">
+                                                    🔄 Digantikan: {leave.replacementDoctor}
+                                                </span>
+                                            )}
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-2 shrink-0 ml-3">

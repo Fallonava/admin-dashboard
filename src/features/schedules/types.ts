@@ -34,6 +34,7 @@ export const LeaveCreateSchema = z.object({
     reason: z.string().optional().nullable(),
     status: z.string().optional().nullable(),
     avatar: z.string().optional().nullable(),
+    replacementDoctor: z.string().optional().nullable(),
 });
 
 export const LeaveCreateBulkSchema = z.union([LeaveCreateSchema, z.array(LeaveCreateSchema)]);
@@ -47,6 +48,7 @@ export const LeaveUpdateSchema = z.object({
     reason: z.string().optional().nullable(),
     status: z.string().optional().nullable(),
     avatar: z.string().optional().nullable(),
+    replacementDoctor: z.string().optional().nullable(),
 });
 
 export type LeaveCreateDTO = z.infer<typeof LeaveCreateSchema>;
