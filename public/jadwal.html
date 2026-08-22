@@ -1,0 +1,3919 @@
+<!doctype html>
+<html lang="id" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Siaga Medika" />
+    <meta name="theme-color" content="#F2F5F9" />
+    <title>Jadwal Dokter - RSU Siaga Medika (Apple iOS 2026 Native)</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Outfit:wght@500;600;700;800;900&family=JetBrains+Mono:wght@600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet" />
+    
+    <style>
+      .material-icons-round {
+        font-family: "Material Icons Round"; font-weight: normal; font-style: normal; font-size: 22px;
+        display: inline-block; line-height: 1; text-transform: none; letter-spacing: normal; word-wrap: normal;
+        white-space: nowrap; direction: ltr; -webkit-font-smoothing: antialiased;
+      }
+
+      :root {
+        --ios-bg: #F2F5F9;
+        --ios-card: #FFFFFF;
+        --ios-card-subtle: #F8FAFC;
+        --ios-border: rgba(226, 232, 240, 0.85);
+        
+        --text-primary: #0F172A;
+        --text-secondary: #475569;
+        --text-muted: #94A3B8;
+
+        /* Ultra Luxury Apple Clay Palette */
+        --ios-blue: #007AFF;
+        --ios-indigo: #5856D6;
+        --ios-emerald: #34C759;
+        --ios-emerald-dark: #059669;
+        --ios-amber: #FF9500;
+        --ios-rose: #FF2D55;
+        --ios-teal: #30B0C7;
+        --ios-purple: #AF52DE;
+
+        --st-praktek: #059669;
+        --st-praktek-bg: #ECFDF5;
+        --st-praktek-shadow: rgba(16, 185, 129, 0.28);
+
+        --st-pendaftaran: #EA580C;
+        --st-pendaftaran-bg: #FFF7ED;
+        --st-pendaftaran-shadow: rgba(249, 115, 22, 0.28);
+
+        --st-terjadwal: #0284C7;
+        --st-terjadwal-bg: #F0F9FF;
+        --st-terjadwal-shadow: rgba(2, 132, 199, 0.28);
+
+        --st-penuh: #D97706;
+        --st-penuh-bg: #FFFBEB;
+        --st-penuh-shadow: rgba(217, 119, 6, 0.28);
+
+        --st-operasi: #7C3AED;
+        --st-operasi-bg: #F5F3FF;
+        --st-operasi-shadow: rgba(124, 58, 237, 0.28);
+
+        --st-cuti: #E11D48;
+        --st-cuti-bg: #FFF1F2;
+        --st-cuti-shadow: rgba(225, 29, 72, 0.28);
+
+        --st-selesai: #475569;
+        --st-selesai-bg: #F8FAFC;
+        --st-selesai-shadow: rgba(71, 85, 105, 0.2);
+
+        /* Apple Safe Area Insets */
+        --sat: env(safe-area-inset-top, 0px);
+        --sab: env(safe-area-inset-bottom, 0px);
+        --sal: env(safe-area-inset-left, 0px);
+        --sar: env(safe-area-inset-right, 0px);
+      }
+
+      * {
+        box-sizing: border-box; margin: 0; padding: 0;
+        -webkit-font-smoothing: antialiased;
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
+      }
+
+      html, body {
+        width: 100%; min-height: 100%;
+        background: var(--ios-bg); color: var(--text-primary);
+        font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Plus Jakarta Sans", sans-serif;
+        overscroll-behavior-y: bounce;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      body {
+        display: flex; flex-direction: column;
+        padding-top: var(--sat);
+        padding-bottom: calc(var(--sab) + 78px);
+        padding-left: var(--sal);
+        padding-right: var(--sar);
+      }
+
+      /* Ambient Light Mesh Gradient */
+      .ambient-bg {
+        position: fixed; inset: 0; z-index: -1; pointer-events: none;
+        background: radial-gradient(circle at 50% 0%, rgba(0, 122, 255, 0.05), transparent 45%),
+                    radial-gradient(circle at 100% 100%, rgba(52, 199, 89, 0.05), transparent 45%),
+                    radial-gradient(circle at 0% 50%, rgba(88, 86, 214, 0.04), transparent 40%),
+                    #F2F5F9;
+      }
+
+      /* =========================================================================
+         1. APPLE DYNAMIC ISLAND (iOS 2026 MORPHING CAPSULE)
+         ========================================================================= */
+      .dynamic-island {
+        position: fixed; top: calc(var(--sat) + 8px); left: 50%;
+        transform: translateX(-50%) scale(0.85);
+        height: 44px; min-width: 210px;
+        background: rgba(15, 23, 42, 0.96);
+        backdrop-filter: blur(28px) saturate(190%);
+        -webkit-backdrop-filter: blur(28px) saturate(190%);
+        border: 1.5px solid rgba(255, 255, 255, 0.18);
+        border-radius: 26px; z-index: 9999;
+        display: flex; align-items: center; justify-content: center;
+        transition: all 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+        box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.3);
+        opacity: 0; pointer-events: none;
+      }
+
+      .dynamic-island.expanded {
+        transform: translateX(-50%) scale(1);
+        opacity: 1; pointer-events: auto;
+        min-width: min(calc(100vw - 28px), 440px);
+        padding: 0 16px;
+      }
+
+      .di-surface {
+        width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      }
+      .di-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
+      
+      .di-icon-box {
+        width: 28px; height: 28px; border-radius: 10px; background: #10B981;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+        display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+      }
+      .di-icon-box .material-icons-round { font-size: 16px; color: #FFFFFF; }
+
+      .di-text { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+      .di-title { font-size: 8.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: #A7F3D0; }
+      .di-msg { font-size: 11.5px; font-weight: 700; color: #FFFFFF; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+      .di-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+      .di-soundwave { display: flex; align-items: center; gap: 2px; height: 14px; }
+      .di-soundwave .bar { width: 2.5px; background: #10B981; border-radius: 2px; animation: iosEqBar 1s ease-in-out infinite alternate; }
+      .di-soundwave .bar-1 { height: 5px; animation-delay: 0.1s; }
+      .di-soundwave .bar-2 { height: 12px; animation-delay: 0.25s; }
+      .di-soundwave .bar-3 { height: 8px; animation-delay: 0.4s; }
+      .di-soundwave .bar-4 { height: 6px; animation-delay: 0.15s; }
+      @keyframes iosEqBar { 0% { height: 3px; } 100% { height: 14px; } }
+
+      .di-live-indicator {
+        display: flex; align-items: center; gap: 4px; padding: 2px 7px; border-radius: 10px;
+        background: rgba(255, 255, 255, 0.12);
+      }
+      .di-live-dot { width: 5px; height: 5px; border-radius: 50%; background: #10B981; animation: iosBreathe 1.4s infinite; }
+      .di-live-text { font-family: "JetBrains Mono", monospace; font-size: 8.5px; font-weight: 900; color: #FFFFFF; }
+
+      /* =========================================================================
+         2. NATIVE APPLE iOS APP HEADER & NAVIGATION BAR
+         ========================================================================= */
+      .ios-nav-header {
+        position: sticky; top: var(--sat); z-index: 100;
+        background: rgba(242, 245, 249, 0.9);
+        backdrop-filter: blur(24px) saturate(180%);
+        -webkit-backdrop-filter: blur(24px) saturate(180%);
+        border-bottom: 1px solid var(--ios-border);
+        padding: 10px 16px;
+        transition: box-shadow 0.2s ease;
+      }
+
+      .ios-nav-row {
+        display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      }
+
+      .ios-brand-group {
+        display: flex; align-items: center; gap: 10px;
+      }
+      .ios-logo-coin {
+        width: 42px; height: 42px; border-radius: 14px; background: #FFFFFF;
+        box-shadow: 4px 4px 10px rgba(166, 178, 195, 0.35), -3px -3px 8px #FFFFFF, inset 1px 1px 2px rgba(255, 255, 255, 0.95);
+        border: 1.5px solid #F1F5F9; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0;
+      }
+      .ios-logo-coin img { width: 85%; height: 85%; object-fit: contain; }
+
+      .ios-title-group { display: flex; flex-direction: column; }
+      .ios-title-group h1 {
+        font-size: 15px; font-weight: 900; letter-spacing: -0.02em; line-height: 1.15; color: var(--text-primary);
+      }
+      .ios-title-group span {
+        font-size: 10px; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ios-blue);
+      }
+
+      .ios-header-actions {
+        display: flex; align-items: center; gap: 8px;
+      }
+      .ios-icon-btn {
+        width: 36px; height: 36px; border-radius: 12px; background: #FFFFFF;
+        box-shadow: 3px 3px 8px rgba(166, 178, 195, 0.28), -2px -2px 6px #FFFFFF, inset 1px 1px 2px rgba(255, 255, 255, 0.9);
+        border: 1.5px solid #F1F5F9; display: flex; align-items: center; justify-content: center;
+        color: var(--text-primary); cursor: pointer; transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.15s ease;
+      }
+      .ios-icon-btn:active { transform: scale(0.92); background: #F8FAFC; }
+      .ios-icon-btn.primary { color: var(--ios-blue); }
+
+      /* Clock & Date Bar */
+      .ios-time-banner {
+        display: flex; align-items: center; justify-content: space-between;
+        margin-top: 8px; padding: 6px 12px; border-radius: 14px;
+        background: #FFFFFF;
+        box-shadow: 3px 3px 8px rgba(166, 178, 195, 0.2), -2px -2px 6px #FFFFFF;
+        border: 1px solid #E2E8F0;
+      }
+      .ios-clock {
+        font-family: "JetBrains Mono", monospace; font-size: 17px; font-weight: 900; color: var(--text-primary);
+      }
+      .ios-date {
+        font-size: 10px; font-weight: 800; color: var(--text-secondary); text-transform: uppercase;
+      }
+
+      /* =========================================================================
+         3. iOS BENTO HEALTH STATS (TOUCH FIRST 3D TILES)
+         ========================================================================= */
+      .ios-main-content {
+        display: flex; flex-direction: column; gap: 12px; padding: 12px 16px;
+      }
+
+      .ios-bento-stats {
+        display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+      }
+      .ios-bento-tile {
+        background: #FFFFFF; border-radius: 18px; padding: 10px 8px;
+        display: flex; flex-direction: column; align-items: center; text-align: center;
+        box-shadow: 5px 5px 14px rgba(166, 178, 195, 0.25), -4px -4px 10px #FFFFFF, inset 1px 1px 2px rgba(255, 255, 255, 0.95);
+        border: 1.5px solid #F1F5F9;
+        transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        cursor: pointer;
+      }
+      .ios-bento-tile:active { transform: scale(0.95); }
+      .ios-bento-tile.buka { border-top: 3.5px solid var(--ios-emerald); }
+      .ios-bento-tile.penuh { border-top: 3.5px solid var(--ios-amber); }
+      .ios-bento-tile.cuti { border-top: 3.5px solid var(--ios-rose); }
+
+      .bento-num { font-family: "JetBrains Mono", monospace; font-size: 22px; font-weight: 900; line-height: 1; }
+      .bento-lbl { font-size: 9.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); margin-top: 4px; }
+
+      /* =========================================================================
+         4. iOS SPOTLIGHT SEARCH & SEGMENTED CONTROL BAR
+         ========================================================================= */
+      .ios-search-wrapper { margin: 2px 0 2px; }
+      .ios-search-bar {
+        display: flex; align-items: center; gap: 8px;
+        background: #FFFFFF; border-radius: 16px; padding: 8px 14px;
+        box-shadow: 4px 4px 12px rgba(166, 178, 195, 0.25), -3px -3px 8px #FFFFFF, inset 1px 1px 2px rgba(255, 255, 255, 0.9);
+        border: 1.5px solid #E2E8F0;
+        transition: border-color 0.25s ease, box-shadow 0.25s ease;
+      }
+      .ios-search-bar:focus-within {
+        border-color: var(--ios-blue);
+        box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.15), 4px 4px 12px rgba(166, 178, 195, 0.25);
+      }
+      .ios-search-icon { color: var(--ios-blue); font-size: 20px; flex-shrink: 0; }
+      .ios-search-input {
+        flex: 1; border: none; outline: none; background: transparent;
+        font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Plus Jakarta Sans", sans-serif;
+        font-size: 12.5px; font-weight: 600; color: var(--text-primary);
+      }
+      .ios-search-input::placeholder { color: var(--text-muted); font-weight: 500; }
+      .ios-search-clear {
+        border: none; background: transparent; cursor: pointer; color: #94A3B8;
+        display: flex; align-items: center; justify-content: center; padding: 0;
+      }
+      .ios-search-clear:active { color: var(--text-primary); }
+
+      .ios-segmented-bar {
+        display: flex; background: rgba(226, 232, 240, 0.7); padding: 3px; border-radius: 14px;
+        box-shadow: inset 1px 1px 3px rgba(166, 178, 195, 0.3); gap: 3px;
+        overflow-x: auto; -webkit-overflow-scrolling: touch;
+      }
+      .ios-segmented-bar::-webkit-scrollbar { display: none; }
+      
+      .ios-seg-btn {
+        flex: 1; min-width: max-content; padding: 7px 12px; border: none; border-radius: 11px;
+        background: transparent; font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 11px; font-weight: 800; color: var(--text-secondary);
+        cursor: pointer; transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+        display: flex; align-items: center; justify-content: center; gap: 5px;
+      }
+      .ios-seg-btn.active {
+        background: #FFFFFF; color: var(--text-primary);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+      }
+      .ios-seg-btn:active { transform: scale(0.96); }
+
+      /* =========================================================================
+         5. iOS TABLEVIEW DOCTOR PLATTER CARDS (WITH EXPANDABLE ACCORDION)
+         ========================================================================= */
+      .ios-section { display: flex; flex-direction: column; gap: 8px; }
+      .ios-section-header {
+        display: flex; align-items: center; justify-content: space-between; padding: 2px 4px;
+      }
+      .ios-sec-title {
+        font-size: 12.5px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-secondary);
+        display: flex; align-items: center; gap: 6px;
+      }
+      .ios-sec-badge {
+        font-family: "JetBrains Mono", monospace; font-size: 10px; font-weight: 900; padding: 2px 8px; border-radius: 12px;
+        background: #FFFFFF; color: var(--ios-blue); border: 1px solid #E2E8F0;
+        box-shadow: 2px 2px 6px rgba(166, 178, 195, 0.2);
+      }
+
+      .scroller { display: flex; flex-direction: column; gap: 9px; }
+
+      .platter {
+        display: flex; flex-direction: column; padding: 12px 14px;
+        background: #FFFFFF; border-radius: 20px;
+        box-shadow: 6px 6px 16px rgba(166, 178, 195, 0.25), -4px -4px 12px #FFFFFF, inset 1px 1px 2px rgba(255, 255, 255, 0.95);
+        border: 1.5px solid #F1F5F9;
+        position: relative; overflow: hidden;
+        transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+        cursor: pointer;
+        animation: iosCardIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+      }
+      .platter:active { transform: scale(0.975); }
+
+      @keyframes iosCardIn {
+        0% { opacity: 0; transform: translateY(12px) scale(0.97); }
+        100% { opacity: 1; transform: translateY(0) scale(1); }
+      }
+
+      .platter::before {
+        content: ""; position: absolute; left: 0; top: 10px; bottom: 10px; width: 4.5px;
+        border-radius: 0 6px 6px 0; background: var(--status-color, var(--ios-blue));
+        box-shadow: 0 0 8px var(--status-color, var(--ios-blue));
+      }
+
+      .platter-main { display: flex; align-items: center; gap: 12px; width: 100%; }
+      
+      .initials {
+        width: 42px; height: 42px; border-radius: 14px; background: #FAFCFE;
+        box-shadow: 3px 3px 8px rgba(166, 178, 195, 0.3), -2px -2px 6px #FFFFFF, inset 1px 1px 2px rgba(255, 255, 255, 0.95);
+        border: 1.5px solid #F1F5F9; display: flex; align-items: center; justify-content: center;
+        font-family: "Outfit", sans-serif; font-size: 13.5px; font-weight: 900;
+        color: var(--status-color, #0F172A); flex-shrink: 0;
+      }
+      .info-col { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+      .doc-spec { font-size: 13px; font-weight: 900; color: #0F172A; text-transform: uppercase; letter-spacing: 0.01em; line-height: 1.2; }
+      .doc-name { font-size: 11.5px; font-weight: 600; color: var(--text-secondary); line-height: 1.35; }
+      .meta-col { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
+      
+      .status-pill {
+        padding: 4px 9px; border-radius: 10px; font-size: 8.5px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em;
+        background: var(--status-bg, #F1F5F9); color: var(--status-color, #0F172A);
+        box-shadow: 2px 2px 6px var(--status-shadow, rgba(0,0,0,0.06)), -1px -1px 4px #FFFFFF;
+        display: flex; align-items: center; gap: 4px;
+      }
+      .jam-val { font-family: "JetBrains Mono", monospace; font-size: 12px; font-weight: 800; color: #0F172A; }
+
+      /* ACTIVE HERO CONSULTATION CARD */
+      .platter.active {
+        background: #ECFDF5 !important; border: 1.5px solid #A7F3D0 !important;
+        box-shadow: 8px 8px 22px rgba(16, 185, 129, 0.22), -5px -5px 14px #FFFFFF !important;
+      }
+      .platter.active .doc-spec { color: #065F46 !important; font-size: 14px; }
+      .platter.active .doc-name { color: #047857 !important; font-weight: 700; }
+      .platter.active .initials { background: #FFFFFF !important; box-shadow: 3px 3px 8px rgba(16, 185, 129, 0.2) !important; }
+      
+      .platter-detail {
+        max-height: 0; opacity: 0; overflow: hidden; transition: all 0.35s ease;
+        border-top: 1px solid transparent; margin-top: 0; padding-top: 0;
+      }
+      .platter.active .platter-detail {
+        max-height: 75px; opacity: 1; margin-top: 8px; padding-top: 8px;
+        border-top: 1.5px dashed rgba(16, 185, 129, 0.3); display: flex; justify-content: space-between; align-items: center;
+      }
+      .detail-label { font-size: 8px; font-weight: 800; text-transform: uppercase; color: var(--text-muted); }
+      .detail-time { font-family: "JetBrains Mono", monospace; font-size: 13.5px; font-weight: 900; color: #0F172A; }
+      .live-status {
+        display: flex; align-items: center; gap: 5px; padding: 4px 9px; border-radius: 9px;
+        background: #10B981; color: #FFFFFF; font-size: 9px; font-weight: 900; text-transform: uppercase;
+      }
+      .pulse-dot { width: 6px; height: 6px; border-radius: 50%; background: #FFFFFF; animation: iosBreathe 1.4s infinite; }
+      @keyframes iosBreathe { 0%, 100% { transform: scale(0.9); opacity: 0.7; } 50% { transform: scale(1.3); opacity: 1; } }
+
+      /* =========================================================================
+         6. iOS PATIENT SERVICE WIDGET (HOTLINE 0823-2344-6076 & QR SHARE)
+         ========================================================================= */
+      .patient-service-clay {
+        background: #FFFFFF; border-radius: 22px; padding: 14px;
+        box-shadow: 6px 6px 18px rgba(166, 178, 195, 0.3), -4px -4px 12px #FFFFFF, inset 1px 1px 2px rgba(255, 255, 255, 0.95);
+        border: 1.5px solid #F1F5F9; display: flex; flex-direction: column; gap: 10px;
+      }
+
+      .patient-qr-row { display: flex; align-items: center; gap: 12px; }
+      .qr-container-clay {
+        width: 72px; height: 72px; border-radius: 14px; background: #FFFFFF; padding: 4px;
+        box-shadow: inset 2px 2px 6px rgba(166, 178, 195, 0.25), inset -2px -2px 6px #FFFFFF;
+        border: 1px solid #E2E8F0; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        position: relative; cursor: pointer;
+      }
+      .qr-container-clay svg { width: 100% !important; height: 100% !important; border-radius: 6px; }
+
+      .qr-tap-badge {
+        position: absolute; bottom: -4px; right: -4px;
+        width: 22px; height: 22px; border-radius: 50%;
+        background: var(--ios-blue); color: #FFFFFF;
+        display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 2px 6px rgba(0, 122, 255, 0.4);
+        border: 1.5px solid #FFFFFF; pointer-events: none;
+      }
+      .qr-tap-badge .material-icons-round { font-size: 13px; }
+
+      .qr-label-group { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+      .qr-badge-pill {
+        display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 8px;
+        background: #E0F2FE; color: var(--ios-blue); font-size: 9px; font-weight: 900; text-transform: uppercase;
+        width: fit-content;
+      }
+      .qr-desc { font-size: 10px; font-weight: 700; line-height: 1.3; color: var(--text-secondary); }
+
+      /* HIGHLIGHT HOTLINE TOUCH BUTTON (0823-2344-6076) */
+      .hotline-clay-pill {
+        display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 16px;
+        background: linear-gradient(135deg, #059669, #047857); text-decoration: none;
+        box-shadow: 0 6px 16px rgba(5, 150, 105, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.4);
+        transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      .hotline-clay-pill:active { transform: scale(0.96); }
+      
+      .hotline-icon-box {
+        width: 34px; height: 34px; border-radius: 12px; background: rgba(255, 255, 255, 0.22);
+        display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+      }
+      .hotline-icon-box .material-icons-round { font-size: 18px; color: #FFFFFF; }
+      .hotline-text-col { display: flex; flex-direction: column; gap: 1px; flex: 1; }
+      .hotline-label { font-size: 7.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: #D1FAE5; }
+      .hotline-number { font-family: "JetBrains Mono", monospace; font-size: 14.5px; font-weight: 900; color: #FFFFFF; }
+      .hotline-chevron { color: rgba(255, 255, 255, 0.7); font-size: 20px; }
+
+      .dynamic-info-clay {
+        display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 12px;
+        background: #F8FAFC; border: 1px solid #E2E8F0;
+      }
+      .info-icon-coin {
+        width: 22px; height: 22px; border-radius: 7px; background: #E0F2FE;
+        display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+      }
+      .info-icon-coin .material-icons-round { font-size: 13px; color: var(--ios-blue); }
+      .dynamic-info-clay p {
+        font-size: 9.5px; font-weight: 700; color: var(--text-secondary); margin: 0; line-height: 1.3;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      }
+
+      /* =========================================================================
+         7. FLOATING iOS BOTTOM ACTION DOCK
+         ========================================================================= */
+      .ios-floating-dock {
+        position: fixed; bottom: calc(var(--sab) + 10px); left: 16px; right: 16px;
+        height: 52px; background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(24px) saturate(190%);
+        -webkit-backdrop-filter: blur(24px) saturate(190%);
+        border-radius: 20px; border: 1.5px solid rgba(255, 255, 255, 0.95);
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.15), 0 2px 8px rgba(0, 0, 0, 0.06);
+        display: flex; align-items: center; justify-content: space-between; padding: 0 14px;
+        z-index: 900;
+      }
+      .dock-ticker { flex: 1; margin-right: 10px; overflow: hidden; }
+      .dock-ticker-inner {
+        white-space: nowrap; animation: marquee 25s linear infinite; font-size: 11px; font-weight: 700; color: var(--text-primary);
+      }
+      @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
+
+      .dock-wa-btn {
+        display: flex; align-items: center; gap: 5px; padding: 6px 12px; border-radius: 12px;
+        background: #059669; color: #FFFFFF; text-decoration: none; font-size: 10.5px; font-weight: 800;
+        box-shadow: 0 3px 10px rgba(5, 150, 105, 0.35); flex-shrink: 0;
+        transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      .dock-wa-btn:active { transform: scale(0.94); }
+
+      /* =========================================================================
+         8. APPLE iOS 2026 MODAL BOTTOM SHEET
+         ========================================================================= */
+      .ios-modal-overlay {
+        position: fixed; inset: 0; z-index: 10000;
+        background: rgba(15, 23, 42, 0.65);
+        backdrop-filter: blur(16px) saturate(180%);
+        -webkit-backdrop-filter: blur(16px) saturate(180%);
+        display: flex; align-items: center; justify-content: center;
+        padding: 16px; opacity: 0; pointer-events: none;
+        transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .ios-modal-overlay.active { opacity: 1; pointer-events: auto; }
+
+      .ios-modal-card {
+        width: 100%; max-width: 390px;
+        background: #FFFFFF; border-radius: 28px;
+        box-shadow: 0 24px 60px rgba(15, 23, 42, 0.3), inset 1px 1px 2px rgba(255, 255, 255, 0.95);
+        border: 1.5px solid rgba(255, 255, 255, 0.95);
+        padding: 20px 22px; display: flex; flex-direction: column; gap: 14px;
+        transform: scale(0.9) translateY(24px);
+        transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+        max-height: 90vh; overflow-y: auto;
+      }
+      .ios-modal-overlay.active .ios-modal-card { transform: scale(1) translateY(0); }
+
+      .ios-sheet-handle {
+        width: 36px; height: 5px; border-radius: 3px; background: #CBD5E1; margin: -6px auto 4px;
+      }
+
+      .modal-head-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+      .modal-title-group { display: flex; align-items: center; gap: 8px; }
+      .modal-title-group h3 { font-size: 15px; font-weight: 900; color: #0F172A; }
+      
+      .modal-close-btn {
+        width: 32px; height: 32px; border-radius: 50%; background: #F1F5F9;
+        border: none; display: flex; align-items: center; justify-content: center;
+        color: #64748B; cursor: pointer; transition: transform 0.15s ease, background 0.2s ease;
+      }
+      .modal-close-btn:active { transform: scale(0.92); background: #E2E8F0; }
+
+      .modal-qr-section {
+        display: flex; flex-direction: column; align-items: center; text-align: center; gap: 10px;
+        padding: 14px 10px; border-radius: 20px; background: #F8FAFC; border: 1px solid #E2E8F0;
+        box-shadow: inset 1px 1px 4px rgba(166, 178, 195, 0.15);
+      }
+
+      .modal-big-qr {
+        width: 170px; height: 170px; border-radius: 16px; background: #FFFFFF;
+        padding: 8px; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08), inset 0 0 0 1px #E2E8F0;
+        display: flex; align-items: center; justify-content: center;
+      }
+      .modal-big-qr svg { width: 100% !important; height: 100% !important; border-radius: 8px; }
+
+      .modal-qr-caption {
+        font-size: 11.5px; font-weight: 700; color: var(--text-secondary); line-height: 1.35; max-width: 280px;
+      }
+
+      .modal-action-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+      .modal-action-btn {
+        padding: 9px 12px; border-radius: 14px; border: none;
+        display: flex; align-items: center; justify-content: center; gap: 6px;
+        font-family: "Plus Jakarta Sans", sans-serif; font-size: 11px; font-weight: 800;
+        cursor: pointer; transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      .modal-action-btn:active { transform: scale(0.95); }
+      .modal-action-btn.copy { background: #F1F5F9; color: var(--text-primary); border: 1px solid #E2E8F0; }
+      .modal-action-btn.share { background: var(--ios-blue); color: #FFFFFF; box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3); }
+
+      .modal-hotline-card {
+        display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 16px;
+        background: linear-gradient(135deg, #059669, #047857); text-decoration: none;
+        color: #FFFFFF !important; box-shadow: 0 6px 16px rgba(5, 150, 105, 0.35);
+      }
+      .modal-hotline-card:active { transform: scale(0.97); }
+
+      /* Emergency Overlay */
+      .broadcast-overlay {
+        position: fixed; inset: 0; z-index: 10000; display: none; align-items: center; justify-content: center;
+        background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(12px);
+      }
+      .broadcast-overlay.active { display: flex; }
+      .broadcast-panel {
+        background: #FFFFFF; border-radius: 28px; padding: 24px; max-width: 90%; text-align: center;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4); border: 2px solid #FECDD3;
+      }
+      .broadcast-level-label { font-size: 12px; font-weight: 900; color: #E11D48; text-transform: uppercase; margin-bottom: 8px; }
+      .broadcast-message { font-size: 18px; font-weight: 900; color: #0F172A; line-height: 1.35; margin-bottom: 12px; }
+      .broadcast-zone { font-size: 11px; font-weight: 700; color: #64748B; }
+
+      .st-libur { display: none !important; }
+    
+      /* ===== 🚀 ULTRA SMOOTH 120Hz PERFORMANCE OPTIMIZATIONS ===== */
+      .scroller {
+        
+        scroll-behavior: smooth;
+      }
+
+      .platter {
+        contain: layout style paint;
+        
+        transform: translateZ(0);
+        -webkit-transform: translateZ(0);
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+        will-change: transform;
+      }
+
+      .ios-bento-tile, .hotline-clay-pill, .ios-icon-btn, .ios-seg-btn {
+        transform: translateZ(0);
+        -webkit-transform: translateZ(0);
+        backface-visibility: hidden;
+      }
+
+      /* Reduce Paint in Scrolling Areas */
+      
+
+    
+      .scroll-mask {
+        width: 100%;
+        overflow: visible;
+      }
+      .scroller {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        width: 100%;
+      }
+
+    
+      /* =========================================================================
+         9. iOS TOP MODE SWITCHER (LIVE vs JADWAL KESELURUHAN)
+         ========================================================================= */
+      .ios-mode-switcher {
+        display: flex; gap: 6px; padding: 4px; border-radius: 16px;
+        background: #E2E8F0; margin: 4px 0 10px;
+        box-shadow: inset 1px 1px 3px rgba(166, 178, 195, 0.35);
+      }
+      .ios-mode-btn {
+        flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px;
+        padding: 9px 12px; border: none; border-radius: 13px; background: transparent;
+        font-family: "Plus Jakarta Sans", sans-serif; font-size: 12px; font-weight: 800;
+        color: #64748B; cursor: pointer; transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      .ios-mode-btn.active {
+        background: #FFFFFF; color: #0F172A;
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08), 0 1px 3px rgba(0, 0, 0, 0.04);
+      }
+      .ios-mode-btn:active { transform: scale(0.97); }
+
+      /* Weekly Schedule Styling */
+      .ios-weekly-container {
+        display: none; flex-direction: column; gap: 12px;
+      }
+      .ios-weekly-container.active {
+        display: flex;
+      }
+      .ios-live-container {
+        display: flex; flex-direction: column; gap: 12px;
+      }
+      .ios-live-container.hidden {
+        display: none;
+      }
+
+      .weekly-day-bar {
+        display: flex; gap: 6px; overflow-x: auto; padding: 2px 2px 6px;
+        -webkit-overflow-scrolling: touch;
+      }
+      .weekly-day-bar::-webkit-scrollbar { display: none; }
+      
+      .weekly-day-btn {
+        flex-shrink: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
+        padding: 8px 12px; min-width: 58px; border-radius: 16px; border: 1.5px solid #E2E8F0;
+        background: #FFFFFF; box-shadow: 3px 3px 8px rgba(166, 178, 195, 0.2), -2px -2px 6px #FFFFFF;
+        cursor: pointer; transition: transform 0.15s ease, background 0.2s ease, border-color 0.2s ease;
+      }
+      .weekly-day-btn:active { transform: scale(0.94); }
+      .weekly-day-btn.active {
+        background: #007AFF; border-color: #007AFF; color: #FFFFFF;
+        box-shadow: 0 4px 14px rgba(0, 122, 255, 0.35);
+      }
+      .weekly-day-btn .day-title { font-size: 11px; font-weight: 900; text-transform: uppercase; }
+      .weekly-day-btn.active .day-title { color: #FFFFFF; }
+      .weekly-day-btn .day-badge {
+        font-family: "JetBrains Mono", monospace; font-size: 9px; font-weight: 800;
+        margin-top: 2px; padding: 1px 5px; border-radius: 6px; background: #F1F5F9; color: #475569;
+      }
+      .weekly-day-btn.active .day-badge { background: rgba(255, 255, 255, 0.25); color: #FFFFFF; }
+
+      .spec-chips-bar {
+        display: flex; gap: 6px; overflow-x: auto; padding: 2px 0 4px;
+        -webkit-overflow-scrolling: touch;
+      }
+      .spec-chips-bar::-webkit-scrollbar { display: none; }
+      .spec-chip {
+        flex-shrink: 0; padding: 6px 12px; border-radius: 12px; border: 1px solid #E2E8F0;
+        background: #FFFFFF; font-size: 11px; font-weight: 700; color: #475569;
+        cursor: pointer; transition: all 0.15s ease;
+      }
+      .spec-chip.active {
+        background: #0F172A; color: #FFFFFF; border-color: #0F172A;
+      }
+
+      /* Weekly Doctor Shift Card */
+      .weekly-shift-card {
+        background: #FFFFFF; border-radius: 20px; padding: 14px 16px;
+        box-shadow: 6px 6px 16px rgba(166, 178, 195, 0.22), -4px -4px 12px #FFFFFF, inset 1px 1px 2px rgba(255, 255, 255, 0.95);
+        border: 1.5px solid #F1F5F9; display: flex; flex-direction: column; gap: 10px;
+        transition: transform 0.15s ease;
+      }
+      .weekly-shift-card:active { transform: scale(0.98); }
+      .weekly-shift-head { display: flex; align-items: center; gap: 12px; }
+      .weekly-shift-initials {
+        width: 44px; height: 44px; border-radius: 14px; background: #F8FAFC;
+        border: 1.5px solid #E2E8F0; display: flex; align-items: center; justify-content: center;
+        font-family: "Outfit", sans-serif; font-size: 14px; font-weight: 900; color: #007AFF; flex-shrink: 0;
+      }
+      .weekly-shift-doc { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+      .weekly-shift-name { font-size: 13.5px; font-weight: 900; color: #0F172A; line-height: 1.25; }
+      .weekly-shift-spec { font-size: 11px; font-weight: 700; color: #007AFF; text-transform: uppercase; }
+
+      .weekly-shift-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+      .weekly-time-pill {
+        display: inline-flex; align-items: center; gap: 5px; padding: 5px 10px; border-radius: 10px;
+        background: #F0F9FF; color: #0284C7; font-family: "JetBrains Mono", monospace; font-size: 11.5px; font-weight: 800;
+        border: 1px solid #BAE6FD;
+      }
+      .weekly-reg-pill {
+        display: inline-flex; align-items: center; gap: 4px; padding: 5px 9px; border-radius: 10px;
+        background: #FFF7ED; color: #C2410C; font-size: 10.5px; font-weight: 800;
+        border: 1px solid #FFEDD5;
+      }
+      .weekly-day-tag {
+        display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 8px;
+        background: #F1F5F9; color: #475569; font-size: 10px; font-weight: 800; text-transform: uppercase;
+      }
+
+    
+      
+      /* =========================================================================
+         10. iOS JADWAL CUTI DOKTER & FULL CALENDAR CLONING
+         ========================================================================= */
+      .ios-leaves-container {
+        display: none; flex-direction: column; gap: 14px;
+      }
+      .ios-leaves-container.active {
+        display: flex;
+      }
+
+      /* Calendar Surface Card */
+      .leaves-cal-card {
+        background: #FFFFFF; border-radius: 24px; padding: 16px;
+        box-shadow: 6px 6px 18px rgba(166, 178, 195, 0.25), -4px -4px 12px #FFFFFF, inset 1px 1px 2px rgba(255, 255, 255, 0.95);
+        border: 1.5px solid #F1F5F9; display: flex; flex-direction: column; gap: 12px;
+      }
+
+      .cal-nav-row {
+        display: flex; align-items: center; justify-content: space-between; gap: 8px;
+      }
+      .cal-month-title {
+        font-size: 15px; font-weight: 900; color: #0F172A; letter-spacing: -0.01em;
+      }
+      .cal-nav-btn-group {
+        display: flex; align-items: center; gap: 4px; background: #F1F5F9; padding: 3px; border-radius: 14px;
+      }
+      .cal-nav-btn {
+        width: 32px; height: 32px; border-radius: 11px; border: none; background: #FFFFFF;
+        box-shadow: 2px 2px 6px rgba(166, 178, 195, 0.25), -1px -1px 4px #FFFFFF;
+        display: flex; align-items: center; justify-content: center; color: #0F172A;
+        cursor: pointer; transition: transform 0.15s ease;
+      }
+      .cal-nav-btn:active { transform: scale(0.92); }
+      .cal-today-btn {
+        padding: 0 10px; height: 32px; border-radius: 11px; border: none;
+        background: #059669; color: #FFFFFF; font-size: 10.5px; font-weight: 800;
+        cursor: pointer; transition: transform 0.15s ease;
+      }
+      .cal-today-btn:active { transform: scale(0.94); }
+
+      /* Calendar Days & Grid */
+      .cal-weekdays {
+        display: grid; grid-template-columns: repeat(7, 1fr); text-align: center;
+        font-size: 10.5px; font-weight: 800; color: #94A3B8; text-transform: uppercase; margin-bottom: -4px;
+      }
+      .cal-weekdays span:first-child { color: #E11D48; }
+
+      .cal-grid {
+        display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px;
+      }
+      .cal-day-cell {
+        aspect-ratio: 1; border-radius: 14px; border: 1px solid transparent; background: transparent;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        font-family: "JetBrains Mono", monospace; font-size: 12.5px; font-weight: 800; color: #1E293B;
+        cursor: pointer; position: relative; transition: all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      .cal-day-cell:active { transform: scale(0.92); }
+      .cal-day-cell.empty { pointer-events: none; }
+      .cal-day-cell.sunday { color: #E11D48; }
+      
+      .cal-day-cell.today {
+        border-color: #059669; color: #059669; background: #ECFDF5;
+      }
+      .cal-day-cell.selected {
+        background: #059669 !important; color: #FFFFFF !important;
+        box-shadow: 0 4px 12px rgba(5, 150, 105, 0.35); transform: scale(1.04);
+      }
+
+      .cal-dot-container {
+        display: flex; gap: 2px; position: absolute; bottom: 3px;
+      }
+      .cal-dot-leave {
+        width: 4.5px; height: 4.5px; border-radius: 50%; background: #D97706;
+      }
+      .cal-day-cell.selected .cal-dot-leave { background: #FEF08A; }
+
+      /* Calendar Legend */
+      .cal-legend {
+        display: flex; align-items: center; justify-content: space-around; padding-top: 8px;
+        border-top: 1px solid #F1F5F9; font-size: 10px; font-weight: 700; color: #64748B;
+      }
+      .cal-legend-item { display: flex; align-items: center; gap: 5px; }
+      .cal-legend-dot { width: 7px; height: 7px; border-radius: 50%; }
+
+      /* Sub Tab Switcher: Tanggal Terpilih vs Semua Agenda */
+      .leaves-subtab-bar {
+        display: flex; gap: 4px; background: #E2E8F0; padding: 3px; border-radius: 14px;
+      }
+      .leaves-subtab-btn {
+        flex: 1; padding: 7px 10px; border-radius: 11px; border: none; background: transparent;
+        font-family: "Plus Jakarta Sans", sans-serif; font-size: 11px; font-weight: 800; color: #64748B;
+        cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; gap: 5px;
+      }
+      .leaves-subtab-btn.active {
+        background: #FFFFFF; color: #0F172A; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+      }
+      .leaves-subtab-btn:active { transform: scale(0.96); }
+
+      /* Leave Card Component */
+      .leave-card {
+        background: #FFFFFF; border-radius: 20px; padding: 14px 16px;
+        box-shadow: 6px 6px 16px rgba(166, 178, 195, 0.22), -4px -4px 12px #FFFFFF, inset 1px 1px 2px rgba(255, 255, 255, 0.95);
+        border: 1.5px solid #F1F5F9; display: flex; flex-direction: column; gap: 10px;
+        position: relative; overflow: hidden; transition: transform 0.15s ease;
+      }
+      .leave-card:active { transform: scale(0.98); }
+      .leave-card::before {
+        content: ""; position: absolute; left: 0; top: 12px; bottom: 12px; width: 4.5px;
+        border-radius: 0 6px 6px 0; background: var(--leave-accent, #E11D48);
+        box-shadow: 0 0 8px var(--leave-accent, #E11D48);
+      }
+
+      .leave-head { display: flex; align-items: center; gap: 12px; }
+      .leave-avatar {
+        width: 44px; height: 44px; border-radius: 14px; background: #FFF1F2;
+        border: 1.5px solid #FECDD3; display: flex; align-items: center; justify-content: center;
+        font-family: "Outfit", sans-serif; font-size: 14px; font-weight: 900; color: #E11D48; flex-shrink: 0;
+      }
+      .leave-doc-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+      .leave-doc-name { font-size: 13.5px; font-weight: 900; color: #0F172A; line-height: 1.25; }
+      .leave-doc-spec { font-size: 11px; font-weight: 700; color: #E11D48; text-transform: uppercase; }
+
+      .leave-badge-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+      
+      .leave-status-pill {
+        display: inline-flex; align-items: center; gap: 4px; padding: 4px 9px; border-radius: 9px;
+        font-size: 9.5px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em;
+      }
+      .leave-status-pill.active { background: #FFF1F2; color: #E11D48; border: 1px solid #FECDD3; }
+      .leave-status-pill.upcoming { background: #EFF6FF; color: #1D4ED8; border: 1px solid #BFDBFE; }
+      .leave-status-pill.past { background: #F8FAFC; color: #64748B; border: 1px solid #E2E8F0; }
+
+      .leave-date-pill {
+        display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 9px;
+        background: #F8FAFC; color: #334155; font-family: "JetBrains Mono", monospace; font-size: 11px; font-weight: 800;
+        border: 1px solid #E2E8F0;
+      }
+
+      .leave-reason-box {
+        display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 12px;
+        background: #F8FAFC; border: 1px solid #E2E8F0; font-size: 11px; font-weight: 600; color: #475569;
+      }
+      .leave-reason-box .material-icons-round { font-size: 16px; color: #94A3B8; flex-shrink: 0; }
+
+      .leave-replacement {
+        display: flex; align-items: center; gap: 6px; font-size: 10.5px; font-weight: 700; color: #059669;
+        padding: 4px 8px; border-radius: 8px; background: #ECFDF5; border: 1px solid #A7F3D0; width: fit-content;
+      }
+
+    </style>
+  </head>
+  <body>
+    <div class="ambient-bg"></div>
+
+    <!-- DYNAMIC ISLAND (APPLE iOS 2026 MORPHING PILL) -->
+    <div id="dynamicIsland" class="dynamic-island">
+      <div class="di-surface">
+        <div class="di-left">
+          <div id="diIconBox" class="di-icon-box">
+            <span id="diIcon" class="material-icons-round">radar</span>
+          </div>
+          <div class="di-text">
+            <span id="diTitle" class="di-title">SIAGA MEDIKA LIVE</span>
+            <span id="diMsg" class="di-msg">Memuat jadwal dokter...</span>
+          </div>
+        </div>
+        <div class="di-right">
+          <div class="di-soundwave">
+            <span class="bar bar-1"></span>
+            <span class="bar bar-2"></span>
+            <span class="bar bar-3"></span>
+            <span class="bar bar-4"></span>
+          </div>
+          <div class="di-live-indicator">
+            <span class="di-live-dot"></span>
+            <span class="di-live-text">LIVE</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EMERGENCY BROADCAST OVERLAY -->
+    <div id="broadcastOverlay" class="broadcast-overlay">
+      <div class="broadcast-panel">
+        <div class="broadcast-level-label" id="broadcastLevelLabel">PENGUMUMAN PENTING</div>
+        <div class="broadcast-message" id="broadcastMessage">—</div>
+        <div class="broadcast-zone" id="broadcastZone">Semua Area</div>
+      </div>
+    </div>
+
+    <!-- STICKY NATIVE iOS APP NAVIGATION HEADER -->
+    <header class="ios-nav-header">
+      <div class="ios-nav-row">
+        <div class="ios-brand-group">
+          <div class="ios-logo-coin">
+            <img src="/logo-rs.png" alt="RSU Siaga Medika" />
+          </div>
+          <div class="ios-title-group">
+            <h1>RSU SIAGA MEDIKA</h1>
+            <span>Jadwal Dokter & Antrian</span>
+          </div>
+        </div>
+        <div class="ios-header-actions">
+          <button class="ios-icon-btn primary" onclick="shareSchedule()" title="Bagikan Jadwal">
+            <span class="material-icons-round" style="font-size: 18px;">ios_share</span>
+          </button>
+          <button class="ios-icon-btn" onclick="openQrModal()" title="Menu & Barcode">
+            <span class="material-icons-round" style="font-size: 20px;">menu</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Time & Date Capsule -->
+      <div class="ios-time-banner">
+        <div class="ios-clock" id="clock">00:00</div>
+        <div class="ios-date" id="date">-</div>
+      </div>
+    </header>
+
+    <!-- MAIN SCROLLABLE MOBILE CONTENT -->
+    <main class="ios-main-content">
+      
+      <!-- TOP MODE SWITCHER -->
+      <!-- TOP MODE SWITCHER -->
+      <nav class="ios-mode-switcher" aria-label="Mode Tampilan Jadwal">
+        <button id="btnViewLive" class="ios-mode-btn active" onclick="switchMainView('live')">
+          <span class="material-icons-round" style="font-size: 16px; color: var(--ios-emerald);">bolt</span>
+          <span>Hari Ini</span>
+        </button>
+        <button id="btnViewWeekly" class="ios-mode-btn" onclick="switchMainView('weekly')">
+          <span class="material-icons-round" style="font-size: 16px; color: var(--ios-blue);">calendar_month</span>
+          <span>Keseluruhan</span>
+        </button>
+        <button id="btnViewLeaves" class="ios-mode-btn" onclick="switchMainView('leaves')">
+          <span class="material-icons-round" style="font-size: 16px; color: var(--ios-rose);">beach_access</span>
+          <span>Jadwal Cuti</span>
+        </button>
+      </nav>
+
+      <!-- ─── LIVE CONTAINER (JADWAL HARI INI) ─── -->
+      <div id="viewLive" class="ios-live-container">
+        <!-- 1. BENTO STATS TILES -->
+      <section class="ios-bento-stats">
+        <div class="ios-bento-tile buka" onclick="switchTab('all')">
+          <span class="bento-num" id="statBuka" style="color: var(--ios-emerald);">0</span>
+          <span class="bento-lbl">Praktek</span>
+        </div>
+        <div class="ios-bento-tile penuh" onclick="switchTab('khusus')">
+          <span class="bento-num" id="statPenuh" style="color: var(--ios-amber);">0</span>
+          <span class="bento-lbl">Penuh</span>
+        </div>
+        <div class="ios-bento-tile cuti" onclick="switchTab('khusus')">
+          <span class="bento-num" id="statCuti" style="color: var(--ios-rose);">0</span>
+          <span class="bento-lbl">Cuti/Izin</span>
+        </div>
+      </section>
+
+      <!-- 2. SPOTLIGHT SEARCH WITH DEBOUNCE -->
+      <div class="ios-search-wrapper">
+        <div class="ios-search-bar">
+          <span class="material-icons-round ios-search-icon">search</span>
+          <input
+            type="text"
+            id="doctorSearchInput"
+            class="ios-search-input"
+            placeholder="Cari nama dokter, spesialis, poli..."
+            oninput="onSearchInput(this.value)"
+            autocomplete="off"
+          />
+          <button id="searchClearBtn" class="ios-search-clear" onclick="clearSearch()" style="display: none;" title="Hapus Pencarian">
+            <span class="material-icons-round" style="font-size: 18px;">cancel</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 3. NATIVE iOS SEGMENTED CONTROL BAR -->
+      <nav class="ios-segmented-bar" aria-label="Pilih Kategori Poli">
+        <button class="ios-seg-btn active" data-tab="all" onclick="switchTab('all')">
+          <span>Semua Poli</span>
+        </button>
+        <button class="ios-seg-btn" data-tab="bedah" onclick="switchTab('bedah')">
+          <span>🏥 Bedah</span>
+        </button>
+        <button class="ios-seg-btn" data-tab="nonbedah" onclick="switchTab('nonbedah')">
+          <span>🩺 Non-Bedah</span>
+        </button>
+        <button class="ios-seg-btn" data-tab="khusus" onclick="switchTab('khusus')">
+          <span>ℹ️ Khusus</span>
+        </button>
+      </nav>
+
+      <!-- 4. DOCTOR LIST: POLI BEDAH -->
+      <section class="ios-section" id="bedahSection">
+        <div class="ios-section-header">
+          <div class="ios-sec-title">
+            <span class="material-icons-round" style="font-size: 16px; color: var(--ios-blue);">local_hospital</span>
+            <span>Poli Bedah</span>
+          </div>
+          <span class="ios-sec-badge" id="countBedah">0</span>
+        </div>
+        <div class="scroll-mask" id="maskBedah">
+          <div class="scroller" id="scrollBedah"></div>
+        </div>
+      </section>
+
+      <!-- 5. DOCTOR LIST: POLI NON-BEDAH -->
+      <section class="ios-section" id="nonBedahSection">
+        <div class="ios-section-header">
+          <div class="ios-sec-title">
+            <span class="material-icons-round" style="font-size: 16px; color: var(--ios-indigo);">medical_services</span>
+            <span>Poli Non Bedah</span>
+          </div>
+          <span class="ios-sec-badge" id="countNonBedah">0</span>
+        </div>
+        <div class="scroll-mask" id="maskNonBedah">
+          <div class="scroller" id="scrollNonBedah"></div>
+        </div>
+      </section>
+
+      <!-- 6. STATUS KHUSUS & INFORMASI -->
+      <section class="ios-section" id="sidebarSection">
+        <div class="ios-section-header">
+          <div class="ios-sec-title">
+            <span class="material-icons-round" style="font-size: 16px; color: var(--ios-amber);">info</span>
+            <span>Status Khusus (Cuti / Penuh)</span>
+          </div>
+          <span class="ios-sec-badge" id="countSidebar">0</span>
+        </div>
+        <div class="scroll-mask" id="maskSidebar">
+          <div class="scroller" id="scrollSidebar"></div>
+        </div>
+      </section>
+
+      <!-- 7. PATIENT SERVICE WIDGET (HOTLINE & QR) -->
+      <section class="patient-service-clay">
+        <div class="patient-qr-row">
+          <div class="qr-container-clay" onclick="openQrModal()" title="Klik untuk memperbesar QR Barcode">
+            <div class="qr-tap-badge"><span class="material-icons-round">zoom_in</span></div>
+            <div id="patientQrCode"></div>
+          </div>
+          <div class="qr-label-group">
+            <div class="qr-badge-pill">
+              <span class="material-icons-round" style="font-size: 12px;">qr_code_scanner</span>
+              <span>BARCODE RESMI</span>
+            </div>
+            <span class="qr-desc">Akses jadwal real-time kapan saja langsung dari smartphone Anda</span>
+          </div>
+        </div>
+        
+        <a href="https://wa.me/6282323446076" target="_blank" class="hotline-clay-pill">
+          <div class="hotline-icon-box">
+            <span class="material-icons-round">support_agent</span>
+          </div>
+          <div class="hotline-text-col">
+            <span class="hotline-label">LAYANAN INFORMASI & PENDAFTARAN</span>
+            <span class="hotline-number">0823-2344-6076</span>
+          </div>
+          <span class="material-icons-round hotline-chevron">chevron_right</span>
+        </a>
+
+        <!-- Dynamic Info Box -->
+        <div class="dynamic-info-clay">
+          <div class="info-icon-coin">
+            <span class="material-icons-round">campaign</span>
+          </div>
+          <p id="dynamicInfoBox">Memuat informasi layanan rumah sakit...</p>
+        </div>
+      </section>
+      </div>
+
+      <!-- ─── JADWAL KESELURUHAN (WEEKLY MASTER SCHEDULE) ─── -->
+      <div id="viewWeekly" class="ios-weekly-container">
+        
+        <!-- Search Spotlight Weekly -->
+        <div class="ios-search-wrapper">
+          <div class="ios-search-bar">
+            <span class="material-icons-round ios-search-icon">search</span>
+            <input
+              type="text"
+              id="weeklySearchInput"
+              class="ios-search-input"
+              placeholder="Cari dokter, poli, atau spesialisasi..."
+              oninput="onWeeklySearchInput(this.value)"
+              autocomplete="off"
+            />
+            <button id="weeklySearchClearBtn" class="ios-search-clear" onclick="clearWeeklySearch()" style="display: none;" title="Hapus">
+              <span class="material-icons-round" style="font-size: 18px;">cancel</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Day Strip Selector -->
+        <div class="weekly-day-bar" id="weeklyDayBar">
+          <button class="weekly-day-btn" data-day="all" onclick="switchWeeklyDay('all')">
+            <span class="day-title">Semua</span>
+            <span class="day-badge" id="badgeAllDays">0</span>
+          </button>
+          <button class="weekly-day-btn" data-day="0" onclick="switchWeeklyDay(0)">
+            <span class="day-title">Senin</span>
+            <span class="day-badge" id="badgeDay0">0</span>
+          </button>
+          <button class="weekly-day-btn" data-day="1" onclick="switchWeeklyDay(1)">
+            <span class="day-title">Selasa</span>
+            <span class="day-badge" id="badgeDay1">0</span>
+          </button>
+          <button class="weekly-day-btn" data-day="2" onclick="switchWeeklyDay(2)">
+            <span class="day-title">Rabu</span>
+            <span class="day-badge" id="badgeDay2">0</span>
+          </button>
+          <button class="weekly-day-btn" data-day="3" onclick="switchWeeklyDay(3)">
+            <span class="day-title">Kamis</span>
+            <span class="day-badge" id="badgeDay3">0</span>
+          </button>
+          <button class="weekly-day-btn" data-day="4" onclick="switchWeeklyDay(4)">
+            <span class="day-title">Jumat</span>
+            <span class="day-badge" id="badgeDay4">0</span>
+          </button>
+          <button class="weekly-day-btn" data-day="5" onclick="switchWeeklyDay(5)">
+            <span class="day-title">Sabtu</span>
+            <span class="day-badge" id="badgeDay5">0</span>
+          </button>
+          <button class="weekly-day-btn" data-day="6" onclick="switchWeeklyDay(6)">
+            <span class="day-title">Minggu</span>
+            <span class="day-badge" id="badgeDay6">0</span>
+          </button>
+        </div>
+
+        <!-- Specialty Filter Chips -->
+        <div class="spec-chips-bar" id="weeklySpecChips">
+          <button class="spec-chip active" data-spec="all" onclick="switchWeeklySpec('all')">Semua Poli</button>
+        </div>
+
+        <!-- Result Counter Header -->
+        <div class="ios-section-header" style="margin-top: 2px;">
+          <div class="ios-sec-title">
+            <span class="material-icons-round" style="font-size: 16px; color: var(--ios-blue);">event_note</span>
+            <span id="weeklyResultTitle">Daftar Jadwal Dokter</span>
+          </div>
+          <span class="ios-sec-badge" id="weeklyResultCount">0 Jadwal</span>
+        </div>
+
+        <!-- Weekly List Cards -->
+        <div class="scroller" id="weeklyListContainer">
+          <div style="text-align: center; padding: 24px; color: #94A3B8; font-weight: 700;">Memuat jadwal dokter...</div>
+        </div>
+
+      </div><!-- /#viewWeekly -->
+
+      <!-- ─── JADWAL CUTI DOKTER (FULL CALENDAR CLONE) ─── -->
+      <div id="viewLeaves" class="ios-leaves-container">
+        
+        <!-- 1. FULL INTERACTIVE CALENDAR SURFACE -->
+        <div class="leaves-cal-card">
+          <div class="cal-nav-row">
+            <span class="cal-month-title" id="calMonthTitle">Agustus 2026</span>
+            <div class="cal-nav-btn-group">
+              <button class="cal-nav-btn" onclick="prevCalMonth()" title="Bulan Sebelumnya">
+                <span class="material-icons-round" style="font-size: 18px;">chevron_left</span>
+              </button>
+              <button class="cal-today-btn" onclick="jumpCalToday()">Hari Ini</button>
+              <button class="cal-nav-btn" onclick="nextCalMonth()" title="Bulan Berikutnya">
+                <span class="material-icons-round" style="font-size: 18px;">chevron_right</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Weekday Labels -->
+          <div class="cal-weekdays">
+            <span>Min</span>
+            <span>Sen</span>
+            <span>Sel</span>
+            <span>Rab</span>
+            <span>Kam</span>
+            <span>Jum</span>
+            <span>Sab</span>
+          </div>
+
+          <!-- Days Grid -->
+          <div class="cal-grid" id="calDaysGrid">
+            <!-- Rendered by JS -->
+          </div>
+
+          <!-- Legend -->
+          <div class="cal-legend">
+            <div class="cal-legend-item">
+              <span class="cal-legend-dot" style="background: #E11D48;"></span>
+              <span>Minggu / Libur</span>
+            </div>
+            <div class="cal-legend-item">
+              <span class="cal-legend-dot" style="background: #D97706;"></span>
+              <span>Ada Cuti</span>
+            </div>
+            <div class="cal-legend-item">
+              <span class="cal-legend-dot" style="background: #059669;"></span>
+              <span>Terpilih</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. SUB TAB SWITCHER -->
+        <nav class="leaves-subtab-bar">
+          <button id="btnSubTabDay" class="leaves-subtab-btn active" onclick="switchLeavesSubTab('selected_day')">
+            <span class="material-icons-round" style="font-size: 15px;">event_available</span>
+            <span id="labelSelectedDayTitle">Tanggal Terpilih</span>
+          </button>
+          <button id="btnSubTabAgenda" class="leaves-subtab-btn" onclick="switchLeavesSubTab('all_agenda')">
+            <span class="material-icons-round" style="font-size: 15px;">view_agenda</span>
+            <span>Semua Agenda</span>
+          </button>
+        </nav>
+
+        <!-- 3. SEARCH SPOTLIGHT FOR AGENDA (Shown when in all_agenda or searching) -->
+        <div class="ios-search-wrapper" id="leavesSearchWrapper" style="display: none;">
+          <div class="ios-search-bar">
+            <span class="material-icons-round ios-search-icon" style="color: var(--ios-emerald);">search</span>
+            <input
+              type="text"
+              id="leavesSearchInput"
+              class="ios-search-input"
+              placeholder="Cari nama dokter cuti atau spesialisasi..."
+              oninput="onLeavesSearchInput(this.value)"
+              autocomplete="off"
+            />
+            <button id="leavesSearchClearBtn" class="ios-search-clear" onclick="clearLeavesSearch()" style="display: none;" title="Hapus">
+              <span class="material-icons-round" style="font-size: 18px;">cancel</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 4. SECTION HEADER & COUNTER -->
+        <div class="ios-section-header" style="margin-top: 2px;">
+          <div class="ios-sec-title">
+            <span class="material-icons-round" style="font-size: 16px; color: var(--ios-emerald);" id="leavesSecIcon">event_note</span>
+            <span id="leavesResultTitle">Dokter Cuti Tanggal Terpilih</span>
+          </div>
+          <span class="ios-sec-badge" id="leavesResultCount" style="color: var(--ios-emerald);">0 Dokter</span>
+        </div>
+
+        <!-- 5. LEAVES LIST CARDS -->
+        <div class="scroller" id="leavesListContainer">
+          <div style="text-align: center; padding: 24px; color: #94A3B8; font-weight: 700;">Memuat jadwal cuti dokter...</div>
+        </div>
+
+      </div><!-- /#viewLeaves -->
+
+    </main>
+
+    <!-- FLOATING iOS BOTTOM BAR -->
+    <footer class="ios-floating-dock">
+      <div class="dock-ticker">
+        <div class="dock-ticker-inner">
+          ✨ Selamat datang di RSU Siaga Medika Purbalingga • Layanan Pendaftaran & Informasi WhatsApp: 0823-2344-6076 • Tetap jaga protokol kesehatan di area rumah sakit.
+        </div>
+      </div>
+      <a href="https://wa.me/6282323446076" target="_blank" class="dock-wa-btn">
+        <span class="material-icons-round" style="font-size: 15px;">chat</span>
+        <span>WA CS</span>
+      </a>
+    </footer>
+
+    <!-- APPLE iOS 2026 QR CODE & HOSPITAL SERVICES MODAL -->
+    <div id="qrModal" class="ios-modal-overlay" onclick="handleOverlayClick(event)">
+      <div class="ios-modal-card">
+        <div class="ios-sheet-handle"></div>
+        <div class="modal-head-row">
+          <div class="modal-title-group">
+            <span class="material-icons-round" style="color: var(--ios-blue); font-size: 20px;">qr_code_2</span>
+            <h3>Barcode Pasien & Info</h3>
+          </div>
+          <button class="modal-close-btn" onclick="closeQrModal()" title="Tutup">
+            <span class="material-icons-round" style="font-size: 18px;">close</span>
+          </button>
+        </div>
+
+        <div class="modal-qr-section">
+          <div class="modal-big-qr">
+            <div id="modalBigQrCode"></div>
+          </div>
+          <p class="modal-qr-caption">
+            Scan barcode di atas menggunakan kamera smartphone untuk melihat jadwal live dokter, kuota, dan antrian secara real-time.
+          </p>
+        </div>
+
+        <div class="modal-action-row">
+          <button class="modal-action-btn copy" onclick="copyScheduleLink()">
+            <span class="material-icons-round" style="font-size: 15px;">content_copy</span>
+            <span>Salin Link</span>
+          </button>
+          <button class="modal-action-btn share" onclick="shareSchedule()">
+            <span class="material-icons-round" style="font-size: 15px;">ios_share</span>
+            <span>Bagikan</span>
+          </button>
+        </div>
+
+        <!-- Highlighted Hotline inside Modal -->
+        <a href="https://wa.me/6282323446076" target="_blank" class="modal-hotline-card">
+          <div class="hotline-icon-box">
+            <span class="material-icons-round">phone_in_talk</span>
+          </div>
+          <div class="hotline-text-col">
+            <span class="hotline-label">LAYANAN INFORMASI & PENDAFTARAN RS</span>
+            <span class="hotline-number">0823-2344-6076</span>
+          </div>
+          <span class="material-icons-round hotline-chevron">chevron_right</span>
+        </a>
+      </div>
+    </div>
+
+
+    <script>
+      // iOS Segmented Tab & Debounced Search Controller
+      window.activeTab = "all";
+      window.searchQuery = "";
+      let searchDebounceTimer = null;
+
+      function onSearchInput(val) {
+        const clearBtn = document.getElementById("searchClearBtn");
+        if (clearBtn) {
+          clearBtn.style.display = val && val.trim() ? "flex" : "none";
+        }
+        clearTimeout(searchDebounceTimer);
+        searchDebounceTimer = setTimeout(() => {
+          window.searchQuery = (val || "").trim().toLowerCase();
+          applyDoctorFilterAndSearch();
+        }, 180);
+      }
+
+      function clearSearch() {
+        const input = document.getElementById("doctorSearchInput");
+        if (input) {
+          input.value = "";
+          onSearchInput("");
+          input.focus();
+        }
+      }
+
+      function switchTab(tabId) {
+        window.activeTab = tabId;
+        document.querySelectorAll(".ios-seg-btn").forEach(btn => {
+          btn.classList.toggle("active", btn.dataset.tab === tabId);
+        });
+        applyDoctorFilterAndSearch();
+      }
+
+      function applyDoctorFilterAndSearch() {
+        requestAnimationFrame(() => {
+          const query = (window.searchQuery || "").toLowerCase();
+          const activeTab = window.activeTab || "all";
+
+          const allPlatters = document.querySelectorAll(".platter");
+          allPlatters.forEach(card => {
+            const text = (card.textContent || "").toLowerCase();
+            const matchesSearch = !query || text.includes(query);
+            
+            let matchesTab = true;
+            const parentSection = card.closest(".ios-section");
+            if (parentSection) {
+              const secId = parentSection.id;
+              if (activeTab === "bedah" && secId !== "bedahSection") matchesTab = false;
+              else if (activeTab === "nonbedah" && secId !== "nonBedahSection") matchesTab = false;
+              else if (activeTab === "khusus" && secId !== "sidebarSection") matchesTab = false;
+            }
+
+            if (matchesSearch && matchesTab) {
+              card.style.display = "flex";
+            } else {
+              card.style.display = "none";
+            }
+          });
+
+          // Toggle section headers
+          ["bedahSection", "nonBedahSection", "sidebarSection"].forEach(secId => {
+            const sec = document.getElementById(secId);
+            if (sec) {
+              if (activeTab === "all") {
+                const hasVisible = Array.from(sec.querySelectorAll(".platter")).some(p => p.style.display !== "none");
+                sec.style.display = hasVisible ? "flex" : (query ? "none" : "flex");
+              } else if (activeTab === "bedah") {
+                sec.style.display = secId === "bedahSection" ? "flex" : "none";
+              } else if (activeTab === "nonbedah") {
+                sec.style.display = secId === "nonBedahSection" ? "flex" : "none";
+              } else if (activeTab === "khusus") {
+                sec.style.display = secId === "sidebarSection" ? "flex" : "none";
+              }
+            }
+          });
+        });
+      }
+
+      function shareSchedule() {
+        if (navigator.share) {
+          navigator.share({
+            title: "Jadwal Praktik Dokter RSU Siaga Medika Purbalingga",
+            text: "Cek jadwal live & ketersediaan dokter spesialis di RSU Siaga Medika Purbalingga:",
+            url: (window.location.origin || "https://simed.fallonava.my.id") + "/jadwal"
+          }).catch(() => {});
+        } else {
+          navigator.clipboard.writeText(window.location.href);
+          if (typeof Island !== "undefined") {
+            Island.show("Link Disalin", "Tautan jadwal berhasil disalin ke clipboard", "success", "content_copy", 3000);
+          }
+        }
+      }
+    </script>
+
+<script>
+      // ===== CONFIGURATION =====
+      const CFG = {
+        API_MAIN: "/api/display",
+        POLL_MS: 3000, // Reduced for faster dev/test feedback, can be restored later
+        // Scroll Profesional: Item-by-Item
+        SCROLL_ITEM_PAUSE: 3000, // Jeda antar item (ms) — waktu baca per kartu
+        SCROLL_EDGE_PAUSE: 6000, // Jeda di ujung atas/bawah (ms)
+        SCROLL_DURATION: 800, // Durasi animasi geser per item (ms)
+      };
+
+      // ===== CORE ENGINE =====
+      const $ = (id) => document.getElementById(id);
+      const esc = (t) => {
+        const d = document.createElement("div");
+        d.textContent = t || "";
+        return d.innerHTML;
+      };
+      const initials = (n) =>
+        n
+          ? n
+              .split(" ")
+              .map((w) => w[0])
+              .join("")
+              .slice(0, 2)
+              .toUpperCase()
+          : "DR";
+
+      const getSpecialistIcon = (spec) => {
+        const s = (spec || "").toLowerCase();
+        if (s.includes("urologi")) return `<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24" fill="currentColor"><path d="M480-120q-33 0-56.5-23.5T400-200q0-33 23.5-56.5T480-280q33 0 56.5 23.5T560-200q0 33-23.5 56.5T480-120Zm0-240q-48 0-83.5-31.5T352-472q-3-22-10-41t-18-35q-23-40-75-52.5T128-636q-14 8-29 6.5T72-646q-12-11-13.5-27t8.5-29q40-45 96.5-66.5T280-790q53 0 100 24t78 66q4 6 10.5 9t11.5 3q5 0 11.5-3t10.5-9q31-42 78-66t100-24q60 0 116.5 21.5T893-702q10 13 8.5 29t-13.5 27q-12 11-27 6.5T832-636q-68 40-120 52.5T637-548q-11 16-18 35t-10 41q-9 48-44.5 79T480-360Z"/></svg>`;
+        if (s.includes("bedah mulut")) return "medical_services";
+        if (s.includes("anak")) return "child_care";
+        if (s.includes("gigi") || s.includes("konservasi") || s.includes("dental") || s.includes("mulut")) return `<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24" fill="currentColor"><path d="M480-120q-48 0-84-30t-48-76q-30 11-61.5 16T224-204q-26 0-45-19t-19-45v-92q0-109 72.5-188.5T408-644v24q0 30 21 51t51 21q30 0 51-21t21-51v-24q103 16 175.5 95.5T800-360v92q0 26-19 45t-45 19q-31 0-62.5-5.5T612-226q-12 46-48 76t-84 30Zm0-80q23 0 45-12.5t33-35.5l14-40 40 10q23 6 49 8.5t55 2.5v-53q0-82-55.5-141.5T528-525q-11 25-33.5 45T440-460q0-8 2-15t4-15q12-40 43.5-72T564-604q-32-15-68-23t-76-8q2 6 3 12t1 13q0 39-24 67.5T334-514q-14 30-36 71.5T260-360v120q29 0 55-2.5t49-8.5l40-10 14 40q11 23 33 35.5T480-200Zm0-300Z"/></svg>`;
+        if (s.includes("kandungan") || s.includes("obgyn")) return "pregnant_woman";
+        if (s.includes("mata")) return "visibility";
+        if (s.includes("saraf") || s.includes("neurologi")) return "psychology";
+        if (s.includes("dalam")) return "monitor_heart";
+        if (s.includes("jantung")) return "favorite";
+        if (s.includes("bedah")) return "medical_services";
+        if (s.includes("kulit") || s.includes("kelamin")) return "face_retouching_natural";
+        if (s.includes("tht") || s.includes("tth")) return "hearing";
+        if (s.includes("paru") || s.includes("pulmo")) return "air";
+        if (s.includes("ortopedi") || s.includes("orthopaedi")) return "accessible_forward";
+        if (s.includes("jiwa") || s.includes("psikiatri")) return "self_improvement";
+        if (s.includes("rehab")) return "accessibility_new";
+        return "health_and_safety";
+      };
+
+      // Helper: Tentukan apakah dokter dalam status "aktif" (sedang melayani/bisa daftar)
+      // Satu definisi tunggal dipakai di _detectChanges DAN render()
+      const isActive = (st) =>
+        ["PRAKTEK", "PENDAFTARAN"].includes(st) || st.includes("PENUH");
+
+      // #6: Format Jam Konsisten
+      const formatJam = (j) => {
+        if (!j || j === "-") return "-";
+        return j
+          .replace(/\./g, ":")
+          .replace(/\s*[-–]\s*/g, " — ")
+          .replace(/\s*s\/d\s*/gi, " — ");
+      };
+
+      // ===== CARD HTML BUILDER (Satu Fungsi untuk render() & _renderSidebar()) =====
+      const buildCardHTML = (d, avatarText, statusIcon, statusLabel, labelJam, labelLive) => {
+        const jamTampil = d.JamDaftar !== "-"
+          ? esc(d.JamDaftar)
+          : formatJam((d.JamPraktek || "").split("-")[0]);
+          
+        const isCPO = ["CUTI", "PENUH", "OPERASI"].some(st => (d.Status || "").toUpperCase().includes(st));
+
+        return `
+          <div class="platter-main">
+            <div class="initials">${avatarText}</div>
+            <div class="info-col">
+              <div class="doc-spec">${esc(d.Spesialis)}</div>
+              <div class="doc-name">${esc(d.Dokter)}</div>
+            </div>
+            <div class="meta-col">
+              <div class="status-pill" style="background:var(--status-bg);color:var(--status-color)">
+                <span class="material-icons-round" style="font-size:12px">${statusIcon}</span>${statusLabel}
+              </div>
+              ${!isCPO && d.JamPraktek && d.JamPraktek !== "-" ? `
+              <div class="jam-box">
+                <span class="jam-val jam-val-daftar" style="color:var(--status-color)">${jamTampil}</span>
+              </div>` : ""}
+            </div>
+          </div>
+          <div class="platter-detail">
+            <div class="detail-info">
+              <span class="detail-label">${labelJam}</span>
+              <span class="detail-time" style="font-size:15px">${jamTampil}</span>
+            </div>
+            <div class="live-status">
+              <div class="pulse-dot"></div>
+              <span class="live-text">${labelLive}</span>
+            </div>
+          </div>`;
+      };
+
+      const buildSidebarCardHTML = (d, avatarText, statusIcon, statusLabel) => {
+        const jamTampil = d.JamDaftar !== "-"
+          ? esc(d.JamDaftar)
+          : formatJam((d.JamPraktek || "").split("-")[0]);
+          
+        return `
+          <div class="platter-mini-grid" style="position:relative; z-index:1; display:flex; flex-direction:column; gap:8px; width:100%;">
+            <div class="mini-top-row" style="display:flex; justify-content:space-between; align-items:flex-start; width:100%;">
+              <div class="initials">${avatarText}</div>
+              <div class="meta-col" style="flex-shrink:0;">
+                <div class="status-pill" style="background:var(--status-bg);color:var(--status-color)">
+                  <span class="material-icons-round" style="font-size:10px; margin-right:2px;">${statusIcon}</span>${statusLabel}
+                </div>
+                <div class="jam-sidebar" style="display:none; align-items:center; gap:4px; background:rgba(125,125,125,0.08); padding:3px 8px; border-radius:6px; box-shadow:var(--neo-inset-dark), var(--neo-inset-light);">
+                  <span class="material-icons-round" style="font-size:12px; color:var(--text-secondary);">schedule</span>
+                  <span class="jam-val-daftar" style="font-size:12px; font-weight:800; color:var(--text-primary); font-variant-numeric: tabular-nums;">${jamTampil}</span>
+                </div>
+              </div>
+            </div>
+            <div class="info-col" style="display:flex; flex-direction:column; gap:4px; margin-top:2px;">
+              <div class="doc-name" style="font-size:11.5px; font-weight:700;">${esc(d.Dokter)}</div>
+              <div class="doc-spec" style="font-size:9.5px; opacity:0.75;">${esc(d.Spesialis)}</div>
+            </div>
+          </div>`;
+      };
+
+
+      // ===== PROFESSIONAL SCROLLER (Item-by-Item with Easing) =====
+      // Pola: Scroll satu item → pause → scroll item berikutnya → ... → sampai bawah → pause lama → fade reset ke atas → ulangi
+      class SmoothScroller {
+        constructor(id) {
+          this.el = $(id);
+          this.y = 0;
+          this.targetY = 0;
+          this.currentItem = 0;
+          this.itemOffsets = []; // Posisi Y setiap item (kartu)
+          this.active = true;
+          this.animating = false;
+          this.h = 0; // scrollHeight
+          this.vh = 0; // viewportHeight
+          this.timer = null;
+
+          window.addEventListener("resize", () => this.updateMetrics());
+        }
+
+        // Hitung posisi setiap item kartu
+        updateMetrics() {
+          if (!this.el) return;
+          this.h = this.el.scrollHeight;
+          this.vh = this.el.parentElement.clientHeight;
+
+          // Bangun array offset posisi tiap item
+          this.itemOffsets = [];
+          const children = this.el.children;
+          for (let i = 0; i < children.length; i++) {
+            this.itemOffsets.push(children[i].offsetTop);
+          }
+
+          // Jika konten tidak perlu scroll, reset
+          if (this.h <= this.vh) {
+            this.y = 0;
+            this.targetY = 0;
+            this.currentItem = 0;
+            this.el.style.transform = "translate3d(0,0,0)";
+            this.el.style.opacity = "1";
+          }
+        }
+
+        // Easing: Cubic ease-in-out — pelan di awal & akhir, cepat di tengah
+        _ease(t) {
+          return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+        }
+
+        // Animasi scroll dari posisi saat ini ke target
+        _animateTo(target, duration, callback) {
+          if (this.animating) return;
+          this.animating = true;
+          const startY = this.y;
+          const delta = target - startY;
+
+          if (Math.abs(delta) < 1) {
+            this.animating = false;
+            if (callback) callback();
+            return;
+          }
+
+          let startTime = null;
+          const step = (timestamp) => {
+            if (!this.active) {
+              this.animating = false;
+              return;
+            }
+            if (!startTime) startTime = timestamp;
+
+            const elapsed = timestamp - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            const easedProgress = this._ease(progress);
+
+            this.y = startY + delta * easedProgress;
+            this.el.style.transform = `translate3d(0, -${this.y}px, 0)`;
+
+            if (progress < 1) {
+              // Jika mode tv optimized, pelankan simulasi ke ~30FPS untuk mendinginkan CPU
+              if (document.body.classList.contains("tv-optimized")) {
+                setTimeout(() => step(performance.now()), 33);
+              } else {
+                requestAnimationFrame(step);
+              }
+            } else {
+              this.y = target;
+              this.el.style.transform = `translate3d(0, -${this.y}px, 0)`;
+              this.animating = false;
+              if (callback) callback();
+            }
+          };
+          requestAnimationFrame(step);
+        }
+
+        // Fade out → reset ke atas → fade in (loop seamless)
+        _fadeResetToTop(callback) {
+          // Fade out
+          this.el.style.transition = "opacity 0.5s ease";
+          this.el.style.opacity = "0";
+
+          setTimeout(() => {
+            // Snap ke atas (tersembunyi)
+            this.y = 0;
+            this.targetY = 0;
+            this.currentItem = 0;
+            this.el.style.transition = "none";
+            this.el.style.transform = "translate3d(0, 0, 0)";
+
+            // Force reflow
+            void this.el.offsetHeight;
+
+            // Fade in
+            this.el.style.transition = "opacity 0.5s ease";
+            this.el.style.opacity = "1";
+
+            setTimeout(() => {
+              this.el.style.transition = "";
+              if (callback) callback();
+            }, 500);
+          }, 500);
+        }
+
+        // Loop utama: scroll item demi item
+        _scheduleNext() {
+          if (!this.active) return;
+          if (this.h <= this.vh) return; // Tidak perlu scroll
+
+          const maxScroll = this.h - this.vh;
+
+          // Hitung berapa item yang masih bisa di-scroll
+          // Cari item berikutnya yang offset-nya masih dalam batas
+          let nextItem = this.currentItem + 1;
+
+          // Pastikan ada item berikutnya
+          if (nextItem < this.itemOffsets.length) {
+            // Scroll ke item berikutnya — clamp ke maxScroll agar tidak overshoot
+            this.currentItem = nextItem;
+            // Jika item terakhir atau offset melebihi maxScroll, scroll ke maxScroll
+            // agar konten paling bawah terlihat sepenuhnya
+            this.targetY = Math.min(this.itemOffsets[nextItem], maxScroll);
+            if (this.y >= maxScroll - 1) {
+              // Sudah di posisi paling bawah, tidak perlu scroll lagi
+              this.timer = setTimeout(() => {
+                this._fadeResetToTop(() => {
+                  this.timer = setTimeout(
+                    () => this._scheduleNext(),
+                    CFG.SCROLL_EDGE_PAUSE,
+                  );
+                });
+              }, CFG.SCROLL_EDGE_PAUSE);
+              return;
+            }
+
+            this._animateTo(this.targetY, CFG.SCROLL_DURATION, () => {
+              // Pause setelah sampai, lalu lanjut
+              this.timer = setTimeout(
+                () => this._scheduleNext(),
+                CFG.SCROLL_ITEM_PAUSE,
+              );
+            });
+          } else {
+            // Sudah melewati semua item — scroll ke maxScroll jika belum
+            if (this.y < maxScroll - 1) {
+              this._animateTo(maxScroll, CFG.SCROLL_DURATION, () => {
+                this.timer = setTimeout(() => {
+                  this._fadeResetToTop(() => {
+                    this.timer = setTimeout(
+                      () => this._scheduleNext(),
+                      CFG.SCROLL_EDGE_PAUSE,
+                    );
+                  });
+                }, CFG.SCROLL_EDGE_PAUSE);
+              });
+            } else {
+              // Sudah di ujung bawah — pause lama, lalu fade reset
+              this.timer = setTimeout(() => {
+                this._fadeResetToTop(() => {
+                  // Pause di atas, lalu mulai scroll lagi
+                  this.timer = setTimeout(
+                    () => this._scheduleNext(),
+                    CFG.SCROLL_EDGE_PAUSE,
+                  );
+                });
+              }, CFG.SCROLL_EDGE_PAUSE);
+            }
+          }
+        }
+
+        start() {
+          // Pause awal di posisi atas sebelum mulai scroll
+          this.timer = setTimeout(
+            () => this._scheduleNext(),
+            CFG.SCROLL_EDGE_PAUSE,
+          );
+        }
+
+        reset() {
+          // Bersihkan semua timer dan state
+          if (this.timer) clearTimeout(this.timer);
+          this.animating = false;
+          this.y = 0;
+          this.targetY = 0;
+          this.currentItem = 0;
+          if (this.el) {
+            this.el.style.transition = "none";
+            this.el.style.transform = "translate3d(0, 0, 0)";
+            this.el.style.opacity = "1";
+          }
+          // Restart cycle setelah metrics diupdate
+          this.timer = setTimeout(
+            () => this._scheduleNext(),
+            CFG.SCROLL_EDGE_PAUSE,
+          );
+        }
+      }
+
+      const isMobile = window.innerWidth <= 768;
+
+      let s1, s2, s3;
+
+      if (!isMobile) {
+        s1 = new SmoothScroller("scrollBedah");
+        s2 = new SmoothScroller("scrollNonBedah");
+        s3 = new SmoothScroller("scrollSidebar");
+      }
+
+      // Dynamic Island Controller (with Queue)
+      // Dynamic Island Controller (with Queue & Idle Cycle)
+      const Island = {
+        _el: null,
+        _icon: null,
+        _queue: [],
+        _isAnimating: false,
+        _idleTimer: null,
+
+        init() {
+          this._el = $("dynamicIsland");
+          this._icon = $("diIcon");
+          // #2 & #4: Mulai cycle idle message (sapaan / info)
+          this.startIdleCycle();
+        },
+
+        // #2: Sapaan Waktu Otomatis
+        getGreeting() {
+          const h = new Date().getHours();
+          if (h < 10) return "Selamat Pagi, Semangat Sehat! ☀️";
+          if (h < 15) return "Selamat Siang, Mohon Menunggu 🌤️";
+          if (h < 18) return "Selamat Sore 👋";
+          return "Selamat Malam 🌙";
+        },
+
+        // #4: Rotasi Info Edukasi
+        getIdleMessage() {
+          const msgs = [
+            this.getGreeting(),
+            "Dilarang Merokok di Area RS 🚭",
+            "Jagalah Kebersihan Ruang Tunggu 🗑️",
+            "Gunakan Masker Jika Batuk 😷",
+            "Antri Dengan Tertib 🚶‍♂️🚶‍♀️",
+            "Siapkan KTP & BPJS Anda 🆔",
+          ];
+          return msgs[Math.floor(Math.random() * msgs.length)];
+        },
+
+        startIdleCycle() {
+          // Diambil alih oleh Master Clock di App.init()
+        },
+
+        // show(title, msg, type, [icon], [duration])
+        async show(title, msg, type = "info", arg4 = null, arg5 = null) {
+          let duration = 8000;
+          let icon = null;
+
+          // Overload handling
+          if (typeof arg4 === "number") {
+            duration = arg4;
+          } else if (typeof arg4 === "string") {
+            icon = arg4;
+            if (typeof arg5 === "number") duration = arg5;
+          }
+
+          // Default icons
+          if (!icon) {
+            if (type === "success") icon = "check_circle";
+            else if (type === "warn") icon = "warning";
+            else if (type === "error") icon = "error";
+            else if (type === "info") icon = "info";
+            else if (type === "idle") icon = "notifications";
+          }
+
+          this._queue.push({ title, msg, type, icon, duration });
+          this.processQueue();
+        },
+
+        async processQueue() {
+          if (this._isAnimating || this._queue.length === 0) return;
+
+          this._isAnimating = true;
+          const item = this._queue.shift();
+
+          // 1. Reset Classes
+          this._el.className = `dynamic-island ${item.type}`;
+
+          // 2. Set Content
+          $("diTitle").textContent = item.title;
+          $("diMsg").textContent = item.msg;
+          // 3. Set Icon
+          const iconEl = this._icon;
+          if (iconEl) {
+            iconEl.textContent = item.icon || "info";
+            // Fix: Reset class to remove spinner
+            iconEl.className = "material-icons-round di-icon";
+          }
+
+          // Force layout recalc to restart transitions cleanly
+          void this._el.offsetWidth;
+
+          // 4. Expand Animation (in next frame for smoothness)
+          requestAnimationFrame(() => {
+            this._el.classList.add("expanded");
+          });
+
+          // 5. Wait Notification Duration
+          await new Promise((r) => setTimeout(r, item.duration));
+
+          // 5. Collapse Animation
+          this._el.classList.remove("expanded");
+
+          // 6. Cleanup & Next
+          setTimeout(() => {
+            this._isAnimating = false;
+            this._el.className = "dynamic-island"; // Reset to base
+            this.processQueue();
+          }, 600); // 0.6s match CSS liquid render
+        },
+      };
+
+      // Main App Logic
+      const App = {
+        _data: { doctors: [], shifts: [], leaves: [], settings: {} },
+        _prevDoctors: {}, // Track previous doctor states for change detection
+        _greetSent: {}, // Track which greetings have been sent today
+
+        _operasiDoctors: [], // Melacak dokter-dokter spesifik yang berada di Ruang Operasi
+        _opCycleIdx: 0,
+
+        // Jadwal Sholat Statis (Purbalingga) untuk Hitung Mundur
+        _prayTimes: [
+          { id: "Dzuhur", h: 12, m: 2 },
+          { id: "Ashar", h: 15, m: 18 },
+          { id: "Maghrib", h: 18, m: 3 },
+        ],
+        _activePrayCountdown: null,
+
+        _customMsgIdx: 0,
+        _customMsgs: [
+          { title: "Info", text: "Terimakasih sudah menunggu 🙏" },
+          { title: "Info", text: "Terimakasih sudah tertib 🌟" },
+          { title: "Antrian", text: "Belum online? Yo ambil antrian 🎫" },
+          { title: "Info", text: "Terimakasih sudah mengantri 😊" },
+        ],
+
+        _isFetching: false, // Network lock
+        _infoMsgIdx: 0,
+        _infoMsgs: [
+          "Pasien dengan status <strong>PENUH</strong> mohon mendaftar di hari lain.",
+          "Silakan siapkan <strong>KTP & Kartu BPJS</strong> sebelum ke loket pendaftaran.",
+          "Gunakan aplikasi <strong>MOBILE JKN</strong> untuk pendaftaran online.",
+          "Harap datang <strong>30 menit</strong> sebelum jam praktek dimulai.",
+          "Pasien <strong>BPJS</strong> wajib membawa surat rujukan dari Faskes tingkat 1.",
+          "Pastikan data diri Anda sudah sesuai dengan kartu identitas.",
+          "Informasi lebih lanjut hubungi <strong>INFORMASI</strong> atau <strong>0823-2344-6076</strong>.",
+        ],
+
+        
+        async fetchInitialData() {
+          try {
+            const res = await fetch("/api/display");
+            if (res.ok) {
+              const data = await res.json();
+              if (Array.isArray(data)) {
+                this.render(data);
+              } else if (data && (data.doctors || data.shifts)) {
+                this.processData(data);
+              if (typeof updateWeeklyData === "function" && data.doctors) updateWeeklyData(data.doctors, data.shifts);
+              if (typeof updateLeavesData === "function" && data.leaves) updateLeavesData(data.leaves);
+              }
+            }
+          } catch (err) {
+            console.error("Initial fetch error:", err);
+          }
+        },
+
+        async init() {
+          this.fetchInitialData();
+          setInterval(() => this.fetchInitialData(), 5000);
+          Island.init(); // Initialize Dynamic Island
+
+          // --- SMART TV OPTIMIZATION DETECTOR ---
+          const ua = navigator.userAgent.toLowerCase();
+          if (
+            ua.includes("webos") ||
+            ua.includes("tizen") ||
+            ua.includes("smarttv") ||
+            ua.includes("netcast")
+          ) {
+            document.body.classList.add("tv-optimized");
+          }
+
+          // Greeting based on time
+          const h = new Date().getHours();
+          const greeting =
+            h < 11
+              ? "Selamat Pagi"
+              : h < 15
+                ? "Selamat Siang"
+                : h < 18
+                  ? "Selamat Sore"
+                  : "Selamat Malam";
+          Island.show("PETUGAS PENDAFTARAN", greeting + " 👋", "success", 3000);
+
+          // --- MASTER CLOCK LOOP ---
+          // Menyatukan semua interval aplikasi (Clock, Fetch, Idle Island, Operasi, Theme) ke dalam satu timer agar lebih sinkron dan ringan di memori
+          let tick = 0;
+          setInterval(() => {
+            this.clock();
+            tick++;
+
+            if (tick % 8 === 0) this.updateInfoBox(); // Info box setiap 8 detik
+            if (tick % 60 === 0) this.updateTheme(); // Tema setiap 60 detik (1 menit)
+            // Diganti: this.fetch() dinonaktifkan karena sekarang pakai SSE realtime
+            if (tick % 10 === 0) this.checkBroadcast(); // Emergency broadcast polling setiap 10 detik
+
+            // Island Idle Cycle (setiap 180 detik / 3 menit)
+            if (
+              tick % 180 === 0 &&
+              Island._queue.length === 0 &&
+              !Island._isAnimating
+            ) {
+              Island.show(
+                "Info",
+                Island.getIdleMessage(),
+                "idle",
+                "tips_and_updates",
+                6000,
+              );
+            }
+
+            // Notifikasi Ruang Operasi (setiap 300 detik / 5 menit)
+            if (
+              tick % 300 === 0 &&
+              this._operasiDoctors.length > 0 &&
+              !Island._isAnimating
+            ) {
+              const dr = this._operasiDoctors[this._opCycleIdx];
+              Island.show(
+                "Ruang Operasi",
+                `${dr} sedang dalam tindakan operasi`,
+                "warn",
+                "local_hospital",
+                8000,
+              );
+              this._opCycleIdx =
+                (this._opCycleIdx + 1) % this._operasiDoctors.length;
+            }
+          }, 1000);
+
+          this.clock();
+          this.updateTheme();
+          this.skel();
+
+          // Start SSE Realtime Connection
+          this.connectRealtime();
+
+          this.checkBroadcast(); // Initial broadcast check
+          this.updateInfoBox();
+          if (!isMobile) {
+            s1.start();
+            s2.start();
+            s3.start();
+          }
+
+          // Watchdog: Auto-reload every 1 hour to clear memory (3600 detik)
+          setTimeout(() => window.location.reload(), 3600000);
+        },
+
+        clock() {
+          const d = new Date();
+
+          // Cache DOM updates untuk mencegah reflow tiap detik di TV low end
+          const clockVal = d.toLocaleTimeString("id-ID", {
+            hour: "2-digit",
+            minute: "2-digit",
+          });
+          const clockEl = $("clock");
+          if (clockEl && clockEl.textContent !== clockVal)
+            clockEl.textContent = clockVal;
+
+          const dateVal = d
+            .toLocaleDateString("id-ID", {
+              weekday: "long",
+              day: "numeric",
+              month: "long",
+            })
+            .toUpperCase();
+          const dateEl = $("date");
+          if (dateEl && dateEl.textContent !== dateVal)
+            dateEl.textContent = dateVal;
+
+          const h = d.getHours();
+          const m = d.getMinutes();
+          const s = d.getSeconds();
+
+          // Custom Rotating Notification every 5 minutes (avoid clash with break time at 12:00)
+          if (m % 5 === 0 && s === 0 && h !== 12) {
+            const msg = this._customMsgs[this._customMsgIdx];
+            Island.show(msg.title, msg.text, "info", 6000);
+            this._customMsgIdx =
+              (this._customMsgIdx + 1) % this._customMsgs.length;
+          }
+
+          // Sholat Countdown Logic (15 menit sebelum masuknya waktu)
+          const currentTotalMins = h * 60 + m;
+          let prayCountdownActive = false;
+
+          for (const p of this._prayTimes) {
+            const prayMins = p.h * 60 + p.m;
+            const diffMins = prayMins - currentTotalMins;
+
+            // Jika berada di rentang 1 hingga 15 menit SEBELUM masuk sholat
+            if (diffMins > 0 && diffMins <= 15) {
+              prayCountdownActive = true;
+              if (s === 0 && this._activePrayCountdown !== p.id) {
+                this._activePrayCountdown = p.id;
+                Island.show(
+                  "Waktu Sholat",
+                  `${diffMins} Menit Menuju Waktu ${p.id} 🕌`,
+                  "info",
+                  "access_time",
+                  6000,
+                );
+              }
+
+              // Hitung mundur visual di bottom left
+              const remainingSeconds = 60 - s;
+              const displayMins = diffMins - 1; // contoh: dif 15m, di menit 14:59 kita tampilkan 14.
+
+              const mm = displayMins.toString().padStart(2, "0");
+              const ss =
+                remainingSeconds === 60
+                  ? "00"
+                  : remainingSeconds.toString().padStart(2, "0");
+              this.status(
+                `[${mm}:${ss}] MENUJU WAKTU ${p.id.toUpperCase()} 🕌`,
+                true,
+              );
+              break;
+            }
+            // Tepat saat Waktu Sholat Tiba
+            else if (diffMins === 0 && s === 0) {
+              this._activePrayCountdown = null;
+              this.status("LIVE STREAM", false);
+              Island.show(
+                "Waktu Sholat",
+                `Waktu ${p.id} Telah Tiba 🕌`,
+                "success",
+                "access_time",
+                8000,
+              );
+
+              // Audio dibuang sepenuhnya untuk performa memori Smart TV yang lebih baik
+            }
+          }
+
+          if (!prayCountdownActive && this._activePrayCountdown) {
+            this._activePrayCountdown = null;
+            if (!this._isFetching) this.status("LIVE STREAM", false);
+          }
+
+          // Time-based Greetings (fire once at the exact hour)
+          if (s === 0 && m === 0) {
+            const key = "greet_" + h;
+            if (!this._greetSent[key]) {
+              this._greetSent[key] = true;
+              if (h === 6) Island.show("Pagi", "Selamat Pagi 🌅", "info", 4000);
+              if (h === 12)
+                Island.show("Siang", "Selamat Siang ☀️", "info", 4000);
+              if (h === 18)
+                Island.show("Sore", "Selamat Sore 🌇", "info", 4000);
+            }
+          }
+        },
+
+        updateTheme() { document.documentElement.setAttribute("data-theme", "light"); return;
+          const h = new Date().getHours();
+          // Light Theme: 06:00 - 17:59 | Dark Theme: 18:00 - 05:59
+          const isLight = h >= 6 && h < 18;
+          document.documentElement.setAttribute(
+            "data-theme",
+            isLight ? "light" : "dark",
+          );
+        },
+
+        skel() {
+          const make = () =>
+            Array(4)
+              .fill(0)
+              .map(
+                () =>
+                  `<div class="platter" style="height:48px; opacity:0.6"><div class="skel" style="width:32px;height:32px;border-radius:10px"></div><div class="skel" style="width:60%;height:14px"></div></div>`,
+              )
+              .join("");
+          $("scrollBedah").innerHTML = make();
+          $("scrollNonBedah").innerHTML = make();
+        },
+
+        connectRealtime() {
+          const es = new EventSource("/api/stream/live");
+
+          // Legacy/Initial snapshot (unnamed)
+          es.onmessage = (e) => {
+            try {
+              const res = JSON.parse(e.data);
+              if (res && res.doctors) this.processData(res);
+            } catch (err) {
+              console.error("Snapshot Error:", err);
+            }
+          };
+
+          // Modern named events
+          const events = ["doctors", "shifts", "leaves", "settings"];
+          events.forEach((eventName) => {
+            es.addEventListener(eventName, (e) => {
+              try {
+                const data = JSON.parse(e.data);
+                this.processData({ [eventName]: data });
+              } catch (err) {
+                console.error(`SSE ${eventName} Error:`, err);
+              }
+            });
+          });
+
+          es.onerror = () => {
+            Island.show(
+              "Koneksi",
+              "Mencoba menyambung kembali...",
+              "warn",
+              5000,
+            );
+            this.status("OFFLINE MODE", true);
+          };
+        },
+
+        processData(partial) {
+          if (!partial) return;
+          this._data = { ...this._data, ...partial };
+          if (typeof updateWeeklyData === "function") updateWeeklyData(this._data.doctors, this._data.shifts);
+          if (typeof updateLeavesData === "function" && this._data.leaves) updateLeavesData(this._data.leaves);
+          const res = this._data;
+
+          this._isFetching = true;
+
+          try {
+            const doctors = res.doctors || [];
+            const shifts = res.shifts || [];
+            const leaves = res.leaves || [];
+
+            // Get today's info
+            const now = new Date();
+            const todayDayIdx = now.getDay() === 0 ? 6 : now.getDay() - 1; // 0=Mon, 6=Sun
+            const todayStr = now.toISOString().split("T")[0];
+
+            // Map standard format to legacy format needed by TV UI
+            const mappedData = [];
+
+            // Helper inline untuk cek ganjil/genap
+            const isShiftActiveForDate = (extra, date) => {
+              if (!extra) return true;
+              const weekOfMonth = Math.ceil(date.getDate() / 7);
+              if (extra === 'odd_weeks' && weekOfMonth % 2 === 0) return false;
+              if (extra === 'even_weeks' && weekOfMonth % 2 !== 0) return false;
+              return true;
+            };
+
+            // Find shifts for today
+            const todayShifts = shifts.filter(
+              (s) => s.dayIdx === todayDayIdx && isShiftActiveForDate(s.extra, now)
+            );
+
+            todayShifts.forEach((shift, index) => {
+              const doc = doctors.find((d) => d.id === shift.doctorId);
+              if (!doc) return;
+
+              const jamStr = shift.formattedTime || shift.title || "-";
+
+              // Status dasar yang diputuskan server secara global untuk dokter
+              let status = (doc.status || "").toUpperCase();
+
+              // Cek apakah dokter cuti/tidak praktek hari ini
+              const isLeaveToday = (shift.disabledDates || []).includes(todayStr) || 
+                                   leaves.some(l => l.doctorId === doc.id && l.startDate <= todayStr && l.endDate >= todayStr);
+
+              if (isLeaveToday) {
+                status = "CUTI";
+              }
+              
+              const isPriorityStatus = ["CUTI", "PENUH", "OPERASI"].some(s => status.includes(s));
+
+              // --- MULTI-SHIFT BUG FIX ---
+              if (jamStr !== "-") {
+                const parts = jamStr.replace(/\s/g, "").replace(/\./g, ":").toLowerCase().match(/(\d{1,2}:\d{2})/g);
+                if (parts && parts.length > 0) {
+                  const parseMins = (t) => {
+                    const [h, m] = t.split(":").map(Number);
+                    return h * 60 + m;
+                  };
+                  const startMins = parseMins(parts[0]);
+                  let endMins = null;
+                  
+                  if (parts.length >= 2) {
+                    endMins = parseMins(parts[1]);
+                    if (endMins < startMins) endMins += 24 * 60; // crossover midnight
+                  } else if (jamStr.toLowerCase().includes("selesai")) {
+                    endMins = startMins + 240; // Default 4 jam jika "sampai selesai"
+                  }
+
+                  let regMins = startMins - 30; // default 30 min buka loket
+                  const rTime = shift.registrationTime || doc.registrationTime;
+                  if (rTime && rTime !== "-") {
+                    const rParts = rTime.replace(/\./g, ":").split(":");
+                    if (rParts.length >= 2) regMins = Number(rParts[0]) * 60 + Number(rParts[1]);
+                  }
+
+                  const now = new Date();
+                  const curMins = now.getHours() * 60 + now.getMinutes();
+
+                  if (endMins !== null && curMins >= endMins) {
+                    // Shift ini sudah sepenuhnya lewat (berlaku untuk SEMUA dokter, termasuk Cuti/Penuh/Operasi)
+                    status = "SELESAI";
+                  } else if (!isPriorityStatus) {
+                    // Jika belum habis, dan BUKAN status prioritas, evaluasi Terjadwal/Praktek
+                    if (curMins < regMins) {
+                      // Shift ini belum mulai dan loket belum buka
+                      status = "TERJADWAL";
+                    } else {
+                      // Shift sedang berjalan
+                      if (!["PRAKTEK", "PENDAFTARAN"].includes(status)) {
+                         status = "PRAKTEK";
+                      }
+                    }
+                  }
+                }
+              }
+
+              mappedData.push({
+                Dokter: doc.name,
+                Spesialis: doc.specialty,
+                Status: status,
+                Jam: jamStr,
+                JamPraktek: jamStr,
+                JamDaftar:
+                  shift.registrationTime || doc.registrationTime || "-",
+                Jenis: doc.category,
+                "Code Antrian": doc.queueCode,
+                _shiftId: shift.id || index,
+              });
+            });
+
+            // Detect doctor status changes before render
+            this._detectChanges(mappedData);
+
+            this.render(mappedData);
+            this.status("LIVE STREAM", false);
+          } catch (e) {
+            console.error("TV ProcessData Error:", e);
+            Island.show(
+              "Data Error",
+              "Gagal memproses data realtime",
+              "error",
+              8000,
+            );
+          } finally {
+            this._isFetching = false;
+          }
+        },
+
+        _detectChanges(data) {
+          if (!data) return;
+          const now = {}; // { status: string, active: boolean }
+          const ops = [];
+
+          data.forEach((d) => {
+            const name = (d.Dokter || "").trim();
+            const st = (d.Status || "").toUpperCase();
+            // Gunakan kombinasi nama + shift sebagai key agar dokter multi-shift dilacak terpisah
+            const key = `${name}_${d._shiftId || d.Jam || ""}`;
+            // Active logic: Inside time AND (BUKA or PENUH)
+            const isNowActive = isActive(st);
+
+            // Daftarkan ke list Ruang Operasi jika cocok
+            if (st.includes("OPERASI")) ops.push(name);
+
+            const prev = this._prevDoctors[key]; // { status, active } or undefined
+
+            // Store current state
+            now[key] = { status: st, active: isNowActive };
+
+            if (prev && prev.status !== st) {
+              if (st === "PENDAFTARAN") {
+                Island.show("Loket Dibuka", `Pendaftaran poli ${name} telah dimulai`, "info", "assignment", 8000);
+              } else if (st === "PRAKTEK") {
+                Island.show("Praktek Dimulai", `${name} Mulai Melayani Pasien`, "success", "door_front", 8000);
+              } else if (st === "PENUH") {
+                 Island.show("Kuota Penuh", `Poli ${name} telah memenuhi kuota maksimal`, "warn", "front_hand", 10000);
+              } else if (st === "SELESAI") {
+                 Island.show("Praktek Selesai", `Pelayanan ${name} telah purna`, "info", "check_circle", 8000);
+              } else if (st === "OPERASI") {
+                 Island.show("Tindakan Operasi", `${name} sedang dalam tindakan operasi`, "warn", "local_hospital", 10000);
+              }
+            }
+          });
+
+          this._operasiDoctors = ops;
+          this._prevDoctors = now;
+        },
+
+        _lastBroadcastId: null, // Track to avoid re-rendering same popup
+
+        async checkBroadcast() {
+          try {
+            const res = await fetch("/api/automation");
+            if (!res.ok) return; // Silent guard
+            const rules = await res.json();
+
+            // Filter rules that are active (assuming the backend returns true boolean)
+            const active = rules.find(
+              (r) => r.active === true || r.active === 1 || r.active === "true",
+            );
+            const overlay = $("broadcastOverlay");
+            if (!overlay) return;
+
+            if (active) {
+              // Only update DOM if broadcast changed
+              if (this._lastBroadcastId !== active.id) {
+                this._lastBroadcastId = active.id;
+
+                // Stop any closing animation if it was happening
+                overlay.classList.remove("closing");
+
+                // Set level class on overlay
+                overlay.className = `broadcast-overlay active broadcast-level-${active.alertLevel}`;
+
+                // Icon
+                const iconMap = {
+                  Information: "info",
+                  Warning: "warning",
+                  Critical: "error",
+                };
+                const iconEl = overlay.querySelector(
+                  ".broadcast-icon-ring .material-icons-round",
+                );
+                if (iconEl)
+                  iconEl.textContent = iconMap[active.alertLevel] || "campaign";
+
+                // Label
+                const labelEl = $("broadcastLevelLabel");
+                if (labelEl)
+                  labelEl.textContent = active.alertLevel.toUpperCase();
+
+                // Message
+                const msgEl = $("broadcastMessage");
+                if (msgEl) msgEl.textContent = active.message;
+
+                // Zone
+                const zoneEl = $("broadcastZone");
+                if (zoneEl)
+                  zoneEl.textContent =
+                    active.targetZone.replace("_", " ") +
+                    " • " +
+                    active.duration +
+                    " menit";
+
+                // Also show on Dynamic Island (debounce/protect multiple calls)
+                Island.show(
+                  "EMERGENCY BROADCAST",
+                  active.message,
+                  active.alertLevel === "Critical" ? "error" : "warn",
+                  "campaign",
+                  10000,
+                );
+              }
+            } else {
+              // No active broadcast — hide overlay with animation
+              if (
+                overlay.classList.contains("active") &&
+                !overlay.classList.contains("closing")
+              ) {
+                this._lastBroadcastId = null;
+                overlay.classList.add("closing");
+
+                // Wait for CSS animation to finish before removing 'active' class (display:none)
+                setTimeout(() => {
+                  // Double check if it wasn't re-activated during the closing animation
+                  if (overlay.classList.contains("closing")) {
+                    overlay.classList.remove("active", "closing");
+                    // Reset class back to base to purge level colors
+                    overlay.className = "broadcast-overlay";
+                  }
+                }, 450); // Slightly larger than the 0.4s animation duration
+              }
+            }
+          } catch (e) {
+            console.error("Broadcast check failed:", e);
+          }
+        },
+
+        updateInfoBox() {
+          const el = $("dynamicInfoBox");
+          if (!el) return;
+          el.style.opacity = "0";
+          setTimeout(() => {
+            el.innerHTML = this._infoMsgs[this._infoMsgIdx];
+            el.style.opacity = "1";
+            this._infoMsgIdx = (this._infoMsgIdx + 1) % this._infoMsgs.length;
+          }, 300);
+        },
+
+        status(msg, warn) {
+          const elTxt = $("liveText");
+          if (elTxt && elTxt.textContent !== msg) elTxt.textContent = msg;
+
+          const elDot = $("liveDot");
+          const newClass = warn ? "live-dot warn" : "live-dot";
+          if (elDot && elDot.className !== newClass) elDot.className = newClass;
+        },
+
+        render(data) {
+          if (!data) return;
+
+          // 0. Calculate Stats
+          let countBuka = 0,
+            countPenuh = 0,
+            countCuti = 0;
+          data.forEach((d) => {
+            const s = (d.Status || "").toUpperCase();
+            if (["PRAKTEK", "PENDAFTARAN", "TERJADWAL"].includes(s)) countBuka++;
+              else if (s === "PENUH") countPenuh++;
+            else if (s.includes("CUTI")) countCuti++;
+          });
+          $("statBuka").textContent = countBuka;
+          $("statPenuh").textContent = countPenuh;
+          $("statCuti").textContent = countCuti;
+
+          const group = { Bedah: [], NonBedah: [], Sidebar: [] };
+
+          // 1. ACTIVE List (Main Display) - Exclude Penuh, Cuti, Selesai, Tidak Praktek, Operasi
+          const mainData = data.filter((d) => {
+            const s = (d.Status || "").toUpperCase();
+            if (
+              s.includes("SELESAI") ||
+              s.includes("TIDAK") ||
+              s.includes("LIBUR")
+            )
+              return false;
+            // Move Penuh, Cuti, Operasi to Sidebar
+            if (
+              s.includes("PENUH") ||
+              s.includes("CUTI") ||
+              s.includes("OPERASI")
+            )
+              return false;
+            return true;
+          });
+
+          // 2. SIDEBAR List - Only Penuh, Cuti, Operasi
+          const sidebarData = data.filter((d) => {
+            const s = (d.Status || "").toUpperCase();
+            if (
+              s.includes("SELESAI") ||
+              s.includes("TIDAK") ||
+              s.includes("LIBUR")
+            )
+              return false;
+            return (
+              s.includes("PENUH") || s.includes("CUTI") || s.includes("OPERASI")
+            );
+          });
+
+          [...mainData, ...sidebarData].forEach((d) => {
+            const s = (d.Status || "").toUpperCase();
+            d._isActive = isActive(s);
+          });
+
+          // Sorting: AKTIF (Top) -> PRAKTEK/PNDF (4) -> PENUH (3) -> TERJADWAL (2.5) -> OPERASI (2) -> CUTI (1)
+          const score = (s) => {
+            const u = s.toUpperCase();
+            if (["PRAKTEK", "PENDAFTARAN"].includes(u)) return 4;
+            if (u.includes("PENUH")) return 3;
+            if (u === "TERJADWAL") return 2.5;
+            if (u.includes("OPERASI")) return 2;
+            if (u.includes("CUTI")) return 1;
+            return 0;
+          };
+
+          const sortFn = (a, b) => {
+            // Priority 1: Active
+            if (a._isActive && !b._isActive) return -1;
+            if (!a._isActive && b._isActive) return 1;
+            // Priority 2: Status Score
+            const diff = score(b.Status) - score(a.Status);
+            if (diff !== 0) return diff;
+            // Priority 3: Specialty (Poliklinik)
+            if (a.Spesialis < b.Spesialis) return -1;
+            if (a.Spesialis > b.Spesialis) return 1;
+            // Priority 4: Doctor Name
+            if (a.Dokter < b.Dokter) return -1;
+            if (a.Dokter > b.Dokter) return 1;
+            return 0;
+          };
+
+          mainData.sort(sortFn);
+          sidebarData.sort(sortFn);
+
+          // Group Main Data
+          mainData.forEach((d) => {
+            const g = d.Jenis === "Bedah" ? "Bedah" : "NonBedah";
+            if (group[g]) group[g].push(d);
+          });
+
+          // Group Sidebar Data — terpisah per status
+          group.SidebarOperasi = sidebarData.filter((d) =>
+            (d.Status || "").toUpperCase().includes("OPERASI"),
+          );
+          group.SidebarPenuh = sidebarData.filter((d) =>
+            (d.Status || "").toUpperCase().includes("PENUH"),
+          );
+          group.SidebarCuti = sidebarData.filter((d) =>
+            (d.Status || "").toUpperCase().includes("CUTI"),
+          );
+
+          // --- DOM RECYCLING ENGINE ---
+          const updateList = (containerId, list) => {
+            const container = $(containerId);
+            
+            // Handle Empty State 3D Animation
+            if (list.length === 0) {
+              const emptyStateHTML = `
+                <div class="neo-empty-state">
+                  <div class="neo-orb"></div>
+                  <div class="neo-empty-text">TIDAK ADA JADWAL</div>
+                </div>
+              `;
+              if (container.innerHTML !== emptyStateHTML) {
+                container.innerHTML = emptyStateHTML;
+                return true; // signal scroller refresh
+              }
+              return false;
+            }
+
+            const oldMap = new Map();
+            // Map existing elements by Doctor Name
+            Array.from(container.children).forEach((el) => {
+              if (el.dataset.id) oldMap.set(el.dataset.id, el);
+            });
+
+            let hasLayoutChange = false;
+            const newElements = list.map((d) => {
+              // Unique ID: Name + Shift Time so duplicate doctors don't overwrite each other
+              const shiftJam = d.Jam && d.Jam !== "-" ? d.Jam : "no-time";
+              const id = `${d.Dokter}_${shiftJam}`;
+              const hash = `${d.Status}|${d.Jam}|${d._isActive}|${d["Code Antrian"] || ""}|${d.JamDaftar}`;
+
+              // Helpers for styles
+              const st = d.Status.toUpperCase();
+              let c = "st-nopoli",
+                i = "block",
+                l = d.Status;
+              if (st === "PRAKTEK" || st === "PENDAFTARAN") {
+                c = "st-buka";
+                i = "check_circle";
+                l = "BUKA";
+              } else if (st === "TERJADWAL") {
+                c = "st-buka st-terjadwal";
+                i = "schedule";
+                l = "TERJADWAL";
+              } else if (st.includes("PENUH")) {
+                c = "st-penuh";
+                i = "front_hand";
+                l = "PENUH";
+              } else if (st.includes("OPERASI")) {
+                c = "st-operasi";
+                i = "local_hospital";
+                l = "OPERASI";
+              } else if (st.includes("CUTI")) {
+                c = "st-cuti";
+                i = "flight";
+                l = "CUTI";
+              }
+              const avatarIcon = getSpecialistIcon(d.Spesialis);
+              const avatarText = avatarIcon.startsWith("<svg") ? avatarIcon : `<span class="material-icons-round" style="font-size:24px;">${avatarIcon}</span>`;
+              if (d._isActive) c += " active";
+
+              let labelJam = "REGISTRASI DIBUKA";
+              let labelLive = "SEDANG MELAYANI";
+              if (st.includes("OPERASI")) {
+                labelJam = "TINDAKAN MEDIS";
+                labelLive = "SEDANG OPERASI";
+              } else if (st.includes("PENUH")) {
+                labelJam = "STATUS KUOTA";
+                labelLive = "TELAH PENUH";
+              } else if (st.includes("CUTI")) {
+                labelJam = "JADWAL CUTI";
+                labelLive = "TIDAK MELAYANI";
+              } else if (st === "TERJADWAL") {
+                labelJam = "MENUNGGU SHIFT";
+                labelLive = "BELUM MULAI";
+              }
+
+
+              let el = oldMap.get(id);
+
+              if (el) {
+                // RECYCLE: Only update if Hash changed
+                if (el.dataset.hash !== hash) {
+                  el.className = `platter ${c}`;
+
+                  // IN-PLACE DOM Update (Menghindari innerHTML untuk performa)
+                  const dName = el.querySelector(".doc-name");
+                  if (dName) dName.textContent = d.Dokter;
+
+                  const dSpec = el.querySelector(".doc-spec");
+                  if (dSpec) dSpec.textContent = d.Spesialis.toUpperCase();
+
+                  const stPill = el.querySelector(".status-pill");
+                  if (stPill) {
+                    stPill.style.background = `var(--status-bg)`;
+                    stPill.style.color = `var(--status-color)`;
+                    stPill.innerHTML = `<span class="material-icons-round" style="font-size:12px">${i}</span>${l}`;
+                  }
+
+                  const jValDaftar = el.querySelector(".jam-val-daftar");
+                  if (jValDaftar)
+                    jValDaftar.textContent =
+                      d.JamDaftar !== "-"
+                        ? d.JamDaftar
+                        : formatJam(d.JamPraktek.split("-")[0]);
+
+                  const jValPraktek = el.querySelector(".jam-val-praktek");
+                  if (jValPraktek && d.JamPraktek)
+                    jValPraktek.textContent = d.JamPraktek;
+
+                  const dtTime = el.querySelector(".detail-time");
+                  if (dtTime)
+                    dtTime.textContent =
+                      d.JamDaftar !== "-"
+                        ? d.JamDaftar
+                        : formatJam(d.JamPraktek.split("-")[0]);
+
+                  const dtLabel = el.querySelector(".detail-label");
+                  if (dtLabel) dtLabel.textContent = labelJam;
+
+                  const lText = el.querySelector(".live-text");
+                  if (lText) lText.textContent = labelLive;
+
+                  el.dataset.hash = hash;
+                }
+                // Hapus class animasi lama
+                el.classList.remove("platter-new");
+                oldMap.delete(id); // Mark handled
+              } else {
+                // CREATE: New element dengan animasi slide-in
+                el = document.createElement("div");
+                el.className = `platter ${c} platter-new`;
+                el.dataset.id = id;
+                el.dataset.hash = hash;
+                el.innerHTML = buildCardHTML(d, avatarText, i, l, labelJam, labelLive);
+
+                hasLayoutChange = true;
+                // Hapus class animasi setelah selesai
+                el.addEventListener(
+                  "animationend",
+                  () => el.classList.remove("platter-new"),
+                  { once: true },
+                );
+              }
+              return el;
+            });
+
+            // If items removed, we need layout update
+            if (oldMap.size > 0) hasLayoutChange = true;
+
+            // Check if order changed
+            if (!hasLayoutChange) {
+              for (let i = 0; i < newElements.length; i++) {
+                if (container.children[i] !== newElements[i]) {
+                  hasLayoutChange = true;
+                  break;
+                }
+              }
+            }
+
+            // Apply to DOM only if structural change occurred
+            if (hasLayoutChange) {
+              container.replaceChildren(...newElements);
+              return true; // Signal scroller to reset
+            }
+
+            return false; // No scroll reset needed
+          };
+
+          const changed1 = updateList("scrollBedah", group.Bedah);
+          const changed2 = updateList("scrollNonBedah", group.NonBedah);
+
+          // --- SIDEBAR: Grouped Render (OPERASI + PENUH + CUTI terpisah) ---
+          const changed3 = this._renderSidebar(
+            group.SidebarOperasi,
+            group.SidebarPenuh,
+            group.SidebarCuti,
+            updateList,
+          );
+
+          $("countBedah").textContent = group.Bedah.length;
+          $("countNonBedah").textContent = group.NonBedah.length;
+          $("countSidebar").textContent =
+            group.SidebarPenuh.length + group.SidebarCuti.length;
+
+          // Only reset scroller if list structure changed (avoid jumpiness on simple updates)
+          if (!isMobile) {
+            if (changed1) {
+              s1.reset();
+              requestAnimationFrame(() => s1.updateMetrics());
+            }
+            if (changed2) {
+              s2.reset();
+              requestAnimationFrame(() => s2.updateMetrics());
+            }
+            if (changed3) {
+              s3.reset();
+              requestAnimationFrame(() => s3.updateMetrics());
+            }
+          }
+        },
+
+        // Render sidebar dengan section header terpisah
+        _renderSidebar(operasiList, penuhList, cutiList, updateList) {
+          const container = $("scrollSidebar");
+          const oldMap = new Map();
+          Array.from(container.children).forEach((el) => {
+            if (el.dataset.id) oldMap.set(el.dataset.id, el);
+          });
+
+          const allElements = [];
+          let hasLayoutChange = false;
+
+          // Helper: Buat section header
+          const makeSectionHeader = (label, color, count, id) => {
+            let el = container.querySelector(`[data-section="${id}"]`);
+            if (!el) {
+              el = document.createElement("div");
+              el.className = "sidebar-section-header";
+              el.dataset.section = id;
+              hasLayoutChange = true;
+            }
+            el.innerHTML = `
+                        <div class="sidebar-section-dot" style="background:${color}"></div>
+                        <span class="sidebar-section-label">${label}</span>
+                        <div class="sidebar-section-line"></div>
+                        <span class="sidebar-section-count">${count}</span>
+                    `;
+            return el;
+          };
+
+          // Helper: Buat platter card (reuse dari updateList logic)
+          const makeCard = (d) => {
+            // Unique ID: Name + Shift Time
+            const shiftJam = d.Jam && d.Jam !== "-" ? d.Jam : "no-time";
+            const id = `${d.Dokter}_${shiftJam}`;
+            const hash = `${d.Status}|${d.Jam}|${d._isActive}|${d["Code Antrian"] || ""}|${d.JamDaftar}`;
+            const st = d.Status.toUpperCase();
+            let c = "st-nopoli", i = "block", l = d.Status;
+            if (st === "PRAKTEK") { c = "st-praktek"; i = "check_circle"; l = "PRAKTEK"; }
+            else if (st === "PENDAFTARAN") { c = "st-pendaftaran"; i = "assignment"; l = "PENDAFTARAN"; }
+            else if (st === "TERJADWAL") { c = "st-terjadwal"; i = "schedule"; l = "TERJADWAL"; }
+            else if (st === "SELESAI") { c = "st-selesai"; i = "done_all"; l = "SELESAI"; }
+            else if (st === "PENUH") { c = "st-penuh"; i = "front_hand"; l = "PENUH"; }
+            else if (st === "OPERASI") { c = "st-operasi"; i = "local_hospital"; l = "OPERASI"; }
+            else if (st === "CUTI") { c = "st-cuti"; i = "flight"; l = "CUTI"; }
+            else if (st === "LIBUR") { c = "st-libur"; i = "block"; l = "LIBUR"; }
+            const avatarIcon = getSpecialistIcon(d.Spesialis);
+            const avatarText = avatarIcon.startsWith("<svg") ? avatarIcon : `<span class="material-icons-round" style="font-size:24px;">${avatarIcon}</span>`;
+            if (d._isActive) c += " active";
+
+            let labelJam = "REGISTRASI DIBUKA";
+            let labelLive = "SEDANG MELAYANI";
+            if (st.includes("OPERASI")) {
+              labelJam = "TINDAKAN MEDIS";
+              labelLive = "SEDANG OPERASI";
+            } else if (st.includes("PENUH")) {
+              labelJam = "STATUS KUOTA";
+              labelLive = "TELAH PENUH";
+            } else if (st.includes("CUTI")) {
+              labelJam = "JADWAL CUTI";
+              labelLive = "TIDAK MELAYANI";
+            } else if (st === "TERJADWAL") {
+              labelJam = "MENUNGGU SHIFT";
+              labelLive = "BELUM MULAI";
+            }
+
+            let el = oldMap.get(id);
+
+            if (el) {
+              if (el.dataset.hash !== hash) {
+                el.className = `platter platter-mini ${c}`;
+
+                // IN-PLACE DOM Update Sidebar
+                const dName = el.querySelector(".doc-name");
+                if (dName) dName.textContent = d.Dokter;
+
+                const dSpec = el.querySelector(".doc-spec");
+                if (dSpec) dSpec.textContent = d.Spesialis.toUpperCase();
+
+                const stPill = el.querySelector(".status-pill");
+                if (stPill) {
+                  stPill.style.background = `var(--status-bg)`;
+                  stPill.style.color = `var(--status-color)`;
+                  stPill.innerHTML = `<span class="material-icons-round" style="font-size:12px">${i}</span>${l}`;
+                }
+
+                const jValDaftar = el.querySelector(".jam-val-daftar");
+                if (jValDaftar)
+                  jValDaftar.textContent =
+                    d.JamDaftar !== "-"
+                      ? d.JamDaftar
+                      : formatJam(d.JamPraktek.split("-")[0]);
+
+                const jValPraktek = el.querySelector(".jam-val-praktek");
+                if (jValPraktek && d.JamPraktek)
+                  jValPraktek.textContent = d.JamPraktek;
+
+                const dtTime = el.querySelector(".detail-time");
+                if (dtTime)
+                  dtTime.textContent =
+                    d.JamDaftar !== "-"
+                      ? d.JamDaftar
+                      : formatJam(d.JamPraktek.split("-")[0]);
+
+                const dtLabel = el.querySelector(".detail-label");
+                if (dtLabel) dtLabel.textContent = labelJam;
+
+                const lText = el.querySelector(".live-text");
+                if (lText) lText.textContent = labelLive;
+
+                el.dataset.hash = hash;
+              }
+              el.classList.remove("platter-new");
+              oldMap.delete(id);
+            } else {
+              el = document.createElement("div");
+              el.className = `platter platter-mini ${c} platter-new`;
+              el.dataset.id = id;
+              el.dataset.hash = hash;
+              el.innerHTML = buildSidebarCardHTML(d, avatarText, i, l);
+              hasLayoutChange = true;
+              el.addEventListener(
+                "animationend",
+                () => el.classList.remove("platter-new"),
+                { once: true },
+              );
+            }
+            return el;
+          };
+
+          // --- Build grouped layout ---
+          if (operasiList.length > 0) {
+            allElements.push(
+              makeSectionHeader(
+                "Tindakan Operasi",
+                "#BF5AF2",
+                operasiList.length,
+                "sec-operasi",
+              ),
+            );
+            operasiList.forEach((d) => allElements.push(makeCard(d)));
+          }
+
+          if (penuhList.length > 0) {
+            allElements.push(
+              makeSectionHeader(
+                "Kuota Penuh",
+                "#FF9F0A",
+                penuhList.length,
+                "sec-penuh",
+              ),
+            );
+            penuhList.forEach((d) => allElements.push(makeCard(d)));
+          }
+
+          if (cutiList.length > 0) {
+            allElements.push(
+              makeSectionHeader(
+                "Sedang Cuti",
+                "#FF453A",
+                cutiList.length,
+                "sec-cuti",
+              ),
+            );
+            cutiList.forEach((d) => allElements.push(makeCard(d)));
+          }
+
+          // Deteksi perubahan
+          if (oldMap.size > 0) hasLayoutChange = true;
+          if (!hasLayoutChange) {
+            const currentChildren = Array.from(container.children);
+            if (currentChildren.length !== allElements.length) {
+              hasLayoutChange = true;
+            } else {
+              for (let i = 0; i < allElements.length; i++) {
+                if (currentChildren[i] !== allElements[i]) {
+                  hasLayoutChange = true;
+                  break;
+                }
+              }
+            }
+          }
+
+          if (hasLayoutChange) {
+            container.replaceChildren(...allElements);
+            return true;
+          }
+          return false;
+        },
+      };
+
+      
+      // ═════════════════════════════════════════════════════════════════════════
+      // JADWAL KESELURUHAN (MASTER WEEKLY SCHEDULE CONTROLLER)
+      // ═════════════════════════════════════════════════════════════════════════
+      window.mainViewMode = "live"; // "live" | "weekly"
+      window.selectedWeeklyDay = "all"; // "all" | 0..6
+      window.selectedWeeklySpec = "all";
+      window.weeklySearchQuery = "";
+      window.masterDoctors = [];
+      window.masterShifts = [];
+
+      const DAYS_NAME_FULL = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"];
+
+      function switchMainView(mode) {
+        window.mainViewMode = mode;
+        const btnLive = document.getElementById("btnViewLive");
+        const btnWeekly = document.getElementById("btnViewWeekly");
+        const btnLeaves = document.getElementById("btnViewLeaves");
+        
+        const viewLive = document.getElementById("viewLive");
+        const viewWeekly = document.getElementById("viewWeekly");
+        const viewLeaves = document.getElementById("viewLeaves");
+
+        // Reset active buttons
+        [btnLive, btnWeekly, btnLeaves].forEach(b => { if (b) b.classList.remove("active"); });
+        [viewLive, viewWeekly, viewLeaves].forEach(v => { if (v) { v.classList.remove("active"); v.classList.add("hidden"); } });
+
+        if (mode === "weekly") {
+          if (btnWeekly) btnWeekly.classList.add("active");
+          if (viewWeekly) { viewWeekly.classList.remove("hidden"); viewWeekly.classList.add("active"); }
+          if (window.selectedWeeklyDay === "all") {
+            const todayIdx = (new Date().getDay() + 6) % 7;
+            switchWeeklyDay(todayIdx);
+          } else {
+            renderWeeklySchedule();
+          }
+        } else if (mode === "leaves") {
+          if (btnLeaves) btnLeaves.classList.add("active");
+          if (viewLeaves) { viewLeaves.classList.remove("hidden"); viewLeaves.classList.add("active"); }
+          renderCalendarGrid();
+          renderLeavesList();
+        } else {
+          if (btnLive) btnLive.classList.add("active");
+          if (viewLive) { viewLive.classList.remove("hidden"); viewLive.classList.add("active"); }
+        }
+      }
+
+      function switchWeeklyDay(dayIdx) {
+        window.selectedWeeklyDay = dayIdx;
+        document.querySelectorAll(".weekly-day-btn").forEach(btn => {
+          btn.classList.toggle("active", String(btn.dataset.day) === String(dayIdx));
+        });
+        renderWeeklySchedule();
+      }
+
+      function switchWeeklySpec(spec) {
+        window.selectedWeeklySpec = spec;
+        document.querySelectorAll(".spec-chip").forEach(chip => {
+          chip.classList.toggle("active", chip.dataset.spec === spec);
+        });
+        renderWeeklySchedule();
+      }
+
+      function onWeeklySearchInput(val) {
+        const clearBtn = document.getElementById("weeklySearchClearBtn");
+        if (clearBtn) clearBtn.style.display = val && val.trim() ? "flex" : "none";
+        window.weeklySearchQuery = (val || "").trim().toLowerCase();
+        renderWeeklySchedule();
+      }
+
+      function clearWeeklySearch() {
+        const input = document.getElementById("weeklySearchInput");
+        if (input) {
+          input.value = "";
+          onWeeklySearchInput("");
+          input.focus();
+        }
+      }
+
+      function updateWeeklyData(doctors, shifts) {
+        if (Array.isArray(doctors)) window.masterDoctors = doctors;
+        if (Array.isArray(shifts)) window.masterShifts = shifts;
+
+        // Build unique specialty chips
+        const specChipsContainer = document.getElementById("weeklySpecChips");
+        if (specChipsContainer && window.masterDoctors.length > 0) {
+          const specSet = new Set();
+          window.masterDoctors.forEach(d => { if (d.specialty) specSet.add(d.specialty); });
+          const specList = Array.from(specSet).sort();
+
+          let chipsHtml = '<button class="spec-chip ' + (window.selectedWeeklySpec === "all" ? "active" : "") + '" data-spec="all" onclick="switchWeeklySpec(\'all\')">Semua Poli</button>';
+          specList.forEach(s => {
+            chipsHtml += '<button class="spec-chip ' + (window.selectedWeeklySpec === s ? "active" : "") + '" data-spec="' + esc(s) + '" onclick="switchWeeklySpec(\'' + esc(s) + '\')">' + esc(s) + '</button>';
+          });
+          specChipsContainer.innerHTML = chipsHtml;
+        }
+
+        // Update day badges
+        if (window.masterShifts.length > 0) {
+          const validShifts = window.masterShifts.filter(s => s.formattedTime && s.formattedTime !== "-" && s.formattedTime.includes(":"));
+          const badgeAll = document.getElementById("badgeAllDays");
+          if (badgeAll) badgeAll.textContent = validShifts.length;
+
+          for (let d = 0; d < 7; d++) {
+            const b = document.getElementById("badgeDay" + d);
+            if (b) {
+              const count = validShifts.filter(s => s.dayIdx === d).length;
+              b.textContent = count;
+            }
+          }
+        }
+
+        if (window.mainViewMode === "weekly") {
+          renderWeeklySchedule();
+        }
+      }
+
+      function renderWeeklySchedule() {
+        const container = document.getElementById("weeklyListContainer");
+        if (!container) return;
+
+        const doctors = window.masterDoctors || [];
+        const shifts = window.masterShifts || [];
+        const selectedDay = window.selectedWeeklyDay;
+        const selectedSpec = window.selectedWeeklySpec;
+        const query = (window.weeklySearchQuery || "").toLowerCase();
+
+        // Create doctor map for quick lookup
+        const docMap = new Map();
+        doctors.forEach(d => docMap.set(d.id, d));
+
+        // Filter shifts
+        let filteredShifts = shifts.filter(s => {
+          if (!s.formattedTime || s.formattedTime === "-" || !s.formattedTime.includes(":")) return false;
+          
+          // Day filter
+          if (selectedDay !== "all" && s.dayIdx !== Number(selectedDay)) return false;
+
+          const doc = docMap.get(s.doctorId);
+          const docName = doc ? (doc.name || "") : (s.doctorName || "");
+          const docSpec = doc ? (doc.specialty || "") : (s.title || "");
+
+          // Spec filter
+          if (selectedSpec !== "all" && docSpec !== selectedSpec) return false;
+
+          // Search query filter
+          if (query) {
+            const combined = (docName + " " + docSpec + " " + s.formattedTime + " " + (s.registrationTime || "")).toLowerCase();
+            if (!combined.includes(query)) return false;
+          }
+
+          return true;
+        });
+
+        // Sort by Day, then Specialty, then Doctor Name
+        filteredShifts.sort((a, b) => {
+          if (a.dayIdx !== b.dayIdx) return a.dayIdx - b.dayIdx;
+          const docA = docMap.get(a.doctorId);
+          const docB = docMap.get(b.doctorId);
+          const specA = docA ? docA.specialty : "";
+          const specB = docB ? docB.specialty : "";
+          if (specA !== specB) return specA.localeCompare(specB);
+          const nameA = docA ? docA.name : "";
+          const nameB = docB ? docB.name : "";
+          return nameA.localeCompare(nameB);
+        });
+
+        // Update count header
+        const titleEl = document.getElementById("weeklyResultTitle");
+        const countEl = document.getElementById("weeklyResultCount");
+        if (titleEl) {
+          titleEl.textContent = selectedDay === "all" ? "Jadwal Semua Hari" : "Jadwal Hari " + DAYS_NAME_FULL[selectedDay];
+        }
+        if (countEl) {
+          countEl.textContent = filteredShifts.length + " Jadwal";
+        }
+
+        if (filteredShifts.length === 0) {
+          container.innerHTML = '<div style="text-align: center; padding: 36px 16px; background: #FFFFFF; border-radius: 20px; border: 1.5px solid #F1F5F9; box-shadow: 4px 4px 12px rgba(166,178,195,0.2);">' +
+            '<span class="material-icons-round" style="font-size: 38px; color: #94A3B8; margin-bottom: 8px;">event_busy</span>' +
+            '<p style="font-size: 13px; font-weight: 800; color: #0F172A; margin: 0;">Tidak Ada Jadwal Dokter</p>' +
+            '<p style="font-size: 11px; font-weight: 600; color: #64748B; margin-top: 4px;">Silakan pilih hari lain atau gunakan kata kunci pencarian yang berbeda.</p>' +
+            '</div>';
+          return;
+        }
+
+        let htmlCards = "";
+        filteredShifts.forEach(s => {
+          const doc = docMap.get(s.doctorId);
+          const docName = doc ? doc.name : (s.doctorName || "Dokter Spesialis");
+          const docSpec = doc ? (doc.specialty || "Spesialis") : (s.title || "Spesialis");
+          const avatarInitials = initials(docName);
+          const dayName = DAYS_NAME_FULL[s.dayIdx] || "Hari";
+
+          htmlCards += '<div class="weekly-shift-card">' +
+            '<div class="weekly-shift-head">' +
+              '<div class="weekly-shift-initials">' + esc(avatarInitials) + '</div>' +
+              '<div class="weekly-shift-doc">' +
+                '<span class="weekly-shift-name">' + esc(docName) + '</span>' +
+                '<span class="weekly-shift-spec">' + esc(docSpec) + '</span>' +
+              '</div>' +
+            '</div>' +
+            '<div class="weekly-shift-pills">' +
+              '<span class="weekly-day-tag"><span class="material-icons-round" style="font-size: 12px; color: #007AFF;">calendar_today</span>' + esc(dayName) + '</span>' +
+              '<span class="weekly-time-pill"><span class="material-icons-round" style="font-size: 13px;">schedule</span>' + esc(s.formattedTime) + '</span>' +
+              (s.registrationTime ? '<span class="weekly-reg-pill"><span class="material-icons-round" style="font-size: 12px;">how_to_reg</span>Reg ' + esc(s.registrationTime) + '</span>' : '') +
+            '</div>' +
+          '</div>';
+        });
+
+        container.innerHTML = htmlCards;
+      }
+
+      
+      // ═════════════════════════════════════════════════════════════════════════
+      // JADWAL CUTI DOKTER - FULL INTERACTIVE CALENDAR ENGINE
+      // ═════════════════════════════════════════════════════════════════════════
+      window.masterLeaves = [];
+      window.calCurrentDate = new Date();
+      window.calSelectedDate = new Date();
+      window.leavesSubTab = "selected_day"; // "selected_day" | "all_agenda"
+      window.leavesSearchQuery = "";
+
+      const MONTHS_ID_FULL = [
+        "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+        "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+      ];
+
+      function isDateInLeave(checkDate, leave) {
+        if (!leave.startDate) return false;
+        const target = new Date(checkDate);
+        target.setHours(0, 0, 0, 0);
+
+        const start = new Date(leave.startDate);
+        const end = leave.endDate ? new Date(leave.endDate) : new Date(leave.startDate);
+        start.setHours(0, 0, 0, 0);
+        end.setHours(0, 0, 0, 0);
+
+        return target >= start && target <= end;
+      }
+
+      function prevCalMonth() {
+        window.calCurrentDate = new Date(window.calCurrentDate.getFullYear(), window.calCurrentDate.getMonth() - 1, 1);
+        renderCalendarGrid();
+      }
+
+      function nextCalMonth() {
+        window.calCurrentDate = new Date(window.calCurrentDate.getFullYear(), window.calCurrentDate.getMonth() + 1, 1);
+        renderCalendarGrid();
+      }
+
+      function jumpCalToday() {
+        window.calCurrentDate = new Date();
+        window.calSelectedDate = new Date();
+        renderCalendarGrid();
+        renderLeavesList();
+      }
+
+      function selectCalDate(year, month, day) {
+        window.calSelectedDate = new Date(year, month, day);
+        renderCalendarGrid();
+        if (window.leavesSubTab !== "selected_day") {
+          switchLeavesSubTab("selected_day");
+        } else {
+          renderLeavesList();
+        }
+      }
+
+      function switchLeavesSubTab(tab) {
+        window.leavesSubTab = tab;
+        const btnDay = document.getElementById("btnSubTabDay");
+        const btnAgenda = document.getElementById("btnSubTabAgenda");
+        const searchWrap = document.getElementById("leavesSearchWrapper");
+
+        if (tab === "all_agenda") {
+          btnDay.classList.remove("active");
+          btnAgenda.classList.add("active");
+          if (searchWrap) searchWrap.style.display = "block";
+        } else {
+          btnAgenda.classList.remove("active");
+          btnDay.classList.add("active");
+          if (searchWrap) searchWrap.style.display = "none";
+        }
+        renderLeavesList();
+      }
+
+      function renderCalendarGrid() {
+        const gridEl = document.getElementById("calDaysGrid");
+        const titleEl = document.getElementById("calMonthTitle");
+        if (!gridEl || !titleEl) return;
+
+        const cur = window.calCurrentDate;
+        const sel = window.calSelectedDate;
+        const now = new Date();
+        const year = cur.getFullYear();
+        const month = cur.getMonth();
+
+        titleEl.textContent = MONTHS_ID_FULL[month] + " " + year;
+
+        const firstDay = new Date(year, month, 1).getDay(); // 0 = Min, 1 = Sen
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+        const leaves = window.masterLeaves || [];
+
+        let html = "";
+
+        // Empty cells before day 1
+        for (let i = 0; i < firstDay; i++) {
+          html += '<div class="cal-day-cell empty"></div>';
+        }
+
+        // Days of current month
+        for (let day = 1; day <= daysInMonth; day++) {
+          const dateObj = new Date(year, month, day);
+          const dayOfWeek = dateObj.getDay();
+          const isSunday = dayOfWeek === 0;
+          const isToday = dateObj.toDateString() === now.toDateString();
+          const isSelected = dateObj.toDateString() === sel.toDateString();
+
+          const hasLeave = leaves.some(l => isDateInLeave(dateObj, l));
+
+          let cellClass = "cal-day-cell";
+          if (isSunday) cellClass += " sunday";
+          if (isToday) cellClass += " today";
+          if (isSelected) cellClass += " selected";
+
+          html += '<button class="' + cellClass + '" onclick="selectCalDate(' + year + ',' + month + ',' + day + ')">' +
+            '<span>' + day + '</span>' +
+            (hasLeave ? '<div class="cal-dot-container"><span class="cal-dot-leave"></span></div>' : '') +
+          '</button>';
+        }
+
+        gridEl.innerHTML = html;
+      }
+
+      function onLeavesSearchInput(val) {
+        const clearBtn = document.getElementById("leavesSearchClearBtn");
+        if (clearBtn) clearBtn.style.display = val && val.trim() ? "flex" : "none";
+        window.leavesSearchQuery = (val || "").trim().toLowerCase();
+        renderLeavesList();
+      }
+
+      function clearLeavesSearch() {
+        const input = document.getElementById("leavesSearchInput");
+        if (input) {
+          input.value = "";
+          onLeavesSearchInput("");
+          input.focus();
+        }
+      }
+
+      function updateLeavesData(leaves) {
+        if (Array.isArray(leaves)) {
+          window.masterLeaves = leaves;
+          if (window.mainViewMode === "leaves") {
+            renderCalendarGrid();
+            renderLeavesList();
+          }
+        }
+      }
+
+      function formatDateIndo(dateStr) {
+        if (!dateStr) return "-";
+        try {
+          const d = new Date(dateStr);
+          return d.toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" });
+        } catch(e) {
+          return dateStr;
+        }
+      }
+
+      function renderLeavesList() {
+        const container = document.getElementById("leavesListContainer");
+        const titleEl = document.getElementById("leavesResultTitle");
+        const countEl = document.getElementById("leavesResultCount");
+        const labelSelectedDay = document.getElementById("labelSelectedDayTitle");
+        if (!container) return;
+
+        const leaves = window.masterLeaves || [];
+        const subTab = window.leavesSubTab;
+        const sel = window.calSelectedDate;
+        const todayStr = new Date().toISOString().slice(0, 10);
+        const query = (window.leavesSearchQuery || "").toLowerCase();
+
+        const selFormatted = sel.toLocaleDateString("id-ID", { weekday: "short", day: "numeric", month: "short" });
+        if (labelSelectedDay) labelSelectedDay.textContent = selFormatted;
+
+        let filtered = [];
+
+        if (subTab === "selected_day") {
+          if (titleEl) {
+            titleEl.textContent = sel.toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+          }
+          filtered = leaves.filter(l => isDateInLeave(sel, l));
+        } else {
+          if (titleEl) {
+            titleEl.textContent = "Semua Agenda Cuti Dokter";
+          }
+          filtered = leaves.filter(l => {
+            if (query) {
+              const docName = (l.doctorName || "").toLowerCase();
+              const docSpec = (l.specialty || "").toLowerCase();
+              const reason = (l.reason || "").toLowerCase();
+              const repl = (l.replacementDoctor || "").toLowerCase();
+              return (docName + " " + docSpec + " " + reason + " " + repl).includes(query);
+            }
+            return true;
+          });
+          // Sort upcoming first
+          filtered.sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime());
+        }
+
+        if (countEl) countEl.textContent = filtered.length + " Dokter";
+
+        if (filtered.length === 0) {
+          const emptyMsg = subTab === "selected_day"
+            ? "Tidak ada dokter yang cuti pada tanggal ini. Seluruh jadwal beroperasi reguler."
+            : "Tidak ditemukan agenda cuti dokter yang sesuai pencarian.";
+          
+          container.innerHTML = '<div style="text-align: center; padding: 32px 16px; background: #FFFFFF; border-radius: 20px; border: 1.5px solid #F1F5F9; box-shadow: 4px 4px 12px rgba(166,178,195,0.2);">' +
+            '<span class="material-icons-round" style="font-size: 36px; color: #10B981; margin-bottom: 6px;">verified</span>' +
+            '<p style="font-size: 13px; font-weight: 800; color: #0F172A; margin: 0;">Tidak Ada Jadwal Cuti</p>' +
+            '<p style="font-size: 11px; font-weight: 600; color: #64748B; margin-top: 4px;">' + esc(emptyMsg) + '</p>' +
+            '</div>';
+          return;
+        }
+
+        let htmlCards = "";
+        filtered.forEach(l => {
+          const start = (l.startDate || "").slice(0, 10);
+          const end = (l.endDate || l.startDate || "").slice(0, 10);
+          const isActive = start <= todayStr && todayStr <= end;
+          const isUpcoming = start > todayStr;
+
+          const docName = l.doctorName || "Dokter Spesialis";
+          const docSpec = l.specialty || "Spesialis";
+          const avatarInitials = initials(docName);
+
+          const statusClass = isActive ? "active" : (isUpcoming ? "upcoming" : "past");
+          const statusText = isActive ? "Sedang Cuti" : (isUpcoming ? "Akan Datang" : "Selesai");
+          const statusIcon = isActive ? "radio_button_checked" : (isUpcoming ? "schedule" : "check_circle");
+          const accentColor = isActive ? "#E11D48" : (isUpcoming ? "#1D4ED8" : "#64748B");
+
+          const dateDisplay = start === end ? formatDateIndo(start) : (formatDateIndo(start) + " - " + formatDateIndo(end));
+
+          htmlCards += '<div class="leave-card" style="--leave-accent: ' + accentColor + ';">' +
+            '<div class="leave-head">' +
+              '<div class="leave-avatar" style="color: ' + accentColor + '; border-color: ' + accentColor + '40; background: ' + accentColor + '15;">' + esc(avatarInitials) + '</div>' +
+              '<div class="leave-doc-info">' +
+                '<span class="leave-doc-name">' + esc(docName) + '</span>' +
+                '<span class="leave-doc-spec" style="color: ' + accentColor + ';">' + esc(docSpec) + '</span>' +
+              '</div>' +
+            '</div>' +
+            '<div class="leave-badge-row">' +
+              '<span class="leave-status-pill ' + statusClass + '"><span class="material-icons-round" style="font-size: 11px;">' + statusIcon + '</span>' + statusText + '</span>' +
+              '<span class="leave-date-pill"><span class="material-icons-round" style="font-size: 12px; color: var(--ios-blue);">date_range</span>' + esc(dateDisplay) + '</span>' +
+            '</div>' +
+            (l.reason ? '<div class="leave-reason-box"><span class="material-icons-round">info</span><span>' + esc(l.reason) + '</span></div>' : '') +
+            (l.replacementDoctor ? '<div class="leave-replacement"><span class="material-icons-round" style="font-size: 13px;">person</span><span>Pengganti: ' + esc(l.replacementDoctor) + '</span></div>' : '') +
+          '</div>';
+        });
+
+        container.innerHTML = htmlCards;
+      }
+
+      App.init();
+    </script>
+
+    <!-- ZERO-DEPENDENCY INLINE SVG QR CODE GENERATOR -->
+    <script>
+      var QRCodeLib = (function() {
+        function QR8bitByte(data) { this.mode = 4; this.data = data; }
+        QR8bitByte.prototype = {
+          getLength: function() { return this.data.length; },
+          write: function(buffer) {
+            for (var i = 0; i < this.data.length; i++) buffer.put(this.data.charCodeAt(i), 8);
+          }
+        };
+        function QRCodeModel(typeNumber, errorCorrectLevel) {
+          this.typeNumber = typeNumber; this.errorCorrectLevel = errorCorrectLevel;
+          this.modules = null; this.moduleCount = 0; this.dataCache = null; this.dataList = [];
+        }
+        QRCodeModel.prototype = {
+          addData: function(data) { this.dataList.push(new QR8bitByte(data)); },
+          isDark: function(row, col) { return this.modules[row][col]; },
+          getModuleCount: function() { return this.moduleCount; },
+          make: function() {
+            if (this.typeNumber < 1) {
+              var typeNumber = 1;
+              for (typeNumber = 1; typeNumber < 40; typeNumber++) {
+                var rsBlocks = QRRSBlock.getRSBlocks(typeNumber, this.errorCorrectLevel);
+                var buffer = new QRBitBuffer();
+                var totalDataCount = 0;
+                for (var i = 0; i < rsBlocks.length; i++) totalDataCount += rsBlocks[i].dataCount;
+                for (var i = 0; i < this.dataList.length; i++) {
+                  var data = this.dataList[i];
+                  buffer.put(data.mode, 4);
+                  buffer.put(data.getLength(), QRUtil.getLengthInBits(data.mode, typeNumber));
+                  data.write(buffer);
+                }
+                if (buffer.getLengthInBits() <= totalDataCount * 8) break;
+              }
+              this.typeNumber = typeNumber;
+            }
+            this.makeImpl(false, this.getBestMaskPattern());
+          },
+          makeImpl: function(test, maskPattern) {
+            this.moduleCount = this.typeNumber * 4 + 17;
+            this.modules = new Array(this.moduleCount);
+            for (var row = 0; row < this.moduleCount; row++) {
+              this.modules[row] = new Array(this.moduleCount);
+              for (var col = 0; col < this.moduleCount; col++) this.modules[row][col] = null;
+            }
+            this.setupPositionProbePattern(0, 0);
+            this.setupPositionProbePattern(this.moduleCount - 7, 0);
+            this.setupPositionProbePattern(0, this.moduleCount - 7);
+            this.setupPositionAdjustPattern();
+            this.setupTimingPattern();
+            this.setupTypeInfo(test, maskPattern);
+            if (this.typeNumber >= 7) this.setupTypeNumber(test);
+            if (this.dataCache == null) this.dataCache = QRCodeModel.createData(this.typeNumber, this.errorCorrectLevel, this.dataList);
+            this.mapData(this.dataCache, maskPattern);
+          },
+          setupPositionProbePattern: function(row, col) {
+            for (var r = -1; r <= 7; r++) {
+              if (row + r <= -1 || this.moduleCount <= row + r) continue;
+              for (var c = -1; c <= 7; c++) {
+                if (col + c <= -1 || this.moduleCount <= col + c) continue;
+                if ((0 <= r && r <= 6 && (c == 0 || c == 6)) || (0 <= c && c <= 6 && (r == 0 || r == 6)) || (2 <= r && r <= 4 && 2 <= c && c <= 4)) {
+                  this.modules[row + r][col + c] = true;
+                } else {
+                  this.modules[row + r][col + c] = false;
+                }
+              }
+            }
+          },
+          getBestMaskPattern: function() {
+            var minLostPoint = 0, pattern = 0;
+            for (var i = 0; i < 8; i++) {
+              this.makeImpl(true, i);
+              var lostPoint = QRUtil.getLostPoint(this);
+              if (i == 0 || minLostPoint > lostPoint) { minLostPoint = lostPoint; pattern = i; }
+            }
+            return pattern;
+          },
+          setupTimingPattern: function() {
+            for (var r = 8; r < this.moduleCount - 8; r++) {
+              if (this.modules[r][6] != null) continue;
+              this.modules[r][6] = (r % 2 == 0);
+            }
+            for (var c = 8; c < this.moduleCount - 8; c++) {
+              if (this.modules[6][c] != null) continue;
+              this.modules[6][c] = (c % 2 == 0);
+            }
+          },
+          setupPositionAdjustPattern: function() {
+            var pos = QRUtil.getPatternPosition(this.typeNumber);
+            for (var i = 0; i < pos.length; i++) {
+              for (var j = 0; j < pos.length; j++) {
+                var row = pos[i], col = pos[j];
+                if (this.modules[row][col] != null) continue;
+                for (var r = -2; r <= 2; r++) {
+                  for (var c = -2; c <= 2; c++) {
+                    if (r == -2 || r == 2 || c == -2 || c == 2 || (r == 0 && c == 0)) this.modules[row + r][col + c] = true;
+                    else this.modules[row + r][col + c] = false;
+                  }
+                }
+              }
+            }
+          },
+          setupTypeNumber: function(test) {
+            var bits = QRUtil.getBCHTypeNumber(this.typeNumber);
+            for (var i = 0; i < 18; i++) {
+              var mod = (!test && ((bits >> i) & 1) == 1);
+              this.modules[Math.floor(i / 3)][i % 3 + this.moduleCount - 8 - 3] = mod;
+            }
+            for (var i = 0; i < 18; i++) {
+              var mod = (!test && ((bits >> i) & 1) == 1);
+              this.modules[i % 3 + this.moduleCount - 8 - 3][Math.floor(i / 3)] = mod;
+            }
+          },
+          setupTypeInfo: function(test, maskPattern) {
+            var data = (this.errorCorrectLevel << 3) | maskPattern;
+            var bits = QRUtil.getBCHTypeInfo(data);
+            for (var i = 0; i < 15; i++) {
+              var mod = (!test && ((bits >> i) & 1) == 1);
+              if (i < 6) this.modules[i][8] = mod;
+              else if (i < 8) this.modules[i + 1][8] = mod;
+              else this.modules[this.moduleCount - 15 + i][8] = mod;
+            }
+            for (var i = 0; i < 15; i++) {
+              var mod = (!test && ((bits >> i) & 1) == 1);
+              if (i < 8) this.modules[8][this.moduleCount - i - 1] = mod;
+              else if (i < 9) this.modules[8][15 - i - 1 + 1] = mod;
+              else this.modules[8][15 - i - 1] = mod;
+            }
+            this.modules[this.moduleCount - 8][8] = (!test);
+          },
+          mapData: function(data, maskPattern) {
+            var inc = -1, row = this.moduleCount - 1, bitIndex = 7, byteIndex = 0;
+            var maskFunc = QRUtil.getMaskFunction(maskPattern);
+            for (var col = this.moduleCount - 1; col > 0; col -= 2) {
+              if (col == 6) col--;
+              while (true) {
+                for (var c = 0; c < 2; c++) {
+                  if (this.modules[row][col - c] == null) {
+                    var dark = false;
+                    if (byteIndex < data.length) dark = (((data[byteIndex] >>> bitIndex) & 1) == 1);
+                    var mask = maskFunc(row, col - c);
+                    if (mask) dark = !dark;
+                    this.modules[row][col - c] = dark;
+                    bitIndex--;
+                    if (bitIndex == -1) { byteIndex++; bitIndex = 7; }
+                  }
+                }
+                row += inc;
+                if (row < 0 || this.moduleCount <= row) { row -= inc; inc = -inc; break; }
+              }
+            }
+          }
+        };
+
+        QRCodeModel.createData = function(typeNumber, errorCorrectLevel, dataList) {
+          var rsBlocks = QRRSBlock.getRSBlocks(typeNumber, errorCorrectLevel);
+          var buffer = new QRBitBuffer();
+          for (var i = 0; i < dataList.length; i++) {
+            var data = dataList[i];
+            buffer.put(data.mode, 4);
+            buffer.put(data.getLength(), QRUtil.getLengthInBits(data.mode, typeNumber));
+            data.write(buffer);
+          }
+          var totalDataCount = 0;
+          for (var i = 0; i < rsBlocks.length; i++) totalDataCount += rsBlocks[i].dataCount;
+          if (buffer.getLengthInBits() > totalDataCount * 8) throw new Error("code length overflow");
+          if (buffer.getLengthInBits() + 4 <= totalDataCount * 8) buffer.put(0, 4);
+          while (buffer.getLengthInBits() % 8 != 0) buffer.putBit(false);
+          while (true) {
+            if (buffer.getLengthInBits() >= totalDataCount * 8) break;
+            buffer.put(0xEC, 8);
+            if (buffer.getLengthInBits() >= totalDataCount * 8) break;
+            buffer.put(0x11, 8);
+          }
+          return QRCodeModel.createBytes(buffer, rsBlocks);
+        };
+
+        QRCodeModel.createBytes = function(buffer, rsBlocks) {
+          var offset = 0, maxDcCount = 0, maxEcCount = 0;
+          var dcdata = new Array(rsBlocks.length), ecdata = new Array(rsBlocks.length);
+          for (var r = 0; r < rsBlocks.length; r++) {
+            var dcCount = rsBlocks[r].dataCount, ecCount = rsBlocks[r].totalCount - dcCount;
+            maxDcCount = Math.max(maxDcCount, dcCount);
+            maxEcCount = Math.max(maxEcCount, ecCount);
+            dcdata[r] = new Array(dcCount);
+            for (var i = 0; i < dcdata[r].length; i++) dcdata[r][i] = 0xff & buffer.buffer[i + offset];
+            offset += dcCount;
+            var rsPoly = QRUtil.getErrorCorrectPolynomial(ecCount);
+            var rawPoly = new QRPolynomial(dcdata[r], rsPoly.getLength() - 1);
+            var modPoly = rawPoly.mod(rsPoly);
+            ecdata[r] = new Array(rsPoly.getLength() - 1);
+            for (var i = 0; i < ecdata[r].length; i++) {
+              var modIndex = i + modPoly.getLength() - ecdata[r].length;
+              ecdata[r][i] = (modIndex >= 0) ? modPoly.get(modIndex) : 0;
+            }
+          }
+          var totalCodeCount = 0;
+          for (var i = 0; i < rsBlocks.length; i++) totalCodeCount += rsBlocks[i].totalCount;
+          var data = new Array(totalCodeCount), index = 0;
+          for (var i = 0; i < maxDcCount; i++) {
+            for (var r = 0; r < rsBlocks.length; r++) {
+              if (i < dcdata[r].length) data[index++] = dcdata[r][i];
+            }
+          }
+          for (var i = 0; i < maxEcCount; i++) {
+            for (var r = 0; r < rsBlocks.length; r++) {
+              if (i < ecdata[r].length) data[index++] = ecdata[r][i];
+            }
+          }
+          return data;
+        };
+
+        var QRErrorCorrectLevel = { L: 1, M: 0, Q: 3, H: 2 };
+        var QRUtil = {
+          PATTERN_POSITION_TABLE: [
+            [], [6, 18], [6, 22], [6, 26], [6, 30], [6, 34], [6, 22, 38], [6, 24, 42], [6, 26, 46], [6, 28, 50],
+            [6, 30, 54], [6, 32, 58], [6, 34, 62], [6, 26, 46, 66], [6, 26, 48, 70], [6, 26, 50, 74], [6, 30, 54, 78],
+            [6, 30, 56, 82], [6, 30, 58, 86], [6, 34, 62, 90], [6, 28, 50, 72, 94], [6, 26, 50, 74, 98], [6, 30, 54, 78, 102],
+            [6, 28, 54, 80, 106], [6, 32, 58, 84, 110], [6, 30, 58, 86, 114], [6, 34, 62, 90, 118], [6, 26, 50, 74, 98, 122],
+            [6, 30, 54, 78, 102, 126], [6, 26, 52, 78, 104, 130], [6, 30, 56, 82, 108, 134], [6, 34, 60, 86, 112, 138],
+            [6, 30, 58, 86, 114, 142], [6, 34, 62, 90, 118, 146], [6, 30, 54, 78, 102, 126, 150], [6, 24, 50, 76, 102, 128, 154],
+            [6, 28, 54, 80, 106, 132, 158], [6, 32, 58, 84, 110, 136, 162], [6, 26, 54, 82, 110, 138, 166], [6, 30, 58, 86, 114, 142, 170]
+          ],
+          G15: (1 << 10) | (1 << 8) | (1 << 5) | (1 << 4) | (1 << 2) | (1 << 1) | (1 << 0),
+          G18: (1 << 12) | (1 << 11) | (1 << 10) | (1 << 9) | (1 << 8) | (1 << 5) | (1 << 2) | (1 << 0),
+          G15_MASK: (1 << 14) | (1 << 12) | (1 << 10) | (1 << 4) | (1 << 1),
+          getBCHTypeInfo: function(data) {
+            var d = data << 10;
+            while (QRUtil.getBCHDigit(d) - QRUtil.getBCHDigit(QRUtil.G15) >= 0) d ^= (QRUtil.G15 << (QRUtil.getBCHDigit(d) - QRUtil.getBCHDigit(QRUtil.G15)));
+            return ((data << 10) | d) ^ QRUtil.G15_MASK;
+          },
+          getBCHTypeNumber: function(data) {
+            var d = data << 12;
+            while (QRUtil.getBCHDigit(d) - QRUtil.getBCHDigit(QRUtil.G18) >= 0) d ^= (QRUtil.G18 << (QRUtil.getBCHDigit(d) - QRUtil.getBCHDigit(QRUtil.G18)));
+            return (data << 12) | d;
+          },
+          getBCHDigit: function(data) { var digit = 0; while (data != 0) { digit++; data >>>= 1; } return digit; },
+          getPatternPosition: function(typeNumber) { return QRUtil.PATTERN_POSITION_TABLE[typeNumber - 1]; },
+          getMaskFunction: function(maskPattern) {
+            switch (maskPattern) {
+              case 0: return function(i, j) { return (i + j) % 2 == 0; };
+              case 1: return function(i, j) { return i % 2 == 0; };
+              case 2: return function(i, j) { return j % 3 == 0; };
+              case 3: return function(i, j) { return (i + j) % 3 == 0; };
+              case 4: return function(i, j) { return (Math.floor(i / 2) + Math.floor(j / 3)) % 2 == 0; };
+              case 5: return function(i, j) { return (i * j) % 2 + (i * j) % 3 == 0; };
+              case 6: return function(i, j) { return ((i * j) % 2 + (i * j) % 3) % 2 == 0; };
+              case 7: return function(i, j) { return ((i * j) % 3 + (i + j) % 2) % 2 == 0; };
+              default: throw new Error("bad maskPattern:" + maskPattern);
+            }
+          },
+          getErrorCorrectPolynomial: function(errorCorrectLength) {
+            var a = new QRPolynomial([1], 0);
+            for (var i = 0; i < errorCorrectLength; i++) a = a.multiply(new QRPolynomial([1, QRMath.gexp(i)], 0));
+            return a;
+          },
+          getLengthInBits: function(mode, type) {
+            if (1 <= type && type < 10) return 8;
+            else if (type < 27) return 16;
+            else if (type < 41) return 16;
+            else throw new Error("type:" + type);
+          },
+          getLostPoint: function(qrCode) {
+            var moduleCount = qrCode.getModuleCount(), lostPoint = 0;
+            for (var row = 0; row < moduleCount; row++) {
+              for (var col = 0; col < moduleCount; col++) {
+                var sameCount = 0, dark = qrCode.isDark(row, col);
+                for (var r = -1; r <= 1; r++) {
+                  if (row + r < 0 || moduleCount <= row + r) continue;
+                  for (var c = -1; c <= 1; c++) {
+                    if (col + c < 0 || moduleCount <= col + c) continue;
+                    if (r == 0 && c == 0) continue;
+                    if (dark == qrCode.isDark(row + r, col + c)) sameCount++;
+                  }
+                }
+                if (sameCount > 5) lostPoint += (3 + sameCount - 5);
+              }
+            }
+            return lostPoint;
+          }
+        };
+
+        var QRMath = {
+          glog: function(n) { if (n < 1) throw new Error("glog(" + n + ")"); return QRMath.LOG_TABLE[n]; },
+          gexp: function(n) { while (n < 0) n += 255; while (n >= 256) n -= 255; return QRMath.EXP_TABLE[n]; },
+          EXP_TABLE: new Array(256), LOG_TABLE: new Array(256)
+        };
+        for (var i = 0; i < 8; i++) QRMath.EXP_TABLE[i] = 1 << i;
+        for (var i = 8; i < 256; i++) QRMath.EXP_TABLE[i] = QRMath.EXP_TABLE[i - 4] ^ QRMath.EXP_TABLE[i - 5] ^ QRMath.EXP_TABLE[i - 6] ^ QRMath.EXP_TABLE[i - 8];
+        for (var i = 0; i < 255; i++) QRMath.LOG_TABLE[QRMath.EXP_TABLE[i]] = i;
+
+        function QRPolynomial(num, shift) {
+          if (num.length == undefined) throw new Error(num.length + "/" + shift);
+          var offset = 0;
+          while (offset < num.length && num[offset] == 0) offset++;
+          this.num = new Array(num.length - offset + shift);
+          for (var i = 0; i < num.length - offset; i++) this.num[i] = num[i + offset];
+        }
+        QRPolynomial.prototype = {
+          get: function(index) { return this.num[index]; },
+          getLength: function() { return this.num.length; },
+          multiply: function(e) {
+            var num = new Array(this.getLength() + e.getLength() - 1);
+            for (var i = 0; i < this.getLength(); i++) {
+              for (var j = 0; j < e.getLength(); j++) num[i + j] ^= QRMath.gexp(QRMath.glog(this.get(i)) + QRMath.glog(e.get(j)));
+            }
+            return new QRPolynomial(num, 0);
+          },
+          mod: function(e) {
+            if (this.getLength() - e.getLength() < 0) return this;
+            var ratio = QRMath.glog(this.get(0)) - QRMath.glog(e.get(0));
+            var num = new Array(this.getLength());
+            for (var i = 0; i < this.getLength(); i++) num[i] = this.get(i);
+            for (var i = 0; i < e.getLength(); i++) num[i] ^= QRMath.gexp(QRMath.glog(e.get(i)) + ratio);
+            return new QRPolynomial(num, 0).mod(e);
+          }
+        };
+
+        function QRRSBlock(totalCount, dataCount) { this.totalCount = totalCount; this.dataCount = dataCount; }
+        QRRSBlock.RS_BLOCK_TABLE = [
+          [1, 26, 19], [1, 26, 16], [1, 26, 13], [1, 26, 9],
+          [1, 44, 34], [1, 44, 28], [1, 44, 22], [1, 44, 16],
+          [1, 70, 55], [1, 70, 44], [2, 35, 17], [2, 35, 13],
+          [1, 100, 80], [2, 50, 32], [2, 50, 24], [4, 25, 9],
+          [1, 134, 108], [2, 67, 43], [2, 33, 15, 2, 34, 16], [2, 33, 11, 2, 34, 12],
+          [2, 86, 68], [4, 43, 27], [4, 43, 19], [4, 43, 15]
+        ];
+        QRRSBlock.getRSBlocks = function(typeNumber, errorCorrectLevel) {
+          var rsBlock = QRRSBlock.getRsBlockTable(typeNumber, errorCorrectLevel);
+          if (rsBlock == undefined) throw new Error("bad rs block @ typeNumber:" + typeNumber + "/errorCorrectLevel:" + errorCorrectLevel);
+          var length = rsBlock.length / 3, list = [];
+          for (var i = 0; i < length; i++) {
+            var count = rsBlock[i * 3 + 0], totalCount = rsBlock[i * 3 + 1], dataCount = rsBlock[i * 3 + 2];
+            for (var j = 0; j < count; j++) list.push(new QRRSBlock(totalCount, dataCount));
+          }
+          return list;
+        };
+        QRRSBlock.getRsBlockTable = function(typeNumber, errorCorrectLevel) {
+          switch (errorCorrectLevel) {
+            case QRErrorCorrectLevel.L: return QRRSBlock.RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 0];
+            case QRErrorCorrectLevel.M: return QRRSBlock.RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 1];
+            case QRErrorCorrectLevel.Q: return QRRSBlock.RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 2];
+            case QRErrorCorrectLevel.H: return QRRSBlock.RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 3];
+            default: return undefined;
+          }
+        };
+
+        function QRBitBuffer() { this.buffer = []; this.length = 0; }
+        QRBitBuffer.prototype = {
+          get: function(index) { return ((this.buffer[Math.floor(index / 8)] >>> (7 - index % 8)) & 1) == 1; },
+          put: function(num, length) {
+            for (var i = 0; i < length; i++) this.putBit(((num >>> (length - i - 1)) & 1) == 1);
+          },
+          getLengthInBits: function() { return this.length; },
+          putBit: function(bit) {
+            var bufIndex = Math.floor(this.length / 8);
+            if (this.buffer.length <= bufIndex) this.buffer.push(0);
+            if (bit) this.buffer[bufIndex] |= (0x80 >>> (this.length % 8));
+            this.length++;
+          }
+        };
+
+        return {
+          generateSVG: function(text, margin) {
+            if (margin === undefined) margin = 2;
+            var qr = new QRCodeModel(0, QRErrorCorrectLevel.M);
+            qr.addData(text);
+            qr.make();
+            var count = qr.getModuleCount();
+            var size = count + margin * 2;
+            var svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + size + ' ' + size + '" width="100%" height="100%" style="display:block; shape-rendering:crispEdges;">';
+            svg += '<rect width="100%" height="100%" fill="#FFFFFF" rx="1"/>';
+            for (var r = 0; r < count; r++) {
+              for (var c = 0; c < count; c++) {
+                if (qr.isDark(r, c)) {
+                  svg += '<rect x="' + (c + margin) + '" y="' + (r + margin) + '" width="1" height="1" fill="#0F172A"/>';
+                }
+              }
+            }
+            svg += '</svg>';
+            return svg;
+          }
+        };
+      })();
+    </script>
+    <script>
+      (function renderPatientSvgQR() {
+        function doRender() {
+          try {
+            var container = document.getElementById("patientQrCode");
+            if (container) {
+              var targetUrl = (window.location.origin || "https://simed.fallonava.my.id") + "/jadwal";
+              container.innerHTML = QRCodeLib.generateSVG(targetUrl, 2);
+            }
+          } catch(e) {
+            console.error("Patient QR render error:", e);
+          }
+        }
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", doRender);
+        } else {
+          doRender();
+        }
+      })();
+
+      function openQrModal() {
+        var modal = document.getElementById("qrModal");
+        if (modal) {
+          modal.classList.add("active");
+          var bigContainer = document.getElementById("modalBigQrCode");
+          if (bigContainer && !bigContainer.hasChildNodes()) {
+            var targetUrl = (window.location.origin || "https://simed.fallonava.my.id") + "/jadwal";
+            bigContainer.innerHTML = QRCodeLib.generateSVG(targetUrl, 2);
+          }
+        }
+      }
+
+      function closeQrModal() {
+        var modal = document.getElementById("qrModal");
+        if (modal) modal.classList.remove("active");
+      }
+
+      function handleOverlayClick(e) {
+        if (e.target && e.target.id === "qrModal") {
+          closeQrModal();
+        }
+      }
+
+      function copyScheduleLink() {
+        var url = window.location.origin + "/mobile";
+        navigator.clipboard.writeText(url).then(function() {
+          if (typeof Island !== "undefined") {
+            Island.show("Link Disalin", "Tautan jadwal berhasil disalin ke clipboard", "success", "check_circle", 3000);
+          } else {
+            alert("Tautan berhasil disalin!");
+          }
+        });
+      }
+
+      // ── Traffic Tracker (Async Beacon) ──────────────────────────────────
+      (function() {
+        try {
+          var payload = JSON.stringify({
+            path: window.location.pathname || "/jadwal",
+            referrer: document.referrer || "direct"
+          });
+          if (navigator.sendBeacon) {
+            navigator.sendBeacon("/api/traffic/track", payload);
+          } else if (window.fetch) {
+            fetch("/api/traffic/track", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: payload,
+              keepalive: true
+            }).catch(function() {});
+          }
+        } catch(e) {}
+      })();
+    </script>
+  </body>
+</html>
