@@ -61,9 +61,10 @@ try {
 # -- 3. GIT PULL REPO TERBARU --------------------------------------------------
 Write-Host ""
 Write-Host "[2/6] Menarik update source code terbaru dari Git..." -ForegroundColor Yellow
-git pull origin master
+git fetch origin master
+git reset --hard origin/master
 if ($LASTEXITCODE -ne 0) {
-    Write-Host "[ERROR] Gagal git pull. Membatalkan deploy." -ForegroundColor Red
+    Write-Host "[ERROR] Gagal git sync. Membatalkan deploy." -ForegroundColor Red
     exit 1
 }
 
