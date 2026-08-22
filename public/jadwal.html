@@ -530,13 +530,14 @@
       .ios-brand-group {
         display: flex;
         align-items: center;
-        gap: 11px;
+        gap: 12px;
+        min-width: 0;
       }
       .ios-logo-coin {
         width: 44px;
         height: 44px;
         border-radius: 16px;
-        background: var(--surface-avatar);
+        background: var(--surface-card-solid);
         box-shadow: var(--shadow-btn);
         border: 1.5px solid var(--border-card);
         display: flex;
@@ -545,23 +546,94 @@
         overflow: hidden;
         flex-shrink: 0;
         position: relative;
+        transition: transform 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       }
-      .ios-logo-coin img { width: 85%; height: 85%; object-fit: contain; }
+      .ios-logo-coin:active {
+        transform: scale(0.92) rotate(-3deg);
+      }
+      .ios-logo-coin img {
+        width: 82%;
+        height: 82%;
+        object-fit: contain;
+        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.08));
+      }
+      .logo-clay-shine {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.45) 0%, transparent 60%);
+        pointer-events: none;
+        border-radius: 14px;
+      }
 
-      .ios-title-group { display: flex; flex-direction: column; }
-      .ios-title-group h1 {
-        font-size: 15px;
+      .ios-title-group {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        min-width: 0;
+      }
+      .brand-title-row {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .brand-title {
+        font-family: "Outfit", sans-serif;
+        font-size: 14.5px;
         font-weight: 900;
         letter-spacing: -0.02em;
         line-height: 1.15;
         color: var(--text-main);
+        margin: 0;
+        white-space: nowrap;
       }
-      .ios-title-group span {
+      .brand-city-tag {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 8px;
+        font-weight: 900;
+        padding: 1.5px 5px;
+        border-radius: 6px;
+        background: rgba(37, 99, 235, 0.12);
+        color: var(--ios-blue);
+        border: 1px solid rgba(37, 99, 235, 0.25);
+        letter-spacing: 0.04em;
+        flex-shrink: 0;
+      }
+      [data-theme="dark"] .brand-city-tag {
+        background: rgba(59, 130, 246, 0.2);
+        color: #93C5FD;
+        border-color: rgba(96, 165, 250, 0.35);
+      }
+
+      .brand-sub-row {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .brand-live-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #10B981;
+        box-shadow: 0 0 8px #10B981;
+        animation: livePulseDot 2s infinite ease-in-out;
+        flex-shrink: 0;
+      }
+      @keyframes livePulseDot {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.4; transform: scale(0.75); }
+      }
+      .brand-subtitle {
+        font-family: "Plus Jakarta Sans", sans-serif;
         font-size: 10px;
         font-weight: 800;
-        letter-spacing: 0.05em;
-        text-transform: uppercase;
+        letter-spacing: 0.02em;
         color: var(--ios-blue);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      [data-theme="dark"] .brand-subtitle {
+        color: #60A5FA;
       }
 
       .ios-header-actions {
@@ -1958,10 +2030,17 @@
         <div class="ios-brand-group">
           <div class="ios-logo-coin">
             <img src="/logo-rs.png" alt="RSU Siaga Medika" />
+            <div class="logo-clay-shine"></div>
           </div>
           <div class="ios-title-group">
-            <h1>RSU SIAGA MEDIKA</h1>
-            <span>Jadwal Dokter & Antrian</span>
+            <div class="brand-title-row">
+              <h1 class="brand-title">RSU SIAGA MEDIKA</h1>
+              <span class="brand-city-tag">PBG</span>
+            </div>
+            <div class="brand-sub-row">
+              <span class="brand-live-dot"></span>
+              <span class="brand-subtitle">Jadwal Dokter & Antrean</span>
+            </div>
           </div>
         </div>
         <div class="ios-header-actions">
