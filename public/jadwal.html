@@ -74,6 +74,103 @@
         --sar: env(safe-area-inset-right, 0px);
       }
 
+      /* ═══════════════════════════════════════════════════════════════
+         🌙 DARK OBSIDIAN CLAY THEME OVERRIDES
+         ═══════════════════════════════════════════════════════════════ */
+      [data-theme="dark"] {
+        --clay-bg: #0B1120;
+        --clay-surface: #1E293B;
+        --clay-surface-subtle: #1E293B;
+        --clay-inset: #0F172A;
+        --clay-border: rgba(51, 65, 85, 0.8);
+        --clay-border-subtle: rgba(51, 65, 85, 0.5);
+
+        --text-primary: #F8FAFC;
+        --text-secondary: #CBD5E1;
+        --text-muted: #64748B;
+
+        --clay-shadow-card: 
+          -6px -6px 16px 0px rgba(255, 255, 255, 0.03),
+          8px 14px 28px -2px rgba(0, 0, 0, 0.55),
+          0px 4px 12px 0px rgba(0, 0, 0, 0.35),
+          inset 1.5px 1.5px 2px 0px rgba(255, 255, 255, 0.08),
+          inset -2px -2px 4px 0px rgba(0, 0, 0, 0.4);
+
+        --clay-shadow-btn: 
+          -2px -2px 6px rgba(255, 255, 255, 0.04),
+          3px 5px 12px rgba(0, 0, 0, 0.45),
+          inset 1px 1px 1.5px rgba(255, 255, 255, 0.08);
+
+        --clay-shadow-inset: 
+          inset 3px 3px 6px rgba(0, 0, 0, 0.65),
+          inset -2px -2px 4px rgba(255, 255, 255, 0.04);
+      }
+
+      /* Dark Mode Component Tuning */
+      [data-theme="dark"] .ios-header { background: #0B1120; }
+      [data-theme="dark"] .ios-time-banner { background: #1E293B; border-color: #334155; }
+      [data-theme="dark"] .ios-clock { color: #38BDF8; }
+      [data-theme="dark"] .ios-icon-btn { background: #1E293B; color: #F8FAFC; border-color: #334155; }
+      [data-theme="dark"] .ios-icon-btn.primary { background: #2563EB; color: #FFFFFF; }
+      [data-theme="dark"] .ios-bento-tile { background: #1E293B !important; border-color: #334155 !important; }
+      [data-theme="dark"] .ios-bento-tile .bento-lbl { color: #94A3B8 !important; }
+      [data-theme="dark"] .ios-section-header { background: #1E293B !important; border-color: #334155 !important; }
+      [data-theme="dark"] .ios-sec-title { color: #F8FAFC !important; }
+      [data-theme="dark"] .ios-sec-badge { background: #0F172A !important; border-color: #334155 !important; color: #38BDF8 !important; }
+      [data-theme="dark"] .platter { 
+        background: linear-gradient(155deg, #1E293B 0%, #0F172A 100%) !important;
+        border-color: #334155 !important;
+      }
+      [data-theme="dark"] .platter .doc-name { color: #F8FAFC !important; }
+      [data-theme="dark"] .platter .doc-spec { color: #94A3B8 !important; }
+      [data-theme="dark"] .platter .initials { background: #0F172A !important; color: #F8FAFC !important; border-color: #334155 !important; }
+      [data-theme="dark"] .platter .jam-box { background: #0B1120 !important; border-color: #334155 !important; }
+      [data-theme="dark"] .platter .jam-val { color: #F8FAFC !important; }
+      [data-theme="dark"] .platter-detail { border-top-color: #334155 !important; }
+      [data-theme="dark"] .ios-mode-btn.active, [data-theme="dark"] .ios-seg-btn.active { 
+        background: #1E293B !important; color: #38BDF8 !important; border-color: #334155 !important; 
+      }
+      [data-theme="dark"] .dynamic-island { background: #1E293B !important; border-color: #334155 !important; }
+      [data-theme="dark"] .di-title { color: #38BDF8 !important; }
+      [data-theme="dark"] .di-msg { color: #CBD5E1 !important; }
+      [data-theme="dark"] .spec-chip { background: #1E293B; border-color: #334155; color: #CBD5E1; }
+      [data-theme="dark"] .weekly-day-btn { background: #1E293B; border-color: #334155; }
+      [data-theme="dark"] .weekly-day-btn .day-title { color: #F8FAFC; }
+      [data-theme="dark"] .weekly-shift-card, [data-theme="dark"] .leaves-cal-card, [data-theme="dark"] .leave-card {
+        background: #1E293B !important; border-color: #334155 !important;
+      }
+      [data-theme="dark"] .weekly-doc-name { color: #F8FAFC !important; }
+
+      /* Search Highlighting */
+      .search-highlight {
+        background: #FDE047 !important;
+        color: #713F12 !important;
+        padding: 1px 4px;
+        border-radius: 4px;
+        font-weight: 900;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      }
+      [data-theme="dark"] .search-highlight {
+        background: #EAB308 !important;
+        color: #422006 !important;
+      }
+
+      /* Silky Clay Shimmer Skeleton */
+      .clay-skeleton {
+        background: linear-gradient(90deg, rgba(226, 232, 240, 0.8) 25%, rgba(248, 250, 252, 0.95) 50%, rgba(226, 232, 240, 0.8) 75%);
+        background-size: 200% 100%;
+        animation: clayShimmer 1.5s infinite;
+        border-radius: 14px;
+      }
+      [data-theme="dark"] .clay-skeleton {
+        background: linear-gradient(90deg, rgba(30, 41, 59, 0.8) 25%, rgba(51, 65, 85, 0.95) 50%, rgba(30, 41, 59, 0.8) 75%);
+        background-size: 200% 100%;
+      }
+      @keyframes clayShimmer {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+      }
+
       * {
         box-sizing: border-box;
         margin: 0;
@@ -1017,6 +1114,18 @@
       }
 
       /* Card Expand Drawer */
+      /* Live Quick Specialty Chips (1-Tap Fast Filter) */
+      .live-spec-chips-bar {
+        display: flex;
+        gap: 6px;
+        overflow-x: auto;
+        padding: 3px 2px 6px;
+        margin: 2px 0 4px;
+        -webkit-overflow-scrolling: touch;
+      }
+      .live-spec-chips-bar::-webkit-scrollbar { display: none; }
+
+      /* Card Expand Drawer */
       .platter-detail {
         max-height: 0;
         opacity: 0;
@@ -1026,16 +1135,21 @@
         padding-top: 0;
         border-top: 1px solid transparent;
         width: 100%;
+        display: flex;
+        flex-direction: column;
       }
       .platter.active .platter-detail {
-        max-height: 80px;
+        max-height: 140px;
         opacity: 1;
         margin-top: 10px;
         padding-top: 9px;
-        border-top: 1.5px dashed #86EFAC;
+        border-top: 1.5px dashed rgba(134, 239, 172, 0.7);
+      }
+      .platter-detail-row {
         display: flex;
         justify-content: space-between;
         align-items: center;
+        width: 100%;
       }
       .detail-label {
         font-family: "Plus Jakarta Sans", sans-serif;
@@ -1077,6 +1191,47 @@
         display: flex;
         align-items: center;
         gap: 6px;
+      }
+
+      /* Card Drawer Actions (WhatsApp & Calendar) */
+      .platter-actions-row {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 8px;
+        padding-top: 7px;
+        border-top: 1px dashed rgba(226, 232, 240, 0.8);
+        width: 100%;
+      }
+      .platter-action-btn {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        padding: 7px 10px;
+        border-radius: 12px;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 10px;
+        font-weight: 800;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+        transition: transform 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s ease;
+        touch-action: manipulation;
+        user-select: none;
+      }
+      .platter-action-btn:active { transform: scale(0.92) translate3d(0, 1.5px, 0); }
+      .platter-action-btn.wa {
+        background: linear-gradient(135deg, #10B981, #059669);
+        color: #FFFFFF;
+        box-shadow: 0 3px 10px rgba(5, 150, 105, 0.35);
+      }
+      .platter-action-btn.cal {
+        background: var(--clay-inset);
+        color: var(--text-primary);
+        border: 1.5px solid rgba(255, 255, 255, 0.8);
+        box-shadow: var(--clay-shadow-btn);
       }
 
       /* ═══════════════════════════════════════════════════════════════
@@ -1590,6 +1745,9 @@
           </div>
         </div>
         <div class="ios-header-actions">
+          <button id="btnThemeToggle" class="ios-icon-btn" onclick="toggleTheme()" title="Ubah Mode Gelap/Terang">
+            <span id="themeIcon" class="material-icons-round" style="font-size: 19px;">dark_mode</span>
+          </button>
           <button class="ios-icon-btn primary" onclick="shareSchedule()" title="Bagikan Jadwal">
             <span class="material-icons-round" style="font-size: 18px;">ios_share</span>
           </button>
@@ -1659,6 +1817,13 @@
               <span class="material-icons-round" style="font-size: 18px;">cancel</span>
             </button>
           </div>
+        </div>
+
+        <!-- QUICK SPECIALTY FILTER CHIPS (1-TAP 0-TYPING) -->
+        <div class="live-spec-chips-bar" id="liveSpecChips">
+          <button class="spec-chip active" data-spec="all" onclick="switchLiveSpec('all')">
+            <span>✨ Semua Poli</span>
+          </button>
         </div>
 
         <!-- SEGMENTED CONTROL BAR -->
@@ -1977,8 +2142,49 @@
          JAVASCRIPT CONTROLLERS
          ═══════════════════════════════════════════════════════════════ -->
     <script>
-      // iOS Segmented Tab & Debounced Search Controller
+      // ===== WEB HAPTIC FEEDBACK (iOS NATIVE FEEL) =====
+      function triggerHaptic(type = "light") {
+        if ("vibrate" in navigator) {
+          try {
+            if (type === "light") navigator.vibrate(8);
+            else if (type === "medium") navigator.vibrate(18);
+            else if (type === "success") navigator.vibrate([10, 25, 15]);
+          } catch (e) {}
+        }
+      }
+
+      // ===== THEME TOGGLE (PORCELAIN VS OBSIDIAN CYBER CLAY) =====
+      function toggleTheme() {
+        const cur = document.documentElement.getAttribute("data-theme") || "light";
+        const next = cur === "dark" ? "light" : "dark";
+        document.documentElement.setAttribute("data-theme", next);
+        localStorage.setItem("rsu_theme", next);
+        const icon = document.getElementById("themeIcon");
+        if (icon) icon.textContent = next === "dark" ? "light_mode" : "dark_mode";
+        triggerHaptic("medium");
+        if (typeof Island !== "undefined") {
+          Island.show("Tema Tampilan", next === "dark" ? "Mode Gelap Obsidian Aktif" : "Mode Terang Porcelain Aktif", "info", next === "dark" ? "dark_mode" : "light_mode", 2500);
+        }
+      }
+
+      // Auto-load Theme
+      (function initTheme() {
+        const saved = localStorage.getItem("rsu_theme");
+        if (saved) {
+          document.documentElement.setAttribute("data-theme", saved);
+        } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+          document.documentElement.setAttribute("data-theme", "dark");
+        }
+        window.addEventListener("DOMContentLoaded", () => {
+          const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+          const icon = document.getElementById("themeIcon");
+          if (icon) icon.textContent = isDark ? "light_mode" : "dark_mode";
+        });
+      })();
+
+      // ===== SEGMENTED TABS, LIVE SPECIALTY CHIPS & SEARCH =====
       window.activeTab = "all";
+      window.selectedLiveSpec = "all";
       window.searchQuery = "";
       let searchDebounceTimer = null;
 
@@ -1991,13 +2197,14 @@
         searchDebounceTimer = setTimeout(() => {
           window.searchQuery = (val || "").trim().toLowerCase();
           applyDoctorFilterAndSearch();
-        }, 180);
+        }, 120);
       }
 
       function clearSearch() {
         const input = document.getElementById("doctorSearchInput");
         if (input) {
           input.value = "";
+          triggerHaptic("light");
           onSearchInput("");
           input.focus();
         }
@@ -2005,21 +2212,56 @@
 
       function switchTab(tabId) {
         window.activeTab = tabId;
+        triggerHaptic("light");
         document.querySelectorAll(".ios-seg-btn").forEach(btn => {
           btn.classList.toggle("active", btn.dataset.tab === tabId);
         });
         applyDoctorFilterAndSearch();
       }
 
+      function switchLiveSpec(spec) {
+        window.selectedLiveSpec = spec;
+        triggerHaptic("light");
+        document.querySelectorAll("#liveSpecChips .spec-chip").forEach(chip => {
+          chip.classList.toggle("active", chip.dataset.spec === spec);
+        });
+        applyDoctorFilterAndSearch();
+      }
+
+      function populateLiveSpecChips(data) {
+        const container = document.getElementById("liveSpecChips");
+        if (!container || !Array.isArray(data)) return;
+
+        const specMap = new Map();
+        data.forEach(d => {
+          if (d.Spesialis && !["CUTI", "SELESAI"].includes((d.Status || "").toUpperCase())) {
+            specMap.set(d.Spesialis, (specMap.get(d.Spesialis) || 0) + 1);
+          }
+        });
+
+        let html = `<button class="spec-chip ${window.selectedLiveSpec === 'all' ? 'active' : ''}" data-spec="all" onclick="switchLiveSpec('all')"><span>✨ Semua Poli</span></button>`;
+        Array.from(specMap.keys()).sort().forEach(spec => {
+          const shortSpec = spec.replace(/Spesialis\s*/i, "Sp. ").replace(/Poli\s*/i, "");
+          const isActive = window.selectedLiveSpec === spec;
+          html += `<button class="spec-chip ${isActive ? 'active' : ''}" data-spec="${esc(spec)}" onclick="switchLiveSpec('${esc(spec)}')"><span>${esc(shortSpec)}</span></button>`;
+        });
+        container.innerHTML = html;
+      }
+
       function applyDoctorFilterAndSearch() {
         requestAnimationFrame(() => {
           const query = (window.searchQuery || "").toLowerCase();
           const activeTab = window.activeTab || "all";
+          const activeSpec = window.selectedLiveSpec || "all";
 
           const allPlatters = document.querySelectorAll(".platter");
           allPlatters.forEach(card => {
+            const rawDocName = card.dataset.docName || card.querySelector(".doc-name")?.textContent || "";
+            const rawDocSpec = card.dataset.docSpec || card.querySelector(".doc-spec")?.textContent || "";
             const text = (card.textContent || "").toLowerCase();
+            
             const matchesSearch = !query || text.includes(query);
+            const matchesSpec = activeSpec === "all" || rawDocSpec.toLowerCase() === activeSpec.toLowerCase();
             
             let matchesTab = true;
             const parentSection = card.closest(".ios-section");
@@ -2030,8 +2272,20 @@
               else if (activeTab === "khusus" && secId !== "sidebarSection") matchesTab = false;
             }
 
-            if (matchesSearch && matchesTab) {
+            if (matchesSearch && matchesTab && matchesSpec) {
               card.style.display = "flex";
+
+              // Real-time Text Highlighting
+              const nameEl = card.querySelector(".doc-name");
+              const specEl = card.querySelector(".doc-spec");
+              if (query && query.length >= 2) {
+                const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, "gi");
+                if (nameEl) nameEl.innerHTML = rawDocName.replace(regex, '<mark class="search-highlight">$1</mark>');
+                if (specEl) specEl.innerHTML = rawDocSpec.replace(regex, '<mark class="search-highlight">$1</mark>');
+              } else {
+                if (nameEl) nameEl.textContent = rawDocName;
+                if (specEl) specEl.textContent = rawDocSpec;
+              }
             } else {
               card.style.display = "none";
             }
@@ -2041,7 +2295,7 @@
           ["bedahSection", "nonBedahSection", "sidebarSection"].forEach(secId => {
             const sec = document.getElementById(secId);
             if (sec) {
-              if (activeTab === "all") {
+              if (activeTab === "all" && activeSpec === "all") {
                 const hasVisible = Array.from(sec.querySelectorAll(".platter")).some(p => p.style.display !== "none");
                 sec.style.display = hasVisible ? "flex" : (query ? "none" : "flex");
               } else if (activeTab === "bedah") {
@@ -2050,13 +2304,39 @@
                 sec.style.display = secId === "nonBedahSection" ? "flex" : "none";
               } else if (activeTab === "khusus") {
                 sec.style.display = secId === "sidebarSection" ? "flex" : "none";
+              } else {
+                const hasVisible = Array.from(sec.querySelectorAll(".platter")).some(p => p.style.display !== "none");
+                sec.style.display = hasVisible ? "flex" : "none";
               }
             }
           });
         });
       }
 
+      function addDoctorToCalendar(docName, spec, jam) {
+        triggerHaptic("success");
+        const now = new Date();
+        const startHour = jam && jam.includes(":") ? parseInt(jam.split(":")[0]) : 8;
+        const startMin = jam && jam.includes(":") ? parseInt(jam.split(":")[1]) : 0;
+        
+        const startTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), startHour, startMin);
+        const endTime = new Date(startTime.getTime() + 2 * 60 * 60 * 1000);
+
+        const fmt = (d) => d.toISOString().replace(/-|:|\.\d+/g, "");
+        const title = encodeURIComponent(`Jadwal Dokter: ${docName} (${spec})`);
+        const details = encodeURIComponent(`Konsultasi Dokter di RSU Siaga Medika Purbalingga.\nDokter: ${docName}\nSpesialis: ${spec}\nJam: ${jam}`);
+        const location = encodeURIComponent("RSU Siaga Medika Purbalingga");
+
+        const gcalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${fmt(startTime)}/${fmt(endTime)}&details=${details}&location=${location}`;
+        window.open(gcalUrl, "_blank");
+
+        if (typeof Island !== "undefined") {
+          Island.show("Pengingat Kalender", `Membuka Google Calendar untuk ${docName}`, "success", "event", 3500);
+        }
+      }
+
       function shareSchedule() {
+        triggerHaptic("light");
         if (navigator.share) {
           navigator.share({
             title: "Jadwal Praktik Dokter RSU Siaga Medika Purbalingga",
@@ -2128,6 +2408,7 @@
           : formatJam((d.JamPraktek || "").split("-")[0]);
           
         const isCPO = ["CUTI", "PENUH", "OPERASI"].some(st => (d.Status || "").toUpperCase().includes(st));
+        const waText = encodeURIComponent(`Halo RSU Siaga Medika, saya ingin tanya informasi jadwal/pendaftaran untuk ${d.Dokter} (${d.Spesialis})`);
 
         return `
           <div class="platter-main">
@@ -2148,16 +2429,33 @@
             </div>
           </div>
           <div class="platter-detail">
-            <div class="detail-info" style="display:flex; flex-direction:column; gap:1px;">
-              <span class="detail-label">${labelJam}</span>
-              <span class="detail-time">${jamTampil}</span>
+            <div class="platter-detail-row">
+              <div class="detail-info" style="display:flex; flex-direction:column; gap:1px;">
+                <span class="detail-label">${labelJam}</span>
+                <span class="detail-time">${jamTampil}</span>
+              </div>
+              <div class="live-status">
+                <div class="pulse-dot"></div>
+                <span class="live-text">${labelLive}</span>
+              </div>
             </div>
-            <div class="live-status">
-              <div class="pulse-dot"></div>
-              <span class="live-text">${labelLive}</span>
+            <div class="platter-actions-row">
+              <a href="https://wa.me/6282323446076?text=${waText}" target="_blank" class="platter-action-btn wa" onclick="triggerHaptic('light'); event.stopPropagation();">
+                <span class="material-icons-round" style="font-size:14px;">chat</span>
+                <span>Tanya / Daftar WA</span>
+              </a>
+              <button class="platter-action-btn cal" onclick="addDoctorToCalendar('${esc(d.Dokter)}', '${esc(d.Spesialis)}', '${jamTampil}'); event.stopPropagation();">
+                <span class="material-icons-round" style="font-size:14px;">event</span>
+                <span>Ingatkan</span>
+              </button>
             </div>
           </div>`;
       };
+
+      function toggleCardActive(card) {
+        triggerHaptic("light");
+        card.classList.toggle("active");
+      }
 
       // ===== DYNAMIC ISLAND CONTROLLER =====
       const Island = {
@@ -2190,7 +2488,6 @@
           ];
           return msgs[Math.floor(Math.random() * msgs.length)];
         },
-
         async show(title, msg, type = "info", arg4 = null, arg5 = null) {
           let duration = 6000;
           let icon = null;
@@ -2310,12 +2607,23 @@
 
         skel() {
           const make = () =>
-            Array(4)
+            Array(3)
               .fill(0)
-              .map(() => `<div class="platter" style="height:48px; opacity:0.6"><div style="width:32px;height:32px;border-radius:12px;background:#E2E8F0"></div><div style="width:60%;height:14px;background:#E2E8F0;border-radius:6px"></div></div>`)
+              .map(() => `
+                <div class="platter clay-skeleton" style="padding: 14px 16px; display: flex; flex-direction: column; gap: 8px;">
+                  <div style="display: flex; align-items: center; gap: 12px; width: 100%;">
+                    <div style="width: 44px; height: 44px; border-radius: 16px; background: rgba(0,0,0,0.06); flex-shrink: 0;"></div>
+                    <div style="flex: 1; display: flex; flex-direction: column; gap: 6px;">
+                      <div style="width: 40%; height: 12px; border-radius: 6px; background: rgba(0,0,0,0.06);"></div>
+                      <div style="width: 75%; height: 15px; border-radius: 6px; background: rgba(0,0,0,0.08);"></div>
+                    </div>
+                    <div style="width: 65px; height: 24px; border-radius: 10px; background: rgba(0,0,0,0.06);"></div>
+                  </div>
+                </div>`)
               .join("");
-          $("scrollBedah").innerHTML = make();
-          $("scrollNonBedah").innerHTML = make();
+          if ($("scrollBedah")) $("scrollBedah").innerHTML = make();
+          if ($("scrollNonBedah")) $("scrollNonBedah").innerHTML = make();
+          if ($("scrollSidebar")) $("scrollSidebar").innerHTML = make();
         },
 
         connectRealtime() {
@@ -2340,12 +2648,10 @@
 
         processData(partial) {
           if (!partial) return;
-          this._data = { ...this._data, ...partial };
-          if (typeof updateWeeklyData === "function") updateWeeklyData(this._data.doctors, this._data.shifts);
-          if (typeof updateLeavesData === "function" && this._data.leaves) updateLeavesData(this._data.leaves);
-          const res = this._data;
-
           try {
+            const res = { ...this._data, ...partial };
+            this._data = res;
+
             const doctors = res.doctors || [];
             const shifts = res.shifts || [];
             const leaves = res.leaves || [];
@@ -2490,6 +2796,9 @@
           $("statPenuh").textContent = countPenuh;
           $("statCuti").textContent = countCuti;
 
+          // Populate Quick Specialty Filter Chips
+          populateLiveSpecChips(data);
+
           const group = { Bedah: [], NonBedah: [], Sidebar: [] };
 
           const mainData = data.filter((d) => {
@@ -2545,7 +2854,7 @@
               else if (st.includes("CUTI")) { labelJam = "JADWAL CUTI"; labelLive = "TIDAK MELAYANI"; }
               else if (st === "TERJADWAL") { labelJam = "MENUNGGU SHIFT"; labelLive = "BELUM MULAI"; }
 
-              return `<div class="platter ${c}">${buildCardHTML(d, avatarText, i, l, labelJam, labelLive)}</div>`;
+              return `<div class="platter ${c}" data-doc-name="${esc(d.Dokter)}" data-doc-spec="${esc(d.Spesialis)}" onclick="toggleCardActive(this)">${buildCardHTML(d, avatarText, i, l, labelJam, labelLive)}</div>`;
             }).join("");
           };
 
@@ -2556,6 +2865,9 @@
           $("countBedah").textContent = group.Bedah.length;
           $("countNonBedah").textContent = group.NonBedah.length;
           $("countSidebar").textContent = group.Sidebar.length;
+
+          // Re-apply active filters and search highlights
+          applyDoctorFilterAndSearch();
         },
       };
 
@@ -2572,6 +2884,7 @@
       const DAYS_NAME_FULL = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"];
 
       function switchMainView(mode) {
+        triggerHaptic("light");
         window.mainViewMode = mode;
         const btnLive = document.getElementById("btnViewLive");
         const btnWeekly = document.getElementById("btnViewWeekly");
@@ -2605,6 +2918,7 @@
       }
 
       function switchWeeklyDay(dayIdx) {
+        triggerHaptic("light");
         window.selectedWeeklyDay = dayIdx;
         document.querySelectorAll(".weekly-day-btn").forEach(btn => {
           btn.classList.toggle("active", String(btn.dataset.day) === String(dayIdx));
@@ -2613,6 +2927,7 @@
       }
 
       function switchWeeklySpec(spec) {
+        triggerHaptic("light");
         window.selectedWeeklySpec = spec;
         document.querySelectorAll(".spec-chip").forEach(chip => {
           chip.classList.toggle("active", chip.dataset.spec === spec);
