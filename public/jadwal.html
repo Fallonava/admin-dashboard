@@ -39,27 +39,27 @@
         --ios-rose: #E11D48;
         --ios-purple: #7C3AED;
 
-        /* Master 3D Tactile Shadows */
+        /* Master 3D Tactile Shadows (Ultra Smooth Multi-Stop Diffusion) */
         --clay-shadow-card: 
-          8px 12px 24px rgba(150, 168, 195, 0.35),
-          -6px -6px 18px #FFFFFF,
+          0 2px 4px rgba(15, 23, 42, 0.02),
+          0 8px 18px rgba(148, 163, 184, 0.18),
+          0 16px 32px rgba(148, 163, 184, 0.12),
+          -6px -6px 16px #FFFFFF,
           inset 1.5px 1.5px 2.5px #FFFFFF,
-          inset -2px -2px 4px rgba(150, 168, 195, 0.12);
+          inset -1.5px -1.5px 3px rgba(148, 163, 184, 0.08);
 
         --clay-shadow-btn: 
-          4px 5px 12px rgba(150, 168, 195, 0.28),
-          -3px -3px 8px #FFFFFF,
-          inset 1.2px 1.2px 2px #FFFFFF,
-          inset -1.2px -1.2px 2px rgba(150, 168, 195, 0.12);
+          0 3px 8px rgba(148, 163, 184, 0.2),
+          -2px -2px 6px #FFFFFF,
+          inset 1px 1px 1.5px #FFFFFF;
 
         --clay-shadow-inset: 
-          inset 3px 3px 6px rgba(150, 168, 195, 0.3),
-          inset -3px -3px 6px #FFFFFF,
-          inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+          inset 2.5px 2.5px 5px rgba(148, 163, 184, 0.22),
+          inset -2.5px -2.5px 5px #FFFFFF;
 
         --clay-shadow-pill: 
-          2px 3px 8px rgba(150, 168, 195, 0.25),
-          -1px -1px 4px #FFFFFF,
+          0 2px 6px rgba(148, 163, 184, 0.2),
+          -1px -1px 3px #FFFFFF,
           inset 1px 1px 1.5px rgba(255, 255, 255, 0.9);
 
         --radius-card: 22px;
@@ -692,9 +692,7 @@
       .scroller {
         display: flex;
         flex-direction: column;
-        gap: 11px;
-        contain: content;
-        will-change: transform;
+        gap: 12px;
       }
 
       .platter {
@@ -703,25 +701,26 @@
         padding: 14px 16px;
         border-radius: 22px;
         background: #FFFFFF !important;
-        /* Master Smooth 4-Layer Clay Physics */
+        /* Master Ultra Smooth Diffuse Clay Shadow */
         box-shadow: 
-          8px 12px 24px rgba(150, 168, 195, 0.38),
-          -6px -6px 18px #FFFFFF,
-          inset 2px 2px 3px #FFFFFF,
-          inset -2px -2px 4px rgba(150, 168, 195, 0.12);
+          0 2px 4px rgba(15, 23, 42, 0.02),
+          0 8px 18px rgba(148, 163, 184, 0.18),
+          0 16px 32px rgba(148, 163, 184, 0.12),
+          -6px -6px 16px #FFFFFF,
+          inset 1.5px 1.5px 2.5px #FFFFFF,
+          inset -1.5px -1.5px 3px rgba(148, 163, 184, 0.08);
         border: 2px solid #FFFFFF !important;
         position: relative;
-        overflow: hidden;
         transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.22s ease;
         cursor: pointer;
       }
       .platter:active {
-        transform: scale(0.975) translateY(2px);
+        transform: scale(0.98) translateY(1.5px);
         box-shadow: 
-          4px 6px 14px rgba(150, 168, 195, 0.3),
+          0 3px 8px rgba(148, 163, 184, 0.2),
           -2px -2px 6px #FFFFFF,
-          inset 3px 3px 6px rgba(150, 168, 195, 0.18),
-          inset -2px -2px 4px #FFFFFF;
+          inset 2px 2px 4px rgba(148, 163, 184, 0.12),
+          inset -1.5px -1.5px 3px #FFFFFF;
       }
       .platter::before {
         content: '';
@@ -1426,18 +1425,10 @@
       /* ═══════════════════════════════════════════════════════════════
          12. GPU LAYER ACCELERATION & 120HZ PERFORMANCE
          ═══════════════════════════════════════════════════════════════ */
-      .platter, .weekly-shift-card, .leave-card {
-        contain: layout paint;
-      }
-
       .platter, .ios-bento-tile, .weekly-shift-card, .leave-card,
       .ios-icon-btn, .ios-seg-btn, .ios-mode-btn, .weekly-day-btn, .spec-chip,
       .hotline-clay-pill, .ios-floating-dock, .dynamic-island {
-        transform: translateZ(0);
-        -webkit-transform: translateZ(0);
-        backface-visibility: hidden;
-        -webkit-backface-visibility: hidden;
-        perspective: 1000px;
+        -webkit-font-smoothing: antialiased;
       }
     </style>
   </head>
