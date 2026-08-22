@@ -1485,17 +1485,8 @@
       /* ═══════════════════════════════════════════════════════════════
          12. GPU LAYER ACCELERATION & 120HZ PERFORMANCE
          ═══════════════════════════════════════════════════════════════ */
-      @keyframes clayCardSpring {
-        0% { opacity: 0; transform: translateY(16px) scale(0.96); }
-        70% { transform: translateY(-2px) scale(1.005); }
-        100% { opacity: 1; transform: translateY(0) scale(1); }
-      }
-
       .platter, .weekly-shift-card, .leave-card {
-        animation: clayCardSpring 0.38s cubic-bezier(0.16, 1, 0.3, 1) backwards;
         contain: layout paint;
-        content-visibility: auto;
-        contain-intrinsic-size: 0 76px;
       }
 
       .platter, .ios-bento-tile, .weekly-shift-card, .leave-card,
@@ -2435,8 +2426,14 @@
           }, 300);
         },
 
+        _lastDataHash: "",
+
         render(data) {
           if (!data) return;
+
+          const currentHash = JSON.stringify(data);
+          if (this._lastDataHash === currentHash) return;
+          this._lastDataHash = currentHash;
 
           let countBuka = 0, countPenuh = 0, countCuti = 0;
           data.forEach((d) => {
