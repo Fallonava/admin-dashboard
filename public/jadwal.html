@@ -1715,6 +1715,180 @@
         box-shadow: 5px 7px 18px rgba(5, 150, 105, 0.42);
       }
 
+      /* ═══════════════════════════════════════════════════════════════
+         REGISTRATION & BOOKING CHOICE CLAY TILES
+         ═══════════════════════════════════════════════════════════════ */
+      .booking-doc-context {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 14px;
+        border-radius: 18px;
+        background: var(--surface-well);
+        box-shadow: var(--shadow-inset);
+        border: 1px solid var(--border-subtle);
+      }
+      .booking-doc-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 14px;
+        background: var(--surface-avatar);
+        box-shadow: var(--shadow-btn);
+        border: 1.5px solid var(--border-card);
+        color: var(--ios-blue);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Outfit", sans-serif;
+        font-size: 14px;
+        font-weight: 900;
+        flex-shrink: 0;
+      }
+      .booking-doc-info {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        min-width: 0;
+        flex: 1;
+      }
+      .booking-doc-spec {
+        font-size: 9.5px;
+        font-weight: 800;
+        text-transform: uppercase;
+        color: var(--ios-blue);
+      }
+      .booking-doc-name {
+        font-size: 12.5px;
+        font-weight: 900;
+        color: var(--text-main);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .booking-doc-time {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        font-weight: 700;
+        color: var(--text-sub);
+      }
+
+      .clay-choice-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .clay-choice-tile {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 13px 15px;
+        border-radius: 20px;
+        background: var(--surface-card-solid);
+        box-shadow: var(--shadow-card);
+        border: 1.5px solid var(--border-card);
+        text-decoration: none;
+        color: var(--text-main);
+        position: relative;
+        overflow: hidden;
+        transition: transform 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s ease, border-color 0.2s ease;
+        touch-action: manipulation;
+        user-select: none;
+      }
+      .clay-choice-tile:active {
+        transform: scale(0.95) translateY(2px) !important;
+        box-shadow: var(--shadow-inset) !important;
+      }
+
+      .clay-choice-icon-coin {
+        width: 44px;
+        height: 44px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        color: #FFFFFF;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), inset 1.5px 1.5px 3px rgba(255, 255, 255, 0.4);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+      }
+      .clay-choice-icon-coin.bpjs {
+        background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+        box-shadow: 0 4px 14px rgba(5, 150, 105, 0.38), inset 1.5px 1.5px 3px rgba(255, 255, 255, 0.45);
+      }
+      .clay-choice-icon-coin.non-bpjs {
+        background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);
+        box-shadow: 0 4px 14px rgba(29, 78, 216, 0.38), inset 1.5px 1.5px 3px rgba(255, 255, 255, 0.45);
+      }
+      .clay-choice-icon-coin.wa {
+        background: linear-gradient(135deg, #34D399 0%, #059669 100%);
+        box-shadow: 0 4px 14px rgba(5, 150, 105, 0.38), inset 1.5px 1.5px 3px rgba(255, 255, 255, 0.45);
+      }
+      .clay-choice-icon-coin .material-icons-round {
+        font-size: 22px;
+      }
+
+      .clay-choice-content {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+        flex: 1;
+        min-width: 0;
+      }
+      .clay-choice-title-row {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+      .clay-choice-title {
+        font-family: "Outfit", sans-serif;
+        font-size: 13px;
+        font-weight: 900;
+        color: var(--text-main);
+      }
+      .clay-choice-tag {
+        font-size: 8.5px;
+        font-weight: 900;
+        padding: 2px 6px;
+        border-radius: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .clay-choice-tag.bpjs {
+        background: rgba(16, 185, 129, 0.15);
+        color: #059669;
+        border: 1px solid rgba(16, 185, 129, 0.3);
+      }
+      .clay-choice-tag.non-bpjs {
+        background: rgba(37, 99, 235, 0.15);
+        color: #2563EB;
+        border: 1px solid rgba(37, 99, 235, 0.3);
+      }
+      .clay-choice-tag.wa {
+        background: rgba(16, 185, 129, 0.15);
+        color: #059669;
+        border: 1px solid rgba(16, 185, 129, 0.3);
+      }
+
+      .clay-choice-desc {
+        font-size: 10px;
+        font-weight: 600;
+        color: var(--text-sub);
+        line-height: 1.35;
+      }
+
+      .clay-choice-chevron {
+        color: var(--text-mute);
+        font-size: 20px;
+        flex-shrink: 0;
+        transition: transform 0.2s ease, color 0.2s ease;
+      }
+      .clay-choice-tile:hover .clay-choice-chevron {
+        transform: translateX(2px);
+        color: var(--text-main);
+      }
+
       /* Emergency Overlay */
       .broadcast-overlay {
         position: fixed; inset: 0; z-index: 10000; display: none; align-items: center; justify-content: center;
@@ -2184,6 +2358,80 @@
       </div>
     </div>
 
+    <!-- APPLE iOS 2026 REGISTRATION & BOOKING CHOICE MODAL -->
+    <div id="registerChoiceModal" class="ios-modal-overlay" onclick="handleRegisterOverlayClick(event)">
+      <div class="ios-modal-card">
+        <div class="ios-sheet-handle"></div>
+        <div class="modal-head-row">
+          <div class="modal-title-group">
+            <div class="sec-icon-coin bedah" style="width: 28px; height: 28px; border-radius: 10px;">
+              <span class="material-icons-round" style="font-size: 16px;">app_registration</span>
+            </div>
+            <h3>Pendaftaran & Informasi</h3>
+          </div>
+          <button class="modal-close-btn" onclick="closeRegisterModal()" title="Tutup">
+            <span class="material-icons-round" style="font-size: 18px;">close</span>
+          </button>
+        </div>
+
+        <div class="booking-doc-context" id="regDocContext" style="display: none;">
+          <div class="booking-doc-avatar" id="regDocAvatar">DS</div>
+          <div class="booking-doc-info">
+            <span class="booking-doc-spec" id="regDocSpec">Poli Spesialis</span>
+            <span class="booking-doc-name" id="regDocName">Nama Dokter</span>
+            <span class="booking-doc-time" id="regDocTime">08:00 - 12:00</span>
+          </div>
+        </div>
+
+        <div class="clay-choice-list">
+          <!-- 1. DAFTAR ONLINE BPJS (MOBILE JKN) -->
+          <a href="https://play.google.com/store/apps/details?id=app.bpjs.mobile" target="_blank" class="clay-choice-tile" onclick="triggerHaptic('medium'); trackRegChoice('bpjs');">
+            <div class="clay-choice-icon-coin bpjs">
+              <span class="material-icons-round">health_and_safety</span>
+            </div>
+            <div class="clay-choice-content">
+              <div class="clay-choice-title-row">
+                <span class="clay-choice-title">Daftar Online BPJS</span>
+                <span class="clay-choice-tag bpjs">Mobile JKN</span>
+              </div>
+              <span class="clay-choice-desc">Ambil antrean faskes rujukan BPJS Kesehatan via aplikasi resmi Mobile JKN</span>
+            </div>
+            <span class="material-icons-round clay-choice-chevron">chevron_right</span>
+          </a>
+
+          <!-- 2. DAFTAR ONLINE NON BPJS (NUHA APP) -->
+          <a href="https://play.google.com/store/apps/details?id=com.nuha.nuha" target="_blank" class="clay-choice-tile" onclick="triggerHaptic('medium'); trackRegChoice('non_bpjs');">
+            <div class="clay-choice-icon-coin non-bpjs">
+              <span class="material-icons-round">app_registration</span>
+            </div>
+            <div class="clay-choice-content">
+              <div class="clay-choice-title-row">
+                <span class="clay-choice-title">Daftar Online Non-BPJS</span>
+                <span class="clay-choice-tag non-bpjs">Nuha App</span>
+              </div>
+              <span class="clay-choice-desc">Booking antrean pasien umum, asuransi rekanan & perusahaan via aplikasi Nuha</span>
+            </div>
+            <span class="material-icons-round clay-choice-chevron">chevron_right</span>
+          </a>
+
+          <!-- 3. BUTUH BANTUAN WA INFORMASI -->
+          <a id="regWaBtn" href="https://wa.me/6282323446076" target="_blank" class="clay-choice-tile" onclick="triggerHaptic('medium'); trackRegChoice('wa');">
+            <div class="clay-choice-icon-coin wa">
+              <span class="material-icons-round">support_agent</span>
+            </div>
+            <div class="clay-choice-content">
+              <div class="clay-choice-title-row">
+                <span class="clay-choice-title">Butuh Bantuan WA Informasi</span>
+                <span class="clay-choice-tag wa">WhatsApp CS</span>
+              </div>
+              <span class="clay-choice-desc">Konsultasi langsung dengan customer service & petugas pendaftaran RS</span>
+            </div>
+            <span class="material-icons-round clay-choice-chevron">chevron_right</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
     <!-- ═══════════════════════════════════════════════════════════════
          JAVASCRIPT CONTROLLERS
          ═══════════════════════════════════════════════════════════════ -->
@@ -2502,10 +2750,10 @@
               </div>
             </div>
             <div class="platter-actions-row">
-              <a href="https://wa.me/6282323446076?text=${waText}" target="_blank" class="platter-action-btn wa" onclick="triggerHaptic('light'); event.stopPropagation();">
-                <span class="material-icons-round" style="font-size:14px;">chat</span>
-                <span>Tanya / Daftar WA</span>
-              </a>
+              <button class="platter-action-btn wa" onclick="openRegisterModal('${esc(d.Dokter)}', '${esc(d.Spesialis)}', '${jamTampil}'); event.stopPropagation();">
+                <span class="material-icons-round" style="font-size:14px;">app_registration</span>
+                <span>Tanya / Daftar</span>
+              </button>
               <button class="platter-action-btn cal" onclick="addDoctorToCalendar('${esc(d.Dokter)}', '${esc(d.Spesialis)}', '${jamTampil}'); event.stopPropagation();">
                 <span class="material-icons-round" style="font-size:14px;">event</span>
                 <span>Ingatkan</span>
@@ -3807,6 +4055,53 @@
       function handleOverlayClick(e) {
         if (e.target && e.target.id === "qrModal") {
           closeQrModal();
+        }
+      }
+
+      function openRegisterModal(docName = "", docSpec = "", jam = "") {
+        triggerHaptic("medium");
+        var modal = document.getElementById("registerChoiceModal");
+        var contextBox = document.getElementById("regDocContext");
+        var nameEl = document.getElementById("regDocName");
+        var specEl = document.getElementById("regDocSpec");
+        var timeEl = document.getElementById("regDocTime");
+        var avatarEl = document.getElementById("regDocAvatar");
+        var waBtn = document.getElementById("regWaBtn");
+
+        if (docName && docName.trim()) {
+          if (contextBox) contextBox.style.display = "flex";
+          if (nameEl) nameEl.textContent = docName;
+          if (specEl) specEl.textContent = docSpec || "Poli Spesialis";
+          if (timeEl) timeEl.textContent = jam ? `Jadwal: ${jam}` : "Sesuai Jadwal";
+          if (avatarEl) avatarEl.textContent = initials(docName);
+
+          var waMsg = encodeURIComponent(`Halo RSU Siaga Medika, saya ingin menanyakan informasi pendaftaran & jadwal untuk ${docName} (${docSpec || 'Dokter Spesialis'})${jam ? ' jam ' + jam : ''}.`);
+          if (waBtn) waBtn.href = `https://wa.me/6282323446076?text=${waMsg}`;
+        } else {
+          if (contextBox) contextBox.style.display = "none";
+          if (waBtn) waBtn.href = `https://wa.me/6282323446076?text=${encodeURIComponent('Halo RSU Siaga Medika, saya ingin tanya informasi jadwal & pendaftaran pasien.')}`;
+        }
+
+        if (modal) modal.classList.add("active");
+      }
+
+      function closeRegisterModal() {
+        triggerHaptic("light");
+        var modal = document.getElementById("registerChoiceModal");
+        if (modal) modal.classList.remove("active");
+      }
+
+      function handleRegisterOverlayClick(e) {
+        if (e.target && e.target.id === "registerChoiceModal") {
+          closeRegisterModal();
+        }
+      }
+
+      function trackRegChoice(type) {
+        if (typeof Island !== "undefined") {
+          if (type === "bpjs") Island.show("Mobile JKN", "Membuka Google Play Store untuk BPJS Mobile JKN", "info", "health_and_safety", 3000);
+          else if (type === "non_bpjs") Island.show("Nuha App", "Membuka Google Play Store untuk Nuha Online Booking", "info", "app_registration", 3000);
+          else if (type === "wa") Island.show("WhatsApp CS", "Menghubungkan ke WhatsApp Pendaftaran RS", "success", "chat", 3000);
         }
       }
 
