@@ -20,6 +20,7 @@ import {
   Sparkles,
   Layers,
   Calendar,
+  Zap,
 } from "lucide-react";
 import {
   AreaChart,
@@ -42,23 +43,28 @@ const CHART_COLORS = ["#3B82F6", "#10B981", "#F59E0B", "#8B5CF6", "#EC4899", "#0
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
-// Custom Apple Obsidian Tooltip for Charts
+// Custom Apple Obsidian Tooltip with iOS Spring Reveal
 function CustomChartTooltip({ active, payload, label }: any) {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-[#10131C]/95 dark:bg-[#0B0D13]/95 border border-white/10 rounded-[14px] p-3 shadow-2xl backdrop-blur-md text-white text-xs">
-        <div className="font-bold text-zinc-300 mb-1.5 border-b border-white/10 pb-1 flex items-center justify-between gap-4">
-          <span>{label}</span>
-          <span className="text-[10px] text-zinc-400 font-mono">Real-time</span>
+      <div className="bg-[#10131C]/95 dark:bg-[#0B0D13]/95 border border-white/15 rounded-[16px] p-3.5 shadow-2xl backdrop-blur-md text-white text-xs transform transition-all duration-200 ease-out animate-in fade-in zoom-in-95">
+        <div className="font-bold text-zinc-300 mb-1.5 border-b border-white/10 pb-1.5 flex items-center justify-between gap-4">
+          <span className="flex items-center gap-1.5">
+            <Sparkles size={11} className="text-blue-400 animate-pulse" />
+            {label}
+          </span>
+          <span className="text-[10px] text-zinc-400 font-mono tracking-tight">Real-time</span>
         </div>
-        <div className="space-y-1">
+        <div className="space-y-1.5">
           {payload.map((entry: any, index: number) => (
-            <div key={`item-${index}`} className="flex items-center justify-between gap-3 font-semibold">
-              <div className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }} />
-                <span className="text-zinc-300">{entry.name}:</span>
+            <div key={`item-${index}`} className="flex items-center justify-between gap-4 font-semibold">
+              <div className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full shadow-sm" style={{ backgroundColor: entry.color }} />
+                <span className="text-zinc-300 font-medium">{entry.name}:</span>
               </div>
-              <span className="font-black font-mono text-white">{entry.value.toLocaleString("id-ID")}</span>
+              <span className="font-black font-mono text-white tracking-wide">
+                {entry.value.toLocaleString("id-ID")}
+              </span>
             </div>
           ))}
         </div>
@@ -88,8 +94,8 @@ export default function TrafficDashboardPage() {
   const isScheduleOnly = selectedPath === "/jadwal";
 
   return (
-    <div className="flex-1 w-full flex flex-col h-full min-h-0 overflow-y-auto bg-[#EDF2F8] dark:bg-[#0B0E14] text-zinc-900 dark:text-zinc-100 pb-20 custom-scrollbar">
-      {/* ═══ PAGE HEADER ═══ */}
+    <div className="flex-1 w-full flex flex-col h-full min-h-0 overflow-y-auto bg-[#EDF2F8] dark:bg-[#0B0E14] text-zinc-900 dark:text-zinc-100 pb-20 custom-scrollbar page-enter">
+      {/* ═══ PAGE HEADER WITH iOS ACCENT ═══ */}
       <PageHeader
         icon={<Activity size={22} className="text-white" strokeWidth={2.5} />}
         title="Monitoring Trafik"
@@ -99,9 +105,9 @@ export default function TrafficDashboardPage() {
         accentBarGradient="from-blue-600 via-indigo-600 to-violet-600"
         accentColor="text-indigo-600 dark:text-indigo-400"
         badge={
-          <div className="flex items-center gap-2 clay-pill-emerald text-white px-3.5 py-1 rounded-full shadow-sm">
+          <div className="flex items-center gap-2 clay-pill-emerald text-white px-3.5 py-1 rounded-full shadow-sm transition-all duration-300 hover:scale-105 active:scale-95 cursor-default">
             <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75 duration-1000"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
             </span>
             <span className="text-[10px] sm:text-xs font-black tracking-widest uppercase">
@@ -113,25 +119,31 @@ export default function TrafficDashboardPage() {
           <button
             onClick={() => mutate()}
             disabled={isLoading}
-            className="clay-button text-zinc-700 dark:text-zinc-200 px-3.5 py-2 rounded-[14px] text-xs font-black flex items-center gap-2 active:scale-95 transition-all shadow-sm cursor-pointer"
+            className="clay-button text-zinc-700 dark:text-zinc-200 px-4 py-2 rounded-[14px] text-xs font-black flex items-center gap-2 active:scale-90 transition-all duration-200 ease-[cubic-bezier(0.34,1.56,0.64,1)] shadow-sm hover:shadow-md cursor-pointer group"
             title="Perbarui analitik trafik sekarang"
           >
-            <RefreshCw size={14} className={cn(isLoading ? "animate-spin text-indigo-600" : "text-zinc-400")} />
-            <span>{isLoading ? "Memuat..." : "Refresh Data"}</span>
+            <RefreshCw
+              size={14}
+              className={cn(
+                "transition-transform duration-500 ease-out",
+                isLoading ? "animate-spin text-indigo-600" : "text-zinc-400 group-hover:rotate-180 text-zinc-600 dark:text-zinc-300"
+              )}
+            />
+            <span>{isLoading ? "Memuat..." : "Refresh"}</span>
           </button>
         }
       />
 
       <div className="px-3 sm:px-6 space-y-4 max-w-7xl mx-auto w-full">
-        {/* ═══ 4 TOP CLAY KPI CARDS ═══ */}
+        {/* ═══ 4 TOP CLAY KPI CARDS WITH APPLE SPRING PHYSICS ═══ */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
           {/* Card 1: Today Views */}
-          <div className="clay-surface rounded-[22px] sm:rounded-[26px] p-3.5 sm:p-5 flex flex-col justify-between border border-zinc-200/50 dark:border-white/5 relative overflow-hidden group">
+          <div className="clay-surface rounded-[22px] sm:rounded-[26px] p-3.5 sm:p-5 flex flex-col justify-between border border-zinc-200/50 dark:border-white/5 relative overflow-hidden group transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1.5 hover:shadow-lg hover:border-blue-500/30 active:scale-[0.98]">
             <div className="flex items-center justify-between">
               <span className="text-[10px] sm:text-[11px] font-black uppercase text-zinc-400 dark:text-zinc-500 tracking-wider">
                 Views Hari Ini
               </span>
-              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-[14px] clay-icon-blue flex items-center justify-center text-white">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-[14px] clay-icon-blue flex items-center justify-center text-white transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:scale-110 group-hover:rotate-6 shadow-sm">
                 <Eye size={18} strokeWidth={2.5} />
               </div>
             </div>
@@ -144,7 +156,7 @@ export default function TrafficDashboardPage() {
               </div>
             </div>
             <div className="mt-2 pt-2 border-t border-zinc-200/40 dark:border-white/5 flex items-center justify-between text-[11px]">
-              <span className="font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+              <span className="font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1 transition-transform duration-200 group-hover:translate-x-0.5">
                 <TrendingUp size={13} />
                 {overview.todayUniques} Unik
               </span>
@@ -153,12 +165,12 @@ export default function TrafficDashboardPage() {
           </div>
 
           {/* Card 2: Total Views */}
-          <div className="clay-surface rounded-[22px] sm:rounded-[26px] p-3.5 sm:p-5 flex flex-col justify-between border border-zinc-200/50 dark:border-white/5 relative overflow-hidden group">
+          <div className="clay-surface rounded-[22px] sm:rounded-[26px] p-3.5 sm:p-5 flex flex-col justify-between border border-zinc-200/50 dark:border-white/5 relative overflow-hidden group transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1.5 hover:shadow-lg hover:border-indigo-500/30 active:scale-[0.98]">
             <div className="flex items-center justify-between">
               <span className="text-[10px] sm:text-[11px] font-black uppercase text-zinc-400 dark:text-zinc-500 tracking-wider">
                 Total Views ({days} Hari)
               </span>
-              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-[14px] clay-icon-indigo flex items-center justify-center text-white">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-[14px] clay-icon-indigo flex items-center justify-center text-white transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:scale-110 group-hover:-rotate-6 shadow-sm">
                 <Activity size={18} strokeWidth={2.5} />
               </div>
             </div>
@@ -171,7 +183,7 @@ export default function TrafficDashboardPage() {
               </div>
             </div>
             <div className="mt-2 pt-2 border-t border-zinc-200/40 dark:border-white/5 flex items-center justify-between text-[11px]">
-              <span className="font-bold text-indigo-600 dark:text-indigo-400">
+              <span className="font-bold text-indigo-600 dark:text-indigo-400 transition-transform duration-200 group-hover:translate-x-0.5">
                 ~{Math.round(overview.totalViews / Math.max(days, 1))} / hari
               </span>
               <span className="text-[10px] font-extrabold text-zinc-400">Rata-rata</span>
@@ -179,12 +191,12 @@ export default function TrafficDashboardPage() {
           </div>
 
           {/* Card 3: Unique Visitors */}
-          <div className="clay-surface rounded-[22px] sm:rounded-[26px] p-3.5 sm:p-5 flex flex-col justify-between border border-zinc-200/50 dark:border-white/5 relative overflow-hidden group">
+          <div className="clay-surface rounded-[22px] sm:rounded-[26px] p-3.5 sm:p-5 flex flex-col justify-between border border-zinc-200/50 dark:border-white/5 relative overflow-hidden group transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1.5 hover:shadow-lg hover:border-emerald-500/30 active:scale-[0.98]">
             <div className="flex items-center justify-between">
               <span className="text-[10px] sm:text-[11px] font-black uppercase text-zinc-400 dark:text-zinc-500 tracking-wider">
                 Pengunjung Unik
               </span>
-              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-[14px] clay-icon-emerald flex items-center justify-center text-white">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-[14px] clay-icon-emerald flex items-center justify-center text-white transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:scale-110 group-hover:rotate-6 shadow-sm">
                 <Users size={18} strokeWidth={2.5} />
               </div>
             </div>
@@ -197,7 +209,7 @@ export default function TrafficDashboardPage() {
               </div>
             </div>
             <div className="mt-2 pt-2 border-t border-zinc-200/40 dark:border-white/5 flex items-center justify-between text-[11px]">
-              <span className="font-bold text-emerald-600 dark:text-emerald-400">
+              <span className="font-bold text-emerald-600 dark:text-emerald-400 transition-transform duration-200 group-hover:translate-x-0.5">
                 {overview.totalViews > 0
                   ? `${((overview.totalUniques / overview.totalViews) * 100).toFixed(0)}% Baru`
                   : "0%"}
@@ -207,12 +219,12 @@ export default function TrafficDashboardPage() {
           </div>
 
           {/* Card 4: Peak Hour */}
-          <div className="clay-surface rounded-[22px] sm:rounded-[26px] p-3.5 sm:p-5 flex flex-col justify-between border border-zinc-200/50 dark:border-white/5 relative overflow-hidden group">
+          <div className="clay-surface rounded-[22px] sm:rounded-[26px] p-3.5 sm:p-5 flex flex-col justify-between border border-zinc-200/50 dark:border-white/5 relative overflow-hidden group transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1.5 hover:shadow-lg hover:border-amber-500/30 active:scale-[0.98]">
             <div className="flex items-center justify-between">
               <span className="text-[10px] sm:text-[11px] font-black uppercase text-zinc-400 dark:text-zinc-500 tracking-wider">
                 Jam Teramai
               </span>
-              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-[14px] clay-icon-amber flex items-center justify-center text-white">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-[14px] clay-icon-amber flex items-center justify-center text-white transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:scale-110 group-hover:-rotate-6 shadow-sm">
                 <Clock size={18} strokeWidth={2.5} />
               </div>
             </div>
@@ -224,7 +236,7 @@ export default function TrafficDashboardPage() {
               </div>
             </div>
             <div className="mt-2 pt-2 border-t border-zinc-200/40 dark:border-white/5 flex items-center justify-between text-[11px]">
-              <span className="font-bold text-amber-600 dark:text-amber-400 flex items-center gap-1">
+              <span className="font-bold text-amber-600 dark:text-amber-400 flex items-center gap-1 transition-transform duration-200 group-hover:translate-x-0.5">
                 Puncak Pasien
               </span>
               <span className="text-[10px] font-extrabold text-zinc-400">WIB</span>
@@ -232,16 +244,16 @@ export default function TrafficDashboardPage() {
           </div>
         </div>
 
-        {/* ═══ FILTER & TIMEFRAME BAR ═══ */}
-        <div className="clay-surface rounded-[20px] p-2.5 sm:p-3 flex flex-wrap items-center justify-between gap-2.5 border border-zinc-200/50 dark:border-white/5">
+        {/* ═══ FILTER & TIMEFRAME BAR (iOS SEGMENTED CONTROL) ═══ */}
+        <div className="clay-surface rounded-[20px] p-2.5 sm:p-3 flex flex-wrap items-center justify-between gap-2.5 border border-zinc-200/50 dark:border-white/5 shadow-sm">
           {/* Path Filters */}
           <div className="flex items-center gap-1.5 overflow-x-auto py-0.5">
             <button
               onClick={() => setSelectedPath("")}
               className={cn(
-                "px-3.5 py-1.5 rounded-[12px] text-xs font-black transition-all cursor-pointer",
+                "px-3.5 py-1.5 rounded-[12px] text-xs font-black transition-all duration-200 ease-[cubic-bezier(0.34,1.56,0.64,1)] active:scale-90 cursor-pointer select-none",
                 selectedPath === ""
-                  ? "clay-pill-blue text-white shadow-md"
+                  ? "clay-pill-blue text-white shadow-md scale-100"
                   : "clay-button text-zinc-600 dark:text-zinc-300 hover:text-zinc-900"
               )}
             >
@@ -250,9 +262,9 @@ export default function TrafficDashboardPage() {
             <button
               onClick={() => setSelectedPath("/jadwal")}
               className={cn(
-                "px-3.5 py-1.5 rounded-[12px] text-xs font-black transition-all cursor-pointer flex items-center gap-1.5",
+                "px-3.5 py-1.5 rounded-[12px] text-xs font-black transition-all duration-200 ease-[cubic-bezier(0.34,1.56,0.64,1)] active:scale-90 cursor-pointer select-none flex items-center gap-1.5",
                 isScheduleOnly
-                  ? "clay-pill-emerald text-white shadow-md"
+                  ? "clay-pill-emerald text-white shadow-md scale-100"
                   : "clay-button text-zinc-600 dark:text-zinc-300 hover:text-zinc-900"
               )}
             >
@@ -272,7 +284,7 @@ export default function TrafficDashboardPage() {
                 key={t.val}
                 onClick={() => setDays(t.val)}
                 className={cn(
-                  "px-3 py-1 text-xs font-black rounded-[10px] transition-all cursor-pointer",
+                  "px-3.5 py-1 text-xs font-black rounded-[10px] transition-all duration-200 ease-[cubic-bezier(0.34,1.56,0.64,1)] active:scale-90 cursor-pointer select-none",
                   days === t.val
                     ? "clay-button text-indigo-600 dark:text-indigo-400 shadow-sm"
                     : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"
@@ -287,7 +299,7 @@ export default function TrafficDashboardPage() {
         {/* ═══ CHARTS SECTION (TREND & DEVICE DONUT) ═══ */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           {/* Main Trend Chart (2 Cols) */}
-          <div className="lg:col-span-2 clay-surface rounded-[24px] p-4 sm:p-6 border border-zinc-200/50 dark:border-white/5 flex flex-col justify-between">
+          <div className="lg:col-span-2 clay-surface rounded-[24px] p-4 sm:p-6 border border-zinc-200/50 dark:border-white/5 flex flex-col justify-between transition-all duration-300 hover:shadow-md">
             <div className="flex items-center justify-between mb-3">
               <div>
                 <h2 className="text-sm sm:text-base font-black text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
@@ -299,11 +311,11 @@ export default function TrafficDashboardPage() {
                 </p>
               </div>
               <div className="flex items-center gap-3 text-xs font-black">
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1.5 transition-transform duration-200 hover:scale-105">
                   <span className="w-2.5 h-2.5 rounded-full bg-blue-500 shadow-sm" />
                   <span className="text-zinc-600 dark:text-zinc-300">Views</span>
                 </div>
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1.5 transition-transform duration-200 hover:scale-105">
                   <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-sm" />
                   <span className="text-zinc-600 dark:text-zinc-300">Unik</span>
                 </div>
@@ -362,7 +374,7 @@ export default function TrafficDashboardPage() {
           </div>
 
           {/* Device Breakdown (1 Col) */}
-          <div className="clay-surface rounded-[24px] p-4 sm:p-6 border border-zinc-200/50 dark:border-white/5 flex flex-col justify-between">
+          <div className="clay-surface rounded-[24px] p-4 sm:p-6 border border-zinc-200/50 dark:border-white/5 flex flex-col justify-between transition-all duration-300 hover:shadow-md">
             <div>
               <h2 className="text-sm sm:text-base font-black text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
                 <Smartphone size={16} className="text-blue-600" strokeWidth={2.5} />
@@ -394,7 +406,10 @@ export default function TrafficDashboardPage() {
 
             <div className="space-y-1.5 mt-2">
               {(data?.deviceBreakdown || []).map((dev: any, i: number) => (
-                <div key={dev.name} className="clay-inset rounded-[12px] px-3 py-1.5 flex items-center justify-between text-xs">
+                <div
+                  key={dev.name}
+                  className="clay-inset rounded-[12px] px-3 py-1.5 flex items-center justify-between text-xs transition-all duration-200 hover:translate-x-1"
+                >
                   <div className="flex items-center gap-2">
                     <span
                       className="w-2.5 h-2.5 rounded-full shadow-sm"
@@ -414,12 +429,12 @@ export default function TrafficDashboardPage() {
           </div>
         </div>
 
-        {/* ═══ 3 DETAILED BREAKDOWN CARDS (REFERRER, OS, PATH) ═══ */}
+        {/* ═══ 3 DETAILED BREAKDOWN CARDS WITH HOVER EXPANSION ═══ */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           {/* Referrers Source */}
-          <div className="clay-surface rounded-[24px] p-4 sm:p-5 border border-zinc-200/50 dark:border-white/5">
+          <div className="clay-surface rounded-[24px] p-4 sm:p-5 border border-zinc-200/50 dark:border-white/5 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md group">
             <div className="flex items-center gap-2.5 mb-3">
-              <div className="w-8 h-8 rounded-[12px] clay-icon-emerald flex items-center justify-center text-white">
+              <div className="w-8 h-8 rounded-[12px] clay-icon-emerald flex items-center justify-center text-white transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:scale-110 group-hover:rotate-6">
                 <Share2 size={16} strokeWidth={2.5} />
               </div>
               <div>
@@ -429,7 +444,10 @@ export default function TrafficDashboardPage() {
             </div>
             <div className="space-y-2">
               {(data?.referrerBreakdown || []).slice(0, 5).map((ref: any) => (
-                <div key={ref.name} className="clay-inset rounded-[12px] px-3 py-2 flex items-center justify-between text-xs">
+                <div
+                  key={ref.name}
+                  className="clay-inset rounded-[12px] px-3 py-2 flex items-center justify-between text-xs transition-all duration-200 hover:translate-x-1 hover:border-emerald-500/20"
+                >
                   <span className="font-bold text-zinc-700 dark:text-zinc-300 truncate max-w-[160px] capitalize">
                     {ref.name}
                   </span>
@@ -445,9 +463,9 @@ export default function TrafficDashboardPage() {
           </div>
 
           {/* Operating System */}
-          <div className="clay-surface rounded-[24px] p-4 sm:p-5 border border-zinc-200/50 dark:border-white/5">
+          <div className="clay-surface rounded-[24px] p-4 sm:p-5 border border-zinc-200/50 dark:border-white/5 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md group">
             <div className="flex items-center gap-2.5 mb-3">
-              <div className="w-8 h-8 rounded-[12px] clay-icon-indigo flex items-center justify-center text-white">
+              <div className="w-8 h-8 rounded-[12px] clay-icon-indigo flex items-center justify-center text-white transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:scale-110 group-hover:-rotate-6">
                 <Globe size={16} strokeWidth={2.5} />
               </div>
               <div>
@@ -457,7 +475,10 @@ export default function TrafficDashboardPage() {
             </div>
             <div className="space-y-2">
               {(data?.osBreakdown || []).slice(0, 5).map((os: any) => (
-                <div key={os.name} className="clay-inset rounded-[12px] px-3 py-2 flex items-center justify-between text-xs">
+                <div
+                  key={os.name}
+                  className="clay-inset rounded-[12px] px-3 py-2 flex items-center justify-between text-xs transition-all duration-200 hover:translate-x-1 hover:border-indigo-500/20"
+                >
                   <span className="font-bold text-zinc-700 dark:text-zinc-300">{os.name}</span>
                   <span className="font-black font-mono text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded-[8px]">
                     {os.count} <span className="text-[10px] opacity-75">({os.percentage}%)</span>
@@ -471,9 +492,9 @@ export default function TrafficDashboardPage() {
           </div>
 
           {/* Top URL Paths */}
-          <div className="clay-surface rounded-[24px] p-4 sm:p-5 border border-zinc-200/50 dark:border-white/5">
+          <div className="clay-surface rounded-[24px] p-4 sm:p-5 border border-zinc-200/50 dark:border-white/5 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md group">
             <div className="flex items-center gap-2.5 mb-3">
-              <div className="w-8 h-8 rounded-[12px] clay-icon-amber flex items-center justify-center text-white">
+              <div className="w-8 h-8 rounded-[12px] clay-icon-amber flex items-center justify-center text-white transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:scale-110 group-hover:rotate-6">
                 <Layers size={16} strokeWidth={2.5} />
               </div>
               <div>
@@ -483,7 +504,10 @@ export default function TrafficDashboardPage() {
             </div>
             <div className="space-y-2">
               {(data?.pathBreakdown || []).slice(0, 5).map((p: any) => (
-                <div key={p.path} className="clay-inset rounded-[12px] px-3 py-2 flex items-center justify-between text-xs">
+                <div
+                  key={p.path}
+                  className="clay-inset rounded-[12px] px-3 py-2 flex items-center justify-between text-xs transition-all duration-200 hover:translate-x-1 hover:border-amber-500/20"
+                >
                   <span className="font-bold font-mono text-zinc-700 dark:text-zinc-300 truncate max-w-[160px]">
                     {p.path}
                   </span>
@@ -499,17 +523,20 @@ export default function TrafficDashboardPage() {
           </div>
         </div>
 
-        {/* ═══ LIVE FEED: RECENT HITS TABLE ═══ */}
-        <div className="clay-surface rounded-[24px] p-4 sm:p-6 border border-zinc-200/50 dark:border-white/5">
+        {/* ═══ LIVE FEED: RECENT HITS TABLE WITH STREAM PULSE ═══ */}
+        <div className="clay-surface rounded-[24px] p-4 sm:p-6 border border-zinc-200/50 dark:border-white/5 transition-all duration-300 hover:shadow-md">
           <div className="flex items-center justify-between mb-4">
             <div>
               <h3 className="text-sm sm:text-base font-black text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
-                <Radio size={16} className="text-emerald-500 animate-pulse" strokeWidth={2.5} />
+                <span className="relative flex h-2.5 w-2.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                </span>
                 Feed Kunjungan Terakhir (Live Stream)
               </h3>
               <p className="text-xs text-zinc-400 mt-0.5 font-medium">15 hit pengunjung publik teranyar</p>
             </div>
-            <div className="clay-pill-blue text-white px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase">
+            <div className="clay-pill-blue text-white px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider transition-transform duration-200 hover:scale-105">
               Auto-Sync 8s
             </div>
           </div>
@@ -527,15 +554,18 @@ export default function TrafficDashboardPage() {
               </thead>
               <tbody className="divide-y divide-zinc-200/40 dark:divide-white/5">
                 {(data?.recentHits || []).map((hit: any) => (
-                  <tr key={hit.id} className="hover:bg-zinc-100/50 dark:hover:bg-white/5 transition-colors">
+                  <tr
+                    key={hit.id}
+                    className="hover:bg-zinc-100/60 dark:hover:bg-white/5 transition-colors duration-150 group cursor-default"
+                  >
                     <td className="py-2.5 px-2.5 font-mono font-bold text-zinc-500 dark:text-zinc-400 whitespace-nowrap">
                       {new Date(hit.createdAt).toLocaleTimeString("id-ID")}
                     </td>
-                    <td className="py-2.5 px-2.5 font-black font-mono text-indigo-600 dark:text-indigo-400">
+                    <td className="py-2.5 px-2.5 font-black font-mono text-indigo-600 dark:text-indigo-400 group-hover:translate-x-0.5 transition-transform duration-200">
                       {hit.path}
                     </td>
                     <td className="py-2.5 px-2.5">
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[10px] clay-inset text-[10px] font-black text-zinc-700 dark:text-zinc-300">
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[10px] clay-inset text-[10px] font-black text-zinc-700 dark:text-zinc-300 transition-transform duration-200 group-hover:scale-105">
                         {hit.device === "mobile" ? "📱 Mobile" : hit.device === "desktop" ? "💻 Desktop" : "📟 Tablet"}
                       </span>
                     </td>
@@ -543,7 +573,7 @@ export default function TrafficDashboardPage() {
                       {hit.os} <span className="text-zinc-400 font-medium">• {hit.browser}</span>
                     </td>
                     <td className="py-2.5 px-2.5">
-                      <span className="px-2 py-0.5 rounded-[8px] bg-zinc-200/60 dark:bg-zinc-800 text-[11px] font-semibold text-zinc-700 dark:text-zinc-300 capitalize">
+                      <span className="px-2.5 py-0.5 rounded-[8px] bg-zinc-200/60 dark:bg-zinc-800 text-[11px] font-semibold text-zinc-700 dark:text-zinc-300 capitalize">
                         {hit.referrer}
                       </span>
                     </td>
