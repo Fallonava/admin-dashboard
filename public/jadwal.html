@@ -439,25 +439,26 @@
         align-items: center;
         justify-content: center;
         gap: 5px;
-        transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+        transition: transform 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s ease, background 0.2s ease, color 0.18s ease;
         position: relative;
+        touch-action: manipulation;
+        user-select: none;
       }
       .ios-mode-btn.active {
-        background: linear-gradient(145deg, #FFFFFF, #F8FAFD);
+        background: #FFFFFF;
         color: var(--text-primary);
-        box-shadow: 4px 5px 12px rgba(150, 168, 195, 0.35), -3px -3px 8px rgba(255, 255, 255, 0.95), inset 1.5px 1.5px 2px #FFF;
+        font-weight: 900;
+        box-shadow: 
+          -3px -3px 8px #FFFFFF,
+          3px 5px 14px rgba(140, 165, 200, 0.32),
+          inset 1.5px 1.5px 2px #FFFFFF;
         border: 1.5px solid rgba(255, 255, 255, 0.95);
         transform: translateY(-1px);
       }
-      .ios-mode-btn.active::after {
-        content: '';
-        position: absolute;
-        top: 0; left: 0; right: 0; height: 42%;
-        background: linear-gradient(180deg, rgba(255,255,255,0.7) 0%, transparent 100%);
-        border-radius: 15px 15px 50% 50%;
-        pointer-events: none;
+      .ios-mode-btn:active {
+        transform: scale(0.92) translate3d(0, 1.5px, 0) !important;
+        box-shadow: inset 2.5px 2.5px 5px rgba(140, 165, 200, 0.35), inset -2px -2px 4px #FFFFFF !important;
       }
-      .ios-mode-btn:active { transform: scale(0.95) translateY(1px); }
 
       /* View Containers */
       .ios-live-container, .ios-weekly-container, .ios-leaves-container {
@@ -484,14 +485,15 @@
         align-items: center;
         text-align: center;
         box-shadow: 
-          6px 8px 18px rgba(150, 168, 195, 0.35),
           -4px -4px 12px #FFFFFF,
+          6px 8px 18px rgba(140, 165, 200, 0.32),
           inset 1.5px 1.5px 2px #FFFFFF;
         border: 2px solid #FFFFFF;
-        transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+        transition: transform 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s ease;
         cursor: pointer;
         position: relative;
         overflow: hidden;
+        touch-action: manipulation;
       }
       .ios-bento-tile::before {
         content: '';
@@ -514,8 +516,8 @@
       .ios-bento-tile.cuti .bento-lbl { color: #475569 !important; font-weight: 800; }
 
       .ios-bento-tile:active {
-        transform: scale(0.94) translateY(2px);
-        box-shadow: inset 3px 3px 6px rgba(150, 168, 195, 0.35), inset -2px -2px 4px #FFFFFF;
+        transform: scale(0.92) translate3d(0, 2px, 0);
+        box-shadow: inset 3px 3px 6px rgba(140, 165, 200, 0.38), inset -2px -2px 4px #FFFFFF;
       }
       .bento-num {
         font-family: "JetBrains Mono", monospace;
@@ -530,25 +532,6 @@
         font-family: "Plus Jakarta Sans", sans-serif;
         font-size: 10.5px;
         font-weight: 800;
-        letter-spacing: 0.05em;
-        text-transform: uppercase;
-        margin-top: 4px;
-        z-index: 1;
-        position: relative;
-      }
-      .bento-num {
-        font-family: "JetBrains Mono", monospace;
-        font-size: 27px;
-        font-weight: 900;
-        line-height: 1.1;
-        letter-spacing: -0.04em;
-        z-index: 1;
-        position: relative;
-      }
-      .bento-lbl {
-        font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 10.5px;
-        font-weight: 900;
         letter-spacing: 0.05em;
         text-transform: uppercase;
         margin-top: 4px;
@@ -574,7 +557,7 @@
       .ios-search-bar:focus-within {
         border-color: rgba(37, 99, 235, 0.5);
         box-shadow: 
-          inset 4px 4px 8px rgba(150, 168, 195, 0.32),
+          inset 4px 4px 8px rgba(140, 165, 200, 0.32),
           inset -4px -4px 8px rgba(255, 255, 255, 0.95),
           0 0 0 3.5px rgba(37, 99, 235, 0.15);
         background: #E8EFF8;
@@ -630,28 +613,29 @@
         font-weight: 800;
         color: var(--text-secondary);
         cursor: pointer;
-        transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+        transition: transform 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s ease, background 0.2s ease, color 0.18s ease;
         display: flex;
         align-items: center;
         justify-content: center;
         gap: 5px;
         position: relative;
+        touch-action: manipulation;
+        user-select: none;
       }
       .ios-seg-btn.active {
-        background: linear-gradient(145deg, #FFFFFF, #F8FAFD);
+        background: #FFFFFF;
         color: var(--text-primary);
-        box-shadow: 3px 4px 10px rgba(150, 168, 195, 0.3), -2px -2px 6px rgba(255, 255, 255, 0.95), inset 1px 1px 2px #FFF;
+        font-weight: 900;
+        box-shadow: 
+          -2px -2px 6px #FFFFFF,
+          3px 4px 10px rgba(140, 165, 200, 0.3),
+          inset 1px 1px 2px #FFFFFF;
         border: 1.5px solid rgba(255, 255, 255, 0.95);
       }
-      .ios-seg-btn.active::after {
-        content: '';
-        position: absolute;
-        top: 0; left: 0; right: 0; height: 42%;
-        background: linear-gradient(180deg, rgba(255,255,255,0.7) 0%, transparent 100%);
-        border-radius: var(--radius-tab) var(--radius-tab) 50% 50%;
-        pointer-events: none;
+      .ios-seg-btn:active {
+        transform: scale(0.92) translate3d(0, 1.5px, 0) !important;
+        box-shadow: inset 2px 2px 4px rgba(140, 165, 200, 0.35), inset -1.5px -1.5px 3px #FFFFFF !important;
       }
-      .ios-seg-btn:active { transform: scale(0.94); }
 
       /* ═══════════════════════════════════════════════════════════════
          6. DOCTOR PLATTER CARDS (100% PURE SOLID CLAY)
@@ -1119,25 +1103,22 @@
         align-items: center;
         gap: 4px;
         cursor: pointer;
-        transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+        transition: transform 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s ease;
         position: relative;
+        touch-action: manipulation;
+        user-select: none;
       }
-      .weekly-day-btn::after {
-        content: '';
-        position: absolute;
-        top: 0; left: 0; right: 0; height: 42%;
-        background: linear-gradient(180deg, rgba(255,255,255,0.7) 0%, transparent 100%);
-        border-radius: 18px 18px 50% 50%;
-        pointer-events: none;
+      .weekly-day-btn:active {
+        transform: scale(0.92) translate3d(0, 2px, 0) !important;
+        box-shadow: inset 2.5px 2.5px 5px rgba(140, 165, 200, 0.35), inset -2px -2px 4px #FFFFFF !important;
       }
       .weekly-day-btn.active {
-        background: linear-gradient(145deg, #60A5FA 0%, #2563EB 100%);
+        background: linear-gradient(145deg, #3B82F6 0%, #1D4ED8 100%);
         border-color: rgba(96, 165, 250, 0.6);
-        box-shadow: 5px 7px 18px rgba(37, 99, 235, 0.45), -2px -2px 8px rgba(255, 255, 255, 0.35), inset 1.5px 1.5px 3px rgba(255, 255, 255, 0.45);
+        box-shadow: 0 4px 14px rgba(29, 78, 216, 0.4), inset 1.5px 1.5px 3px rgba(255, 255, 255, 0.45);
         color: #FFFFFF;
         transform: translateY(-1.5px);
       }
-      .weekly-day-btn.active::after { background: linear-gradient(180deg, rgba(255,255,255,0.4) 0%, transparent 100%); }
       .weekly-day-btn .day-title { font-size: 11px; font-weight: 800; }
       .weekly-day-btn .day-badge {
         font-family: "JetBrains Mono", monospace;
@@ -1174,8 +1155,14 @@
         padding: 7px 14px;
         white-space: nowrap;
         cursor: pointer;
-        transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        transition: transform 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s ease;
         color: var(--text-secondary);
+        touch-action: manipulation;
+        user-select: none;
+      }
+      .spec-chip:active {
+        transform: scale(0.92) translate3d(0, 1.5px, 0) !important;
+        box-shadow: inset 2px 2px 4px rgba(140, 165, 200, 0.35), inset -1.5px -1.5px 3px #FFFFFF !important;
       }
       .spec-chip.active {
         background: #0F172A;
