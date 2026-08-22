@@ -2930,6 +2930,7 @@
         applyDoctorFilterAndSearch();
       }
 
+      let _lastLiveChipsHash = "";
       function populateLiveSpecChips(data) {
         const container = document.getElementById("liveSpecChips");
         if (!container || !Array.isArray(data)) return;
@@ -2941,8 +2942,13 @@
           }
         });
 
+        const sortedSpecs = Array.from(specMap.keys()).sort();
+        const chipsHash = JSON.stringify(sortedSpecs) + "_" + (window.selectedLiveSpec || "all");
+        if (_lastLiveChipsHash === chipsHash) return;
+        _lastLiveChipsHash = chipsHash;
+
         let html = `<button class="spec-chip ${window.selectedLiveSpec === 'all' ? 'active' : ''}" data-spec="all" onclick="switchLiveSpec('all')"><span>✨ Semua Poli</span></button>`;
-        Array.from(specMap.keys()).sort().forEach(spec => {
+        sortedSpecs.forEach(spec => {
           const shortSpec = spec.replace(/Spesialis\s*/i, "Sp. ").replace(/Poli\s*/i, "");
           const isActive = window.selectedLiveSpec === spec;
           html += `<button class="spec-chip ${isActive ? 'active' : ''}" data-spec="${esc(spec)}" onclick="switchLiveSpec('${esc(spec)}')"><span>${esc(shortSpec)}</span></button>`;
@@ -3223,24 +3229,31 @@
         async processQueue() {
           if (this._isAnimating || this._queue.length === 0 || !this._el) return;
           this._isAnimating = true;
-          const item = this._queue.shift();
+          try {
+            const item = this._queue.shift();
+            if (!item) return;
 
-          $("diTitle").textContent = item.title;
-          $("diMsg").textContent = item.msg;
-          if (this._icon) this._icon.textContent = item.icon || "info";
+            const titleEl = $("diTitle");
+            const msgEl = $("diMsg");
+            if (titleEl) titleEl.textContent = item.title;
+            if (msgEl) msgEl.textContent = item.msg;
+            if (this._icon) this._icon.textContent = item.icon || "info";
 
-          void this._el.offsetWidth;
-          requestAnimationFrame(() => {
-            this._el.classList.add("expanded");
-          });
+            void this._el.offsetWidth;
+            requestAnimationFrame(() => {
+              if (this._el) this._el.classList.add("expanded");
+            });
 
-          await new Promise((r) => setTimeout(r, item.duration));
-          this._el.classList.remove("expanded");
-
-          setTimeout(() => {
-            this._isAnimating = false;
-            this.processQueue();
-          }, 500);
+            await new Promise((r) => setTimeout(r, item.duration || 4000));
+            if (this._el) this._el.classList.remove("expanded");
+          } catch (e) {
+            console.error("Island queue error:", e);
+          } finally {
+            setTimeout(() => {
+              this._isAnimating = false;
+              this.processQueue();
+            }, 500);
+          }
         },
       };
 
@@ -3253,6 +3266,7 @@
         _opCycleIdx: 0,
         _isFetching: false,
         _infoMsgIdx: 0,
+        _es: null,
         _infoMsgs: [
           "Pasien dengan status <strong>PENUH</strong> mohon mendaftar di hari lain.",
           "Silakan siapkan <strong>KTP & Kartu BPJS</strong> sebelum ke loket pendaftaran.",
@@ -3263,6 +3277,8 @@
         ],
 
         async fetchInitialData() {
+          if (this._isFetching) return;
+          this._isFetching = true;
           try {
             const res = await fetch("/api/display");
             if (res.ok) {
@@ -3277,6 +3293,8 @@
             }
           } catch (err) {
             console.error("Initial fetch error:", err);
+          } finally {
+            this._isFetching = false;
           }
         },
 
@@ -3341,7 +3359,12 @@
 
         connectRealtime() {
           try {
+            if (this._es) {
+              this._es.close();
+              this._es = null;
+            }
             const es = new EventSource("/api/stream/live");
+            this._es = es;
             es.onmessage = (e) => {
               try {
                 const res = JSON.parse(e.data);
@@ -3356,6 +3379,9 @@
                 } catch (err) {}
               });
             });
+            es.onerror = () => {
+              // Silently gracefully fall back to interval sync
+            };
           } catch(e) {}
         },
 
@@ -3693,6 +3719,7 @@
         }
       }
 
+      let _lastWeeklyChipsHash = "";
       function updateWeeklyData(doctors, shifts) {
         if (Array.isArray(doctors)) window.masterDoctors = doctors;
         if (Array.isArray(shifts)) window.masterShifts = shifts;
@@ -3702,12 +3729,16 @@
           const specSet = new Set();
           window.masterDoctors.forEach(d => { if (d.specialty) specSet.add(d.specialty); });
           const specList = Array.from(specSet).sort();
+          const chipsHash = JSON.stringify(specList) + "_" + (window.selectedWeeklySpec || "all");
 
-          let chipsHtml = '<button class="spec-chip ' + (window.selectedWeeklySpec === "all" ? "active" : "") + '" data-spec="all" onclick="switchWeeklySpec(\'all\')">Semua Poli</button>';
-          specList.forEach(s => {
-            chipsHtml += '<button class="spec-chip ' + (window.selectedWeeklySpec === s ? "active" : "") + '" data-spec="' + esc(s) + '" onclick="switchWeeklySpec(\'' + esc(s) + '\')">' + esc(s) + '</button>';
-          });
-          specChipsContainer.innerHTML = chipsHtml;
+          if (_lastWeeklyChipsHash !== chipsHash) {
+            _lastWeeklyChipsHash = chipsHash;
+            let chipsHtml = '<button class="spec-chip ' + (window.selectedWeeklySpec === "all" ? "active" : "") + '" data-spec="all" onclick="switchWeeklySpec(\'all\')">Semua Poli</button>';
+            specList.forEach(s => {
+              chipsHtml += '<button class="spec-chip ' + (window.selectedWeeklySpec === s ? "active" : "") + '" data-spec="' + esc(s) + '" onclick="switchWeeklySpec(\'' + esc(s) + '\')">' + esc(s) + '</button>';
+            });
+            specChipsContainer.innerHTML = chipsHtml;
+          }
         }
 
         if (window.masterShifts.length > 0) {
