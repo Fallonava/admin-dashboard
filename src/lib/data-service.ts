@@ -37,6 +37,7 @@ export interface LeaveRequest {
     endDate: Date;
     reason?: string;
     status: string;
+    replacementDoctor?: string | null;
     createdAt?: string;
     updatedAt?: string;
 }
