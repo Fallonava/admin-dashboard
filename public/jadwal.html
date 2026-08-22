@@ -686,10 +686,13 @@
         padding: 3px 9px;
       }
 
+      /* ═══════════════════════════════════════════════════════════════
+         6. DOCTOR PLATTER CARDS (PREMIUM NEXT-GEN SMOOTH CLAY)
+         ═══════════════════════════════════════════════════════════════ */
       .scroller {
         display: flex;
         flex-direction: column;
-        gap: 10px;
+        gap: 11px;
         contain: content;
         will-change: transform;
       }
@@ -697,28 +700,34 @@
       .platter {
         display: flex;
         flex-direction: column;
-        padding: 13px 15px;
-        border-radius: var(--radius-card);
-        background: #FFFFFF;
+        padding: 14px 16px;
+        border-radius: 22px;
+        background: #FFFFFF !important;
+        /* Master Smooth 4-Layer Clay Physics */
         box-shadow: 
-          4px 6px 16px rgba(150, 168, 195, 0.3),
-          -2px -2px 8px #FFFFFF,
-          inset 1px 1px 1.5px #FFFFFF;
-        border: 2px solid #E2E8F0;
+          8px 12px 24px rgba(150, 168, 195, 0.38),
+          -6px -6px 18px #FFFFFF,
+          inset 2px 2px 3px #FFFFFF,
+          inset -2px -2px 4px rgba(150, 168, 195, 0.12);
+        border: 2px solid #FFFFFF !important;
         position: relative;
         overflow: hidden;
-        transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+        transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.22s ease;
         cursor: pointer;
       }
       .platter:active {
-        transform: scale(0.97) translateY(1.5px);
-        box-shadow: 2px 4px 10px rgba(150, 168, 195, 0.28);
+        transform: scale(0.975) translateY(2px);
+        box-shadow: 
+          4px 6px 14px rgba(150, 168, 195, 0.3),
+          -2px -2px 6px #FFFFFF,
+          inset 3px 3px 6px rgba(150, 168, 195, 0.18),
+          inset -2px -2px 4px #FFFFFF;
       }
       .platter::before {
         content: '';
         position: absolute;
-        left: 0; top: 12px; bottom: 12px; width: 5px;
-        border-radius: 0 6px 6px 0;
+        left: 0; top: 14px; bottom: 14px; width: 5px;
+        border-radius: 0 8px 8px 0;
         background: var(--status-color, var(--ios-blue));
         z-index: 3;
       }
@@ -732,21 +741,25 @@
         z-index: 3;
       }
 
-      /* Doctor Initials Avatar (Squircle 18px) */
+      /* Extruded 3D Clay Coin Avatar */
       .initials {
         width: 44px;
         height: 44px;
-        border-radius: 18px;
-        background: #F1F5F9;
-        box-shadow: 2px 3px 8px rgba(150, 168, 195, 0.25);
-        border: 2px solid #E2E8F0;
+        border-radius: 16px;
+        background: #FFFFFF;
+        box-shadow: 
+          4px 5px 12px rgba(150, 168, 195, 0.32),
+          -3px -3px 8px #FFFFFF,
+          inset 1.5px 1.5px 2px #FFFFFF,
+          inset -1.2px -1.2px 2px rgba(150, 168, 195, 0.12);
+        border: 2px solid #FFFFFF;
         display: flex;
         align-items: center;
         justify-content: center;
         font-family: "Outfit", sans-serif;
         font-size: 14px;
         font-weight: 900;
-        color: var(--status-color, var(--ios-blue));
+        color: #0F172A;
         flex-shrink: 0;
       }
 
@@ -759,9 +772,9 @@
       }
       .doc-spec {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 12.5px;
+        font-size: 12px;
         font-weight: 900;
-        color: var(--text-primary);
+        color: #475569;
         letter-spacing: -0.01em;
         text-transform: uppercase;
         line-height: 1.2;
@@ -771,9 +784,9 @@
       }
       .doc-name {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 11.5px;
-        font-weight: 700;
-        color: var(--text-secondary);
+        font-size: 12px;
+        font-weight: 800;
+        color: #0F172A;
         line-height: 1.35;
         white-space: nowrap;
         overflow: hidden;
@@ -784,98 +797,67 @@
         display: flex;
         flex-direction: column;
         align-items: flex-end;
-        gap: 4px;
+        gap: 5px;
         flex-shrink: 0;
       }
 
-      /* Status Pills (Pure Solid Pill) */
+      /* Smooth Tactile Pill */
       .status-pill {
         display: inline-flex;
         align-items: center;
         gap: 4px;
-        padding: 4px 9px;
-        border-radius: 10px;
+        padding: 4px 10px;
+        border-radius: 11px;
         font-family: "Plus Jakarta Sans", sans-serif;
         font-size: 9.5px;
         font-weight: 900;
         letter-spacing: 0.04em;
         text-transform: uppercase;
         background: #F1F5F9;
-        color: var(--text-primary);
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
-        border: 1.5px solid #CBD5E1;
+        color: #0F172A;
+        box-shadow: 
+          2px 3px 8px rgba(150, 168, 195, 0.25),
+          -1px -1px 4px #FFFFFF,
+          inset 1px 1px 1.5px rgba(255, 255, 255, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.9);
         transition: all 0.2s ease;
       }
 
-      /* Jam Box (Pure Solid Accent Box) */
+      /* Sunken Clay Well Jam Box */
       .jam-box {
         display: inline-flex;
         align-items: center;
-        gap: 3.5px;
-        padding: 3px 8px;
-        border-radius: 8px;
-        background: #F1F5F9;
-        border: 1.5px solid #CBD5E1;
+        gap: 4px;
+        padding: 3.5px 9px;
+        border-radius: 9px;
+        background: var(--clay-inset);
+        box-shadow: 
+          inset 2px 2px 4px rgba(150, 168, 195, 0.3),
+          inset -2px -2px 4px #FFFFFF;
+        border: 1px solid rgba(255, 255, 255, 0.8);
       }
       .jam-box .material-icons-round {
         font-size: 13px;
+        color: #64748B;
       }
       .jam-val {
         font-family: "JetBrains Mono", monospace;
         font-size: 11px;
         font-weight: 900;
         letter-spacing: -0.02em;
+        color: #0F172A;
       }
 
       /* ═══════════════════════════════════════════════════════════════
-         7. FULL SOLID WHITE 3D CLAY PALETTES FOR DOCTOR CARDS
+         7. STATE STATUS PILLS & ACCENTS (SOLID WHITE CLAY BASE)
          ═══════════════════════════════════════════════════════════════ */
-      .platter {
-        display: flex;
-        flex-direction: column;
-        padding: 14px 16px;
-        border-radius: var(--radius-card);
-        background: #FFFFFF !important;
-        box-shadow: 
-          6px 9px 22px rgba(150, 168, 195, 0.35),
-          -4px -4px 12px #FFFFFF,
-          inset 1.5px 1.5px 2.5px #FFFFFF;
-        border: 2px solid #FFFFFF !important;
-        position: relative;
-        overflow: hidden;
-        transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
-        cursor: pointer;
-      }
-      .platter:active {
-        transform: scale(0.97) translateY(1.5px);
-        box-shadow: inset 3px 3px 6px rgba(150, 168, 195, 0.35), inset -2px -2px 4px #FFFFFF;
-      }
-
-      /* Clean Universal Typography on Solid White Cards */
-      .platter .doc-spec { color: #475569 !important; font-weight: 900; }
-      .platter .doc-name { color: #0F172A !important; font-weight: 800; }
-      .platter .initials {
-        background: #F8FAFC;
-        box-shadow: 2px 3px 6px rgba(150, 168, 195, 0.2);
-        border: 1.5px solid #E2E8F0;
-        color: #0F172A;
-      }
-      .platter .jam-box {
-        background: #F8FAFC;
-        border: 1.5px solid #E2E8F0;
-        box-shadow: inset 1px 1px 2px #E2E8F0, inset -1px -1px 2px #FFFFFF;
-      }
-      .platter .jam-val { color: #0F172A !important; }
-      .platter .jam-box .material-icons-round { color: #64748B !important; }
-
-      /* State Indicators (Left Strip & Status Pill on Solid White Clay) */
       /* PRAKTEK */
       .platter.st-praktek::before, .platter.active::before { background: #16A34A; }
       .platter.st-praktek .status-pill, .platter.active .status-pill {
         background: #16A34A;
         color: #FFFFFF !important;
         border-color: #15803D;
-        box-shadow: 0 2px 6px rgba(22, 163, 74, 0.35);
+        box-shadow: 2px 3px 8px rgba(22, 163, 74, 0.35), inset 1px 1px 1.5px rgba(255,255,255,0.4);
       }
 
       /* PENDAFTARAN */
@@ -884,7 +866,7 @@
         background: #EA580C;
         color: #FFFFFF !important;
         border-color: #C2410C;
-        box-shadow: 0 2px 6px rgba(234, 88, 12, 0.35);
+        box-shadow: 2px 3px 8px rgba(234, 88, 12, 0.35), inset 1px 1px 1.5px rgba(255,255,255,0.4);
       }
 
       /* TERJADWAL */
@@ -893,7 +875,7 @@
         background: #0284C7;
         color: #FFFFFF !important;
         border-color: #0369A1;
-        box-shadow: 0 2px 6px rgba(2, 132, 199, 0.35);
+        box-shadow: 2px 3px 8px rgba(2, 132, 199, 0.35), inset 1px 1px 1.5px rgba(255,255,255,0.4);
       }
 
       /* PENUH */
@@ -902,7 +884,7 @@
         background: #D97706;
         color: #FFFFFF !important;
         border-color: #B45309;
-        box-shadow: 0 2px 6px rgba(217, 119, 6, 0.35);
+        box-shadow: 2px 3px 8px rgba(217, 119, 6, 0.35), inset 1px 1px 1.5px rgba(255,255,255,0.4);
       }
 
       /* OPERASI */
@@ -911,7 +893,7 @@
         background: #9333EA;
         color: #FFFFFF !important;
         border-color: #7E22CE;
-        box-shadow: 0 2px 6px rgba(147, 51, 234, 0.35);
+        box-shadow: 2px 3px 8px rgba(147, 51, 234, 0.35), inset 1px 1px 1.5px rgba(255,255,255,0.4);
       }
 
       /* CUTI */
@@ -920,7 +902,7 @@
         background: #E11D48;
         color: #FFFFFF !important;
         border-color: #BE123C;
-        box-shadow: 0 2px 6px rgba(225, 29, 72, 0.35);
+        box-shadow: 2px 3px 8px rgba(225, 29, 72, 0.35), inset 1px 1px 1.5px rgba(255,255,255,0.4);
       }
 
       /* SELESAI */
@@ -929,6 +911,7 @@
         background: #64748B;
         color: #FFFFFF !important;
         border-color: #475569;
+        box-shadow: 1px 2px 4px rgba(0,0,0,0.1);
       }
 
       /* Card Expand Drawer */
