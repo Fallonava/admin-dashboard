@@ -3894,6 +3894,26 @@
           }
         });
       }
+
+      // ── Traffic Tracker (Async Beacon) ──────────────────────────────────
+      (function() {
+        try {
+          var payload = JSON.stringify({
+            path: window.location.pathname || "/jadwal",
+            referrer: document.referrer || "direct"
+          });
+          if (navigator.sendBeacon) {
+            navigator.sendBeacon("/api/traffic/track", payload);
+          } else if (window.fetch) {
+            fetch("/api/traffic/track", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: payload,
+              keepalive: true
+            }).catch(function() {});
+          }
+        } catch(e) {}
+      })();
     </script>
   </body>
 </html>

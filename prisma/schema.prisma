@@ -274,3 +274,21 @@ model AiSettings {
   updatedAt    DateTime @updatedAt
 }
 
+// ─── Traffic Monitoring ───────────────────────────────────────────────────
+
+model TrafficHit {
+  id        String   @id @default(cuid())
+  path      String   // e.g. "/jadwal", "/mobile.html"
+  ipHash    String?  // SHA256 hashed IP for unique visitor count
+  userAgent String?  @db.Text
+  device    String?  // "mobile" | "desktop" | "tablet" | "bot"
+  os        String?  // "Android" | "iOS" | "Windows" | "macOS" | "Linux" | "Other"
+  browser   String?  // "Chrome" | "Safari" | "Firefox" | "Edge" | "Other"
+  referrer  String?  // "Direct" | "WhatsApp" | "Google" | etc.
+  createdAt DateTime @default(now())
+
+  @@index([path, createdAt])
+  @@index([createdAt])
+  @@index([ipHash, createdAt])
+}
+
