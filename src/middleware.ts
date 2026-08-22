@@ -21,7 +21,8 @@ const PUBLIC_PATHS = [
   '/api/assistant',       // AI Chat Assistant (public)
   '/mobile',              // Clean professional URL for Mobile display
   '/jadwal',              // Clean alias for Mobile display
-  '/mobile.html',         // Mobile First Apple iOS 2026 Display
+  '/jadwal.html',         // Mobile First Apple iOS 2026 Display
+  '/mobile.html',         // Legacy Mobile Display
   '/tv',                  // Clean URL for Smart TV display
   '/tv.html',             // Main TV display page
   '/tv-backup.html',      // Backup copy of main TV display
@@ -53,7 +54,10 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Clean professional URL rewrites
-  if (pathname === '/mobile' || pathname === '/jadwal' || pathname === '/tvmod' || pathname === '/tvmode') {
+  if (pathname === '/jadwal') {
+    return NextResponse.rewrite(new URL('/jadwal.html', request.url));
+  }
+  if (pathname === '/mobile' || pathname === '/tvmod' || pathname === '/tvmode') {
     return NextResponse.rewrite(new URL('/mobile.html', request.url));
   }
   if (pathname === '/tv' || pathname === '/display') {

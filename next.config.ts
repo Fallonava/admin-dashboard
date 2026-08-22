@@ -47,8 +47,8 @@ const nextConfig: NextConfig = {
   },
   async rewrites() {
     return [
+      { source: '/jadwal', destination: '/jadwal.html' },
       { source: '/mobile', destination: '/mobile.html' },
-      { source: '/jadwal', destination: '/mobile.html' },
       { source: '/tv', destination: '/tv.html' },
       { source: '/tvmod', destination: '/mobile.html' },
       { source: '/tvmode', destination: '/mobile.html' },

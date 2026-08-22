@@ -4532,7 +4532,7 @@
       }
 
       function copyScheduleLink() {
-        var url = window.location.origin + "/mobile";
+        var url = window.location.origin + "/jadwal";
         navigator.clipboard.writeText(url).then(function() {
           if (typeof Island !== "undefined") {
             Island.show("Link Disalin", "Tautan jadwal berhasil disalin ke clipboard", "success", "check_circle", 3000);
