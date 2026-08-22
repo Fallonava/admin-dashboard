@@ -105,7 +105,7 @@ export class TrafficService {
         cleanPath = cleanPath.slice(0, -1);
       }
 
-      await prisma.trafficHit.create({
+      await (prisma as any).trafficHit.create({
         data: {
           path: cleanPath,
           ipHash,
@@ -143,7 +143,7 @@ export class TrafficService {
     }
 
     // Fetch hits for the given range
-    const hits = await prisma.trafficHit.findMany({
+    const hits: any[] = await (prisma as any).trafficHit.findMany({
       where: whereClause,
       select: {
         id: true,
