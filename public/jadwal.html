@@ -863,43 +863,54 @@
         box-shadow: 0 2px 5px rgba(0,0,0,0.15);
       }
 
-      /* Live Quick Specialty Chips (1-Tap Fast Filter) */
-      .live-spec-chips-bar {
+      /* Live Quick Specialty Chips (Unified Segmented Concept) */
+      .live-spec-chips-bar, .spec-chips-bar {
         display: flex;
-        gap: 6px;
+        background: var(--surface-well);
+        box-shadow: var(--shadow-inset);
+        border-radius: 19px;
+        padding: 4px;
+        border: 1px solid var(--border-input);
+        gap: 4px;
         overflow-x: auto;
-        padding: 3px 2px 6px;
-        margin: 2px 0 4px;
         -webkit-overflow-scrolling: touch;
+        margin: 4px 0;
       }
-      .live-spec-chips-bar::-webkit-scrollbar { display: none; }
+      .live-spec-chips-bar::-webkit-scrollbar, .spec-chips-bar::-webkit-scrollbar { display: none; }
 
       .spec-chip {
-        border-radius: 14px;
-        background: var(--surface-card-solid);
-        box-shadow: var(--shadow-btn);
-        border: 1.5px solid var(--border-card);
+        flex: 0 0 auto;
+        min-width: max-content;
+        padding: 8px 13px;
+        border: 1.5px solid transparent;
+        border-radius: var(--radius-tab);
+        background: transparent;
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-weight: 800;
         font-size: 11px;
-        padding: 7px 14px;
-        white-space: nowrap;
+        font-weight: 800;
+        color: var(--text-sub);
         cursor: pointer;
         transition: transform 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s ease, background 0.2s ease, color 0.18s ease;
-        color: var(--text-sub);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        position: relative;
         touch-action: manipulation;
         user-select: none;
+        white-space: nowrap;
       }
       .spec-chip:active {
         transform: scale(0.92) translate3d(0, 1.5px, 0) !important;
         box-shadow: var(--shadow-inset) !important;
       }
       .spec-chip.active {
-        background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%) !important;
-        color: #FFFFFF !important;
-        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.38), inset 1px 1px 2px rgba(255, 255, 255, 0.35) !important;
-        border: 1.5px solid rgba(147, 197, 253, 0.6) !important;
-        transform: translateY(-1px);
+        background: var(--surface-card-solid) !important;
+        color: var(--text-main) !important;
+        font-weight: 900 !important;
+        box-shadow: var(--shadow-btn) !important;
+        border: 1.5px solid var(--border-card) !important;
+        transform: none !important;
       }
 
       .ios-segmented-bar {
@@ -1443,14 +1454,6 @@
         color: #FFFFFF;
       }
 
-      .spec-chips-bar {
-        display: flex;
-        gap: 6px;
-        overflow-x: auto;
-        padding: 4px 0;
-        -webkit-overflow-scrolling: touch;
-      }
-      .spec-chips-bar::-webkit-scrollbar { display: none; }
 
       .weekly-shift-card {
         border-radius: var(--radius-card);
