@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import useSWR from "swr";
 import {
   Activity,
@@ -25,6 +25,11 @@ import {
   Compass,
   ArrowDownRight,
   ShieldCheck,
+  CheckCircle2,
+  Flame,
+  MessageCircle,
+  Laptop,
+  Check,
 } from "lucide-react";
 import {
   AreaChart,
@@ -51,19 +56,19 @@ const fetcher = (url: string) => fetch(url).then((res) => res.json());
 function CustomChartTooltip({ active, payload, label }: any) {
   if (active && payload && payload.length) {
     return (
-      <div className="clay-surface !bg-[#121622]/95 dark:!bg-[#0A0D14]/95 !border-white/10 rounded-[20px] p-4 shadow-2xl backdrop-blur-xl text-white text-xs transform transition-all duration-200 ease-out">
+      <div className="clay-surface !bg-[#121622]/95 dark:!bg-[#0A0D14]/95 !border-white/10 rounded-[22px] p-4 shadow-2xl backdrop-blur-xl text-white text-xs transform transition-all duration-200 ease-out">
         <div className="font-black text-zinc-300 mb-2 border-b border-white/10 pb-2 flex items-center justify-between gap-6">
           <span className="flex items-center gap-1.5 font-mono text-zinc-200">
             <Sparkles size={12} className="text-indigo-400 animate-pulse" />
             {label}
           </span>
-          <span className="text-[10px] text-emerald-400 font-black uppercase tracking-wider clay-pill-emerald !px-2 !py-0.5 rounded-full">
+          <span className="text-[10px] text-emerald-400 font-black uppercase tracking-wider clay-pill-emerald !px-2.5 !py-0.5 rounded-full">
             Realtime
           </span>
         </div>
-        <div className="space-y-1.5">
+        <div className="space-y-2">
           {payload.map((entry: any, index: number) => (
-            <div key={`item-${index}`} className="flex items-center justify-between gap-5 font-bold">
+            <div key={`item-${index}`} className="flex items-center justify-between gap-6 font-bold">
               <div className="flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-full shadow-sm" style={{ backgroundColor: entry.color }} />
                 <span className="text-zinc-300 font-medium">{entry.name}:</span>
@@ -99,8 +104,12 @@ export default function TrafficDashboardPage() {
 
   const isScheduleOnly = selectedPath === "/jadwal";
 
+  // Compute platform share for hero banner
+  const mobileDevice = (data?.deviceBreakdown || []).find((d: any) => d.name.toLowerCase() === "mobile");
+  const mobilePercentage = mobileDevice ? mobileDevice.percentage : 0;
+
   return (
-    <div className="flex-1 w-full flex flex-col h-full min-h-0 overflow-y-auto bg-[#EDF2F8] dark:bg-[#0B0E14] text-zinc-900 dark:text-zinc-100 pb-24 custom-scrollbar page-enter">
+    <div className="flex-1 w-full flex flex-col h-full min-h-0 overflow-y-auto bg-[#EDF2F8] dark:bg-[#0B0E14] text-zinc-900 dark:text-zinc-100 pb-28 custom-scrollbar page-enter">
       {/* ═══ SIGNATURE CLAYMORPHIC PAGE HEADER ═══ */}
       <PageHeader
         icon={<Activity size={24} className="text-white" strokeWidth={2.5} />}
@@ -140,150 +149,228 @@ export default function TrafficDashboardPage() {
         }
       />
 
-      <div className="px-3 sm:px-6 space-y-5 max-w-7xl mx-auto w-full">
-        {/* ═══ 4 ULTRA-PREMIUM CLAYMORPHIC KPI CARDS ═══ */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-5">
-          {/* Card 1: Today Views */}
-          <div className="clay-surface rounded-[30px] p-5 sm:p-6 flex flex-col justify-between shadow-xl relative overflow-hidden group transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-2 hover:shadow-2xl">
-            <div className="absolute -right-10 -top-10 w-32 h-32 bg-blue-500/10 dark:bg-blue-500/15 rounded-full blur-2xl pointer-events-none transition-all duration-500 group-hover:scale-150" />
-            
-            <div className="flex items-center justify-between relative z-10">
-              <span className="text-[11px] font-black uppercase text-zinc-400 dark:text-zinc-500 tracking-wider">
-                Views Hari Ini
-              </span>
-              <div className="w-12 h-12 rounded-[20px] clay-icon-blue flex items-center justify-center text-white transition-all duration-400 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:scale-115 group-hover:rotate-6 shadow-md">
-                <Eye size={22} strokeWidth={2.5} />
-              </div>
+      <div className="px-3 sm:px-6 space-y-6 max-w-7xl mx-auto w-full">
+        {/* ═══ HERO LIVE VELOCITY & INSIGHTS BANNER ═══ */}
+        <div className="clay-surface rounded-[32px] p-4 sm:p-5 shadow-xl relative overflow-hidden flex flex-wrap items-center justify-between gap-4 border border-white/60 dark:border-white/5">
+          <div className="flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-[20px] clay-icon-blue flex items-center justify-center text-white shadow-md">
+              <Flame size={24} strokeWidth={2.5} className="animate-pulse text-amber-300" />
             </div>
-
-            <div className="mt-4 relative z-10">
-              <div className="flex items-baseline gap-2">
-                <span className="text-3xl sm:text-4xl font-black text-zinc-900 dark:text-zinc-100 tracking-tight">
-                  {overview.todayViews.toLocaleString("id-ID")}
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm sm:text-base font-black text-zinc-900 dark:text-zinc-100 tracking-tight">
+                  Trafik Portal Publik
                 </span>
-                <span className="text-xs font-black text-zinc-400 uppercase tracking-wider">tayangan</span>
+                <span className="clay-pill-blue text-white text-[10px] font-black px-2.5 py-0.5 rounded-full">
+                  Real-time Beacon
+                </span>
               </div>
-            </div>
-
-            <div className="mt-4 pt-3 border-t border-zinc-200/60 dark:border-white/5 flex items-center justify-between text-xs relative z-10">
-              <div className="clay-pill-emerald text-white px-2.5 py-0.5 rounded-full text-[10px] font-black flex items-center gap-1 shadow-sm">
-                <TrendingUp size={12} strokeWidth={2.5} />
-                <span>{overview.todayUniques} Unik</span>
-              </div>
-              <span className="text-[11px] font-black text-zinc-400">Hari ini</span>
+              <p className="text-xs text-zinc-500 dark:text-zinc-400 font-bold mt-0.5">
+                Pengunjung otomatis tercatat tanpa beban database (0-overhead beacon)
+              </p>
             </div>
           </div>
 
-          {/* Card 2: Total Views */}
-          <div className="clay-surface rounded-[30px] p-5 sm:p-6 flex flex-col justify-between shadow-xl relative overflow-hidden group transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-2 hover:shadow-2xl">
-            <div className="absolute -right-10 -top-10 w-32 h-32 bg-indigo-500/10 dark:bg-indigo-500/15 rounded-full blur-2xl pointer-events-none transition-all duration-500 group-hover:scale-150" />
-            
-            <div className="flex items-center justify-between relative z-10">
-              <span className="text-[11px] font-black uppercase text-zinc-400 dark:text-zinc-500 tracking-wider">
-                Total Views ({days} Hari)
+          <div className="flex items-center gap-2.5 flex-wrap">
+            <div className="clay-inset rounded-[18px] px-3.5 py-2 flex items-center gap-2">
+              <Smartphone size={14} className="text-blue-500" strokeWidth={2.5} />
+              <span className="text-xs font-black text-zinc-700 dark:text-zinc-300">
+                {mobilePercentage > 0 ? `${mobilePercentage}% Mobile` : "Mobile-First"}
               </span>
-              <div className="w-12 h-12 rounded-[20px] clay-icon-indigo flex items-center justify-center text-white transition-all duration-400 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:scale-115 group-hover:-rotate-6 shadow-md">
-                <Activity size={22} strokeWidth={2.5} />
-              </div>
             </div>
-
-            <div className="mt-4 relative z-10">
-              <div className="flex items-baseline gap-2">
-                <span className="text-3xl sm:text-4xl font-black text-zinc-900 dark:text-zinc-100 tracking-tight">
-                  {overview.totalViews.toLocaleString("id-ID")}
-                </span>
-                <span className="text-xs font-black text-zinc-400 uppercase tracking-wider">hits</span>
-              </div>
-            </div>
-
-            <div className="mt-4 pt-3 border-t border-zinc-200/60 dark:border-white/5 flex items-center justify-between text-xs relative z-10">
-              <div className="clay-pill-violet text-white px-2.5 py-0.5 rounded-full text-[10px] font-black flex items-center gap-1 shadow-sm">
-                <Zap size={11} strokeWidth={2.5} />
-                <span>~{Math.round(overview.totalViews / Math.max(days, 1))} / hr</span>
-              </div>
-              <span className="text-[11px] font-black text-zinc-400">Rata-rata</span>
-            </div>
-          </div>
-
-          {/* Card 3: Unique Visitors */}
-          <div className="clay-surface rounded-[30px] p-5 sm:p-6 flex flex-col justify-between shadow-xl relative overflow-hidden group transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-2 hover:shadow-2xl">
-            <div className="absolute -right-10 -top-10 w-32 h-32 bg-emerald-500/10 dark:bg-emerald-500/15 rounded-full blur-2xl pointer-events-none transition-all duration-500 group-hover:scale-150" />
-            
-            <div className="flex items-center justify-between relative z-10">
-              <span className="text-[11px] font-black uppercase text-zinc-400 dark:text-zinc-500 tracking-wider">
-                Pengunjung Unik
+            <div className="clay-inset rounded-[18px] px-3.5 py-2 flex items-center gap-2">
+              <MessageCircle size={14} className="text-emerald-500" strokeWidth={2.5} />
+              <span className="text-xs font-black text-zinc-700 dark:text-zinc-300">
+                WhatsApp Direct
               </span>
-              <div className="w-12 h-12 rounded-[20px] clay-icon-emerald flex items-center justify-center text-white transition-all duration-400 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:scale-115 group-hover:rotate-6 shadow-md">
-                <Users size={22} strokeWidth={2.5} />
-              </div>
             </div>
-
-            <div className="mt-4 relative z-10">
-              <div className="flex items-baseline gap-2">
-                <span className="text-3xl sm:text-4xl font-black text-zinc-900 dark:text-zinc-100 tracking-tight">
-                  {overview.totalUniques.toLocaleString("id-ID")}
-                </span>
-                <span className="text-xs font-black text-zinc-400 uppercase tracking-wider">audiens</span>
-              </div>
-            </div>
-
-            <div className="mt-4 pt-3 border-t border-zinc-200/60 dark:border-white/5 flex items-center justify-between text-xs relative z-10">
-              <div className="clay-pill-blue text-white px-2.5 py-0.5 rounded-full text-[10px] font-black flex items-center gap-1 shadow-sm">
-                <ShieldCheck size={12} strokeWidth={2.5} />
-                <span>
-                  {overview.totalViews > 0
-                    ? `${((overview.totalUniques / overview.totalViews) * 100).toFixed(0)}% Unik`
-                    : "0%"}
-                </span>
-              </div>
-              <span className="text-[11px] font-black text-zinc-400">Rasio Baru</span>
-            </div>
-          </div>
-
-          {/* Card 4: Peak Hour */}
-          <div className="clay-surface rounded-[30px] p-5 sm:p-6 flex flex-col justify-between shadow-xl relative overflow-hidden group transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-2 hover:shadow-2xl">
-            <div className="absolute -right-10 -top-10 w-32 h-32 bg-amber-500/10 dark:bg-amber-500/15 rounded-full blur-2xl pointer-events-none transition-all duration-500 group-hover:scale-150" />
-            
-            <div className="flex items-center justify-between relative z-10">
-              <span className="text-[11px] font-black uppercase text-zinc-400 dark:text-zinc-500 tracking-wider">
-                Jam Teramai
+            <div className="clay-inset rounded-[18px] px-3.5 py-2 flex items-center gap-2">
+              <ShieldCheck size={14} className="text-indigo-500" strokeWidth={2.5} />
+              <span className="text-xs font-black text-zinc-700 dark:text-zinc-300">
+                SHA-256 Anonymized
               </span>
-              <div className="w-12 h-12 rounded-[20px] clay-icon-amber flex items-center justify-center text-white transition-all duration-400 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:scale-115 group-hover:-rotate-6 shadow-md">
-                <Clock size={22} strokeWidth={2.5} />
-              </div>
-            </div>
-
-            <div className="mt-4 relative z-10">
-              <div className="flex items-baseline gap-2">
-                <span className="text-3xl sm:text-4xl font-black text-amber-600 dark:text-amber-400 tracking-tight font-mono">
-                  {overview.peakHour}
-                </span>
-              </div>
-            </div>
-
-            <div className="mt-4 pt-3 border-t border-zinc-200/60 dark:border-white/5 flex items-center justify-between text-xs relative z-10">
-              <div className="clay-pill-amber text-white px-2.5 py-0.5 rounded-full text-[10px] font-black flex items-center gap-1 shadow-sm">
-                <Sparkles size={11} strokeWidth={2.5} />
-                <span>Puncak Pasien</span>
-              </div>
-              <span className="text-[11px] font-black text-zinc-400 font-mono">WIB</span>
             </div>
           </div>
         </div>
 
-        {/* ═══ CLAY FILTER CONTROLS BAR ═══ */}
-        <div className="clay-surface rounded-[28px] p-3 sm:p-4 flex flex-wrap items-center justify-between gap-3 shadow-lg">
+        {/* ═══ 4 FLAGSHIP CLAYMORPHIC STAT CARDS WITH PROGRESS BARS ═══ */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+          {/* Card 1: Views Hari Ini */}
+          <div className="clay-surface rounded-[32px] p-5 sm:p-6 flex flex-col justify-between shadow-xl relative overflow-hidden group transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-2 hover:shadow-2xl">
+            <div className="absolute -right-12 -top-12 w-36 h-36 bg-blue-500/15 rounded-full blur-3xl pointer-events-none transition-all duration-500 group-hover:scale-150" />
+
+            <div className="flex items-start justify-between relative z-10">
+              <div>
+                <span className="text-[11px] font-black uppercase text-zinc-400 dark:text-zinc-500 tracking-wider block">
+                  Views Hari Ini
+                </span>
+                <div className="flex items-baseline gap-2 mt-2">
+                  <span className="text-3xl sm:text-4xl font-black text-zinc-900 dark:text-zinc-100 tracking-tight font-mono">
+                    {overview.todayViews.toLocaleString("id-ID")}
+                  </span>
+                  <span className="text-[11px] font-black text-zinc-400 uppercase">tayangan</span>
+                </div>
+              </div>
+              <div className="w-13 h-13 rounded-[22px] clay-icon-blue flex items-center justify-center text-white shadow-md transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6 shrink-0">
+                <Eye size={24} strokeWidth={2.5} />
+              </div>
+            </div>
+
+            {/* Micro Progress Track */}
+            <div className="mt-4 pt-3 border-t border-zinc-200/60 dark:border-white/5 space-y-2 relative z-10">
+              <div className="flex items-center justify-between text-xs font-black">
+                <span className="text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                  <TrendingUp size={13} strokeWidth={2.5} />
+                  {overview.todayUniques} Pengunjung Unik
+                </span>
+                <span className="text-zinc-400 text-[10px]">Hari ini</span>
+              </div>
+              <div className="w-full h-2 rounded-full clay-inset overflow-hidden p-0.5">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-blue-500 to-emerald-500 transition-all duration-700"
+                  style={{
+                    width: `${overview.todayViews > 0 ? Math.min(100, Math.round((overview.todayUniques / overview.todayViews) * 100)) : 0}%`,
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Card 2: Total Views */}
+          <div className="clay-surface rounded-[32px] p-5 sm:p-6 flex flex-col justify-between shadow-xl relative overflow-hidden group transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-2 hover:shadow-2xl">
+            <div className="absolute -right-12 -top-12 w-36 h-36 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none transition-all duration-500 group-hover:scale-150" />
+
+            <div className="flex items-start justify-between relative z-10">
+              <div>
+                <span className="text-[11px] font-black uppercase text-zinc-400 dark:text-zinc-500 tracking-wider block">
+                  Total Views ({days} Hari)
+                </span>
+                <div className="flex items-baseline gap-2 mt-2">
+                  <span className="text-3xl sm:text-4xl font-black text-zinc-900 dark:text-zinc-100 tracking-tight font-mono">
+                    {overview.totalViews.toLocaleString("id-ID")}
+                  </span>
+                  <span className="text-[11px] font-black text-zinc-400 uppercase">hits</span>
+                </div>
+              </div>
+              <div className="w-13 h-13 rounded-[22px] clay-icon-indigo flex items-center justify-center text-white shadow-md transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6 shrink-0">
+                <Activity size={24} strokeWidth={2.5} />
+              </div>
+            </div>
+
+            {/* Micro Average Rate */}
+            <div className="mt-4 pt-3 border-t border-zinc-200/60 dark:border-white/5 space-y-2 relative z-10">
+              <div className="flex items-center justify-between text-xs font-black">
+                <span className="text-indigo-600 dark:text-indigo-400 flex items-center gap-1">
+                  <Zap size={13} strokeWidth={2.5} />
+                  ~{Math.round(overview.totalViews / Math.max(days, 1))} / hari
+                </span>
+                <span className="text-zinc-400 text-[10px]">Rata-rata</span>
+              </div>
+              <div className="w-full h-2 rounded-full clay-inset overflow-hidden p-0.5">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-violet-500 transition-all duration-700"
+                  style={{ width: "100%" }}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Card 3: Pengunjung Unik */}
+          <div className="clay-surface rounded-[32px] p-5 sm:p-6 flex flex-col justify-between shadow-xl relative overflow-hidden group transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-2 hover:shadow-2xl">
+            <div className="absolute -right-12 -top-12 w-36 h-36 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none transition-all duration-500 group-hover:scale-150" />
+
+            <div className="flex items-start justify-between relative z-10">
+              <div>
+                <span className="text-[11px] font-black uppercase text-zinc-400 dark:text-zinc-500 tracking-wider block">
+                  Pengunjung Unik
+                </span>
+                <div className="flex items-baseline gap-2 mt-2">
+                  <span className="text-3xl sm:text-4xl font-black text-zinc-900 dark:text-zinc-100 tracking-tight font-mono">
+                    {overview.totalUniques.toLocaleString("id-ID")}
+                  </span>
+                  <span className="text-[11px] font-black text-zinc-400 uppercase">perangkat</span>
+                </div>
+              </div>
+              <div className="w-13 h-13 rounded-[22px] clay-icon-emerald flex items-center justify-center text-white shadow-md transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6 shrink-0">
+                <Users size={24} strokeWidth={2.5} />
+              </div>
+            </div>
+
+            {/* Micro Conversion Rate */}
+            <div className="mt-4 pt-3 border-t border-zinc-200/60 dark:border-white/5 space-y-2 relative z-10">
+              <div className="flex items-center justify-between text-xs font-black">
+                <span className="text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                  <ShieldCheck size={13} strokeWidth={2.5} />
+                  {overview.totalViews > 0
+                    ? `${((overview.totalUniques / overview.totalViews) * 100).toFixed(0)}% Audiens Baru`
+                    : "0%"}
+                </span>
+                <span className="text-zinc-400 text-[10px]">Rasio Unik</span>
+              </div>
+              <div className="w-full h-2 rounded-full clay-inset overflow-hidden p-0.5">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-700"
+                  style={{
+                    width: `${overview.totalViews > 0 ? Math.min(100, Math.round((overview.totalUniques / overview.totalViews) * 100)) : 0}%`,
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Card 4: Jam Paling Ramai */}
+          <div className="clay-surface rounded-[32px] p-5 sm:p-6 flex flex-col justify-between shadow-xl relative overflow-hidden group transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-2 hover:shadow-2xl">
+            <div className="absolute -right-12 -top-12 w-36 h-36 bg-amber-500/15 rounded-full blur-3xl pointer-events-none transition-all duration-500 group-hover:scale-150" />
+
+            <div className="flex items-start justify-between relative z-10">
+              <div>
+                <span className="text-[11px] font-black uppercase text-zinc-400 dark:text-zinc-500 tracking-wider block">
+                  Jam Paling Ramai
+                </span>
+                <div className="flex items-baseline gap-2 mt-2">
+                  <span className="text-3xl sm:text-4xl font-black text-amber-600 dark:text-amber-400 tracking-tight font-mono">
+                    {overview.peakHour}
+                  </span>
+                </div>
+              </div>
+              <div className="w-13 h-13 rounded-[22px] clay-icon-amber flex items-center justify-center text-white shadow-md transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6 shrink-0">
+                <Clock size={24} strokeWidth={2.5} />
+              </div>
+            </div>
+
+            {/* Peak Activity Tag */}
+            <div className="mt-4 pt-3 border-t border-zinc-200/60 dark:border-white/5 space-y-2 relative z-10">
+              <div className="flex items-center justify-between text-xs font-black">
+                <span className="text-amber-600 dark:text-amber-400 flex items-center gap-1">
+                  <Sparkles size={13} strokeWidth={2.5} />
+                  Puncak Pasien Masuk
+                </span>
+                <span className="text-zinc-400 text-[10px] font-mono">WIB</span>
+              </div>
+              <div className="w-full h-2 rounded-full clay-inset overflow-hidden p-0.5">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-amber-500 to-orange-400 transition-all duration-700"
+                  style={{ width: "85%" }}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ═══ MODERN SEGMENTED CONTROLS BAR ═══ */}
+        <div className="clay-surface rounded-[30px] p-3 sm:p-4 flex flex-wrap items-center justify-between gap-3 shadow-lg">
           {/* Path Filters */}
           <div className="flex items-center gap-2 overflow-x-auto py-1">
             <button
               onClick={() => setSelectedPath("")}
               className={cn(
-                "px-5 py-2.5 rounded-full text-xs font-black transition-all duration-200 active:scale-90 cursor-pointer select-none",
+                "px-5 py-2.5 rounded-full text-xs font-black transition-all duration-200 active:scale-90 cursor-pointer select-none flex items-center gap-2",
                 selectedPath === ""
                   ? "clay-pill-blue text-white shadow-md scale-100"
                   : "clay-button text-zinc-600 dark:text-zinc-300 hover:text-zinc-900"
               )}
             >
+              <Globe size={14} strokeWidth={2.5} />
               Semua Halaman
             </button>
             <button
@@ -296,11 +383,11 @@ export default function TrafficDashboardPage() {
               )}
             >
               <Smartphone size={14} strokeWidth={2.5} />
-              /jadwal (Jadwal Mobile Pasien)
+              /jadwal (Jadwal Dokter Mobile)
             </button>
           </div>
 
-          {/* Time Range Segmented Control */}
+          {/* Timeframe Selector */}
           <div className="clay-inset p-1.5 rounded-full flex items-center gap-1.5">
             {[
               { label: "Hari Ini", val: 1 },
@@ -323,14 +410,14 @@ export default function TrafficDashboardPage() {
           </div>
         </div>
 
-        {/* ═══ CLAY CHARTS SECTION (TREND & DEVICE DONUT) ═══ */}
+        {/* ═══ CHARTS SECTION (MAIN TREND + DEVICE DONUT) ═══ */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
           {/* Main Trend Chart (2 Cols) */}
           <div className="lg:col-span-2 clay-surface rounded-[36px] p-6 sm:p-7 shadow-xl flex flex-col justify-between relative overflow-hidden group">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
               <div className="flex items-center gap-3.5">
-                <div className="w-11 h-11 rounded-[18px] clay-icon-indigo flex items-center justify-center text-white shadow-md">
-                  <BarChart3 size={20} strokeWidth={2.5} />
+                <div className="w-12 h-12 rounded-[20px] clay-icon-indigo flex items-center justify-center text-white shadow-md">
+                  <BarChart3 size={22} strokeWidth={2.5} />
                 </div>
                 <div>
                   <h2 className="text-base sm:text-lg font-black text-zinc-900 dark:text-zinc-100 tracking-tight">
@@ -343,11 +430,11 @@ export default function TrafficDashboardPage() {
               </div>
 
               <div className="flex items-center gap-2 text-xs font-black">
-                <div className="clay-inset px-3 py-1.5 rounded-full flex items-center gap-2">
+                <div className="clay-inset px-3.5 py-1.5 rounded-full flex items-center gap-2">
                   <span className="w-2.5 h-2.5 rounded-full bg-blue-500 shadow-sm" />
                   <span className="text-zinc-700 dark:text-zinc-200">Views</span>
                 </div>
-                <div className="clay-inset px-3 py-1.5 rounded-full flex items-center gap-2">
+                <div className="clay-inset px-3.5 py-1.5 rounded-full flex items-center gap-2">
                   <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-sm" />
                   <span className="text-zinc-700 dark:text-zinc-200">Unik</span>
                 </div>
@@ -408,8 +495,8 @@ export default function TrafficDashboardPage() {
           {/* Device Breakdown Donut (1 Col) */}
           <div className="clay-surface rounded-[36px] p-6 sm:p-7 shadow-xl flex flex-col justify-between relative overflow-hidden group">
             <div className="flex items-center gap-3.5 mb-2">
-              <div className="w-11 h-11 rounded-[18px] clay-icon-blue flex items-center justify-center text-white shadow-md">
-                <Smartphone size={20} strokeWidth={2.5} />
+              <div className="w-12 h-12 rounded-[20px] clay-icon-blue flex items-center justify-center text-white shadow-md">
+                <Smartphone size={22} strokeWidth={2.5} />
               </div>
               <div>
                 <h2 className="text-base sm:text-lg font-black text-zinc-900 dark:text-zinc-100 tracking-tight">
@@ -427,7 +514,7 @@ export default function TrafficDashboardPage() {
                     cx="50%"
                     cy="50%"
                     innerRadius={52}
-                    outerRadius={78}
+                    outerRadius={80}
                     paddingAngle={5}
                     dataKey="count"
                   >
@@ -440,38 +527,50 @@ export default function TrafficDashboardPage() {
               </ResponsiveContainer>
             </div>
 
+            {/* Modern Proportional Segmented Device List */}
             <div className="space-y-2 mt-2">
               {(data?.deviceBreakdown || []).map((dev: any, i: number) => (
                 <div
                   key={dev.name}
-                  className="clay-inset rounded-[16px] px-3.5 py-2 flex items-center justify-between text-xs transition-all duration-200 hover:translate-x-1"
+                  className="clay-inset rounded-[18px] p-2.5 space-y-1.5 transition-all duration-200 hover:translate-x-1"
                 >
-                  <div className="flex items-center gap-2.5">
-                    <span
-                      className="w-3 h-3 rounded-full shadow-sm"
-                      style={{ backgroundColor: CHART_COLORS[i % CHART_COLORS.length] }}
-                    />
-                    <span className="font-bold text-zinc-700 dark:text-zinc-300 capitalize">{dev.name}</span>
+                  <div className="flex items-center justify-between text-xs font-black">
+                    <div className="flex items-center gap-2">
+                      <span
+                        className="w-2.5 h-2.5 rounded-full shadow-sm"
+                        style={{ backgroundColor: CHART_COLORS[i % CHART_COLORS.length] }}
+                      />
+                      <span className="text-zinc-800 dark:text-zinc-200 capitalize">{dev.name}</span>
+                    </div>
+                    <span className="font-mono text-zinc-900 dark:text-zinc-100">
+                      {dev.count} <span className="text-zinc-400 font-medium">({dev.percentage}%)</span>
+                    </span>
                   </div>
-                  <span className="font-black font-mono text-zinc-900 dark:text-zinc-100">
-                    {dev.count} <span className="text-zinc-400 font-medium">({dev.percentage}%)</span>
-                  </span>
+                  <div className="w-full h-1.5 rounded-full bg-zinc-200/50 dark:bg-white/5 overflow-hidden">
+                    <div
+                      className="h-full rounded-full transition-all duration-500"
+                      style={{
+                        width: `${dev.percentage}%`,
+                        backgroundColor: CHART_COLORS[i % CHART_COLORS.length],
+                      }}
+                    />
+                  </div>
                 </div>
               ))}
               {(!data?.deviceBreakdown || data.deviceBreakdown.length === 0) && (
-                <p className="text-xs text-zinc-400 py-3 text-center font-bold">Belum ada data perangkat</p>
+                <p className="text-xs text-zinc-400 py-4 text-center font-bold">Belum ada data perangkat</p>
               )}
             </div>
           </div>
         </div>
 
-        {/* ═══ 3 ULTRA CLAY BREAKDOWN CARDS (REFERRER, OS, PATH) ═══ */}
+        {/* ═══ 3 ULTRA-MODERN PROPORTIONAL BREAKDOWN CARDS ═══ */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
           {/* Referrers Source */}
           <div className="clay-surface rounded-[32px] p-6 shadow-xl relative overflow-hidden group transition-all duration-300 hover:-translate-y-1.5">
             <div className="flex items-center gap-3.5 mb-4">
-              <div className="w-10 h-10 rounded-[16px] clay-icon-emerald flex items-center justify-center text-white shadow-md transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6">
-                <Share2 size={18} strokeWidth={2.5} />
+              <div className="w-11 h-11 rounded-[18px] clay-icon-emerald flex items-center justify-center text-white shadow-md transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6">
+                <Share2 size={20} strokeWidth={2.5} />
               </div>
               <div>
                 <h3 className="text-sm font-black text-zinc-900 dark:text-zinc-100">Sumber Referrer</h3>
@@ -479,19 +578,31 @@ export default function TrafficDashboardPage() {
               </div>
             </div>
             <div className="space-y-2.5">
-              {(data?.referrerBreakdown || []).slice(0, 5).map((ref: any) => (
-                <div
-                  key={ref.name}
-                  className="clay-inset rounded-[18px] px-4 py-2.5 flex items-center justify-between text-xs transition-all duration-200 hover:translate-x-1"
-                >
-                  <span className="font-bold text-zinc-700 dark:text-zinc-300 truncate max-w-[160px] capitalize">
-                    {ref.name}
-                  </span>
-                  <span className="font-black font-mono clay-pill-emerald text-white text-[11px] px-2.5 py-0.5 rounded-full shadow-sm">
-                    {ref.count} hits
-                  </span>
-                </div>
-              ))}
+              {(data?.referrerBreakdown || []).slice(0, 5).map((ref: any) => {
+                const totalRefHits = (data?.referrerBreakdown || []).reduce((acc: number, cur: any) => acc + cur.count, 0) || 1;
+                const refPct = Math.round((ref.count / totalRefHits) * 100);
+                return (
+                  <div
+                    key={ref.name}
+                    className="clay-inset rounded-[20px] p-3 space-y-1.5 transition-all duration-200 hover:translate-x-1"
+                  >
+                    <div className="flex items-center justify-between text-xs font-black">
+                      <span className="text-zinc-700 dark:text-zinc-300 truncate max-w-[150px] capitalize">
+                        {ref.name}
+                      </span>
+                      <span className="font-mono clay-pill-emerald text-white text-[10px] px-2.5 py-0.5 rounded-full shadow-sm">
+                        {ref.count} hits ({refPct}%)
+                      </span>
+                    </div>
+                    <div className="w-full h-1.5 rounded-full bg-zinc-200/50 dark:bg-white/5 overflow-hidden">
+                      <div
+                        className="h-full rounded-full bg-emerald-500 transition-all duration-500"
+                        style={{ width: `${refPct}%` }}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
               {(!data?.referrerBreakdown || data.referrerBreakdown.length === 0) && (
                 <p className="text-xs text-zinc-400 py-6 text-center font-bold">Belum ada data referrer</p>
               )}
@@ -501,8 +612,8 @@ export default function TrafficDashboardPage() {
           {/* Operating System */}
           <div className="clay-surface rounded-[32px] p-6 shadow-xl relative overflow-hidden group transition-all duration-300 hover:-translate-y-1.5">
             <div className="flex items-center gap-3.5 mb-4">
-              <div className="w-10 h-10 rounded-[16px] clay-icon-indigo flex items-center justify-center text-white shadow-md transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6">
-                <Globe size={18} strokeWidth={2.5} />
+              <div className="w-11 h-11 rounded-[18px] clay-icon-indigo flex items-center justify-center text-white shadow-md transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6">
+                <Globe size={20} strokeWidth={2.5} />
               </div>
               <div>
                 <h3 className="text-sm font-black text-zinc-900 dark:text-zinc-100">Sistem Operasi</h3>
@@ -513,12 +624,20 @@ export default function TrafficDashboardPage() {
               {(data?.osBreakdown || []).slice(0, 5).map((os: any) => (
                 <div
                   key={os.name}
-                  className="clay-inset rounded-[18px] px-4 py-2.5 flex items-center justify-between text-xs transition-all duration-200 hover:translate-x-1"
+                  className="clay-inset rounded-[20px] p-3 space-y-1.5 transition-all duration-200 hover:translate-x-1"
                 >
-                  <span className="font-bold text-zinc-700 dark:text-zinc-300">{os.name}</span>
-                  <span className="font-black font-mono clay-pill-violet text-white text-[11px] px-2.5 py-0.5 rounded-full shadow-sm">
-                    {os.count} <span className="opacity-80">({os.percentage}%)</span>
-                  </span>
+                  <div className="flex items-center justify-between text-xs font-black">
+                    <span className="text-zinc-700 dark:text-zinc-300">{os.name}</span>
+                    <span className="font-mono clay-pill-violet text-white text-[10px] px-2.5 py-0.5 rounded-full shadow-sm">
+                      {os.count} ({os.percentage}%)
+                    </span>
+                  </div>
+                  <div className="w-full h-1.5 rounded-full bg-zinc-200/50 dark:bg-white/5 overflow-hidden">
+                    <div
+                      className="h-full rounded-full bg-indigo-500 transition-all duration-500"
+                      style={{ width: `${os.percentage}%` }}
+                    />
+                  </div>
                 </div>
               ))}
               {(!data?.osBreakdown || data.osBreakdown.length === 0) && (
@@ -530,8 +649,8 @@ export default function TrafficDashboardPage() {
           {/* Top URL Paths */}
           <div className="clay-surface rounded-[32px] p-6 shadow-xl relative overflow-hidden group transition-all duration-300 hover:-translate-y-1.5">
             <div className="flex items-center gap-3.5 mb-4">
-              <div className="w-10 h-10 rounded-[16px] clay-icon-amber flex items-center justify-center text-white shadow-md transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6">
-                <Layers size={18} strokeWidth={2.5} />
+              <div className="w-11 h-11 rounded-[18px] clay-icon-amber flex items-center justify-center text-white shadow-md transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6">
+                <Layers size={20} strokeWidth={2.5} />
               </div>
               <div>
                 <h3 className="text-sm font-black text-zinc-900 dark:text-zinc-100">Halaman Terpopuler</h3>
@@ -539,19 +658,31 @@ export default function TrafficDashboardPage() {
               </div>
             </div>
             <div className="space-y-2.5">
-              {(data?.pathBreakdown || []).slice(0, 5).map((p: any) => (
-                <div
-                  key={p.path}
-                  className="clay-inset rounded-[18px] px-4 py-2.5 flex items-center justify-between text-xs transition-all duration-200 hover:translate-x-1"
-                >
-                  <span className="font-bold font-mono text-zinc-700 dark:text-zinc-300 truncate max-w-[160px]">
-                    {p.path}
-                  </span>
-                  <span className="font-black font-mono clay-pill-amber text-white text-[11px] px-2.5 py-0.5 rounded-full shadow-sm">
-                    {p.count} views
-                  </span>
-                </div>
-              ))}
+              {(data?.pathBreakdown || []).slice(0, 5).map((p: any) => {
+                const totalViewsCount = (data?.pathBreakdown || []).reduce((acc: number, cur: any) => acc + cur.count, 0) || 1;
+                const pathPct = Math.round((p.count / totalViewsCount) * 100);
+                return (
+                  <div
+                    key={p.path}
+                    className="clay-inset rounded-[20px] p-3 space-y-1.5 transition-all duration-200 hover:translate-x-1"
+                  >
+                    <div className="flex items-center justify-between text-xs font-black">
+                      <span className="font-mono text-zinc-700 dark:text-zinc-300 truncate max-w-[150px]">
+                        {p.path}
+                      </span>
+                      <span className="font-mono clay-pill-amber text-white text-[10px] px-2.5 py-0.5 rounded-full shadow-sm">
+                        {p.count} views ({pathPct}%)
+                      </span>
+                    </div>
+                    <div className="w-full h-1.5 rounded-full bg-zinc-200/50 dark:bg-white/5 overflow-hidden">
+                      <div
+                        className="h-full rounded-full bg-amber-500 transition-all duration-500"
+                        style={{ width: `${pathPct}%` }}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
               {(!data?.pathBreakdown || data.pathBreakdown.length === 0) && (
                 <p className="text-xs text-zinc-400 py-6 text-center font-bold">Belum ada data rute</p>
               )}
@@ -559,48 +690,54 @@ export default function TrafficDashboardPage() {
           </div>
         </div>
 
-        {/* ═══ LIVE STREAM FEED TABLE (SCULPTED CLAY INSET ROWS) ═══ */}
+        {/* ═══ NEXT-GEN LIVE FEED STREAM CARDS ═══ */}
         <div className="clay-surface rounded-[36px] p-6 sm:p-7 shadow-xl relative overflow-hidden">
           <div className="flex items-center justify-between mb-5">
             <div className="flex items-center gap-3.5">
-              <div className="w-11 h-11 rounded-[18px] clay-icon-emerald flex items-center justify-center text-white shadow-md">
-                <Radio size={20} className="animate-pulse" strokeWidth={2.5} />
+              <div className="w-12 h-12 rounded-[20px] clay-icon-emerald flex items-center justify-center text-white shadow-md">
+                <Radio size={22} className="animate-pulse" strokeWidth={2.5} />
               </div>
               <div>
                 <h3 className="text-base sm:text-lg font-black text-zinc-900 dark:text-zinc-100 tracking-tight">
-                  Live Stream Feed
+                  Live Stream Activity Feed
                 </h3>
-                <p className="text-xs text-zinc-400 font-bold mt-0.5">15 aktivitas request pengunjung terbaru</p>
+                <p className="text-xs text-zinc-400 font-bold mt-0.5">15 request pengunjung paling teranyar</p>
               </div>
             </div>
-            <div className="clay-pill-blue text-white px-3.5 py-1 rounded-full text-[11px] font-black uppercase tracking-wider shadow-sm">
+            <div className="clay-pill-blue text-white px-4 py-1.5 rounded-full text-[11px] font-black uppercase tracking-wider shadow-sm">
               Live Polling 8s
             </div>
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-2.5">
             {(data?.recentHits || []).map((hit: any) => (
               <div
                 key={hit.id}
-                className="clay-inset rounded-[20px] p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs transition-all duration-200 hover:translate-x-1"
+                className="clay-inset rounded-[22px] p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs transition-all duration-200 hover:translate-x-1.5 hover:border-indigo-500/30"
               >
                 <div className="flex items-center gap-3 min-w-0">
-                  <span className="font-mono font-black text-zinc-500 dark:text-zinc-400 bg-zinc-200/50 dark:bg-white/5 px-2.5 py-1 rounded-lg shrink-0">
+                  <div className="font-mono font-black text-zinc-600 dark:text-zinc-300 clay-button px-3 py-1.5 rounded-full text-[11px] shrink-0 shadow-sm">
                     {new Date(hit.createdAt).toLocaleTimeString("id-ID")}
-                  </span>
-                  <span className="font-black font-mono text-indigo-600 dark:text-indigo-400 truncate">
-                    {hit.path}
-                  </span>
+                  </div>
+                  <div className="min-w-0">
+                    <span className="font-black font-mono text-indigo-600 dark:text-indigo-400 text-[13px] block truncate">
+                      {hit.path}
+                    </span>
+                    <span className="text-[10px] text-zinc-400 font-bold">
+                      IP Hash: {hit.ipHash ? `${hit.ipHash.slice(0, 8)}...` : "Anonymized"}
+                    </span>
+                  </div>
                 </div>
 
-                <div className="flex items-center gap-2.5 flex-wrap sm:flex-nowrap">
-                  <span className="clay-pill-blue text-white px-2.5 py-0.5 rounded-full text-[10px] font-black shrink-0 shadow-sm">
-                    {hit.device === "mobile" ? "📱 Mobile" : hit.device === "desktop" ? "💻 Desktop" : "📟 Tablet"}
+                <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+                  <span className="clay-pill-blue text-white px-3 py-1 rounded-full text-[10px] font-black shrink-0 shadow-sm flex items-center gap-1">
+                    {hit.device === "mobile" ? <Smartphone size={11} strokeWidth={2.5} /> : <Laptop size={11} strokeWidth={2.5} />}
+                    {hit.device === "mobile" ? "Mobile" : hit.device === "desktop" ? "Desktop" : "Tablet"}
                   </span>
-                  <span className="font-bold text-zinc-700 dark:text-zinc-300">
+                  <span className="font-black text-zinc-700 dark:text-zinc-200 clay-button px-3 py-1 rounded-full text-[10px] shrink-0 shadow-sm">
                     {hit.os} <span className="text-zinc-400 font-medium">• {hit.browser}</span>
                   </span>
-                  <span className="clay-button px-2.5 py-0.5 rounded-full text-[10px] font-black text-zinc-600 dark:text-zinc-300 capitalize shrink-0 shadow-sm">
+                  <span className="clay-pill-emerald text-white px-3 py-1 rounded-full text-[10px] font-black capitalize shrink-0 shadow-sm">
                     {hit.referrer}
                   </span>
                 </div>
@@ -608,7 +745,7 @@ export default function TrafficDashboardPage() {
             ))}
 
             {(!data?.recentHits || data.recentHits.length === 0) && (
-              <div className="py-12 text-center text-zinc-400 font-bold">
+              <div className="py-14 text-center text-zinc-400 font-bold">
                 Belum ada log kunjungan yang tercatat. Buka <span className="font-mono text-indigo-500 font-black">/jadwal</span> untuk mengirim hit pertama.
               </div>
             )}
