@@ -457,7 +457,7 @@
       .hidden { display: none !important; }
 
       /* ═══════════════════════════════════════════════════════════════
-         4. BENTO HEALTH STATS (VIBRANT SOLID CLAY TILES)
+         4. BENTO HEALTH STATS (PURE SOLID CLAY TILES)
          ═══════════════════════════════════════════════════════════════ */
       .ios-bento-stats {
         display: grid;
@@ -472,10 +472,9 @@
         align-items: center;
         text-align: center;
         box-shadow: 
-          6px 8px 18px rgba(150, 168, 195, 0.35),
-          -4px -4px 12px #FFFFFF,
-          inset 1.5px 1.5px 2px #FFFFFF,
-          inset -1.5px -1.5px 3px rgba(0, 0, 0, 0.04);
+          5px 7px 16px rgba(150, 168, 195, 0.35),
+          -3px -3px 10px #FFFFFF,
+          inset 1.5px 1.5px 2px #FFFFFF;
         border: 2px solid #FFFFFF;
         transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
         cursor: pointer;
@@ -489,9 +488,9 @@
         height: 5px;
       }
       
-      /* Vibrant Solid Clay Bento Variants */
+      /* Pure Solid Bento Variants */
       .ios-bento-tile.buka {
-        background: linear-gradient(145deg, #F0FDF4 0%, #DCFCE7 100%);
+        background: #F0FDF4;
         border-color: #86EFAC;
       }
       .ios-bento-tile.buka::before { background: #16A34A; }
@@ -499,7 +498,7 @@
       .ios-bento-tile.buka .bento-lbl { color: #166534 !important; font-weight: 900; }
 
       .ios-bento-tile.penuh {
-        background: linear-gradient(145deg, #FFFBEB 0%, #FEF3C7 100%);
+        background: #FFFBEB;
         border-color: #FCD34D;
       }
       .ios-bento-tile.penuh::before { background: #D97706; }
@@ -507,21 +506,13 @@
       .ios-bento-tile.penuh .bento-lbl { color: #92400E !important; font-weight: 900; }
 
       .ios-bento-tile.cuti {
-        background: linear-gradient(145deg, #FFF1F2 0%, #FFE4E6 100%);
+        background: #FFF1F2;
         border-color: #FDA4AF;
       }
       .ios-bento-tile.cuti::before { background: #E11D48; }
       .ios-bento-tile.cuti .bento-num { color: #BE123C !important; }
       .ios-bento-tile.cuti .bento-lbl { color: #9F1239 !important; font-weight: 900; }
 
-      .ios-bento-tile::after {
-        content: '';
-        position: absolute;
-        top: 0; left: 0; right: 0; height: 40%;
-        background: linear-gradient(180deg, #FFFFFF 0%, rgba(255,255,255,0) 100%);
-        border-radius: 20px 20px 50% 50%;
-        pointer-events: none;
-      }
       .ios-bento-tile:active {
         transform: scale(0.94) translateY(2px);
         box-shadow: inset 3px 3px 6px rgba(150, 168, 195, 0.35), inset -2px -2px 4px #FFFFFF;
@@ -644,7 +635,7 @@
       .ios-seg-btn:active { transform: scale(0.94); }
 
       /* ═══════════════════════════════════════════════════════════════
-         6. DOCTOR PLATTER CARDS (TRUE 3D PORCELAIN CLAYMORPHISM)
+         6. DOCTOR PLATTER CARDS (100% PURE SOLID CLAY)
          ═══════════════════════════════════════════════════════════════ */
       .ios-section { display: flex; flex-direction: column; gap: 9px; }
       .ios-section-header {
@@ -665,10 +656,10 @@
         gap: 6px;
       }
       .ios-sec-badge {
-        background: linear-gradient(145deg, #FFFFFF, #F1F5F9);
+        background: #FFFFFF;
         color: var(--ios-blue);
-        border: 1.5px solid rgba(255, 255, 255, 0.95);
-        box-shadow: var(--clay-shadow-btn);
+        border: 1.5px solid #CBD5E1;
+        box-shadow: 2px 3px 6px rgba(150, 168, 195, 0.25);
         border-radius: 12px;
         font-family: "JetBrains Mono", monospace;
         font-size: 10.5px;
@@ -689,34 +680,27 @@
         flex-direction: column;
         padding: 13px 15px;
         border-radius: var(--radius-card);
-        background: linear-gradient(145deg, #FFFFFF 0%, #F5F8FC 100%);
-        box-shadow: var(--clay-shadow-card);
-        border: 2px solid rgba(255, 255, 255, 0.95);
+        background: #FFFFFF;
+        box-shadow: 
+          4px 6px 16px rgba(150, 168, 195, 0.3),
+          -2px -2px 8px #FFFFFF,
+          inset 1px 1px 1.5px #FFFFFF;
+        border: 2px solid #E2E8F0;
         position: relative;
         overflow: hidden;
         transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
         cursor: pointer;
       }
-      .platter::after {
-        content: '';
-        position: absolute;
-        top: 0; left: 0; right: 0; height: 38%;
-        background: linear-gradient(180deg, rgba(255,255,255,0.85) 0%, transparent 100%);
-        border-radius: var(--radius-card) var(--radius-card) 50% 50%;
-        pointer-events: none;
-        z-index: 2;
-      }
       .platter:active {
         transform: scale(0.97) translateY(1.5px);
-        box-shadow: 4px 6px 14px rgba(150, 168, 195, 0.28), inset 2px 2px 4px rgba(150, 168, 195, 0.15);
+        box-shadow: 2px 4px 10px rgba(150, 168, 195, 0.28);
       }
       .platter::before {
         content: '';
         position: absolute;
-        left: 0; top: 14px; bottom: 14px; width: 4.5px;
-        border-radius: 0 8px 8px 0;
+        left: 0; top: 12px; bottom: 12px; width: 5px;
+        border-radius: 0 6px 6px 0;
         background: var(--status-color, var(--ios-blue));
-        box-shadow: none !important;
         z-index: 3;
       }
 
@@ -729,26 +713,14 @@
         z-index: 3;
       }
 
-      /* Micro-texture Grain Overlay */
-      .platter-main::before {
-        content: '';
-        position: absolute;
-        inset: -15px;
-        background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
-        pointer-events: none;
-        mix-blend-mode: multiply;
-        border-radius: 22px;
-        z-index: -1;
-      }
-
       /* Doctor Initials Avatar (Squircle 18px) */
       .initials {
         width: 44px;
         height: 44px;
         border-radius: 18px;
-        background: linear-gradient(145deg, #FFFFFF, #EEF3F8);
-        box-shadow: var(--clay-shadow-btn);
-        border: 1.5px solid rgba(255, 255, 255, 0.95);
+        background: #F1F5F9;
+        box-shadow: 2px 3px 8px rgba(150, 168, 195, 0.25);
+        border: 2px solid #E2E8F0;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -757,15 +729,6 @@
         font-weight: 900;
         color: var(--status-color, var(--ios-blue));
         flex-shrink: 0;
-        position: relative;
-      }
-      .initials::after {
-        content: '';
-        position: absolute;
-        top: 0; left: 0; right: 0; height: 45%;
-        background: linear-gradient(180deg, rgba(255,255,255,0.85) 0%, transparent 100%);
-        border-radius: 18px 18px 50% 50%;
-        pointer-events: none;
       }
 
       .info-col {
@@ -806,277 +769,216 @@
         flex-shrink: 0;
       }
 
-      /* Status Pills (Glossy Enamel Bead) */
+      /* Status Pills (Pure Solid Pill) */
       .status-pill {
         display: inline-flex;
         align-items: center;
         gap: 4px;
         padding: 4px 9px;
-        border-radius: 11px;
+        border-radius: 10px;
         font-family: "Plus Jakarta Sans", sans-serif;
         font-size: 9.5px;
         font-weight: 900;
         letter-spacing: 0.04em;
         text-transform: uppercase;
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, var(--status-bg, #F1F5F9) 100%);
-        color: var(--status-color, var(--text-primary));
-        box-shadow: 
-          2px 3px 8px rgba(150, 168, 195, 0.25),
-          -1px -1px 4px #FFFFFF,
-          inset 1.5px 1.5px 2px #FFFFFF,
-          inset -1px -1px 2px rgba(150, 168, 195, 0.15);
-        border: 1px solid rgba(255, 255, 255, 0.8);
+        background: #F1F5F9;
+        color: var(--text-primary);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+        border: 1.5px solid #CBD5E1;
         transition: all 0.2s ease;
-        position: relative;
-        overflow: hidden;
-      }
-      .status-pill::after {
-        content: '';
-        position: absolute;
-        top: 0; left: 0; right: 0; height: 50%;
-        background: linear-gradient(180deg, rgba(255,255,255,0.7) 0%, transparent 100%);
-        pointer-events: none;
       }
 
-      /* Jam Box (Sunken Well with Monochrome Accent) */
+      /* Jam Box (Pure Solid Accent Box) */
       .jam-box {
         display: inline-flex;
         align-items: center;
         gap: 3.5px;
         padding: 3px 8px;
-        border-radius: 9px;
-        background: linear-gradient(135deg, rgba(150, 168, 195, 0.1), rgba(255, 255, 255, 0.7));
-        box-shadow: inset 1.5px 1.5px 3px rgba(150, 168, 195, 0.25), inset -1.5px -1.5px 3px #FFFFFF;
-        border: 1px solid rgba(255, 255, 255, 0.9);
+        border-radius: 8px;
+        background: #F1F5F9;
+        border: 1.5px solid #CBD5E1;
       }
       .jam-box .material-icons-round {
-        color: var(--status-color, var(--text-secondary));
         font-size: 13px;
-        opacity: 0.85;
       }
       .jam-val {
         font-family: "JetBrains Mono", monospace;
         font-size: 11px;
         font-weight: 900;
         letter-spacing: -0.02em;
-        color: var(--status-color, var(--text-primary));
       }
 
       /* ═══════════════════════════════════════════════════════════════
-         7. STATE-SPECIFIC PALETTES FOR DOCTOR CARDS (SOLID RICH CLAY)
+         7. STATE-SPECIFIC PALETTES FOR DOCTOR CARDS (100% PURE SOLID)
          ═══════════════════════════════════════════════════════════════ */
       /* PRAKTEK (Active Doctor) */
       .platter.st-praktek, .platter.active {
-        background: linear-gradient(145deg, #F0FDF4 0%, #DCFCE7 100%);
+        background: #F0FDF4;
         border: 2px solid #86EFAC;
-        box-shadow: 
-          6px 9px 20px rgba(150, 168, 195, 0.35),
-          -4px -4px 12px #FFFFFF,
-          inset 1.5px 1.5px 2px #FFFFFF,
-          inset -1.5px -1.5px 3px #BBF7D0;
       }
       .platter.st-praktek::before, .platter.active::before { background: #16A34A; }
       .platter.st-praktek .initials, .platter.active .initials {
-        background: linear-gradient(145deg, #FFFFFF, #DCFCE7);
+        background: #FFFFFF;
         color: #15803D;
         border-color: #86EFAC;
-        box-shadow: 3px 4px 10px rgba(22, 163, 74, 0.2), inset 1px 1px 2px #FFFFFF;
       }
       .platter.st-praktek .doc-spec, .platter.active .doc-spec { color: #14532D; font-weight: 900; }
       .platter.st-praktek .doc-name, .platter.active .doc-name { color: #166534; font-weight: 800; }
       .platter.st-praktek .status-pill, .platter.active .status-pill {
-        background: linear-gradient(135deg, #22C55E 0%, #16A34A 100%);
+        background: #16A34A;
         color: #FFFFFF !important;
-        box-shadow: 2px 3px 8px rgba(22, 163, 74, 0.35), inset 1px 1px 1.5px #86EFAC;
         border-color: #15803D;
+        box-shadow: 0 2px 6px rgba(22, 163, 74, 0.35);
       }
       .platter.st-praktek .jam-box, .platter.active .jam-box {
         background: #DCFCE7;
         border-color: #86EFAC;
-        box-shadow: inset 1.5px 1.5px 3px #BBF7D0, inset -1.5px -1.5px 3px #FFFFFF;
       }
       .platter.st-praktek .jam-val, .platter.active .jam-val { color: #14532D !important; }
       .platter.st-praktek .jam-box .material-icons-round, .platter.active .jam-box .material-icons-round { color: #15803D !important; }
 
       /* PENDAFTARAN */
       .platter.st-pendaftaran {
-        background: linear-gradient(145deg, #FFF7ED 0%, #FFEDD5 100%);
+        background: #FFF7ED;
         border: 2px solid #FDBA74;
-        box-shadow: 
-          6px 9px 20px rgba(150, 168, 195, 0.35),
-          -4px -4px 12px #FFFFFF,
-          inset 1.5px 1.5px 2px #FFFFFF,
-          inset -1.5px -1.5px 3px #FED7AA;
       }
       .platter.st-pendaftaran::before { background: #EA580C; }
       .platter.st-pendaftaran .initials {
-        background: linear-gradient(145deg, #FFFFFF, #FFEDD5);
+        background: #FFFFFF;
         color: #C2410C;
         border-color: #FDBA74;
-        box-shadow: 3px 4px 10px rgba(234, 88, 12, 0.2), inset 1px 1px 2px #FFFFFF;
       }
       .platter.st-pendaftaran .doc-spec { color: #7C2D12; font-weight: 900; }
       .platter.st-pendaftaran .doc-name { color: #9A3412; font-weight: 800; }
       .platter.st-pendaftaran .status-pill {
-        background: linear-gradient(135deg, #FB923C 0%, #EA580C 100%);
+        background: #EA580C;
         color: #FFFFFF !important;
-        box-shadow: 2px 3px 8px rgba(234, 88, 12, 0.35), inset 1px 1px 1.5px #FED7AA;
         border-color: #C2410C;
+        box-shadow: 0 2px 6px rgba(234, 88, 12, 0.35);
       }
       .platter.st-pendaftaran .jam-box {
         background: #FFEDD5;
         border-color: #FDBA74;
-        box-shadow: inset 1.5px 1.5px 3px #FED7AA, inset -1.5px -1.5px 3px #FFFFFF;
       }
       .platter.st-pendaftaran .jam-val { color: #7C2D12 !important; }
       .platter.st-pendaftaran .jam-box .material-icons-round { color: #C2410C !important; }
 
       /* TERJADWAL */
       .platter.st-terjadwal {
-        background: linear-gradient(145deg, #F0F9FF 0%, #E0F2FE 100%);
+        background: #F0F9FF;
         border: 2px solid #7DD3FC;
-        box-shadow: 
-          6px 9px 20px rgba(150, 168, 195, 0.35),
-          -4px -4px 12px #FFFFFF,
-          inset 1.5px 1.5px 2px #FFFFFF,
-          inset -1.5px -1.5px 3px #BAE6FD;
       }
       .platter.st-terjadwal::before { background: #0284C7; }
       .platter.st-terjadwal .initials {
-        background: linear-gradient(145deg, #FFFFFF, #E0F2FE);
+        background: #FFFFFF;
         color: #0369A1;
         border-color: #7DD3FC;
-        box-shadow: 3px 4px 10px rgba(2, 132, 199, 0.2), inset 1px 1px 2px #FFFFFF;
       }
       .platter.st-terjadwal .doc-spec { color: #0C4A6E; font-weight: 900; }
       .platter.st-terjadwal .doc-name { color: #075985; font-weight: 800; }
       .platter.st-terjadwal .status-pill {
-        background: linear-gradient(135deg, #38BDF8 0%, #0284C7 100%);
+        background: #0284C7;
         color: #FFFFFF !important;
-        box-shadow: 2px 3px 8px rgba(2, 132, 199, 0.35), inset 1px 1px 1.5px #BAE6FD;
         border-color: #0369A1;
+        box-shadow: 0 2px 6px rgba(2, 132, 199, 0.35);
       }
       .platter.st-terjadwal .jam-box {
         background: #E0F2FE;
         border-color: #7DD3FC;
-        box-shadow: inset 1.5px 1.5px 3px #BAE6FD, inset -1.5px -1.5px 3px #FFFFFF;
       }
       .platter.st-terjadwal .jam-val { color: #0C4A6E !important; }
       .platter.st-terjadwal .jam-box .material-icons-round { color: #0369A1 !important; }
 
       /* PENUH */
       .platter.st-penuh {
-        background: linear-gradient(145deg, #FFFBEB 0%, #FEF3C7 100%);
+        background: #FFFBEB;
         border: 2px solid #FCD34D;
-        box-shadow: 
-          6px 9px 20px rgba(150, 168, 195, 0.35),
-          -4px -4px 12px #FFFFFF,
-          inset 1.5px 1.5px 2px #FFFFFF,
-          inset -1.5px -1.5px 3px #FDE68A;
       }
       .platter.st-penuh::before { background: #D97706; }
       .platter.st-penuh .initials {
-        background: linear-gradient(145deg, #FFFFFF, #FEF3C7);
+        background: #FFFFFF;
         color: #B45309;
         border-color: #FCD34D;
-        box-shadow: 3px 4px 10px rgba(217, 119, 6, 0.2), inset 1px 1px 2px #FFFFFF;
       }
       .platter.st-penuh .doc-spec { color: #78350F; font-weight: 900; }
       .platter.st-penuh .doc-name { color: #92400E; font-weight: 800; }
       .platter.st-penuh .status-pill {
-        background: linear-gradient(135deg, #FBBF24 0%, #D97706 100%);
+        background: #D97706;
         color: #FFFFFF !important;
-        box-shadow: 2px 3px 8px rgba(217, 119, 6, 0.35), inset 1px 1px 1.5px #FDE68A;
         border-color: #B45309;
+        box-shadow: 0 2px 6px rgba(217, 119, 6, 0.35);
       }
       .platter.st-penuh .jam-box {
         background: #FEF3C7;
         border-color: #FCD34D;
-        box-shadow: inset 1.5px 1.5px 3px #FDE68A, inset -1.5px -1.5px 3px #FFFFFF;
       }
       .platter.st-penuh .jam-val { color: #78350F !important; }
       .platter.st-penuh .jam-box .material-icons-round { color: #B45309 !important; }
 
       /* OPERASI */
       .platter.st-operasi {
-        background: linear-gradient(145deg, #FAF5FF 0%, #F3E8FF 100%);
+        background: #FAF5FF;
         border: 2px solid #D8B4FE;
-        box-shadow: 
-          6px 9px 20px rgba(150, 168, 195, 0.35),
-          -4px -4px 12px #FFFFFF,
-          inset 1.5px 1.5px 2px #FFFFFF,
-          inset -1.5px -1.5px 3px #E9D5FF;
       }
       .platter.st-operasi::before { background: #9333EA; }
       .platter.st-operasi .initials {
-        background: linear-gradient(145deg, #FFFFFF, #F3E8FF);
+        background: #FFFFFF;
         color: #7E22CE;
         border-color: #D8B4FE;
-        box-shadow: 3px 4px 10px rgba(147, 51, 234, 0.2), inset 1px 1px 2px #FFFFFF;
       }
       .platter.st-operasi .doc-spec { color: #581C87; font-weight: 900; }
       .platter.st-operasi .doc-name { color: #6B21A8; font-weight: 800; }
       .platter.st-operasi .status-pill {
-        background: linear-gradient(135deg, #C084FC 0%, #9333EA 100%);
+        background: #9333EA;
         color: #FFFFFF !important;
-        box-shadow: 2px 3px 8px rgba(147, 51, 234, 0.35), inset 1px 1px 1.5px #E9D5FF;
         border-color: #7E22CE;
+        box-shadow: 0 2px 6px rgba(147, 51, 234, 0.35);
       }
       .platter.st-operasi .jam-box {
         background: #F3E8FF;
         border-color: #D8B4FE;
-        box-shadow: inset 1.5px 1.5px 3px #E9D5FF, inset -1.5px -1.5px 3px #FFFFFF;
       }
       .platter.st-operasi .jam-val { color: #581C87 !important; }
       .platter.st-operasi .jam-box .material-icons-round { color: #7E22CE !important; }
 
       /* CUTI */
       .platter.st-cuti {
-        background: linear-gradient(145deg, #FFF1F2 0%, #FFE4E6 100%);
+        background: #FFF1F2;
         border: 2px solid #FDA4AF;
-        box-shadow: 
-          6px 9px 20px rgba(150, 168, 195, 0.35),
-          -4px -4px 12px #FFFFFF,
-          inset 1.5px 1.5px 2px #FFFFFF,
-          inset -1.5px -1.5px 3px #FECDD3;
       }
       .platter.st-cuti::before { background: #E11D48; }
       .platter.st-cuti .initials {
-        background: linear-gradient(145deg, #FFFFFF, #FFE4E6);
+        background: #FFFFFF;
         color: #BE123C;
         border-color: #FDA4AF;
-        box-shadow: 3px 4px 10px rgba(225, 29, 72, 0.2), inset 1px 1px 2px #FFFFFF;
       }
       .platter.st-cuti .doc-spec { color: #881337; font-weight: 900; }
       .platter.st-cuti .doc-name { color: #9F1239; font-weight: 800; }
       .platter.st-cuti .status-pill {
-        background: linear-gradient(135deg, #FB7185 0%, #E11D48 100%);
+        background: #E11D48;
         color: #FFFFFF !important;
-        box-shadow: 2px 3px 8px rgba(225, 29, 72, 0.35), inset 1px 1px 1.5px #FECDD3;
         border-color: #BE123C;
+        box-shadow: 0 2px 6px rgba(225, 29, 72, 0.35);
       }
       .platter.st-cuti .jam-box {
         background: #FFE4E6;
         border-color: #FDA4AF;
-        box-shadow: inset 1.5px 1.5px 3px #FECDD3, inset -1.5px -1.5px 3px #FFFFFF;
       }
       .platter.st-cuti .jam-val { color: #881337 !important; }
       .platter.st-cuti .jam-box .material-icons-round { color: #BE123C !important; }
 
       /* SELESAI */
       .platter.st-selesai {
-        background: linear-gradient(145deg, #F8FAFC 0%, #F1F5F9 100%);
+        background: #F8FAFC;
         border: 2px solid #CBD5E1;
-        box-shadow: 5px 7px 16px rgba(150, 168, 195, 0.25), -3px -3px 10px #FFFFFF, inset 1.5px 1.5px 2px #FFFFFF;
       }
       .platter.st-selesai::before { background: #94A3B8; }
-      .platter.st-selesai .initials { background: #F1F5F9; color: #64748B; border-color: #CBD5E1; }
+      .platter.st-selesai .initials { background: #FFFFFF; color: #64748B; border-color: #CBD5E1; }
       .platter.st-selesai .doc-spec { color: #334155; }
       .platter.st-selesai .doc-name { color: #64748B; }
       .platter.st-selesai .status-pill {
-        background: linear-gradient(135deg, #94A3B8 0%, #64748B 100%);
+        background: #64748B;
         color: #FFFFFF !important;
-        box-shadow: 1px 2px 4px rgba(0,0,0,0.1), inset 1px 1px 1.5px #CBD5E1;
         border-color: #475569;
       }
       .platter.st-selesai .jam-box {
@@ -1239,9 +1141,11 @@
 
       .weekly-shift-card {
         border-radius: var(--radius-card);
-        background: linear-gradient(145deg, #FFFFFF, #F7FAFD);
-        box-shadow: var(--clay-shadow-card);
-        border: 1.5px solid rgba(255, 255, 255, 0.95);
+        background: #FFFFFF;
+        box-shadow: 
+          4px 6px 16px rgba(150, 168, 195, 0.3),
+          -2px -2px 8px #FFFFFF;
+        border: 2px solid #E2E8F0;
         padding: 14px 16px;
         display: flex;
         flex-direction: column;
@@ -1251,9 +1155,9 @@
       .weekly-shift-initials {
         width: 42px; height: 42px;
         border-radius: 16px;
-        background: linear-gradient(145deg, #FFFFFF, #EEF3F8);
-        box-shadow: var(--clay-shadow-btn);
-        border: 1.5px solid rgba(255, 255, 255, 0.95);
+        background: #F1F5F9;
+        box-shadow: 2px 3px 6px rgba(150, 168, 195, 0.25);
+        border: 1.5px solid #CBD5E1;
         color: var(--ios-blue);
         display: flex; align-items: center; justify-content: center;
         font-family: "Outfit", sans-serif; font-size: 14px; font-weight: 900;
@@ -1272,29 +1176,29 @@
       }
       .weekly-time-pill {
         display: inline-flex; align-items: center; gap: 4px;
-        padding: 4px 10px; border-radius: 11px;
-        background: rgba(37, 99, 235, 0.08); color: var(--ios-blue);
-        border: 1px solid rgba(37, 99, 235, 0.2);
-        box-shadow: var(--clay-shadow-pill);
+        padding: 4px 10px; border-radius: 10px;
+        background: #EFF6FF; color: #1D4ED8;
+        border: 1.5px solid #BFDBFE;
         font-family: "JetBrains Mono", monospace; font-size: 11px; font-weight: 900;
       }
       .weekly-reg-pill {
         display: inline-flex; align-items: center; gap: 4px;
-        padding: 4px 10px; border-radius: 11px;
-        background: rgba(234, 88, 12, 0.08); color: #EA580C;
-        border: 1px solid rgba(234, 88, 12, 0.2);
-        box-shadow: var(--clay-shadow-pill);
+        padding: 4px 10px; border-radius: 10px;
+        background: #FFF7ED; color: #C2410C;
+        border: 1.5px solid #FED7AA;
         font-size: 10.5px; font-weight: 800;
       }
 
       /* ═══════════════════════════════════════════════════════════════
-         9. CALENDAR & LEAVES STYLES
+         9. CALENDAR & LEAVES STYLES (PURE SOLID)
          ═══════════════════════════════════════════════════════════════ */
       .leaves-cal-card {
         border-radius: 26px;
-        background: linear-gradient(145deg, #FFFFFF, #F7FAFD);
-        box-shadow: var(--clay-shadow-card);
-        border: 1.5px solid rgba(255, 255, 255, 0.95);
+        background: #FFFFFF;
+        box-shadow: 
+          4px 6px 16px rgba(150, 168, 195, 0.3),
+          -2px -2px 8px #FFFFFF;
+        border: 2px solid #E2E8F0;
         padding: 18px;
         display: flex;
         flex-direction: column;
@@ -1311,18 +1215,18 @@
         gap: 4px;
       }
       .cal-nav-btn {
-        width: 32px; height: 32px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.9);
-        background: linear-gradient(145deg, #FFFFFF, #F6F9FD);
-        box-shadow: var(--clay-shadow-btn);
+        width: 32px; height: 32px; border-radius: 12px; border: 1.5px solid #CBD5E1;
+        background: #FFFFFF;
+        box-shadow: 2px 3px 6px rgba(150, 168, 195, 0.25);
         display: flex; align-items: center; justify-content: center;
         cursor: pointer; color: var(--text-primary);
       }
       .cal-nav-btn:active { transform: scale(0.92); }
       .cal-today-btn {
-        padding: 0 10px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.25);
-        background: linear-gradient(135deg, #34D399, #059669);
+        padding: 0 10px; border-radius: 12px; border: 1.5px solid #15803D;
+        background: #16A34A;
         color: #FFFFFF; font-size: 10.5px; font-weight: 800;
-        box-shadow: 0 4px 12px rgba(5, 150, 105, 0.35); cursor: pointer;
+        box-shadow: 0 3px 8px rgba(22, 163, 74, 0.35); cursor: pointer;
       }
 
       .cal-weekdays {
@@ -1341,11 +1245,11 @@
       .cal-day-cell.empty { pointer-events: none; }
       .cal-day-cell.sunday { color: var(--ios-rose); }
       .cal-day-cell.today {
-        background: rgba(5, 150, 105, 0.12); border: 1.5px solid rgba(5, 150, 105, 0.4); color: var(--ios-emerald);
+        background: #ECFDF5; border: 2px solid #86EFAC; color: #15803D; font-weight: 900;
       }
       .cal-day-cell.selected {
-        background: linear-gradient(145deg, #34D399 0%, #059669 100%);
-        box-shadow: 0 6px 16px rgba(5, 150, 105, 0.45); color: #FFFFFF; transform: scale(1.06);
+        background: #16A34A;
+        box-shadow: 0 4px 12px rgba(22, 163, 74, 0.45); color: #FFFFFF; transform: scale(1.06);
       }
       .cal-dot-container { position: absolute; bottom: 4px; display: flex; gap: 2px; }
       .cal-dot-leave { width: 4px; height: 4px; border-radius: 50%; background: #D97706; }
