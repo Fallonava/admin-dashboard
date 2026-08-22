@@ -353,6 +353,54 @@
         line-height: 1.38;
       }
 
+      .empty-reset-btn {
+        margin-top: 8px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 16px;
+        border-radius: 14px;
+        background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+        color: #FFFFFF;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 11px;
+        font-weight: 800;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4), inset 1.2px 1.2px 2px rgba(255,255,255,0.4);
+        cursor: pointer;
+        transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        touch-action: manipulation;
+        user-select: none;
+      }
+      .empty-reset-btn:active {
+        transform: scale(0.93) translateY(1.5px) !important;
+      }
+
+      .card-expand-indicator {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: var(--surface-well);
+        box-shadow: var(--shadow-inset);
+        border: 1px solid var(--border-subtle);
+        color: var(--text-mute);
+        flex-shrink: 0;
+        margin-left: 4px;
+        transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s ease, color 0.2s ease;
+      }
+      .card-expand-indicator .material-icons-round {
+        font-size: 16px;
+      }
+      .platter.active .card-expand-indicator {
+        transform: rotate(180deg);
+        color: var(--ios-blue);
+        background: rgba(37, 99, 235, 0.15);
+        border-color: rgba(37, 99, 235, 0.3);
+      }
+
       /* Ambient Atmospheric Mesh Gradient */
       .ambient-bg {
         position: fixed;
@@ -809,6 +857,24 @@
         border-radius: 50%;
         background: radial-gradient(circle, rgba(225, 29, 72, 0.18), transparent 70%);
         pointer-events: none;
+      }
+
+      /* Active Filter Ring for Bento Cards */
+      .ios-bento-card.active {
+        border-color: var(--ios-blue) !important;
+        box-shadow: 0 0 0 2.5px rgba(37, 99, 235, 0.35), var(--shadow-card) !important;
+      }
+      .ios-bento-card.bento-praktek.active {
+        border-color: #10B981 !important;
+        box-shadow: 0 0 0 2.5px rgba(16, 185, 129, 0.38), var(--shadow-card) !important;
+      }
+      .ios-bento-card.bento-penuh.active {
+        border-color: #F59E0B !important;
+        box-shadow: 0 0 0 2.5px rgba(245, 158, 11, 0.38), var(--shadow-card) !important;
+      }
+      .ios-bento-card.bento-cuti.active {
+        border-color: #F43F5E !important;
+        box-shadow: 0 0 0 2.5px rgba(244, 63, 94, 0.38), var(--shadow-card) !important;
       }
 
       .bento-glass-bevel {
@@ -2411,6 +2477,20 @@
           <div class="scroller" id="scrollSidebar"></div>
         </section>
 
+        <!-- LIVE SEARCH EMPTY STATE WITH 1-TAP RESET -->
+        <div id="liveSearchEmptyState" class="empty-state-clay" style="display: none; margin: 10px 0 16px;">
+          <div class="clay-empty-coin amber">
+            <div class="clay-pulse-ring"></div>
+            <span class="material-icons-round">person_search</span>
+          </div>
+          <h4>Dokter Tidak Ditemukan</h4>
+          <p>Tidak ditemukan jadwal dokter dengan kata kunci atau filter poli tersebut.</p>
+          <button class="empty-reset-btn" onclick="clearSearch(); switchLiveSpec('all'); switchTab('all');">
+            <span class="material-icons-round" style="font-size: 16px;">restart_alt</span>
+            <span>Bersihkan Pencarian</span>
+          </button>
+        </div>
+
         <!-- PATIENT SERVICE WIDGET (HOTLINE & QR) -->
         <section class="patient-service-clay">
           <div class="patient-qr-row">
@@ -2833,6 +2913,11 @@
         document.querySelectorAll(".ios-seg-btn").forEach(btn => {
           btn.classList.toggle("active", btn.dataset.tab === tabId);
         });
+        document.querySelectorAll(".ios-bento-card").forEach(card => {
+          if (tabId === "all") card.classList.toggle("active", card.classList.contains("bento-praktek"));
+          else if (tabId === "khusus") card.classList.toggle("active", card.classList.contains("bento-penuh") || card.classList.contains("bento-cuti"));
+          else card.classList.remove("active");
+        });
         applyDoctorFilterAndSearch();
       }
 
@@ -2871,6 +2956,7 @@
           const activeTab = window.activeTab || "all";
           const activeSpec = window.selectedLiveSpec || "all";
 
+          let anyCardVisible = false;
           const allPlatters = document.querySelectorAll(".platter");
           allPlatters.forEach(card => {
             const rawDocName = card.dataset.docName || card.querySelector(".doc-name")?.textContent || "";
@@ -2891,6 +2977,7 @@
 
             if (matchesSearch && matchesTab && matchesSpec) {
               card.style.display = "flex";
+              anyCardVisible = true;
 
               // Real-time Text Highlighting
               const nameEl = card.querySelector(".doc-name");
@@ -2927,6 +3014,12 @@
               }
             }
           });
+
+          // Toggle global search empty state
+          const searchEmptyEl = document.getElementById("liveSearchEmptyState");
+          if (searchEmptyEl) {
+            searchEmptyEl.style.display = (!anyCardVisible && (query || activeSpec !== "all")) ? "flex" : "none";
+          }
         });
       }
 
@@ -3043,6 +3136,9 @@
                 <span class="material-icons-round" style="font-size:11px;">schedule</span>
                 <span class="jam-val jam-val-daftar">${jamTampil}</span>
               </div>` : ""}
+            </div>
+            <div class="card-expand-indicator" title="Buka Menu Pendaftaran">
+              <span class="material-icons-round">expand_more</span>
             </div>
           </div>
           <div class="platter-detail">
