@@ -1945,22 +1945,46 @@
       box-shadow: 5px 7px 18px rgba(5, 150, 105, 0.42), inset 1.5px 1.5px 3px rgba(255, 255, 255, 0.35) !important;
     }
 
-    /* ─── 15. GPU LAYER ACCELERATION & SPRING ENTRANCE ─── */
+    /* ─── 15. GPU LAYER ACCELERATION & 120HZ PERFORMANCE OPTIMIZATIONS ─── */
     @keyframes clayCardSpring {
       0% { opacity: 0; transform: translateY(16px) scale(0.96); }
       70% { transform: translateY(-2px) scale(1.005); }
       100% { opacity: 1; transform: translateY(0) scale(1); }
     }
+
     .platter, .weekly-shift-card, .leave-card {
       animation: clayCardSpring 0.38s cubic-bezier(0.16, 1, 0.3, 1) backwards !important;
       contain: layout paint;
+      content-visibility: auto;
+      contain-intrinsic-size: 0 76px;
+    }
+
+    .scroller {
+      contain: content !important;
+      will-change: transform !important;
+      transform: translateZ(0) !important;
+      -webkit-transform: translateZ(0) !important;
+      backface-visibility: hidden !important;
+      -webkit-backface-visibility: hidden !important;
+    }
+
+    .scroll-mask {
+      contain: paint !important;
     }
 
     .platter, .ios-bento-tile, .weekly-shift-card, .leave-card,
-    .ios-icon-btn, .ios-seg-btn, .ios-mode-btn, .weekly-day-btn, .spec-chip {
+    .ios-icon-btn, .ios-seg-btn, .ios-mode-btn, .weekly-day-btn, .spec-chip,
+    .hotline-clay-pill, .ios-floating-dock, .dynamic-island {
       transform: translateZ(0) !important;
+      -webkit-transform: translateZ(0) !important;
       backface-visibility: hidden !important;
       -webkit-backface-visibility: hidden !important;
+      perspective: 1000px;
+    }
+
+    * {
+      -webkit-tap-highlight-color: transparent !important;
+      text-rendering: optimizeLegibility;
     }
 
     </style>
