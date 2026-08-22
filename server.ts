@@ -1,4 +1,8 @@
-import 'dotenv/config';
+import path from 'path';
+import dotenv from 'dotenv';
+dotenv.config({ path: path.resolve(__dirname, '.env') });
+dotenv.config({ path: path.resolve(process.cwd(), '.env') });
+
 import { AsyncLocalStorage } from 'async_hooks';
 // Next.js 16 internal checks expect this to be global in some environments
 (globalThis as any).AsyncLocalStorage = AsyncLocalStorage;
