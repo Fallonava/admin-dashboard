@@ -751,71 +751,238 @@
       .hidden { display: none !important; }
 
       /* ═══════════════════════════════════════════════════════════════
-         4. BENTO HEALTH STATS TILES
+         4. BENTO HEALTH STATS TILES (APPLE iOS 2026 CLAY DESIGN)
          ═══════════════════════════════════════════════════════════════ */
       .ios-bento-stats {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         gap: 10px;
+        margin-bottom: 4px;
       }
-      .ios-bento-tile {
+
+      .ios-bento-card {
         background: var(--surface-card-solid);
-        border-radius: var(--radius-card);
-        padding: 13px 8px;
+        border-radius: 22px;
+        padding: 12px 10px 11px;
         display: flex;
         flex-direction: column;
-        align-items: center;
-        text-align: center;
+        justify-content: space-between;
+        min-height: 110px;
         box-shadow: var(--shadow-card);
         border: 2px solid var(--border-card);
-        transition: transform 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s ease;
+        transition: transform 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s ease, border-color 0.2s ease;
         cursor: pointer;
         position: relative;
         overflow: hidden;
         touch-action: manipulation;
+        user-select: none;
       }
-      .ios-bento-tile::before {
+      .ios-bento-card:active {
+        transform: scale(0.93) translate3d(0, 2px, 0) !important;
+        box-shadow: var(--shadow-inset) !important;
+      }
+
+      /* Subtle Ambient Accent Glow */
+      .ios-bento-card.bento-praktek::after {
         content: '';
         position: absolute;
-        top: 0; left: 0; right: 0;
-        height: 5px;
+        bottom: -20px; right: -20px;
+        width: 65px; height: 65px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(16, 185, 129, 0.18), transparent 70%);
+        pointer-events: none;
       }
-      
-      /* Solid Bento Variants */
-      .ios-bento-tile.buka::before { background: #16A34A; }
-      .ios-bento-tile.buka .bento-num { color: #16A34A !important; }
-      .ios-bento-tile.buka .bento-lbl { color: var(--text-sub) !important; font-weight: 800; }
+      .ios-bento-card.bento-penuh::after {
+        content: '';
+        position: absolute;
+        bottom: -20px; right: -20px;
+        width: 65px; height: 65px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(217, 119, 6, 0.18), transparent 70%);
+        pointer-events: none;
+      }
+      .ios-bento-card.bento-cuti::after {
+        content: '';
+        position: absolute;
+        bottom: -20px; right: -20px;
+        width: 65px; height: 65px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(225, 29, 72, 0.18), transparent 70%);
+        pointer-events: none;
+      }
 
-      .ios-bento-tile.penuh::before { background: #D97706; }
-      .ios-bento-tile.penuh .bento-num { color: #D97706 !important; }
-      .ios-bento-tile.penuh .bento-lbl { color: var(--text-sub) !important; font-weight: 800; }
+      .bento-glass-bevel {
+        position: absolute;
+        inset: 0;
+        border-radius: 20px;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.35) 0%, transparent 45%);
+        pointer-events: none;
+      }
+      [data-theme="dark"] .bento-glass-bevel {
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, transparent 45%);
+      }
 
-      .ios-bento-tile.cuti::before { background: #E11D48; }
-      .ios-bento-tile.cuti .bento-num { color: #E11D48 !important; }
-      .ios-bento-tile.cuti .bento-lbl { color: var(--text-sub) !important; font-weight: 800; }
+      .bento-card-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        position: relative;
+        z-index: 1;
+      }
 
-      .ios-bento-tile:active {
-        transform: scale(0.92) translate3d(0, 2px, 0);
-        box-shadow: var(--shadow-inset);
+      .bento-icon-coin {
+        width: 30px;
+        height: 30px;
+        border-radius: 11px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: var(--shadow-btn);
+        border: 1px solid var(--border-subtle);
+        flex-shrink: 0;
+      }
+      .bento-icon-coin.praktek {
+        background: rgba(16, 185, 129, 0.15);
+        color: #059669;
+        border-color: rgba(16, 185, 129, 0.3);
+      }
+      [data-theme="dark"] .bento-icon-coin.praktek {
+        background: rgba(16, 185, 129, 0.25);
+        color: #34D399;
+      }
+      .bento-icon-coin.penuh {
+        background: rgba(217, 119, 6, 0.15);
+        color: #D97706;
+        border-color: rgba(217, 119, 6, 0.3);
+      }
+      [data-theme="dark"] .bento-icon-coin.penuh {
+        background: rgba(217, 119, 6, 0.25);
+        color: #FBBF24;
+      }
+      .bento-icon-coin.cuti {
+        background: rgba(225, 29, 72, 0.15);
+        color: #E11D48;
+        border-color: rgba(225, 29, 72, 0.3);
+      }
+      [data-theme="dark"] .bento-icon-coin.cuti {
+        background: rgba(225, 29, 72, 0.25);
+        color: #FB7185;
+      }
+      .bento-icon-coin .material-icons-round {
+        font-size: 16px;
+      }
+
+      .bento-status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 3.5px;
+        padding: 2px 6px;
+        border-radius: 8px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 8.5px;
+        font-weight: 900;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+      .bento-status-pill.praktek {
+        background: rgba(16, 185, 129, 0.14);
+        color: #059669;
+        border: 1px solid rgba(16, 185, 129, 0.28);
+      }
+      [data-theme="dark"] .bento-status-pill.praktek {
+        background: rgba(16, 185, 129, 0.25);
+        color: #6EE7B7;
+        border-color: rgba(52, 211, 153, 0.4);
+      }
+      .bento-status-pill.penuh {
+        background: rgba(217, 119, 6, 0.14);
+        color: #D97706;
+        border: 1px solid rgba(217, 119, 6, 0.28);
+      }
+      [data-theme="dark"] .bento-status-pill.penuh {
+        background: rgba(217, 119, 6, 0.25);
+        color: #FCD34D;
+        border-color: rgba(251, 191, 36, 0.4);
+      }
+      .bento-status-pill.cuti {
+        background: rgba(225, 29, 72, 0.14);
+        color: #E11D48;
+        border: 1px solid rgba(225, 29, 72, 0.28);
+      }
+      [data-theme="dark"] .bento-status-pill.cuti {
+        background: rgba(225, 29, 72, 0.25);
+        color: #FDA4AF;
+        border-color: rgba(251, 113, 133, 0.4);
+      }
+
+      .bento-pulse-dot {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: #10B981;
+        box-shadow: 0 0 6px #10B981;
+        animation: livePulseDot 2s infinite ease-in-out;
+      }
+
+      .bento-card-main {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        margin-top: 8px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .bento-num-wrap {
+        display: flex;
+        align-items: baseline;
+        gap: 3px;
       }
       .bento-num {
         font-family: "JetBrains Mono", monospace;
-        font-size: 27px;
+        font-size: 26px;
         font-weight: 900;
-        line-height: 1.1;
+        line-height: 1;
         letter-spacing: -0.04em;
-        z-index: 1;
-        position: relative;
       }
-      .bento-lbl {
-        font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 10.5px;
+      .ios-bento-card.bento-praktek .bento-num { color: #059669; }
+      [data-theme="dark"] .ios-bento-card.bento-praktek .bento-num { color: #34D399; }
+
+      .ios-bento-card.bento-penuh .bento-num { color: #D97706; }
+      [data-theme="dark"] .ios-bento-card.bento-penuh .bento-num { color: #FBBF24; }
+
+      .ios-bento-card.bento-cuti .bento-num { color: #E11D48; }
+      [data-theme="dark"] .ios-bento-card.bento-cuti .bento-num { color: #FB7185; }
+
+      .bento-unit {
+        font-family: "Outfit", sans-serif;
+        font-size: 9.5px;
         font-weight: 800;
-        letter-spacing: 0.05em;
+        color: var(--text-mute);
         text-transform: uppercase;
-        margin-top: 4px;
-        z-index: 1;
-        position: relative;
+      }
+
+      .bento-text-group {
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+      }
+      .bento-title {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 11px;
+        font-weight: 900;
+        color: var(--text-main);
+        letter-spacing: -0.01em;
+        line-height: 1.2;
+      }
+      .bento-sub {
+        font-size: 8.5px;
+        font-weight: 700;
+        color: var(--text-sub);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
 
       /* ═══════════════════════════════════════════════════════════════
@@ -1981,9 +2148,9 @@
       /* ═══════════════════════════════════════════════════════════════
          12. GPU LAYER ACCELERATION
          ═══════════════════════════════════════════════════════════════ */
-      .platter, .ios-bento-tile, .weekly-shift-card, .leave-card,
+      .platter, .ios-bento-card, .ios-bento-tile, .weekly-shift-card, .leave-card,
       .ios-icon-btn, .ios-seg-btn, .ios-mode-btn, .weekly-day-btn, .spec-chip,
-      .hotline-clay-pill, .ios-floating-dock, .dynamic-island {
+      .clay-choice-tile, .hotline-clay-pill, .ios-floating-dock, .dynamic-island {
         -webkit-font-smoothing: antialiased;
       }
     </style>
@@ -2088,18 +2255,76 @@
       <!-- ─── 1. LIVE CONTAINER (JADWAL HARI INI) ─── -->
       <div id="viewLive" class="ios-live-container">
         <!-- BENTO STATS TILES -->
+        <!-- BENTO HEALTH STATS TILES (APPLE iOS 2026 CLAY REDESIGN) -->
         <section class="ios-bento-stats">
-          <div class="ios-bento-tile buka" onclick="switchTab('all')">
-            <span class="bento-num" id="statBuka" style="color: var(--ios-emerald);">0</span>
-            <span class="bento-lbl">Praktek</span>
+          <!-- PRAKTEK -->
+          <div class="ios-bento-card bento-praktek" onclick="triggerHaptic('light'); switchTab('all');">
+            <div class="bento-card-top">
+              <div class="bento-icon-coin praktek">
+                <span class="material-icons-round">medical_services</span>
+              </div>
+              <div class="bento-status-pill praktek">
+                <span class="bento-pulse-dot"></span>
+                <span>BUKA</span>
+              </div>
+            </div>
+            <div class="bento-card-main">
+              <div class="bento-num-wrap">
+                <span class="bento-num" id="statBuka">0</span>
+                <span class="bento-unit">Poli</span>
+              </div>
+              <div class="bento-text-group">
+                <span class="bento-title">Praktek</span>
+                <span class="bento-sub">Siap Melayani</span>
+              </div>
+            </div>
+            <div class="bento-glass-bevel"></div>
           </div>
-          <div class="ios-bento-tile penuh" onclick="switchTab('khusus')">
-            <span class="bento-num" id="statPenuh" style="color: var(--ios-amber);">0</span>
-            <span class="bento-lbl">Penuh</span>
+
+          <!-- PENUH -->
+          <div class="ios-bento-card bento-penuh" onclick="triggerHaptic('light'); switchTab('khusus');">
+            <div class="bento-card-top">
+              <div class="bento-icon-coin penuh">
+                <span class="material-icons-round">front_hand</span>
+              </div>
+              <div class="bento-status-pill penuh">
+                <span>MAX</span>
+              </div>
+            </div>
+            <div class="bento-card-main">
+              <div class="bento-num-wrap">
+                <span class="bento-num" id="statPenuh">0</span>
+                <span class="bento-unit">Poli</span>
+              </div>
+              <div class="bento-text-group">
+                <span class="bento-title">Penuh</span>
+                <span class="bento-sub">Kuota Terisi</span>
+              </div>
+            </div>
+            <div class="bento-glass-bevel"></div>
           </div>
-          <div class="ios-bento-tile cuti" onclick="switchTab('khusus')">
-            <span class="bento-num" id="statCuti" style="color: var(--ios-rose);">0</span>
-            <span class="bento-lbl">Cuti/Izin</span>
+
+          <!-- CUTI / IZIN -->
+          <div class="ios-bento-card bento-cuti" onclick="triggerHaptic('light'); switchTab('khusus');">
+            <div class="bento-card-top">
+              <div class="bento-icon-coin cuti">
+                <span class="material-icons-round">flight</span>
+              </div>
+              <div class="bento-status-pill cuti">
+                <span>OFF</span>
+              </div>
+            </div>
+            <div class="bento-card-main">
+              <div class="bento-num-wrap">
+                <span class="bento-num" id="statCuti">0</span>
+                <span class="bento-unit">Poli</span>
+              </div>
+              <div class="bento-text-group">
+                <span class="bento-title">Cuti / Izin</span>
+                <span class="bento-sub">Tidak Dinas</span>
+              </div>
+            </div>
+            <div class="bento-glass-bevel"></div>
           </div>
         </section>
 
