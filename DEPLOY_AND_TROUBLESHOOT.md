@@ -7,16 +7,18 @@ Dokumen ini adalah panduan standar operasional (SOP) untuk melakukan redeploy ap
 ## 📑 Daftar Isi
 1. [Akses Remote Server via SSH](#1-akses-remote-server-via-ssh)
 2. [Cara Redeploy Aplikasi (Production)](#2-cara-redeploy-aplikasi-production)
-   - [Metode A: Otomatis 1-Klik (Rekomendasi)](#metode-a-otomatis-1-klik-rekomendasi)
+   - [Metode A: Otomatis 1-Klik (Sangat Direkomendasikan)](#metode-a-otomatis-1-klik-sangat-direkomendasikan)
    - [Metode B: Manual Step-by-Step](#metode-b-manual-step-by-step)
 3. [Panduan Mengatasi Masalah (Troubleshooting Matrix)](#3-panduan-mengatasi-masalah-troubleshooting-matrix)
-   - [Masalah 1: PM2 Status `errored` / Terus Menerus Restart](#masalah-1-pm2-status-errored--terus-menerus-restart)
-   - [Masalah 2: Database PostgreSQL Down / Connection Refused](#masalah-2-database-postgresql-down--connection-refused)
-   - [Masalah 3: Port 3000 / 3002 Bentrok (Port In Use / Zombie Process)](#masalah-3-port-3000--3002-bentrok-port-in-use--zombie-process)
-   - [Masalah 4: Cloudflare Tunnel Down (Error 1033 / 502 Bad Gateway)](#masalah-4-cloudflare-tunnel-down-error-1033--502-bad-gateway)
-   - [Masalah 5: WhatsApp Bot Worker (`wa-worker`) Terputus](#masalah-5-whatsapp-bot-worker-wa-worker-terputus)
-   - [Masalah 6: Next.js Build Gagal / TypeScript Error](#masalah-6-nextjs-build-gagal--typescript-error)
+   - [Masalah 1: PM2 Status `errored` / Port Bentrok `EADDRINUSE 3000` / PID 0](#masalah-1-pm2-status-errored--port-bentrok-eaddrinuse-3000--pid-0)
+   - [Masalah 2: Error `Invalid/missing environment variables: DATABASE_URL`](#masalah-2-error-invalidmissing-environment-variables-database_url)
+   - [Masalah 3: Tabel Baru Tidak Ditemukan (`The table public.X does not exist`)](#masalah-3-tabel-baru-tidak-ditemukan-the-table-publicx-does-not-exist)
+   - [Masalah 4: `git pull` Gagal karena File Lokal Transpilasi](#masalah-4-git-pull-gagal-karena-file-lokal-transpilasi)
+   - [Masalah 5: Database PostgreSQL Down / Connection Refused](#masalah-5-database-postgresql-down--connection-refused)
+   - [Masalah 6: Cloudflare Tunnel Down (Error 1033 / 502 Bad Gateway)](#masalah-6-cloudflare-tunnel-down-error-1033--502-bad-gateway)
+   - [Masalah 7: WhatsApp Bot Worker (`wa-worker`) Terputus](#masalah-7-whatsapp-bot-worker-wa-worker-terputus)
 4. [Prosedur Pemulihan Darurat (Emergency Database Rollback)](#4-prosedur-pemulihan-darurat-emergency-database-rollback)
+5. [Verifikasi Status Sistem Pasca-Deploy](#5-verifikasi-status-sistem-pasca-deploy)
 
 ---
 
@@ -33,16 +35,17 @@ sshpass -p "qwer" ssh -o StrictHostKeyChecking=no -o ProxyCommand="cloudflared a
 > * **User**: `ANTRIAN 1`
 > * **Password**: `qwer`
 > * **Direktori Aplikasi**: `C:\simed-production`
-> * **Direktori Backup**: `C:\simed-production\backups` & `C:\simed-backups`
+> * **Direktori Backup**: `C:\simed-production\backups` & `C:\backups`
 > * **Database**: PostgreSQL 16 (`medcoredb` di `localhost:5432`)
+> * **PM2 Profile**: `C:\Users\ANTRIAN 1\.pm2`
 
 ---
 
 ## 2. Cara Redeploy Aplikasi (Production)
 
-### Metode A: Otomatis 1-Klik (Rekomendasi)
+### Metode A: Otomatis 1-Klik (Sangat Direkomendasikan)
 
-Jalankan script deploy otomatis yang sudah dilengkapi pelindung database, non-destructive schema migration, dan zero-downtime rolling reload:
+Jalankan script deploy otomatis yang sudah dilengkapi pelindung database, non-destructive schema migration, dan proses restart bersih:
 
 ```powershell
 # Jalankan di PowerShell server Windows:
@@ -50,12 +53,13 @@ cd C:\simed-production
 powershell -ExecutionPolicy Bypass -File scripts\deploy-production.ps1
 ```
 
-Script ini secara otomatis melakukan:
-1. 🛡️ **Level 1 Pre-deploy Backup**: Snapshot JSON seluruh tabel (Dokter, Shift, Cuti, User, Broadcast) ke folder `backups/`.
-2. 🔄 **Git Sync**: Mengambil commit terbaru dari `origin/master`.
-3. 📦 **Prisma Client & DB Sync**: Memperbarui schema database tanpa menghapus data yang ada (`npx prisma db push`).
-4. ⚡ **Production Compile**: Mengompilasi bundle Next.js yang dioptimalkan (`npm run build`).
-5. 🔁 **Zero-Downtime Reload**: Me-reload cluster PM2 secara bertahap (`pm2 reload ecosystem.config.js`).
+Script ini secara otomatis melakukan 6 tahap:
+1. 🛡️ **[1/6] Automated Database Safe-Guard**: Snapshot JSON 18 tabel ke `backups/` + `pg_dump` SQL backup.
+2. 🔄 **[2/6] Clean Git Sync**: `git fetch origin master; git reset --hard origin/master` (menghindari konflik file lokal).
+3. 📦 **[3/6] Prisma Client & DB Sync**: `npx prisma generate` dan `npx prisma db push --skip-generate` (sinkronisasi tabel baru tanpa menghapus data).
+4. ⚡ **[4/6] Production Compile**: `npm run build` (Next.js 16 + esbuild bundle `server.js`).
+5. 🔁 **[5/6] PM2 Fork Refresh**: `pm2 restart ecosystem.config.js --update-env` (re-bind port 3000 secara bersih).
+6. 💾 **[6/6] Save PM2 State**: `pm2 save` untuk auto-resurrect saat server restart.
 
 ---
 
@@ -66,23 +70,22 @@ Jika ingin melakukan pembaruan langkah demi langkah secara manual:
 ```powershell
 cd C:\simed-production
 
-# 1. Backup Database terlebih dahulu
-npx tsx -r dotenv/config scripts\backup-db.ts
+# 1. Backup Database terlebih dahulu (PENTING)
+npx tsx scripts/backup-db.ts
 
-# 2. Ambil update kode terbaru dari repository Git
+# 2. Ambil update kode terbaru dan paksa sync
 git fetch origin master
 git reset --hard origin/master
 
-# 3. Sinkronisasi dependensi dan skema database
-npm install
+# 3. Sinkronisasi Prisma & Database Schema
 npx prisma generate
-npx prisma db push
+npx prisma db push --skip-generate
 
-# 4. Compile build Next.js
+# 4. Compile build Next.js dan server bundler
 npm run build
 
-# 5. Reload PM2 cluster tanpa downtime
-pm2 reload ecosystem.config.js --update-env
+# 5. Restart PM2 dengan environment terbaru
+pm2 restart ecosystem.config.js --update-env
 pm2 save
 ```
 
@@ -90,160 +93,139 @@ pm2 save
 
 ## 3. Panduan Mengatasi Masalah (Troubleshooting Matrix)
 
-### Masalah 1: PM2 Status `errored` / Terus Menerus Restart
+### Masalah 1: PM2 Status `errored` / Port Bentrok `EADDRINUSE 3000` / PID 0
 
-**Gejala**: `pm2 status` menampilkan status `errored` atau angka restart (`↺`) terus bertambah.
-
+**Gejala**: `pm2 status` menampilkan status `errored`, `launching`, memori `8.0kb`, atau angka restart (`↺`) terus bertambah.
+**Penyebab**: Di OS Windows, mode PM2 `cluster` bentrok karena Windows tidak mendukung socket handle sharing port 3000 antar worker.
 **Langkah Penanganan**:
-1. Cek penyebab error secara langsung melalui log:
-   ```bash
-   pm2 logs simed --lines 50 --err
+1. Pastikan `ecosystem.config.js` menggunakan `exec_mode: 'fork'` dan `instances: 1`:
+   ```javascript
+   // ecosystem.config.js
+   instances: 1,
+   exec_mode: 'fork',
    ```
-2. Cek berkas log fisik di:
-   ```cmd
-   type C:\simed-production\logs\simed-error.log
-   ```
-3. **Penyebab & Solusi Umum**:
-   * **Out of Memory**: Jika memori melebihi batas, pastikan di `ecosystem.config.js` diset `max_memory_restart: '1G'`.
-   * **Environment Variable Hilang**: Pastikan berkas `.env` ada di `C:\simed-production\.env` dan memuat `DATABASE_URL`, `JWT_SECRET`, `ADMIN_KEY`, dan `PORT=3000`.
-   * **Server.js Crash**: Hapus proses lama dan restart ulang:
-     ```bash
-     pm2 delete simed
-     pm2 start ecosystem.config.js
-     pm2 save
-     ```
-
----
-
-### Masalah 2: Database PostgreSQL Down / Connection Refused
-
-**Gejala**: Muncul pesan `Can't reach database server at localhost:5432` atau halaman login tidak dapat memproses autentikasi.
-
-**Langkah Penanganan**:
-1. Cek status service PostgreSQL di Windows:
+2. Reset proses PM2 secara bersih:
    ```powershell
-   Get-Service postgresql*
-   ```
-2. Jika status `Stopped`, jalankan kembali service:
-   ```powershell
-   Start-Service postgresql-x64-16
-   ```
-3. Cek port PostgreSQL apakah sudah listening:
-   ```cmd
-   netstat -ano | findstr :5432
+   pm2 delete all
+   pm2 start ecosystem.config.js
+   pm2 save
    ```
 
 ---
 
-### Masalah 3: Port 3000 / 3002 Bentrok (Port In Use / Zombie Process)
+### Masalah 2: Error `Invalid/missing environment variables: DATABASE_URL`
 
-**Gejala**: Muncul error `EADDRINUSE: address already in use :::3000`.
-
+**Gejala**: Log PM2 menampilkan `❌ Invalid/missing environment variables: DATABASE_URL, JWT_SECRET, ADMIN_KEY`.
+**Penyebab**: Bundler esbuild me-hoist modul sebelum `dotenv.config()` dijalankan.
 **Langkah Penanganan**:
-1. Cari PID yang sedang menduduki port:
-   ```cmd
-   netstat -ano | findstr :3000
+* Pastikan di baris paling atas `src/lib/env.ts` terdapat:
+  ```typescript
+  import dotenv from 'dotenv';
+  dotenv.config();
+  ```
+* Jalankan ulang `npm run build` dan `pm2 restart ecosystem.config.js`.
+
+---
+
+### Masalah 3: Tabel Baru Tidak Ditemukan (`The table public.X does not exist`)
+
+**Gejala**: Error `PrismaClientKnownRequestError: The table public.TrafficHit does not exist`.
+**Penyebab**: Skema Prisma baru belum di-push ke PostgreSQL database.
+**Langkah Penanganan**:
+```powershell
+cd C:\simed-production
+npx prisma db push --skip-generate
+npx prisma generate
+pm2 restart ecosystem.config.js
+```
+
+---
+
+### Masalah 4: `git pull` Gagal karena File Lokal Transpilasi
+
+**Gejala**: `error: Your local changes to the following files would be overwritten by merge`.
+**Penyebab**: File `.js` hasil kompilasi lokal termodifikasi di server.
+**Langkah Penanganan**:
+```powershell
+cd C:\simed-production
+git fetch origin master
+git reset --hard origin/master
+```
+
+---
+
+### Masalah 5: Database PostgreSQL Down / Connection Refused
+
+**Gejala**: Log menampilkan `Can't reach database server at localhost:5432`.
+**Langkah Penanganan**:
+1. Cek status service PostgreSQL di Windows Services:
+   ```powershell
+   Get-Service -Name "*postgres*"
    ```
-2. Matikan proses zombie yang memblokir port tersebut (ganti `1234` dengan PID yang ditemukan):
-   ```cmd
-   taskkill /F /PID 1234
-   ```
-3. Jalankan kembali aplikasi via PM2:
-   ```bash
-   pm2 restart simed
+2. Jika berstatus `Stopped`, jalankan service:
+   ```powershell
+   Start-Service -Name "postgresql-x64-16"
    ```
 
 ---
 
-### Masalah 4: Cloudflare Tunnel Down (Error 1033 / 502 Bad Gateway)
+### Masalah 6: Cloudflare Tunnel Down (Error 1033 / 502 Bad Gateway)
 
-**Gejala**: Akses ke domain `https://simed.fallonava.my.id` menghasilkan error Cloudflare 1033 atau 502.
-
+**Gejala**: Domain `simed.fallonava.my.id` menampilkan error Cloudflare 1033 atau 502.
 **Langkah Penanganan**:
-1. Cek status koneksi Cloudflared di Windows Server:
+1. Cek status service Cloudflared di server:
    ```powershell
-   Get-Service cloudflared
+   Get-Service -Name "cloudflared"
    ```
-2. Restart service Cloudflared:
+2. Restart service jika perlu:
    ```powershell
-   Restart-Service cloudflared
-   ```
-3. Jika dijalankan manual via CLI, cek log:
-   ```cmd
-   cloudflared tunnel run
+   Restart-Service -Name "cloudflared"
    ```
 
 ---
 
-### Masalah 5: WhatsApp Bot Worker (`wa-worker`) Terputus
+### Masalah 7: WhatsApp Bot Worker (`wa-worker`) Terputus
 
-**Gejala**: Pesan notifikasi WhatsApp tidak terkirim atau bot berstatus offline.
-
+**Gejala**: Pesan WhatsApp bot tidak terkirim atau status di admin tidak sinkron.
 **Langkah Penanganan**:
-1. Cek status bot di PM2:
-   ```bash
+1. Cek log worker:
+   ```powershell
    pm2 logs wa-worker --lines 30
    ```
-2. Jika session expired / butuh scan QR ulang:
+2. Restart worker:
    ```powershell
-   pm2 stop wa-worker
-   # Hapus cache session lama
-   Remove-Item -Recurse -Force C:\simed-production\.wwebjs_cache
-   Remove-Item -Recurse -Force C:\simed-production\wa-bot\.wwebjs_auth
-   # Jalankan kembali
-   pm2 start wa-worker
-   ```
-3. Scan QR code yang muncul di terminal log.
-
----
-
-### Masalah 6: Next.js Build Gagal / TypeScript Error
-
-**Gejala**: Perintah `npm run build` berhenti dengan pesan error merah.
-
-**Langkah Penanganan**:
-1. Lakukan pengecekan tipe data tanpa build:
-   ```bash
-   npx tsc --noEmit
-   ```
-2. Bersihkan cache build `.next` yang korup:
-   ```powershell
-   Remove-Item -Recurse -Force C:\simed-production\.next
-   ```
-3. Jalankan ulang build:
-   ```bash
-   npm run build
+   pm2 restart wa-worker
    ```
 
 ---
 
 ## 4. Prosedur Pemulihan Darurat (Emergency Database Rollback)
 
-Jika terjadi kesalahan data fatal atau tabel terhapus, database dapat dipulihkan secara instan:
+Jika terjadi kesalahan data atau penghapusan yang tidak diinginkan:
 
-### Opsi 1: Restore dari JSON Snapshot Terbaru
-Setiap deployment secara otomatis membuat backup tabel di `C:\simed-production\backups\<TIMESTAMP>\`.
-
-Untuk me-restore data tabel:
-```powershell
-npx tsx scripts\backup-db.ts --restore=C:\simed-production\backups\<TIMESTAMP>
-```
-
-### Opsi 2: Restore dari Level 2 `pg_dump` SQL
-```powershell
-# Mengembalikan full database dari dump SQL di C:\simed-backups:
-$env:PGPASSWORD="medcore_local_password"
-& "C:\Program Files\PostgreSQL\16\bin\psql.exe" -U postgres -d medcoredb -f "C:\simed-backups\medcore_manual_backup.sql"
-```
+1. Buka direktori backup otomatis:
+   ```powershell
+   Get-ChildItem "C:\simed-production\backups" | Sort-Object CreationTime -Descending
+   ```
+2. Temukan folder timestamp terakhir (misal: `2026-08-22T07-03-57-190Z`).
+3. Restore data menggunakan file JSON yang tersimpan atau database SQL dump di `C:\backups\`.
 
 ---
 
-## 📞 Checklist Harian Administrator
+## 5. Verifikasi Status Sistem Pasca-Deploy
 
-| Pengecekan | Perintah | Status Normal |
-|---|---|---|
-| **Status PM2** | `pm2 status` | Semua `online`, memori `< 400MB` |
-| **Koneksi Database** | `powershell "Get-Service postgresql*"` | `Running` |
-| **Endpoint Web** | `curl -I https://simed.fallonava.my.id/login` | `HTTP/2 200` |
-| **Display TV Antrean** | `curl -I https://simed.fallonava.my.id/tv.html` | `HTTP/2 200` |
-| **Backup Otomatis** | `dir C:\simed-production\backups` | Ada folder backup hari ini |
+Setelah melakukan deploy, lakukan verifikasi cepat:
+
+```bash
+# Cek endpoint publik:
+curl -I https://simed.fallonava.my.id/jadwal
+curl -I https://simed.fallonava.my.id/tv.html
+
+# Cek tracking traffic:
+curl -X POST https://simed.fallonava.my.id/api/traffic/track -H "Content-Type: application/json" -d '{"path":"/jadwal","ref":"verify"}'
+
+# Cek PM2 status:
+pm2 status
+```
+
+Semua endpoint harus mengembalikan status **HTTP 200 OK** dan PM2 berstatus **online**.
