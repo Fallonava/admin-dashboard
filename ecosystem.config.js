@@ -4,8 +4,8 @@ module.exports = {
       name: 'simed',
       script: 'server.js',
       cwd: 'C:\\simed-production',
-      instances: 2,                   // Reduced from 'max' to stabilize 8GB RAM usage
-      exec_mode: 'cluster',           // Enable load balancing layer
+      instances: 1,
+      exec_mode: 'fork',
       autorestart: true,
       watch: false,
 
