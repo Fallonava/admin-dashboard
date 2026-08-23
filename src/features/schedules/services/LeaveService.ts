@@ -217,15 +217,28 @@ export class LeaveService {
   }
 
   static async delete(id: string) {
-    await (prisma.leaveRequest as any).delete({
-      where: { id }
-    });
-    
-    notifyViaSocket('leave_updated', { id });
-    getFullSnapshot().then(syncAdminData).catch(console.error);
-    triggerSchedulerResync();
+    try {
+      const leave = await (prisma.leaveRequest as any).findUnique({
+        where: { id }
+      });
+      if (!leave) return false;
 
-    return true;
+      await (prisma.leaveRequest as any).delete({
+        where: { id }
+      });
+      
+      notifyViaSocket('leave_updated', { id });
+      if (leave.doctorId) {
+        notifyViaSocket('doctor_updated', { ids: [leave.doctorId] });
+      }
+      getFullSnapshot().then(syncAdminData).catch(console.error);
+      triggerSchedulerResync();
+
+      return true;
+    } catch (err) {
+      console.error("LeaveService.delete error:", err);
+      throw err;
+    }
   }
 
   static async deduplicateAll() {

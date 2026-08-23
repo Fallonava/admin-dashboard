@@ -102,15 +102,16 @@ export function LeaveCalendar({ leaves, onRefresh, onOpenAll, totalLeaves = 0 }:
     onRefresh();
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Hapus data cuti ini?")) return;
+  const handleDelete = async (id: string, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    if (!confirm("Hapus data jadwal cuti dokter ini?")) return;
     try {
       const res = await fetch(`/api/leaves?id=${id}`, { method: 'DELETE' });
       if (!res.ok) {
         const errData = await res.json().catch(() => ({}));
         throw new Error(errData.error || 'Gagal menghapus cuti');
       }
-      onRefresh();
+      await onRefresh();
     } catch (err: any) {
       console.error(err);
       alert(err.message || "Gagal menghapus cuti");
@@ -525,11 +526,11 @@ export function LeaveCalendar({ leaves, onRefresh, onOpenAll, totalLeaves = 0 }:
 
                       {/* Action Delete */}
                       <button
-                        onClick={() => handleDelete(leave.id)}
-                        className="opacity-0 group-hover:opacity-100 p-1.5 text-zinc-400 hover:text-rose-600 clay-button rounded-[10px] transition-all absolute right-3 top-3.5 active:scale-90"
+                        onClick={(e) => handleDelete(leave.id, e)}
+                        className="p-2 text-rose-500 hover:text-rose-600 bg-rose-500/10 hover:bg-rose-500/20 clay-button rounded-[12px] transition-all absolute right-3 top-3.5 active:scale-90 z-20"
                         title="Hapus Cuti"
                       >
-                        <Trash2 size={13} strokeWidth={2.5} />
+                        <Trash2 size={14} strokeWidth={2.5} />
                       </button>
                     </div>
                   );
@@ -593,11 +594,11 @@ export function LeaveCalendar({ leaves, onRefresh, onOpenAll, totalLeaves = 0 }:
                         </span>
                       )}
                       <button
-                        onClick={() => handleDelete(leave.id)}
-                        className="opacity-0 group-hover:opacity-100 p-1.5 text-zinc-400 hover:text-rose-600 clay-button rounded-[8px] transition-all"
+                        onClick={(e) => handleDelete(leave.id, e)}
+                        className="p-1.5 text-rose-500 hover:text-rose-600 bg-rose-500/10 hover:bg-rose-500/20 clay-button rounded-[10px] transition-all active:scale-90"
                         title="Hapus"
                       >
-                        <Trash2 size={12} strokeWidth={2.5} />
+                        <Trash2 size={13} strokeWidth={2.5} />
                       </button>
                     </div>
                   </div>

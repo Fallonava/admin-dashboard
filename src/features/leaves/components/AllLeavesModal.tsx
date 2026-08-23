@@ -106,11 +106,16 @@ export function AllLeavesModal({ isOpen, onClose, leaves, onDelete }: Props) {
                                             {leave.type}
                                         </span>
                                         <button
-                                            onClick={() => onDelete(leave.id)}
-                                            className="w-7 h-7 flex items-center justify-center text-zinc-400 hover:text-rose-500 clay-button rounded-[10px] opacity-0 group-hover:opacity-100 transition-all active:scale-95"
-                                            title="Hapus"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                if (confirm(`Hapus data cuti ${leave.doctor}?`)) {
+                                                    onDelete(leave.id);
+                                                }
+                                            }}
+                                            className="w-8 h-8 flex items-center justify-center text-rose-500 hover:text-rose-600 bg-rose-500/10 hover:bg-rose-500/20 clay-button rounded-[12px] transition-all active:scale-95"
+                                            title="Hapus Cuti"
                                         >
-                                            <Trash2 size={12} />
+                                            <Trash2 size={13} strokeWidth={2.5} />
                                         </button>
                                     </div>
                                 </div>
