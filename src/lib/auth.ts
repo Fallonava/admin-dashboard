@@ -11,9 +11,9 @@ import { cookies } from 'next/headers';
 // ─── Constants ───
 // JWT_SECRET is validated by env.ts (Zod) on startup.
 
-const ACCESS_SECRET = new TextEncoder().encode(env.JWT_SECRET || 'fallback_secret_for_build_only');
+const ACCESS_SECRET = new TextEncoder().encode(env.JWT_SECRET);
 // Refresh tokens use a separate derived secret for extra security
-const REFRESH_SECRET = new TextEncoder().encode((env.JWT_SECRET || 'fallback_secret_for_build_only') + '_refresh');
+const REFRESH_SECRET = new TextEncoder().encode(env.JWT_SECRET + '_refresh');
 
 const ACCESS_COOKIE  = 'medcore_session';
 const REFRESH_COOKIE = 'medcore_refresh';

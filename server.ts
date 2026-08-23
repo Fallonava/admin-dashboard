@@ -16,18 +16,33 @@ import { runAutomation } from './src/lib/automation';
 import { getFullSnapshot } from './src/lib/data-fetchers';
 import { logger } from './src/lib/logger';
 
-
 // Expose internal scheduling engine to isolated API routes
 (global as any).triggerScheduler = scheduleToday;
 (global as any).runAutomationNow = runAutomation;
 
 const dev = process.env.NODE_ENV !== 'production';
-const hostname = process.env.HOSTNAME || 'localhost';
+const hostname = process.env.HOSTNAME || '0.0.0.0';
 const port = parseInt(process.env.PORT || '3000', 10);
 
 // In development, give Next.js internal compiler a separate internal port to prevent collision with custom httpServer
 const app = next(dev ? { dev, hostname: '127.0.0.1', port: port + 1 } : { dev, hostname, port });
 const handle = app.getRequestHandler();
+
+// ── Snapshot In-Memory Cache (Debounce Reconnect Storms) ──
+let cachedSnapshot: any = null;
+let cachedSnapshotTime = 0;
+const SNAPSHOT_CACHE_TTL_MS = 5000; // 5 seconds cache
+
+async function getCachedOrFreshSnapshot() {
+  const now = Date.now();
+  if (cachedSnapshot && now - cachedSnapshotTime < SNAPSHOT_CACHE_TTL_MS) {
+    return cachedSnapshot;
+  }
+  const fresh = await getFullSnapshot();
+  cachedSnapshot = fresh;
+  cachedSnapshotTime = now;
+  return fresh;
+}
 
 app.prepare().then(() => {
   const httpServer = createServer((req, res) => {
@@ -49,18 +64,15 @@ app.prepare().then(() => {
     pingInterval: 10000,
   });
 
-  // CRITICAL: Expose io globally BEFORE any async operations
-  // so that automation-broadcaster.js can immediately use it
+  // Expose io globally for automation broadcaster
   (global as any).io = io;
 
   io.on('connection', async (socket) => {
     console.log(`[Socket.IO] Client connected: ${socket.id}`);
 
-    // Send initial snapshot to Admin clients immediately
+    // Send snapshot to client (cached to protect DB during reconnect storms)
     try {
-      console.log(`[Socket.IO] Generating initial snapshot for ${socket.id}...`);
-      const snapshot = await getFullSnapshot();
-      console.log(`[Socket.IO] Snapshot ready: ${snapshot.doctors.length} doctors. Sending...`);
+      const snapshot = await getCachedOrFreshSnapshot();
       socket.emit('admin_sync_all', snapshot);
     } catch (err: any) {
       console.error(`[Socket.IO] Snapshot error for ${socket.id}:`, err.message);
@@ -68,10 +80,8 @@ app.prepare().then(() => {
 
     // Explicit data sync request from Admin Dashboard
     socket.on('request_admin_sync', async () => {
-      console.log(`[Socket.IO] Manual sync requested by ${socket.id}`);
       try {
-        const snapshot = await getFullSnapshot();
-        console.log(`[Socket.IO] Sending manual sync: ${snapshot.doctors.length} doctors`);
+        const snapshot = await getCachedOrFreshSnapshot();
         socket.emit('admin_sync_all', snapshot);
       } catch (err: any) {
         console.error(`[Socket.IO] Manual sync error for ${socket.id}:`, err.message);
@@ -80,13 +90,15 @@ app.prepare().then(() => {
 
     // Join specific rooms for granular subscriptions
     socket.on('join_room', (room) => {
-      socket.join(room);
-      console.log(`[Socket.IO] ${socket.id} joined room: ${room}`);
+      if (typeof room === 'string' && room.length < 50) {
+        socket.join(room);
+      }
     });
 
     // General broadcast for schedule updates
     socket.on('schedule_updated', (data) => {
-      // Broadcast to everyone else that schedule was updated
+      // Invalidate cache immediately on update
+      cachedSnapshot = null;
       socket.broadcast.emit('schedule_changed', data);
     });
 
@@ -107,9 +119,6 @@ app.prepare().then(() => {
       }
 
       // ── Real-time Event-Driven Scheduler ──────────────────────────────────
-      // Replaces the separate cron daemon (medcore-cron-worker PM2 process).
-      // Schedules setTimeout triggers for each shift start/end event today
-      // and recalculates at midnight. Much more precise than per-minute polling.
       scheduleToday().catch((err) => {
         console.error('[scheduler] Failed to start:', err);
       });

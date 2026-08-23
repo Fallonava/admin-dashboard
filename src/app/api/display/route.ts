@@ -1,12 +1,8 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requirePermission } from '@/lib/api-utils';
-import { Doctor } from '@/lib/data-service'; // Only using for type if needed
-import { revalidatePath } from 'next/cache';
 import { isShiftActiveForDate } from '@/lib/schedule-utils';
 
-// Enable Time-based Revalidation (Vercel Edge Cache) for 10 seconds.
-// TV polling setiap 3s hanya akan mengenai DB 1 kali per 10 detik.
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
@@ -56,7 +52,12 @@ export async function GET() {
         automationEnabled: false,
         runTextMessage: "Selamat Datang di RSU Siaga Medika",
         emergencyMode: false,
-        customMessages: [] as any
+        customMessages: [
+            { title: 'Info', text: 'Terimakasih sudah menunggu 🙏' },
+            { title: 'Info', text: 'Terimakasih sudah tertib 🌟' },
+            { title: 'Antrian', text: 'Belum online? Yo ambil antrian 🎫' },
+            { title: 'Info', text: 'Terimakasih sudah mengantri 😊' }
+        ] as any
     };
 
     if (!settings.customMessages || (settings.customMessages as any[]).length === 0) {
@@ -66,25 +67,6 @@ export async function GET() {
             { title: 'Antrian', text: 'Belum online? Yo ambil antrian 🎫' },
             { title: 'Info', text: 'Terimakasih sudah mengantri 😊' }
         ];
-
-        // Ensure settings exist in DB with default if missing
-        const existing = await (prisma.settings as any).findUnique({ where: { id: "1" } });
-        if (existing) {
-            await (prisma.settings as any).update({
-                where: { id: "1" },
-                data: { customMessages: settings.customMessages }
-            });
-        } else {
-            await (prisma.settings as any).create({
-                data: {
-                    id: "1",
-                    automationEnabled: settings.automationEnabled,
-                    runTextMessage: settings.runTextMessage,
-                    emergencyMode: settings.emergencyMode,
-                    customMessages: settings.customMessages
-                }
-            });
-        }
     }
 
     return NextResponse.json({
@@ -129,45 +111,43 @@ export async function POST(req: Request) {
 
         const body = await req.json();
 
-        // Used by Display Control Page to force save state
-        if (body.doctors) {
-            const currentDocs = await prisma.doctor.findMany();
-            const incomingDocs = body.doctors as typeof currentDocs;
-            const incomingIds = new Set(incomingDocs.map(d => d.id));
+        // Transactional batch update to prevent database partial failure/corruption
+        await prisma.$transaction(async (tx) => {
+            if (body.doctors && Array.isArray(body.doctors)) {
+                const currentDocs = await tx.doctor.findMany();
+                const incomingDocs = body.doctors;
+                const incomingIds = new Set(incomingDocs.map((d: any) => d.id));
 
-            for (const inc of incomingDocs) {
-                const dataToSave = { ...inc };
+                for (const inc of incomingDocs) {
+                    const dataToSave = { ...inc };
+                    const exists = currentDocs.find((d: any) => d.id === inc.id);
+                    if (exists) {
+                        await tx.doctor.update({ where: { id: inc.id }, data: dataToSave });
+                    } else {
+                        await tx.doctor.create({ data: dataToSave });
+                    }
+                }
 
-                const exists = currentDocs.find((d: any) => d.id === inc.id);
-                if (exists) {
-                    await (prisma.doctor as any).update({ where: { id: inc.id }, data: dataToSave });
+                for (const doc of currentDocs) {
+                    if (!incomingIds.has(doc.id)) {
+                        await tx.doctor.delete({ where: { id: doc.id } });
+                    }
+                }
+            }
+
+            if (body.settings) {
+                const currentSettings = await tx.settings.findMany();
+                const existing = currentSettings[0];
+                const updates = { ...body.settings };
+                delete updates.id;
+
+                if (existing) {
+                    await tx.settings.update({ where: { id: existing.id }, data: updates });
                 } else {
-                    await (prisma.doctor as any).create({ data: dataToSave });
+                    await tx.settings.create({ data: { ...updates, id: "1" } });
                 }
             }
-
-            for (const doc of currentDocs) {
-                if (!incomingIds.has(doc.id as string)) {
-                    await (prisma.doctor as any).delete({ where: { id: doc.id } });
-                }
-            }
-        }
-
-        if (body.settings) {
-            const currentSettings = await (prisma.settings as any).findMany();
-            const existing = currentSettings[0];
-            const updates = { ...body.settings };
-            delete updates.id;
-
-            if (existing) {
-                await (prisma.settings as any).update({ where: { id: existing.id }, data: updates });
-            } else {
-                await (prisma.settings as any).create({ data: { ...updates, id: "1" } });
-            }
-        }
-
-        // On-Demand Revalidation: Segera hapus cache 10-detik jika admin/sistem mengubah data via POST
-        revalidatePath('/api/display');
+        });
 
         return NextResponse.json({ success: true }, {
             headers: {

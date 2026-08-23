@@ -124,10 +124,9 @@ export class TrafficService {
   }
 
   /**
-   * Aggregate traffic stats for dashboard display
+   * Aggregate traffic stats for dashboard display using SQL aggregation (No memory OOM)
    */
   static async getStats(days = 7, targetPath?: string) {
-    const now = new Date();
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - days);
     startDate.setHours(0, 0, 0, 0);
@@ -138,166 +137,252 @@ export class TrafficService {
     const whereClause: any = {
       createdAt: { gte: startDate },
     };
+    const todayWhereClause: any = {
+      createdAt: { gte: startOfToday },
+    };
     if (targetPath) {
       whereClause.path = targetPath;
+      todayWhereClause.path = targetPath;
     }
 
-    // Fetch hits for the given range
-    const hits: any[] = await (prisma as any).trafficHit.findMany({
-      where: whereClause,
-      select: {
-        id: true,
-        path: true,
-        ipHash: true,
-        device: true,
-        os: true,
-        browser: true,
-        referrer: true,
-        createdAt: true,
-      },
-      orderBy: { createdAt: "desc" },
-    });
+    try {
+      // 1. Overview counts using DB count & aggregations
+      const [totalViews, todayViews, recentHits] = await Promise.all([
+        (prisma as any).trafficHit.count({ where: whereClause }),
+        (prisma as any).trafficHit.count({ where: todayWhereClause }),
+        (prisma as any).trafficHit.findMany({
+          where: whereClause,
+          select: {
+            id: true,
+            path: true,
+            device: true,
+            os: true,
+            browser: true,
+            referrer: true,
+            createdAt: true,
+          },
+          orderBy: { createdAt: "desc" },
+          take: 15,
+        }),
+      ]);
 
-    // 1. Overview counts
-    const todayHits = hits.filter((h) => h.createdAt >= startOfToday);
-    const todayViews = todayHits.length;
-    const todayUniques = new Set(todayHits.map((h) => h.ipHash).filter(Boolean)).size;
+      // Unique counts via native SQL or distinct query
+      let totalUniques = 0;
+      let todayUniques = 0;
 
-    const totalViews = hits.length;
-    const totalUniques = new Set(hits.map((h) => h.ipHash).filter(Boolean)).size;
+      try {
+        const totalUniquesRes: any = targetPath
+          ? await (prisma as any).$queryRaw`
+              SELECT COUNT(DISTINCT "ipHash") as count FROM "TrafficHit" 
+              WHERE "createdAt" >= ${startDate} AND "path" = ${targetPath} AND "ipHash" IS NOT NULL
+            `
+          : await (prisma as any).$queryRaw`
+              SELECT COUNT(DISTINCT "ipHash") as count FROM "TrafficHit" 
+              WHERE "createdAt" >= ${startDate} AND "ipHash" IS NOT NULL
+            `;
+        totalUniques = Number(totalUniquesRes?.[0]?.count ?? 0);
 
-    // 2. Hourly breakdown for Today (00:00 - 23:00)
-    const hourlyMap: Record<number, { views: number; uniques: Set<string> }> = {};
-    for (let h = 0; h < 24; h++) {
-      hourlyMap[h] = { views: 0, uniques: new Set() };
-    }
-    todayHits.forEach((hit) => {
-      const hour = new Date(hit.createdAt).getHours();
-      hourlyMap[hour].views += 1;
-      if (hit.ipHash) hourlyMap[hour].uniques.add(hit.ipHash);
-    });
-
-    const hourlyTrend = Object.entries(hourlyMap).map(([hourStr, data]) => ({
-      hour: `${hourStr.padStart(2, "0")}:00`,
-      views: data.views,
-      uniques: data.uniques.size,
-    }));
-
-    // Find peak hour today
-    let peakHour = "-";
-    let maxHourlyViews = 0;
-    hourlyTrend.forEach((item) => {
-      if (item.views > maxHourlyViews) {
-        maxHourlyViews = item.views;
-        peakHour = `${item.hour} (${item.views} views)`;
+        const todayUniquesRes: any = targetPath
+          ? await (prisma as any).$queryRaw`
+              SELECT COUNT(DISTINCT "ipHash") as count FROM "TrafficHit" 
+              WHERE "createdAt" >= ${startOfToday} AND "path" = ${targetPath} AND "ipHash" IS NOT NULL
+            `
+          : await (prisma as any).$queryRaw`
+              SELECT COUNT(DISTINCT "ipHash") as count FROM "TrafficHit" 
+              WHERE "createdAt" >= ${startOfToday} AND "ipHash" IS NOT NULL
+            `;
+        todayUniques = Number(todayUniquesRes?.[0]?.count ?? 0);
+      } catch (err) {
+        totalUniques = totalViews;
+        todayUniques = todayViews;
       }
-    });
 
-    // 3. Daily breakdown (last N days)
-    const dailyMap: Record<string, { views: number; uniques: Set<string> }> = {};
-    for (let d = 0; d <= days; d++) {
-      const dDate = new Date();
-      dDate.setDate(dDate.getDate() - (days - d));
-      const key = dDate.toISOString().slice(0, 10);
-      dailyMap[key] = { views: 0, uniques: new Set() };
-    }
-
-    hits.forEach((hit) => {
-      const key = hit.createdAt.toISOString().slice(0, 10);
-      if (dailyMap[key]) {
-        dailyMap[key].views += 1;
-        if (hit.ipHash) dailyMap[key].uniques.add(hit.ipHash);
+      // 2. Hourly breakdown for Today
+      const hourlyMap: Record<number, { views: number; uniques: number }> = {};
+      for (let h = 0; h < 24; h++) {
+        hourlyMap[h] = { views: 0, uniques: 0 };
       }
-    });
 
-    const dailyTrend = Object.entries(dailyMap).map(([dateStr, data]) => {
-      const dateObj = new Date(dateStr);
-      const label = dateObj.toLocaleDateString("id-ID", { weekday: "short", day: "numeric", month: "short" });
-      return {
-        date: dateStr,
-        label,
+      try {
+        const hourlyData: any[] = targetPath
+          ? await (prisma as any).$queryRaw`
+              SELECT EXTRACT(HOUR FROM "createdAt")::int as hour, 
+                     COUNT(*)::int as views, 
+                     COUNT(DISTINCT "ipHash")::int as uniques
+              FROM "TrafficHit"
+              WHERE "createdAt" >= ${startOfToday} AND "path" = ${targetPath}
+              GROUP BY 1 ORDER BY 1 ASC
+            `
+          : await (prisma as any).$queryRaw`
+              SELECT EXTRACT(HOUR FROM "createdAt")::int as hour, 
+                     COUNT(*)::int as views, 
+                     COUNT(DISTINCT "ipHash")::int as uniques
+              FROM "TrafficHit"
+              WHERE "createdAt" >= ${startOfToday}
+              GROUP BY 1 ORDER BY 1 ASC
+            `;
+
+        if (Array.isArray(hourlyData)) {
+          for (const row of hourlyData) {
+            const h = Number(row.hour);
+            if (hourlyMap[h] !== undefined) {
+              hourlyMap[h] = { views: Number(row.views || 0), uniques: Number(row.uniques || 0) };
+            }
+          }
+        }
+      } catch (e) {}
+
+      const hourlyTrend = Object.entries(hourlyMap).map(([hourStr, data]) => ({
+        hour: `${hourStr.padStart(2, "0")}:00`,
         views: data.views,
-        uniques: data.uniques.size,
+        uniques: data.uniques,
+      }));
+
+      let peakHour = "-";
+      let maxHourlyViews = 0;
+      hourlyTrend.forEach((item) => {
+        if (item.views > maxHourlyViews) {
+          maxHourlyViews = item.views;
+          peakHour = `${item.hour} (${item.views} views)`;
+        }
+      });
+
+      // 3. Daily breakdown (last N days)
+      const dailyMap: Record<string, { views: number; uniques: number }> = {};
+      for (let d = 0; d <= days; d++) {
+        const dDate = new Date();
+        dDate.setDate(dDate.getDate() - (days - d));
+        const key = dDate.toISOString().slice(0, 10);
+        dailyMap[key] = { views: 0, uniques: 0 };
+      }
+
+      try {
+        const dailyData: any[] = targetPath
+          ? await (prisma as any).$queryRaw`
+              SELECT TO_CHAR("createdAt", 'YYYY-MM-DD') as date, 
+                     COUNT(*)::int as views, 
+                     COUNT(DISTINCT "ipHash")::int as uniques
+              FROM "TrafficHit"
+              WHERE "createdAt" >= ${startDate} AND "path" = ${targetPath}
+              GROUP BY 1 ORDER BY 1 ASC
+            `
+          : await (prisma as any).$queryRaw`
+              SELECT TO_CHAR("createdAt", 'YYYY-MM-DD') as date, 
+                     COUNT(*)::int as views, 
+                     COUNT(DISTINCT "ipHash")::int as uniques
+              FROM "TrafficHit"
+              WHERE "createdAt" >= ${startDate}
+              GROUP BY 1 ORDER BY 1 ASC
+            `;
+
+        if (Array.isArray(dailyData)) {
+          for (const row of dailyData) {
+            if (dailyMap[row.date] !== undefined) {
+              dailyMap[row.date] = { views: Number(row.views || 0), uniques: Number(row.uniques || 0) };
+            }
+          }
+        }
+      } catch (e) {}
+
+      const dailyTrend = Object.entries(dailyMap).map(([dateStr, data]) => {
+        const dateObj = new Date(dateStr);
+        const label = dateObj.toLocaleDateString("id-ID", { weekday: "short", day: "numeric", month: "short" });
+        return {
+          date: dateStr,
+          label,
+          views: data.views,
+          uniques: data.uniques,
+        };
+      });
+
+      // 4. Breakdown by Device, OS, Referrer, Path using Prisma groupBy
+      const [deviceGroup, osGroup, referrerGroup, pathGroup] = await Promise.all([
+        (prisma as any).trafficHit.groupBy({
+          by: ["device"],
+          _count: { id: true },
+          where: whereClause,
+        }),
+        (prisma as any).trafficHit.groupBy({
+          by: ["os"],
+          _count: { id: true },
+          where: whereClause,
+        }),
+        (prisma as any).trafficHit.groupBy({
+          by: ["referrer"],
+          _count: { id: true },
+          where: whereClause,
+        }),
+        (prisma as any).trafficHit.groupBy({
+          by: ["path"],
+          _count: { id: true },
+          where: whereClause,
+        }),
+      ]);
+
+      const deviceBreakdown = (deviceGroup as any[])
+        .map((g) => {
+          const name = g.device === "mobile" ? "Smartphone" : g.device === "desktop" ? "Komputer / Laptop" : g.device === "tablet" ? "Tablet" : "Lainnya";
+          const count = g._count.id;
+          return {
+            name,
+            count,
+            percentage: totalViews > 0 ? Math.round((count / totalViews) * 100) : 0,
+          };
+        })
+        .sort((a, b) => b.count - a.count);
+
+      const osBreakdown = (osGroup as any[])
+        .map((g) => ({
+          name: g.os || "Lainnya",
+          count: g._count.id,
+          percentage: totalViews > 0 ? Math.round((g._count.id / totalViews) * 100) : 0,
+        }))
+        .sort((a, b) => b.count - a.count);
+
+      const referrerBreakdown = (referrerGroup as any[])
+        .map((g) => ({
+          name: g.referrer || "Langsung (Direct)",
+          count: g._count.id,
+          percentage: totalViews > 0 ? Math.round((g._count.id / totalViews) * 100) : 0,
+        }))
+        .sort((a, b) => b.count - a.count);
+
+      const pathBreakdown = (pathGroup as any[])
+        .map((g) => ({
+          path: g.path || "/",
+          count: g._count.id,
+          percentage: totalViews > 0 ? Math.round((g._count.id / totalViews) * 100) : 0,
+        }))
+        .sort((a, b) => b.count - a.count);
+
+      return {
+        overview: {
+          todayViews,
+          todayUniques,
+          totalViews,
+          totalUniques,
+          peakHour,
+        },
+        hourlyTrend,
+        dailyTrend,
+        deviceBreakdown,
+        osBreakdown,
+        referrerBreakdown,
+        pathBreakdown,
+        recentHits,
       };
-    });
-
-    // 4. Breakdown by Device
-    const deviceCounts: Record<string, number> = {};
-    hits.forEach((h) => {
-      const dev = h.device || "Lainnya";
-      deviceCounts[dev] = (deviceCounts[dev] || 0) + 1;
-    });
-    const deviceBreakdown = Object.entries(deviceCounts).map(([name, count]) => ({
-      name: name === "mobile" ? "Smartphone" : name === "desktop" ? "Komputer / Laptop" : name === "tablet" ? "Tablet" : "Lainnya",
-      count,
-      percentage: totalViews > 0 ? Math.round((count / totalViews) * 100) : 0,
-    }));
-
-    // 5. Breakdown by OS
-    const osCounts: Record<string, number> = {};
-    hits.forEach((h) => {
-      const os = h.os || "Lainnya";
-      osCounts[os] = (osCounts[os] || 0) + 1;
-    });
-    const osBreakdown = Object.entries(osCounts)
-      .map(([name, count]) => ({
-        name,
-        count,
-        percentage: totalViews > 0 ? Math.round((count / totalViews) * 100) : 0,
-      }))
-      .sort((a, b) => b.count - a.count);
-
-    // 6. Breakdown by Referrer
-    const referrerCounts: Record<string, number> = {};
-    hits.forEach((h) => {
-      const ref = h.referrer || "Langsung (Direct)";
-      referrerCounts[ref] = (referrerCounts[ref] || 0) + 1;
-    });
-    const referrerBreakdown = Object.entries(referrerCounts)
-      .map(([name, count]) => ({
-        name,
-        count,
-        percentage: totalViews > 0 ? Math.round((count / totalViews) * 100) : 0,
-      }))
-      .sort((a, b) => b.count - a.count);
-
-    // 7. Breakdown by Path
-    const pathCounts: Record<string, number> = {};
-    hits.forEach((h) => {
-      const p = h.path || "/";
-      pathCounts[p] = (pathCounts[p] || 0) + 1;
-    });
-    const pathBreakdown = Object.entries(pathCounts)
-      .map(([path, count]) => ({
-        path,
-        count,
-        percentage: totalViews > 0 ? Math.round((count / totalViews) * 100) : 0,
-      }))
-      .sort((a, b) => b.count - a.count);
-
-    return {
-      overview: {
-        todayViews,
-        todayUniques,
-        totalViews,
-        totalUniques,
-        peakHour,
-      },
-      hourlyTrend,
-      dailyTrend,
-      deviceBreakdown,
-      osBreakdown,
-      referrerBreakdown,
-      pathBreakdown,
-      recentHits: hits.slice(0, 15).map((h) => ({
-        id: h.id,
-        path: h.path,
-        device: h.device,
-        os: h.os,
-        browser: h.browser,
-        referrer: h.referrer,
-        createdAt: h.createdAt,
-      })),
-    };
+    } catch (error) {
+      console.error("[TrafficService] getStats error:", error);
+      return {
+        overview: { todayViews: 0, todayUniques: 0, totalViews: 0, totalUniques: 0, peakHour: "-" },
+        hourlyTrend: [],
+        dailyTrend: [],
+        deviceBreakdown: [],
+        osBreakdown: [],
+        referrerBreakdown: [],
+        pathBreakdown: [],
+        recentHits: [],
+      };
+    }
   }
 }

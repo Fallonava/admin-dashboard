@@ -31,11 +31,9 @@ const serverSchema = z.object({
   ),
 });
 
-
 // Public env (accessible in browser) — must be prefixed NEXT_PUBLIC_
 const clientSchema = z.object({
   NEXT_PUBLIC_APP_URL: z.string().url().optional(),
-  NEXT_PUBLIC_ADMIN_KEY: z.string().optional(),
 });
 
 function validateEnv() {
@@ -43,7 +41,6 @@ function validateEnv() {
   if (typeof window !== 'undefined') {
     const parsed = clientSchema.safeParse({
       NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
-      NEXT_PUBLIC_ADMIN_KEY: process.env.NEXT_PUBLIC_ADMIN_KEY,
     });
     if (!parsed.success) {
       console.error('❌ Invalid client environment variables:', parsed.error.flatten().fieldErrors);

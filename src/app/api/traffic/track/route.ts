@@ -1,10 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
 import { TrafficService } from "@/features/traffic/services/TrafficService";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
   try {
+    const ip =
+      req.headers.get("cf-connecting-ip") ||
+      req.headers.get("x-real-ip") ||
+      req.headers.get("x-forwarded-for")?.split(",")[0].trim() ||
+      "unknown";
+
+    // Rate limit: max 60 track hits per minute per IP to prevent spam DoS
+    const isAllowed = await checkRateLimit(`traffic_${ip}`, 60, 60 * 1000);
+    if (!isAllowed) {
+      return NextResponse.json({ ok: false, error: "Rate limit exceeded" }, { status: 429 });
+    }
+
     let body: any = {};
     const contentType = req.headers.get("content-type") || "";
 
@@ -16,12 +29,6 @@ export async function POST(req: NextRequest) {
         // Ignore json parse error for malformed beacons
       }
     }
-
-    const ip =
-      req.headers.get("x-real-ip") ||
-      req.headers.get("x-forwarded-for") ||
-      req.headers.get("cf-connecting-ip") ||
-      null;
 
     const userAgent = req.headers.get("user-agent") || null;
     const referrer = body.referrer || body.ref || req.headers.get("referer") || null;
