@@ -627,7 +627,7 @@ export default function DoctorsPage() {
 
         {/* ─── FLOATING BULK ACTION BAR (SAFE SPACING) ─── */}
         <div className={cn(
-          "fixed bottom-24 lg:bottom-8 left-1/2 -translate-x-1/2 max-w-[94vw] sm:max-w-none clay-surface rounded-[28px] shadow-2xl p-2.5 sm:p-3 flex items-center transition-all duration-300 z-[90]",
+          "fixed bottom-[calc(76px+env(safe-area-inset-bottom,0px))] lg:bottom-8 left-1/2 -translate-x-1/2 max-w-[94vw] sm:max-w-none clay-surface rounded-[28px] shadow-2xl p-2.5 sm:p-3 flex items-center transition-all duration-300 z-[105]",
           selectedIds.size > 0 ? "translate-y-0 opacity-100 scale-100" : "translate-y-24 opacity-0 scale-90 pointer-events-none"
         )}>
           <div className="flex items-center gap-2 sm:gap-3 overflow-x-auto no-scrollbar px-1">

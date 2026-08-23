@@ -1990,7 +1990,7 @@ export default function PosterStudioPage() {
   };
 
   return (
-    <div className="flex-1 w-full flex flex-col h-full min-h-0 overflow-y-auto bg-[#EDF2F8] dark:bg-[#0B0E14] text-zinc-900 dark:text-zinc-100 p-3 sm:p-6 lg:p-8">
+    <div className="flex-1 w-full flex flex-col h-full min-h-0 overflow-y-auto custom-scrollbar bg-[#EDF2F8] dark:bg-[#0B0E14] text-zinc-900 dark:text-zinc-100 p-3 sm:p-6 lg:p-8 pb-32 lg:pb-8">
       {/* ── Studio Standard Page Header ── */}
       <PageHeader
         icon={<Palette size={22} className="text-white" strokeWidth={2.5} />}

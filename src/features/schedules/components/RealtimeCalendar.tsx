@@ -570,7 +570,7 @@ export function RealtimeCalendar({ selectedDate, onDateChange, onOpenDoctorSched
 
       {/* ─── ADD SHIFT MODAL ─── */}
       {showAddModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="clay-surface rounded-[32px] p-6 lg:p-8 w-full max-w-md relative overflow-hidden animate-in zoom-in-95 duration-200 shadow-2xl border border-zinc-200/60 dark:border-white/10">
             <div className="flex justify-between items-center mb-5 relative z-10">
               <div>

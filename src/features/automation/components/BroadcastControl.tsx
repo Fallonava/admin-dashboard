@@ -325,7 +325,7 @@ export function BroadcastControl() {
 
             {/* Claymorphic Modal */}
             {editingRule && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-200">
+                <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-200">
                     <div className="clay-surface rounded-[36px] p-8 w-full max-w-lg shadow-2xl relative overflow-hidden animate-in zoom-in-95 duration-300">
                         <div className="flex justify-between items-center mb-6">
                             <div className="flex items-center gap-3.5">

@@ -220,7 +220,7 @@ export default function SchedulesPage() {
                     </div>
 
                     {/* Sheet Content */}
-                    <div className="flex-1 overflow-y-auto min-h-0 pb-16">
+                    <div className="flex-1 overflow-y-auto min-h-0 pb-[calc(5rem+env(safe-area-inset-bottom,0px))] px-1">
                         <UpcomingShifts
                             selectedDate={selectedDate}
                             onOpenScheduleModal={(doc) => {
@@ -237,7 +237,7 @@ export default function SchedulesPage() {
                 onClick={() => setIsSheetOpen(true)}
                 className={cn(
                     "lg:hidden fixed z-[105] flex items-center gap-2 px-4 py-3 rounded-full clay-pill-blue text-white shadow-xl transition-all duration-300 active:scale-95",
-                    "right-4 bottom-24",
+                    "right-4 bottom-[calc(76px+env(safe-area-inset-bottom,0px))] sm:bottom-24",
                     isSheetOpen ? "opacity-0 pointer-events-none scale-90" : "opacity-100 scale-100"
                 )}
             >

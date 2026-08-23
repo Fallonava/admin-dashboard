@@ -272,7 +272,7 @@ export default function AnomalyDashboard({ data, onRefresh }: AnomalyDashboardPr
     <>
     {/* Delete All Confirmation Modal */}
     {isDeleteAllModalOpen && (
-      <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-md flex items-center justify-center p-4" onClick={() => setIsDeleteAllModalOpen(false)}>
+      <div className="fixed inset-0 z-[200] bg-black/60 backdrop-blur-md flex items-center justify-center p-4" onClick={() => setIsDeleteAllModalOpen(false)}>
         <div className="clay-surface rounded-[32px] p-6 max-w-sm w-full shadow-2xl" onClick={e => e.stopPropagation()}>
           <div className="flex items-start gap-4">
             <div className="p-3 clay-pill-rose text-white rounded-2xl shrink-0"><Trash2 size={22}/></div>
@@ -472,8 +472,8 @@ export default function AnomalyDashboard({ data, onRefresh }: AnomalyDashboardPr
       {/* Resolve Modal via Radix UI */}
       <Dialog.Root open={isResolveModalOpen} onOpenChange={setIsResolveModalOpen}>
         <Dialog.Portal>
-          <Dialog.Overlay className="fixed inset-0 bg-black/60 backdrop-blur-md z-50 animate-in fade-in" />
-          <Dialog.Content className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md clay-surface rounded-[36px] p-6 shadow-2xl z-50 animate-in zoom-in-95 duration-200">
+          <Dialog.Overlay className="fixed inset-0 bg-black/60 backdrop-blur-md z-[200] animate-in fade-in" />
+          <Dialog.Content className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md clay-surface rounded-[36px] p-6 shadow-2xl z-[200] animate-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between mb-5">
               <Dialog.Title className="text-lg font-black text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
                 <Edit2 className="text-violet-500" /> Ubah Status Anomali
@@ -545,8 +545,8 @@ export default function AnomalyDashboard({ data, onRefresh }: AnomalyDashboardPr
         }
       }}>
         <Dialog.Portal>
-          <Dialog.Overlay className="fixed inset-0 bg-black/60 backdrop-blur-md z-50 animate-in fade-in" />
-          <Dialog.Content className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md clay-surface rounded-[36px] p-6 shadow-2xl z-50 animate-in zoom-in-95 duration-200">
+          <Dialog.Overlay className="fixed inset-0 bg-black/60 backdrop-blur-md z-[200] animate-in fade-in" />
+          <Dialog.Content className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md clay-surface rounded-[36px] p-6 shadow-2xl z-[200] animate-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between mb-5">
               <Dialog.Title className="text-lg font-black text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
                 {isAddModalOpen ? <Plus className="text-blue-500" /> : <Edit2 className="text-blue-500" />} 
@@ -625,8 +625,8 @@ export default function AnomalyDashboard({ data, onRefresh }: AnomalyDashboardPr
       {/* Delete Confirmation Modal */}
       <Dialog.Root open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
         <Dialog.Portal>
-          <Dialog.Overlay className="fixed inset-0 bg-black/60 backdrop-blur-md z-50 animate-in fade-in" />
-          <Dialog.Content className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-sm clay-surface rounded-[36px] p-6 shadow-2xl z-50 animate-in zoom-in-95 duration-200 text-center">
+          <Dialog.Overlay className="fixed inset-0 bg-black/60 backdrop-blur-md z-[200] animate-in fade-in" />
+          <Dialog.Content className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-sm clay-surface rounded-[36px] p-6 shadow-2xl z-[200] animate-in zoom-in-95 duration-200 text-center">
             <div className="mx-auto w-12 h-12 clay-pill-rose text-white rounded-2xl flex items-center justify-center mb-4">
               <ShieldAlert size={24} />
             </div>
@@ -656,8 +656,8 @@ export default function AnomalyDashboard({ data, onRefresh }: AnomalyDashboardPr
       {/* Audit Log Modal */}
       <Dialog.Root open={isLogModalOpen} onOpenChange={setIsLogModalOpen}>
         <Dialog.Portal>
-          <Dialog.Overlay className="fixed inset-0 bg-black/60 backdrop-blur-md z-50 animate-in fade-in" />
-          <Dialog.Content className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg clay-surface rounded-[36px] p-6 shadow-2xl z-50 animate-in zoom-in-95 duration-200">
+          <Dialog.Overlay className="fixed inset-0 bg-black/60 backdrop-blur-md z-[200] animate-in fade-in" />
+          <Dialog.Content className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg clay-surface rounded-[36px] p-6 shadow-2xl z-[200] animate-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between mb-5">
               <Dialog.Title className="text-lg font-black text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
                 <History className="text-violet-500" /> Jejak Audit (Audit Trail)

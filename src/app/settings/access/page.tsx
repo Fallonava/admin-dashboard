@@ -351,7 +351,7 @@ export default function AccessManagementPage() {
             {/* Role Editor Modal */}
             {(editingRole || showNewRole) && (
               <div
-                className="fixed inset-0 z-50 bg-black/60 backdrop-blur-md flex items-center justify-center p-4"
+                className="fixed inset-0 z-[200] bg-black/60 backdrop-blur-md flex items-center justify-center p-4"
                 onClick={() => { setEditingRole(null); setShowNewRole(false); }}
               >
                 <div

@@ -246,8 +246,8 @@ export default function BroadcastPage() {
                 </button>
               </Dialog.Trigger>
               <Dialog.Portal>
-                <Dialog.Overlay className="fixed inset-0 bg-black/60 backdrop-blur-md z-50 animate-in fade-in" />
-                <Dialog.Content className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 clay-surface rounded-[36px] shadow-2xl z-50 p-8 w-full max-w-sm flex flex-col items-center text-center animate-in zoom-in-95">
+                <Dialog.Overlay className="fixed inset-0 bg-black/60 backdrop-blur-md z-[200] animate-in fade-in" />
+                <Dialog.Content className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 clay-surface rounded-[36px] shadow-2xl z-[200] p-8 w-full max-w-sm flex flex-col items-center text-center animate-in zoom-in-95">
                   <Dialog.Title className="text-xl font-black text-zinc-900 dark:text-zinc-100 mb-2">Tautkan FAKT-Bot</Dialog.Title>
                   <p className="text-xs text-zinc-500 font-bold mb-6">Buka WhatsApp HP &gt; Perangkat Tertaut &gt; Tautkan Perangkat. Scan kode ini:</p>
                   
@@ -295,8 +295,8 @@ export default function BroadcastPage() {
       <Dialog.Root open={isModalOpen} onOpenChange={setIsModalOpen}>
 
             <Dialog.Portal>
-              <Dialog.Overlay className="fixed inset-0 bg-black/60 backdrop-blur-md z-50 animate-in fade-in" />
-              <Dialog.Content className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-5xl clay-surface rounded-[36px] shadow-2xl z-50 flex flex-col overflow-hidden max-h-[92vh] transition-all">
+              <Dialog.Overlay className="fixed inset-0 bg-black/60 backdrop-blur-md z-[200] animate-in fade-in" />
+              <Dialog.Content className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-5xl clay-surface rounded-[36px] shadow-2xl z-[200] flex flex-col overflow-hidden max-h-[92vh] transition-all">
                 <Dialog.Title className="sr-only">Buat Pesan Broadcast WhatsApp</Dialog.Title>
 
                 {/* Top Section (Editor & Preview) */}
