@@ -34,14 +34,14 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import type { Doctor, Shift, LeaveRequest } from "@/lib/data-service";
 import { getIndonesianHoliday } from "@/lib/holidays";
 
-type ThemeType = "sage" | "white" | "dark" | "rose" | "emerald" | "cobalt";
+type ThemeType = "oceanBlue" | "snowClear" | "midnightInk" | "peachSunset" | "mossForest" | "lavenderMist";
 type LayoutMode = "matrix2" | "compact3" | "heroSplit" | "singleStack";
-type VisualStyle = "clay3d" | "glassmorphism" | "swissModern" | "luxuryGold";
+type VisualStyle = "clay3d" | "neonNoir" | "warmTerra" | "sakuraZen";
 
 export default function PosterStudioPage() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [aspectRatio, setAspectRatio] = useState<"poster" | "story" | "feed">("poster");
-  const [themeMode, setThemeMode] = useState<ThemeType>("sage");
+  const [themeMode, setThemeMode] = useState<ThemeType>("oceanBlue");
   const [layoutMode, setLayoutMode] = useState<LayoutMode>("matrix2");
   const [visualStyle, setVisualStyle] = useState<VisualStyle>("clay3d");
   const [poliFilter, setPoliFilter] = useState<"all" | "Bedah" | "NonBedah">("all");
@@ -171,7 +171,7 @@ export default function PosterStudioPage() {
     };
   }, [scheduleData]);
 
-  // Helper: Card Drawer supporting 4 distinct visual styles (Clay 3D, Glassmorphism, Swiss Bauhaus, Luxury Gold)
+  // Helper: Card Drawer supporting 4 distinct visual styles (Clay 3D, Neon Noir, Warm Terra, Sakura Zen)
   const drawStyledCard = (
     ctx: CanvasRenderingContext2D,
     x: number,
@@ -206,7 +206,7 @@ export default function PosterStudioPage() {
     ctx.save();
 
     if (visualStyle === "clay3d") {
-      // 1. Apple 3D Claymorphic
+      // 1. Apple 3D Claymorphic – Soft tactile bevel + specular highlight
       ctx.shadowColor = shadowColor;
       ctx.shadowBlur = shadowBlur;
       ctx.shadowOffsetX = 0;
@@ -235,61 +235,100 @@ export default function PosterStudioPage() {
       ctx.roundRect(x, y, w, h, r);
       ctx.stroke();
       ctx.restore();
-    } else if (visualStyle === "glassmorphism") {
-      // 2. Frosted Aero Glassmorphism
-      ctx.shadowColor = "rgba(0, 0, 0, 0.12)";
-      ctx.shadowBlur = 16;
+
+    } else if (visualStyle === "neonNoir") {
+      // 2. Neon Noir – Deep charcoal panels + glowing neon accent borders
+      ctx.shadowColor = isHeader ? "rgba(251, 113, 133, 0.55)" : "rgba(0,0,0,0.5)";
+      ctx.shadowBlur = isHeader ? 20 : 12;
       ctx.shadowOffsetY = 4;
 
-      const grad = ctx.createLinearGradient(x, y, x + w, y + h);
-      grad.addColorStop(0, "rgba(255, 255, 255, 0.85)");
-      grad.addColorStop(1, "rgba(255, 255, 255, 0.5)");
+      const grad = ctx.createLinearGradient(x, y, x, y + h);
+      if (isHeader) {
+        grad.addColorStop(0, "#1C0B2B");
+        grad.addColorStop(1, "#0D0117");
+      } else {
+        grad.addColorStop(0, "#18181B");
+        grad.addColorStop(1, "#0F0F12");
+      }
       ctx.fillStyle = grad;
-
       ctx.beginPath();
       ctx.roundRect(x, y, w, h, r);
       ctx.fill();
       ctx.restore();
 
+      // Neon glow border
       ctx.save();
-      ctx.strokeStyle = "rgba(255, 255, 255, 0.8)";
-      ctx.lineWidth = 2;
+      const neonGrad = ctx.createLinearGradient(x, y, x + w, y + h);
+      if (isHeader) {
+        neonGrad.addColorStop(0, "#FB7185");
+        neonGrad.addColorStop(0.5, "#A78BFA");
+        neonGrad.addColorStop(1, "#22D3EE");
+      } else {
+        neonGrad.addColorStop(0, "rgba(251, 113, 133, 0.45)");
+        neonGrad.addColorStop(1, "rgba(34, 211, 238, 0.35)");
+      }
+      ctx.strokeStyle = neonGrad;
+      ctx.lineWidth = isHeader ? 1.5 : 1;
       ctx.beginPath();
       ctx.roundRect(x, y, w, h, r);
       ctx.stroke();
       ctx.restore();
-    } else if (visualStyle === "swissModern") {
-      // 3. Swiss Minimalist Bauhaus
-      ctx.fillStyle = isHeader ? "#0F172A" : "#FFFFFF";
-      ctx.beginPath();
-      ctx.roundRect(x, y, w, h, Math.min(r, 8));
-      ctx.fill();
-      ctx.restore();
 
-      ctx.save();
-      ctx.strokeStyle = "#0F172A";
-      ctx.lineWidth = isHeader ? 0 : 2;
-      if (!isHeader) {
-        ctx.beginPath();
-        ctx.roundRect(x, y, w, h, Math.min(r, 8));
-        ctx.stroke();
-      }
-      ctx.restore();
-    } else {
-      // 4. Luxury Obsidian & Gold
+    } else if (visualStyle === "warmTerra") {
+      // 3. Warm Terracotta Editorial – Magazine warmth, linen texture vibe
+      ctx.shadowColor = isHeader ? "rgba(180, 83, 9, 0.25)" : "rgba(120, 60, 20, 0.12)";
+      ctx.shadowBlur = isHeader ? 18 : 12;
+      ctx.shadowOffsetY = isHeader ? 6 : 4;
+
       const grad = ctx.createLinearGradient(x, y, x, y + h);
-      grad.addColorStop(0, isHeader ? "#B45309" : "#1E293B");
-      grad.addColorStop(1, isHeader ? "#78350F" : "#0F172A");
+      if (isHeader) {
+        grad.addColorStop(0, "#C2410C");
+        grad.addColorStop(1, "#9A3412");
+      } else {
+        grad.addColorStop(0, "#FFFBF5");
+        grad.addColorStop(1, "#FEF3E2");
+      }
       ctx.fillStyle = grad;
-
       ctx.beginPath();
       ctx.roundRect(x, y, w, h, r);
       ctx.fill();
       ctx.restore();
 
       ctx.save();
-      ctx.strokeStyle = isHeader ? "rgba(255, 255, 255, 0.4)" : "#F59E0B";
-      ctx.lineWidth = isHeader ? 1 : 1.5;
+      ctx.strokeStyle = isHeader ? "rgba(255,255,255,0.3)" : "rgba(194, 65, 12, 0.18)";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.roundRect(x, y, w, h, r);
+      ctx.stroke();
+      ctx.restore();
+
+    } else {
+      // 4. Sakura Zen – Japanese minimal, blush pink + mauve + white
+      ctx.shadowColor = isHeader ? "rgba(190, 24, 93, 0.25)" : "rgba(190, 24, 93, 0.10)";
+      ctx.shadowBlur = isHeader ? 20 : 10;
+      ctx.shadowOffsetY = isHeader ? 6 : 4;
+
+      const grad = ctx.createLinearGradient(x, y, x, y + h);
+      if (isHeader) {
+        grad.addColorStop(0, "#BE185D");
+        grad.addColorStop(1, "#9D174D");
+      } else {
+        grad.addColorStop(0, "#FFFFFF");
+        grad.addColorStop(1, "#FFF0F6");
+      }
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.roundRect(x, y, w, h, r);
+      ctx.fill();
+      ctx.restore();
+
+      ctx.save();
+      // Delicate sakura petal border
+      const sakuraBorder = ctx.createLinearGradient(x, y, x + w, y + h);
+      sakuraBorder.addColorStop(0, isHeader ? "rgba(255,255,255,0.45)" : "rgba(251, 207, 232, 0.9)");
+      sakuraBorder.addColorStop(1, isHeader ? "rgba(255,255,255,0.15)" : "rgba(244, 114, 182, 0.4)");
+      ctx.strokeStyle = sakuraBorder;
+      ctx.lineWidth = isHeader ? 1.5 : 1;
       ctx.beginPath();
       ctx.roundRect(x, y, w, h, r);
       ctx.stroke();
@@ -320,84 +359,143 @@ export default function PosterStudioPage() {
     canvas.height = height;
 
     const { specMap, leaveDoctors } = scheduleData();
-    const isDark = themeMode === "dark" || visualStyle === "luxuryGold";
+    const isDark = visualStyle === "neonNoir" || themeMode === "midnightInk";
 
-    // ── 1. BACKGROUND CANVAS WITH DYNAMIC VISUAL STYLES ──
-    if (visualStyle === "luxuryGold") {
-      const bgGrad = ctx.createLinearGradient(0, 0, width, height);
-      bgGrad.addColorStop(0, "#090D16");
-      bgGrad.addColorStop(0.5, "#0F172A");
-      bgGrad.addColorStop(1, "#050811");
+    // ── 1. BACKGROUND CANVAS – 6 Pinterest-Inspired Palette Themes ──
+    if (visualStyle === "neonNoir") {
+      // Neon Noir always uses its own cinematic dark BG regardless of palette
+      const bgGrad = ctx.createLinearGradient(0, 0, 0, height);
+      bgGrad.addColorStop(0, "#0A0010");
+      bgGrad.addColorStop(0.5, "#100020");
+      bgGrad.addColorStop(1, "#060010");
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, width, height);
 
-      const glow = ctx.createRadialGradient(260, 200, 10, 260, 200, 520);
-      glow.addColorStop(0, "rgba(245, 158, 11, 0.2)");
-      glow.addColorStop(1, "rgba(245, 158, 11, 0)");
-      ctx.fillStyle = glow;
-      ctx.fillRect(0, 0, width, height);
-    } else if (visualStyle === "swissModern") {
-      ctx.fillStyle = "#F8FAFC";
-      ctx.fillRect(0, 0, width, height);
-    } else if (themeMode === "sage") {
-      const bgGrad = ctx.createLinearGradient(0, 0, width, height);
-      bgGrad.addColorStop(0, "#D2E5EC");
-      bgGrad.addColorStop(0.45, "#BED9E3");
-      bgGrad.addColorStop(1, "#ACCDD8");
-      ctx.fillStyle = bgGrad;
-      ctx.fillRect(0, 0, width, height);
-
-      const glow1 = ctx.createRadialGradient(280, 200, 20, 280, 200, 550);
-      glow1.addColorStop(0, "rgba(255, 255, 255, 0.7)");
-      glow1.addColorStop(1, "rgba(255, 255, 255, 0)");
+      // Atmospheric neon glow orbs
+      const glow1 = ctx.createRadialGradient(200, 250, 10, 200, 250, 480);
+      glow1.addColorStop(0, "rgba(251, 113, 133, 0.22)");
+      glow1.addColorStop(1, "rgba(251, 113, 133, 0)");
       ctx.fillStyle = glow1;
       ctx.fillRect(0, 0, width, height);
-    } else if (themeMode === "white") {
+
+      const glow2 = ctx.createRadialGradient(900, 800, 10, 900, 800, 500);
+      glow2.addColorStop(0, "rgba(34, 211, 238, 0.2)");
+      glow2.addColorStop(1, "rgba(34, 211, 238, 0)");
+      ctx.fillStyle = glow2;
+      ctx.fillRect(0, 0, width, height);
+    } else if (visualStyle === "warmTerra") {
+      // Warm Terracotta: linen warm cream base
+      const bgGrad = ctx.createLinearGradient(0, 0, 0, height);
+      bgGrad.addColorStop(0, "#FDF6ED");
+      bgGrad.addColorStop(0.6, "#FAF0E4");
+      bgGrad.addColorStop(1, "#F5E8D5");
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, width, height);
+
+      const glow = ctx.createRadialGradient(180, 200, 10, 180, 200, 620);
+      glow.addColorStop(0, "rgba(194, 65, 12, 0.1)");
+      glow.addColorStop(1, "rgba(194, 65, 12, 0)");
+      ctx.fillStyle = glow;
+      ctx.fillRect(0, 0, width, height);
+    } else if (visualStyle === "sakuraZen") {
+      // Sakura Zen: soft blush gradient background
+      const bgGrad = ctx.createLinearGradient(0, 0, 0, height);
+      bgGrad.addColorStop(0, "#FFF5F9");
+      bgGrad.addColorStop(0.5, "#FDE8F2");
+      bgGrad.addColorStop(1, "#FAD9EB");
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, width, height);
+
+      const glow = ctx.createRadialGradient(800, 220, 10, 800, 220, 600);
+      glow.addColorStop(0, "rgba(190, 24, 93, 0.12)");
+      glow.addColorStop(1, "rgba(190, 24, 93, 0)");
+      ctx.fillStyle = glow;
+      ctx.fillRect(0, 0, width, height);
+    } else if (themeMode === "oceanBlue") {
+      // Ocean Blue: deep teal → aqua → seafoam
       const bgGrad = ctx.createLinearGradient(0, 0, width, height);
+      bgGrad.addColorStop(0, "#0F4C6E");
+      bgGrad.addColorStop(0.4, "#0E7490");
+      bgGrad.addColorStop(0.75, "#0891B2");
+      bgGrad.addColorStop(1, "#38BDF8");
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, width, height);
+
+      const glow = ctx.createRadialGradient(900, 220, 10, 900, 220, 580);
+      glow.addColorStop(0, "rgba(186, 230, 253, 0.3)");
+      glow.addColorStop(1, "rgba(186, 230, 253, 0)");
+      ctx.fillStyle = glow;
+      ctx.fillRect(0, 0, width, height);
+    } else if (themeMode === "snowClear") {
+      // Snow Clear: crisp white + ice blue haze
+      const bgGrad = ctx.createLinearGradient(0, 0, 0, height);
       bgGrad.addColorStop(0, "#FFFFFF");
-      bgGrad.addColorStop(0.4, "#F8FAFC");
-      bgGrad.addColorStop(1, "#EDF4F8");
+      bgGrad.addColorStop(0.5, "#F0F9FF");
+      bgGrad.addColorStop(1, "#E0F2FE");
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, width, height);
 
-      const glow = ctx.createRadialGradient(220, 160, 10, 220, 160, 500);
-      glow.addColorStop(0, "rgba(16, 185, 129, 0.15)");
-      glow.addColorStop(1, "rgba(16, 185, 129, 0)");
+      const glow = ctx.createRadialGradient(540, 300, 10, 540, 300, 700);
+      glow.addColorStop(0, "rgba(56, 189, 248, 0.2)");
+      glow.addColorStop(1, "rgba(56, 189, 248, 0)");
       ctx.fillStyle = glow;
       ctx.fillRect(0, 0, width, height);
-    } else if (themeMode === "dark") {
-      const bgGrad = ctx.createLinearGradient(0, 0, width, height);
-      bgGrad.addColorStop(0, "#080D1A");
-      bgGrad.addColorStop(0.5, "#0F172A");
-      bgGrad.addColorStop(1, "#0A101D");
+    } else if (themeMode === "midnightInk") {
+      // Midnight Ink: deep indigo navy editorial
+      const bgGrad = ctx.createLinearGradient(0, 0, 0, height);
+      bgGrad.addColorStop(0, "#0B0E2B");
+      bgGrad.addColorStop(0.5, "#131640");
+      bgGrad.addColorStop(1, "#0A0D28");
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, width, height);
 
-      const glow = ctx.createRadialGradient(260, 200, 10, 260, 200, 520);
-      glow.addColorStop(0, "rgba(16, 185, 129, 0.22)");
-      glow.addColorStop(1, "rgba(16, 185, 129, 0)");
+      const glow = ctx.createRadialGradient(200, 300, 10, 200, 300, 600);
+      glow.addColorStop(0, "rgba(99, 102, 241, 0.22)");
+      glow.addColorStop(1, "rgba(99, 102, 241, 0)");
       ctx.fillStyle = glow;
       ctx.fillRect(0, 0, width, height);
-    } else if (themeMode === "rose") {
-      const bgGrad = ctx.createLinearGradient(0, 0, width, height);
-      bgGrad.addColorStop(0, "#FCE7F3");
-      bgGrad.addColorStop(0.5, "#FBCFE8");
-      bgGrad.addColorStop(1, "#F472B6");
+    } else if (themeMode === "peachSunset") {
+      // Peach Sunset: warm peach to amber sunset glow
+      const bgGrad = ctx.createLinearGradient(0, 0, 0, height);
+      bgGrad.addColorStop(0, "#FFF7ED");
+      bgGrad.addColorStop(0.4, "#FFEDD5");
+      bgGrad.addColorStop(0.75, "#FED7AA");
+      bgGrad.addColorStop(1, "#FDBA74");
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, width, height);
-    } else if (themeMode === "emerald") {
-      const bgGrad = ctx.createLinearGradient(0, 0, width, height);
-      bgGrad.addColorStop(0, "#D1FAE5");
-      bgGrad.addColorStop(0.5, "#A7F3D0");
-      bgGrad.addColorStop(1, "#6EE7B7");
+
+      const glow = ctx.createRadialGradient(750, 180, 10, 750, 180, 560);
+      glow.addColorStop(0, "rgba(249, 115, 22, 0.18)");
+      glow.addColorStop(1, "rgba(249, 115, 22, 0)");
+      ctx.fillStyle = glow;
+      ctx.fillRect(0, 0, width, height);
+    } else if (themeMode === "mossForest") {
+      // Moss Forest: rich deep olive/forest editorial
+      const bgGrad = ctx.createLinearGradient(0, 0, 0, height);
+      bgGrad.addColorStop(0, "#14261A");
+      bgGrad.addColorStop(0.5, "#1A3222");
+      bgGrad.addColorStop(1, "#0F1E14");
       ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, width, height);
+
+      const glow = ctx.createRadialGradient(300, 250, 10, 300, 250, 600);
+      glow.addColorStop(0, "rgba(74, 222, 128, 0.18)");
+      glow.addColorStop(1, "rgba(74, 222, 128, 0)");
+      ctx.fillStyle = glow;
       ctx.fillRect(0, 0, width, height);
     } else {
+      // Lavender Mist: soft lavender to periwinkle
       const bgGrad = ctx.createLinearGradient(0, 0, width, height);
-      bgGrad.addColorStop(0, "#DBEAFE");
-      bgGrad.addColorStop(0.5, "#BFDBFE");
-      bgGrad.addColorStop(1, "#93C5FD");
+      bgGrad.addColorStop(0, "#F5F3FF");
+      bgGrad.addColorStop(0.45, "#EDE9FE");
+      bgGrad.addColorStop(1, "#DDD6FE");
       ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, width, height);
+
+      const glow = ctx.createRadialGradient(200, 250, 10, 200, 250, 620);
+      glow.addColorStop(0, "rgba(139, 92, 246, 0.2)");
+      glow.addColorStop(1, "rgba(139, 92, 246, 0)");
+      ctx.fillStyle = glow;
       ctx.fillRect(0, 0, width, height);
     }
 
@@ -438,8 +536,19 @@ export default function PosterStudioPage() {
       } catch (e) {}
     } else {
       const emblemGrad = ctx.createLinearGradient(emblemX, emblemY, emblemX + emblemSize, emblemY + emblemSize);
-      emblemGrad.addColorStop(0, visualStyle === "luxuryGold" ? "#F59E0B" : "#10B981");
-      emblemGrad.addColorStop(1, visualStyle === "luxuryGold" ? "#B45309" : "#047857");
+      if (visualStyle === "neonNoir") {
+        emblemGrad.addColorStop(0, "#FB7185");
+        emblemGrad.addColorStop(1, "#A78BFA");
+      } else if (visualStyle === "warmTerra") {
+        emblemGrad.addColorStop(0, "#C2410C");
+        emblemGrad.addColorStop(1, "#78350F");
+      } else if (visualStyle === "sakuraZen") {
+        emblemGrad.addColorStop(0, "#F472B6");
+        emblemGrad.addColorStop(1, "#BE185D");
+      } else {
+        emblemGrad.addColorStop(0, "#10B981");
+        emblemGrad.addColorStop(1, "#047857");
+      }
       ctx.fillStyle = emblemGrad;
       ctx.beginPath();
       ctx.roundRect(emblemX, emblemY, emblemSize, emblemSize, 18);
@@ -456,13 +565,32 @@ export default function PosterStudioPage() {
       ctx.fillText("+", emblemX + emblemSize / 2, emblemY + emblemSize / 2);
     }
 
-    // Hospital Typography
+    // Hospital Typography – adaptive per style
     ctx.textAlign = "left";
-    ctx.fillStyle = visualStyle === "luxuryGold" ? "#FCD34D" : (isDark ? "#34D399" : "#0F766E");
+    ctx.textBaseline = "alphabetic";
+    if (visualStyle === "neonNoir") {
+      ctx.fillStyle = "#FB7185";
+    } else if (visualStyle === "warmTerra") {
+      ctx.fillStyle = "#9A3412";
+    } else if (visualStyle === "sakuraZen") {
+      ctx.fillStyle = "#BE185D";
+    } else if (isDark) {
+      ctx.fillStyle = "#34D399";
+    } else {
+      ctx.fillStyle = "#0F766E";
+    }
     ctx.font = "900 20px sans-serif";
     ctx.fillText(hospitalName, pad + 90, currY + 36);
 
-    ctx.fillStyle = isDark ? "#94A3B8" : "#64748B";
+    if (visualStyle === "neonNoir") {
+      ctx.fillStyle = "#A1A1AA";
+    } else if (visualStyle === "warmTerra") {
+      ctx.fillStyle = "#92400E";
+    } else if (visualStyle === "sakuraZen") {
+      ctx.fillStyle = "#9D174D";
+    } else {
+      ctx.fillStyle = isDark ? "#94A3B8" : "#64748B";
+    }
     ctx.font = "800 13px sans-serif";
     ctx.fillText(hospitalSubtitle, pad + 90, currY + 62);
 
@@ -597,8 +725,8 @@ export default function PosterStudioPage() {
           const totalSectionH = headerH + docList.length * (cardH + cardGap);
 
           drawStyledCard(ctx, startX, colY, colW, headerH, 12, {
-            fillTop: "#569DAA",
-            fillBottom: "#3A7685",
+            fillTop: visualStyle === "neonNoir" ? "#1C0B2B" : visualStyle === "warmTerra" ? "#C2410C" : visualStyle === "sakuraZen" ? "#BE185D" : "#569DAA",
+            fillBottom: visualStyle === "neonNoir" ? "#0D0117" : visualStyle === "warmTerra" ? "#9A3412" : visualStyle === "sakuraZen" ? "#9D174D" : "#3A7685",
             isHeader: true,
           });
 
@@ -641,8 +769,8 @@ export default function PosterStudioPage() {
         const totalH = headerH + docList.length * (cardH + cardGap);
 
         drawStyledCard(ctx, pad, stackY, headerW, headerH, 14, {
-          fillTop: "#569DAA",
-          fillBottom: "#3A7685",
+          fillTop: visualStyle === "neonNoir" ? "#1C0B2B" : visualStyle === "warmTerra" ? "#C2410C" : visualStyle === "sakuraZen" ? "#BE185D" : "#569DAA",
+          fillBottom: visualStyle === "neonNoir" ? "#0D0117" : visualStyle === "warmTerra" ? "#9A3412" : visualStyle === "sakuraZen" ? "#9D174D" : "#3A7685",
           isHeader: true,
         });
 
@@ -656,18 +784,36 @@ export default function PosterStudioPage() {
           const isCuti = d.status === "CUTI";
 
           drawStyledCard(ctx, pad, docY, headerW, cardH, 14, {
-            fillTop: isDark ? "rgba(30, 41, 59, 0.95)" : "#FFFFFF",
-            fillBottom: isDark ? "rgba(15, 23, 42, 0.95)" : "#F5F9FA",
+            fillTop: isDark ? "rgba(22, 22, 26, 0.97)" : "rgba(255,255,255,0.98)",
+            fillBottom: isDark ? "rgba(15, 15, 18, 0.97)" : visualStyle === "warmTerra" ? "#FEF3E2" : visualStyle === "sakuraZen" ? "#FFF5F9" : "#F5F9FA",
           });
 
           ctx.textAlign = "left";
-          ctx.fillStyle = isDark ? "#FFFFFF" : "#0F172A";
+          if (visualStyle === "neonNoir") {
+            ctx.fillStyle = "#F4F4F5";
+          } else if (visualStyle === "warmTerra") {
+            ctx.fillStyle = "#431407";
+          } else if (visualStyle === "sakuraZen") {
+            ctx.fillStyle = "#500724";
+          } else {
+            ctx.fillStyle = isDark ? "#FFFFFF" : "#0F172A";
+          }
           ctx.font = "900 13px sans-serif";
           ctx.fillText(d.doctorName, pad + 16, docY + 28);
 
           ctx.textAlign = "right";
           ctx.font = "900 12px monospace";
-          ctx.fillStyle = isCuti ? "#E11D48" : (isDark ? "#38BDF8" : "#0284C7");
+          if (isCuti) {
+            ctx.fillStyle = "#E11D48";
+          } else if (visualStyle === "neonNoir") {
+            ctx.fillStyle = "#22D3EE";
+          } else if (visualStyle === "warmTerra") {
+            ctx.fillStyle = "#C2410C";
+          } else if (visualStyle === "sakuraZen") {
+            ctx.fillStyle = "#BE185D";
+          } else {
+            ctx.fillStyle = isDark ? "#38BDF8" : "#0284C7";
+          }
           ctx.fillText(isCuti ? "LIBUR 📅" : `🕒 ${d.time}`, pad + headerW - 16, docY + 28);
 
           docY += cardH + cardGap;
@@ -695,9 +841,9 @@ export default function PosterStudioPage() {
           const totalSectionH = headerH + docList.length * (cardH + cardGap);
 
           drawStyledCard(ctx, startX, colY, colW, headerH, 16, {
-            fillTop: "#569DAA",
-            fillBottom: "#3A7685",
-            shadowColor: "rgba(58, 118, 133, 0.28)",
+            fillTop: visualStyle === "neonNoir" ? "#1C0B2B" : visualStyle === "warmTerra" ? "#C2410C" : visualStyle === "sakuraZen" ? "#BE185D" : "#569DAA",
+            fillBottom: visualStyle === "neonNoir" ? "#0D0117" : visualStyle === "warmTerra" ? "#9A3412" : visualStyle === "sakuraZen" ? "#9D174D" : "#3A7685",
+            shadowColor: visualStyle === "neonNoir" ? "rgba(251,113,133,0.4)" : visualStyle === "warmTerra" ? "rgba(180,83,9,0.3)" : visualStyle === "sakuraZen" ? "rgba(190,24,93,0.3)" : "rgba(58, 118, 133, 0.28)",
             shadowBlur: 8,
             shadowOffsetY: 2,
             borderLight: "rgba(255, 255, 255, 0.65)",
@@ -716,12 +862,12 @@ export default function PosterStudioPage() {
             const isBedah = d.category === "Bedah";
 
             drawStyledCard(ctx, startX, doctorY, colW, cardH, 16, {
-              fillTop: isDark ? "rgba(30, 41, 59, 0.95)" : "#FFFFFF",
-              fillBottom: isDark ? "rgba(15, 23, 42, 0.95)" : "#F5F9FA",
-              shadowColor: isDark ? "rgba(0,0,0,0.3)" : "rgba(15, 76, 92, 0.08)",
+              fillTop: isDark ? "rgba(22, 22, 26, 0.97)" : "rgba(255,255,255,0.98)",
+              fillBottom: isDark ? "rgba(15, 15, 18, 0.97)" : visualStyle === "warmTerra" ? "#FEF3E2" : visualStyle === "sakuraZen" ? "#FFF5F9" : "#F5F9FA",
+              shadowColor: isDark ? "rgba(0,0,0,0.4)" : "rgba(15, 76, 92, 0.08)",
               shadowBlur: 8,
               shadowOffsetY: 2,
-              borderLight: isDark ? "rgba(255, 255, 255, 0.12)" : "#FFFFFF",
+              borderLight: isDark ? "rgba(255, 255, 255, 0.1)" : "#FFFFFF",
             });
 
             const avatarSize = 34;
@@ -733,11 +879,11 @@ export default function PosterStudioPage() {
               avatarGrad.addColorStop(0, "#F43F5E");
               avatarGrad.addColorStop(1, "#BE123C");
             } else if (isBedah) {
-              avatarGrad.addColorStop(0, "#3B82F6");
-              avatarGrad.addColorStop(1, "#1D4ED8");
+              avatarGrad.addColorStop(0, visualStyle === "neonNoir" ? "#A78BFA" : "#3B82F6");
+              avatarGrad.addColorStop(1, visualStyle === "neonNoir" ? "#7C3AED" : "#1D4ED8");
             } else {
-              avatarGrad.addColorStop(0, "#10B981");
-              avatarGrad.addColorStop(1, "#047857");
+              avatarGrad.addColorStop(0, visualStyle === "neonNoir" ? "#22D3EE" : visualStyle === "warmTerra" ? "#EA580C" : visualStyle === "sakuraZen" ? "#F472B6" : "#10B981");
+              avatarGrad.addColorStop(1, visualStyle === "neonNoir" ? "#0891B2" : visualStyle === "warmTerra" ? "#9A3412" : visualStyle === "sakuraZen" ? "#BE185D" : "#047857");
             }
 
             ctx.fillStyle = avatarGrad;
@@ -751,12 +897,20 @@ export default function PosterStudioPage() {
             ctx.fillText(getInitials(d.doctorName), avatarX + avatarSize / 2, avatarY + 22);
 
             ctx.textAlign = "left";
-            ctx.fillStyle = isDark ? "#FFFFFF" : "#0F172A";
+            if (visualStyle === "neonNoir") {
+              ctx.fillStyle = "#F4F4F5";
+            } else if (visualStyle === "warmTerra") {
+              ctx.fillStyle = "#431407";
+            } else if (visualStyle === "sakuraZen") {
+              ctx.fillStyle = "#500724";
+            } else {
+              ctx.fillStyle = isDark ? "#FFFFFF" : "#0F172A";
+            }
             ctx.font = "900 13px sans-serif";
             ctx.fillText(d.doctorName.slice(0, 26), startX + 48, doctorY + (d.replacement ? 21 : 28));
 
             if (d.replacement) {
-              ctx.fillStyle = "#059669";
+              ctx.fillStyle = visualStyle === "neonNoir" ? "#4ADE80" : "#059669";
               ctx.font = "900 10.5px sans-serif";
               ctx.fillText(`🔄 Digantikan: ${d.replacement}`, startX + 48, doctorY + 38);
             }
@@ -777,12 +931,29 @@ export default function PosterStudioPage() {
               ctx.textAlign = "center";
               ctx.fillText("LIBUR 📅", timePillX + timePillW / 2, timePillY + 19);
             } else {
-              ctx.fillStyle = isDark ? "rgba(56, 189, 248, 0.15)" : "rgba(2, 132, 199, 0.1)";
+              // Time pill bg color per style
+              if (visualStyle === "neonNoir") {
+                ctx.fillStyle = "rgba(34, 211, 238, 0.15)";
+              } else if (visualStyle === "warmTerra") {
+                ctx.fillStyle = "rgba(194, 65, 12, 0.1)";
+              } else if (visualStyle === "sakuraZen") {
+                ctx.fillStyle = "rgba(244, 114, 182, 0.12)";
+              } else {
+                ctx.fillStyle = isDark ? "rgba(56, 189, 248, 0.15)" : "rgba(2, 132, 199, 0.1)";
+              }
               ctx.beginPath();
               ctx.roundRect(timePillX, timePillY, timePillW, timePillH, 10);
               ctx.fill();
 
-              ctx.fillStyle = isDark ? "#38BDF8" : "#0369A1";
+              if (visualStyle === "neonNoir") {
+                ctx.fillStyle = "#22D3EE";
+              } else if (visualStyle === "warmTerra") {
+                ctx.fillStyle = "#C2410C";
+              } else if (visualStyle === "sakuraZen") {
+                ctx.fillStyle = "#BE185D";
+              } else {
+                ctx.fillStyle = isDark ? "#38BDF8" : "#0369A1";
+              }
               ctx.font = "900 11.5px monospace";
               ctx.textAlign = "center";
               ctx.fillText(`🕒 ${d.time}`, timePillX + timePillW / 2, timePillY + 19);
@@ -799,13 +970,18 @@ export default function PosterStudioPage() {
       renderSpecColumn(rightSpecs, pad + colW + 20, currY);
     }
 
-    // ── 5. FULL-WIDTH APPLE iOS FOOTER BENTO HUB ──
+    // ── 5. FOOTER BENTO HUB ──
     const footerY = height - pad - footerH;
 
+    // Footer fill colors – adaptive per style
+    const footerFillTop = visualStyle === "neonNoir" ? "#1C0B2B" : visualStyle === "warmTerra" ? "#C2410C" : visualStyle === "sakuraZen" ? "#BE185D" : isDark ? "#065F46" : "#0F766E";
+    const footerFillBot = visualStyle === "neonNoir" ? "#0D0117" : visualStyle === "warmTerra" ? "#7C2D12" : visualStyle === "sakuraZen" ? "#831843" : isDark ? "#022C22" : "#044E48";
+    const footerShadow = visualStyle === "neonNoir" ? "rgba(251,113,133,0.35)" : visualStyle === "warmTerra" ? "rgba(180,83,9,0.35)" : visualStyle === "sakuraZen" ? "rgba(190,24,93,0.35)" : "rgba(4, 78, 72, 0.35)";
+
     drawStyledCard(ctx, pad, footerY, headerW, footerH, 24, {
-      fillTop: isDark ? "#065F46" : "#0F766E",
-      fillBottom: isDark ? "#022C22" : "#044E48",
-      shadowColor: "rgba(4, 78, 72, 0.35)",
+      fillTop: footerFillTop,
+      fillBottom: footerFillBot,
+      shadowColor: footerShadow,
       shadowBlur: 16,
       shadowOffsetY: 6,
       borderLight: "rgba(255, 255, 255, 0.35)",
@@ -817,7 +993,7 @@ export default function PosterStudioPage() {
     ctx.font = "900 14px sans-serif";
     ctx.fillText(`📱 PENDAFTARAN VIA WHATSAPP : ${hotlinePhone}`, pad + 24, footerY + 34);
 
-    ctx.fillStyle = "#A7F3D0";
+    ctx.fillStyle = visualStyle === "neonNoir" ? "#A5F3FC" : visualStyle === "warmTerra" ? "#FED7AA" : visualStyle === "sakuraZen" ? "#FBCFE8" : "#A7F3D0";
     ctx.font = "800 12px sans-serif";
     ctx.fillText(`🌐 Cek Live Jadwal & Antrean Dokter: ${websiteUrl}`, pad + 24, footerY + 58);
 
@@ -1073,10 +1249,10 @@ export default function PosterStudioPage() {
               </label>
               <div className="grid grid-cols-2 gap-2">
                 {[
-                  { id: "clay3d", label: "🍏 Apple 3D Clay", sub: "Tactile Inset Bevel" },
-                  { id: "glassmorphism", label: "✨ Frosted Glass", sub: "Aero Translucent" },
-                  { id: "swissModern", label: "🇨🇭 Swiss Minimalist", sub: "Clean Bauhaus" },
-                  { id: "luxuryGold", label: "👑 Obsidian Gold", sub: "Metallic Champagne" },
+                  { id: "clay3d", label: "🍏 Apple 3D Clay", sub: "Tactile Soft Bevel" },
+                  { id: "neonNoir", label: "🌃 Neon Noir", sub: "Cyberpunk Cinematic" },
+                  { id: "warmTerra", label: "🍊 Warm Terracotta", sub: "Editorial Magazine" },
+                  { id: "sakuraZen", label: "🌸 Sakura Zen", sub: "Japanese Minimal" },
                 ].map((s) => (
                   <button
                     key={s.id}
@@ -1100,22 +1276,23 @@ export default function PosterStudioPage() {
               </label>
               <div className="grid grid-cols-3 gap-1.5">
                 {[
-                  { id: "sage", label: "🌊 Sage Mint" },
-                  { id: "white", label: "☀️ Apple Light" },
-                  { id: "dark", label: "🌙 Midnight" },
-                  { id: "rose", label: "🌸 Rose Velvet" },
-                  { id: "emerald", label: "🌿 Emerald" },
-                  { id: "cobalt", label: "💎 Royal Cobalt" },
+                  { id: "oceanBlue",    label: "🌊 Ocean Blue",    dot: "bg-cyan-600" },
+                  { id: "snowClear",    label: "❄️ Snow Clear",    dot: "bg-sky-300" },
+                  { id: "midnightInk", label: "🌌 Midnight Ink",  dot: "bg-indigo-900" },
+                  { id: "peachSunset", label: "🌅 Peach Sunset",  dot: "bg-orange-300" },
+                  { id: "mossForest",  label: "🌿 Moss Forest",   dot: "bg-green-900" },
+                  { id: "lavenderMist",label: "💜 Lavender Mist", dot: "bg-violet-300" },
                 ].map((t) => (
                   <button
                     key={t.id}
                     onClick={() => setThemeMode(t.id as ThemeType)}
                     className={cn(
-                      "py-1.5 px-1.5 rounded-[12px] text-xs font-black transition-all text-center",
+                      "py-1.5 px-1.5 rounded-[12px] text-xs font-black transition-all text-left flex items-center gap-1.5",
                       themeMode === t.id ? "clay-pill-blue text-white shadow-xs" : "clay-button text-zinc-600 dark:text-zinc-300"
                     )}
                   >
-                    {t.label}
+                    <span className={cn("w-2.5 h-2.5 rounded-full shrink-0", t.dot)} />
+                    <span className="truncate">{t.label}</span>
                   </button>
                 ))}
               </div>
