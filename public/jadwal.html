@@ -1349,11 +1349,12 @@
         flex-shrink: 0;
       }
 
-      /* 1-Tap Doctor Favorite Star Button */
+      /* 1-Tap Doctor Favorite Star Button (34px Touch Target + Spring Pop Micro-Animation) */
       .btn-fav-doc {
-        width: 28px;
-        height: 28px;
-        border-radius: 9px;
+        width: 34px;
+        min-width: 34px;
+        height: 34px;
+        border-radius: 11px;
         border: none;
         background: transparent;
         color: var(--text-mute);
@@ -1361,29 +1362,39 @@
         align-items: center;
         justify-content: center;
         cursor: pointer;
-        transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.2s ease, background 0.2s ease;
+        transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
         padding: 0;
         margin-left: 2px;
         touch-action: manipulation;
         flex-shrink: 0;
+        position: relative;
+        z-index: 5;
       }
       .btn-fav-doc:active {
-        transform: scale(0.8);
+        transform: scale(0.75);
       }
       .btn-fav-doc .material-icons-round {
-        font-size: 19px;
-        transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+        font-size: 21px;
+        transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
       }
       .btn-fav-doc.is-fav {
         color: #F59E0B !important;
-        background: rgba(245, 158, 11, 0.12);
-        box-shadow: inset 0 1px 2px rgba(245, 158, 11, 0.2);
+        background: rgba(245, 158, 11, 0.14);
+        box-shadow: 0 0 12px rgba(245, 158, 11, 0.25), inset 0 1px 2px rgba(245, 158, 11, 0.2);
       }
       .btn-fav-doc.is-fav .material-icons-round {
-        transform: scale(1.08);
+        transform: scale(1.15);
+        animation: starSpringBurst 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+      }
+      @keyframes starSpringBurst {
+        0% { transform: scale(0.6) rotate(-25deg); }
+        50% { transform: scale(1.45) rotate(15deg); }
+        80% { transform: scale(0.95) rotate(-5deg); }
+        100% { transform: scale(1.15) rotate(0deg); }
       }
       .platter.is-favorite-doctor {
-        border-color: rgba(245, 158, 11, 0.4) !important;
+        border-color: rgba(245, 158, 11, 0.45) !important;
+        box-shadow: var(--shadow-card), 0 0 16px rgba(245, 158, 11, 0.12) !important;
       }
       .platter.is-favorite-doctor .btn-fav-doc {
         color: #F59E0B;
@@ -1687,6 +1698,17 @@
         color: var(--text-main);
         border: 1.5px solid var(--border-card);
         box-shadow: var(--shadow-btn);
+      }
+      .platter-action-btn.share {
+        background: rgba(59, 130, 246, 0.12);
+        color: #2563EB;
+        border: 1.5px solid rgba(59, 130, 246, 0.3);
+        box-shadow: 0 2px 6px rgba(37, 99, 235, 0.12);
+      }
+      [data-theme="dark"] .platter-action-btn.share {
+        background: rgba(59, 130, 246, 0.18);
+        color: #60A5FA;
+        border-color: rgba(96, 165, 250, 0.35);
       }
 
       /* ═══════════════════════════════════════════════════════════════
@@ -2624,15 +2646,15 @@
 
         <!-- LIVE SEARCH EMPTY STATE WITH 1-TAP RESET -->
         <div id="liveSearchEmptyState" class="empty-state-clay" style="display: none; margin: 10px 0 16px;">
-          <div class="clay-empty-coin amber">
+          <div class="clay-empty-coin amber" id="searchEmptyCoin">
             <div class="clay-pulse-ring"></div>
-            <span class="material-icons-round">person_search</span>
+            <span class="material-icons-round" id="searchEmptyIcon">person_search</span>
           </div>
-          <h4>Dokter Tidak Ditemukan</h4>
-          <p>Tidak ditemukan jadwal dokter dengan kata kunci atau filter poli tersebut.</p>
-          <button class="empty-reset-btn" onclick="clearSearch(); switchLiveSpec('all'); switchTab('all');">
+          <h4 id="searchEmptyTitle">Dokter Tidak Ditemukan</h4>
+          <p id="searchEmptySub">Tidak ditemukan jadwal dokter dengan kata kunci atau filter poli tersebut.</p>
+          <button class="empty-reset-btn" id="searchEmptyBtn" onclick="clearSearch(); switchLiveSpec('all'); switchTab('all');">
             <span class="material-icons-round" style="font-size: 16px;">restart_alt</span>
-            <span>Bersihkan Pencarian</span>
+            <span id="searchEmptyBtnText">Bersihkan Pencarian</span>
           </button>
         </div>
 
@@ -3184,10 +3206,31 @@
             }
           });
 
-          // Toggle global search empty state
+          // Toggle global search empty state with dynamic favorite messaging
           const searchEmptyEl = document.getElementById("liveSearchEmptyState");
           if (searchEmptyEl) {
-            searchEmptyEl.style.display = (!anyCardVisible && (query || activeSpec !== "all")) ? "flex" : "none";
+            const isFavFilter = activeSpec === "favorites";
+            const isShown = !anyCardVisible && (query || activeSpec !== "all");
+            searchEmptyEl.style.display = isShown ? "flex" : "none";
+
+            if (isShown) {
+              const iconEl = document.getElementById("searchEmptyIcon");
+              const titleEl = document.getElementById("searchEmptyTitle");
+              const subEl = document.getElementById("searchEmptySub");
+              const btnTextEl = document.getElementById("searchEmptyBtnText");
+
+              if (isFavFilter) {
+                if (iconEl) iconEl.textContent = "star_border";
+                if (titleEl) titleEl.textContent = "Belum Ada Dokter Favorit";
+                if (subEl) subEl.textContent = "Ketuk ikon bintang ⭐ pada kartu dokter untuk menyematkan jadwal dokter langganan keluarga Anda.";
+                if (btnTextEl) btnTextEl.textContent = "Tampilkan Semua Dokter";
+              } else {
+                if (iconEl) iconEl.textContent = "person_search";
+                if (titleEl) titleEl.textContent = "Dokter Tidak Ditemukan";
+                if (subEl) subEl.textContent = "Tidak ditemukan jadwal dokter dengan kata kunci atau filter poli tersebut.";
+                if (btnTextEl) btnTextEl.textContent = "Bersihkan Pencarian";
+              }
+            }
           }
         });
       }
@@ -3370,17 +3413,39 @@
               </div>
             </div>
             <div class="platter-actions-row">
-              <button class="platter-action-btn wa" onclick="openRegisterModal('${esc(d.Dokter)}', '${esc(d.Spesialis)}', '${jamTampil}'); event.stopPropagation();">
+              <button class="platter-action-btn wa" onclick="openRegisterModal('${esc(d.Dokter)}', '${esc(d.Spesialis)}', '${jamTampil}'); event.stopPropagation();" title="Daftar Antrean via WhatsApp">
                 <span class="material-icons-round" style="font-size:14px;">app_registration</span>
                 <span>Tanya / Daftar</span>
               </button>
-              <button class="platter-action-btn cal" onclick="addDoctorToCalendar('${esc(d.Dokter)}', '${esc(d.Spesialis)}', '${jamTampil}'); event.stopPropagation();">
+              <button class="platter-action-btn share" onclick="shareDoctorSchedule('${esc(d.Dokter)}', '${esc(d.Spesialis)}', '${jamTampil}', '${esc(d.Status || '')}'); event.stopPropagation();" title="Bagikan Jadwal ke WhatsApp">
+                <span class="material-icons-round" style="font-size:14px;">share</span>
+                <span>Bagikan</span>
+              </button>
+              <button class="platter-action-btn cal" onclick="addDoctorToCalendar('${esc(d.Dokter)}', '${esc(d.Spesialis)}', '${jamTampil}'); event.stopPropagation();" title="Simpan ke Google Calendar">
                 <span class="material-icons-round" style="font-size:14px;">event</span>
                 <span>Ingatkan</span>
               </button>
             </div>
           </div>`;
       };
+
+      function shareDoctorSchedule(docName, docSpec, jamStr, statusStr) {
+        triggerHaptic("medium");
+        const dateFormatted = new Date().toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+        const text = `🏥 *JADWAL DOKTER RSU SIAGA MEDIKA PURBALINGGA*\n📅 ${dateFormatted}\n\n👨‍⚕️ *${docName}*\n🩺 *Spesialis:* ${docSpec}\n🕒 *Jam Praktik:* ${jamStr}\n📌 *Status:* ${statusStr || "PRAKTEK"}\n\n🌐 Cek live update jadwal & ketersediaan antrean:\nhttps://simed.fallonava.my.id/jadwal`;
+        
+        if (navigator.share) {
+          navigator.share({
+            title: `Jadwal ${docName} - RSU Siaga Medika`,
+            text: text,
+            url: "https://simed.fallonava.my.id/jadwal"
+          }).catch(() => {
+            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, "_blank");
+          });
+        } else {
+          window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, "_blank");
+        }
+      }
 
       function toggleCardActive(card) {
         triggerHaptic("light");
