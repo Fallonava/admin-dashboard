@@ -41,7 +41,10 @@ import {
   Type,
   ShieldCheck,
   Wand2,
-  Sparkle
+  Sparkle,
+  PanelTop,
+  PanelBottom,
+  Compass
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PageHeader } from "@/components/ui/PageHeader";
@@ -85,10 +88,13 @@ type CardVariant =
   | "minimalBorder"
   | "floatingPill";
 
+type HeaderStyle = "islandFloating" | "splitBento" | "minimalHeadline" | "glassNotch";
+type FooterStyle = "bentoHub" | "floatingPillBar" | "splitActionStrip" | "minimalStrip";
+type EmblemShape = "squircle" | "circle" | "hexagon";
 type LeaveCardStyle = "bentoBox" | "cautionStrip" | "minimalPill" | "glowFrame";
 type AvatarMode = "specialtyIcon" | "monogram" | "doctorAvatar";
 type FontTheme = "sans" | "serif" | "mono" | "rounded";
-type ActiveTab = "layout" | "colors" | "elements" | "presets" | "branding";
+type ActiveTab = "layout" | "colors" | "headerFooter" | "elements" | "presets" | "branding";
 
 interface CustomColors {
   useCustom: boolean;
@@ -129,6 +135,8 @@ interface SavedPreset {
   themeMode: ThemeType;
   visualStyle: VisualStyle;
   cardVariant: CardVariant;
+  headerStyle: HeaderStyle;
+  footerStyle: FooterStyle;
   leaveCardStyle: LeaveCardStyle;
   avatarMode: AvatarMode;
   fontTheme: FontTheme;
@@ -176,11 +184,15 @@ export default function PosterStudioPage() {
   const [layoutMode, setLayoutMode] = useState<LayoutMode>("matrix2");
   const [visualStyle, setVisualStyle] = useState<VisualStyle>("clay3d");
   const [cardVariant, setCardVariant] = useState<CardVariant>("smooth");
+  const [headerStyle, setHeaderStyle] = useState<HeaderStyle>("islandFloating");
+  const [footerStyle, setFooterStyle] = useState<FooterStyle>("bentoHub");
+  const [emblemShape, setEmblemShape] = useState<EmblemShape>("squircle");
   const [leaveCardStyle, setLeaveCardStyle] = useState<LeaveCardStyle>("bentoBox");
   const [avatarMode, setAvatarMode] = useState<AvatarMode>("specialtyIcon");
   const [fontTheme, setFontTheme] = useState<FontTheme>("sans");
   const [cardCornerRadius, setCardCornerRadius] = useState<number>(16);
   const [headerEmblemIcon, setHeaderEmblemIcon] = useState<string>("+");
+  const [emergencyBadgeText, setEmergencyBadgeText] = useState<string>("🚨 IGD & AMBULANS 24 JAM");
   const [watermarkText, setWatermarkText] = useState<string>("");
   
   // Custom Color State
@@ -196,6 +208,7 @@ export default function PosterStudioPage() {
   const [showQrCode, setShowQrCode] = useState<boolean>(true);
   const [showIgdBadge, setShowIgdBadge] = useState<boolean>(true);
   const [showAccreditation, setShowAccreditation] = useState<boolean>(true);
+  const [showHeaderDateBadge, setShowHeaderDateBadge] = useState<boolean>(true);
   const [showStatsBar, setShowStatsBar] = useState<boolean>(true);
 
   const [poliFilter, setPoliFilter] = useState<"all" | "Bedah" | "NonBedah">("all");
@@ -254,6 +267,8 @@ export default function PosterStudioPage() {
       themeMode,
       visualStyle,
       cardVariant,
+      headerStyle,
+      footerStyle,
       leaveCardStyle,
       avatarMode,
       fontTheme,
@@ -270,6 +285,8 @@ export default function PosterStudioPage() {
     setThemeMode(p.themeMode);
     setVisualStyle(p.visualStyle);
     setCardVariant(p.cardVariant);
+    setHeaderStyle(p.headerStyle || "islandFloating");
+    setFooterStyle(p.footerStyle || "bentoHub");
     setLeaveCardStyle(p.leaveCardStyle || "bentoBox");
     setAvatarMode(p.avatarMode || "specialtyIcon");
     setFontTheme(p.fontTheme || "sans");
@@ -333,7 +350,7 @@ export default function PosterStudioPage() {
 
   // Compute doctor schedule grouped by Specialty for selected date
   const scheduleData = useCallback(() => {
-    const dayIdx = (selectedDate.getDay() + 6) % 7; // 0 = Senin, 6 = Minggu
+    const dayIdx = (selectedDate.getDay() + 6) % 7;
     const dateStr = selectedDate.toISOString().slice(0, 10);
     const holiday = getIndonesianHoliday(selectedDate);
 
@@ -400,7 +417,77 @@ export default function PosterStudioPage() {
     };
   }, [scheduleData]);
 
-  // Helper: Card Drawer supporting 8 distinct visual styles
+  // ─── ULTRA SMOOTH SHADOW PASS HELPER ───
+  const drawUltraSmoothShadow = (
+    ctx: CanvasRenderingContext2D,
+    x: number,
+    y: number,
+    w: number,
+    h: number,
+    r: number,
+    options: {
+      shadowColor?: string;
+      glowColor?: string;
+      isHeader?: boolean;
+      isDark?: boolean;
+      elevation?: "subtle" | "medium" | "deep" | "floating";
+    } = {}
+  ) => {
+    const { isHeader = false, isDark = false, elevation = "medium" } = options;
+    const shadowBase = options.shadowColor || (isDark ? "rgba(0, 0, 0, 0.45)" : "rgba(15, 23, 42, 0.08)");
+
+    // Pass 1: Contact Ambient Occlusion (tight crisp anchor)
+    ctx.save();
+    ctx.shadowColor = isDark ? "rgba(0,0,0,0.5)" : "rgba(15, 23, 42, 0.06)";
+    ctx.shadowBlur = 4;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 1.5;
+    ctx.fillStyle = "rgba(0,0,0,0.01)";
+    ctx.beginPath();
+    ctx.roundRect(x, y, w, h, r);
+    ctx.fill();
+    ctx.restore();
+
+    // Pass 2: Penumbra Mid-Spread Dispersion
+    ctx.save();
+    ctx.shadowColor = shadowBase;
+    ctx.shadowBlur = isHeader ? 28 : (elevation === "deep" || elevation === "floating" ? 22 : 14);
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = isHeader ? 8 : (elevation === "deep" || elevation === "floating" ? 8 : 4);
+    ctx.fillStyle = "rgba(0,0,0,0.01)";
+    ctx.beginPath();
+    ctx.roundRect(x, y, w, h, r);
+    ctx.fill();
+    ctx.restore();
+
+    // Pass 3: Wide Atmosphere Umbrella Drop (ultra-soft gaussian falloff)
+    ctx.save();
+    ctx.shadowColor = isDark ? "rgba(0,0,0,0.28)" : "rgba(15, 23, 42, 0.035)";
+    ctx.shadowBlur = isHeader ? 48 : (elevation === "floating" ? 44 : 32);
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = isHeader ? 16 : (elevation === "floating" ? 18 : 10);
+    ctx.fillStyle = "rgba(0,0,0,0.01)";
+    ctx.beginPath();
+    ctx.roundRect(x, y, w, h, r);
+    ctx.fill();
+    ctx.restore();
+
+    // Pass 4: Optional Luminous Colored Glow Halo
+    if (options.glowColor) {
+      ctx.save();
+      ctx.shadowColor = options.glowColor;
+      ctx.shadowBlur = isHeader ? 36 : 24;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 2;
+      ctx.fillStyle = "rgba(0,0,0,0.01)";
+      ctx.beginPath();
+      ctx.roundRect(x, y, w, h, r);
+      ctx.fill();
+      ctx.restore();
+    }
+  };
+
+  // Helper: Card Drawer supporting 8 distinct visual styles with Ultra-Smooth Shadows
   const drawStyledCard = (
     ctx: CanvasRenderingContext2D,
     x: number,
@@ -412,6 +499,7 @@ export default function PosterStudioPage() {
       fillTop?: string;
       fillBottom?: string;
       shadowColor?: string;
+      glowColor?: string;
       shadowBlur?: number;
       shadowOffsetY?: number;
       borderLight?: string;
@@ -423,21 +511,26 @@ export default function PosterStudioPage() {
       fillTop = "#FFFFFF",
       fillBottom = "#F1F5F9",
       shadowColor = "rgba(15, 23, 42, 0.08)",
-      shadowBlur = 14,
-      shadowOffsetY = 5,
+      glowColor,
       borderLight = "rgba(255, 255, 255, 0.9)",
       borderDark = "rgba(0, 0, 0, 0.06)",
       isHeader = false,
     } = options;
 
+    const isDark = visualStyle === "neonNoir" || visualStyle === "metallicTitanium" || themeMode === "tokyoNeon" || themeMode === "hyperViolet" || themeMode === "cyberEmerald" || themeMode === "deepCobalt" || themeMode === "mochaVelvet";
+
+    // 1. Cast 3-Pass Ultra Smooth Diffused Shadow
+    drawUltraSmoothShadow(ctx, x, y, w, h, r, {
+      shadowColor,
+      glowColor: glowColor || (visualStyle === "neonNoir" ? "rgba(251, 113, 133, 0.35)" : visualStyle === "auroraBorealis" ? "rgba(52, 211, 153, 0.35)" : undefined),
+      isHeader,
+      isDark,
+      elevation: isHeader ? "deep" : "medium",
+    });
+
     ctx.save();
 
     if (visualStyle === "clay3d") {
-      ctx.shadowColor = shadowColor;
-      ctx.shadowBlur = shadowBlur;
-      ctx.shadowOffsetX = 0;
-      ctx.shadowOffsetY = shadowOffsetY;
-
       const grad = ctx.createLinearGradient(x, y, x, y + h);
       grad.addColorStop(0, fillTop);
       grad.addColorStop(1, fillBottom);
@@ -463,10 +556,6 @@ export default function PosterStudioPage() {
       ctx.restore();
 
     } else if (visualStyle === "neonNoir") {
-      ctx.shadowColor = isHeader ? "rgba(251, 113, 133, 0.55)" : "rgba(0,0,0,0.5)";
-      ctx.shadowBlur = isHeader ? 20 : 12;
-      ctx.shadowOffsetY = 4;
-
       const grad = ctx.createLinearGradient(x, y, x, y + h);
       if (isHeader) {
         grad.addColorStop(0, "#1C0B2B");
@@ -488,8 +577,8 @@ export default function PosterStudioPage() {
         neonGrad.addColorStop(0.5, "#A78BFA");
         neonGrad.addColorStop(1, "#22D3EE");
       } else {
-        neonGrad.addColorStop(0, "rgba(251, 113, 133, 0.45)");
-        neonGrad.addColorStop(1, "rgba(34, 211, 238, 0.35)");
+        neonGrad.addColorStop(0, "rgba(251, 113, 133, 0.55)");
+        neonGrad.addColorStop(1, "rgba(34, 211, 238, 0.45)");
       }
       ctx.strokeStyle = neonGrad;
       ctx.lineWidth = isHeader ? 1.5 : 1;
@@ -499,10 +588,6 @@ export default function PosterStudioPage() {
       ctx.restore();
 
     } else if (visualStyle === "warmTerra") {
-      ctx.shadowColor = isHeader ? "rgba(180, 83, 9, 0.25)" : "rgba(120, 60, 20, 0.12)";
-      ctx.shadowBlur = isHeader ? 18 : 12;
-      ctx.shadowOffsetY = isHeader ? 6 : 4;
-
       const grad = ctx.createLinearGradient(x, y, x, y + h);
       if (isHeader) {
         grad.addColorStop(0, fillTop !== "#FFFFFF" ? fillTop : "#C2410C");
@@ -518,7 +603,7 @@ export default function PosterStudioPage() {
       ctx.restore();
 
       ctx.save();
-      ctx.strokeStyle = isHeader ? "rgba(255,255,255,0.3)" : "rgba(194, 65, 12, 0.18)";
+      ctx.strokeStyle = isHeader ? "rgba(255,255,255,0.35)" : "rgba(194, 65, 12, 0.18)";
       ctx.lineWidth = 1;
       ctx.beginPath();
       ctx.roundRect(x, y, w, h, r);
@@ -526,18 +611,14 @@ export default function PosterStudioPage() {
       ctx.restore();
 
     } else if (visualStyle === "auroraBorealis") {
-      ctx.shadowColor = "rgba(16, 185, 129, 0.3)";
-      ctx.shadowBlur = 18;
-      ctx.shadowOffsetY = 4;
-
       const grad = ctx.createLinearGradient(x, y, x + w, y + h);
       if (isHeader) {
         grad.addColorStop(0, "#064E3B");
         grad.addColorStop(0.5, "#0E7490");
         grad.addColorStop(1, "#4C1D95");
       } else {
-        grad.addColorStop(0, "rgba(6, 78, 59, 0.7)");
-        grad.addColorStop(1, "rgba(15, 23, 42, 0.85)");
+        grad.addColorStop(0, "rgba(6, 78, 59, 0.75)");
+        grad.addColorStop(1, "rgba(15, 23, 42, 0.88)");
       }
       ctx.fillStyle = grad;
       ctx.beginPath();
@@ -558,10 +639,6 @@ export default function PosterStudioPage() {
       ctx.restore();
 
     } else if (visualStyle === "monochromeSwiss") {
-      ctx.shadowColor = "rgba(0,0,0,0.15)";
-      ctx.shadowBlur = 8;
-      ctx.shadowOffsetY = 4;
-
       ctx.fillStyle = isHeader ? "#09090B" : "#FFFFFF";
       ctx.beginPath();
       ctx.roundRect(x, y, w, h, Math.min(r, 8));
@@ -579,10 +656,6 @@ export default function PosterStudioPage() {
       ctx.restore();
 
     } else if (visualStyle === "vintageBotanical") {
-      ctx.shadowColor = "rgba(45, 90, 62, 0.25)";
-      ctx.shadowBlur = 12;
-      ctx.shadowOffsetY = 4;
-
       const grad = ctx.createLinearGradient(x, y, x, y + h);
       if (isHeader) {
         grad.addColorStop(0, "#1F3D2B");
@@ -606,10 +679,6 @@ export default function PosterStudioPage() {
       ctx.restore();
 
     } else if (visualStyle === "metallicTitanium") {
-      ctx.shadowColor = "rgba(0,0,0,0.6)";
-      ctx.shadowBlur = 14;
-      ctx.shadowOffsetY = 6;
-
       const grad = ctx.createLinearGradient(x, y, x + w, y + h);
       if (isHeader) {
         grad.addColorStop(0, "#27272A");
@@ -639,10 +708,6 @@ export default function PosterStudioPage() {
 
     } else {
       // Sakura Zen
-      ctx.shadowColor = isHeader ? "rgba(190, 24, 93, 0.25)" : "rgba(190, 24, 93, 0.10)";
-      ctx.shadowBlur = isHeader ? 20 : 10;
-      ctx.shadowOffsetY = isHeader ? 6 : 4;
-
       const grad = ctx.createLinearGradient(x, y, x, y + h);
       if (isHeader) {
         grad.addColorStop(0, fillTop !== "#FFFFFF" ? fillTop : "#BE185D");
@@ -885,19 +950,27 @@ export default function PosterStudioPage() {
       return `${weight} ${sizePx}px ${family}`;
     };
 
-    // ── 1. BACKGROUND CANVAS (12 Modern 2026 Palettes) ──
+    // ── 1. BACKGROUND CANVAS (12 Modern 2026 Palettes with Ultra-Smooth Radial Glow) ──
+    const drawSmoothGlowOrb = (cx: number, cy: number, rMax: number, r: number, g: number, b: number, peakAlpha: number) => {
+      const glow = ctx.createRadialGradient(cx, cy, 0, cx, cy, rMax);
+      glow.addColorStop(0.00, `rgba(${r}, ${g}, ${b}, ${peakAlpha.toFixed(3)})`);
+      glow.addColorStop(0.18, `rgba(${r}, ${g}, ${b}, ${(peakAlpha * 0.82).toFixed(3)})`);
+      glow.addColorStop(0.38, `rgba(${r}, ${g}, ${b}, ${(peakAlpha * 0.52).toFixed(3)})`);
+      glow.addColorStop(0.60, `rgba(${r}, ${g}, ${b}, ${(peakAlpha * 0.26).toFixed(3)})`);
+      glow.addColorStop(0.80, `rgba(${r}, ${g}, ${b}, ${(peakAlpha * 0.08).toFixed(3)})`);
+      glow.addColorStop(0.94, `rgba(${r}, ${g}, ${b}, ${(peakAlpha * 0.015).toFixed(3)})`);
+      glow.addColorStop(1.00, `rgba(${r}, ${g}, ${b}, 0)`);
+      ctx.fillStyle = glow;
+      ctx.fillRect(0, 0, width, height);
+    };
+
     if (colors.useCustom) {
       const bgGrad = ctx.createLinearGradient(0, 0, width, height);
       bgGrad.addColorStop(0, colors.bgStart);
       bgGrad.addColorStop(1, colors.bgEnd);
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, width, height);
-
-      const glow = ctx.createRadialGradient(width / 2, height / 3, 10, width / 2, height / 3, 600);
-      glow.addColorStop(0, colors.bgGlow || "rgba(255,255,255,0.15)");
-      glow.addColorStop(1, "rgba(255,255,255,0)");
-      ctx.fillStyle = glow;
-      ctx.fillRect(0, 0, width, height);
+      drawSmoothGlowOrb(width / 2, height / 3, 620, 255, 255, 255, 0.18);
     } else if (themeMode === "cyberEmerald") {
       const bgGrad = ctx.createLinearGradient(0, 0, 0, height);
       bgGrad.addColorStop(0, "#022C22");
@@ -905,12 +978,8 @@ export default function PosterStudioPage() {
       bgGrad.addColorStop(1, "#021E17");
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, width, height);
-
-      const glow = ctx.createRadialGradient(300, 200, 10, 300, 200, 600);
-      glow.addColorStop(0, "rgba(52, 211, 153, 0.28)");
-      glow.addColorStop(1, "rgba(52, 211, 153, 0)");
-      ctx.fillStyle = glow;
-      ctx.fillRect(0, 0, width, height);
+      drawSmoothGlowOrb(300, 200, 680, 52, 211, 153, 0.32);
+      drawSmoothGlowOrb(850, 750, 550, 16, 185, 129, 0.18);
     } else if (themeMode === "hyperViolet") {
       const bgGrad = ctx.createLinearGradient(0, 0, width, height);
       bgGrad.addColorStop(0, "#1E1B4B");
@@ -918,12 +987,8 @@ export default function PosterStudioPage() {
       bgGrad.addColorStop(1, "#0F0B24");
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, width, height);
-
-      const glow = ctx.createRadialGradient(800, 250, 10, 800, 250, 580);
-      glow.addColorStop(0, "rgba(192, 132, 252, 0.25)");
-      glow.addColorStop(1, "rgba(192, 132, 252, 0)");
-      ctx.fillStyle = glow;
-      ctx.fillRect(0, 0, width, height);
+      drawSmoothGlowOrb(800, 250, 650, 192, 132, 252, 0.3);
+      drawSmoothGlowOrb(200, 800, 500, 139, 92, 246, 0.18);
     } else if (themeMode === "tokyoNeon") {
       const bgGrad = ctx.createLinearGradient(0, 0, 0, height);
       bgGrad.addColorStop(0, "#09090B");
@@ -931,18 +996,8 @@ export default function PosterStudioPage() {
       bgGrad.addColorStop(1, "#050507");
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, width, height);
-
-      const glow1 = ctx.createRadialGradient(200, 250, 10, 200, 250, 480);
-      glow1.addColorStop(0, "rgba(244, 63, 94, 0.28)");
-      glow1.addColorStop(1, "rgba(244, 63, 94, 0)");
-      ctx.fillStyle = glow1;
-      ctx.fillRect(0, 0, width, height);
-
-      const glow2 = ctx.createRadialGradient(900, 800, 10, 900, 800, 500);
-      glow2.addColorStop(0, "rgba(6, 182, 212, 0.25)");
-      glow2.addColorStop(1, "rgba(6, 182, 212, 0)");
-      ctx.fillStyle = glow2;
-      ctx.fillRect(0, 0, width, height);
+      drawSmoothGlowOrb(200, 250, 550, 244, 63, 94, 0.32);
+      drawSmoothGlowOrb(900, 800, 580, 6, 182, 212, 0.28);
     } else if (themeMode === "nordicCream") {
       const bgGrad = ctx.createLinearGradient(0, 0, 0, height);
       bgGrad.addColorStop(0, "#FFFDF7");
@@ -950,12 +1005,7 @@ export default function PosterStudioPage() {
       bgGrad.addColorStop(1, "#EFE4D3");
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, width, height);
-
-      const glow = ctx.createRadialGradient(200, 200, 10, 200, 200, 600);
-      glow.addColorStop(0, "rgba(212, 163, 115, 0.18)");
-      glow.addColorStop(1, "rgba(212, 163, 115, 0)");
-      ctx.fillStyle = glow;
-      ctx.fillRect(0, 0, width, height);
+      drawSmoothGlowOrb(200, 200, 650, 212, 163, 115, 0.22);
     } else if (themeMode === "matchaZen") {
       const bgGrad = ctx.createLinearGradient(0, 0, width, height);
       bgGrad.addColorStop(0, "#14281D");
@@ -963,12 +1013,7 @@ export default function PosterStudioPage() {
       bgGrad.addColorStop(1, "#0F1E15");
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, width, height);
-
-      const glow = ctx.createRadialGradient(800, 300, 10, 800, 300, 550);
-      glow.addColorStop(0, "rgba(167, 243, 208, 0.22)");
-      glow.addColorStop(1, "rgba(167, 243, 208, 0)");
-      ctx.fillStyle = glow;
-      ctx.fillRect(0, 0, width, height);
+      drawSmoothGlowOrb(800, 300, 620, 167, 243, 208, 0.25);
     } else if (themeMode === "sunsetQuartz") {
       const bgGrad = ctx.createLinearGradient(0, 0, 0, height);
       bgGrad.addColorStop(0, "#FFF1F2");
@@ -976,12 +1021,7 @@ export default function PosterStudioPage() {
       bgGrad.addColorStop(1, "#FED7AA");
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, width, height);
-
-      const glow = ctx.createRadialGradient(540, 200, 10, 540, 200, 600);
-      glow.addColorStop(0, "rgba(251, 146, 60, 0.2)");
-      glow.addColorStop(1, "rgba(251, 146, 60, 0)");
-      ctx.fillStyle = glow;
-      ctx.fillRect(0, 0, width, height);
+      drawSmoothGlowOrb(540, 200, 650, 251, 146, 60, 0.24);
     } else if (themeMode === "mochaVelvet") {
       const bgGrad = ctx.createLinearGradient(0, 0, width, height);
       bgGrad.addColorStop(0, "#1C140E");
@@ -989,12 +1029,7 @@ export default function PosterStudioPage() {
       bgGrad.addColorStop(1, "#140D09");
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, width, height);
-
-      const glow = ctx.createRadialGradient(250, 250, 10, 250, 250, 580);
-      glow.addColorStop(0, "rgba(245, 158, 11, 0.22)");
-      glow.addColorStop(1, "rgba(245, 158, 11, 0)");
-      ctx.fillStyle = glow;
-      ctx.fillRect(0, 0, width, height);
+      drawSmoothGlowOrb(250, 250, 620, 245, 158, 11, 0.25);
     } else if (themeMode === "deepCobalt") {
       const bgGrad = ctx.createLinearGradient(0, 0, 0, height);
       bgGrad.addColorStop(0, "#021B47");
@@ -1002,12 +1037,7 @@ export default function PosterStudioPage() {
       bgGrad.addColorStop(1, "#021233");
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, width, height);
-
-      const glow = ctx.createRadialGradient(850, 200, 10, 850, 200, 600);
-      glow.addColorStop(0, "rgba(96, 165, 250, 0.28)");
-      glow.addColorStop(1, "rgba(96, 165, 250, 0)");
-      ctx.fillStyle = glow;
-      ctx.fillRect(0, 0, width, height);
+      drawSmoothGlowOrb(850, 200, 650, 96, 165, 250, 0.32);
     } else if (themeMode === "snowTitanium") {
       const bgGrad = ctx.createLinearGradient(0, 0, 0, height);
       bgGrad.addColorStop(0, "#FFFFFF");
@@ -1015,12 +1045,7 @@ export default function PosterStudioPage() {
       bgGrad.addColorStop(1, "#E2E8F0");
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, width, height);
-
-      const glow = ctx.createRadialGradient(540, 300, 10, 540, 300, 700);
-      glow.addColorStop(0, "rgba(148, 163, 184, 0.25)");
-      glow.addColorStop(1, "rgba(148, 163, 184, 0)");
-      ctx.fillStyle = glow;
-      ctx.fillRect(0, 0, width, height);
+      drawSmoothGlowOrb(540, 300, 720, 148, 163, 184, 0.28);
     } else if (themeMode === "sakuraBlush") {
       const bgGrad = ctx.createLinearGradient(0, 0, 0, height);
       bgGrad.addColorStop(0, "#FFF5F8");
@@ -1028,12 +1053,7 @@ export default function PosterStudioPage() {
       bgGrad.addColorStop(1, "#FBCFE8");
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, width, height);
-
-      const glow = ctx.createRadialGradient(800, 220, 10, 800, 220, 600);
-      glow.addColorStop(0, "rgba(244, 114, 182, 0.22)");
-      glow.addColorStop(1, "rgba(244, 114, 182, 0)");
-      ctx.fillStyle = glow;
-      ctx.fillRect(0, 0, width, height);
+      drawSmoothGlowOrb(800, 220, 640, 244, 114, 182, 0.25);
     } else if (themeMode === "solarAmber") {
       const bgGrad = ctx.createLinearGradient(0, 0, width, height);
       bgGrad.addColorStop(0, "#2E1002");
@@ -1041,14 +1061,8 @@ export default function PosterStudioPage() {
       bgGrad.addColorStop(1, "#1A0800");
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, width, height);
-
-      const glow = ctx.createRadialGradient(300, 220, 10, 300, 220, 600);
-      glow.addColorStop(0, "rgba(252, 211, 77, 0.25)");
-      glow.addColorStop(1, "rgba(252, 211, 77, 0)");
-      ctx.fillStyle = glow;
-      ctx.fillRect(0, 0, width, height);
+      drawSmoothGlowOrb(300, 220, 650, 252, 211, 77, 0.28);
     } else {
-      // oceanBlue default
       const bgGrad = ctx.createLinearGradient(0, 0, width, height);
       bgGrad.addColorStop(0, "#0F4C6E");
       bgGrad.addColorStop(0.4, "#0E7490");
@@ -1056,51 +1070,98 @@ export default function PosterStudioPage() {
       bgGrad.addColorStop(1, "#38BDF8");
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, width, height);
-
-      const glow = ctx.createRadialGradient(900, 220, 10, 900, 220, 580);
-      glow.addColorStop(0, "rgba(186, 230, 253, 0.3)");
-      glow.addColorStop(1, "rgba(186, 230, 253, 0)");
-      ctx.fillStyle = glow;
-      ctx.fillRect(0, 0, width, height);
+      drawSmoothGlowOrb(900, 220, 650, 186, 230, 253, 0.35);
     }
 
     const pad = 34;
     let currY = pad;
 
-    // ── 2. HEADER BENTO BAR ──
+    // ── 2. ULTRA-MODERN HEADER CUSTOMIZATION (4 Styles) ──
     const headerW = width - pad * 2;
     const headerH = 92;
 
     const headBgTop = colors.useCustom ? colors.headerBgStart : isDark ? "rgba(30, 41, 59, 0.95)" : "#FFFFFF";
     const headBgBot = colors.useCustom ? colors.headerBgEnd : isDark ? "rgba(15, 23, 42, 0.95)" : "#EEF5F8";
 
-    drawStyledCard(ctx, pad, currY, headerW, headerH, 26, {
-      fillTop: headBgTop,
-      fillBottom: headBgBot,
-      shadowColor: isDark ? "rgba(0,0,0,0.4)" : "rgba(15, 76, 92, 0.14)",
-      shadowBlur: 18,
-      shadowOffsetY: 6,
-      borderLight: isDark ? "rgba(255, 255, 255, 0.16)" : "#FFFFFF",
-    });
+    if (headerStyle === "splitBento") {
+      // Split Bento Header (Left: Logo + RS Info, Right: Big Date Card)
+      const leftW = showHeaderDateBadge ? headerW - 320 : headerW;
+      drawStyledCard(ctx, pad, currY, leftW, headerH, 24, {
+        fillTop: headBgTop,
+        fillBottom: headBgBot,
+        isHeader: true,
+      });
 
+      if (showHeaderDateBadge) {
+        const rightX = pad + leftW + 16;
+        drawStyledCard(ctx, rightX, currY, 304, headerH, 24, {
+          fillTop: isDark ? "#1E293B" : "#F8FAFC",
+          fillBottom: isDark ? "#0F172A" : "#EEF2F6",
+          isHeader: true,
+        });
+
+        ctx.fillStyle = isDark ? "#38BDF8" : "#0284C7";
+        ctx.font = getFont("900", 12);
+        ctx.textAlign = "center";
+        ctx.fillText(selectedDate.toLocaleDateString("id-ID", { weekday: "long" }).toUpperCase(), rightX + 152, currY + 30);
+
+        ctx.fillStyle = isDark ? "#FFFFFF" : "#0F172A";
+        ctx.font = getFont("900", 22);
+        ctx.fillText(selectedDate.toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" }).toUpperCase(), rightX + 152, currY + 58);
+
+        if (showAccreditation) {
+          ctx.fillStyle = "#D97706";
+          ctx.font = getFont("900", 10);
+          ctx.fillText(accreditationText, rightX + 152, currY + 76);
+        }
+      }
+    } else if (headerStyle === "minimalHeadline") {
+      // Minimalist Magazine Headline Banner
+      ctx.fillStyle = isDark ? "rgba(15, 23, 42, 0.85)" : "#FFFFFF";
+      ctx.beginPath();
+      ctx.roundRect(pad, currY, headerW, headerH, 14);
+      ctx.fill();
+
+      // Vertical Accent Strip
+      ctx.fillStyle = isDark ? "#38BDF8" : "#0F766E";
+      ctx.beginPath();
+      ctx.roundRect(pad, currY, 8, headerH, [14, 0, 0, 14]);
+      ctx.fill();
+    } else if (headerStyle === "glassNotch") {
+      // Futuristic Dynamic Island Notch
+      const notchW = headerW - 80;
+      const notchX = pad + 40;
+      drawStyledCard(ctx, notchX, currY, notchW, headerH, 28, {
+        fillTop: isDark ? "rgba(30, 41, 59, 0.9)" : "rgba(255, 255, 255, 0.95)",
+        fillBottom: isDark ? "rgba(15, 23, 42, 0.9)" : "rgba(240, 248, 255, 0.95)",
+        glowColor: "rgba(56, 189, 248, 0.25)",
+        isHeader: true,
+      });
+    } else {
+      // Island Floating Bento Bar (Default)
+      drawStyledCard(ctx, pad, currY, headerW, headerH, 26, {
+        fillTop: headBgTop,
+        fillBottom: headBgBot,
+        isHeader: true,
+      });
+    }
+
+    // Emblem Drawing (Supports Squircle, Circle, Hexagon)
     const emblemX = pad + 18;
     const emblemY = currY + 17;
     const emblemSize = 58;
 
+    ctx.save();
     if (customLogoImgRef.current && customLogoImgRef.current.complete) {
       try {
-        ctx.save();
         ctx.beginPath();
-        ctx.roundRect(emblemX, emblemY, emblemSize, emblemSize, 18);
+        if (emblemShape === "circle") {
+          ctx.arc(emblemX + emblemSize / 2, emblemY + emblemSize / 2, emblemSize / 2, 0, Math.PI * 2);
+        } else {
+          ctx.roundRect(emblemX, emblemY, emblemSize, emblemSize, 18);
+        }
         ctx.clip();
         ctx.drawImage(customLogoImgRef.current, emblemX, emblemY, emblemSize, emblemSize);
-        ctx.restore();
-
-        ctx.strokeStyle = "rgba(255, 255, 255, 0.8)";
-        ctx.lineWidth = 1.5;
-        ctx.beginPath();
-        ctx.roundRect(emblemX, emblemY, emblemSize, emblemSize, 18);
-        ctx.stroke();
       } catch (e) {}
     } else {
       const emblemGrad = ctx.createLinearGradient(emblemX, emblemY, emblemX + emblemSize, emblemY + emblemSize);
@@ -1119,12 +1180,12 @@ export default function PosterStudioPage() {
       }
       ctx.fillStyle = emblemGrad;
       ctx.beginPath();
-      ctx.roundRect(emblemX, emblemY, emblemSize, emblemSize, 18);
+      if (emblemShape === "circle") {
+        ctx.arc(emblemX + emblemSize / 2, emblemY + emblemSize / 2, emblemSize / 2, 0, Math.PI * 2);
+      } else {
+        ctx.roundRect(emblemX, emblemY, emblemSize, emblemSize, 18);
+      }
       ctx.fill();
-
-      ctx.strokeStyle = "rgba(255, 255, 255, 0.65)";
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
 
       ctx.fillStyle = "#FFFFFF";
       ctx.font = getFont("900", 30);
@@ -1132,6 +1193,7 @@ export default function PosterStudioPage() {
       ctx.textBaseline = "middle";
       ctx.fillText(headerEmblemIcon, emblemX + emblemSize / 2, emblemY + emblemSize / 2);
     }
+    ctx.restore();
 
     // Hospital Typography
     ctx.textAlign = "left";
@@ -1166,59 +1228,59 @@ export default function PosterStudioPage() {
     ctx.font = getFont("800", 13);
     ctx.fillText(hospitalSubtitle, pad + 90, currY + 62);
 
-    const dateFormatted = selectedDate.toLocaleDateString("id-ID", {
-      weekday: "long",
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    }).toUpperCase();
+    // Standard Date Badge on Floating Island
+    if (headerStyle !== "splitBento" && showHeaderDateBadge) {
+      const dateFormatted = selectedDate.toLocaleDateString("id-ID", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      }).toUpperCase();
 
-    const datePinW = 330;
-    const datePinH = 60;
-    const datePinX = width - pad - datePinW - 16;
-    const datePinY = currY + 16;
+      const datePinW = 330;
+      const datePinH = 60;
+      const datePinX = width - pad - datePinW - 16;
+      const datePinY = currY + 16;
 
-    drawStyledCard(ctx, datePinX, datePinY, datePinW, datePinH, 18, {
-      fillTop: isDark ? "rgba(15, 23, 42, 0.9)" : "#F0F7FA",
-      fillBottom: isDark ? "rgba(10, 15, 29, 0.9)" : "#E2EEF2",
-      shadowColor: "rgba(0,0,0,0.08)",
-      shadowBlur: 8,
-      shadowOffsetY: 2,
-    });
+      drawStyledCard(ctx, datePinX, datePinY, datePinW, datePinH, 18, {
+        fillTop: isDark ? "rgba(15, 23, 42, 0.9)" : "#F0F7FA",
+        fillBottom: isDark ? "rgba(10, 15, 29, 0.9)" : "#E2EEF2",
+      });
 
-    const calBlockX = datePinX + 9;
-    const calBlockY = datePinY + 8;
-    const calBlockW = 44;
-    const calBlockH = 44;
+      const calBlockX = datePinX + 9;
+      const calBlockY = datePinY + 8;
+      const calBlockW = 44;
+      const calBlockH = 44;
 
-    ctx.fillStyle = "#E11D48";
-    ctx.beginPath();
-    ctx.roundRect(calBlockX, calBlockY, calBlockW, 15, [8, 8, 0, 0]);
-    ctx.fill();
+      ctx.fillStyle = "#E11D48";
+      ctx.beginPath();
+      ctx.roundRect(calBlockX, calBlockY, calBlockW, 15, [8, 8, 0, 0]);
+      ctx.fill();
 
-    ctx.fillStyle = "#FFFFFF";
-    ctx.beginPath();
-    ctx.roundRect(calBlockX, calBlockY + 15, calBlockW, 29, [0, 0, 8, 8]);
-    ctx.fill();
+      ctx.fillStyle = "#FFFFFF";
+      ctx.beginPath();
+      ctx.roundRect(calBlockX, calBlockY + 15, calBlockW, 29, [0, 0, 8, 8]);
+      ctx.fill();
 
-    ctx.fillStyle = "#FFFFFF";
-    ctx.font = getFont("900", 9);
-    ctx.textAlign = "center";
-    ctx.fillText(selectedDate.toLocaleDateString("id-ID", { weekday: "short" }).toUpperCase(), calBlockX + 22, calBlockY + 11);
+      ctx.fillStyle = "#FFFFFF";
+      ctx.font = getFont("900", 9);
+      ctx.textAlign = "center";
+      ctx.fillText(selectedDate.toLocaleDateString("id-ID", { weekday: "short" }).toUpperCase(), calBlockX + 22, calBlockY + 11);
 
-    ctx.fillStyle = "#0F172A";
-    ctx.font = getFont("900", 17);
-    ctx.fillText(String(selectedDate.getDate()), calBlockX + 22, calBlockY + 36);
+      ctx.fillStyle = "#0F172A";
+      ctx.font = getFont("900", 17);
+      ctx.fillText(String(selectedDate.getDate()), calBlockX + 22, calBlockY + 36);
 
-    ctx.textAlign = "left";
-    ctx.fillStyle = isDark ? "#FFFFFF" : "#0F172A";
-    ctx.font = getFont("900", 13.5);
-    ctx.fillText(dateFormatted, datePinX + 62, datePinY + 28);
+      ctx.textAlign = "left";
+      ctx.fillStyle = isDark ? "#FFFFFF" : "#0F172A";
+      ctx.font = getFont("900", 13.5);
+      ctx.fillText(dateFormatted, datePinX + 62, datePinY + 28);
 
-    if (showAccreditation) {
-      ctx.fillStyle = "#D97706";
-      ctx.font = getFont("900", 11);
-      ctx.fillText(accreditationText, datePinX + 62, datePinY + 47);
+      if (showAccreditation) {
+        ctx.fillStyle = "#D97706";
+        ctx.font = getFont("900", 11);
+        ctx.fillText(accreditationText, datePinX + 62, datePinY + 47);
+      }
     }
 
     currY += headerH + 18;
@@ -1232,7 +1294,6 @@ export default function PosterStudioPage() {
       const leaveBorderClr = colors.useCustom ? colors.leaveBorder : "rgba(225, 29, 72, 0.28)";
 
       if (leaveCardStyle === "cautionStrip") {
-        // Caution Warning Banner Ribbon
         ctx.fillStyle = "#BE123C";
         ctx.beginPath();
         ctx.roundRect(pad, currY, headerW, leaveCardH, 12);
@@ -1246,7 +1307,6 @@ export default function PosterStudioPage() {
         ctx.stroke();
         ctx.restore();
       } else if (leaveCardStyle === "glowFrame") {
-        // Neon Glow Laser Frame
         ctx.fillStyle = "rgba(15, 23, 42, 0.85)";
         ctx.beginPath();
         ctx.roundRect(pad, currY, headerW, leaveCardH, 18);
@@ -1261,7 +1321,6 @@ export default function PosterStudioPage() {
         ctx.stroke();
         ctx.restore();
       } else {
-        // Standard Bento Island
         drawStyledCard(ctx, pad, currY, headerW, leaveCardH, 22, {
           fillTop: leaveFillTop,
           fillBottom: leaveFillBot,
@@ -1338,13 +1397,11 @@ export default function PosterStudioPage() {
       cx.save();
 
       if (cardVariant === "accentBar") {
-        cx.shadowColor = isDark ? "rgba(0,0,0,0.45)" : "rgba(0,0,0,0.09)";
-        cx.shadowBlur = 10; cx.shadowOffsetY = 3;
+        drawUltraSmoothShadow(cx, x, y, w, h, r, { elevation: "subtle", isDark });
         cx.fillStyle = colors.useCustom ? colors.cardBgStart : isDark ? "#18181B" :
           visualStyle === "warmTerra" ? "#FFFBF5" :
           visualStyle === "sakuraZen" ? "#FFF5F9" : "#FFFFFF";
         cx.beginPath(); cx.roundRect(x, y, w, h, r); cx.fill();
-        cx.shadowBlur = 0; cx.shadowOffsetY = 0;
 
         cx.fillStyle = accent;
         cx.beginPath(); cx.roundRect(x, y, 6, h, [r, 0, 0, r]); cx.fill();
@@ -1384,7 +1441,7 @@ export default function PosterStudioPage() {
         cx.strokeStyle = accent;
         cx.lineWidth = 1.2;
         cx.shadowColor = accent;
-        cx.shadowBlur = 10;
+        cx.shadowBlur = 14;
         cx.beginPath(); cx.roundRect(x, y, w, h, r); cx.stroke();
         cx.restore();
 
@@ -1406,11 +1463,9 @@ export default function PosterStudioPage() {
 
       } else if (cardVariant === "floatingPill") {
         const pillR = h / 2;
-        cx.shadowColor = "rgba(0,0,0,0.12)";
-        cx.shadowBlur = 12; cx.shadowOffsetY = 4;
+        drawUltraSmoothShadow(cx, x, y, w, h, pillR, { elevation: "deep", isDark });
         cx.fillStyle = colors.useCustom ? colors.cardBgStart : isDark ? "#1E293B" : "#FFFFFF";
         cx.beginPath(); cx.roundRect(x, y, w, h, pillR); cx.fill();
-        cx.shadowBlur = 0;
 
         const avS = h - 8, avX = x + 4, avY = y + 4;
         cx.fillStyle = accent;
@@ -1431,12 +1486,12 @@ export default function PosterStudioPage() {
         cx.fillText(isCuti ? "LIBUR 📅" : `🕒 ${d.time}`, pX + pW / 2, pY + pH / 2);
 
       } else if (cardVariant === "retroBadge") {
+        drawUltraSmoothShadow(cx, x, y, w, h, 8, { elevation: "subtle", isDark });
         cx.fillStyle = colors.useCustom ? colors.cardBgStart : isDark ? "#18181B" : "#FFFFFF";
         cx.beginPath(); cx.roundRect(x, y, w, h, 8); cx.fill();
-        cx.strokeStyle = "rgba(0,0,0,0.15)"; cx.lineWidth = 1;
+        cx.strokeStyle = "rgba(0,0,0,0.12)"; cx.lineWidth = 1;
         ctx.stroke();
 
-        // Punch badge circle left
         cx.fillStyle = isDark ? "#09090B" : "#EDF2F8";
         cx.beginPath(); cx.arc(x, y + h / 2, 6, -Math.PI / 2, Math.PI / 2); cx.fill();
         cx.beginPath(); cx.arc(x + w, y + h / 2, 6, Math.PI / 2, -Math.PI / 2); cx.fill();
@@ -1499,13 +1554,11 @@ export default function PosterStudioPage() {
         cx.fillText(isCuti ? "LIBUR 📅" : `🕒 ${d.time}`, pX + pW / 2, pY + pH / 2);
 
       } else if (cardVariant === "glassFrost") {
-        cx.shadowColor = isDark ? "rgba(0,0,0,0.55)" : "rgba(80,110,150,0.18)";
-        cx.shadowBlur = 16; cx.shadowOffsetY = 4;
+        drawUltraSmoothShadow(cx, x, y, w, h, r, { elevation: "medium", isDark });
         const gg = cx.createLinearGradient(x, y, x, y + h);
-        gg.addColorStop(0, isDark ? "rgba(255,255,255,0.22)" : "rgba(255,255,255,0.82)");
-        gg.addColorStop(1, isDark ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0.5)");
+        gg.addColorStop(0, isDark ? "rgba(255,255,255,0.22)" : "rgba(255,255,255,0.85)");
+        gg.addColorStop(1, isDark ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0.55)");
         cx.fillStyle = gg; cx.beginPath(); cx.roundRect(x, y, w, h, r); cx.fill();
-        cx.shadowBlur = 0; cx.shadowOffsetY = 0;
 
         const sh = cx.createLinearGradient(x, y, x + w, y + 5);
         sh.addColorStop(0, "rgba(255,255,255,0)");
@@ -1557,7 +1610,6 @@ export default function PosterStudioPage() {
           fillTop: cBgTop,
           fillBottom: cBgBot,
           shadowColor: isDark ? "rgba(0,0,0,0.4)" : "rgba(15, 76, 92, 0.08)",
-          shadowBlur: 8, shadowOffsetY: 2,
           borderLight: isDark ? "rgba(255, 255, 255, 0.1)" : "#FFFFFF",
         });
         const avS = 34, avX = x + 8, avY = y + 7;
@@ -1701,8 +1753,6 @@ export default function PosterStudioPage() {
             fillTop: specBgTop,
             fillBottom: specBgBot,
             shadowColor: "rgba(0,0,0,0.15)",
-            shadowBlur: 8,
-            shadowOffsetY: 2,
             borderLight: "rgba(255, 255, 255, 0.65)",
             isHeader: true,
           });
@@ -1727,67 +1777,116 @@ export default function PosterStudioPage() {
       renderSpecColumn(rightSpecs, pad + colW + 20, currY);
     }
 
-    // ── 6. FOOTER BENTO HUB ──
+    // ── 6. ULTRA-MODERN FOOTER CUSTOMIZATION (4 Styles) ──
     if (showFooter) {
       const footerY = height - pad - footerH;
 
       const footBgTop = colors.useCustom ? colors.footerBgStart : visualStyle === "neonNoir" ? "#1C0B2B" : visualStyle === "warmTerra" ? "#C2410C" : visualStyle === "sakuraZen" ? "#BE185D" : isDark ? "#065F46" : "#0F766E";
       const footBgBot = colors.useCustom ? colors.footerBgEnd : visualStyle === "neonNoir" ? "#0D0117" : visualStyle === "warmTerra" ? "#7C2D12" : visualStyle === "sakuraZen" ? "#831843" : isDark ? "#022C22" : "#044E48";
 
-      drawStyledCard(ctx, pad, footerY, headerW, footerH, 24, {
-        fillTop: footBgTop,
-        fillBottom: footBgBot,
-        shadowColor: "rgba(0,0,0,0.3)",
-        shadowBlur: 16,
-        shadowOffsetY: 6,
-        borderLight: "rgba(255, 255, 255, 0.35)",
-        isHeader: true,
-      });
-
-      ctx.textAlign = "left";
-      ctx.fillStyle = colors.useCustom ? colors.footerText : "#FFFFFF";
-      ctx.font = getFont("900", 14);
-      ctx.fillText(`📱 PENDAFTARAN VIA WHATSAPP : ${hotlinePhone}`, pad + 24, footerY + 34);
-
-      ctx.fillStyle = colors.useCustom ? colors.footerSub : visualStyle === "neonNoir" ? "#A5F3FC" : visualStyle === "warmTerra" ? "#FED7AA" : visualStyle === "sakuraZen" ? "#FBCFE8" : "#A7F3D0";
-      ctx.font = getFont("800", 12);
-      ctx.fillText(`🌐 Cek Live Jadwal & Antrean Dokter: ${websiteUrl}`, pad + 24, footerY + 58);
-
-      if (showIgdBadge) {
-        const igdBadgeX = pad + (showQrCode ? 530 : 640);
-        const igdBadgeY = footerY + 20;
-        drawStyledCard(ctx, igdBadgeX, igdBadgeY, 210, 42, 14, {
-          fillTop: "rgba(225, 29, 72, 0.25)",
-          fillBottom: "rgba(159, 18, 57, 0.35)",
-          shadowColor: "rgba(0,0,0,0.15)",
-          shadowBlur: 6,
-          shadowOffsetY: 2,
-          borderLight: "rgba(255, 255, 255, 0.25)",
+      if (footerStyle === "floatingPillBar") {
+        // macOS / iOS Floating Capsule Dock
+        const dockW = headerW - 60;
+        const dockX = pad + 30;
+        drawStyledCard(ctx, dockX, footerY, dockW, footerH, footerH / 2, {
+          fillTop: footBgTop,
+          fillBottom: footBgBot,
+          isHeader: true,
         });
 
-        ctx.fillStyle = "#FFE4E6";
-        ctx.font = getFont("900", 12);
-        ctx.textAlign = "center";
-        ctx.fillText("🚨 IGD & AMBULANS 24 JAM", igdBadgeX + 105, igdBadgeY + 25);
-      }
+        ctx.textAlign = "left";
+        ctx.fillStyle = colors.useCustom ? colors.footerText : "#FFFFFF";
+        ctx.font = getFont("900", 13.5);
+        ctx.fillText(`📱 WhatsApp: ${hotlinePhone}`, dockX + 30, footerY + 34);
 
-      if (showQrCode && qrImageRef.current && qrImageRef.current.complete) {
-        try {
-          const qrTileW = 64;
-          const qrTileH = 64;
-          const qrTileX = pad + headerW - qrTileW - 12;
-          const qrTileY = footerY + 9;
+        ctx.fillStyle = colors.useCustom ? colors.footerSub : "#A7F3D0";
+        ctx.font = getFont("800", 11.5);
+        ctx.fillText(`🌐 Live Web: ${websiteUrl}`, dockX + 30, footerY + 58);
 
-          drawStyledCard(ctx, qrTileX, qrTileY, qrTileW, qrTileH, 16, {
-            fillTop: "#FFFFFF",
-            fillBottom: "#F8FAFC",
-            shadowColor: "rgba(0,0,0,0.25)",
-            shadowBlur: 8,
-            shadowOffsetY: 2,
+        if (showIgdBadge) {
+          const igdX = dockX + dockW - (showQrCode ? 260 : 190);
+          drawStyledCard(ctx, igdX, footerY + 18, 170, 44, 22, {
+            fillTop: "rgba(225, 29, 72, 0.3)",
+            fillBottom: "rgba(159, 18, 57, 0.4)",
+          });
+          ctx.fillStyle = "#FFE4E6";
+          ctx.font = getFont("900", 11);
+          ctx.textAlign = "center";
+          ctx.fillText(emergencyBadgeText, igdX + 85, footerY + 44);
+        }
+
+      } else if (footerStyle === "splitActionStrip") {
+        // 3-Card Split Action Grid
+        const colW = (headerW - 24) / 3;
+
+        // Card 1: WhatsApp
+        drawStyledCard(ctx, pad, footerY, colW, footerH, 18, { fillTop: footBgTop, fillBottom: footBgBot });
+        ctx.fillStyle = "#FFFFFF"; ctx.font = getFont("900", 12); ctx.textAlign = "center";
+        ctx.fillText("📱 PENDAFTARAN WA", pad + colW / 2, footerY + 32);
+        ctx.font = getFont("900", 13.5); ctx.fillText(hotlinePhone, pad + colW / 2, footerY + 56);
+
+        // Card 2: Live Web
+        const col2X = pad + colW + 12;
+        drawStyledCard(ctx, col2X, footerY, colW, footerH, 18, { fillTop: footBgTop, fillBottom: footBgBot });
+        ctx.fillStyle = "#FFFFFF"; ctx.font = getFont("900", 12); ctx.textAlign = "center";
+        ctx.fillText("🌐 LIVE ANTREAN WEB", col2X + colW / 2, footerY + 32);
+        ctx.font = getFont("800", 11.5); ctx.fillText(websiteUrl, col2X + colW / 2, footerY + 56);
+
+        // Card 3: IGD 24H
+        const col3X = pad + (colW + 12) * 2;
+        drawStyledCard(ctx, col3X, footerY, colW, footerH, 18, { fillTop: "#BE123C", fillBottom: "#881337" });
+        ctx.fillStyle = "#FFFFFF"; ctx.font = getFont("900", 12); ctx.textAlign = "center";
+        ctx.fillText("🚨 EMERGENSI 24 JAM", col3X + colW / 2, footerY + 32);
+        ctx.font = getFont("900", 13); ctx.fillText(emergencyBadgeText, col3X + colW / 2, footerY + 56);
+
+      } else {
+        // Standard Bento Hub (Default)
+        drawStyledCard(ctx, pad, footerY, headerW, footerH, 24, {
+          fillTop: footBgTop,
+          fillBottom: footBgBot,
+          borderLight: "rgba(255, 255, 255, 0.35)",
+          isHeader: true,
+        });
+
+        ctx.textAlign = "left";
+        ctx.fillStyle = colors.useCustom ? colors.footerText : "#FFFFFF";
+        ctx.font = getFont("900", 14);
+        ctx.fillText(`📱 PENDAFTARAN VIA WHATSAPP : ${hotlinePhone}`, pad + 24, footerY + 34);
+
+        ctx.fillStyle = colors.useCustom ? colors.footerSub : visualStyle === "neonNoir" ? "#A5F3FC" : visualStyle === "warmTerra" ? "#FED7AA" : visualStyle === "sakuraZen" ? "#FBCFE8" : "#A7F3D0";
+        ctx.font = getFont("800", 12);
+        ctx.fillText(`🌐 Cek Live Jadwal & Antrean Dokter: ${websiteUrl}`, pad + 24, footerY + 58);
+
+        if (showIgdBadge) {
+          const igdBadgeX = pad + (showQrCode ? 530 : 640);
+          const igdBadgeY = footerY + 20;
+          drawStyledCard(ctx, igdBadgeX, igdBadgeY, 210, 42, 14, {
+            fillTop: "rgba(225, 29, 72, 0.25)",
+            fillBottom: "rgba(159, 18, 57, 0.35)",
+            borderLight: "rgba(255, 255, 255, 0.25)",
           });
 
-          ctx.drawImage(qrImageRef.current, qrTileX + 4, qrTileY + 4, qrTileW - 8, qrTileH - 8);
-        } catch (e) {}
+          ctx.fillStyle = "#FFE4E6";
+          ctx.font = getFont("900", 12);
+          ctx.textAlign = "center";
+          ctx.fillText(emergencyBadgeText, igdBadgeX + 105, igdBadgeY + 25);
+        }
+
+        if (showQrCode && qrImageRef.current && qrImageRef.current.complete) {
+          try {
+            const qrTileW = 64;
+            const qrTileH = 64;
+            const qrTileX = pad + headerW - qrTileW - 12;
+            const qrTileY = footerY + 9;
+
+            drawStyledCard(ctx, qrTileX, qrTileY, qrTileW, qrTileH, 16, {
+              fillTop: "#FFFFFF",
+              fillBottom: "#F8FAFC",
+            });
+
+            ctx.drawImage(qrImageRef.current, qrTileX + 4, qrTileY + 4, qrTileW - 8, qrTileH - 8);
+          } catch (e) {}
+        }
       }
     }
 
@@ -1808,11 +1907,15 @@ export default function PosterStudioPage() {
     layoutMode,
     visualStyle,
     cardVariant,
+    headerStyle,
+    footerStyle,
+    emblemShape,
     leaveCardStyle,
     avatarMode,
     fontTheme,
     cardCornerRadius,
     headerEmblemIcon,
+    emergencyBadgeText,
     watermarkText,
     colors,
     showLeaveCard,
@@ -1820,6 +1923,7 @@ export default function PosterStudioPage() {
     showQrCode,
     showIgdBadge,
     showAccreditation,
+    showHeaderDateBadge,
     aspectRatio,
     hospitalName,
     hospitalSubtitle,
@@ -1893,7 +1997,7 @@ export default function PosterStudioPage() {
         title="Studio Poster Selebaran"
         accentWord="Poster"
         accentColor="text-emerald-600 dark:text-emerald-400"
-        subtitle="Generator poster visual resolusi tinggi dengan kustomisasi bebas warna, ikon spesialis, & elemen"
+        subtitle="Generator poster visual resolusi tinggi dengan kustomisasi bebas warna, header/footer, & elemen"
         iconClay="clay-icon-cyan"
         accentBarGradient="from-cyan-500 via-teal-500 to-emerald-500"
         actions={
@@ -1992,14 +2096,15 @@ export default function PosterStudioPage() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mt-2">
         {/* ── LEFT CONTROL PANEL (5 Cols) ── */}
         <div className="lg:col-span-5 flex flex-col gap-4">
-          {/* Studio Navigation Tabs */}
-          <div className="grid grid-cols-5 gap-1 p-1 rounded-[20px] clay-surface border border-zinc-200/50 dark:border-white/5">
+          {/* Studio Navigation Tabs (6 Tabs) */}
+          <div className="grid grid-cols-6 gap-1 p-1 rounded-[20px] clay-surface border border-zinc-200/50 dark:border-white/5">
             {[
               { id: "layout", label: "Style", icon: LayoutGrid },
               { id: "colors", label: "Warna", icon: Paintbrush },
+              { id: "headerFooter", label: "Header", icon: PanelTop },
               { id: "elements", label: "Elemen", icon: Sliders },
               { id: "presets", label: "Simpan", icon: Bookmark },
-              { id: "branding", label: "Info RS", icon: Award },
+              { id: "branding", label: "RS", icon: Award },
             ].map((tab) => {
               const Icon = tab.icon;
               return (
@@ -2168,42 +2273,6 @@ export default function PosterStudioPage() {
                   ))}
                 </div>
               </div>
-
-              {/* Aspect Ratio */}
-              <div className="pt-2 border-t border-zinc-200/50 dark:border-white/5">
-                <label className="text-[11px] font-black text-zinc-600 dark:text-zinc-300 mb-1.5 block">
-                  Ukuran Frame Output:
-                </label>
-                <div className="grid grid-cols-3 gap-1.5 clay-inset p-1 rounded-[16px]">
-                  <button
-                    onClick={() => setAspectRatio("poster")}
-                    className={cn(
-                      "py-1.5 rounded-[12px] text-xs font-black transition-all",
-                      aspectRatio === "poster" ? "clay-pill-blue text-white shadow-xs" : "text-zinc-500"
-                    )}
-                  >
-                    Poster 4:5
-                  </button>
-                  <button
-                    onClick={() => setAspectRatio("story")}
-                    className={cn(
-                      "py-1.5 rounded-[12px] text-xs font-black transition-all",
-                      aspectRatio === "story" ? "clay-pill-blue text-white shadow-xs" : "text-zinc-500"
-                    )}
-                  >
-                    Story 9:16
-                  </button>
-                  <button
-                    onClick={() => setAspectRatio("feed")}
-                    className={cn(
-                      "py-1.5 rounded-[12px] text-xs font-black transition-all",
-                      aspectRatio === "feed" ? "clay-pill-blue text-white shadow-xs" : "text-zinc-500"
-                    )}
-                  >
-                    Feed 1:1
-                  </button>
-                </div>
-              </div>
             </div>
           )}
 
@@ -2232,7 +2301,7 @@ export default function PosterStudioPage() {
                 </button>
               </div>
 
-              {/* Preset Palettes 2026 (12 Palettes) */}
+              {/* Preset Palettes 2026 */}
               {!colors.useCustom && (
                 <div>
                   <label className="text-[11px] font-black text-zinc-600 dark:text-zinc-300 mb-1.5 block">
@@ -2283,7 +2352,6 @@ export default function PosterStudioPage() {
                     </button>
                   </div>
 
-                  {/* Component Color Editor Helper */}
                   {[
                     {
                       title: "🌄 Background Poster",
@@ -2345,7 +2413,6 @@ export default function PosterStudioPage() {
                               <span className="font-mono text-zinc-700 dark:text-zinc-300">{colors[item.key]}</span>
                             </div>
                             <div className="flex items-center gap-2">
-                              {/* Circular Color Picker */}
                               <div className="relative w-8 h-8 rounded-full overflow-hidden shrink-0 shadow-sm border-2 border-white dark:border-zinc-700">
                                 <input
                                   type="color"
@@ -2354,7 +2421,6 @@ export default function PosterStudioPage() {
                                   className="absolute -top-2 -left-2 w-12 h-12 cursor-pointer border-0 p-0"
                                 />
                               </div>
-                              {/* Direct Hex Input */}
                               <input
                                 type="text"
                                 value={colors[item.key]}
@@ -2362,7 +2428,6 @@ export default function PosterStudioPage() {
                                 className="clay-inset px-2.5 py-1 rounded-[10px] text-xs font-mono font-bold text-zinc-900 dark:text-zinc-100 outline-none w-28"
                                 placeholder="#RRGGBB"
                               />
-                              {/* Quick Chip Swatches */}
                               <div className="flex items-center gap-1 overflow-x-auto py-0.5">
                                 {QUICK_CHIPS.slice(0, 5).map((chip, cIdx) => (
                                   <button
@@ -2385,7 +2450,128 @@ export default function PosterStudioPage() {
             </div>
           )}
 
-          {/* TAB 3: VISIBILITAS & ELEMEN */}
+          {/* TAB 3: HEADER & FOOTER ULTRA MODERN */}
+          {activeTab === "headerFooter" && (
+            <div className="clay-surface rounded-[24px] p-4 sm:p-5 flex flex-col gap-4 border border-zinc-200/50 dark:border-white/5">
+              {/* Header Styles */}
+              <div>
+                <label className="text-[11px] font-black uppercase tracking-wider text-zinc-500 dark:text-zinc-400 mb-1.5 block flex items-center gap-1.5">
+                  <PanelTop size={13} />
+                  <span>4 Pilihan Desain Header RS:</span>
+                </label>
+                <div className="grid grid-cols-2 gap-2 mt-1">
+                  {[
+                    { id: "islandFloating", label: "🏝️ Island Floating", sub: "Floating Apple Bar (Default)" },
+                    { id: "splitBento", label: "🍱 Split Dual Bento", sub: "Card RS + Card Tanggal Besar" },
+                    { id: "minimalHeadline", label: "📰 Minimal Editorial", sub: "Magazine Clean Line" },
+                    { id: "glassNotch", label: "📱 Dynamic Notch", sub: "Curved Glass Island" },
+                  ].map((h) => (
+                    <button
+                      key={h.id}
+                      onClick={() => setHeaderStyle(h.id as HeaderStyle)}
+                      className={cn(
+                        "py-2 px-2.5 rounded-[14px] text-xs font-black transition-all flex flex-col items-start gap-0.5 text-left",
+                        headerStyle === h.id ? "clay-pill-blue text-white shadow-xs" : "clay-button text-zinc-600 dark:text-zinc-300"
+                      )}
+                    >
+                      <span>{h.label}</span>
+                      <span className="text-[9.5px] opacity-75 font-normal">{h.sub}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Emblem Shape */}
+              <div className="pt-2 border-t border-zinc-200/50 dark:border-white/5">
+                <label className="text-[11px] font-black text-zinc-600 dark:text-zinc-300 mb-1.5 block">
+                  Bentuk Geometri Logo / Emblem:
+                </label>
+                <div className="grid grid-cols-3 gap-1.5 clay-inset p-1 rounded-[16px]">
+                  {[
+                    { id: "squircle", label: "Squircle" },
+                    { id: "circle", label: "Lingkaran" },
+                    { id: "hexagon", label: "Hexagon" },
+                  ].map((shape) => (
+                    <button
+                      key={shape.id}
+                      onClick={() => setEmblemShape(shape.id as EmblemShape)}
+                      className={cn(
+                        "py-1.5 rounded-[12px] text-xs font-black transition-all",
+                        emblemShape === shape.id ? "clay-pill-blue text-white shadow-xs" : "text-zinc-500"
+                      )}
+                    >
+                      {shape.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Footer Styles */}
+              <div className="pt-2 border-t border-zinc-200/50 dark:border-white/5">
+                <label className="text-[11px] font-black uppercase tracking-wider text-zinc-500 dark:text-zinc-400 mb-1.5 block flex items-center gap-1.5">
+                  <PanelBottom size={13} />
+                  <span>4 Pilihan Desain Footer Kontak:</span>
+                </label>
+                <div className="grid grid-cols-2 gap-2 mt-1">
+                  {[
+                    { id: "bentoHub", label: "🏛️ Bento Hub", sub: "Island Bar Lengkap (Default)" },
+                    { id: "floatingPillBar", label: "💊 Floating Capsule", sub: "macOS / iOS Dock Style" },
+                    { id: "splitActionStrip", label: "⚡ 3-Card Grid", sub: "Split WA + Web + IGD" },
+                    { id: "minimalStrip", label: "🔲 Minimalist Strip", sub: "Clean Ultra-thin Line" },
+                  ].map((f) => (
+                    <button
+                      key={f.id}
+                      onClick={() => setFooterStyle(f.id as FooterStyle)}
+                      className={cn(
+                        "py-2 px-2.5 rounded-[14px] text-xs font-black transition-all flex flex-col items-start gap-0.5 text-left",
+                        footerStyle === f.id ? "clay-pill-blue text-white shadow-xs" : "clay-button text-zinc-600 dark:text-zinc-300"
+                      )}
+                    >
+                      <span>{f.label}</span>
+                      <span className="text-[9.5px] opacity-75 font-normal">{f.sub}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Emergency Badge Text */}
+              <div className="pt-2 border-t border-zinc-200/50 dark:border-white/5">
+                <label className="text-[11px] font-black text-zinc-600 dark:text-zinc-300 mb-1 block">
+                  Teks Badge IGD Emergensi 24 Jam:
+                </label>
+                <input
+                  type="text"
+                  value={emergencyBadgeText}
+                  onChange={(e) => setEmergencyBadgeText(e.target.value)}
+                  className="clay-inset px-3 py-1.5 rounded-[12px] text-xs font-bold text-zinc-900 dark:text-zinc-100 outline-none w-full"
+                />
+              </div>
+
+              {/* Header / Footer Toggles */}
+              <div className="pt-2 border-t border-zinc-200/50 dark:border-white/5 flex flex-col gap-2">
+                <div className="flex items-center justify-between p-2 rounded-[12px] bg-zinc-100/70 dark:bg-zinc-800/40">
+                  <span className="text-xs font-bold text-zinc-700 dark:text-zinc-300">Badge Kalender Header</span>
+                  <button
+                    onClick={() => setShowHeaderDateBadge(!showHeaderDateBadge)}
+                    className={cn("w-9 h-5 rounded-full transition-all relative flex items-center p-0.5", showHeaderDateBadge ? "bg-emerald-500" : "bg-zinc-300 dark:bg-zinc-700")}
+                  >
+                    <div className={cn("w-4 h-4 rounded-full bg-white shadow-md transition-all", showHeaderDateBadge ? "translate-x-4" : "translate-x-0")} />
+                  </button>
+                </div>
+                <div className="flex items-center justify-between p-2 rounded-[12px] bg-zinc-100/70 dark:bg-zinc-800/40">
+                  <span className="text-xs font-bold text-zinc-700 dark:text-zinc-300">Badge IGD 24 Jam di Footer</span>
+                  <button
+                    onClick={() => setShowIgdBadge(!showIgdBadge)}
+                    className={cn("w-9 h-5 rounded-full transition-all relative flex items-center p-0.5", showIgdBadge ? "bg-emerald-500" : "bg-zinc-300 dark:bg-zinc-700")}
+                  >
+                    <div className={cn("w-4 h-4 rounded-full bg-white shadow-md transition-all", showIgdBadge ? "translate-x-4" : "translate-x-0")} />
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* TAB 4: VISIBILITAS & ELEMEN */}
           {activeTab === "elements" && (
             <div className="clay-surface rounded-[24px] p-4 sm:p-5 flex flex-col gap-4 border border-zinc-200/50 dark:border-white/5">
               <label className="text-[11px] font-black uppercase tracking-wider text-zinc-500 dark:text-zinc-400 block">
@@ -2517,7 +2703,7 @@ export default function PosterStudioPage() {
             </div>
           )}
 
-          {/* TAB 4: SIMPAN & LOAD PRESET */}
+          {/* TAB 5: SIMPAN & LOAD PRESET */}
           {activeTab === "presets" && (
             <div className="clay-surface rounded-[24px] p-4 sm:p-5 flex flex-col gap-4 border border-zinc-200/50 dark:border-white/5">
               <div>
@@ -2618,7 +2804,7 @@ export default function PosterStudioPage() {
             </div>
           )}
 
-          {/* TAB 5: BRANDING & DATA */}
+          {/* TAB 6: BRANDING & DATA */}
           {activeTab === "branding" && (
             <div className="clay-surface rounded-[24px] p-4 sm:p-5 flex flex-col gap-4 border border-zinc-200/50 dark:border-white/5">
               {/* Date Input */}

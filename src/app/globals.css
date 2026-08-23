@@ -428,16 +428,18 @@ html.reduce-effects .animate-spin {
   transform: translateY(-8px) scale(1.02);
 }
 
-/* ════════════════ CLAYMORPHISM DESIGN SYSTEM ════════════════ */
+/* ════════════════ CLAYMORPHISM DESIGN SYSTEM (ULTRA-SMOOTH) ════════════════ */
 
-/* Light Mode: Crisp Porcelain Clay */
+/* Light Mode: Crisp Porcelain Clay with Ultra-Smooth Layered Dispersion */
 .clay-surface {
   background: #f0f4f9;
   box-shadow: 
-    8px 8px 20px rgba(160, 175, 200, 0.35),
-    -6px -6px 16px rgba(255, 255, 255, 0.95),
+    0 2px 4px rgba(160, 175, 200, 0.08),
+    0 8px 20px rgba(160, 175, 200, 0.18),
+    0 18px 36px rgba(160, 175, 200, 0.12),
+    -4px -4px 14px rgba(255, 255, 255, 0.95),
     inset 1.5px 1.5px 2px rgba(255, 255, 255, 1),
-    inset -2px -2px 4px rgba(160, 175, 200, 0.12);
+    inset -2px -2px 4px rgba(160, 175, 200, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.9);
   transform: translateZ(0);
   backface-visibility: hidden;
@@ -447,12 +449,14 @@ html.reduce-effects .animate-spin {
 .clay-button {
   background: #f4f6fa;
   box-shadow: 
-    4px 4px 10px rgba(160, 175, 200, 0.25),
-    -3px -3px 8px rgba(255, 255, 255, 0.9),
+    0 1px 2px rgba(160, 175, 200, 0.08),
+    0 4px 12px rgba(160, 175, 200, 0.15),
+    0 10px 20px rgba(160, 175, 200, 0.08),
+    -2px -2px 8px rgba(255, 255, 255, 0.9),
     inset 1px 1px 2px rgba(255, 255, 255, 0.95),
-    inset -1px -1px 2px rgba(160, 175, 200, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.8);
-  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    inset -1px -1px 2px rgba(160, 175, 200, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   transform: translateZ(0);
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
@@ -461,83 +465,93 @@ html.reduce-effects .animate-spin {
 .clay-button:active {
   transform: translateY(1px);
   box-shadow: 
-    inset 2px 2px 4px rgba(160, 175, 200, 0.35),
+    inset 2px 2px 4px rgba(160, 175, 200, 0.25),
     inset -2px -2px 4px rgba(255, 255, 255, 0.9);
 }
 
 .clay-inset {
   background: #eef2f7;
   box-shadow: 
-    inset 3px 3px 6px rgba(160, 175, 200, 0.28),
-    inset -3px -3px 6px rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(255, 255, 255, 0.5);
+    inset 2px 2px 5px rgba(160, 175, 200, 0.2),
+    inset -2px -2px 5px rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.6);
 }
 
-/* Dark Mode: Obsidian Matte Clay */
+/* Dark Mode: Obsidian Matte Clay with Ultra-Smooth Ambient Glow */
 .dark .clay-surface {
   background: #141722;
   box-shadow: 
-    10px 10px 24px rgba(0, 0, 0, 0.6),
-    -6px -6px 18px rgba(255, 255, 255, 0.02),
+    0 2px 4px rgba(0, 0, 0, 0.4),
+    0 8px 24px rgba(0, 0, 0, 0.5),
+    0 20px 48px rgba(0, 0, 0, 0.35),
+    -4px -4px 16px rgba(255, 255, 255, 0.015),
     inset 1.5px 1.5px 2px rgba(255, 255, 255, 0.08),
-    inset -2px -2px 4px rgba(0, 0, 0, 0.5);
+    inset -2px -2px 4px rgba(0, 0, 0, 0.4);
   border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .dark .clay-button {
   background: #1a1e2b;
   box-shadow: 
-    5px 5px 12px rgba(0, 0, 0, 0.5),
-    -3px -3px 8px rgba(255, 255, 255, 0.02),
+    0 2px 4px rgba(0, 0, 0, 0.3),
+    0 6px 16px rgba(0, 0, 0, 0.4),
+    0 12px 24px rgba(0, 0, 0, 0.2),
+    -2px -2px 8px rgba(255, 255, 255, 0.015),
     inset 1px 1px 2px rgba(255, 255, 255, 0.06),
-    inset -1px -1px 2px rgba(0, 0, 0, 0.4);
+    inset -1px -1px 2px rgba(0, 0, 0, 0.35);
   border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .dark .clay-button:active {
   transform: translateY(1px);
   box-shadow: 
-    inset 3px 3px 6px rgba(0, 0, 0, 0.6),
+    inset 3px 3px 6px rgba(0, 0, 0, 0.5),
     inset -2px -2px 4px rgba(255, 255, 255, 0.03);
 }
 
 .dark .clay-inset {
   background: #0f121a;
   box-shadow: 
-    inset 3px 3px 7px rgba(0, 0, 0, 0.7),
+    inset 2px 2px 6px rgba(0, 0, 0, 0.6),
     inset -2px -2px 5px rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(255, 255, 255, 0.03);
 }
 
-/* Clay Colored Chips */
+/* Clay Colored Chips with Ultra-Smooth Glow Dispersion */
 .clay-pill-blue {
   background: linear-gradient(135deg, #3b82f6, #2563eb);
   box-shadow: 
-    4px 4px 12px rgba(37, 99, 235, 0.35),
-    -2px -2px 8px rgba(255, 255, 255, 0.3),
+    0 2px 6px rgba(37, 99, 235, 0.2),
+    0 6px 18px rgba(37, 99, 235, 0.35),
+    0 12px 28px rgba(37, 99, 235, 0.15),
+    -1px -1px 6px rgba(255, 255, 255, 0.3),
     inset 1.5px 1.5px 3px rgba(255, 255, 255, 0.4),
-    inset -1.5px -1.5px 3px rgba(0, 0, 0, 0.25);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+    inset -1.5px -1.5px 3px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.25);
 }
 
 .clay-pill-emerald {
   background: linear-gradient(135deg, #10b981, #059669);
   box-shadow: 
-    4px 4px 12px rgba(5, 150, 105, 0.35),
-    -2px -2px 8px rgba(255, 255, 255, 0.3),
+    0 2px 6px rgba(5, 150, 105, 0.2),
+    0 6px 18px rgba(5, 150, 105, 0.35),
+    0 12px 28px rgba(5, 150, 105, 0.15),
+    -1px -1px 6px rgba(255, 255, 255, 0.3),
     inset 1.5px 1.5px 3px rgba(255, 255, 255, 0.4),
-    inset -1.5px -1.5px 3px rgba(0, 0, 0, 0.25);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+    inset -1.5px -1.5px 3px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.25);
 }
 
 .clay-pill-rose {
   background: linear-gradient(135deg, #f43f5e, #e11d48);
   box-shadow: 
-    4px 4px 12px rgba(225, 29, 72, 0.35),
-    -2px -2px 8px rgba(255, 255, 255, 0.3),
+    0 2px 6px rgba(225, 29, 72, 0.2),
+    0 6px 18px rgba(225, 29, 72, 0.35),
+    0 12px 28px rgba(225, 29, 72, 0.15),
+    -1px -1px 6px rgba(255, 255, 255, 0.3),
     inset 1.5px 1.5px 3px rgba(255, 255, 255, 0.4),
-    inset -1.5px -1.5px 3px rgba(0, 0, 0, 0.25);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+    inset -1.5px -1.5px 3px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.25);
 }
 
 .clay-pill-amber {
