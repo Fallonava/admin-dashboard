@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="id">
+<html lang="id" data-theme="light">
   <head>
     <meta charset="UTF-8" />
     <meta
@@ -8,8 +8,9 @@
     />
     <title>Jadwal Dokter - RSU Siaga Medika</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800;900&display=swap"
       rel="stylesheet"
     />
     <link
@@ -18,8 +19,6 @@
     />
     <style>
       /* Google Fonts Material Icons Round */
-      /* Google Fonts Material Icons Round loaded via <link> */
-
       .material-icons-round {
         font-family: "Material Icons Round";
         font-weight: normal;
@@ -32,72 +31,100 @@
         word-wrap: normal;
         white-space: nowrap;
         direction: ltr;
-
-        /* Support for all WebKit browsers. */
         -webkit-font-smoothing: antialiased;
-        /* Support for Safari and Chrome. */
         text-rendering: optimizeLegibility;
-
-        /* Support for Firefox. */
         -moz-osx-font-smoothing: grayscale;
-
-        /* Support for IE. */
         font-feature-settings: "liga";
       }
 
       :root {
-        /* Semantic Base Colors (Clinical Dark) */
-        --bg-body: #0B1120;
-        --bg-ambient: var(--bg-body); /* Neomorphism solid background */
-        --neo-shadow-dark: rgba(0, 0, 0, 0.5);
-        --neo-shadow-light: rgba(255, 255, 255, 0.08);
-        --neo-inset-dark: inset 4px 4px 8px rgba(0, 0, 0, 0.5);
-        --neo-inset-light: inset -4px -4px 8px rgba(255, 255, 255, 0.08);
+        /* ═══ MODERN SOFT CLAYMORPHISM 3D PALETTE (DARK) ═══ */
+        --bg-body: #080C14;
+        --bg-ambient: radial-gradient(circle at 50% 0%, #111A2E 0%, #080C14 75%);
+        --clay-bg-surface: #101726;
+        --clay-border: rgba(255, 255, 255, 0.08);
+        --clay-shadow-outer: 0 14px 32px -4px rgba(0, 0, 0, 0.6), 0 4px 12px -2px rgba(0, 0, 0, 0.4);
+        --clay-shadow-inner: inset 1px 1px 1px rgba(255, 255, 255, 0.14), inset -1px -1px 2px rgba(0, 0, 0, 0.5);
+        --clay-inset: inset 3px 3px 6px rgba(0, 0, 0, 0.55), inset -2px -2px 5px rgba(255, 255, 255, 0.05);
+
+        --neo-shadow-dark: rgba(0, 0, 0, 0.6);
+        --neo-shadow-light: rgba(255, 255, 255, 0.06);
+        --neo-inset-dark: inset 3px 3px 6px rgba(0, 0, 0, 0.55);
+        --neo-inset-light: inset -2px -2px 5px rgba(255, 255, 255, 0.05);
         
         --text-primary: #F8FAFC;
         --text-secondary: #94A3B8;
-        --glass-panel: var(--bg-body); /* Solid for Neomorphism */
-        --card-bg: var(--bg-body); /* Solid for Neomorphism */
+        --text-muted: #64748B;
+        --glass-panel: #101726;
+        --card-bg: #101726;
         --header-bg: transparent;
-        --border-light: transparent;
-        --platter-border: transparent; 
-        --footer-bg: var(--bg-body);
+        --border-light: rgba(255, 255, 255, 0.08);
+        --platter-border: rgba(255, 255, 255, 0.08); 
+        --footer-bg: #101726;
         --app-bg-overlay: transparent;
-        --shadow: 8px 8px 16px var(--neo-shadow-dark), -8px -8px 16px var(--neo-shadow-light);
-        --accent-blue: #0284C7; /* Medical Sky Blue */
-        --accent-purple: #7C3AED; /* Violet */
-        --accent-green: #10B981; /* Emerald / Safe */
-        --accent-orange: #F59E0B; /* Amber / Warning */
-        --accent-red: #E11D48; /* Rose / Critical */
+        --shadow: var(--clay-shadow-outer), var(--clay-shadow-inner);
+        
+        /* Vibrant 3D Clinical Statuses */
+        --accent-emerald: #10B981;
+        --accent-emerald-gradient: linear-gradient(135deg, #10B981 0%, #059669 100%);
+        --accent-emerald-glow: rgba(16, 185, 129, 0.4);
+
+        --accent-violet: #8B5CF6;
+        --accent-violet-gradient: linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%);
+        --accent-violet-glow: rgba(139, 92, 246, 0.4);
+
+        --accent-amber: #F59E0B;
+        --accent-amber-gradient: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+        --accent-amber-glow: rgba(245, 158, 11, 0.4);
+
+        --accent-rose: #F43F5E;
+        --accent-rose-gradient: linear-gradient(135deg, #F43F5E 0%, #E11D48 100%);
+        --accent-rose-glow: rgba(244, 63, 94, 0.4);
+
+        --accent-blue: #0EA5E9;
+        --accent-sky-gradient: linear-gradient(135deg, #0EA5E9 0%, #0284C7 100%);
+        --accent-sky-glow: rgba(14, 165, 233, 0.4);
+
+        --accent-purple: #7C3AED;
+        --accent-green: #10B981;
+        --accent-orange: #F59E0B;
+        --accent-red: #F43F5E;
         --logo-text: #ffffff;
       }
 
-      /* Light Mode Theme (Clinical Light) */
+      /* Light Mode Theme (Modern Apple iOS Soft Clay Ceramic) */
       [data-theme="light"] {
-        --bg-body: #E0E5EC; /* Light Gray for Neomorphism */
-        --bg-ambient: var(--bg-body);
-        --neo-shadow-dark: #a3b1c6;
+        --bg-body: #F4F7FB;
+        --bg-ambient: radial-gradient(at 0% 0%, rgba(224, 234, 252, 0.8) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(237, 231, 246, 0.7) 0px, transparent 50%), #F4F7FB;
+        --clay-bg-surface: #FFFFFF;
+        --clay-border: rgba(255, 255, 255, 0.95);
+        --clay-shadow-outer: 0 10px 30px -4px rgba(45, 65, 95, 0.06), 0 2px 8px -2px rgba(45, 65, 95, 0.03);
+        --clay-shadow-inner: inset 0 2px 3px rgba(255, 255, 255, 0.98), inset 0 -2px 3px rgba(180, 195, 215, 0.12);
+        --clay-inset: inset 2px 2px 5px rgba(148, 163, 184, 0.16), inset -2px -2px 5px rgba(255, 255, 255, 0.95);
+
+        --neo-shadow-dark: rgba(148, 163, 184, 0.25);
         --neo-shadow-light: #ffffff;
-        --neo-inset-dark: inset 4px 4px 8px #a3b1c6;
-        --neo-inset-light: inset -4px -4px 8px #ffffff;
+        --neo-inset-dark: inset 2px 2px 5px rgba(148, 163, 184, 0.16);
+        --neo-inset-light: inset -2px -2px 5px rgba(255, 255, 255, 0.95);
 
         --text-primary: #0F172A;
-        --text-secondary: #5f6f87;
-        --glass-panel: var(--bg-body);
-        --card-bg: var(--bg-body);
+        --text-secondary: #475569;
+        --text-muted: #94A3B8;
+        --glass-panel: #FFFFFF;
+        --card-bg: #FFFFFF;
         --header-bg: transparent;
-        --border-light: transparent;
-        --platter-border: transparent;
-        --footer-bg: var(--bg-body);
+        --border-light: rgba(226, 234, 245, 0.85);
+        --platter-border: rgba(226, 234, 245, 0.85);
+        --footer-bg: #FFFFFF;
         --app-bg-overlay: transparent;
-        --shadow: 8px 8px 16px var(--neo-shadow-dark), -8px -8px 16px var(--neo-shadow-light);
+        --shadow: var(--clay-shadow-outer), var(--clay-shadow-inner);
         --logo-text: #0F172A;
         
-        --accent-blue: #0369A1; /* Darker Sky for contrast */
+        --accent-blue: #0284C7;
         --accent-purple: #6D28D9;
-        --accent-green: #0D9488; /* Teal for high visibility */
-        --accent-orange: #D97706; /* Darker Amber */
-        --accent-red: #BE123C; /* Darker Rose */
+        --accent-green: #059669;
+        --accent-orange: #D97706;
+        --accent-red: #E11D48;
       }
 
       /* ===== RESET & BASE ===== */
@@ -245,36 +272,29 @@
       .brand {
         display: flex;
         align-items: center;
-        gap: 14px;
+        gap: 12px;
       }
 
       .logo-box {
-        width: 44px;
-        height: 44px;
-        border-radius: 12px;
-        background: #ffffff; /* Memalsukan efek transparan logo */
+        width: 42px;
+        height: 42px;
+        border-radius: 14px;
+        background: #FFFFFF;
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: 
-          4px 4px 10px var(--neo-shadow-dark),
-          -4px -4px 10px var(--neo-shadow-light);
-        overflow: hidden; /* Mengunci pendaran gambar */
-        border: 1px solid rgba(255, 255, 255, 0.4); /* Glass-glint frame tipis */
+        box-shadow: 0 6px 16px -2px rgba(45, 65, 95, 0.08), inset 0 1.5px 1.5px #FFFFFF;
+        overflow: hidden;
+        border: 1px solid rgba(226, 234, 245, 0.9);
         animation: slow-breathe 4s ease-in-out infinite;
       }
 
       @keyframes slow-breathe {
         0%, 100% {
-          box-shadow: 
-            4px 4px 10px var(--neo-shadow-dark),
-            -4px -4px 10px var(--neo-shadow-light);
+          box-shadow: 0 6px 16px -2px rgba(45, 65, 95, 0.08), inset 0 1.5px 1.5px #FFFFFF;
         }
         50% {
-          box-shadow: 
-            4px 4px 10px var(--neo-shadow-dark),
-            -4px -4px 10px var(--neo-shadow-light),
-            0 0 15px rgba(16, 185, 129, 0.25); /* Emerald Green Status Aura */
+          box-shadow: 0 8px 20px -2px rgba(5, 150, 105, 0.2), inset 0 1.5px 1.5px #FFFFFF;
         }
       }
 
@@ -282,24 +302,24 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
-        mix-blend-mode: multiply; /* Membuang sisa offset putih, jika ada */
       }
 
       .title-group h1 {
-        font-size: 18px;
-        font-weight: 700;
-        letter-spacing: -0.02em;
-        line-height: 1.1;
-        color: var(--text-primary);
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 13.5px;
+        font-weight: 800;
+        letter-spacing: -0.01em;
+        line-height: 1.15;
+        color: #0F172A;
       }
 
       .title-group span {
-        font-size: 11px;
-        font-weight: 600;
-        opacity: 1; /* Diperkuat untuk aksesibilitas */
-        letter-spacing: 0.02em;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 9.5px;
+        font-weight: 800;
+        letter-spacing: 0.05em;
         text-transform: uppercase;
-        color: var(--text-secondary);
+        color: #64748B;
       }
 
       .time-group {
@@ -307,19 +327,22 @@
       }
 
       .clock {
-        font-size: 32px;
-        font-weight: 400;
-        letter-spacing: -0.03em;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 28px;
+        font-weight: 800;
+        letter-spacing: -0.02em;
         font-variant-numeric: tabular-nums;
         line-height: 1;
+        color: #0F172A;
       }
 
       .date {
-        font-size: 12px;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 10.5px;
         font-weight: 700;
-        opacity: 1; /* Diperkuat */
-        letter-spacing: 0.02em;
+        letter-spacing: 0.04em;
         text-transform: uppercase;
+        color: #64748B;
         margin-top: 2px;
       }
 
@@ -335,10 +358,10 @@
         flex: 1;
         display: flex;
         flex-direction: column;
-        background: var(--glass-panel); /* Kept solid via variable */
-        border-radius: 20px; 
-        box-shadow: var(--shadow); /* Refers to our new inset-heavy 3D shadow */
-        border: 1px solid var(--border-light);
+        background: var(--clay-bg-surface);
+        border-radius: 28px; 
+        box-shadow: var(--clay-shadow-outer), var(--clay-shadow-inner);
+        border: 1px solid var(--clay-border);
         overflow: hidden;
         transition: background 0.5s ease;
       }
@@ -349,59 +372,61 @@
         min-width: 300px;
         display: flex;
         flex-direction: column;
-        background: var(--bg-body);
+        background: var(--clay-bg-surface);
         border-right: none;
-        border-radius: 24px;
+        border-radius: 28px;
         margin-right: 0;
         overflow: hidden;
         z-index: 10;
-        /* Sidebar Neomorph Trough (Debossed) */
-        box-shadow: var(--neo-inset-dark), var(--neo-inset-light);
+        box-shadow: var(--clay-shadow-outer), var(--clay-shadow-inner);
+        border: 1px solid var(--clay-border);
       }
 
       .sidebar-panel .island-header {
         background: transparent;
-        border-bottom: 1px solid rgba(125, 125, 125, 0.06);
+        border-bottom: 1px solid var(--border-light);
+        padding: 12px 18px;
       }
 
-      /* Sidebar Item Tweaks - Mencegah konten bertumpuk pada layar 1080p */
+      /* Sidebar Compact Platter */
       .sidebar-panel .platter {
-        background: var(--bg-body);
-        border: none;
-        box-shadow: 4px 4px 10px var(--neo-shadow-dark), -4px -4px 10px var(--neo-shadow-light);
-        padding: 10px 12px;
-        border-radius: 12px;
+        background: var(--clay-bg-surface);
+        border: 1px solid var(--clay-border);
+        box-shadow: var(--clay-shadow-outer), var(--clay-shadow-inner);
+        padding: 12px 14px;
+        border-radius: 18px;
         transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         color: var(--text-primary);
         gap: 12px;
-        margin: 8px 16px;
+        margin: 6px 14px;
       }
 
       .sidebar-panel .platter-main {
-        gap: 8px;
+        gap: 10px;
         align-items: center;
       }
       
       .sidebar-panel .platter::before {
-        width: 3px;
-        top: 8px;
-        bottom: 8px;
+        width: 4px;
+        top: 10px;
+        bottom: 10px;
       }
 
       .sidebar-panel .initials {
-        width: 34px;
-        height: 34px;
-        font-size: 12px;
+        width: 38px;
+        height: 38px;
+        font-size: 13px;
+        border-radius: 12px;
         flex-shrink: 0;
       }
 
       .sidebar-panel .info-col {
         flex: 1;
-        min-width: 0; /* Ensures truncation works */
+        min-width: 0;
       }
 
       .sidebar-panel .doc-spec {
-        font-size: 13px;
+        font-size: 14px;
         line-height: 1.2;
         margin-bottom: 2px;
         white-space: nowrap;
@@ -410,7 +435,7 @@
       }
 
       .sidebar-panel .doc-name {
-        font-size: 11px;
+        font-size: 11.5px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -422,21 +447,23 @@
       }
 
       .sidebar-panel .status-pill {
-        padding: 4px 8px;
-        font-size: 8px;
+        padding: 3px 10px;
+        font-size: 9px;
       }
 
       .sidebar-panel .jam-val {
         font-size: 13px;
       }
 
-      /* Stat Panel */
+      /* Stat Panel - Modern Clay Inset */
       .stat-panel {
         display: flex;
         justify-content: space-around;
-        padding: 14px 16px;
-        background: transparent;
-        gap: 12px;
+        padding: 10px 14px;
+        background: var(--clay-inset);
+        margin: 6px 16px 12px 16px;
+        border-radius: 18px;
+        gap: 8px;
       }
 
       .stat-item {
@@ -444,11 +471,174 @@
         flex-direction: column;
         align-items: center;
         flex: 1;
-        background: var(--bg-body);
-        padding: 8px 0;
-        border-radius: 12px;
-        /* Extruded Neomorph Button inside Trough */
-        box-shadow: 4px 4px 8px var(--neo-shadow-dark), -4px -4px 8px var(--neo-shadow-light);
+        background: transparent;
+        padding: 4px 0;
+      }
+
+      .stat-count {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 20px;
+        font-weight: 800;
+        line-height: 1.1;
+      }
+
+      .stat-label {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 9.5px;
+        font-weight: 800;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin-top: 2px;
+      }
+
+      /* ===== 🚀 APPLE iOS SOFT CLAY SMART TV QR HERO CARD ===== */
+      .sidebar-qr-hotline {
+        padding: 12px 14px;
+        border-top: 1px solid rgba(226, 234, 245, 0.9);
+        background: #FFFFFF;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 10px;
+        flex-shrink: 0;
+      }
+
+      .tv-qr-hero-card {
+        width: 100%;
+        background: #FFFFFF;
+        border-radius: 20px;
+        padding: 10px 12px;
+        border: 1px solid rgba(226, 234, 245, 0.9);
+        box-shadow: 0 8px 24px -4px rgba(45, 65, 95, 0.06), inset 0 1.5px 1.5px #FFFFFF;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .tv-qr-header-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 3px 10px;
+        border-radius: 9999px;
+        background: #EFF6FF;
+        color: #0284C7;
+        border: 1px solid #BAE6FD;
+      }
+
+      .tv-qr-header-badge .radar-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #0284C7;
+        animation: radarPulse 1.4s infinite;
+        box-shadow: 0 0 8px rgba(2, 132, 199, 0.6);
+      }
+
+      @keyframes radarPulse {
+        0%, 100% { transform: scale(0.9); opacity: 0.7; }
+        50% { transform: scale(1.25); opacity: 1; }
+      }
+
+      .tv-qr-header-badge span {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 10px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .dynamic-qr-box {
+        width: 130px;
+        height: 130px;
+        border-radius: 14px;
+        background: #FFFFFF;
+        padding: 6px;
+        box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.06), 0 2px 6px rgba(15, 23, 42, 0.04);
+        border: 1px solid rgba(226, 232, 240, 0.9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+
+      .dynamic-qr-box svg {
+        width: 100% !important;
+        height: 100% !important;
+        display: block;
+        shape-rendering: crispEdges !important;
+        border-radius: 6px;
+      }
+
+      .tv-qr-url-pill {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 10px;
+        border-radius: 10px;
+        background: #F8FAFC;
+        border: 1px solid rgba(226, 232, 240, 0.9);
+        font-family: "Plus Jakarta Sans", monospace;
+        font-size: 10px;
+        font-weight: 800;
+        color: #0F172A;
+      }
+
+      .hotline-highlight-box {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 12px;
+        background: linear-gradient(135deg, #059669 0%, #047857 100%);
+        border-radius: 14px;
+        color: #FFFFFF;
+        text-decoration: none;
+        box-shadow: 0 6px 16px -2px rgba(5, 150, 105, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.35);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      .hotline-icon-wrap {
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .hotline-icon-wrap .material-icons-round {
+        font-size: 16px;
+        color: #FFFFFF;
+      }
+
+      .hotline-details {
+        display: flex;
+        flex-direction: column;
+        text-align: left;
+        flex: 1;
+        margin-left: 8px;
+      }
+
+      .hotline-tag {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 8px;
+        font-weight: 800;
+        letter-spacing: 0.05em;
+        opacity: 0.9;
+        text-transform: uppercase;
+      }
+
+      .hotline-num {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 12px;
+        font-weight: 900;
+        letter-spacing: 0.02em;
       }
 
       /* ===== 3D EMPTY STATE (NEO ORB) ===== */
@@ -706,64 +896,72 @@
         /* Hint to browser compositor */
       }
 
-      /* ===== PLATTER CARD (Neo-Bento Style) ===== */
+      /* ===== PLATTER CARD (Modern Apple iOS Soft Clay Ceramic) ===== */
       .platter {
         display: flex;
         flex-direction: column;
         align-items: stretch;
-        gap: 10px;
-        padding: 14px 18px; 
-        background: var(--bg-body); /* Neomorphism needs match */
-        border-radius: 16px;
-        border: none;
-        box-shadow: 
-          8px 8px 16px var(--neo-shadow-dark),
-          -8px -8px 16px var(--neo-shadow-light);
+        gap: 12px;
+        padding: 16px 20px; 
+        background: #FFFFFF;
+        border-radius: 24px;
+        border: 1px solid rgba(226, 234, 245, 0.85);
+        box-shadow: 0 10px 28px -4px rgba(45, 65, 95, 0.05), inset 0 1.5px 1.5px #FFFFFF;
         position: relative;
         overflow: hidden;
         transform: translateZ(0) translateY(0);
         opacity: 1; 
         transition:
           opacity 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),
-          transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1),
-          box-shadow 0.4s ease,
-          background-color 0.4s ease;
+          transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
+          box-shadow 0.3s ease;
       }
 
       [data-theme="light"] .platter {
         opacity: 1;
-        background: var(--bg-body);
+        background: #FFFFFF;
+        border: 1px solid rgba(226, 234, 245, 0.85);
+        box-shadow: 0 10px 28px -4px rgba(45, 65, 95, 0.05), inset 0 1.5px 1.5px #FFFFFF;
       }
 
-      /* Status Edge Accent */
+      /* Status Edge Accent Glow */
       .platter::before {
         content: "";
         position: absolute;
         left: 0;
-        top: 16px;
-        bottom: 16px;
-        width: 4px;
+        top: 14px;
+        bottom: 14px;
+        width: 4.5px;
         background: var(--status-color);
-        border-radius: 0 4px 4px 0;
-        opacity: 0.8;
+        border-radius: 0 6px 6px 0;
+        box-shadow: 0 0 12px var(--status-color);
+        opacity: 0.95;
       }
 
-      /* Avatar */
+      /* 3D Clay Ceramic Avatar */
       .initials {
-        width: 36px;
-        height: 36px;
-        border-radius: 10px;
-        background: var(--bg-body);
-        box-shadow: var(--neo-inset-dark), var(--neo-inset-light);
+        width: 44px;
+        height: 44px;
+        border-radius: 14px;
+        background: #F8FAFC;
+        box-shadow: inset 0 1.5px 2px #FFFFFF, 0 3px 8px rgba(45, 65, 95, 0.04);
+        border: 1px solid rgba(226, 232, 240, 0.9);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 14px;
+        font-family: "Plus Jakarta Sans", "Inter", sans-serif;
+        font-size: 15px;
         font-weight: 800;
         letter-spacing: -0.02em;
-        color: var(--text-primary);
+        color: #0F172A;
         flex-shrink: 0;
         position: relative;
+      }
+
+      [data-theme="light"] .initials {
+        background: #F8FAFC;
+        border: 1px solid rgba(226, 232, 240, 0.9);
+        box-shadow: inset 0 1.5px 2px #FFFFFF, 0 3px 8px rgba(45, 65, 95, 0.04);
       }
 
       /* Info */
@@ -772,14 +970,15 @@
         min-width: 0;
         display: flex;
         flex-direction: column;
-        gap: 2px;
+        gap: 3px;
       }
 
       .doc-name {
-        font-size: 13px; /* Name Integer - Non Blur */
-        font-weight: 600;
-        color: var(--text-secondary);
-        white-space: normal; /* wrap */
+        font-family: "Inter", -apple-system, sans-serif;
+        font-size: 13.5px;
+        font-weight: 700;
+        color: #64748B;
+        white-space: normal;
         display: -webkit-box;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
@@ -790,13 +989,14 @@
       }
 
       .doc-spec {
-        font-size: 17px; /* Specialty - Huge and Prominent */
+        font-family: "Plus Jakarta Sans", "Inter", sans-serif;
+        font-size: 17px;
         font-weight: 800;
-        color: var(--text-primary);
+        color: #0F172A;
         text-transform: uppercase;
-        letter-spacing: 0.02em;
+        letter-spacing: -0.01em;
         margin-bottom: 2px;
-        line-height: 1.1;
+        line-height: 1.15;
       }
 
       /* Meta */
@@ -808,33 +1008,36 @@
         flex-shrink: 0;
       }
 
+      /* ═══ 3D CLAY STATUS PILLS ═══ */
       .status-pill {
-        padding: 4px 12px;
-        border-radius: 8px;
-        font-size: 10px;
+        padding: 5px 14px;
+        border-radius: 9999px;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 10.5px;
         font-weight: 800;
         text-transform: uppercase;
         letter-spacing: 0.08em;
-        background: var(--bg-body);
-        color: var(--status-color);
+        background: var(--status-color);
+        color: #ffffff;
         display: flex;
         align-items: center;
         gap: 6px;
         position: relative; 
-        /* Debossed Neo */
-        box-shadow: var(--neo-inset-dark), var(--neo-inset-light);
+        box-shadow: 0 4px 14px var(--status-bg), inset 0 1px 1px rgba(255, 255, 255, 0.45);
+        border: 1px solid rgba(255, 255, 255, 0.2);
       }
       
-      /* The Pulse Dot next to active or penuh pills */
-      .platter.active .status-pill::after, .platter.st-penuh .status-pill::after {
+      /* Pulse Dot next to active pills */
+      .platter.active .status-pill::after, .platter.st-penuh .status-pill::after, .platter.st-praktek .status-pill::after {
         content: '';
         display: block;
         width: 6px;
         height: 6px;
         border-radius: 50%;
-        background-color: var(--status-color);
+        background-color: #ffffff;
         animation: ecg-pulse 2s infinite;
-        margin-left: 4px;
+        margin-left: 2px;
+        box-shadow: 0 0 8px rgba(255, 255, 255, 0.9);
       }
 
       /* Jam / Call Info */
@@ -842,112 +1045,107 @@
         display: flex;
         align-items: center;
         justify-content: flex-end;
+        background: rgba(241, 245, 249, 0.9);
+        border: 1px solid rgba(226, 232, 240, 0.8);
+        padding: 4px 10px;
+        border-radius: 12px;
       }
 
       .jam-val {
-        font-size: 15px; /* Boosted visibility */
-        font-weight: 900;
-        color: var(--text-primary);
+        font-family: "Plus Jakarta Sans", "Inter", sans-serif;
+        font-size: 14px;
+        font-weight: 800;
+        color: #0F172A;
         font-variant-numeric: tabular-nums;
-        letter-spacing: -0.02em;
+        letter-spacing: 0.02em;
         line-height: 1;
       }
 
-      /* Status Styles - Synced with AI Automation (Brand Signature Palette) */
-      .st-praktek { --status-color: #10B981; --status-bg: rgba(16, 185, 129, 0.2); }
-      .st-pendaftaran { --status-color: #F97316; --status-bg: rgba(249, 115, 22, 0.2); }
-      .st-terjadwal { --status-color: #0EA5E9; --status-bg: rgba(14, 165, 233, 0.2); opacity: 0.8; }
-      .st-selesai { --status-color: #64748B; --status-bg: rgba(100, 116, 139, 0.2); opacity: 0.6; }
-      .st-penuh { --status-color: #F59E0B; --status-bg: rgba(245, 158, 11, 0.2); }
-      .st-operasi { --status-color: #8B5CF6; --status-bg: rgba(139, 92, 246, 0.2); }
-      .st-cuti { --status-color: #EF4444; --status-bg: rgba(239, 68, 68, 0.2); opacity: 0.65; }
-      .st-libur { --status-color: #8e8e93; --status-bg: rgba(142, 142, 147, 0.2); display: none; }
-      .platter.st-praktek .initials { background: var(--bg-body); color: #10B981; box-shadow: var(--neo-inset-dark), var(--neo-inset-light); }
-      .platter.st-pendaftaran .initials { background: var(--bg-body); color: #F97316; box-shadow: var(--neo-inset-dark), var(--neo-inset-light); }
-      .platter.st-terjadwal .initials { background: var(--bg-body); color: #0EA5E9; box-shadow: var(--neo-inset-dark), var(--neo-inset-light); }
-      .platter.st-selesai .initials { background: var(--bg-body); color: #64748B; box-shadow: var(--neo-inset-dark), var(--neo-inset-light); }
-      .platter.st-penuh .initials { background: var(--bg-body); color: #F59E0B; box-shadow: var(--neo-inset-dark), var(--neo-inset-light); }
-      .platter.st-cuti .initials { background: var(--bg-body); color: #EF4444; box-shadow: var(--neo-inset-dark), var(--neo-inset-light); }
-      .platter.st-operasi .initials { background: var(--bg-body); color: #8B5CF6; box-shadow: var(--neo-inset-dark), var(--neo-inset-light); }
+      /* Status Styles - Modern 3D Clinical Gradients */
+      .st-praktek { --status-color: #059669; --status-bg: rgba(5, 150, 105, 0.28); }
+      .st-pendaftaran { --status-color: #D97706; --status-bg: rgba(217, 119, 6, 0.28); }
+      .st-terjadwal { --status-color: #0284C7; --status-bg: rgba(2, 132, 199, 0.28); }
+      .st-selesai { --status-color: #64748B; --status-bg: rgba(100, 116, 139, 0.2); opacity: 0.65; }
+      .st-penuh { --status-color: #D97706; --status-bg: rgba(217, 119, 6, 0.28); }
+      .st-operasi { --status-color: #7C3AED; --status-bg: rgba(124, 58, 237, 0.28); }
+      .st-cuti { --status-color: #DC2626; --status-bg: rgba(220, 38, 38, 0.28); opacity: 0.75; }
+      .st-libur { --status-color: #64748B; --status-bg: rgba(100, 116, 139, 0.2); display: none; }
+
+      .platter.st-praktek .initials { color: #059669; border-color: rgba(5, 150, 105, 0.25); }
+      .platter.st-pendaftaran .initials { color: #D97706; border-color: rgba(217, 119, 6, 0.25); }
+      .platter.st-terjadwal .initials { color: #0284C7; border-color: rgba(2, 132, 199, 0.25); }
+      .platter.st-selesai .initials { color: #64748B; }
+      .platter.st-penuh .initials { color: #D97706; border-color: rgba(217, 119, 6, 0.25); }
+      .platter.st-cuti .initials { color: #DC2626; border-color: rgba(220, 38, 38, 0.25); }
+      .platter.st-operasi .initials { color: #7C3AED; border-color: rgba(124, 58, 237, 0.25); }
 
       .platter.st-praktek, .platter.st-pendaftaran { z-index: 5; }
-      .platter.st-praktek { background: var(--bg-body); box-shadow: 0 0 10px rgba(16, 185, 129, 0.2), 8px 8px 16px var(--neo-shadow-dark), -8px -8px 16px var(--neo-shadow-light); }
-      .platter.st-pendaftaran { background: var(--bg-body); animation: pendaftaran-pulse 2s infinite; }
+      .platter.st-praktek { box-shadow: 0 12px 28px -4px rgba(5, 150, 105, 0.12), inset 0 1.5px 1.5px #FFFFFF; border-color: rgba(5, 150, 105, 0.25); }
+      .platter.st-pendaftaran { animation: pendaftaran-pulse 2.5s infinite; }
       @keyframes pendaftaran-pulse { 
-        0% { box-shadow: 0 0 5px rgba(249, 115, 22, 0.1), 8px 8px 16px var(--neo-shadow-dark), -8px -8px 16px var(--neo-shadow-light); } 
-        50% { box-shadow: 0 0 15px rgba(249, 115, 22, 0.4), 8px 8px 16px var(--neo-shadow-dark), -8px -8px 16px var(--neo-shadow-light); } 
-        100% { box-shadow: 0 0 5px rgba(249, 115, 22, 0.1), 8px 8px 16px var(--neo-shadow-dark), -8px -8px 16px var(--neo-shadow-light); } 
+        0% { box-shadow: 0 10px 24px -4px rgba(217, 119, 6, 0.1), inset 0 1.5px 1.5px #FFFFFF; } 
+        50% { box-shadow: 0 16px 36px -4px rgba(217, 119, 6, 0.22), inset 0 1.5px 1.5px #FFFFFF; } 
+        100% { box-shadow: 0 10px 24px -4px rgba(217, 119, 6, 0.1), inset 0 1.5px 1.5px #FFFFFF; } 
       }
       
-      [data-theme="light"] .platter.st-praktek { background: var(--bg-body); box-shadow: 0 0 10px rgba(16, 185, 129, 0.15), 8px 8px 16px var(--neo-shadow-dark), -8px -8px 16px var(--neo-shadow-light); }
-      [data-theme="light"] .platter.st-pendaftaran { background: var(--bg-body); }
-      
-      .platter.st-praktek .jam-val, .platter.st-pendaftaran .jam-val { color: var(--status-color); font-size: 14px; }
+      .platter.st-praktek .jam-val { color: #059669; }
+      .platter.st-pendaftaran .jam-val { color: #D97706; }
 
-      /* st-buka: Digunakan oleh panel Bedah & NonBedah untuk semua status aktif (PRAKTEK/PENDAFTARAN/TERJADWAL) */
-      .st-buka { --status-color: #10B981; --status-bg: rgba(16, 185, 129, 0.2); }
-      .st-buka .initials { background: var(--bg-body); color: #10B981; box-shadow: var(--neo-inset-dark), var(--neo-inset-light); }
-      .platter.st-buka {  }
-      .platter.st-buka.active { background: var(--bg-body) !important; box-shadow: var(--neo-inset-dark), var(--neo-inset-light), 0 0 15px rgba(16, 185, 129, 0.3) !important; }
-      [data-theme="light"] .platter.st-buka {  }
+      /* st-buka */
+      .st-buka { --status-color: #059669; --status-bg: rgba(5, 150, 105, 0.28); }
+      .st-buka .initials { color: #059669; }
+      .st-buka.active { background: #FFFFFF !important; box-shadow: 0 16px 36px -4px rgba(5, 150, 105, 0.2), inset 0 1.5px 1.5px #FFFFFF !important; }
 
-      /* st-buka--terjadwal: Override untuk status TERJADWAL (belum mulai) — pakai warna biru */
-      .st-buka.st-terjadwal { --status-color: #0EA5E9; --status-bg: rgba(14, 165, 233, 0.2); opacity: 0.82; }
-      .st-buka.st-terjadwal .initials { background: var(--bg-body); color: #0EA5E9; box-shadow: var(--neo-inset-dark), var(--neo-inset-light); }
-      .platter.st-buka.st-terjadwal {  }
-      [data-theme="light"] .platter.st-buka.st-terjadwal {  }
+      .st-buka.st-terjadwal { --status-color: #0284C7; --status-bg: rgba(2, 132, 199, 0.28); }
+      .st-buka.st-terjadwal .initials { color: #0284C7; }
       
       /* ===== ACTIVE CALL HIGHLIGHT (NEW) ===== */
-
       .platter-main {
         display: flex;
         align-items: center;
-        gap: 14px;
+        gap: 16px;
         width: 100%;
       }
 
       .platter.active {
         z-index: 100;
-        background: var(--bg-body) !important;
-        border: none !important;
-        /* Neomorph Inset (Pressed) + Neon Glow */
+        background: #FFFFFF !important;
+        border: 1.5px solid rgba(5, 150, 105, 0.45) !important;
         box-shadow: 
-          var(--neo-inset-dark), 
-          var(--neo-inset-light),
-          0 0 16px var(--status-bg) !important;
-        transform: translateZ(0) translateY(1px) scale(0.99); 
+          0 18px 40px -4px rgba(5, 150, 105, 0.22),
+          inset 0 2px 2px #FFFFFF !important;
+        transform: translateZ(0) translateY(-2px) scale(1.01); 
         opacity: 1 !important;
       }
 
       /* Light Mode Override */
       [data-theme="light"] .platter.active {
-        background: var(--bg-body) !important;
+        background: #FFFFFF !important;
+        border: 1.5px solid rgba(5, 150, 105, 0.45) !important;
         box-shadow: 
-          var(--neo-inset-dark), 
-          var(--neo-inset-light),
-          0 0 20px rgba(0,0,0,0.06) !important;
-        color: #000 !important;
+          0 18px 40px -4px rgba(5, 150, 105, 0.22),
+          inset 0 2px 2px #FFFFFF !important;
+        color: #0F172A !important;
       }
 
       .platter.active::before {
         width: 6px;
         background: var(--status-color);
-        box-shadow: 0 0 10px var(--status-color);
-        display: block; /* Keep neon bar */
+        box-shadow: 0 0 16px var(--status-color);
+        display: block;
       }
       
       .platter.active .jam-box {
         display: none !important;
       }
       
-      /* Penghapusan Redundansi: Sembunyikan BUKA/PENDAFTARAN di pojok ketika kartu berekspansi bawah */
       .platter.active:not(.platter-mini) .status-pill {
         display: none !important;
       }
       
       .platter.active .initials {
-        background: var(--bg-body);
-        box-shadow: var(--neo-inset-dark), var(--neo-inset-light);
+        background: var(--clay-bg-surface);
+        box-shadow: var(--clay-shadow-inner), 0 0 16px var(--status-bg);
         color: var(--status-color);
       }
 
@@ -960,26 +1158,14 @@
       
       .platter.active .doc-name {
         color: var(--status-color) !important;
-        font-weight: 700;
+        font-weight: 800;
       }
       
       /* ECG Radar Pulse Indicator */
       @keyframes ecg-pulse {
-        0% { transform: scale(0.9); box-shadow: 0 0 0 0 var(--status-color); }
-        70% { transform: scale(1); box-shadow: 0 0 0 6px transparent; }
+        0% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7); }
+        70% { transform: scale(1.15); box-shadow: 0 0 0 6px transparent; }
         100% { transform: scale(0.9); box-shadow: 0 0 0 0 transparent; }
-      }
-
-      [data-theme="light"] .platter.active .doc-name {
-        color: #000 !important;
-      }
-
-      [data-theme="light"] .platter.active .detail-label {
-        color: rgba(0, 0, 0, 0.6);
-      }
-
-      [data-theme="light"] .platter.active .detail-time {
-        color: #000;
       }
 
       /* ===== SIDEBAR COMPACT PLATTER (NEW) ===== */
@@ -1249,152 +1435,478 @@
         }
       }
 
-      /* ===== DYNAMIC ISLAND (NEW) ===== */
+      /* ===== APPLE iOS INTERACTIVE DYNAMIC ISLAND ===== */
       .dynamic-island {
         position: absolute;
-        top: 16px;
+        top: 14px;
         left: 50%;
-        transform: translateX(-50%) scale(0);
-        height: 54px;
-        width: 32px;
-        background: #000;
-        border-radius: 27px;
+        transform: translateX(-50%) scale(1);
+        height: 42px;
+        width: 230px;
+        background: #000000;
+        border-radius: 9999px;
         z-index: 999;
         display: flex;
         align-items: center;
         justify-content: center;
-        transition:
-          transform 0.4s ease,
-          width 0.4s ease,
-          opacity 0.3s ease;
-        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+        cursor: pointer;
+        user-select: none;
+        box-shadow: 
+          0 18px 45px rgba(0, 0, 0, 0.75), 
+          0 0 0 1px rgba(255, 255, 255, 0.16), 
+          inset 0 1px 1px rgba(255, 255, 255, 0.35);
         overflow: hidden;
-        opacity: 0;
-        will-change: transform, opacity;
-      }
-
-      .dynamic-island.expanded {
-        transform: translateX(-50%) scale(1);
         opacity: 1;
-        width: 320px;
-        height: 54px;
-        border-radius: 27px;
+        transition:
+          transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1),
+          width 0.45s cubic-bezier(0.34, 1.56, 0.64, 1),
+          height 0.45s cubic-bezier(0.34, 1.56, 0.64, 1),
+          border-radius 0.45s cubic-bezier(0.34, 1.56, 0.64, 1),
+          box-shadow 0.4s ease;
+        will-change: width, height, transform, border-radius;
       }
 
-      .di-content {
+      /* Compact State (Default Idle) */
+      .dynamic-island.di-compact {
+        width: 240px;
+        height: 42px;
+        border-radius: 9999px;
+        padding: 0 14px;
+      }
+
+      /* Expanded State (Notification / Rotating Toast) */
+      .dynamic-island.di-expanded {
+        width: 440px;
+        height: 56px;
+        border-radius: 9999px;
+        padding: 0 18px;
+        box-shadow: 
+          0 24px 50px rgba(0, 0, 0, 0.85), 
+          0 0 0 1.5px rgba(255, 255, 255, 0.22), 
+          inset 0 1px 1.5px rgba(255, 255, 255, 0.45);
+      }
+
+      /* Deep Interactive Modal State (Clicked / Expanded Activity) */
+      .dynamic-island.di-modal {
+        width: 480px;
+        height: 220px;
+        border-radius: 36px;
+        padding: 16px 20px;
+        box-shadow: 
+          0 32px 75px rgba(0, 0, 0, 0.9), 
+          0 0 0 2px rgba(255, 255, 255, 0.25), 
+          inset 0 1px 2px rgba(255, 255, 255, 0.5);
+      }
+
+      /* Views Visibility Switcher */
+      .di-compact-view,
+      .di-expanded-view,
+      .di-modal-view {
+        width: 100%;
+        height: 100%;
+        display: none;
+        align-items: center;
+        opacity: 0;
+        transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+
+      .dynamic-island.di-compact .di-compact-view {
+        display: flex;
+        justify-content: space-between;
+        opacity: 1;
+      }
+
+      .dynamic-island.di-expanded .di-expanded-view {
+        display: flex;
+        justify-content: flex-start;
+        gap: 14px;
+        opacity: 1;
+      }
+
+      .dynamic-island.di-modal .di-modal-view {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        opacity: 1;
+      }
+
+      /* --- Compact View Items --- */
+      .di-leading {
         display: flex;
         align-items: center;
-        gap: 12px;
-        opacity: 0;
-        transform: scale(0.9);
-        transition: all 0.3s ease;
-        width: 100%;
-        padding: 0 16px;
+        gap: 8px;
       }
 
-      .dynamic-island.expanded .di-content {
-        opacity: 1;
-        transform: scale(1);
-      }
-
-      .di-spinner {
-        width: 18px;
-        height: 18px;
-        border: 2px solid rgba(255, 255, 255, 0.3);
-        border-top: 2px solid #30d158;
+      .di-pulse-orb {
+        width: 10px;
+        height: 10px;
         border-radius: 50%;
-        animation: spin 1s linear infinite;
+        background: var(--accent-emerald);
+        box-shadow: 0 0 12px var(--accent-emerald);
+        animation: di-pulse-ring 2s infinite;
       }
 
-      .di-icon {
+      @keyframes di-pulse-ring {
+        0% { transform: scale(0.9); opacity: 0.8; }
+        50% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 16px var(--accent-emerald); }
+        100% { transform: scale(0.9); opacity: 0.8; }
+      }
+
+      .di-compact-label {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        color: #FFFFFF;
+        text-transform: uppercase;
+      }
+
+      .di-trailing {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .di-compact-time {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 12px;
+        font-weight: 800;
+        color: #94A3B8;
+        font-variant-numeric: tabular-nums;
+      }
+
+      /* iOS Style Audio Waveform */
+      .di-waveform {
+        display: flex;
+        align-items: center;
+        gap: 2px;
+        height: 14px;
+      }
+
+      .di-waveform .bar {
+        width: 2.5px;
+        background: var(--accent-emerald);
+        border-radius: 2px;
+        box-shadow: 0 0 6px var(--accent-emerald);
+        animation: di-waveform-anim 1.2s ease-in-out infinite alternate;
+      }
+      .di-waveform .bar-1 { height: 6px; animation-delay: 0.1s; }
+      .di-waveform .bar-2 { height: 14px; animation-delay: 0.3s; }
+      .di-waveform .bar-3 { height: 10px; animation-delay: 0.2s; }
+      .di-waveform .bar-4 { height: 7px; animation-delay: 0.4s; }
+
+      @keyframes di-waveform-anim {
+        0% { transform: scaleY(0.35); }
+        100% { transform: scaleY(1.25); }
+      }
+
+      /* --- Expanded Toast View Items --- */
+      .di-icon-box {
+        width: 36px;
+        height: 36px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+      }
+
+      .di-icon-box .material-icons-round {
         font-size: 20px;
-        color: #fff;
+        color: var(--accent-emerald);
       }
 
       .di-text {
         display: flex;
         flex-direction: column;
         line-height: 1.2;
+        min-width: 0;
+        flex: 1;
+      }
+
+      .di-title-row {
+        display: flex;
+        align-items: center;
+        gap: 6px;
       }
 
       .di-title {
-        font-size: 11px;
-        font-weight: 700;
-        color: rgba(255, 255, 255, 0.6);
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 10.5px;
+        font-weight: 800;
+        color: #94A3B8;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
+        letter-spacing: 0.08em;
+      }
+
+      .di-badge {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 9px;
+        font-weight: 800;
+        background: var(--accent-emerald-gradient);
+        color: #ffffff;
+        padding: 1px 6px;
+        border-radius: 9999px;
+        box-shadow: 0 0 8px var(--accent-emerald-glow);
       }
 
       .di-msg {
-        font-size: 13px;
-        font-weight: 600;
-        color: #fff;
+        font-family: "Inter", sans-serif;
+        font-size: 13.5px;
+        font-weight: 700;
+        color: #FFFFFF;
         white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
 
-      .di-warn .di-spinner {
-        border-top-color: #ff453a;
+      .di-tap-hint {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 9px;
+        font-weight: 800;
+        color: rgba(255, 255, 255, 0.4);
+        background: rgba(255, 255, 255, 0.08);
+        padding: 3px 8px;
+        border-radius: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
       }
 
-      .di-warn .di-msg {
-        color: #ff453a;
+      /* --- Deep Modal View Items --- */
+      .di-modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        padding-bottom: 10px;
       }
 
-      .material-icons-round.di-icon {
-        color: #fff;
+      .di-modal-brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
       }
 
-      /* Use a success class added via JS instead of invalid pseudo-selectors */
-      .di-success .di-icon {
-        color: #30d158;
+      .di-modal-logo {
+        width: 32px;
+        height: 32px;
+        border-radius: 10px;
+        background: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
       }
 
-      @keyframes spin {
-        0% {
-          transform: rotate(0deg);
-        }
-
-        100% {
-          transform: rotate(360deg);
-        }
+      .di-modal-logo img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
       }
 
-      /* ===== FOOTER ===== */
+      .di-modal-title {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 13px;
+        font-weight: 800;
+        color: #FFFFFF;
+        line-height: 1.1;
+      }
+
+      .di-modal-subtitle {
+        font-family: "Inter", sans-serif;
+        font-size: 10px;
+        font-weight: 600;
+        color: #94A3B8;
+      }
+
+      .di-close-btn {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.12);
+        border: none;
+        color: #FFFFFF;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background 0.2s ease;
+      }
+
+      .di-close-btn:hover {
+        background: rgba(255, 255, 255, 0.25);
+      }
+
+      .di-close-btn .material-icons-round {
+        font-size: 16px;
+      }
+
+      .di-modal-body {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        width: 100%;
+        margin-top: 8px;
+      }
+
+      .di-modal-status-card {
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 18px;
+        padding: 10px 14px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .di-modal-avatar {
+        width: 38px;
+        height: 38px;
+        border-radius: 12px;
+        background: var(--accent-emerald-gradient);
+        color: #FFFFFF;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        box-shadow: 0 4px 12px var(--accent-emerald-glow);
+      }
+
+      .di-modal-avatar .material-icons-round {
+        font-size: 20px;
+      }
+
+      .di-modal-info {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .di-modal-status-pill {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 9px;
+        font-weight: 800;
+        color: #10B981;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      .di-modal-doc {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 13.5px;
+        font-weight: 800;
+        color: #FFFFFF;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .di-modal-spec {
+        font-family: "Inter", sans-serif;
+        font-size: 11px;
+        font-weight: 600;
+        color: #94A3B8;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .di-modal-stats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+      }
+
+      .di-stat-box {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 14px;
+        padding: 6px 10px;
+        text-align: center;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+      }
+
+      .di-stat-num {
+        display: block;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 16px;
+        font-weight: 800;
+        color: #FFFFFF;
+        line-height: 1.1;
+      }
+
+      .di-stat-lbl {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 8.5px;
+        font-weight: 800;
+        color: #94A3B8;
+        text-transform: uppercase;
+      }
+
+      .di-modal-footer {
+        width: 100%;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        padding-top: 8px;
+      }
+
+      .di-modal-marquee {
+        font-family: "Inter", sans-serif;
+        font-size: 11px;
+        font-weight: 600;
+        color: #CBD5E1;
+        display: block;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      /* ===== FOOTER (Modern 3D Clay Floating Ticker) ===== */
       .footer {
-        height: 48px;
-        background: var(--footer-bg);
-        border-radius: 24px;
+        height: 52px;
+        background: var(--clay-bg-surface);
+        border-radius: 26px;
         display: flex;
         align-items: center;
         justify-content: space-between;
         padding: 0 20px;
-        border: 1px solid var(--border-light);
-        /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); */
+        border: 1px solid var(--clay-border);
+        box-shadow: var(--clay-shadow-outer), var(--clay-shadow-inner);
         overflow: hidden;
         flex-shrink: 0;
         transition: background 0.5s ease;
+      }
+
+      [data-theme="light"] .footer {
+        background: #FFFFFF;
+        border: 1px solid rgba(226, 232, 240, 0.9);
+        box-shadow: 0 10px 24px -4px rgba(15, 23, 42, 0.08), inset 1px 1px 1px #ffffff;
       }
 
       .legend {
         display: flex;
         gap: 16px;
         padding-right: 20px;
-        border-right: 1px solid rgba(255, 255, 255, 0.1);
+        border-right: 1px solid var(--border-light);
       }
 
       .lg-item {
         display: flex;
         align-items: center;
         gap: 6px;
+        font-family: "Plus Jakarta Sans", sans-serif;
         font-size: 11px;
         font-weight: 800;
-        opacity: 0.9; /* Solid visibility */
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
       }
 
       .dot {
-        width: 6px;
-        height: 6px;
+        width: 8px;
+        height: 8px;
         border-radius: 50%;
+        box-shadow: 0 0 8px currentColor;
       }
 
       .ticker {
@@ -1402,53 +1914,54 @@
         margin: 0 20px;
         position: relative;
         overflow: hidden;
-        height: 100%;
+        height: 36px;
         display: flex;
         align-items: center;
+        background: var(--clay-inset);
+        padding: 0 14px;
+        border-radius: 14px;
       }
 
       .ticker-inner {
         white-space: nowrap;
         animation: marquee 30s linear infinite;
-        font-size: 13px;
-        font-weight: 500;
+        font-family: "Inter", sans-serif;
+        font-size: 13.5px;
+        font-weight: 700;
         color: var(--text-primary);
+        letter-spacing: 0.02em;
       }
 
       @keyframes marquee {
-        0% {
-          transform: translateX(0);
-        }
-
-        100% {
-          transform: translateX(-100%);
-        }
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-100%); }
       }
 
       .status-pill-lg {
-        background: rgba(125, 125, 125, 0.15);
-        padding: 4px 12px;
-        border-radius: 100px;
-        font-size: 10px;
-        font-weight: 700;
-        letter-spacing: 0.05em;
+        background: var(--clay-inset);
+        padding: 5px 14px;
+        border-radius: 9999px;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.06em;
         display: flex;
         align-items: center;
-        gap: 6px;
+        gap: 8px;
         color: var(--text-primary);
       }
 
       .live-dot {
-        width: 6px;
-        height: 6px;
+        width: 7px;
+        height: 7px;
         border-radius: 50%;
-        background: #30d158;
-        /* box-shadow: 0 0 8px #30D158; */
+        background: var(--accent-emerald);
+        box-shadow: 0 0 10px var(--accent-emerald);
       }
 
       .live-dot.warn {
-        background: #ff9f0a;
-        box-shadow: none;
+        background: var(--accent-amber);
+        box-shadow: 0 0 10px var(--accent-amber);
         animation: blink 1s infinite;
       }
 
@@ -2268,187 +2781,92 @@
         .status-pill { font-size: 8px; padding: 2px 6px; }
         .status-pill .material-icons-round { font-size: 9px !important; margin-right: 2px; }
       }
-    
-      /* ===== 🚀 REDESIGNED HIGH-VISIBILITY SMART TV QR HERO ===== */
-      .sidebar-qr-hotline {
-        padding: clamp(10px, 1.2vh, 14px) clamp(10px, 1vw, 14px);
-        border-top: 1.5px solid var(--border-light, rgba(226, 232, 240, 0.8));
-        background: var(--card-bg, #FFFFFF);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        gap: clamp(8px, 1vh, 12px);
-        flex-shrink: 0;
-        box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.04);
-      }
-
-      .tv-qr-hero-card {
-        width: 100%;
-        background: #FFFFFF;
-        border-radius: 18px;
-        padding: clamp(8px, 1vh, 12px) clamp(8px, 0.8vw, 12px);
-        border: 2px solid #E2E8F0;
-        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08), inset 0 0 0 1px #FFFFFF;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: clamp(6px, 0.8vh, 8px);
-      }
-
-      .tv-qr-header-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        padding: 4px 10px;
-        border-radius: 10px;
-        background: #EFF6FF;
-        color: #007AFF;
-        border: 1px solid #BFDBFE;
-      }
-      .tv-qr-header-badge .radar-dot {
-        width: 6px;
-        height: 6px;
-        border-radius: 50%;
-        background: #007AFF;
-        animation: radarPulse 1.4s infinite;
-      }
-      @keyframes radarPulse { 0%, 100% { transform: scale(0.9); opacity: 0.7; } 50% { transform: scale(1.4); opacity: 1; } }
-
-      .tv-qr-header-badge span {
-        font-size: clamp(9px, 0.85vw, 11px);
-        font-weight: 900;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-      }
-
-      /* EXTRA LARGE SHARP TV QR BOX */
-      .dynamic-qr-box {
-        width: clamp(140px, 11.5vw, 185px);
-        height: clamp(140px, 11.5vw, 185px);
-        aspect-ratio: 1 / 1;
-        border-radius: 14px;
-        background: #FFFFFF;
-        padding: 6px;
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08), inset 0 0 0 1.5px #E2E8F0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-      }
-
-      .dynamic-qr-box svg {
-        width: 100% !important;
-        height: 100% !important;
-        display: block;
-        shape-rendering: crispEdges !important;
-        border-radius: 6px;
-      }
-
-      .tv-qr-url-pill {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        padding: 3px 10px;
-        border-radius: 8px;
-        background: #F8FAFC;
-        border: 1px solid #E2E8F0;
-        font-family: "JetBrains Mono", monospace;
-        font-size: clamp(9px, 0.8vw, 11px);
-        font-weight: 800;
-        color: #0F172A;
-      }
-
-      /* HIGHLIGHTED HOTLINE PILL 0823-2344-6076 */
-      .hotline-highlight-box {
-        width: 100%;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: clamp(8px, 0.9vh, 11px) clamp(10px, 1vw, 14px);
-        border-radius: 14px;
-        background: linear-gradient(135deg, #059669 0%, #047857 100%);
-        color: #FFFFFF !important;
-        text-decoration: none;
-        box-shadow: 0 4px 14px rgba(5, 150, 105, 0.35);
-        box-sizing: border-box;
-      }
-
-      .hotline-icon-wrap {
-        width: clamp(32px, 2.5vw, 38px);
-        height: clamp(32px, 2.5vw, 38px);
-        border-radius: 11px;
-        background: rgba(255, 255, 255, 0.22);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-      }
-
-      .hotline-icon-wrap .material-icons-round {
-        font-size: clamp(18px, 1.5vw, 22px);
-        color: #FFFFFF;
-      }
-
-      .hotline-details {
-        display: flex;
-        flex-direction: column;
-        gap: 1px;
-        min-width: 0;
-        flex: 1;
-        text-align: left;
-      }
-
-      .hotline-tag {
-        font-size: clamp(7.5px, 0.7vw, 9px);
-        font-weight: 800;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        color: #D1FAE5;
-      }
-
-      .hotline-num {
-        font-family: "JetBrains Mono", monospace;
-        font-size: clamp(13px, 1.25vw, 16.5px);
-        font-weight: 900;
-        letter-spacing: 0.02em;
-        color: #FFFFFF !important;
-        line-height: 1.15;
-      }
-
-      .sidebar-info-ticker {
-        width: 100%;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        padding: 5px 8px;
-        border-radius: 8px;
-        background: rgba(125, 125, 125, 0.08);
-        box-sizing: border-box;
-      }
-
-      .sidebar-info-ticker p {
-        font-size: clamp(8.5px, 0.75vw, 10px);
-        line-height: 1.3;
-        color: var(--text-secondary);
-        margin: 0;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        text-align: left;
-      }
-
     </style>
   </head>
 
-  <body>
-    <!-- DYNAMIC ISLAND PRE-MOUNT -->
-    <div id="dynamicIsland" class="dynamic-island">
-      <div class="di-content">
-        <div id="diIcon" class="di-spinner"></div>
+    <!-- ═══ APPLE iOS INTERACTIVE DYNAMIC ISLAND ═══ -->
+    <div id="dynamicIsland" class="dynamic-island di-compact" onclick="Island.toggleExpand()" title="Klik untuk interaksi Dynamic Island">
+      <!-- Compact View (Idle Pill) -->
+      <div class="di-compact-view">
+        <div class="di-leading">
+          <div id="diCompactIcon" class="di-pulse-orb"></div>
+          <span id="diCompactText" class="di-compact-label">SIAGA LIVE</span>
+        </div>
+        <div class="di-trailing">
+          <div class="di-waveform">
+            <span class="bar bar-1"></span>
+            <span class="bar bar-2"></span>
+            <span class="bar bar-3"></span>
+            <span class="bar bar-4"></span>
+          </div>
+          <span id="diCompactClock" class="di-compact-time">--:--</span>
+        </div>
+      </div>
+
+      <!-- Expanded Toast View (Rotating Custom Messages / Notifications) -->
+      <div class="di-expanded-view">
+        <div class="di-icon-box">
+          <span id="diIcon" class="material-icons-round di-icon">notifications_active</span>
+        </div>
         <div class="di-text">
-          <span id="diTitle" class="di-title">System</span>
-          <span id="diMsg" class="di-msg">Loading...</span>
+          <div class="di-title-row">
+            <span id="diTitle" class="di-title">INFORMASI RSU</span>
+            <span id="diBadge" class="di-badge">LIVE</span>
+          </div>
+          <span id="diMsg" class="di-msg">Memuat jadwal dokter...</span>
+        </div>
+        <div class="di-action-badge">
+          <span class="di-tap-hint">Detail</span>
+        </div>
+      </div>
+
+      <!-- Deep Interactive Modal View (Detailed Activity Widget) -->
+      <div class="di-modal-view">
+        <div class="di-modal-header">
+          <div class="di-modal-brand">
+            <div class="di-modal-logo">
+              <img src="/logo-rs.png" alt="RS" />
+            </div>
+            <div>
+              <h4 class="di-modal-title">RSU Siaga Medika</h4>
+              <p class="di-modal-subtitle">Pusat Layanan & Display TV</p>
+            </div>
+          </div>
+          <button class="di-close-btn" onclick="event.stopPropagation(); Island.collapse();" title="Tutup">
+            <span class="material-icons-round">close</span>
+          </button>
+        </div>
+
+        <div class="di-modal-body">
+          <div class="di-modal-status-card" id="diModalDoctorCard">
+            <div class="di-modal-avatar">
+              <span id="diModalAvatar" class="material-icons-round">medical_services</span>
+            </div>
+            <div class="di-modal-info">
+              <span id="diModalStatus" class="di-modal-status-pill">SEDANG PRAKTEK</span>
+              <h5 id="diModalDocName" class="di-modal-doc">Pelayanan Poliklinik</h5>
+              <p id="diModalDocSpec" class="di-modal-spec">Layanan Poliklinik Rawat Jalan Aktif</p>
+            </div>
+          </div>
+
+          <div class="di-modal-stats-grid">
+            <div class="di-stat-box">
+              <span class="di-stat-num" id="diStatActive">0</span>
+              <span class="di-stat-lbl">Dokter Buka</span>
+            </div>
+            <div class="di-stat-box">
+              <span class="di-stat-num" id="diStatWait">0</span>
+              <span class="di-stat-lbl">Terjadwal</span>
+            </div>
+            <div class="di-stat-box">
+              <span class="di-stat-num" id="diStatPenuh">0</span>
+              <span class="di-stat-lbl">Penuh/Cuti</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="di-modal-footer">
+          <span id="diModalMessage" class="di-modal-marquee">Terimakasih sudah menunggu dan tertib mengantre.</span>
         </div>
       </div>
     </div>
@@ -2585,7 +3003,6 @@
 
           <!-- Dynamic QR Code & Highlighted Hotline Number -->
           <div class="sidebar-qr-hotline">
-            
             <!-- Large High-Visibility TV QR Hero Card -->
             <div class="tv-qr-hero-card">
               <div class="tv-qr-header-badge">
@@ -2596,7 +3013,7 @@
                 <div id="tvQrCode" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;"></div>
               </div>
               <div class="tv-qr-url-pill">
-                <span class="material-icons-round" style="font-size: 13px; color: #007AFF;">public</span>
+                <span class="material-icons-round" style="font-size: 13px; color: #0284C7;">public</span>
                 <span>simed.fallonava.my.id/jadwal</span>
               </div>
             </div>
@@ -2610,14 +3027,8 @@
                 <span class="hotline-tag">INFORMASI & PENDAFTARAN RS</span>
                 <span class="hotline-num">0823-2344-6076</span>
               </div>
-              <span class="material-icons-round" style="color: rgba(255,255,255,0.7); font-size: 18px;">chevron_right</span>
+              <span class="material-icons-round" style="color: rgba(255,255,255,0.8); font-size: 18px;">chevron_right</span>
             </a>
-
-            <!-- Compact Dynamic Info Ticker -->
-            <div class="sidebar-info-ticker">
-              <span class="material-icons-round" style="color: var(--accent-blue); font-size: 14px;">campaign</span>
-              <p id="dynamicInfoBox">Memuat informasi terbaru...</p>
-            </div>
           </div>
 
 
@@ -3035,68 +3446,107 @@
         s3 = new SmoothScroller("scrollSidebar");
       }
 
-      // Dynamic Island Controller (with Queue)
-      // Dynamic Island Controller (with Queue & Idle Cycle)
+      // ═══ APPLE iOS INTERACTIVE DYNAMIC ISLAND CONTROLLER ═══
       const Island = {
         _el: null,
         _icon: null,
         _queue: [],
         _isAnimating: false,
-        _idleTimer: null,
+        _state: "compact", // 'compact' | 'expanded' | 'modal'
+        _autoCycleTimer: null,
+        _modalDismissTimer: null,
 
         init() {
           this._el = $("dynamicIsland");
           this._icon = $("diIcon");
-          // #2 & #4: Mulai cycle idle message (sapaan / info)
-          this.startIdleCycle();
+          this.setCompact();
+          this.startAutoCycle();
         },
 
-        // #2: Sapaan Waktu Otomatis
-        getGreeting() {
-          const h = new Date().getHours();
-          if (h < 10) return "Selamat Pagi, Semangat Sehat! ☀️";
-          if (h < 15) return "Selamat Siang, Mohon Menunggu 🌤️";
-          if (h < 18) return "Selamat Sore 👋";
-          return "Selamat Malam 🌙";
+        // Toggle antara Compact dan Deep Interactive Modal saat diklik
+        toggleExpand() {
+          if (this._state === "modal") {
+            this.collapse();
+          } else {
+            this.openModal();
+          }
         },
 
-        // #4: Rotasi Info Edukasi
-        getIdleMessage() {
-          const msgs = [
-            this.getGreeting(),
-            "Dilarang Merokok di Area RS 🚭",
-            "Jagalah Kebersihan Ruang Tunggu 🗑️",
-            "Gunakan Masker Jika Batuk 😷",
-            "Antri Dengan Tertib 🚶‍♂️🚶‍♀️",
-            "Siapkan KTP & BPJS Anda 🆔",
-          ];
-          return msgs[Math.floor(Math.random() * msgs.length)];
+        openModal() {
+          if (!this._el) return;
+          this._state = "modal";
+          this._el.className = "dynamic-island di-modal";
+          
+          // Auto-update modal info dengan data dokter aktif saat ini
+          this.syncModalData();
+
+          // Auto-collapse modal jika tidak ada interaksi selama 12 detik
+          clearTimeout(this._modalDismissTimer);
+          this._modalDismissTimer = setTimeout(() => {
+            if (this._state === "modal") this.collapse();
+          }, 12000);
         },
 
-        startIdleCycle() {
-          // Diambil alih oleh Master Clock di App.init()
+        collapse() {
+          if (!this._el) return;
+          clearTimeout(this._modalDismissTimer);
+          this.setCompact();
         },
 
-        // show(title, msg, type, [icon], [duration])
+        setCompact() {
+          this._state = "compact";
+          if (this._el) {
+            this._el.className = "dynamic-island di-compact";
+          }
+        },
+
+        syncModalData() {
+          if (!App || !App._data) return;
+          const docs = App._data.doctors || [];
+          const activeDocs = docs.filter(d => (d.Status || "").toUpperCase().includes("PRAKTEK"));
+          const waitDocs = docs.filter(d => (d.Status || "").toUpperCase().includes("TERJADWAL") || (d.Status || "").toUpperCase().includes("PENDAFTARAN"));
+          const offDocs = docs.filter(d => ["CUTI", "PENUH", "OPERASI"].some(st => (d.Status || "").toUpperCase().includes(st)));
+
+          if ($("diStatActive")) $("diStatActive").textContent = activeDocs.length;
+          if ($("diStatWait")) $("diStatWait").textContent = waitDocs.length;
+          if ($("diStatPenuh")) $("diStatPenuh").textContent = offDocs.length;
+
+          // Featured Active Doctor di Modal
+          if (activeDocs.length > 0) {
+            const feat = activeDocs[0];
+            if ($("diModalDocName")) $("diModalDocName").textContent = feat.Dokter || "dr. Praktek";
+            if ($("diModalDocSpec")) $("diModalDocSpec").textContent = (feat.Spesialis || "Spesialis") + " • Sedang Melayani";
+            if ($("diModalStatus")) $("diModalStatus").textContent = "SEDANG PRAKTEK";
+          } else {
+            if ($("diModalDocName")) $("diModalDocName").textContent = "Poliklinik Rawat Jalan";
+            if ($("diModalDocSpec")) $("diModalDocSpec").textContent = "Layanan Terjadwal & Pendaftaran";
+            if ($("diModalStatus")) $("diModalStatus").textContent = "TERJADWAL";
+          }
+
+          // Custom message di modal footer
+          if (App._customMsgs && App._customMsgs.length > 0) {
+            const msg = App._customMsgs[App._customMsgIdx % App._customMsgs.length];
+            if ($("diModalMessage")) $("diModalMessage").textContent = msg.text || msg.message || "Terimakasih sudah menunggu.";
+          }
+        },
+
+        // Tampilkan notifikasi / rotating headline (Expanded Toast)
         async show(title, msg, type = "info", arg4 = null, arg5 = null) {
-          let duration = 8000;
+          let duration = 6500;
           let icon = null;
 
-          // Overload handling
-          if (typeof arg4 === "number") {
-            duration = arg4;
-          } else if (typeof arg4 === "string") {
+          if (typeof arg4 === "number") duration = arg4;
+          else if (typeof arg4 === "string") {
             icon = arg4;
             if (typeof arg5 === "number") duration = arg5;
           }
 
-          // Default icons
           if (!icon) {
             if (type === "success") icon = "check_circle";
-            else if (type === "warn") icon = "warning";
+            else if (type === "warn" || type === "warning") icon = "warning";
             else if (type === "error") icon = "error";
-            else if (type === "info") icon = "info";
-            else if (type === "idle") icon = "notifications";
+            else if (type === "info") icon = "notifications_active";
+            else icon = "campaign";
           }
 
           this._queue.push({ title, msg, type, icon, duration });
@@ -3104,45 +3554,57 @@
         },
 
         async processQueue() {
-          if (this._isAnimating || this._queue.length === 0) return;
+          if (this._isAnimating || this._state === "modal" || this._queue.length === 0) return;
 
           this._isAnimating = true;
           const item = this._queue.shift();
 
-          // 1. Reset Classes
-          this._el.className = `dynamic-island ${item.type}`;
+          if (!this._el) this._el = $("dynamicIsland");
 
-          // 2. Set Content
-          $("diTitle").textContent = item.title;
-          $("diMsg").textContent = item.msg;
-          // 3. Set Icon
-          const iconEl = this._icon;
-          if (iconEl) {
-            iconEl.textContent = item.icon || "info";
-            // Fix: Reset class to remove spinner
-            iconEl.className = "material-icons-round di-icon";
+          // 1. Set Expanded Toast Content
+          if ($("diTitle")) $("diTitle").textContent = item.title;
+          if ($("diMsg")) $("diMsg").textContent = item.msg;
+          if ($("diIcon")) {
+            $("diIcon").textContent = item.icon || "notifications";
+            $("diIcon").className = "material-icons-round di-icon";
           }
 
-          // Force layout recalc to restart transitions cleanly
-          void this._el.offsetWidth;
+          // 2. Morph to Expanded State
+          this._state = "expanded";
+          this._el.className = `dynamic-island di-expanded di-${item.type}`;
 
-          // 4. Expand Animation (in next frame for smoothness)
-          requestAnimationFrame(() => {
-            this._el.classList.add("expanded");
-          });
-
-          // 5. Wait Notification Duration
+          // 3. Hold for duration
           await new Promise((r) => setTimeout(r, item.duration));
 
-          // 5. Collapse Animation
-          this._el.classList.remove("expanded");
+          // 4. Smooth Morph back to Compact (hanya jika user tidak membuka modal)
+          if (this._state === "expanded") {
+            this._el.className = "dynamic-island di-compact";
+            this._state = "compact";
+          }
 
-          // 6. Cleanup & Next
+          // 5. Delay before next queue item
           setTimeout(() => {
             this._isAnimating = false;
-            this._el.className = "dynamic-island"; // Reset to base
-            this.processQueue();
-          }, 600); // 0.6s match CSS liquid render
+            if (this._queue.length > 0) this.processQueue();
+          }, 600);
+        },
+
+        startAutoCycle() {
+          // Clock update in compact view every second
+          setInterval(() => {
+            const now = new Date();
+            const timeStr = String(now.getHours()).padStart(2, "0") + ":" + String(now.getMinutes()).padStart(2, "0");
+            if ($("diCompactClock")) $("diCompactClock").textContent = timeStr;
+          }, 1000);
+
+          // Auto-rotate dynamic island announcements every 9 seconds if queue is idle
+          setInterval(() => {
+            if (this._state === "compact" && !this._isAnimating && this._queue.length === 0 && App._customMsgs && App._customMsgs.length > 0) {
+              const item = App._customMsgs[App._customMsgIdx % App._customMsgs.length];
+              App._customMsgIdx++;
+              this.show(item.title || "INFORMASI", item.text || item.message || "Selamat datang di RSU Siaga Medika", "info", 6000);
+            }
+          }, 9000);
         },
       };
 
@@ -3382,13 +3844,8 @@
         },
 
         updateTheme() {
-          const h = new Date().getHours();
-          // Light Theme: 06:00 - 17:59 | Dark Theme: 18:00 - 05:59
-          const isLight = h >= 6 && h < 18;
-          document.documentElement.setAttribute(
-            "data-theme",
-            isLight ? "light" : "dark",
-          );
+          // Locked to Light Mode
+          document.documentElement.setAttribute("data-theme", "light");
         },
 
         skel() {
@@ -4221,8 +4678,6 @@
 
       App.init();
     </script>
-  
-    <!-- QRCode.js Library -->
 
     <!-- ZERO-DEPENDENCY INLINE SVG QR CODE GENERATOR -->
     <script>
@@ -4235,8 +4690,12 @@
           }
         };
         function QRCodeModel(typeNumber, errorCorrectLevel) {
-          this.typeNumber = typeNumber; this.errorCorrectLevel = errorCorrectLevel;
-          this.modules = null; this.moduleCount = 0; this.dataCache = null; this.dataList = [];
+          this.typeNumber = typeNumber;
+          this.errorCorrectLevel = errorCorrectLevel;
+          this.modules = null;
+          this.moduleCount = 0;
+          this.dataCache = null;
+          this.dataList = [];
         }
         QRCodeModel.prototype = {
           addData: function(data) { this.dataList.push(new QR8bitByte(data)); },
@@ -4244,21 +4703,22 @@
           getModuleCount: function() { return this.moduleCount; },
           make: function() {
             if (this.typeNumber < 1) {
-              var typeNumber = 1;
-              for (typeNumber = 1; typeNumber < 40; typeNumber++) {
+              for (var typeNumber = 1; typeNumber < 40; typeNumber++) {
                 var rsBlocks = QRRSBlock.getRSBlocks(typeNumber, this.errorCorrectLevel);
                 var buffer = new QRBitBuffer();
-                var totalDataCount = 0;
-                for (var i = 0; i < rsBlocks.length; i++) totalDataCount += rsBlocks[i].dataCount;
                 for (var i = 0; i < this.dataList.length; i++) {
                   var data = this.dataList[i];
                   buffer.put(data.mode, 4);
                   buffer.put(data.getLength(), QRUtil.getLengthInBits(data.mode, typeNumber));
                   data.write(buffer);
                 }
-                if (buffer.getLengthInBits() <= totalDataCount * 8) break;
+                var totalDataCount = 0;
+                for (var i = 0; i < rsBlocks.length; i++) totalDataCount += rsBlocks[i].dataCount;
+                if (buffer.getLengthInBits() <= totalDataCount * 8) {
+                  this.typeNumber = typeNumber;
+                  break;
+                }
               }
-              this.typeNumber = typeNumber;
             }
             this.makeImpl(false, this.getBestMaskPattern());
           },
@@ -4267,7 +4727,6 @@
             this.modules = new Array(this.moduleCount);
             for (var row = 0; row < this.moduleCount; row++) {
               this.modules[row] = new Array(this.moduleCount);
-              for (var col = 0; col < this.moduleCount; col++) this.modules[row][col] = null;
             }
             this.setupPositionProbePattern(0, 0);
             this.setupPositionProbePattern(this.moduleCount - 7, 0);
@@ -4297,7 +4756,10 @@
             for (var i = 0; i < 8; i++) {
               this.makeImpl(true, i);
               var lostPoint = QRUtil.getLostPoint(this);
-              if (i == 0 || minLostPoint > lostPoint) { minLostPoint = lostPoint; pattern = i; }
+              if (i == 0 || minLostPoint > lostPoint) {
+                minLostPoint = lostPoint;
+                pattern = i;
+              }
             }
             return pattern;
           },
@@ -4319,8 +4781,7 @@
                 if (this.modules[row][col] != null) continue;
                 for (var r = -2; r <= 2; r++) {
                   for (var c = -2; c <= 2; c++) {
-                    if (r == -2 || r == 2 || c == -2 || c == 2 || (r == 0 && c == 0)) this.modules[row + r][col + c] = true;
-                    else this.modules[row + r][col + c] = false;
+                    this.modules[row + r][col + c] = (r == -2 || r == 2 || c == -2 || c == 2 || (r == 0 && c == 0));
                   }
                 }
               }
@@ -4331,9 +4792,6 @@
             for (var i = 0; i < 18; i++) {
               var mod = (!test && ((bits >> i) & 1) == 1);
               this.modules[Math.floor(i / 3)][i % 3 + this.moduleCount - 8 - 3] = mod;
-            }
-            for (var i = 0; i < 18; i++) {
-              var mod = (!test && ((bits >> i) & 1) == 1);
               this.modules[i % 3 + this.moduleCount - 8 - 3][Math.floor(i / 3)] = mod;
             }
           },
@@ -4345,14 +4803,11 @@
               if (i < 6) this.modules[i][8] = mod;
               else if (i < 8) this.modules[i + 1][8] = mod;
               else this.modules[this.moduleCount - 15 + i][8] = mod;
-            }
-            for (var i = 0; i < 15; i++) {
-              var mod = (!test && ((bits >> i) & 1) == 1);
               if (i < 8) this.modules[8][this.moduleCount - i - 1] = mod;
               else if (i < 9) this.modules[8][15 - i - 1 + 1] = mod;
               else this.modules[8][15 - i - 1] = mod;
             }
-            this.modules[this.moduleCount - 8][8] = (!test);
+            this.modules[this.moduleCount - 8][8] = !test;
           },
           mapData: function(data, maskPattern) {
             var inc = -1, row = this.moduleCount - 1, bitIndex = 7, byteIndex = 0;
@@ -4364,8 +4819,7 @@
                   if (this.modules[row][col - c] == null) {
                     var dark = false;
                     if (byteIndex < data.length) dark = (((data[byteIndex] >>> bitIndex) & 1) == 1);
-                    var mask = maskFunc(row, col - c);
-                    if (mask) dark = !dark;
+                    if (maskFunc(row, col - c)) dark = !dark;
                     this.modules[row][col - c] = dark;
                     bitIndex--;
                     if (bitIndex == -1) { byteIndex++; bitIndex = 7; }
@@ -4377,7 +4831,6 @@
             }
           }
         };
-
         QRCodeModel.createData = function(typeNumber, errorCorrectLevel, dataList) {
           var rsBlocks = QRRSBlock.getRSBlocks(typeNumber, errorCorrectLevel);
           var buffer = new QRBitBuffer();
@@ -4400,7 +4853,6 @@
           }
           return QRCodeModel.createBytes(buffer, rsBlocks);
         };
-
         QRCodeModel.createBytes = function(buffer, rsBlocks) {
           var offset = 0, maxDcCount = 0, maxEcCount = 0;
           var dcdata = new Array(rsBlocks.length), ecdata = new Array(rsBlocks.length);
@@ -4409,7 +4861,7 @@
             maxDcCount = Math.max(maxDcCount, dcCount);
             maxEcCount = Math.max(maxEcCount, ecCount);
             dcdata[r] = new Array(dcCount);
-            for (var i = 0; i < dcdata[r].length; i++) dcdata[r][i] = 0xff & buffer.buffer[i + offset];
+            for (var i = 0; i < dcdata[r].length; i++) dcdata[r][i] = 0xFF & buffer.buffer[i + offset];
             offset += dcCount;
             var rsPoly = QRUtil.getErrorCorrectPolynomial(ecCount);
             var rawPoly = new QRPolynomial(dcdata[r], rsPoly.getLength() - 1);
@@ -4435,17 +4887,21 @@
           }
           return data;
         };
-
         var QRErrorCorrectLevel = { L: 1, M: 0, Q: 3, H: 2 };
         var QRUtil = {
           PATTERN_POSITION_TABLE: [
-            [], [6, 18], [6, 22], [6, 26], [6, 30], [6, 34], [6, 22, 38], [6, 24, 42], [6, 26, 46], [6, 28, 50],
-            [6, 30, 54], [6, 32, 58], [6, 34, 62], [6, 26, 46, 66], [6, 26, 48, 70], [6, 26, 50, 74], [6, 30, 54, 78],
-            [6, 30, 56, 82], [6, 30, 58, 86], [6, 34, 62, 90], [6, 28, 50, 72, 94], [6, 26, 50, 74, 98], [6, 30, 54, 78, 102],
-            [6, 28, 54, 80, 106], [6, 32, 58, 84, 110], [6, 30, 58, 86, 114], [6, 34, 62, 90, 118], [6, 26, 50, 74, 98, 122],
-            [6, 30, 54, 78, 102, 126], [6, 26, 52, 78, 104, 130], [6, 30, 56, 82, 108, 134], [6, 34, 60, 86, 112, 138],
-            [6, 30, 58, 86, 114, 142], [6, 34, 62, 90, 118, 146], [6, 30, 54, 78, 102, 126, 150], [6, 24, 50, 76, 102, 128, 154],
-            [6, 28, 54, 80, 106, 132, 158], [6, 32, 58, 84, 110, 136, 162], [6, 26, 54, 82, 110, 138, 166], [6, 30, 58, 86, 114, 142, 170]
+            [], [6, 18], [6, 22], [6, 26], [6, 30], [6, 34],
+            [6, 22, 38], [6, 24, 42], [6, 26, 46], [6, 28, 50], [6, 30, 54],
+            [6, 32, 58], [6, 34, 62], [6, 26, 46, 66], [6, 26, 48, 70],
+            [6, 26, 50, 74], [6, 30, 54, 78], [6, 30, 56, 82], [6, 30, 58, 86],
+            [6, 34, 62, 90], [6, 28, 50, 72, 94], [6, 26, 50, 74, 98],
+            [6, 30, 54, 78, 102], [6, 28, 54, 80, 106], [6, 32, 58, 84, 110],
+            [6, 30, 58, 86, 114], [6, 34, 62, 90, 118], [6, 26, 50, 74, 98, 122],
+            [6, 30, 54, 78, 102, 126], [6, 26, 52, 78, 104, 130], [6, 30, 56, 82, 108, 134],
+            [6, 34, 60, 86, 112, 138], [6, 30, 58, 86, 114, 142], [6, 34, 62, 90, 118, 146],
+            [6, 30, 54, 78, 102, 126, 150], [6, 24, 50, 76, 102, 128, 154],
+            [6, 28, 54, 80, 106, 132, 158], [6, 32, 58, 84, 110, 136, 162],
+            [6, 26, 54, 82, 110, 138, 166], [6, 30, 58, 86, 114, 142, 170]
           ],
           G15: (1 << 10) | (1 << 8) | (1 << 5) | (1 << 4) | (1 << 2) | (1 << 1) | (1 << 0),
           G18: (1 << 12) | (1 << 11) | (1 << 10) | (1 << 9) | (1 << 8) | (1 << 5) | (1 << 2) | (1 << 0),
@@ -4460,7 +4916,11 @@
             while (QRUtil.getBCHDigit(d) - QRUtil.getBCHDigit(QRUtil.G18) >= 0) d ^= (QRUtil.G18 << (QRUtil.getBCHDigit(d) - QRUtil.getBCHDigit(QRUtil.G18)));
             return (data << 12) | d;
           },
-          getBCHDigit: function(data) { var digit = 0; while (data != 0) { digit++; data >>>= 1; } return digit; },
+          getBCHDigit: function(data) {
+            var digit = 0;
+            while (data != 0) { digit++; data >>>= 1; }
+            return digit;
+          },
           getPatternPosition: function(typeNumber) { return QRUtil.PATTERN_POSITION_TABLE[typeNumber - 1]; },
           getMaskFunction: function(maskPattern) {
             switch (maskPattern) {
@@ -4483,8 +4943,7 @@
           getLengthInBits: function(mode, type) {
             if (1 <= type && type < 10) return 8;
             else if (type < 27) return 16;
-            else if (type < 41) return 16;
-            else throw new Error("type:" + type);
+            else return 16;
           },
           getLostPoint: function(qrCode) {
             var moduleCount = qrCode.getModuleCount(), lostPoint = 0;
@@ -4494,8 +4953,7 @@
                 for (var r = -1; r <= 1; r++) {
                   if (row + r < 0 || moduleCount <= row + r) continue;
                   for (var c = -1; c <= 1; c++) {
-                    if (col + c < 0 || moduleCount <= col + c) continue;
-                    if (r == 0 && c == 0) continue;
+                    if (col + c < 0 || moduleCount <= col + c || (r == 0 && c == 0)) continue;
                     if (dark == qrCode.isDark(row + r, col + c)) sameCount++;
                   }
                 }
@@ -4505,18 +4963,16 @@
             return lostPoint;
           }
         };
-
         var QRMath = {
           glog: function(n) { if (n < 1) throw new Error("glog(" + n + ")"); return QRMath.LOG_TABLE[n]; },
           gexp: function(n) { while (n < 0) n += 255; while (n >= 256) n -= 255; return QRMath.EXP_TABLE[n]; },
-          EXP_TABLE: new Array(256), LOG_TABLE: new Array(256)
+          EXP_TABLE: new Array(256),
+          LOG_TABLE: new Array(256)
         };
         for (var i = 0; i < 8; i++) QRMath.EXP_TABLE[i] = 1 << i;
         for (var i = 8; i < 256; i++) QRMath.EXP_TABLE[i] = QRMath.EXP_TABLE[i - 4] ^ QRMath.EXP_TABLE[i - 5] ^ QRMath.EXP_TABLE[i - 6] ^ QRMath.EXP_TABLE[i - 8];
         for (var i = 0; i < 255; i++) QRMath.LOG_TABLE[QRMath.EXP_TABLE[i]] = i;
-
         function QRPolynomial(num, shift) {
-          if (num.length == undefined) throw new Error(num.length + "/" + shift);
           var offset = 0;
           while (offset < num.length && num[offset] == 0) offset++;
           this.num = new Array(num.length - offset + shift);
@@ -4528,7 +4984,9 @@
           multiply: function(e) {
             var num = new Array(this.getLength() + e.getLength() - 1);
             for (var i = 0; i < this.getLength(); i++) {
-              for (var j = 0; j < e.getLength(); j++) num[i + j] ^= QRMath.gexp(QRMath.glog(this.get(i)) + QRMath.glog(e.get(j)));
+              for (var j = 0; j < e.getLength(); j++) {
+                num[i + j] ^= QRMath.gexp(QRMath.glog(this.get(i)) + QRMath.glog(e.get(j)));
+              }
             }
             return new QRPolynomial(num, 0);
           },
@@ -4541,39 +4999,39 @@
             return new QRPolynomial(num, 0).mod(e);
           }
         };
-
-        function QRRSBlock(totalCount, dataCount) { this.totalCount = totalCount; this.dataCount = dataCount; }
+        function QRRSBlock(totalCount, dataCount) {
+          this.totalCount = totalCount;
+          this.dataCount = dataCount;
+        }
         QRRSBlock.RS_BLOCK_TABLE = [
-          [1, 26, 19], [1, 26, 16], [1, 26, 13], [1, 26, 9],
-          [1, 44, 34], [1, 44, 28], [1, 44, 22], [1, 44, 16],
-          [1, 70, 55], [1, 70, 44], [2, 35, 17], [2, 35, 13],
-          [1, 100, 80], [2, 50, 32], [2, 50, 24], [4, 25, 9],
-          [1, 134, 108], [2, 67, 43], [2, 33, 15, 2, 34, 16], [2, 33, 11, 2, 34, 12],
-          [2, 86, 68], [4, 43, 27], [4, 43, 19], [4, 43, 15]
+          [1, 26, 19], [1, 44, 34], [1, 70, 55], [1, 100, 80], [1, 134, 108],
+          [2, 86, 68], [2, 98, 78], [2, 121, 97], [2, 146, 116], [2, 86, 68, 2, 87, 69]
         ];
         QRRSBlock.getRSBlocks = function(typeNumber, errorCorrectLevel) {
           var rsBlock = QRRSBlock.getRsBlockTable(typeNumber, errorCorrectLevel);
-          if (rsBlock == undefined) throw new Error("bad rs block @ typeNumber:" + typeNumber + "/errorCorrectLevel:" + errorCorrectLevel);
-          var length = rsBlock.length / 3, list = [];
-          for (var i = 0; i < length; i++) {
-            var count = rsBlock[i * 3 + 0], totalCount = rsBlock[i * 3 + 1], dataCount = rsBlock[i * 3 + 2];
+          var list = [];
+          for (var i = 0; i < rsBlock.length; i += 3) {
+            var count = rsBlock[i], totalCount = rsBlock[i + 1], dataCount = rsBlock[i + 2];
             for (var j = 0; j < count; j++) list.push(new QRRSBlock(totalCount, dataCount));
           }
           return list;
         };
         QRRSBlock.getRsBlockTable = function(typeNumber, errorCorrectLevel) {
-          switch (errorCorrectLevel) {
-            case QRErrorCorrectLevel.L: return QRRSBlock.RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 0];
-            case QRErrorCorrectLevel.M: return QRRSBlock.RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 1];
-            case QRErrorCorrectLevel.Q: return QRRSBlock.RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 2];
-            case QRErrorCorrectLevel.H: return QRRSBlock.RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 3];
-            default: return undefined;
+          switch (typeNumber) {
+            case 1: return [1, 26, 19];
+            case 2: return [1, 44, 34];
+            case 3: return [1, 70, 55];
+            case 4: return [1, 100, 80];
+            case 5: return [1, 134, 108];
+            default: return [2, 86, 68];
           }
         };
-
         function QRBitBuffer() { this.buffer = []; this.length = 0; }
         QRBitBuffer.prototype = {
-          get: function(index) { return ((this.buffer[Math.floor(index / 8)] >>> (7 - index % 8)) & 1) == 1; },
+          get: function(index) {
+            var bufIndex = Math.floor(index / 8);
+            return ((this.buffer[bufIndex] >>> (7 - index % 8)) & 1) == 1;
+          },
           put: function(num, length) {
             for (var i = 0; i < length; i++) this.putBit(((num >>> (length - i - 1)) & 1) == 1);
           },
