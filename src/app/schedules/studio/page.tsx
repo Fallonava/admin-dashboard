@@ -22,7 +22,12 @@ import {
   Award,
   Upload,
   Search,
-  RefreshCw
+  LayoutGrid,
+  Columns2,
+  Columns3,
+  Rows3,
+  Split,
+  Eye
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PageHeader } from "@/components/ui/PageHeader";
@@ -30,11 +35,15 @@ import type { Doctor, Shift, LeaveRequest } from "@/lib/data-service";
 import { getIndonesianHoliday } from "@/lib/holidays";
 
 type ThemeType = "sage" | "white" | "dark" | "rose" | "emerald" | "cobalt";
+type LayoutMode = "matrix2" | "compact3" | "heroSplit" | "singleStack";
+type VisualStyle = "clay3d" | "glassmorphism" | "swissModern" | "luxuryGold";
 
 export default function PosterStudioPage() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [aspectRatio, setAspectRatio] = useState<"poster" | "story" | "feed">("poster");
   const [themeMode, setThemeMode] = useState<ThemeType>("sage");
+  const [layoutMode, setLayoutMode] = useState<LayoutMode>("matrix2");
+  const [visualStyle, setVisualStyle] = useState<VisualStyle>("clay3d");
   const [poliFilter, setPoliFilter] = useState<"all" | "Bedah" | "NonBedah">("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [showLeaveCard, setShowLeaveCard] = useState<boolean>(true);
@@ -162,8 +171,8 @@ export default function PosterStudioPage() {
     };
   }, [scheduleData]);
 
-  // Helper: Draw 3D Apple Claymorphic Tile with Inset Bevel Lighting & Diffuse Drop Shadow
-  const drawClayTile = (
+  // Helper: Card Drawer supporting 4 distinct visual styles (Clay 3D, Glassmorphism, Swiss Bauhaus, Luxury Gold)
+  const drawStyledCard = (
     ctx: CanvasRenderingContext2D,
     x: number,
     y: number,
@@ -178,6 +187,8 @@ export default function PosterStudioPage() {
       shadowOffsetY?: number;
       borderLight?: string;
       borderDark?: string;
+      accentStroke?: string;
+      isHeader?: boolean;
     } = {}
   ) => {
     const {
@@ -188,37 +199,102 @@ export default function PosterStudioPage() {
       shadowOffsetY = 5,
       borderLight = "rgba(255, 255, 255, 0.9)",
       borderDark = "rgba(0, 0, 0, 0.06)",
+      accentStroke,
+      isHeader = false,
     } = options;
 
     ctx.save();
-    ctx.shadowColor = shadowColor;
-    ctx.shadowBlur = shadowBlur;
-    ctx.shadowOffsetX = 0;
-    ctx.shadowOffsetY = shadowOffsetY;
 
-    const grad = ctx.createLinearGradient(x, y, x, y + h);
-    grad.addColorStop(0, fillTop);
-    grad.addColorStop(1, fillBottom);
-    ctx.fillStyle = grad;
+    if (visualStyle === "clay3d") {
+      // 1. Apple 3D Claymorphic
+      ctx.shadowColor = shadowColor;
+      ctx.shadowBlur = shadowBlur;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = shadowOffsetY;
 
-    ctx.beginPath();
-    ctx.roundRect(x, y, w, h, r);
-    ctx.fill();
-    ctx.restore();
+      const grad = ctx.createLinearGradient(x, y, x, y + h);
+      grad.addColorStop(0, fillTop);
+      grad.addColorStop(1, fillBottom);
+      ctx.fillStyle = grad;
 
-    ctx.save();
-    ctx.strokeStyle = borderLight;
-    ctx.lineWidth = 1.5;
-    ctx.beginPath();
-    ctx.roundRect(x + 0.5, y + 0.5, w - 1, h - 1, r);
-    ctx.stroke();
+      ctx.beginPath();
+      ctx.roundRect(x, y, w, h, r);
+      ctx.fill();
+      ctx.restore();
 
-    ctx.strokeStyle = borderDark;
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.roundRect(x, y, w, h, r);
-    ctx.stroke();
-    ctx.restore();
+      ctx.save();
+      ctx.strokeStyle = borderLight;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.roundRect(x + 0.5, y + 0.5, w - 1, h - 1, r);
+      ctx.stroke();
+
+      ctx.strokeStyle = borderDark;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.roundRect(x, y, w, h, r);
+      ctx.stroke();
+      ctx.restore();
+    } else if (visualStyle === "glassmorphism") {
+      // 2. Frosted Aero Glassmorphism
+      ctx.shadowColor = "rgba(0, 0, 0, 0.12)";
+      ctx.shadowBlur = 16;
+      ctx.shadowOffsetY = 4;
+
+      const grad = ctx.createLinearGradient(x, y, x + w, y + h);
+      grad.addColorStop(0, "rgba(255, 255, 255, 0.85)");
+      grad.addColorStop(1, "rgba(255, 255, 255, 0.5)");
+      ctx.fillStyle = grad;
+
+      ctx.beginPath();
+      ctx.roundRect(x, y, w, h, r);
+      ctx.fill();
+      ctx.restore();
+
+      ctx.save();
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.8)";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.roundRect(x, y, w, h, r);
+      ctx.stroke();
+      ctx.restore();
+    } else if (visualStyle === "swissModern") {
+      // 3. Swiss Minimalist Bauhaus
+      ctx.fillStyle = isHeader ? "#0F172A" : "#FFFFFF";
+      ctx.beginPath();
+      ctx.roundRect(x, y, w, h, Math.min(r, 8));
+      ctx.fill();
+      ctx.restore();
+
+      ctx.save();
+      ctx.strokeStyle = "#0F172A";
+      ctx.lineWidth = isHeader ? 0 : 2;
+      if (!isHeader) {
+        ctx.beginPath();
+        ctx.roundRect(x, y, w, h, Math.min(r, 8));
+        ctx.stroke();
+      }
+      ctx.restore();
+    } else {
+      // 4. Luxury Obsidian & Gold
+      const grad = ctx.createLinearGradient(x, y, x, y + h);
+      grad.addColorStop(0, isHeader ? "#B45309" : "#1E293B");
+      grad.addColorStop(1, isHeader ? "#78350F" : "#0F172A");
+      ctx.fillStyle = grad;
+
+      ctx.beginPath();
+      ctx.roundRect(x, y, w, h, r);
+      ctx.fill();
+      ctx.restore();
+
+      ctx.save();
+      ctx.strokeStyle = isHeader ? "rgba(255, 255, 255, 0.4)" : "#F59E0B";
+      ctx.lineWidth = isHeader ? 1 : 1.5;
+      ctx.beginPath();
+      ctx.roundRect(x, y, w, h, r);
+      ctx.stroke();
+      ctx.restore();
+    }
   };
 
   // Helper: Get Doctor Avatar Initials
@@ -230,7 +306,7 @@ export default function PosterStudioPage() {
     return "DR";
   };
 
-  // Canvas Drawing Engine (Ultra Aesthetic Apple iOS Bento Matrix)
+  // Canvas Drawing Engine
   const renderToCanvas = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -244,10 +320,26 @@ export default function PosterStudioPage() {
     canvas.height = height;
 
     const { specMap, leaveDoctors } = scheduleData();
-    const isDark = themeMode === "dark";
+    const isDark = themeMode === "dark" || visualStyle === "luxuryGold";
 
-    // ── 1. BACKGROUND CANVAS GRADIENTS (6 Visual Modes) ──
-    if (themeMode === "sage") {
+    // ── 1. BACKGROUND CANVAS WITH DYNAMIC VISUAL STYLES ──
+    if (visualStyle === "luxuryGold") {
+      const bgGrad = ctx.createLinearGradient(0, 0, width, height);
+      bgGrad.addColorStop(0, "#090D16");
+      bgGrad.addColorStop(0.5, "#0F172A");
+      bgGrad.addColorStop(1, "#050811");
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, width, height);
+
+      const glow = ctx.createRadialGradient(260, 200, 10, 260, 200, 520);
+      glow.addColorStop(0, "rgba(245, 158, 11, 0.2)");
+      glow.addColorStop(1, "rgba(245, 158, 11, 0)");
+      ctx.fillStyle = glow;
+      ctx.fillRect(0, 0, width, height);
+    } else if (visualStyle === "swissModern") {
+      ctx.fillStyle = "#F8FAFC";
+      ctx.fillRect(0, 0, width, height);
+    } else if (themeMode === "sage") {
       const bgGrad = ctx.createLinearGradient(0, 0, width, height);
       bgGrad.addColorStop(0, "#D2E5EC");
       bgGrad.addColorStop(0.45, "#BED9E3");
@@ -293,12 +385,6 @@ export default function PosterStudioPage() {
       bgGrad.addColorStop(1, "#F472B6");
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, width, height);
-
-      const glow = ctx.createRadialGradient(240, 180, 10, 240, 180, 500);
-      glow.addColorStop(0, "rgba(255, 255, 255, 0.8)");
-      glow.addColorStop(1, "rgba(255, 255, 255, 0)");
-      ctx.fillStyle = glow;
-      ctx.fillRect(0, 0, width, height);
     } else if (themeMode === "emerald") {
       const bgGrad = ctx.createLinearGradient(0, 0, width, height);
       bgGrad.addColorStop(0, "#D1FAE5");
@@ -306,36 +392,23 @@ export default function PosterStudioPage() {
       bgGrad.addColorStop(1, "#6EE7B7");
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, width, height);
-
-      const glow = ctx.createRadialGradient(240, 180, 10, 240, 180, 500);
-      glow.addColorStop(0, "rgba(255, 255, 255, 0.8)");
-      glow.addColorStop(1, "rgba(255, 255, 255, 0)");
-      ctx.fillStyle = glow;
-      ctx.fillRect(0, 0, width, height);
     } else {
-      // Cobalt Corporate Blue
       const bgGrad = ctx.createLinearGradient(0, 0, width, height);
       bgGrad.addColorStop(0, "#DBEAFE");
       bgGrad.addColorStop(0.5, "#BFDBFE");
       bgGrad.addColorStop(1, "#93C5FD");
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, width, height);
-
-      const glow = ctx.createRadialGradient(240, 180, 10, 240, 180, 500);
-      glow.addColorStop(0, "rgba(255, 255, 255, 0.85)");
-      glow.addColorStop(1, "rgba(255, 255, 255, 0)");
-      ctx.fillStyle = glow;
-      ctx.fillRect(0, 0, width, height);
     }
 
     const pad = 34;
     let currY = pad;
 
-    // ── 2. ULTRA APPLE iOS HEADER BENTO BAR ──
+    // ── 2. HEADER BENTO BAR ──
     const headerW = width - pad * 2;
     const headerH = 92;
 
-    drawClayTile(ctx, pad, currY, headerW, headerH, 26, {
+    drawStyledCard(ctx, pad, currY, headerW, headerH, 26, {
       fillTop: isDark ? "rgba(30, 41, 59, 0.95)" : "#FFFFFF",
       fillBottom: isDark ? "rgba(15, 23, 42, 0.95)" : "#EEF5F8",
       shadowColor: isDark ? "rgba(0,0,0,0.4)" : "rgba(15, 76, 92, 0.14)",
@@ -344,7 +417,6 @@ export default function PosterStudioPage() {
       borderLight: isDark ? "rgba(255, 255, 255, 0.16)" : "#FFFFFF",
     });
 
-    // Custom Logo OR 3D Apple Health Emblem (+)
     const emblemX = pad + 18;
     const emblemY = currY + 17;
     const emblemSize = 58;
@@ -366,8 +438,8 @@ export default function PosterStudioPage() {
       } catch (e) {}
     } else {
       const emblemGrad = ctx.createLinearGradient(emblemX, emblemY, emblemX + emblemSize, emblemY + emblemSize);
-      emblemGrad.addColorStop(0, "#10B981");
-      emblemGrad.addColorStop(1, "#047857");
+      emblemGrad.addColorStop(0, visualStyle === "luxuryGold" ? "#F59E0B" : "#10B981");
+      emblemGrad.addColorStop(1, visualStyle === "luxuryGold" ? "#B45309" : "#047857");
       ctx.fillStyle = emblemGrad;
       ctx.beginPath();
       ctx.roundRect(emblemX, emblemY, emblemSize, emblemSize, 18);
@@ -386,7 +458,7 @@ export default function PosterStudioPage() {
 
     // Hospital Typography
     ctx.textAlign = "left";
-    ctx.fillStyle = isDark ? "#34D399" : "#0F766E";
+    ctx.fillStyle = visualStyle === "luxuryGold" ? "#FCD34D" : (isDark ? "#34D399" : "#0F766E");
     ctx.font = "900 20px sans-serif";
     ctx.fillText(hospitalName, pad + 90, currY + 36);
 
@@ -394,7 +466,6 @@ export default function PosterStudioPage() {
     ctx.font = "800 13px sans-serif";
     ctx.fillText(hospitalSubtitle, pad + 90, currY + 62);
 
-    // Date & KARS Badges
     const dateFormatted = selectedDate.toLocaleDateString("id-ID", {
       weekday: "long",
       day: "numeric",
@@ -407,7 +478,7 @@ export default function PosterStudioPage() {
     const datePinX = width - pad - datePinW - 16;
     const datePinY = currY + 16;
 
-    drawClayTile(ctx, datePinX, datePinY, datePinW, datePinH, 18, {
+    drawStyledCard(ctx, datePinX, datePinY, datePinW, datePinH, 18, {
       fillTop: isDark ? "rgba(15, 23, 42, 0.9)" : "#F0F7FA",
       fillBottom: isDark ? "rgba(10, 15, 29, 0.9)" : "#E2EEF2",
       shadowColor: "rgba(0,0,0,0.08)",
@@ -415,7 +486,6 @@ export default function PosterStudioPage() {
       shadowOffsetY: 2,
     });
 
-    // 3D Red Calendar Pin Block
     const calBlockX = datePinX + 9;
     const calBlockY = datePinY + 8;
     const calBlockW = 44;
@@ -440,7 +510,6 @@ export default function PosterStudioPage() {
     ctx.font = "900 17px sans-serif";
     ctx.fillText(String(selectedDate.getDate()), calBlockX + 22, calBlockY + 36);
 
-    // Date Text
     ctx.textAlign = "left";
     ctx.fillStyle = isDark ? "#FFFFFF" : "#0F172A";
     ctx.font = "900 13.5px sans-serif";
@@ -452,11 +521,11 @@ export default function PosterStudioPage() {
 
     currY += headerH + 18;
 
-    // ── 3. DEDICATED LEAVE DOCTORS BENTO CARD (Ultra Rose Velvet Clay) ──
-    if (showLeaveCard && leaveDoctors.length > 0) {
+    // ── 3. DEDICATED LEAVE DOCTORS BENTO CARD ──
+    if (showLeaveCard && leaveDoctors.length > 0 && layoutMode !== "heroSplit") {
       const leaveCardH = 48 + Math.ceil(leaveDoctors.length / 2) * 32 + 8;
 
-      drawClayTile(ctx, pad, currY, headerW, leaveCardH, 22, {
+      drawStyledCard(ctx, pad, currY, headerW, leaveCardH, 22, {
         fillTop: isDark ? "rgba(225, 29, 72, 0.22)" : "#FFF1F2",
         fillBottom: isDark ? "rgba(159, 18, 57, 0.22)" : "#FFE4E6",
         shadowColor: "rgba(225, 29, 72, 0.18)",
@@ -502,140 +571,245 @@ export default function PosterStudioPage() {
       currY += leaveCardH + 18;
     }
 
-    // ── 4. FULL SCHEDULE 2-COLUMN ULTRA AESTHETIC BENTO MATRIX ──
+    // ── 4. MULTI-LAYOUT SCHEDULE RENDERER ──
     const specEntries = Object.entries(specMap);
-    const colW = (headerW - 20) / 2;
     const footerH = 82;
 
-    const leftSpecs: typeof specEntries = [];
-    const rightSpecs: typeof specEntries = [];
+    if (layoutMode === "compact3") {
+      // ── LAYOUT B: 3-COLUMN COMPACT HIGH-DENSITY GRID ──
+      const numCols = 3;
+      const colGap = 16;
+      const colW = (headerW - colGap * (numCols - 1)) / numCols;
 
-    specEntries.forEach(([spec, docs], idx) => {
-      if (idx % 2 === 0) leftSpecs.push([spec, docs]);
-      else rightSpecs.push([spec, docs]);
-    });
+      const cols: typeof specEntries[] = [[], [], []];
+      specEntries.forEach(([spec, docs], idx) => {
+        cols[idx % 3].push([spec, docs]);
+      });
 
-    const renderSpecColumn = (specs: typeof specEntries, startX: number, startY: number) => {
-      let colY = startY;
-      specs.forEach(([specName, docList]) => {
-        const headerH = 32;
-        const cardH = 48;
-        const cardGap = 8;
-        const totalSectionH = headerH + docList.length * (cardH + cardGap);
+      cols.forEach((colSpecs, colIdx) => {
+        const startX = pad + colIdx * (colW + colGap);
+        let colY = currY;
 
-        drawClayTile(ctx, startX, colY, colW, headerH, 16, {
+        colSpecs.forEach(([specName, docList]) => {
+          const headerH = 28;
+          const cardH = 42;
+          const cardGap = 6;
+          const totalSectionH = headerH + docList.length * (cardH + cardGap);
+
+          drawStyledCard(ctx, startX, colY, colW, headerH, 12, {
+            fillTop: "#569DAA",
+            fillBottom: "#3A7685",
+            isHeader: true,
+          });
+
+          ctx.fillStyle = "#FFFFFF";
+          ctx.font = "900 11.5px sans-serif";
+          ctx.textAlign = "center";
+          ctx.fillText(specName, startX + colW / 2, colY + 18);
+
+          let doctorY = colY + headerH + 5;
+          docList.forEach((d) => {
+            const isCuti = d.status === "CUTI";
+
+            drawStyledCard(ctx, startX, doctorY, colW, cardH, 12, {
+              fillTop: isDark ? "rgba(30, 41, 59, 0.95)" : "#FFFFFF",
+              fillBottom: isDark ? "rgba(15, 23, 42, 0.95)" : "#F5F9FA",
+            });
+
+            ctx.textAlign = "left";
+            ctx.fillStyle = isDark ? "#FFFFFF" : "#0F172A";
+            ctx.font = "800 11px sans-serif";
+            ctx.fillText(d.doctorName.slice(0, 20), startX + 10, doctorY + 18);
+
+            ctx.font = "800 10px monospace";
+            ctx.fillStyle = isCuti ? "#E11D48" : (isDark ? "#38BDF8" : "#0369A1");
+            ctx.fillText(isCuti ? "Libur 📅" : d.time, startX + 10, doctorY + 33);
+
+            doctorY += cardH + cardGap;
+          });
+
+          colY += totalSectionH + 8;
+        });
+      });
+    } else if (layoutMode === "singleStack") {
+      // ── LAYOUT C: 1-COLUMN FULL-WIDTH STREAM ──
+      let stackY = currY;
+      specEntries.slice(0, 10).forEach(([specName, docList]) => {
+        const headerH = 30;
+        const cardH = 46;
+        const cardGap = 6;
+        const totalH = headerH + docList.length * (cardH + cardGap);
+
+        drawStyledCard(ctx, pad, stackY, headerW, headerH, 14, {
           fillTop: "#569DAA",
           fillBottom: "#3A7685",
-          shadowColor: "rgba(58, 118, 133, 0.28)",
-          shadowBlur: 8,
-          shadowOffsetY: 2,
-          borderLight: "rgba(255, 255, 255, 0.65)",
+          isHeader: true,
         });
 
         ctx.fillStyle = "#FFFFFF";
         ctx.font = "900 13px sans-serif";
-        ctx.textAlign = "center";
-        ctx.fillText(specName, startX + colW / 2, colY + 20);
+        ctx.textAlign = "left";
+        ctx.fillText(`🏥 POLI ${specName}`, pad + 16, stackY + 20);
 
-        let doctorY = colY + headerH + 6;
-
+        let docY = stackY + headerH + 6;
         docList.forEach((d) => {
           const isCuti = d.status === "CUTI";
-          const isBedah = d.category === "Bedah";
 
-          drawClayTile(ctx, startX, doctorY, colW, cardH, 16, {
+          drawStyledCard(ctx, pad, docY, headerW, cardH, 14, {
             fillTop: isDark ? "rgba(30, 41, 59, 0.95)" : "#FFFFFF",
             fillBottom: isDark ? "rgba(15, 23, 42, 0.95)" : "#F5F9FA",
-            shadowColor: isDark ? "rgba(0,0,0,0.3)" : "rgba(15, 76, 92, 0.08)",
-            shadowBlur: 8,
-            shadowOffsetY: 2,
-            borderLight: isDark ? "rgba(255, 255, 255, 0.12)" : "#FFFFFF",
           });
-
-          const avatarSize = 34;
-          const avatarX = startX + 8;
-          const avatarY = doctorY + 7;
-
-          const avatarGrad = ctx.createLinearGradient(avatarX, avatarY, avatarX + avatarSize, avatarY + avatarSize);
-          if (isCuti) {
-            avatarGrad.addColorStop(0, "#F43F5E");
-            avatarGrad.addColorStop(1, "#BE123C");
-          } else if (isBedah) {
-            avatarGrad.addColorStop(0, "#3B82F6");
-            avatarGrad.addColorStop(1, "#1D4ED8");
-          } else {
-            avatarGrad.addColorStop(0, "#10B981");
-            avatarGrad.addColorStop(1, "#047857");
-          }
-
-          ctx.fillStyle = avatarGrad;
-          ctx.beginPath();
-          ctx.roundRect(avatarX, avatarY, avatarSize, avatarSize, 11);
-          ctx.fill();
-
-          ctx.fillStyle = "#FFFFFF";
-          ctx.font = "900 12px sans-serif";
-          ctx.textAlign = "center";
-          ctx.fillText(getInitials(d.doctorName), avatarX + avatarSize / 2, avatarY + 22);
 
           ctx.textAlign = "left";
           ctx.fillStyle = isDark ? "#FFFFFF" : "#0F172A";
           ctx.font = "900 13px sans-serif";
-          ctx.fillText(d.doctorName.slice(0, 26), startX + 48, doctorY + (d.replacement ? 21 : 28));
+          ctx.fillText(d.doctorName, pad + 16, docY + 28);
 
-          if (d.replacement) {
-            ctx.fillStyle = "#059669";
-            ctx.font = "900 10.5px sans-serif";
-            ctx.fillText(`🔄 Digantikan: ${d.replacement}`, startX + 48, doctorY + 38);
-          }
+          ctx.textAlign = "right";
+          ctx.font = "900 12px monospace";
+          ctx.fillStyle = isCuti ? "#E11D48" : (isDark ? "#38BDF8" : "#0284C7");
+          ctx.fillText(isCuti ? "LIBUR 📅" : `🕒 ${d.time}`, pad + headerW - 16, docY + 28);
 
-          const timePillW = isCuti ? 84 : 130;
-          const timePillH = 30;
-          const timePillX = startX + colW - timePillW - 8;
-          const timePillY = doctorY + 9;
-
-          if (isCuti) {
-            ctx.fillStyle = "rgba(225, 29, 72, 0.12)";
-            ctx.beginPath();
-            ctx.roundRect(timePillX, timePillY, timePillW, timePillH, 10);
-            ctx.fill();
-
-            ctx.fillStyle = "#E11D48";
-            ctx.font = "900 11.5px sans-serif";
-            ctx.textAlign = "center";
-            ctx.fillText("LIBUR 📅", timePillX + timePillW / 2, timePillY + 19);
-          } else {
-            ctx.fillStyle = isDark ? "rgba(56, 189, 248, 0.15)" : "rgba(2, 132, 199, 0.1)";
-            ctx.beginPath();
-            ctx.roundRect(timePillX, timePillY, timePillW, timePillH, 10);
-            ctx.fill();
-
-            ctx.fillStyle = isDark ? "#38BDF8" : "#0369A1";
-            ctx.font = "900 11.5px monospace";
-            ctx.textAlign = "center";
-            ctx.fillText(`🕒 ${d.time}`, timePillX + timePillW / 2, timePillY + 19);
-          }
-
-          doctorY += cardH + cardGap;
+          docY += cardH + cardGap;
         });
 
-        colY += totalSectionH + 12;
+        stackY += totalH + 10;
       });
-    };
+    } else {
+      // ── LAYOUT A: 2-COLUMN BALANCED MATRIX (Default) ──
+      const colW = (headerW - 20) / 2;
+      const leftSpecs: typeof specEntries = [];
+      const rightSpecs: typeof specEntries = [];
 
-    renderSpecColumn(leftSpecs, pad, currY);
-    renderSpecColumn(rightSpecs, pad + colW + 20, currY);
+      specEntries.forEach(([spec, docs], idx) => {
+        if (idx % 2 === 0) leftSpecs.push([spec, docs]);
+        else rightSpecs.push([spec, docs]);
+      });
+
+      const renderSpecColumn = (specs: typeof specEntries, startX: number, startY: number) => {
+        let colY = startY;
+        specs.forEach(([specName, docList]) => {
+          const headerH = 32;
+          const cardH = 48;
+          const cardGap = 8;
+          const totalSectionH = headerH + docList.length * (cardH + cardGap);
+
+          drawStyledCard(ctx, startX, colY, colW, headerH, 16, {
+            fillTop: "#569DAA",
+            fillBottom: "#3A7685",
+            shadowColor: "rgba(58, 118, 133, 0.28)",
+            shadowBlur: 8,
+            shadowOffsetY: 2,
+            borderLight: "rgba(255, 255, 255, 0.65)",
+            isHeader: true,
+          });
+
+          ctx.fillStyle = "#FFFFFF";
+          ctx.font = "900 13px sans-serif";
+          ctx.textAlign = "center";
+          ctx.fillText(specName, startX + colW / 2, colY + 20);
+
+          let doctorY = colY + headerH + 6;
+
+          docList.forEach((d) => {
+            const isCuti = d.status === "CUTI";
+            const isBedah = d.category === "Bedah";
+
+            drawStyledCard(ctx, startX, doctorY, colW, cardH, 16, {
+              fillTop: isDark ? "rgba(30, 41, 59, 0.95)" : "#FFFFFF",
+              fillBottom: isDark ? "rgba(15, 23, 42, 0.95)" : "#F5F9FA",
+              shadowColor: isDark ? "rgba(0,0,0,0.3)" : "rgba(15, 76, 92, 0.08)",
+              shadowBlur: 8,
+              shadowOffsetY: 2,
+              borderLight: isDark ? "rgba(255, 255, 255, 0.12)" : "#FFFFFF",
+            });
+
+            const avatarSize = 34;
+            const avatarX = startX + 8;
+            const avatarY = doctorY + 7;
+
+            const avatarGrad = ctx.createLinearGradient(avatarX, avatarY, avatarX + avatarSize, avatarY + avatarSize);
+            if (isCuti) {
+              avatarGrad.addColorStop(0, "#F43F5E");
+              avatarGrad.addColorStop(1, "#BE123C");
+            } else if (isBedah) {
+              avatarGrad.addColorStop(0, "#3B82F6");
+              avatarGrad.addColorStop(1, "#1D4ED8");
+            } else {
+              avatarGrad.addColorStop(0, "#10B981");
+              avatarGrad.addColorStop(1, "#047857");
+            }
+
+            ctx.fillStyle = avatarGrad;
+            ctx.beginPath();
+            ctx.roundRect(avatarX, avatarY, avatarSize, avatarSize, 11);
+            ctx.fill();
+
+            ctx.fillStyle = "#FFFFFF";
+            ctx.font = "900 12px sans-serif";
+            ctx.textAlign = "center";
+            ctx.fillText(getInitials(d.doctorName), avatarX + avatarSize / 2, avatarY + 22);
+
+            ctx.textAlign = "left";
+            ctx.fillStyle = isDark ? "#FFFFFF" : "#0F172A";
+            ctx.font = "900 13px sans-serif";
+            ctx.fillText(d.doctorName.slice(0, 26), startX + 48, doctorY + (d.replacement ? 21 : 28));
+
+            if (d.replacement) {
+              ctx.fillStyle = "#059669";
+              ctx.font = "900 10.5px sans-serif";
+              ctx.fillText(`🔄 Digantikan: ${d.replacement}`, startX + 48, doctorY + 38);
+            }
+
+            const timePillW = isCuti ? 84 : 130;
+            const timePillH = 30;
+            const timePillX = startX + colW - timePillW - 8;
+            const timePillY = doctorY + 9;
+
+            if (isCuti) {
+              ctx.fillStyle = "rgba(225, 29, 72, 0.12)";
+              ctx.beginPath();
+              ctx.roundRect(timePillX, timePillY, timePillW, timePillH, 10);
+              ctx.fill();
+
+              ctx.fillStyle = "#E11D48";
+              ctx.font = "900 11.5px sans-serif";
+              ctx.textAlign = "center";
+              ctx.fillText("LIBUR 📅", timePillX + timePillW / 2, timePillY + 19);
+            } else {
+              ctx.fillStyle = isDark ? "rgba(56, 189, 248, 0.15)" : "rgba(2, 132, 199, 0.1)";
+              ctx.beginPath();
+              ctx.roundRect(timePillX, timePillY, timePillW, timePillH, 10);
+              ctx.fill();
+
+              ctx.fillStyle = isDark ? "#38BDF8" : "#0369A1";
+              ctx.font = "900 11.5px monospace";
+              ctx.textAlign = "center";
+              ctx.fillText(`🕒 ${d.time}`, timePillX + timePillW / 2, timePillY + 19);
+            }
+
+            doctorY += cardH + cardGap;
+          });
+
+          colY += totalSectionH + 12;
+        });
+      };
+
+      renderSpecColumn(leftSpecs, pad, currY);
+      renderSpecColumn(rightSpecs, pad + colW + 20, currY);
+    }
 
     // ── 5. FULL-WIDTH APPLE iOS FOOTER BENTO HUB ──
     const footerY = height - pad - footerH;
 
-    drawClayTile(ctx, pad, footerY, headerW, footerH, 24, {
+    drawStyledCard(ctx, pad, footerY, headerW, footerH, 24, {
       fillTop: isDark ? "#065F46" : "#0F766E",
       fillBottom: isDark ? "#022C22" : "#044E48",
       shadowColor: "rgba(4, 78, 72, 0.35)",
       shadowBlur: 16,
       shadowOffsetY: 6,
       borderLight: "rgba(255, 255, 255, 0.35)",
+      isHeader: true,
     });
 
     ctx.textAlign = "left";
@@ -647,10 +821,9 @@ export default function PosterStudioPage() {
     ctx.font = "800 12px sans-serif";
     ctx.fillText(`🌐 Cek Live Jadwal & Antrean Dokter: ${websiteUrl}`, pad + 24, footerY + 58);
 
-    // Center Emergency Badge
     const igdBadgeX = pad + 560;
     const igdBadgeY = footerY + 20;
-    drawClayTile(ctx, igdBadgeX, igdBadgeY, 210, 42, 14, {
+    drawStyledCard(ctx, igdBadgeX, igdBadgeY, 210, 42, 14, {
       fillTop: "rgba(225, 29, 72, 0.25)",
       fillBottom: "rgba(159, 18, 57, 0.35)",
       shadowColor: "rgba(0,0,0,0.15)",
@@ -671,7 +844,7 @@ export default function PosterStudioPage() {
         const qrTileX = pad + headerW - qrTileW - 12;
         const qrTileY = footerY + 9;
 
-        drawClayTile(ctx, qrTileX, qrTileY, qrTileW, qrTileH, 16, {
+        drawStyledCard(ctx, qrTileX, qrTileY, qrTileW, qrTileH, 16, {
           fillTop: "#FFFFFF",
           fillBottom: "#F8FAFC",
           shadowColor: "rgba(0,0,0,0.25)",
@@ -687,6 +860,8 @@ export default function PosterStudioPage() {
     scheduleData,
     selectedDate,
     themeMode,
+    layoutMode,
+    visualStyle,
     showLeaveCard,
     aspectRatio,
     hospitalName,
@@ -706,7 +881,7 @@ export default function PosterStudioPage() {
 
     const dateKey = selectedDate.toISOString().slice(0, 10);
     const link = document.createElement("a");
-    link.download = `jadwal-dokter-siagamedika-${dateKey}-${aspectRatio}.png`;
+    link.download = `jadwal-dokter-siagamedika-${dateKey}-${layoutMode}-${visualStyle}.png`;
     link.href = canvas.toDataURL("image/png");
     link.click();
   };
@@ -762,7 +937,7 @@ export default function PosterStudioPage() {
         title="Studio Poster Selebaran"
         accentWord="Poster"
         accentColor="text-emerald-600 dark:text-emerald-400"
-        subtitle="Generator poster jadwal dokter & publikasi sosial media beresolusi tinggi"
+        subtitle="Multi-layout & multi-style generator poster jadwal dokter resolusi tinggi"
         iconClay="clay-icon-cyan"
         accentBarGradient="from-cyan-500 via-teal-500 to-emerald-500"
         actions={
@@ -859,11 +1034,99 @@ export default function PosterStudioPage() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* ── LEFT CONTROL PANEL (5 Cols) ── */}
         <div className="lg:col-span-5 flex flex-col gap-4">
-          {/* Card 1: Format & Tanggal */}
+          {/* Card 1: Pilihan Layout & Style Modern */}
+          <div className="clay-surface rounded-[24px] p-4 sm:p-5 flex flex-col gap-4 border border-zinc-200/50 dark:border-white/5">
+            <h3 className="text-xs font-black uppercase tracking-wider text-zinc-500 dark:text-zinc-400 flex items-center gap-2">
+              <LayoutGrid size={14} />
+              <span>Pilihan Tata Letak (Layout Grid)</span>
+            </h3>
+
+            {/* Layout Mode Selector */}
+            <div className="grid grid-cols-3 gap-2">
+              {[
+                { id: "matrix2", label: "2-Kolom Bento", icon: Columns2, sub: "Seimbang Rapi" },
+                { id: "compact3", label: "3-Kolom Compact", icon: Columns3, sub: "High Density" },
+                { id: "singleStack", label: "1-Kolom Stream", icon: Rows3, sub: "Story/Feed" },
+              ].map((l) => {
+                const Icon = l.icon;
+                return (
+                  <button
+                    key={l.id}
+                    onClick={() => setLayoutMode(l.id as LayoutMode)}
+                    className={cn(
+                      "py-2.5 px-2 rounded-[16px] text-xs font-black transition-all flex flex-col items-center gap-1 text-center",
+                      layoutMode === l.id ? "clay-pill-blue text-white shadow-xs" : "clay-button text-zinc-600 dark:text-zinc-300"
+                    )}
+                  >
+                    <Icon size={16} />
+                    <span>{l.label}</span>
+                    <span className="text-[9.5px] opacity-75 font-normal">{l.sub}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Visual Style Selector */}
+            <div className="pt-2 border-t border-zinc-200/50 dark:border-white/5">
+              <label className="text-[11px] font-black text-zinc-600 dark:text-zinc-300 mb-1.5 block">
+                Pilihan Style Desain Modern:
+              </label>
+              <div className="grid grid-cols-2 gap-2">
+                {[
+                  { id: "clay3d", label: "🍏 Apple 3D Clay", sub: "Tactile Inset Bevel" },
+                  { id: "glassmorphism", label: "✨ Frosted Glass", sub: "Aero Translucent" },
+                  { id: "swissModern", label: "🇨🇭 Swiss Minimalist", sub: "Clean Bauhaus" },
+                  { id: "luxuryGold", label: "👑 Obsidian Gold", sub: "Metallic Champagne" },
+                ].map((s) => (
+                  <button
+                    key={s.id}
+                    onClick={() => setVisualStyle(s.id as VisualStyle)}
+                    className={cn(
+                      "py-2 px-2.5 rounded-[14px] text-xs font-black transition-all flex flex-col items-start gap-0.5 text-left",
+                      visualStyle === s.id ? "clay-pill-blue text-white shadow-xs" : "clay-button text-zinc-600 dark:text-zinc-300"
+                    )}
+                  >
+                    <span>{s.label}</span>
+                    <span className="text-[9.5px] opacity-75 font-normal">{s.sub}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* 6 Theme Switcher */}
+            <div className="pt-2 border-t border-zinc-200/50 dark:border-white/5">
+              <label className="text-[11px] font-black text-zinc-600 dark:text-zinc-300 mb-1.5 block">
+                Pilihan Palet Warna:
+              </label>
+              <div className="grid grid-cols-3 gap-1.5">
+                {[
+                  { id: "sage", label: "🌊 Sage Mint" },
+                  { id: "white", label: "☀️ Apple Light" },
+                  { id: "dark", label: "🌙 Midnight" },
+                  { id: "rose", label: "🌸 Rose Velvet" },
+                  { id: "emerald", label: "🌿 Emerald" },
+                  { id: "cobalt", label: "💎 Royal Cobalt" },
+                ].map((t) => (
+                  <button
+                    key={t.id}
+                    onClick={() => setThemeMode(t.id as ThemeType)}
+                    className={cn(
+                      "py-1.5 px-1.5 rounded-[12px] text-xs font-black transition-all text-center",
+                      themeMode === t.id ? "clay-pill-blue text-white shadow-xs" : "clay-button text-zinc-600 dark:text-zinc-300"
+                    )}
+                  >
+                    {t.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Card 2: Format Tanggal & Filter */}
           <div className="clay-surface rounded-[24px] p-4 sm:p-5 flex flex-col gap-4 border border-zinc-200/50 dark:border-white/5">
             <h3 className="text-xs font-black uppercase tracking-wider text-zinc-500 dark:text-zinc-400 flex items-center gap-2">
               <Sliders size={14} />
-              <span>Format & Tanggal</span>
+              <span>Format Tanggal & Filter Dokter</span>
             </h3>
 
             {/* Date Input */}
@@ -914,34 +1177,6 @@ export default function PosterStudioPage() {
                 >
                   Feed 1:1
                 </button>
-              </div>
-            </div>
-
-            {/* 6 Theme Switcher */}
-            <div>
-              <label className="text-[11px] font-black text-zinc-600 dark:text-zinc-300 mb-1.5 block">
-                Pilihan Estetika Clay (6 Tema):
-              </label>
-              <div className="grid grid-cols-3 gap-2">
-                {[
-                  { id: "sage", label: "🌊 Sage Mint" },
-                  { id: "white", label: "☀️ Apple Light" },
-                  { id: "dark", label: "🌙 Midnight Glass" },
-                  { id: "rose", label: "🌸 Rose Velvet" },
-                  { id: "emerald", label: "🌿 Emerald Botani" },
-                  { id: "cobalt", label: "💎 Royal Cobalt" },
-                ].map((t) => (
-                  <button
-                    key={t.id}
-                    onClick={() => setThemeMode(t.id as ThemeType)}
-                    className={cn(
-                      "py-2 px-1.5 rounded-[14px] text-xs font-black transition-all text-center",
-                      themeMode === t.id ? "clay-pill-blue text-white shadow-xs" : "clay-button text-zinc-600 dark:text-zinc-300"
-                    )}
-                  >
-                    {t.label}
-                  </button>
-                ))}
               </div>
             </div>
 
@@ -1015,7 +1250,7 @@ export default function PosterStudioPage() {
             </div>
           </div>
 
-          {/* Card 2: Kustomisasi Branding & Header Footer */}
+          {/* Card 3: Kustomisasi Branding & Header Footer */}
           <div className="clay-surface rounded-[24px] p-4 sm:p-5 flex flex-col gap-3.5 border border-zinc-200/50 dark:border-white/5">
             <h3 className="text-xs font-black uppercase tracking-wider text-zinc-500 dark:text-zinc-400 flex items-center gap-2">
               <Award size={14} />
