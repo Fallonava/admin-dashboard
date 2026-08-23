@@ -1,7 +1,13 @@
 import { NextResponse } from 'next/server';
 import { KnowledgeBaseService } from '@/features/knowledge-base/services/KnowledgeBaseService';
+import { requirePermission, withMutationRateLimit } from '@/lib/api-utils';
+
+export const dynamic = 'force-dynamic';
 
 export async function GET(req: Request) {
+  const authErr = await requirePermission(req, 'settings', 'read');
+  if (authErr) return authErr;
+
   const { searchParams } = new URL(req.url);
   const action = searchParams.get('action');
 
@@ -33,6 +39,12 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
+  const rateLimitErr = await withMutationRateLimit(req, 'settings');
+  if (rateLimitErr) return rateLimitErr;
+
+  const authErr = await requirePermission(req, 'settings', 'write');
+  if (authErr) return authErr;
+
   try {
     const formData = await req.formData();
     const file = formData.get('file') as File;
@@ -50,7 +62,7 @@ export async function POST(req: Request) {
     });
 
   } catch (e: any) {
-    const status = e.message.includes('No valid data') || e.message.includes('Empty worksheet') ? 400 : 500;
+    const status = e.message?.includes('No valid data') || e.message?.includes('Empty worksheet') ? 400 : 500;
     return NextResponse.json({ error: e.message }, { status });
   }
 }

@@ -1,5 +1,8 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requirePermission, withMutationRateLimit } from '@/lib/api-utils';
+
+export const dynamic = 'force-dynamic';
 
 const DEFAULT_SYSTEM_PROMPT = 'Anda adalah asisten virtual resmi Rumah Sakit bernama SIMED AI. Jawablah secara singkat, ramah, dan empatik dalam bahasa Indonesia. JANGAN pernah memberikan informasi medis diagnostik, arahkan pasien ke pelayanan. Gunakan data konteks yang diberikan sebagai sumber utama.';
 
@@ -31,6 +34,12 @@ export async function GET() {
 }
 
 export async function PATCH(req: Request) {
+  const rateLimitErr = await withMutationRateLimit(req, 'settings');
+  if (rateLimitErr) return rateLimitErr;
+
+  const authErr = await requirePermission(req, 'settings', 'write');
+  if (authErr) return authErr;
+
   try {
     const data = await req.json();
 

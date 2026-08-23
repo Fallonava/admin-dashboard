@@ -1,19 +1,31 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requirePermission, withMutationRateLimit } from '@/lib/api-utils';
 import type { Prisma } from '@prisma/client';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
-    const all = await prisma.settings.findMany();
-    const settings = all.length > 0 ? all[0] : null;
-    if (settings) {
-        return NextResponse.json({ ...settings, id: Number(settings.id) });
+    try {
+        const all = await prisma.settings.findMany();
+        const settings = all.length > 0 ? all[0] : null;
+        if (settings) {
+            return NextResponse.json({ ...settings, id: Number(settings.id) });
+        }
+        return NextResponse.json({ id: 1, automationEnabled: false });
+    } catch (err: any) {
+        console.error('Settings GET Error:', err);
+        return NextResponse.json({ error: 'Gagal mengambil pengaturan.' }, { status: 500 });
     }
-    return NextResponse.json({ id: 1, automationEnabled: false });
 }
 
 export async function POST(req: Request) {
+    const rateLimitErr = await withMutationRateLimit(req, 'settings');
+    if (rateLimitErr) return rateLimitErr;
+
+    const authErr = await requirePermission(req, 'settings', 'write');
+    if (authErr) return authErr;
+
     try {
         const body = await req.json();
 
@@ -40,7 +52,8 @@ export async function POST(req: Request) {
             const newSettings = await prisma.settings.create({ data: data as any });
             return NextResponse.json({ ...newSettings, id: Number(newSettings.id) });
         }
-    } catch (err) {
-        return NextResponse.json({ error: String(err) }, { status: 500 });
+    } catch (err: any) {
+        console.error('Settings POST Error:', err);
+        return NextResponse.json({ error: String(err.message || err) }, { status: 500 });
     }
 }

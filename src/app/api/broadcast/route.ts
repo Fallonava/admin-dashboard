@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { requirePermission, withMutationRateLimit } from "@/lib/api-utils";
+
+export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request) {
   try {
@@ -20,6 +23,12 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  const rateLimitErr = await withMutationRateLimit(request, 'broadcast');
+  if (rateLimitErr) return rateLimitErr;
+
+  const authErr = await requirePermission(request, 'broadcast', 'write');
+  if (authErr) return authErr;
+
   try {
     const payload = await request.json();
 
@@ -40,8 +49,6 @@ export async function POST(request: Request) {
       })),
     });
 
-    // Bot WA akan memproses antrean ini secara otomatis melalui polling DB.
-    
     return NextResponse.json({ success: true, count: inserted.count });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
@@ -49,6 +56,12 @@ export async function POST(request: Request) {
 }
 
 export async function DELETE(request: Request) {
+  const rateLimitErr = await withMutationRateLimit(request, 'broadcast');
+  if (rateLimitErr) return rateLimitErr;
+
+  const authErr = await requirePermission(request, 'broadcast', 'write');
+  if (authErr) return authErr;
+
   try {
     const { searchParams } = new URL(request.url);
     const type = searchParams.get("type");

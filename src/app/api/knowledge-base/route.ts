@@ -1,5 +1,8 @@
 import { NextResponse } from 'next/server';
 import { KnowledgeBaseService } from '@/features/knowledge-base/services/KnowledgeBaseService';
+import { requirePermission, withMutationRateLimit } from '@/lib/api-utils';
+
+export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
@@ -12,34 +15,52 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
+  const rateLimitErr = await withMutationRateLimit(req, 'settings');
+  if (rateLimitErr) return rateLimitErr;
+
+  const authErr = await requirePermission(req, 'settings', 'write');
+  if (authErr) return authErr;
+
   try {
     const data = await req.json();
     const item = await KnowledgeBaseService.create(data);
     return NextResponse.json({ item }, { status: 201 });
   } catch (e: any) {
-    const status = e.message.includes('required') ? 400 : 500;
+    const status = e.message?.includes('required') ? 400 : 500;
     return NextResponse.json({ error: e.message }, { status });
   }
 }
 
 export async function PATCH(req: Request) {
+  const rateLimitErr = await withMutationRateLimit(req, 'settings');
+  if (rateLimitErr) return rateLimitErr;
+
+  const authErr = await requirePermission(req, 'settings', 'write');
+  if (authErr) return authErr;
+
   try {
     const { id, ...data } = await req.json();
     const item = await KnowledgeBaseService.update(id, data);
     return NextResponse.json({ item });
   } catch (e: any) {
-    const status = e.message.includes('required') ? 400 : 500;
+    const status = e.message?.includes('required') ? 400 : 500;
     return NextResponse.json({ error: e.message }, { status });
   }
 }
 
 export async function DELETE(req: Request) {
+  const rateLimitErr = await withMutationRateLimit(req, 'settings');
+  if (rateLimitErr) return rateLimitErr;
+
+  const authErr = await requirePermission(req, 'settings', 'write');
+  if (authErr) return authErr;
+
   try {
     const { id } = await req.json();
     await KnowledgeBaseService.delete(id);
     return NextResponse.json({ success: true });
   } catch (e: any) {
-    const status = e.message.includes('required') ? 400 : 500;
+    const status = e.message?.includes('required') ? 400 : 500;
     return NextResponse.json({ error: e.message }, { status });
   }
 }
