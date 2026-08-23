@@ -1,18 +1,36 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { requirePermission, withMutationRateLimit } from '@/lib/api-utils';
-import type { Prisma } from '@prisma/client';
+import { getSession, canWrite } from '@/lib/auth';
+import { withMutationRateLimit } from '@/lib/api-utils';
 
 export const dynamic = 'force-dynamic';
+
+const DEFAULT_SETTINGS = {
+    id: "1",
+    automationEnabled: false,
+    runTextMessage: "Selamat Datang di RSU Siaga Medika",
+    emergencyMode: false,
+    customMessages: [
+        { title: 'Info', text: 'Terimakasih sudah menunggu 🙏' },
+        { title: 'Info', text: 'Terimakasih sudah tertib 🌟' },
+        { title: 'Antrian', text: 'Belum online? Yo ambil antrian 🎫' },
+        { title: 'Info', text: 'Terimakasih sudah mengantri 😊' }
+    ],
+    portalSettings: null,
+};
 
 export async function GET() {
     try {
         const all = await prisma.settings.findMany();
         const settings = all.length > 0 ? all[0] : null;
         if (settings) {
-            return NextResponse.json({ ...settings, id: Number(settings.id) });
+            return NextResponse.json({
+                ...settings,
+                id: String(settings.id),
+                customMessages: Array.isArray(settings.customMessages) ? settings.customMessages : DEFAULT_SETTINGS.customMessages,
+            });
         }
-        return NextResponse.json({ id: 1, automationEnabled: false });
+        return NextResponse.json(DEFAULT_SETTINGS);
     } catch (err: any) {
         console.error('Settings GET Error:', err);
         return NextResponse.json({ error: 'Gagal mengambil pengaturan.' }, { status: 500 });
@@ -23,35 +41,62 @@ export async function POST(req: Request) {
     const rateLimitErr = await withMutationRateLimit(req, 'settings');
     if (rateLimitErr) return rateLimitErr;
 
-    const authErr = await requirePermission(req, 'settings', 'write');
-    if (authErr) return authErr;
+    // Verify session & permissions (allow settings, automation, display_tv, or Super Admin)
+    const session = await getSession(req);
+    if (!session) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const hasPermission =
+        session.roleName === 'Super Admin' ||
+        canWrite(session, 'settings') ||
+        canWrite(session, 'automation') ||
+        canWrite(session, 'display_tv') ||
+        canWrite(session, 'kontrol_status');
+
+    if (!hasPermission) {
+        return NextResponse.json({ error: 'Forbidden: Akses ditolak' }, { status: 403 });
+    }
 
     try {
         const body = await req.json();
 
-        // Only pick fields that exist in the Prisma Settings model
-        const data: Prisma.SettingsUpdateInput = {};
+        // Only pick valid fields for Settings model
+        const data: any = {};
         if (typeof body.automationEnabled === 'boolean') data.automationEnabled = body.automationEnabled;
-        if (typeof body.runTextMessage === 'string') data.runTextMessage = body.runTextMessage;
-        if (body.runTextMessage === null) data.runTextMessage = null;
-        if (typeof body.emergencyMode === 'boolean') data.emergencyMode = body.emergencyMode;
-        if (body.emergencyMode === null) data.emergencyMode = null;
-        if (body.customMessages !== undefined) data.customMessages = body.customMessages;
+        if (typeof body.runTextMessage === 'string' || body.runTextMessage === null) data.runTextMessage = body.runTextMessage;
+        if (typeof body.emergencyMode === 'boolean' || body.emergencyMode === null) data.emergencyMode = body.emergencyMode;
+        if (body.customMessages !== undefined) data.customMessages = Array.isArray(body.customMessages) ? body.customMessages : [];
         if (body.portalSettings !== undefined) data.portalSettings = body.portalSettings;
 
         const all = await prisma.settings.findMany();
         const current = all.length > 0 ? all[0] : null;
+        let result: any;
 
         if (current) {
-            const updated = await prisma.settings.update({
+            result = await prisma.settings.update({
                 where: { id: current.id },
                 data,
             });
-            return NextResponse.json({ ...updated, id: Number(updated.id) });
         } else {
-            const newSettings = await prisma.settings.create({ data: data as any });
-            return NextResponse.json({ ...newSettings, id: Number(newSettings.id) });
+            result = await prisma.settings.create({
+                data: { ...data, id: "1" },
+            });
         }
+
+        // Live WebSocket trigger to update TV display
+        if ((global as any).io) {
+            try {
+                (global as any).io.emit('settings_updated', result);
+                (global as any).io.emit('schedule_changed', { type: 'settings', data: result });
+            } catch (e) {}
+        }
+
+        return NextResponse.json({
+            ...result,
+            id: String(result.id),
+            customMessages: Array.isArray(result.customMessages) ? result.customMessages : [],
+        });
     } catch (err: any) {
         console.error('Settings POST Error:', err);
         return NextResponse.json({ error: String(err.message || err) }, { status: 500 });

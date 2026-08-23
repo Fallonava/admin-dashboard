@@ -6,7 +6,7 @@ import { Plus, Trash2, Power, PowerOff, Zap, Shield, CheckCircle2, Clock } from 
 import { cn } from "@/lib/utils";
 
 interface AutomationRule {
-  id: number;
+  id: string;
   name: string;
   condition: any;
   action: any;
@@ -42,27 +42,43 @@ export function AutomationRulesTab() {
   const [saving, setSaving] = useState(false);
 
   const toggleRule = async (rule: AutomationRule) => {
-    await fetch('/api/automation-rules', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        ...rule,
-        active: !rule.active,
-      }),
-    });
+    try {
+      const res = await fetch('/api/automation-rules', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...rule,
+          active: !rule.active,
+        }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        alert('Gagal mengubah status aturan: ' + (err.error || 'Terjadi kesalahan'));
+      }
+    } catch (e: any) {
+      alert('Gagal mengubah status aturan: ' + e.message);
+    }
     mutate();
   };
 
-  const deleteRule = async (id: number) => {
+  const deleteRule = async (id: string) => {
     if (!confirm('Hapus aturan automasi ini?')) return;
-    await fetch(`/api/automation-rules?id=${id}`, { method: 'DELETE' });
+    try {
+      const res = await fetch(`/api/automation-rules?id=${encodeURIComponent(id)}`, { method: 'DELETE' });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        alert('Gagal menghapus aturan: ' + (err.error || 'Terjadi kesalahan'));
+      }
+    } catch (e: any) {
+      alert('Gagal menghapus aturan: ' + e.message);
+    }
     mutate();
   };
 
   const applyPreset = async (preset: typeof PRESET_RULES[0]) => {
     setSaving(true);
     try {
-      await fetch('/api/automation-rules', {
+      const res = await fetch('/api/automation-rules', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -72,7 +88,13 @@ export function AutomationRulesTab() {
           active: true,
         }),
       });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        alert('Gagal memasang template: ' + (err.error || 'Terjadi kesalahan'));
+      }
       mutate();
+    } catch (e: any) {
+      alert('Gagal memasang template: ' + e.message);
     } finally {
       setSaving(false);
     }
@@ -82,7 +104,7 @@ export function AutomationRulesTab() {
     if (!newRuleName.trim()) return;
     setSaving(true);
     try {
-      await fetch('/api/automation-rules', {
+      const res = await fetch('/api/automation-rules', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -92,9 +114,16 @@ export function AutomationRulesTab() {
           active: true,
         }),
       });
-      setNewRuleName("");
-      setIsCreating(false);
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        alert('Gagal membuat aturan: ' + (err.error || 'Terjadi kesalahan'));
+      } else {
+        setNewRuleName("");
+        setIsCreating(false);
+      }
       mutate();
+    } catch (e: any) {
+      alert('Gagal membuat aturan: ' + e.message);
     } finally {
       setSaving(false);
     }

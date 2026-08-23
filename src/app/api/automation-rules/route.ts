@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { requirePermission } from '@/lib/api-utils';
+import { requirePermission, withMutationRateLimit } from '@/lib/api-utils';
 import { z } from 'zod';
 
 export const dynamic = 'force-dynamic';
@@ -26,7 +26,7 @@ const CreateRuleSchema = z.object({
 });
 
 const UpdateRuleSchema = CreateRuleSchema.extend({
-    id: z.union([z.string(), z.number()]).transform(Number),
+    id: z.union([z.string(), z.number()]).transform(String),
 });
 
 export async function GET(req: Request) {
@@ -34,11 +34,14 @@ export async function GET(req: Request) {
     if (authErr) return authErr;
 
     if (!(prisma as any).automationRule) return NextResponse.json([]);
-    const rules = await (prisma as any).automationRule.findMany({ orderBy: { id: 'asc' } });
-    return NextResponse.json(rules.map((r: any) => ({ ...r, id: Number(r.id) }))); // serialize BigInt
+    const rules = await (prisma as any).automationRule.findMany({ orderBy: { createdAt: 'desc' } });
+    return NextResponse.json(rules.map((r: any) => ({ ...r, id: String(r.id) })));
 }
 
 export async function POST(req: Request) {
+    const rateLimitErr = await withMutationRateLimit(req, 'automation-rules');
+    if (rateLimitErr) return rateLimitErr;
+
     const authErr = await requirePermission(req, 'automation', 'write');
     if (authErr) return authErr;
 
@@ -51,7 +54,7 @@ export async function POST(req: Request) {
         }
         
         const created = await (prisma as any).automationRule.create({ data: validated });
-        return NextResponse.json({ ...created, id: Number(created.id) });
+        return NextResponse.json({ ...created, id: String(created.id) });
     } catch (err) {
         if (err instanceof z.ZodError) {
             return NextResponse.json({ error: 'Validation failed', details: err.flatten() }, { status: 400 });
@@ -61,6 +64,9 @@ export async function POST(req: Request) {
 }
 
 export async function PUT(req: Request) {
+    const rateLimitErr = await withMutationRateLimit(req, 'automation-rules');
+    if (rateLimitErr) return rateLimitErr;
+
     const authErr = await requirePermission(req, 'automation', 'write');
     if (authErr) return authErr;
 
@@ -74,10 +80,10 @@ export async function PUT(req: Request) {
         }
         
         const updated = await (prisma as any).automationRule.update({
-            where: { id },
+            where: { id: String(id) },
             data
         });
-        return NextResponse.json({ ...updated, id: Number(updated.id) });
+        return NextResponse.json({ ...updated, id: String(updated.id) });
     } catch (err) {
         if (err instanceof z.ZodError) {
             return NextResponse.json({ error: 'Validation failed', details: err.flatten() }, { status: 400 });
@@ -87,13 +93,25 @@ export async function PUT(req: Request) {
 }
 
 export async function DELETE(req: Request) {
+    const rateLimitErr = await withMutationRateLimit(req, 'automation-rules');
+    if (rateLimitErr) return rateLimitErr;
+
     const authErr = await requirePermission(req, 'automation', 'write');
     if (authErr) return authErr;
 
-    const { searchParams } = new URL(req.url);
-    const id = searchParams.get('id');
-    if (!id) return NextResponse.json({ error: 'ID required' }, { status: 400 });
-    if (!(prisma as any).automationRule) return NextResponse.json({ error: 'automationRule model not present' }, { status: 501 });
-    await (prisma as any).automationRule.delete({ where: { id: Number(id) } });
-    return NextResponse.json({ success: true });
+    try {
+        const { searchParams } = new URL(req.url);
+        const id = searchParams.get('id');
+        if (!id) return NextResponse.json({ error: 'ID required' }, { status: 400 });
+        if (!(prisma as any).automationRule) return NextResponse.json({ error: 'automationRule model not present' }, { status: 501 });
+        
+        await (prisma as any).automationRule.delete({ where: { id: String(id) } });
+        return NextResponse.json({ success: true });
+    } catch (err: any) {
+        if (err.code === 'P2025') {
+            return NextResponse.json({ success: true, message: 'Already deleted' });
+        }
+        console.error("AutomationRule DELETE Error:", err);
+        return NextResponse.json({ error: 'Gagal menghapus aturan automasi.' }, { status: 500 });
+    }
 }
