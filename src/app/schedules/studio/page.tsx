@@ -37,6 +37,7 @@ import { getIndonesianHoliday } from "@/lib/holidays";
 type ThemeType = "oceanBlue" | "snowClear" | "midnightInk" | "peachSunset" | "mossForest" | "lavenderMist";
 type LayoutMode = "matrix2" | "compact3" | "heroSplit" | "singleStack";
 type VisualStyle = "clay3d" | "neonNoir" | "warmTerra" | "sakuraZen";
+type CardVariant = "smooth" | "accentBar" | "neumorphic" | "glassFrost";
 
 export default function PosterStudioPage() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -44,6 +45,7 @@ export default function PosterStudioPage() {
   const [themeMode, setThemeMode] = useState<ThemeType>("oceanBlue");
   const [layoutMode, setLayoutMode] = useState<LayoutMode>("matrix2");
   const [visualStyle, setVisualStyle] = useState<VisualStyle>("clay3d");
+  const [cardVariant, setCardVariant] = useState<CardVariant>("smooth");
   const [poliFilter, setPoliFilter] = useState<"all" | "Bedah" | "NonBedah">("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [showLeaveCard, setShowLeaveCard] = useState<boolean>(true);
@@ -703,6 +705,203 @@ export default function PosterStudioPage() {
     const specEntries = Object.entries(specMap);
     const footerH = 82;
 
+    // ─── DOCTOR CARD DRAW HELPER – 4 Pinterest Card Variants ───
+    const accentOf = (isCuti: boolean, isBedah: boolean) =>
+      isCuti ? "#E11D48" :
+      isBedah ? (visualStyle === "neonNoir" ? "#A78BFA" : "#3B82F6") :
+      visualStyle === "neonNoir" ? "#22D3EE" :
+      visualStyle === "warmTerra" ? "#EA580C" :
+      visualStyle === "sakuraZen" ? "#F472B6" : "#10B981";
+
+    const textOf = () =>
+      visualStyle === "neonNoir" ? "#F4F4F5" :
+      visualStyle === "warmTerra" ? "#431407" :
+      visualStyle === "sakuraZen" ? "#500724" :
+      isDark ? "#FFFFFF" : "#0F172A";
+
+    const drawDoctorCard = (
+      cx: CanvasRenderingContext2D,
+      x: number, y: number, w: number, h: number, r: number,
+      d: { doctorName: string; time: string; status: string; category: string; replacement?: string | null }
+    ) => {
+      const isCuti = d.status === "CUTI";
+      const isBedah = d.category === "Bedah";
+      const accent = accentOf(isCuti, isBedah);
+      const nameColor = textOf();
+
+      cx.save();
+
+      if (cardVariant === "accentBar") {
+        // ── ACCENT BAR: Left colored strip + clean white/dark card ──
+        cx.shadowColor = isDark ? "rgba(0,0,0,0.45)" : "rgba(0,0,0,0.09)";
+        cx.shadowBlur = 10; cx.shadowOffsetY = 3;
+        cx.fillStyle = isDark ? "#18181B" :
+          visualStyle === "warmTerra" ? "#FFFBF5" :
+          visualStyle === "sakuraZen" ? "#FFF5F9" : "#FFFFFF";
+        cx.beginPath(); cx.roundRect(x, y, w, h, r); cx.fill();
+        cx.shadowBlur = 0; cx.shadowOffsetY = 0;
+
+        // Accent strip 5px left
+        cx.fillStyle = accent;
+        cx.beginPath(); cx.roundRect(x, y, 5, h, [r, 0, 0, r]); cx.fill();
+
+        // Doctor name
+        cx.textAlign = "left"; cx.textBaseline = "middle";
+        cx.fillStyle = nameColor;
+        cx.font = d.replacement ? "800 11.5px sans-serif" : "800 13px sans-serif";
+        cx.fillText(d.doctorName.slice(0, 28), x + 14, d.replacement ? y + h * 0.38 : y + h * 0.55);
+
+        if (d.replacement) {
+          cx.font = "700 10px sans-serif";
+          cx.fillStyle = visualStyle === "neonNoir" ? "#4ADE80" : "#059669";
+          cx.fillText(`🔄 ${d.replacement.slice(0, 22)}`, x + 14, y + h * 0.72);
+        }
+
+        // Time right
+        const tText = isCuti ? "LIBUR 📅" : `🕒 ${d.time}`;
+        cx.textAlign = "right";
+        cx.font = isCuti ? "900 11px sans-serif" : "700 10.5px monospace";
+        cx.fillStyle = isCuti ? "#E11D48" : accent;
+        cx.fillText(tText, x + w - 10, y + h * 0.55);
+
+      } else if (cardVariant === "neumorphic") {
+        // ── NEUMORPHIC: Convex raised ambient shadow ──
+        const baseLight = isDark ? 26 : (visualStyle === "warmTerra" ? 253 : visualStyle === "sakuraZen" ? 255 : 246);
+        const baseVal = `rgb(${baseLight},${baseLight},${isDark ? 28 : baseLight})`;
+
+        cx.shadowColor = isDark ? "rgba(255,255,255,0.06)" : "rgba(255,255,255,0.95)";
+        cx.shadowBlur = 10; cx.shadowOffsetX = -4; cx.shadowOffsetY = -4;
+        cx.fillStyle = baseVal;
+        cx.beginPath(); cx.roundRect(x, y, w, h, r); cx.fill();
+
+        cx.shadowColor = isDark ? "rgba(0,0,0,0.7)" : "rgba(160,175,200,0.55)";
+        cx.shadowBlur = 10; cx.shadowOffsetX = 4; cx.shadowOffsetY = 4;
+        cx.fillStyle = baseVal;
+        cx.beginPath(); cx.roundRect(x, y, w, h, r); cx.fill();
+        cx.shadowBlur = 0; cx.shadowOffsetX = 0; cx.shadowOffsetY = 0;
+
+        // Avatar coin – smaller
+        const avS = 28, avX = x + 9, avY = y + (h - avS) / 2;
+        const ag = cx.createLinearGradient(avX, avY, avX + avS, avY + avS);
+        ag.addColorStop(0, isCuti ? "#F43F5E" : isBedah ? "#3B82F6" : accent);
+        ag.addColorStop(1, isCuti ? "#BE123C" : isBedah ? "#1D4ED8" : (isDark ? "#0891B2" : "#047857"));
+        cx.fillStyle = ag;
+        cx.beginPath(); cx.roundRect(avX, avY, avS, avS, 8); cx.fill();
+        cx.fillStyle = "#FFFFFF"; cx.font = "800 10px sans-serif";
+        cx.textAlign = "center"; cx.textBaseline = "middle";
+        cx.fillText(getInitials(d.doctorName), avX + avS / 2, avY + avS / 2);
+
+        // Name & time
+        cx.textAlign = "left"; cx.textBaseline = "alphabetic";
+        cx.fillStyle = nameColor; cx.font = "800 12px sans-serif";
+        cx.fillText(d.doctorName.slice(0, 24), x + 44, y + (d.replacement ? 19 : h / 2 + 4));
+        if (d.replacement) {
+          cx.font = "700 10px sans-serif"; cx.fillStyle = accent;
+          cx.fillText(`🔄 ${d.replacement.slice(0, 20)}`, x + 44, y + h - 11);
+        }
+        // Inset time pill
+        const pW = isCuti ? 76 : 116, pH = 22, pX = x + w - pW - 8, pY = y + (h - pH) / 2;
+        cx.fillStyle = isDark ? "rgba(0,0,0,0.35)" : "rgba(0,0,0,0.07)";
+        cx.beginPath(); cx.roundRect(pX, pY, pW, pH, pH / 2); cx.fill();
+        cx.fillStyle = isCuti ? "#E11D48" : accent;
+        cx.font = isCuti ? "800 10px sans-serif" : "700 10px monospace";
+        cx.textAlign = "center"; cx.textBaseline = "middle";
+        cx.fillText(isCuti ? "LIBUR 📅" : `🕒 ${d.time}`, pX + pW / 2, pY + pH / 2);
+
+      } else if (cardVariant === "glassFrost") {
+        // ── GLASS FROST: Translucent card + shimmer highlight ──
+        cx.shadowColor = isDark ? "rgba(0,0,0,0.55)" : "rgba(80,110,150,0.18)";
+        cx.shadowBlur = 16; cx.shadowOffsetY = 4;
+        const gg = cx.createLinearGradient(x, y, x, y + h);
+        gg.addColorStop(0, isDark ? "rgba(255,255,255,0.22)" : "rgba(255,255,255,0.82)");
+        gg.addColorStop(1, isDark ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0.5)");
+        cx.fillStyle = gg; cx.beginPath(); cx.roundRect(x, y, w, h, r); cx.fill();
+        cx.shadowBlur = 0; cx.shadowOffsetY = 0;
+        // Shimmer line top
+        const sh = cx.createLinearGradient(x, y, x + w, y + 5);
+        sh.addColorStop(0, "rgba(255,255,255,0)");
+        sh.addColorStop(0.35, "rgba(255,255,255,0.75)");
+        sh.addColorStop(1, "rgba(255,255,255,0)");
+        cx.fillStyle = sh; cx.beginPath(); cx.roundRect(x, y, w, 5, [r, r, 0, 0]); cx.fill();
+        // Border
+        cx.strokeStyle = isDark ? "rgba(255,255,255,0.3)" : "rgba(255,255,255,0.85)";
+        cx.lineWidth = 1; cx.beginPath(); cx.roundRect(x, y, w, h, r); cx.stroke();
+
+        // Avatar coin
+        const avS = 32, avX = x + 9, avY = y + (h - avS) / 2;
+        const ag = cx.createLinearGradient(avX, avY, avX + avS, avY + avS);
+        ag.addColorStop(0, isCuti ? "#F43F5E" : isBedah ? "#3B82F6" : accent);
+        ag.addColorStop(1, isCuti ? "#BE123C" : isBedah ? "#1D4ED8" : (isDark ? "#0891B2" : "#047857"));
+        cx.fillStyle = ag; cx.beginPath(); cx.roundRect(avX, avY, avS, avS, 10); cx.fill();
+        cx.fillStyle = "#FFFFFF"; cx.font = "900 11px sans-serif";
+        cx.textAlign = "center"; cx.textBaseline = "middle";
+        cx.fillText(getInitials(d.doctorName), avX + avS / 2, avY + avS / 2);
+
+        // Name
+        cx.textAlign = "left"; cx.textBaseline = "alphabetic";
+        cx.fillStyle = isDark ? "#FFFFFF" : nameColor; cx.font = "900 12.5px sans-serif";
+        cx.fillText(d.doctorName.slice(0, 26), x + 48, y + (d.replacement ? 18 : h / 2 + 4));
+        if (d.replacement) {
+          cx.font = "700 10px sans-serif"; cx.fillStyle = isDark ? "#4ADE80" : "#059669";
+          cx.fillText(`🔄 ${d.replacement.slice(0, 22)}`, x + 48, y + h - 11);
+        }
+        // Glass time pill
+        const pW = isCuti ? 82 : 122, pH = 24, pX = x + w - pW - 8, pY = y + (h - pH) / 2;
+        cx.fillStyle = isDark ? "rgba(255,255,255,0.15)" : "rgba(255,255,255,0.6)";
+        cx.beginPath(); cx.roundRect(pX, pY, pW, pH, pH / 2); cx.fill();
+        cx.strokeStyle = isDark ? "rgba(255,255,255,0.35)" : "rgba(255,255,255,0.9)";
+        cx.lineWidth = 0.8; cx.beginPath(); cx.roundRect(pX, pY, pW, pH, pH / 2); cx.stroke();
+        cx.fillStyle = isCuti ? "#E11D48" : (isDark ? "#FFFFFF" : accent);
+        cx.font = isCuti ? "900 10.5px sans-serif" : "800 10px monospace";
+        cx.textAlign = "center"; cx.textBaseline = "middle";
+        cx.fillText(isCuti ? "LIBUR 📅" : `🕒 ${d.time}`, pX + pW / 2, pY + pH / 2);
+
+      } else {
+        // ── SMOOTH (default) – Apple Clay card ──
+        drawStyledCard(cx, x, y, w, h, r, {
+          fillTop: isDark ? "rgba(22, 22, 26, 0.97)" : "rgba(255,255,255,0.98)",
+          fillBottom: isDark ? "rgba(15, 15, 18, 0.97)" : visualStyle === "warmTerra" ? "#FEF3E2" : visualStyle === "sakuraZen" ? "#FFF5F9" : "#F5F9FA",
+          shadowColor: isDark ? "rgba(0,0,0,0.4)" : "rgba(15, 76, 92, 0.08)",
+          shadowBlur: 8, shadowOffsetY: 2,
+          borderLight: isDark ? "rgba(255, 255, 255, 0.1)" : "#FFFFFF",
+        });
+        const avS = 34, avX = x + 8, avY = y + 7;
+        const ag = cx.createLinearGradient(avX, avY, avX + avS, avY + avS);
+        if (isCuti) { ag.addColorStop(0, "#F43F5E"); ag.addColorStop(1, "#BE123C"); }
+        else if (isBedah) { ag.addColorStop(0, visualStyle === "neonNoir" ? "#A78BFA" : "#3B82F6"); ag.addColorStop(1, visualStyle === "neonNoir" ? "#7C3AED" : "#1D4ED8"); }
+        else { ag.addColorStop(0, accent); ag.addColorStop(1, isDark ? "#0891B2" : visualStyle === "warmTerra" ? "#9A3412" : visualStyle === "sakuraZen" ? "#BE185D" : "#047857"); }
+        cx.fillStyle = ag; cx.beginPath(); cx.roundRect(avX, avY, avS, avS, 11); cx.fill();
+        cx.fillStyle = "#FFFFFF"; cx.font = "900 12px sans-serif";
+        cx.textAlign = "center"; cx.textBaseline = "middle";
+        cx.fillText(getInitials(d.doctorName), avX + avS / 2, avY + avS / 2);
+
+        cx.textAlign = "left"; cx.textBaseline = "alphabetic";
+        cx.fillStyle = nameColor; cx.font = "900 13px sans-serif";
+        cx.fillText(d.doctorName.slice(0, 26), x + 48, y + (d.replacement ? 21 : 28));
+        if (d.replacement) {
+          cx.font = "900 10.5px sans-serif"; cx.fillStyle = visualStyle === "neonNoir" ? "#4ADE80" : "#059669";
+          cx.fillText(`🔄 Digantikan: ${d.replacement}`, x + 48, y + 38);
+        }
+        const pW = isCuti ? 84 : 130, pH = 30, pX = x + w - pW - 8, pY = y + 9;
+        if (isCuti) {
+          cx.fillStyle = "rgba(225,29,72,0.12)"; cx.beginPath(); cx.roundRect(pX, pY, pW, pH, 10); cx.fill();
+          cx.fillStyle = "#E11D48"; cx.font = "900 11.5px sans-serif";
+          cx.textAlign = "center"; cx.textBaseline = "middle";
+          cx.fillText("LIBUR 📅", pX + pW / 2, pY + pH / 2);
+        } else {
+          cx.fillStyle = visualStyle === "neonNoir" ? "rgba(34,211,238,0.15)" : visualStyle === "warmTerra" ? "rgba(194,65,12,0.1)" : visualStyle === "sakuraZen" ? "rgba(244,114,182,0.12)" : isDark ? "rgba(56,189,248,0.15)" : "rgba(2,132,199,0.1)";
+          cx.beginPath(); cx.roundRect(pX, pY, pW, pH, 10); cx.fill();
+          cx.fillStyle = accent; cx.font = "900 11.5px monospace";
+          cx.textAlign = "center"; cx.textBaseline = "middle";
+          cx.fillText(`🕒 ${d.time}`, pX + pW / 2, pY + pH / 2);
+        }
+      }
+
+      cx.restore();
+      cx.textBaseline = "alphabetic";
+    };
+    // ─── END drawDoctorCard ───
+
     if (layoutMode === "compact3") {
       // ── LAYOUT B: 3-COLUMN COMPACT HIGH-DENSITY GRID ──
       const numCols = 3;
@@ -737,23 +936,8 @@ export default function PosterStudioPage() {
 
           let doctorY = colY + headerH + 5;
           docList.forEach((d) => {
-            const isCuti = d.status === "CUTI";
-
-            drawStyledCard(ctx, startX, doctorY, colW, cardH, 12, {
-              fillTop: isDark ? "rgba(30, 41, 59, 0.95)" : "#FFFFFF",
-              fillBottom: isDark ? "rgba(15, 23, 42, 0.95)" : "#F5F9FA",
-            });
-
-            ctx.textAlign = "left";
-            ctx.fillStyle = isDark ? "#FFFFFF" : "#0F172A";
-            ctx.font = "800 11px sans-serif";
-            ctx.fillText(d.doctorName.slice(0, 20), startX + 10, doctorY + 18);
-
-            ctx.font = "800 10px monospace";
-            ctx.fillStyle = isCuti ? "#E11D48" : (isDark ? "#38BDF8" : "#0369A1");
-            ctx.fillText(isCuti ? "Libur 📅" : d.time, startX + 10, doctorY + 33);
-
-            doctorY += cardH + cardGap;
+            drawDoctorCard(ctx, startX, doctorY, colW, 42, 12, d);
+            doctorY += 42 + 6;
           });
 
           colY += totalSectionH + 8;
@@ -781,42 +965,8 @@ export default function PosterStudioPage() {
 
         let docY = stackY + headerH + 6;
         docList.forEach((d) => {
-          const isCuti = d.status === "CUTI";
-
-          drawStyledCard(ctx, pad, docY, headerW, cardH, 14, {
-            fillTop: isDark ? "rgba(22, 22, 26, 0.97)" : "rgba(255,255,255,0.98)",
-            fillBottom: isDark ? "rgba(15, 15, 18, 0.97)" : visualStyle === "warmTerra" ? "#FEF3E2" : visualStyle === "sakuraZen" ? "#FFF5F9" : "#F5F9FA",
-          });
-
-          ctx.textAlign = "left";
-          if (visualStyle === "neonNoir") {
-            ctx.fillStyle = "#F4F4F5";
-          } else if (visualStyle === "warmTerra") {
-            ctx.fillStyle = "#431407";
-          } else if (visualStyle === "sakuraZen") {
-            ctx.fillStyle = "#500724";
-          } else {
-            ctx.fillStyle = isDark ? "#FFFFFF" : "#0F172A";
-          }
-          ctx.font = "900 13px sans-serif";
-          ctx.fillText(d.doctorName, pad + 16, docY + 28);
-
-          ctx.textAlign = "right";
-          ctx.font = "900 12px monospace";
-          if (isCuti) {
-            ctx.fillStyle = "#E11D48";
-          } else if (visualStyle === "neonNoir") {
-            ctx.fillStyle = "#22D3EE";
-          } else if (visualStyle === "warmTerra") {
-            ctx.fillStyle = "#C2410C";
-          } else if (visualStyle === "sakuraZen") {
-            ctx.fillStyle = "#BE185D";
-          } else {
-            ctx.fillStyle = isDark ? "#38BDF8" : "#0284C7";
-          }
-          ctx.fillText(isCuti ? "LIBUR 📅" : `🕒 ${d.time}`, pad + headerW - 16, docY + 28);
-
-          docY += cardH + cardGap;
+          drawDoctorCard(ctx, pad, docY, headerW, 46, 14, d);
+          docY += 46 + 6;
         });
 
         stackY += totalH + 10;
@@ -858,107 +1008,7 @@ export default function PosterStudioPage() {
           let doctorY = colY + headerH + 6;
 
           docList.forEach((d) => {
-            const isCuti = d.status === "CUTI";
-            const isBedah = d.category === "Bedah";
-
-            drawStyledCard(ctx, startX, doctorY, colW, cardH, 16, {
-              fillTop: isDark ? "rgba(22, 22, 26, 0.97)" : "rgba(255,255,255,0.98)",
-              fillBottom: isDark ? "rgba(15, 15, 18, 0.97)" : visualStyle === "warmTerra" ? "#FEF3E2" : visualStyle === "sakuraZen" ? "#FFF5F9" : "#F5F9FA",
-              shadowColor: isDark ? "rgba(0,0,0,0.4)" : "rgba(15, 76, 92, 0.08)",
-              shadowBlur: 8,
-              shadowOffsetY: 2,
-              borderLight: isDark ? "rgba(255, 255, 255, 0.1)" : "#FFFFFF",
-            });
-
-            const avatarSize = 34;
-            const avatarX = startX + 8;
-            const avatarY = doctorY + 7;
-
-            const avatarGrad = ctx.createLinearGradient(avatarX, avatarY, avatarX + avatarSize, avatarY + avatarSize);
-            if (isCuti) {
-              avatarGrad.addColorStop(0, "#F43F5E");
-              avatarGrad.addColorStop(1, "#BE123C");
-            } else if (isBedah) {
-              avatarGrad.addColorStop(0, visualStyle === "neonNoir" ? "#A78BFA" : "#3B82F6");
-              avatarGrad.addColorStop(1, visualStyle === "neonNoir" ? "#7C3AED" : "#1D4ED8");
-            } else {
-              avatarGrad.addColorStop(0, visualStyle === "neonNoir" ? "#22D3EE" : visualStyle === "warmTerra" ? "#EA580C" : visualStyle === "sakuraZen" ? "#F472B6" : "#10B981");
-              avatarGrad.addColorStop(1, visualStyle === "neonNoir" ? "#0891B2" : visualStyle === "warmTerra" ? "#9A3412" : visualStyle === "sakuraZen" ? "#BE185D" : "#047857");
-            }
-
-            ctx.fillStyle = avatarGrad;
-            ctx.beginPath();
-            ctx.roundRect(avatarX, avatarY, avatarSize, avatarSize, 11);
-            ctx.fill();
-
-            ctx.fillStyle = "#FFFFFF";
-            ctx.font = "900 12px sans-serif";
-            ctx.textAlign = "center";
-            ctx.fillText(getInitials(d.doctorName), avatarX + avatarSize / 2, avatarY + 22);
-
-            ctx.textAlign = "left";
-            if (visualStyle === "neonNoir") {
-              ctx.fillStyle = "#F4F4F5";
-            } else if (visualStyle === "warmTerra") {
-              ctx.fillStyle = "#431407";
-            } else if (visualStyle === "sakuraZen") {
-              ctx.fillStyle = "#500724";
-            } else {
-              ctx.fillStyle = isDark ? "#FFFFFF" : "#0F172A";
-            }
-            ctx.font = "900 13px sans-serif";
-            ctx.fillText(d.doctorName.slice(0, 26), startX + 48, doctorY + (d.replacement ? 21 : 28));
-
-            if (d.replacement) {
-              ctx.fillStyle = visualStyle === "neonNoir" ? "#4ADE80" : "#059669";
-              ctx.font = "900 10.5px sans-serif";
-              ctx.fillText(`🔄 Digantikan: ${d.replacement}`, startX + 48, doctorY + 38);
-            }
-
-            const timePillW = isCuti ? 84 : 130;
-            const timePillH = 30;
-            const timePillX = startX + colW - timePillW - 8;
-            const timePillY = doctorY + 9;
-
-            if (isCuti) {
-              ctx.fillStyle = "rgba(225, 29, 72, 0.12)";
-              ctx.beginPath();
-              ctx.roundRect(timePillX, timePillY, timePillW, timePillH, 10);
-              ctx.fill();
-
-              ctx.fillStyle = "#E11D48";
-              ctx.font = "900 11.5px sans-serif";
-              ctx.textAlign = "center";
-              ctx.fillText("LIBUR 📅", timePillX + timePillW / 2, timePillY + 19);
-            } else {
-              // Time pill bg color per style
-              if (visualStyle === "neonNoir") {
-                ctx.fillStyle = "rgba(34, 211, 238, 0.15)";
-              } else if (visualStyle === "warmTerra") {
-                ctx.fillStyle = "rgba(194, 65, 12, 0.1)";
-              } else if (visualStyle === "sakuraZen") {
-                ctx.fillStyle = "rgba(244, 114, 182, 0.12)";
-              } else {
-                ctx.fillStyle = isDark ? "rgba(56, 189, 248, 0.15)" : "rgba(2, 132, 199, 0.1)";
-              }
-              ctx.beginPath();
-              ctx.roundRect(timePillX, timePillY, timePillW, timePillH, 10);
-              ctx.fill();
-
-              if (visualStyle === "neonNoir") {
-                ctx.fillStyle = "#22D3EE";
-              } else if (visualStyle === "warmTerra") {
-                ctx.fillStyle = "#C2410C";
-              } else if (visualStyle === "sakuraZen") {
-                ctx.fillStyle = "#BE185D";
-              } else {
-                ctx.fillStyle = isDark ? "#38BDF8" : "#0369A1";
-              }
-              ctx.font = "900 11.5px monospace";
-              ctx.textAlign = "center";
-              ctx.fillText(`🕒 ${d.time}`, timePillX + timePillW / 2, timePillY + 19);
-            }
-
+            drawDoctorCard(ctx, startX, doctorY, colW, cardH, 16, d);
             doctorY += cardH + cardGap;
           });
 
@@ -1038,6 +1088,7 @@ export default function PosterStudioPage() {
     themeMode,
     layoutMode,
     visualStyle,
+    cardVariant,
     showLeaveCard,
     aspectRatio,
     hospitalName,
@@ -1264,6 +1315,33 @@ export default function PosterStudioPage() {
                   >
                     <span>{s.label}</span>
                     <span className="text-[9.5px] opacity-75 font-normal">{s.sub}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Card Variant Selector — Pinterest Card Designs */}
+            <div className="pt-2 border-t border-zinc-200/50 dark:border-white/5">
+              <label className="text-[11px] font-black text-zinc-600 dark:text-zinc-300 mb-1.5 flex items-center gap-1.5">
+                <span className="text-amber-500">✦</span> Desain Card Dokter &amp; Cuti:
+              </label>
+              <div className="grid grid-cols-2 gap-2 mt-1.5">
+                {[
+                  { id: "smooth",     label: "🍏 Smooth Clay",   sub: "Apple Soft Bevel" },
+                  { id: "accentBar",  label: "▌ Accent Bar",     sub: "Left Strip Minimal" },
+                  { id: "neumorphic", label: "◉ Neumorphic",     sub: "Convex Raised 3D" },
+                  { id: "glassFrost", label: "❋ Glass Frost",    sub: "Frosted Shimmer" },
+                ].map((c) => (
+                  <button
+                    key={c.id}
+                    onClick={() => setCardVariant(c.id as CardVariant)}
+                    className={cn(
+                      "py-2 px-2.5 rounded-[14px] text-xs font-black transition-all flex flex-col items-start gap-0.5 text-left",
+                      cardVariant === c.id ? "clay-pill-blue text-white shadow-xs" : "clay-button text-zinc-600 dark:text-zinc-300"
+                    )}
+                  >
+                    <span>{c.label}</span>
+                    <span className="text-[9.5px] opacity-75 font-normal">{c.sub}</span>
                   </button>
                 ))}
               </div>
