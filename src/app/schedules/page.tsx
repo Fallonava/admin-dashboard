@@ -5,8 +5,7 @@ import useSWR, { mutate } from "swr";
 import { RealtimeCalendar } from "@/features/schedules/components/RealtimeCalendar";
 import { UpcomingShifts } from "@/features/schedules/components/UpcomingShifts";
 import { ScheduleModal } from "@/features/schedules/components/ScheduleModal";
-import { MedsosExportModal } from "@/features/schedules/components/MedsosExportModal";
-import { CalendarDays, ChevronLeft, ChevronRight, Users, X, RotateCcw, Camera } from "lucide-react";
+import { CalendarDays, ChevronLeft, ChevronRight, Users, X, RotateCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PageHeader } from "@/components/ui/PageHeader";
 import type { Doctor, Shift, LeaveRequest } from "@/lib/data-service";
@@ -15,7 +14,6 @@ import { getIndonesianHoliday } from "@/lib/holidays";
 export default function SchedulesPage() {
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [isSheetOpen, setIsSheetOpen] = useState(false);
-    const [isMedsosModalOpen, setIsMedsosModalOpen] = useState(false);
     const [selectedDoctorForModal, setSelectedDoctorForModal] = useState<Doctor | null>(null);
 
     const { data: rawShifts } = useSWR<Shift[]>('/api/shifts');
@@ -67,15 +65,6 @@ export default function SchedulesPage() {
                   accentBarGradient="from-blue-500 via-indigo-500 to-violet-500"
                   actions={
                     <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => setIsMedsosModalOpen(true)}
-                        className="flex items-center gap-1.5 px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-[18px] clay-pill-emerald text-white font-black text-xs sm:text-sm active:scale-95 transition-all shadow-sm shrink-0"
-                        title="Export Gambar Jadwal Medsos"
-                      >
-                        <Camera size={14} strokeWidth={2.5} />
-                        <span>Export Medsos</span>
-                      </button>
-
                       <button
                         onClick={jumpToToday}
                         className={cn(
@@ -255,16 +244,6 @@ export default function SchedulesPage() {
                 <Users size={16} strokeWidth={2.5} />
                 <span className="text-xs font-black tracking-wide">Dokter Bertugas</span>
             </button>
-
-            {/* Medsos Export Modal */}
-            <MedsosExportModal
-                isOpen={isMedsosModalOpen}
-                onClose={() => setIsMedsosModalOpen(false)}
-                selectedDate={selectedDate}
-                doctors={doctors}
-                shifts={shifts}
-                leaves={leaves}
-            />
 
             {/* Schedule Modal for Doctor Weekly Template */}
             {selectedDoctorForModal && (

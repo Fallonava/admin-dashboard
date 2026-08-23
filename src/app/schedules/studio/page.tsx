@@ -18,6 +18,7 @@ import {
   Filter
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { PageHeader } from "@/components/ui/PageHeader";
 import type { Doctor, Shift, LeaveRequest } from "@/lib/data-service";
 import { getIndonesianHoliday } from "@/lib/holidays";
 
@@ -560,59 +561,54 @@ export default function PosterStudioPage() {
   };
 
   return (
-    <div className="flex-1 w-full flex flex-col h-full min-h-0 overflow-y-auto bg-[#EDF2F8] dark:bg-[#0B0E14] text-zinc-900 dark:text-zinc-100 p-4 sm:p-6 lg:p-8">
-      {/* ── Studio Header Bar ── */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-zinc-200/60 dark:border-white/5">
-        <div className="flex items-center gap-3.5">
-          <Link
-            href="/schedules"
-            className="w-10 h-10 rounded-[14px] clay-button flex items-center justify-center text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition-all"
-            title="Kembali ke Jadwal Dokter"
-          >
-            <ChevronLeft size={20} strokeWidth={2.5} />
-          </Link>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                Apple Claymorphic Bento Studio
-              </span>
-            </div>
-            <h1 className="text-xl sm:text-2xl font-black text-zinc-900 dark:text-zinc-100 tracking-tight mt-1">
-              Studio Poster Jadwal Lengkap RS
-            </h1>
-            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
-              Layout Penuh Jadwal Dokter Seluruh Poli + Kartu Cuti & Footer Apple iOS Native
-            </p>
+    <div className="flex-1 w-full flex flex-col h-full min-h-0 overflow-y-auto bg-[#EDF2F8] dark:bg-[#0B0E14] text-zinc-900 dark:text-zinc-100 p-3 sm:p-6 lg:p-8">
+      {/* ── Studio Standard Page Header ── */}
+      <PageHeader
+        icon={<Palette size={22} className="text-white" strokeWidth={2.5} />}
+        title="Studio Poster Selebaran"
+        accentWord="Poster"
+        accentColor="text-emerald-600 dark:text-emerald-400"
+        subtitle="Generator poster jadwal dokter & publikasi sosial media beresolusi tinggi"
+        iconClay="clay-icon-cyan"
+        accentBarGradient="from-cyan-500 via-teal-500 to-emerald-500"
+        actions={
+          <div className="flex items-center gap-2">
+            <Link
+              href="/schedules"
+              className="flex items-center gap-1.5 px-3.5 py-2 sm:py-2.5 rounded-[18px] clay-button text-zinc-600 dark:text-zinc-300 font-bold text-xs sm:text-sm active:scale-95 transition-all shadow-xs shrink-0"
+              title="Kembali ke Jadwal Mingguan"
+            >
+              <ChevronLeft size={15} strokeWidth={2.5} />
+              <span>Jadwal Dokter</span>
+            </Link>
+
+            <button
+              onClick={handleCopy}
+              className="flex items-center gap-1.5 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-[18px] clay-button text-zinc-700 dark:text-zinc-200 font-black text-xs sm:text-sm active:scale-95 transition-all shadow-xs shrink-0"
+            >
+              {copied ? (
+                <>
+                  <Check size={14} className="text-emerald-500" strokeWidth={3} />
+                  <span className="text-emerald-500">Tersalin!</span>
+                </>
+              ) : (
+                <>
+                  <Copy size={14} strokeWidth={2.5} />
+                  <span>Salin</span>
+                </>
+              )}
+            </button>
+
+            <button
+              onClick={handleDownload}
+              className="flex items-center gap-1.5 px-4 sm:px-5 py-2 sm:py-2.5 rounded-[18px] clay-pill-emerald text-white font-black text-xs sm:text-sm active:scale-95 transition-all shadow-md shrink-0"
+            >
+              <Download size={14} strokeWidth={2.5} />
+              <span>Download Ultra HD</span>
+            </button>
           </div>
-        </div>
-
-        <div className="flex items-center gap-2.5">
-          <button
-            onClick={handleCopy}
-            className="h-11 px-4 rounded-[16px] clay-button text-zinc-700 dark:text-zinc-200 font-black text-xs sm:text-sm flex items-center gap-2 active:scale-95 transition-all shadow-xs"
-          >
-            {copied ? (
-              <>
-                <Check size={16} className="text-emerald-500" strokeWidth={3} />
-                <span className="text-emerald-500">Tersalin ke Clipboard!</span>
-              </>
-            ) : (
-              <>
-                <Copy size={16} strokeWidth={2.5} />
-                <span>Salin Gambar</span>
-              </>
-            )}
-          </button>
-
-          <button
-            onClick={handleDownload}
-            className="h-11 px-5 rounded-[16px] clay-pill-emerald text-white font-black text-xs sm:text-sm flex items-center gap-2 active:scale-95 transition-all shadow-md"
-          >
-            <Download size={16} strokeWidth={2.5} />
-            <span>Download Poster Ultra HD</span>
-          </button>
-        </div>
-      </div>
+        }
+      />
 
       {/* ── Studio Workspace Layout ── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mt-6">
