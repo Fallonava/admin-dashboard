@@ -15,7 +15,8 @@ import {
   Image as ImageIcon,
   UserX,
   Layers,
-  Filter
+  Filter,
+  Sparkles
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PageHeader } from "@/components/ui/PageHeader";
@@ -159,7 +160,16 @@ export default function PosterStudioPage() {
     ctx.restore();
   };
 
-  // Canvas Drawing Engine (Full Schedule Apple iOS Bento Grid)
+  // Helper: Get Doctor Avatar Initials
+  const getInitials = (name: string): string => {
+    const cleaned = name.replace(/\b(dr|drg|prof|sp|rr|m)\b\.?/gi, "").trim();
+    const parts = cleaned.split(" ").filter((p) => p.length > 0);
+    if (parts.length >= 2) return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
+    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+    return "DR";
+  };
+
+  // Canvas Drawing Engine (Ultra Aesthetic Apple iOS Bento Matrix)
   const renderToCanvas = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -172,27 +182,26 @@ export default function PosterStudioPage() {
     canvas.width = width;
     canvas.height = height;
 
-    const { specMap, leaveDoctors, holiday } = scheduleData();
+    const { specMap, leaveDoctors } = scheduleData();
     const isDark = themeMode === "dark";
 
-    // ── 1. BACKGROUND CANVAS GRADIENTS ──
+    // ── 1. BACKGROUND CANVAS WITH APPLE AMBIENT LIGHTING ──
     if (themeMode === "sage") {
       const bgGrad = ctx.createLinearGradient(0, 0, width, height);
-      bgGrad.addColorStop(0, "#D0E4EB");
-      bgGrad.addColorStop(0.5, "#BED8E2");
-      bgGrad.addColorStop(1, "#AECED9");
+      bgGrad.addColorStop(0, "#D2E5EC");
+      bgGrad.addColorStop(0.45, "#BED9E3");
+      bgGrad.addColorStop(1, "#ACCDD8");
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, width, height);
 
-      // Soft ambient light orbs
-      const glow1 = ctx.createRadialGradient(240, 200, 20, 240, 200, 520);
-      glow1.addColorStop(0, "rgba(255, 255, 255, 0.65)");
+      const glow1 = ctx.createRadialGradient(280, 200, 20, 280, 200, 550);
+      glow1.addColorStop(0, "rgba(255, 255, 255, 0.7)");
       glow1.addColorStop(1, "rgba(255, 255, 255, 0)");
       ctx.fillStyle = glow1;
       ctx.fillRect(0, 0, width, height);
 
-      const glow2 = ctx.createRadialGradient(880, 1100, 20, 880, 1100, 550);
-      glow2.addColorStop(0, "rgba(75, 139, 155, 0.25)");
+      const glow2 = ctx.createRadialGradient(880, 1150, 20, 880, 1150, 580);
+      glow2.addColorStop(0, "rgba(75, 139, 155, 0.28)");
       glow2.addColorStop(1, "rgba(75, 139, 155, 0)");
       ctx.fillStyle = glow2;
       ctx.fillRect(0, 0, width, height);
@@ -200,12 +209,12 @@ export default function PosterStudioPage() {
       const bgGrad = ctx.createLinearGradient(0, 0, width, height);
       bgGrad.addColorStop(0, "#FFFFFF");
       bgGrad.addColorStop(0.4, "#F8FAFC");
-      bgGrad.addColorStop(1, "#EEF4F8");
+      bgGrad.addColorStop(1, "#EDF4F8");
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, width, height);
 
-      const glow = ctx.createRadialGradient(200, 150, 10, 200, 150, 480);
-      glow.addColorStop(0, "rgba(16, 185, 129, 0.12)");
+      const glow = ctx.createRadialGradient(220, 160, 10, 220, 160, 500);
+      glow.addColorStop(0, "rgba(16, 185, 129, 0.15)");
       glow.addColorStop(1, "rgba(16, 185, 129, 0)");
       ctx.fillStyle = glow;
       ctx.fillRect(0, 0, width, height);
@@ -218,32 +227,32 @@ export default function PosterStudioPage() {
       ctx.fillRect(0, 0, width, height);
 
       const glow = ctx.createRadialGradient(260, 200, 10, 260, 200, 520);
-      glow.addColorStop(0, "rgba(16, 185, 129, 0.2)");
+      glow.addColorStop(0, "rgba(16, 185, 129, 0.22)");
       glow.addColorStop(1, "rgba(16, 185, 129, 0)");
       ctx.fillStyle = glow;
       ctx.fillRect(0, 0, width, height);
     }
 
-    const pad = 36;
+    const pad = 34;
     let currY = pad;
 
-    // ── 2. HEADER BENTO BAR: HOSPITAL LOGO + KARS ACCREDITATION + DATE PIN ──
+    // ── 2. ULTRA APPLE iOS HEADER BENTO BAR ──
     const headerW = width - pad * 2;
-    const headerH = 88;
+    const headerH = 92;
 
-    drawClayTile(ctx, pad, currY, headerW, headerH, 24, {
+    drawClayTile(ctx, pad, currY, headerW, headerH, 26, {
       fillTop: isDark ? "rgba(30, 41, 59, 0.95)" : "#FFFFFF",
       fillBottom: isDark ? "rgba(15, 23, 42, 0.95)" : "#EEF5F8",
-      shadowColor: isDark ? "rgba(0,0,0,0.4)" : "rgba(15, 76, 92, 0.12)",
-      shadowBlur: 16,
+      shadowColor: isDark ? "rgba(0,0,0,0.4)" : "rgba(15, 76, 92, 0.14)",
+      shadowBlur: 18,
       shadowOffsetY: 6,
       borderLight: isDark ? "rgba(255, 255, 255, 0.16)" : "#FFFFFF",
     });
 
-    // 3D Emerald Apple Health Cross Emblem (+)
+    // 3D Apple Health Emblem (+)
     const emblemX = pad + 18;
-    const emblemY = currY + 16;
-    const emblemSize = 56;
+    const emblemY = currY + 17;
+    const emblemSize = 58;
 
     const emblemGrad = ctx.createLinearGradient(emblemX, emblemY, emblemX + emblemSize, emblemY + emblemSize);
     emblemGrad.addColorStop(0, "#10B981");
@@ -253,27 +262,27 @@ export default function PosterStudioPage() {
     ctx.roundRect(emblemX, emblemY, emblemSize, emblemSize, 18);
     ctx.fill();
 
-    ctx.strokeStyle = "rgba(255, 255, 255, 0.6)";
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.65)";
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
     ctx.fillStyle = "#FFFFFF";
-    ctx.font = "900 32px sans-serif";
+    ctx.font = "900 34px sans-serif";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText("+", emblemX + emblemSize / 2, emblemY + emblemSize / 2);
 
-    // Hospital Name & Subtitle
+    // Hospital Typography
     ctx.textAlign = "left";
     ctx.fillStyle = isDark ? "#34D399" : "#0F766E";
-    ctx.font = "900 20px sans-serif";
-    ctx.fillText("RSU SIAGA MEDIKA PURBALINGGA", pad + 86, currY + 34);
+    ctx.font = "900 21px sans-serif";
+    ctx.fillText("RSU SIAGA MEDIKA PURBALINGGA", pad + 90, currY + 36);
 
     ctx.fillStyle = isDark ? "#94A3B8" : "#64748B";
-    ctx.font = "800 13px sans-serif";
-    ctx.fillText("JADWAL RESMI PRAKTEK POLIKLINIK & DOKTER SPESIALIS", pad + 86, currY + 60);
+    ctx.font = "800 13.5px sans-serif";
+    ctx.fillText("JADWAL RESMI PRAKTEK POLIKLINIK & DOKTER SPESIALIS", pad + 90, currY + 62);
 
-    // Date & KARS Badges on Right
+    // Date & KARS Badges
     const dateFormatted = selectedDate.toLocaleDateString("id-ID", {
       weekday: "long",
       day: "numeric",
@@ -281,9 +290,8 @@ export default function PosterStudioPage() {
       year: "numeric",
     }).toUpperCase();
 
-    // Right Date Pin Capsule
-    const datePinW = 320;
-    const datePinH = 56;
+    const datePinW = 330;
+    const datePinH = 60;
     const datePinX = width - pad - datePinW - 16;
     const datePinY = currY + 16;
 
@@ -295,72 +303,70 @@ export default function PosterStudioPage() {
       shadowOffsetY: 2,
     });
 
-    // Red Calendar Mini Block
-    const calBlockX = datePinX + 8;
-    const calBlockY = datePinY + 7;
-    const calBlockW = 42;
-    const calBlockH = 42;
+    // 3D Red Calendar Pin Block
+    const calBlockX = datePinX + 9;
+    const calBlockY = datePinY + 8;
+    const calBlockW = 44;
+    const calBlockH = 44;
 
     ctx.fillStyle = "#E11D48";
     ctx.beginPath();
-    ctx.roundRect(calBlockX, calBlockY, calBlockW, 14, [8, 8, 0, 0]);
+    ctx.roundRect(calBlockX, calBlockY, calBlockW, 15, [8, 8, 0, 0]);
     ctx.fill();
 
     ctx.fillStyle = "#FFFFFF";
     ctx.beginPath();
-    ctx.roundRect(calBlockX, calBlockY + 14, calBlockW, 28, [0, 0, 8, 8]);
+    ctx.roundRect(calBlockX, calBlockY + 15, calBlockW, 29, [0, 0, 8, 8]);
     ctx.fill();
 
     ctx.fillStyle = "#FFFFFF";
-    ctx.font = "900 8.5px sans-serif";
+    ctx.font = "900 9px sans-serif";
     ctx.textAlign = "center";
-    ctx.fillText(selectedDate.toLocaleDateString("id-ID", { weekday: "short" }).toUpperCase(), calBlockX + 21, calBlockY + 10);
+    ctx.fillText(selectedDate.toLocaleDateString("id-ID", { weekday: "short" }).toUpperCase(), calBlockX + 22, calBlockY + 11);
 
     ctx.fillStyle = "#0F172A";
-    ctx.font = "900 16px sans-serif";
-    ctx.fillText(String(selectedDate.getDate()), calBlockX + 21, calBlockY + 34);
+    ctx.font = "900 17px sans-serif";
+    ctx.fillText(String(selectedDate.getDate()), calBlockX + 22, calBlockY + 36);
 
     // Date Text
     ctx.textAlign = "left";
     ctx.fillStyle = isDark ? "#FFFFFF" : "#0F172A";
-    ctx.font = "900 13px sans-serif";
-    ctx.fillText(dateFormatted, datePinX + 58, datePinY + 26);
+    ctx.font = "900 13.5px sans-serif";
+    ctx.fillText(dateFormatted, datePinX + 62, datePinY + 28);
 
     ctx.fillStyle = "#D97706";
     ctx.font = "900 11px sans-serif";
-    ctx.fillText("⭐ AKREDITASI PARIPURNA KARS", datePinX + 58, datePinY + 44);
+    ctx.fillText("⭐ AKREDITASI PARIPURNA KARS", datePinX + 62, datePinY + 47);
 
-    currY += headerH + 20;
+    currY += headerH + 18;
 
-    // ── 3. DEDICATED LEAVE DOCTORS BENTO CARD (If Any Leaves & Enabled) ──
+    // ── 3. DEDICATED LEAVE DOCTORS BENTO CARD (Ultra Rose Velvet Clay) ──
     if (showLeaveCard && leaveDoctors.length > 0) {
-      const leaveCardH = 46 + Math.ceil(leaveDoctors.length / 2) * 30 + 8;
+      const leaveCardH = 48 + Math.ceil(leaveDoctors.length / 2) * 32 + 8;
 
-      drawClayTile(ctx, pad, currY, headerW, leaveCardH, 20, {
-        fillTop: isDark ? "rgba(225, 29, 72, 0.2)" : "#FFF1F2",
-        fillBottom: isDark ? "rgba(159, 18, 57, 0.2)" : "#FFE4E6",
-        shadowColor: "rgba(225, 29, 72, 0.15)",
-        shadowBlur: 12,
+      drawClayTile(ctx, pad, currY, headerW, leaveCardH, 22, {
+        fillTop: isDark ? "rgba(225, 29, 72, 0.22)" : "#FFF1F2",
+        fillBottom: isDark ? "rgba(159, 18, 57, 0.22)" : "#FFE4E6",
+        shadowColor: "rgba(225, 29, 72, 0.18)",
+        shadowBlur: 14,
         shadowOffsetY: 4,
-        borderLight: "rgba(255, 255, 255, 0.8)",
-        borderDark: "rgba(225, 29, 72, 0.25)",
+        borderLight: "rgba(255, 255, 255, 0.85)",
+        borderDark: "rgba(225, 29, 72, 0.28)",
       });
 
-      // Card Header
       ctx.fillStyle = "#E11D48";
       ctx.font = "900 13.5px sans-serif";
       ctx.textAlign = "left";
-      ctx.fillText("📅 PEMBERITAHUAN DOKTER CUTI / TIDAK PRAKTEK HARI INI :", pad + 20, currY + 28);
+      ctx.fillText("📅 PEMBERITAHUAN DOKTER CUTI / TIDAK PRAKTEK HARI INI :", pad + 22, currY + 29);
 
-      // Render leaves in 2 columns
       const halfLeave = Math.ceil(leaveDoctors.length / 2);
-      const leaveColW = (headerW - 48) / 2;
+      const leaveColW = (headerW - 52) / 2;
 
       leaveDoctors.forEach((ld, idx) => {
         const colIdx = idx >= halfLeave ? 1 : 0;
         const rowIdx = idx >= halfLeave ? idx - halfLeave : idx;
-        const itemX = pad + 20 + colIdx * (leaveColW + 24);
-        const itemY = currY + 54 + rowIdx * 28;
+        const itemX = pad + 22 + colIdx * (leaveColW + 24);
+        const itemY = currY + 58 + rowIdx * 30;
 
         ctx.fillStyle = isDark ? "#FFFFFF" : "#0F172A";
         ctx.font = "800 13px sans-serif";
@@ -384,13 +390,11 @@ export default function PosterStudioPage() {
       currY += leaveCardH + 18;
     }
 
-    // ── 4. FULL SCHEDULE 2-COLUMN BENTO GRID ──
+    // ── 4. FULL SCHEDULE 2-COLUMN ULTRA AESTHETIC BENTO MATRIX ──
     const specEntries = Object.entries(specMap);
     const colW = (headerW - 20) / 2;
-    const footerH = 80;
-    const availableH = height - currY - footerH - pad - 12;
+    const footerH = 82;
 
-    // Split specialties into Left & Right Columns
     const leftSpecs: typeof specEntries = [];
     const rightSpecs: typeof specEntries = [];
 
@@ -402,64 +406,115 @@ export default function PosterStudioPage() {
     const renderSpecColumn = (specs: typeof specEntries, startX: number, startY: number) => {
       let colY = startY;
       specs.forEach(([specName, docList]) => {
-        const headerH = 30;
-        const rowH = 28;
-        const totalDocRows = docList.length;
-        const totalSectionH = headerH + totalDocRows * rowH + 8;
+        const headerH = 32;
+        const cardH = 48; // Individual sleek card per doctor
+        const cardGap = 8;
+        const totalSectionH = headerH + docList.length * (cardH + cardGap);
 
-        // Teal / Cyan 3D Clay Capsule Header
-        drawClayTile(ctx, startX, colY, colW, headerH, 15, {
+        // Marine Cyan / Teal 3D Clay Capsule Header
+        drawClayTile(ctx, startX, colY, colW, headerH, 16, {
           fillTop: "#569DAA",
-          fillBottom: "#3D7988",
-          shadowColor: "rgba(61, 121, 136, 0.25)",
+          fillBottom: "#3A7685",
+          shadowColor: "rgba(58, 118, 133, 0.28)",
           shadowBlur: 8,
           shadowOffsetY: 2,
-          borderLight: "rgba(255, 255, 255, 0.6)",
+          borderLight: "rgba(255, 255, 255, 0.65)",
         });
 
         ctx.fillStyle = "#FFFFFF";
         ctx.font = "900 13px sans-serif";
         ctx.textAlign = "center";
-        ctx.fillText(specName, startX + colW / 2, colY + 19);
+        ctx.fillText(specName, startX + colW / 2, colY + 20);
 
-        // Doctor Card Container (Porcelain Clay)
-        const docCardY = colY + headerH - 1;
-        const docCardH = totalDocRows * rowH + 8;
+        // Render Individual Doctor Clay Cards
+        let doctorY = colY + headerH + 6;
 
-        drawClayTile(ctx, startX, docCardY, colW, docCardH, 16, {
-          fillTop: isDark ? "rgba(30, 41, 59, 0.95)" : "#FFFFFF",
-          fillBottom: isDark ? "rgba(15, 23, 42, 0.95)" : "#F6FAFC",
-          shadowColor: isDark ? "rgba(0,0,0,0.3)" : "rgba(15, 76, 92, 0.08)",
-          shadowBlur: 10,
-          shadowOffsetY: 3,
-        });
-
-        let rowY = docCardY + 21;
         docList.forEach((d) => {
           const isCuti = d.status === "CUTI";
+          const isBedah = d.category === "Bedah";
 
-          // Doctor Name on Left
-          ctx.textAlign = "left";
-          ctx.fillStyle = isDark ? "#FFFFFF" : "#0F172A";
-          ctx.font = "800 13px sans-serif";
-          ctx.fillText(d.doctorName.slice(0, 28), startX + 16, rowY);
+          // Doctor Porcelain Clay Tile
+          drawClayTile(ctx, startX, doctorY, colW, cardH, 16, {
+            fillTop: isDark ? "rgba(30, 41, 59, 0.95)" : "#FFFFFF",
+            fillBottom: isDark ? "rgba(15, 23, 42, 0.95)" : "#F5F9FA",
+            shadowColor: isDark ? "rgba(0,0,0,0.3)" : "rgba(15, 76, 92, 0.08)",
+            shadowBlur: 8,
+            shadowOffsetY: 2,
+            borderLight: isDark ? "rgba(255, 255, 255, 0.12)" : "#FFFFFF",
+          });
 
-          // Time or Libur on Right
-          ctx.textAlign = "right";
+          // Left Monogram Avatar Coin
+          const avatarSize = 34;
+          const avatarX = startX + 8;
+          const avatarY = doctorY + 7;
+
+          const avatarGrad = ctx.createLinearGradient(avatarX, avatarY, avatarX + avatarSize, avatarY + avatarSize);
           if (isCuti) {
-            ctx.fillStyle = "#E11D48";
-            ctx.font = "900 12.5px sans-serif";
-            ctx.fillText("Libur 📅", startX + colW - 16, rowY);
+            avatarGrad.addColorStop(0, "#F43F5E");
+            avatarGrad.addColorStop(1, "#BE123C");
+          } else if (isBedah) {
+            avatarGrad.addColorStop(0, "#3B82F6");
+            avatarGrad.addColorStop(1, "#1D4ED8");
           } else {
-            ctx.fillStyle = isDark ? "#38BDF8" : "#0284C7";
-            ctx.font = "800 12px monospace";
-            ctx.fillText(`🕒 ${d.time}`, startX + colW - 16, rowY);
+            avatarGrad.addColorStop(0, "#10B981");
+            avatarGrad.addColorStop(1, "#047857");
           }
 
-          rowY += rowH;
+          ctx.fillStyle = avatarGrad;
+          ctx.beginPath();
+          ctx.roundRect(avatarX, avatarY, avatarSize, avatarSize, 11);
+          ctx.fill();
+
+          ctx.fillStyle = "#FFFFFF";
+          ctx.font = "900 12px sans-serif";
+          ctx.textAlign = "center";
+          ctx.fillText(getInitials(d.doctorName), avatarX + avatarSize / 2, avatarY + 22);
+
+          // Doctor Name
+          ctx.textAlign = "left";
+          ctx.fillStyle = isDark ? "#FFFFFF" : "#0F172A";
+          ctx.font = "900 13px sans-serif";
+          ctx.fillText(d.doctorName.slice(0, 26), startX + 48, doctorY + (d.replacement ? 21 : 28));
+
+          // Relief Doctor Subtitle
+          if (d.replacement) {
+            ctx.fillStyle = "#059669";
+            ctx.font = "900 10.5px sans-serif";
+            ctx.fillText(`🔄 Digantikan: ${d.replacement}`, startX + 48, doctorY + 38);
+          }
+
+          // Right Time Capsule Pill
+          const timePillW = isCuti ? 84 : 130;
+          const timePillH = 30;
+          const timePillX = startX + colW - timePillW - 8;
+          const timePillY = doctorY + 9;
+
+          if (isCuti) {
+            ctx.fillStyle = "rgba(225, 29, 72, 0.12)";
+            ctx.beginPath();
+            ctx.roundRect(timePillX, timePillY, timePillW, timePillH, 10);
+            ctx.fill();
+
+            ctx.fillStyle = "#E11D48";
+            ctx.font = "900 11.5px sans-serif";
+            ctx.textAlign = "center";
+            ctx.fillText("LIBUR 📅", timePillX + timePillW / 2, timePillY + 19);
+          } else {
+            ctx.fillStyle = isDark ? "rgba(56, 189, 248, 0.15)" : "rgba(2, 132, 199, 0.1)";
+            ctx.beginPath();
+            ctx.roundRect(timePillX, timePillY, timePillW, timePillH, 10);
+            ctx.fill();
+
+            ctx.fillStyle = isDark ? "#38BDF8" : "#0369A1";
+            ctx.font = "900 11.5px monospace";
+            ctx.textAlign = "center";
+            ctx.fillText(`🕒 ${d.time}`, timePillX + timePillW / 2, timePillY + 19);
+          }
+
+          doctorY += cardH + cardGap;
         });
 
-        colY += totalSectionH + 10;
+        colY += totalSectionH + 12;
       });
     };
 
@@ -469,29 +524,28 @@ export default function PosterStudioPage() {
     // ── 5. FULL-WIDTH APPLE iOS FOOTER BENTO HUB ──
     const footerY = height - pad - footerH;
 
-    drawClayTile(ctx, pad, footerY, headerW, footerH, 22, {
+    drawClayTile(ctx, pad, footerY, headerW, footerH, 24, {
       fillTop: isDark ? "#065F46" : "#0F766E",
       fillBottom: isDark ? "#022C22" : "#044E48",
       shadowColor: "rgba(4, 78, 72, 0.35)",
-      shadowBlur: 14,
-      shadowOffsetY: 5,
-      borderLight: "rgba(255, 255, 255, 0.3)",
+      shadowBlur: 16,
+      shadowOffsetY: 6,
+      borderLight: "rgba(255, 255, 255, 0.35)",
     });
 
-    // Left Hotline Information
     ctx.textAlign = "left";
     ctx.fillStyle = "#FFFFFF";
     ctx.font = "900 14px sans-serif";
-    ctx.fillText("📱 PENDAFTARAN VIA WHATSAPP : 0823-2344-6076", pad + 24, footerY + 32);
+    ctx.fillText("📱 PENDAFTARAN VIA WHATSAPP : 0823-2344-6076", pad + 24, footerY + 34);
 
     ctx.fillStyle = "#A7F3D0";
     ctx.font = "800 12px sans-serif";
-    ctx.fillText("🌐 Cek Live Jadwal & Antrean Dokter: simed.fallonava.my.id/jadwal", pad + 24, footerY + 56);
+    ctx.fillText("🌐 Cek Live Jadwal & Antrean Dokter: simed.fallonava.my.id/jadwal", pad + 24, footerY + 58);
 
     // Center Emergency Badge
     const igdBadgeX = pad + 560;
     const igdBadgeY = footerY + 20;
-    drawClayTile(ctx, igdBadgeX, igdBadgeY, 210, 40, 14, {
+    drawClayTile(ctx, igdBadgeX, igdBadgeY, 210, 42, 14, {
       fillTop: "rgba(225, 29, 72, 0.25)",
       fillBottom: "rgba(159, 18, 57, 0.35)",
       shadowColor: "rgba(0,0,0,0.15)",
@@ -503,13 +557,13 @@ export default function PosterStudioPage() {
     ctx.fillStyle = "#FFE4E6";
     ctx.font = "900 12px sans-serif";
     ctx.textAlign = "center";
-    ctx.fillText("🚨 IGD & AMBULANS 24 JAM", igdBadgeX + 105, igdBadgeY + 24);
+    ctx.fillText("🚨 IGD & AMBULANS 24 JAM", igdBadgeX + 105, igdBadgeY + 25);
 
     // Right QR Code Tile
     if (qrImageRef.current && qrImageRef.current.complete) {
       try {
-        const qrTileW = 62;
-        const qrTileH = 62;
+        const qrTileW = 64;
+        const qrTileH = 64;
         const qrTileX = pad + headerW - qrTileW - 12;
         const qrTileY = footerY + 9;
 
