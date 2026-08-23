@@ -12,6 +12,7 @@ const PUBLIC_PATHS = [
   '/api/auth/login',
   '/api/auth/refresh',
   '/api/auth/create-superadmin',
+  '/api/health',          // System health & uptime check (public)
   '/api/display',         // TV display endpoint (public)
   '/api/stream/live',     // SSE live stream for TV displays
   '/api/automation',      // Broadcast rules for TV display (GET is public)
