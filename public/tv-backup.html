@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="id">
+<html lang="id" data-theme="light">
   <head>
     <meta charset="UTF-8" />
     <meta
@@ -3274,13 +3274,8 @@
         },
 
         updateTheme() {
-          const h = new Date().getHours();
-          // Light Theme: 06:00 - 17:59 | Dark Theme: 18:00 - 05:59
-          const isLight = h >= 6 && h < 18;
-          document.documentElement.setAttribute(
-            "data-theme",
-            isLight ? "light" : "dark",
-          );
+          // Locked to Light Mode
+          document.documentElement.setAttribute("data-theme", "light");
         },
 
         skel() {
