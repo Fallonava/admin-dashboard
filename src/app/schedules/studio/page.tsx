@@ -31,19 +31,64 @@ import {
   Paintbrush,
   Stethoscope,
   QrCode,
-  RotateCcw
+  RotateCcw,
+  Save,
+  FolderOpen,
+  Trash2,
+  FileDown,
+  FileUp,
+  Bookmark,
+  Type,
+  ShieldCheck,
+  Wand2,
+  Sparkle
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PageHeader } from "@/components/ui/PageHeader";
 import type { Doctor, Shift, LeaveRequest } from "@/lib/data-service";
 import { getIndonesianHoliday } from "@/lib/holidays";
 
-type ThemeType = "oceanBlue" | "snowClear" | "midnightInk" | "peachSunset" | "mossForest" | "lavenderMist";
+// ── TYPES & CONFIGURATION ──
+type ThemeType =
+  | "cyberEmerald"
+  | "hyperViolet"
+  | "oceanBlue"
+  | "tokyoNeon"
+  | "nordicCream"
+  | "matchaZen"
+  | "sunsetQuartz"
+  | "mochaVelvet"
+  | "deepCobalt"
+  | "snowTitanium"
+  | "sakuraBlush"
+  | "solarAmber";
+
 type LayoutMode = "matrix2" | "compact3" | "heroSplit" | "singleStack";
-type VisualStyle = "clay3d" | "neonNoir" | "warmTerra" | "sakuraZen";
-type CardVariant = "smooth" | "accentBar" | "neumorphic" | "glassFrost";
+
+type VisualStyle =
+  | "clay3d"
+  | "neonNoir"
+  | "warmTerra"
+  | "sakuraZen"
+  | "auroraBorealis"
+  | "monochromeSwiss"
+  | "vintageBotanical"
+  | "metallicTitanium";
+
+type CardVariant =
+  | "smooth"
+  | "accentBar"
+  | "neumorphic"
+  | "glassFrost"
+  | "retroBadge"
+  | "cyberGlow"
+  | "minimalBorder"
+  | "floatingPill";
+
+type LeaveCardStyle = "bentoBox" | "cautionStrip" | "minimalPill" | "glowFrame";
 type AvatarMode = "specialtyIcon" | "monogram" | "doctorAvatar";
-type ActiveTab = "layout" | "colors" | "elements" | "branding";
+type FontTheme = "sans" | "serif" | "mono" | "rounded";
+type ActiveTab = "layout" | "colors" | "elements" | "presets" | "branding";
 
 interface CustomColors {
   useCustom: boolean;
@@ -77,6 +122,21 @@ interface CustomColors {
   footerSub: string;
 }
 
+interface SavedPreset {
+  id: string;
+  name: string;
+  date: string;
+  themeMode: ThemeType;
+  visualStyle: VisualStyle;
+  cardVariant: CardVariant;
+  leaveCardStyle: LeaveCardStyle;
+  avatarMode: AvatarMode;
+  fontTheme: FontTheme;
+  cardCornerRadius: number;
+  headerEmblemIcon: string;
+  colors: CustomColors;
+}
+
 const DEFAULT_CUSTOM_COLORS: CustomColors = {
   useCustom: false,
   bgStart: "#0F4C6E",
@@ -103,20 +163,32 @@ const DEFAULT_CUSTOM_COLORS: CustomColors = {
   footerSub: "#A7F3D0",
 };
 
+const QUICK_CHIPS = [
+  "#0F172A", "#10B981", "#06B6D4", "#3B82F6", "#8B5CF6",
+  "#EC4899", "#F43F5E", "#F59E0B", "#84CC16", "#FFFFFF"
+];
+
 export default function PosterStudioPage() {
   const [activeTab, setActiveTab] = useState<ActiveTab>("layout");
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [aspectRatio, setAspectRatio] = useState<"poster" | "story" | "feed">("poster");
-  const [themeMode, setThemeMode] = useState<ThemeType>("oceanBlue");
+  const [themeMode, setThemeMode] = useState<ThemeType>("cyberEmerald");
   const [layoutMode, setLayoutMode] = useState<LayoutMode>("matrix2");
   const [visualStyle, setVisualStyle] = useState<VisualStyle>("clay3d");
   const [cardVariant, setCardVariant] = useState<CardVariant>("smooth");
+  const [leaveCardStyle, setLeaveCardStyle] = useState<LeaveCardStyle>("bentoBox");
   const [avatarMode, setAvatarMode] = useState<AvatarMode>("specialtyIcon");
+  const [fontTheme, setFontTheme] = useState<FontTheme>("sans");
   const [cardCornerRadius, setCardCornerRadius] = useState<number>(16);
   const [headerEmblemIcon, setHeaderEmblemIcon] = useState<string>("+");
+  const [watermarkText, setWatermarkText] = useState<string>("");
   
   // Custom Color State
   const [colors, setColors] = useState<CustomColors>(DEFAULT_CUSTOM_COLORS);
+
+  // Saved Presets State (LocalStorage)
+  const [savedPresets, setSavedPresets] = useState<SavedPreset[]>([]);
+  const [newPresetName, setNewPresetName] = useState("");
 
   // Element Visibility Toggles
   const [showLeaveCard, setShowLeaveCard] = useState<boolean>(true);
@@ -142,6 +214,7 @@ export default function PosterStudioPage() {
   const [customLogoSrc, setCustomLogoSrc] = useState<string | null>(null);
   const logoInputRef = useRef<HTMLInputElement | null>(null);
   const customLogoImgRef = useRef<HTMLImageElement | null>(null);
+  const fileImportRef = useRef<HTMLInputElement | null>(null);
 
   const { data: rawShifts } = useSWR<Shift[]>("/api/shifts");
   const { data: rawDoctors } = useSWR<Doctor[]>("/api/doctors");
@@ -153,6 +226,87 @@ export default function PosterStudioPage() {
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const qrImageRef = useRef<HTMLImageElement | null>(null);
+
+  // Load Saved Presets from LocalStorage on mount
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("nava_studio_presets_v2");
+      if (stored) {
+        setSavedPresets(JSON.parse(stored));
+      }
+    } catch (e) {}
+  }, []);
+
+  // Save Presets to LocalStorage
+  const persistPresets = (list: SavedPreset[]) => {
+    setSavedPresets(list);
+    try {
+      localStorage.setItem("nava_studio_presets_v2", JSON.stringify(list));
+    } catch (e) {}
+  };
+
+  const handleSaveCurrentPreset = () => {
+    if (!newPresetName.trim()) return;
+    const newPreset: SavedPreset = {
+      id: "preset_" + Date.now(),
+      name: newPresetName.trim(),
+      date: new Date().toLocaleDateString("id-ID"),
+      themeMode,
+      visualStyle,
+      cardVariant,
+      leaveCardStyle,
+      avatarMode,
+      fontTheme,
+      cardCornerRadius,
+      headerEmblemIcon,
+      colors: { ...colors },
+    };
+    const updated = [newPreset, ...savedPresets];
+    persistPresets(updated);
+    setNewPresetName("");
+  };
+
+  const handleLoadPreset = (p: SavedPreset) => {
+    setThemeMode(p.themeMode);
+    setVisualStyle(p.visualStyle);
+    setCardVariant(p.cardVariant);
+    setLeaveCardStyle(p.leaveCardStyle || "bentoBox");
+    setAvatarMode(p.avatarMode || "specialtyIcon");
+    setFontTheme(p.fontTheme || "sans");
+    setCardCornerRadius(p.cardCornerRadius || 16);
+    setHeaderEmblemIcon(p.headerEmblemIcon || "+");
+    setColors({ ...p.colors });
+  };
+
+  const handleDeletePreset = (id: string) => {
+    const updated = savedPresets.filter((p) => p.id !== id);
+    persistPresets(updated);
+  };
+
+  const handleExportPresetsJson = () => {
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(savedPresets, null, 2));
+    const dlAnchor = document.createElement("a");
+    dlAnchor.setAttribute("href", dataStr);
+    dlAnchor.setAttribute("download", `nava-studio-presets-${Date.now()}.json`);
+    dlAnchor.click();
+  };
+
+  const handleImportPresetsJson = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const parsed = JSON.parse(event.target?.result as string);
+        if (Array.isArray(parsed)) {
+          persistPresets([...parsed, ...savedPresets]);
+        }
+      } catch (err) {
+        alert("File JSON tidak valid!");
+      }
+    };
+    reader.readAsText(file);
+  };
 
   // Preload QR Code
   useEffect(() => {
@@ -166,16 +320,13 @@ export default function PosterStudioPage() {
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
     const reader = new FileReader();
     reader.onload = (event) => {
       const result = event.target?.result as string;
       setCustomLogoSrc(result);
       const img = new Image();
       img.src = result;
-      img.onload = () => {
-        customLogoImgRef.current = img;
-      };
+      img.onload = () => { customLogoImgRef.current = img; };
     };
     reader.readAsDataURL(file);
   };
@@ -194,9 +345,7 @@ export default function PosterStudioPage() {
       const doc = doctors.find((d) => d.id === s.doctorId);
       if (!doc) return;
 
-      if (poliFilter !== "all" && (doc.category || "NonBedah") !== poliFilter) {
-        return;
-      }
+      if (poliFilter !== "all" && (doc.category || "NonBedah") !== poliFilter) return;
 
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
@@ -214,7 +363,6 @@ export default function PosterStudioPage() {
 
       const isCuti = (s.disabledDates || []).includes(dateStr) || Boolean(matchingLeave);
       let status = isCuti ? "CUTI" : (doc.status || "PRAKTEK");
-
       const specName = (doc.specialty || "Umum").replace(/Spesialis\s*/i, "").replace(/Poli\s*/i, "").trim().toUpperCase();
 
       if (isCuti) {
@@ -252,7 +400,7 @@ export default function PosterStudioPage() {
     };
   }, [scheduleData]);
 
-  // Helper: Card Drawer supporting 4 distinct visual styles
+  // Helper: Card Drawer supporting 8 distinct visual styles
   const drawStyledCard = (
     ctx: CanvasRenderingContext2D,
     x: number,
@@ -377,6 +525,118 @@ export default function PosterStudioPage() {
       ctx.stroke();
       ctx.restore();
 
+    } else if (visualStyle === "auroraBorealis") {
+      ctx.shadowColor = "rgba(16, 185, 129, 0.3)";
+      ctx.shadowBlur = 18;
+      ctx.shadowOffsetY = 4;
+
+      const grad = ctx.createLinearGradient(x, y, x + w, y + h);
+      if (isHeader) {
+        grad.addColorStop(0, "#064E3B");
+        grad.addColorStop(0.5, "#0E7490");
+        grad.addColorStop(1, "#4C1D95");
+      } else {
+        grad.addColorStop(0, "rgba(6, 78, 59, 0.7)");
+        grad.addColorStop(1, "rgba(15, 23, 42, 0.85)");
+      }
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.roundRect(x, y, w, h, r);
+      ctx.fill();
+      ctx.restore();
+
+      ctx.save();
+      const auroraBorder = ctx.createLinearGradient(x, y, x + w, y);
+      auroraBorder.addColorStop(0, "#34D399");
+      auroraBorder.addColorStop(0.5, "#38BDF8");
+      auroraBorder.addColorStop(1, "#A78BFA");
+      ctx.strokeStyle = auroraBorder;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.roundRect(x, y, w, h, r);
+      ctx.stroke();
+      ctx.restore();
+
+    } else if (visualStyle === "monochromeSwiss") {
+      ctx.shadowColor = "rgba(0,0,0,0.15)";
+      ctx.shadowBlur = 8;
+      ctx.shadowOffsetY = 4;
+
+      ctx.fillStyle = isHeader ? "#09090B" : "#FFFFFF";
+      ctx.beginPath();
+      ctx.roundRect(x, y, w, h, Math.min(r, 8));
+      ctx.fill();
+      ctx.restore();
+
+      ctx.save();
+      ctx.strokeStyle = "#09090B";
+      ctx.lineWidth = isHeader ? 0 : 2;
+      if (!isHeader) {
+        ctx.beginPath();
+        ctx.roundRect(x, y, w, h, Math.min(r, 8));
+        ctx.stroke();
+      }
+      ctx.restore();
+
+    } else if (visualStyle === "vintageBotanical") {
+      ctx.shadowColor = "rgba(45, 90, 62, 0.25)";
+      ctx.shadowBlur = 12;
+      ctx.shadowOffsetY = 4;
+
+      const grad = ctx.createLinearGradient(x, y, x, y + h);
+      if (isHeader) {
+        grad.addColorStop(0, "#1F3D2B");
+        grad.addColorStop(1, "#14281D");
+      } else {
+        grad.addColorStop(0, "#FBF9F4");
+        grad.addColorStop(1, "#F4EFE6");
+      }
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.roundRect(x, y, w, h, r);
+      ctx.fill();
+      ctx.restore();
+
+      ctx.save();
+      ctx.strokeStyle = isHeader ? "#D4AF37" : "rgba(45, 90, 62, 0.35)";
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.roundRect(x, y, w, h, r);
+      ctx.stroke();
+      ctx.restore();
+
+    } else if (visualStyle === "metallicTitanium") {
+      ctx.shadowColor = "rgba(0,0,0,0.6)";
+      ctx.shadowBlur = 14;
+      ctx.shadowOffsetY = 6;
+
+      const grad = ctx.createLinearGradient(x, y, x + w, y + h);
+      if (isHeader) {
+        grad.addColorStop(0, "#27272A");
+        grad.addColorStop(0.5, "#3F3F46");
+        grad.addColorStop(1, "#18181B");
+      } else {
+        grad.addColorStop(0, "#1F1F23");
+        grad.addColorStop(1, "#141416");
+      }
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.roundRect(x, y, w, h, r);
+      ctx.fill();
+      ctx.restore();
+
+      ctx.save();
+      const metalBorder = ctx.createLinearGradient(x, y, x, y + h);
+      metalBorder.addColorStop(0, "rgba(255,255,255,0.45)");
+      metalBorder.addColorStop(0.5, "rgba(255,255,255,0.1)");
+      metalBorder.addColorStop(1, "rgba(255,255,255,0.3)");
+      ctx.strokeStyle = metalBorder;
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.roundRect(x, y, w, h, r);
+      ctx.stroke();
+      ctx.restore();
+
     } else {
       // Sakura Zen
       ctx.shadowColor = isHeader ? "rgba(190, 24, 93, 0.25)" : "rgba(190, 24, 93, 0.10)";
@@ -441,7 +701,6 @@ export default function PosterStudioPage() {
     const h = s / 2;
 
     if (norm.includes("ANAK") || norm.includes("PEDIATRI")) {
-      // Baby / Child face
       ctx.beginPath();
       ctx.arc(h, h + 1, s * 0.32, 0, Math.PI * 2);
       ctx.stroke();
@@ -456,7 +715,6 @@ export default function PosterStudioPage() {
       ctx.arc(h, h - s * 0.32, s * 0.08, 0, Math.PI);
       ctx.stroke();
     } else if (norm.includes("KANDUNGAN") || norm.includes("OBGYN") || norm.includes("KEBIDANAN")) {
-      // Mother & Child Heart
       ctx.beginPath();
       ctx.moveTo(h, h + s * 0.35);
       ctx.bezierCurveTo(h - s * 0.4, h, h - s * 0.35, h - s * 0.32, h, h - s * 0.12);
@@ -466,7 +724,6 @@ export default function PosterStudioPage() {
       ctx.arc(h, h + s * 0.05, s * 0.1, 0, Math.PI * 2);
       ctx.fill();
     } else if (norm.includes("GIGI") || norm.includes("DENTAL")) {
-      // Tooth
       ctx.beginPath();
       ctx.moveTo(h - s * 0.28, h - s * 0.15);
       ctx.bezierCurveTo(h - s * 0.3, h - s * 0.35, h - s * 0.08, h - s * 0.35, h, h - s * 0.2);
@@ -478,7 +735,6 @@ export default function PosterStudioPage() {
       ctx.closePath();
       ctx.stroke();
     } else if (norm.includes("MATA") || norm.includes("OFTALMOLOGI")) {
-      // Eye
       ctx.beginPath();
       ctx.moveTo(h - s * 0.38, h);
       ctx.quadraticCurveTo(h, h - s * 0.3, h + s * 0.38, h);
@@ -491,7 +747,6 @@ export default function PosterStudioPage() {
       ctx.arc(h, h, s * 0.07, 0, Math.PI * 2);
       ctx.fill();
     } else if (norm.includes("JANTUNG") || norm.includes("KARDIOLOGI")) {
-      // Heart with Pulse
       ctx.beginPath();
       ctx.moveTo(h, h + s * 0.35);
       ctx.bezierCurveTo(h - s * 0.38, h + s * 0.05, h - s * 0.38, h - s * 0.32, h, h - s * 0.12);
@@ -506,7 +761,6 @@ export default function PosterStudioPage() {
       ctx.lineTo(h + s * 0.25, h + s * 0.02);
       ctx.stroke();
     } else if (norm.includes("SARAF") || norm.includes("NEUROLOGI") || norm.includes("JIWA") || norm.includes("PSIKIATRI")) {
-      // Brain Synapses
       ctx.beginPath();
       ctx.arc(h, h, s * 0.28, 0, Math.PI * 2);
       ctx.stroke();
@@ -523,7 +777,6 @@ export default function PosterStudioPage() {
         ctx.fill();
       });
     } else if (norm.includes("ORTOPEDI") || norm.includes("TULANG")) {
-      // Bone
       ctx.beginPath();
       ctx.moveTo(h - s * 0.2, h - s * 0.1);
       ctx.lineTo(h + s * 0.2, h + s * 0.1);
@@ -536,7 +789,6 @@ export default function PosterStudioPage() {
       ctx.arc(h + s * 0.28, h + s * 0.04, s * 0.09, 0, Math.PI * 2);
       ctx.fill();
     } else if (norm.includes("BEDAH")) {
-      // Scalpel & Shield
       ctx.beginPath();
       ctx.moveTo(h, h - s * 0.35);
       ctx.lineTo(h + s * 0.3, h - s * 0.2);
@@ -551,7 +803,6 @@ export default function PosterStudioPage() {
       ctx.lineTo(h + s * 0.12, h - s * 0.12);
       ctx.stroke();
     } else if (norm.includes("PARU") || norm.includes("PULMONOLOGI")) {
-      // Lungs
       ctx.beginPath();
       ctx.moveTo(h, h - s * 0.35);
       ctx.lineTo(h, h - s * 0.12);
@@ -563,7 +814,6 @@ export default function PosterStudioPage() {
       ctx.arc(h + s * 0.15, h + s * 0.05, s * 0.18, 0, Math.PI * 2);
       ctx.stroke();
     } else if (norm.includes("THT") || norm.includes("TELINGA")) {
-      // Ear & Sound waves
       ctx.beginPath();
       ctx.moveTo(h - s * 0.15, h + s * 0.25);
       ctx.bezierCurveTo(h - s * 0.35, h + s * 0.1, h - s * 0.35, h - s * 0.3, h - s * 0.1, h - s * 0.3);
@@ -575,7 +825,6 @@ export default function PosterStudioPage() {
       ctx.arc(h + s * 0.1, h - s * 0.05, s * 0.22, -0.4 * Math.PI, 0.4 * Math.PI);
       ctx.stroke();
     } else if (norm.includes("KULIT") || norm.includes("DERMATOLOGI") || norm.includes("ESTETIKA")) {
-      // Lotion / Serum Droplet
       ctx.beginPath();
       ctx.moveTo(h, h - s * 0.32);
       ctx.bezierCurveTo(h - s * 0.28, h, h - s * 0.22, h + s * 0.3, h, h + s * 0.3);
@@ -585,7 +834,6 @@ export default function PosterStudioPage() {
       ctx.arc(h + s * 0.2, h - s * 0.18, s * 0.05, 0, Math.PI * 2);
       ctx.fill();
     } else if (norm.includes("DALAM") || norm.includes("INTERNIS") || norm.includes("UMUM")) {
-      // Stethoscope
       ctx.beginPath();
       ctx.arc(h, h - s * 0.05, s * 0.22, 0, Math.PI);
       ctx.stroke();
@@ -604,7 +852,6 @@ export default function PosterStudioPage() {
       ctx.arc(h + s * 0.15, h + s * 0.25, s * 0.08, 0, Math.PI * 2);
       ctx.fill();
     } else {
-      // Standard Medical Cross (+)
       ctx.beginPath();
       const cr = s * 0.1;
       const cl = s * 0.3;
@@ -630,9 +877,15 @@ export default function PosterStudioPage() {
     canvas.height = height;
 
     const { specMap, leaveDoctors } = scheduleData();
-    const isDark = visualStyle === "neonNoir" || themeMode === "midnightInk";
+    const isDark = visualStyle === "neonNoir" || visualStyle === "metallicTitanium" || themeMode === "tokyoNeon" || themeMode === "hyperViolet" || themeMode === "cyberEmerald" || themeMode === "deepCobalt" || themeMode === "mochaVelvet";
 
-    // ── 1. BACKGROUND CANVAS ──
+    // ── FONT FAMILY MAPPER ──
+    const getFont = (weight: string, sizePx: number) => {
+      const family = fontTheme === "serif" ? "Georgia, serif" : fontTheme === "mono" ? "monospace" : fontTheme === "rounded" ? "sans-serif" : "sans-serif";
+      return `${weight} ${sizePx}px ${family}`;
+    };
+
+    // ── 1. BACKGROUND CANVAS (12 Modern 2026 Palettes) ──
     if (colors.useCustom) {
       const bgGrad = ctx.createLinearGradient(0, 0, width, height);
       bgGrad.addColorStop(0, colors.bgStart);
@@ -645,52 +898,157 @@ export default function PosterStudioPage() {
       glow.addColorStop(1, "rgba(255,255,255,0)");
       ctx.fillStyle = glow;
       ctx.fillRect(0, 0, width, height);
-    } else if (visualStyle === "neonNoir") {
+    } else if (themeMode === "cyberEmerald") {
       const bgGrad = ctx.createLinearGradient(0, 0, 0, height);
-      bgGrad.addColorStop(0, "#0A0010");
-      bgGrad.addColorStop(0.5, "#100020");
-      bgGrad.addColorStop(1, "#060010");
+      bgGrad.addColorStop(0, "#022C22");
+      bgGrad.addColorStop(0.5, "#064E3B");
+      bgGrad.addColorStop(1, "#021E17");
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, width, height);
+
+      const glow = ctx.createRadialGradient(300, 200, 10, 300, 200, 600);
+      glow.addColorStop(0, "rgba(52, 211, 153, 0.28)");
+      glow.addColorStop(1, "rgba(52, 211, 153, 0)");
+      ctx.fillStyle = glow;
+      ctx.fillRect(0, 0, width, height);
+    } else if (themeMode === "hyperViolet") {
+      const bgGrad = ctx.createLinearGradient(0, 0, width, height);
+      bgGrad.addColorStop(0, "#1E1B4B");
+      bgGrad.addColorStop(0.5, "#2E1065");
+      bgGrad.addColorStop(1, "#0F0B24");
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, width, height);
+
+      const glow = ctx.createRadialGradient(800, 250, 10, 800, 250, 580);
+      glow.addColorStop(0, "rgba(192, 132, 252, 0.25)");
+      glow.addColorStop(1, "rgba(192, 132, 252, 0)");
+      ctx.fillStyle = glow;
+      ctx.fillRect(0, 0, width, height);
+    } else if (themeMode === "tokyoNeon") {
+      const bgGrad = ctx.createLinearGradient(0, 0, 0, height);
+      bgGrad.addColorStop(0, "#09090B");
+      bgGrad.addColorStop(0.5, "#18181B");
+      bgGrad.addColorStop(1, "#050507");
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, width, height);
 
       const glow1 = ctx.createRadialGradient(200, 250, 10, 200, 250, 480);
-      glow1.addColorStop(0, "rgba(251, 113, 133, 0.22)");
-      glow1.addColorStop(1, "rgba(251, 113, 133, 0)");
+      glow1.addColorStop(0, "rgba(244, 63, 94, 0.28)");
+      glow1.addColorStop(1, "rgba(244, 63, 94, 0)");
       ctx.fillStyle = glow1;
       ctx.fillRect(0, 0, width, height);
 
       const glow2 = ctx.createRadialGradient(900, 800, 10, 900, 800, 500);
-      glow2.addColorStop(0, "rgba(34, 211, 238, 0.2)");
-      glow2.addColorStop(1, "rgba(34, 211, 238, 0)");
+      glow2.addColorStop(0, "rgba(6, 182, 212, 0.25)");
+      glow2.addColorStop(1, "rgba(6, 182, 212, 0)");
       ctx.fillStyle = glow2;
       ctx.fillRect(0, 0, width, height);
-    } else if (visualStyle === "warmTerra") {
+    } else if (themeMode === "nordicCream") {
       const bgGrad = ctx.createLinearGradient(0, 0, 0, height);
-      bgGrad.addColorStop(0, "#FDF6ED");
-      bgGrad.addColorStop(0.6, "#FAF0E4");
-      bgGrad.addColorStop(1, "#F5E8D5");
+      bgGrad.addColorStop(0, "#FFFDF7");
+      bgGrad.addColorStop(0.6, "#F7EFE3");
+      bgGrad.addColorStop(1, "#EFE4D3");
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, width, height);
 
-      const glow = ctx.createRadialGradient(180, 200, 10, 180, 200, 620);
-      glow.addColorStop(0, "rgba(194, 65, 12, 0.1)");
-      glow.addColorStop(1, "rgba(194, 65, 12, 0)");
+      const glow = ctx.createRadialGradient(200, 200, 10, 200, 200, 600);
+      glow.addColorStop(0, "rgba(212, 163, 115, 0.18)");
+      glow.addColorStop(1, "rgba(212, 163, 115, 0)");
       ctx.fillStyle = glow;
       ctx.fillRect(0, 0, width, height);
-    } else if (visualStyle === "sakuraZen") {
+    } else if (themeMode === "matchaZen") {
+      const bgGrad = ctx.createLinearGradient(0, 0, width, height);
+      bgGrad.addColorStop(0, "#14281D");
+      bgGrad.addColorStop(0.5, "#1F3D2B");
+      bgGrad.addColorStop(1, "#0F1E15");
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, width, height);
+
+      const glow = ctx.createRadialGradient(800, 300, 10, 800, 300, 550);
+      glow.addColorStop(0, "rgba(167, 243, 208, 0.22)");
+      glow.addColorStop(1, "rgba(167, 243, 208, 0)");
+      ctx.fillStyle = glow;
+      ctx.fillRect(0, 0, width, height);
+    } else if (themeMode === "sunsetQuartz") {
       const bgGrad = ctx.createLinearGradient(0, 0, 0, height);
-      bgGrad.addColorStop(0, "#FFF5F9");
-      bgGrad.addColorStop(0.5, "#FDE8F2");
-      bgGrad.addColorStop(1, "#FAD9EB");
+      bgGrad.addColorStop(0, "#FFF1F2");
+      bgGrad.addColorStop(0.5, "#FFE4E6");
+      bgGrad.addColorStop(1, "#FED7AA");
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, width, height);
+
+      const glow = ctx.createRadialGradient(540, 200, 10, 540, 200, 600);
+      glow.addColorStop(0, "rgba(251, 146, 60, 0.2)");
+      glow.addColorStop(1, "rgba(251, 146, 60, 0)");
+      ctx.fillStyle = glow;
+      ctx.fillRect(0, 0, width, height);
+    } else if (themeMode === "mochaVelvet") {
+      const bgGrad = ctx.createLinearGradient(0, 0, width, height);
+      bgGrad.addColorStop(0, "#1C140E");
+      bgGrad.addColorStop(0.5, "#2D1A10");
+      bgGrad.addColorStop(1, "#140D09");
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, width, height);
+
+      const glow = ctx.createRadialGradient(250, 250, 10, 250, 250, 580);
+      glow.addColorStop(0, "rgba(245, 158, 11, 0.22)");
+      glow.addColorStop(1, "rgba(245, 158, 11, 0)");
+      ctx.fillStyle = glow;
+      ctx.fillRect(0, 0, width, height);
+    } else if (themeMode === "deepCobalt") {
+      const bgGrad = ctx.createLinearGradient(0, 0, 0, height);
+      bgGrad.addColorStop(0, "#021B47");
+      bgGrad.addColorStop(0.5, "#0A2D6E");
+      bgGrad.addColorStop(1, "#021233");
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, width, height);
+
+      const glow = ctx.createRadialGradient(850, 200, 10, 850, 200, 600);
+      glow.addColorStop(0, "rgba(96, 165, 250, 0.28)");
+      glow.addColorStop(1, "rgba(96, 165, 250, 0)");
+      ctx.fillStyle = glow;
+      ctx.fillRect(0, 0, width, height);
+    } else if (themeMode === "snowTitanium") {
+      const bgGrad = ctx.createLinearGradient(0, 0, 0, height);
+      bgGrad.addColorStop(0, "#FFFFFF");
+      bgGrad.addColorStop(0.5, "#F1F5F9");
+      bgGrad.addColorStop(1, "#E2E8F0");
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, width, height);
+
+      const glow = ctx.createRadialGradient(540, 300, 10, 540, 300, 700);
+      glow.addColorStop(0, "rgba(148, 163, 184, 0.25)");
+      glow.addColorStop(1, "rgba(148, 163, 184, 0)");
+      ctx.fillStyle = glow;
+      ctx.fillRect(0, 0, width, height);
+    } else if (themeMode === "sakuraBlush") {
+      const bgGrad = ctx.createLinearGradient(0, 0, 0, height);
+      bgGrad.addColorStop(0, "#FFF5F8");
+      bgGrad.addColorStop(0.5, "#FCE7F3");
+      bgGrad.addColorStop(1, "#FBCFE8");
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, width, height);
 
       const glow = ctx.createRadialGradient(800, 220, 10, 800, 220, 600);
-      glow.addColorStop(0, "rgba(190, 24, 93, 0.12)");
-      glow.addColorStop(1, "rgba(190, 24, 93, 0)");
+      glow.addColorStop(0, "rgba(244, 114, 182, 0.22)");
+      glow.addColorStop(1, "rgba(244, 114, 182, 0)");
       ctx.fillStyle = glow;
       ctx.fillRect(0, 0, width, height);
-    } else if (themeMode === "oceanBlue") {
+    } else if (themeMode === "solarAmber") {
+      const bgGrad = ctx.createLinearGradient(0, 0, width, height);
+      bgGrad.addColorStop(0, "#2E1002");
+      bgGrad.addColorStop(0.5, "#451A03");
+      bgGrad.addColorStop(1, "#1A0800");
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, width, height);
+
+      const glow = ctx.createRadialGradient(300, 220, 10, 300, 220, 600);
+      glow.addColorStop(0, "rgba(252, 211, 77, 0.25)");
+      glow.addColorStop(1, "rgba(252, 211, 77, 0)");
+      ctx.fillStyle = glow;
+      ctx.fillRect(0, 0, width, height);
+    } else {
+      // oceanBlue default
       const bgGrad = ctx.createLinearGradient(0, 0, width, height);
       bgGrad.addColorStop(0, "#0F4C6E");
       bgGrad.addColorStop(0.4, "#0E7490");
@@ -702,73 +1060,6 @@ export default function PosterStudioPage() {
       const glow = ctx.createRadialGradient(900, 220, 10, 900, 220, 580);
       glow.addColorStop(0, "rgba(186, 230, 253, 0.3)");
       glow.addColorStop(1, "rgba(186, 230, 253, 0)");
-      ctx.fillStyle = glow;
-      ctx.fillRect(0, 0, width, height);
-    } else if (themeMode === "snowClear") {
-      const bgGrad = ctx.createLinearGradient(0, 0, 0, height);
-      bgGrad.addColorStop(0, "#FFFFFF");
-      bgGrad.addColorStop(0.5, "#F0F9FF");
-      bgGrad.addColorStop(1, "#E0F2FE");
-      ctx.fillStyle = bgGrad;
-      ctx.fillRect(0, 0, width, height);
-
-      const glow = ctx.createRadialGradient(540, 300, 10, 540, 300, 700);
-      glow.addColorStop(0, "rgba(56, 189, 248, 0.2)");
-      glow.addColorStop(1, "rgba(56, 189, 248, 0)");
-      ctx.fillStyle = glow;
-      ctx.fillRect(0, 0, width, height);
-    } else if (themeMode === "midnightInk") {
-      const bgGrad = ctx.createLinearGradient(0, 0, 0, height);
-      bgGrad.addColorStop(0, "#0B0E2B");
-      bgGrad.addColorStop(0.5, "#131640");
-      bgGrad.addColorStop(1, "#0A0D28");
-      ctx.fillStyle = bgGrad;
-      ctx.fillRect(0, 0, width, height);
-
-      const glow = ctx.createRadialGradient(200, 300, 10, 200, 300, 600);
-      glow.addColorStop(0, "rgba(99, 102, 241, 0.22)");
-      glow.addColorStop(1, "rgba(99, 102, 241, 0)");
-      ctx.fillStyle = glow;
-      ctx.fillRect(0, 0, width, height);
-    } else if (themeMode === "peachSunset") {
-      const bgGrad = ctx.createLinearGradient(0, 0, 0, height);
-      bgGrad.addColorStop(0, "#FFF7ED");
-      bgGrad.addColorStop(0.4, "#FFEDD5");
-      bgGrad.addColorStop(0.75, "#FED7AA");
-      bgGrad.addColorStop(1, "#FDBA74");
-      ctx.fillStyle = bgGrad;
-      ctx.fillRect(0, 0, width, height);
-
-      const glow = ctx.createRadialGradient(750, 180, 10, 750, 180, 560);
-      glow.addColorStop(0, "rgba(249, 115, 22, 0.18)");
-      glow.addColorStop(1, "rgba(249, 115, 22, 0)");
-      ctx.fillStyle = glow;
-      ctx.fillRect(0, 0, width, height);
-    } else if (themeMode === "mossForest") {
-      const bgGrad = ctx.createLinearGradient(0, 0, 0, height);
-      bgGrad.addColorStop(0, "#14261A");
-      bgGrad.addColorStop(0.5, "#1A3222");
-      bgGrad.addColorStop(1, "#0F1E14");
-      ctx.fillStyle = bgGrad;
-      ctx.fillRect(0, 0, width, height);
-
-      const glow = ctx.createRadialGradient(300, 250, 10, 300, 250, 600);
-      glow.addColorStop(0, "rgba(74, 222, 128, 0.18)");
-      glow.addColorStop(1, "rgba(74, 222, 128, 0)");
-      ctx.fillStyle = glow;
-      ctx.fillRect(0, 0, width, height);
-    } else {
-      // Lavender Mist
-      const bgGrad = ctx.createLinearGradient(0, 0, width, height);
-      bgGrad.addColorStop(0, "#F5F3FF");
-      bgGrad.addColorStop(0.45, "#EDE9FE");
-      bgGrad.addColorStop(1, "#DDD6FE");
-      ctx.fillStyle = bgGrad;
-      ctx.fillRect(0, 0, width, height);
-
-      const glow = ctx.createRadialGradient(200, 250, 10, 200, 250, 620);
-      glow.addColorStop(0, "rgba(139, 92, 246, 0.2)");
-      glow.addColorStop(1, "rgba(139, 92, 246, 0)");
       ctx.fillStyle = glow;
       ctx.fillRect(0, 0, width, height);
     }
@@ -836,7 +1127,7 @@ export default function PosterStudioPage() {
       ctx.stroke();
 
       ctx.fillStyle = "#FFFFFF";
-      ctx.font = "900 30px sans-serif";
+      ctx.font = getFont("900", 30);
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       ctx.fillText(headerEmblemIcon, emblemX + emblemSize / 2, emblemY + emblemSize / 2);
@@ -858,7 +1149,7 @@ export default function PosterStudioPage() {
     } else {
       ctx.fillStyle = "#0F766E";
     }
-    ctx.font = "900 20px sans-serif";
+    ctx.font = getFont("900", 20);
     ctx.fillText(hospitalName, pad + 90, currY + 36);
 
     if (colors.useCustom) {
@@ -872,7 +1163,7 @@ export default function PosterStudioPage() {
     } else {
       ctx.fillStyle = isDark ? "#94A3B8" : "#64748B";
     }
-    ctx.font = "800 13px sans-serif";
+    ctx.font = getFont("800", 13);
     ctx.fillText(hospitalSubtitle, pad + 90, currY + 62);
 
     const dateFormatted = selectedDate.toLocaleDateString("id-ID", {
@@ -911,28 +1202,28 @@ export default function PosterStudioPage() {
     ctx.fill();
 
     ctx.fillStyle = "#FFFFFF";
-    ctx.font = "900 9px sans-serif";
+    ctx.font = getFont("900", 9);
     ctx.textAlign = "center";
     ctx.fillText(selectedDate.toLocaleDateString("id-ID", { weekday: "short" }).toUpperCase(), calBlockX + 22, calBlockY + 11);
 
     ctx.fillStyle = "#0F172A";
-    ctx.font = "900 17px sans-serif";
+    ctx.font = getFont("900", 17);
     ctx.fillText(String(selectedDate.getDate()), calBlockX + 22, calBlockY + 36);
 
     ctx.textAlign = "left";
     ctx.fillStyle = isDark ? "#FFFFFF" : "#0F172A";
-    ctx.font = "900 13.5px sans-serif";
+    ctx.font = getFont("900", 13.5);
     ctx.fillText(dateFormatted, datePinX + 62, datePinY + 28);
 
     if (showAccreditation) {
       ctx.fillStyle = "#D97706";
-      ctx.font = "900 11px sans-serif";
+      ctx.font = getFont("900", 11);
       ctx.fillText(accreditationText, datePinX + 62, datePinY + 47);
     }
 
     currY += headerH + 18;
 
-    // ── 3. DEDICATED LEAVE DOCTORS BENTO CARD ──
+    // ── 3. DEDICATED LEAVE DOCTORS CARD (4 Styles) ──
     if (showLeaveCard && leaveDoctors.length > 0 && layoutMode !== "heroSplit") {
       const leaveCardH = 48 + Math.ceil(leaveDoctors.length / 2) * 32 + 8;
 
@@ -940,18 +1231,50 @@ export default function PosterStudioPage() {
       const leaveFillBot = colors.useCustom ? colors.leaveBg : isDark ? "rgba(159, 18, 57, 0.22)" : "#FFE4E6";
       const leaveBorderClr = colors.useCustom ? colors.leaveBorder : "rgba(225, 29, 72, 0.28)";
 
-      drawStyledCard(ctx, pad, currY, headerW, leaveCardH, 22, {
-        fillTop: leaveFillTop,
-        fillBottom: leaveFillBot,
-        shadowColor: "rgba(225, 29, 72, 0.18)",
-        shadowBlur: 14,
-        shadowOffsetY: 4,
-        borderLight: "rgba(255, 255, 255, 0.85)",
-        borderDark: leaveBorderClr,
-      });
+      if (leaveCardStyle === "cautionStrip") {
+        // Caution Warning Banner Ribbon
+        ctx.fillStyle = "#BE123C";
+        ctx.beginPath();
+        ctx.roundRect(pad, currY, headerW, leaveCardH, 12);
+        ctx.fill();
+        ctx.save();
+        ctx.strokeStyle = "#FFE4E6";
+        ctx.lineWidth = 2;
+        ctx.setLineDash([8, 8]);
+        ctx.beginPath();
+        ctx.roundRect(pad + 4, currY + 4, headerW - 8, leaveCardH - 8, 8);
+        ctx.stroke();
+        ctx.restore();
+      } else if (leaveCardStyle === "glowFrame") {
+        // Neon Glow Laser Frame
+        ctx.fillStyle = "rgba(15, 23, 42, 0.85)";
+        ctx.beginPath();
+        ctx.roundRect(pad, currY, headerW, leaveCardH, 18);
+        ctx.fill();
+        ctx.save();
+        ctx.strokeStyle = "#F43F5E";
+        ctx.lineWidth = 1.5;
+        ctx.shadowColor = "#F43F5E";
+        ctx.shadowBlur = 12;
+        ctx.beginPath();
+        ctx.roundRect(pad, currY, headerW, leaveCardH, 18);
+        ctx.stroke();
+        ctx.restore();
+      } else {
+        // Standard Bento Island
+        drawStyledCard(ctx, pad, currY, headerW, leaveCardH, 22, {
+          fillTop: leaveFillTop,
+          fillBottom: leaveFillBot,
+          shadowColor: "rgba(225, 29, 72, 0.18)",
+          shadowBlur: 14,
+          shadowOffsetY: 4,
+          borderLight: "rgba(255, 255, 255, 0.85)",
+          borderDark: leaveBorderClr,
+        });
+      }
 
-      ctx.fillStyle = colors.useCustom ? colors.leaveText : "#E11D48";
-      ctx.font = "900 13.5px sans-serif";
+      ctx.fillStyle = leaveCardStyle === "cautionStrip" ? "#FFFFFF" : (colors.useCustom ? colors.leaveText : "#E11D48");
+      ctx.font = getFont("900", 13.5);
       ctx.textAlign = "left";
       ctx.fillText("📅 PEMBERITAHUAN DOKTER CUTI / TIDAK PRAKTEK HARI INI :", pad + 22, currY + 29);
 
@@ -964,19 +1287,19 @@ export default function PosterStudioPage() {
         const itemX = pad + 22 + colIdx * (leaveColW + 24);
         const itemY = currY + 58 + rowIdx * 30;
 
-        ctx.fillStyle = isDark ? "#FFFFFF" : "#0F172A";
-        ctx.font = "800 13px sans-serif";
+        ctx.fillStyle = leaveCardStyle === "cautionStrip" ? "#FFE4E6" : (isDark ? "#FFFFFF" : "#0F172A");
+        ctx.font = getFont("800", 13);
         ctx.fillText(`• ${ld.doctorName} (${ld.specialty})`, itemX, itemY);
 
         if (ld.replacement) {
-          ctx.fillStyle = "#059669";
-          ctx.font = "900 12px sans-serif";
+          ctx.fillStyle = leaveCardStyle === "cautionStrip" ? "#86EFAC" : "#059669";
+          ctx.font = getFont("900", 12);
           ctx.textAlign = "right";
           ctx.fillText(`🔄 Digantikan: ${ld.replacement}`, itemX + leaveColW, itemY);
           ctx.textAlign = "left";
         } else {
-          ctx.fillStyle = "#E11D48";
-          ctx.font = "900 12px sans-serif";
+          ctx.fillStyle = leaveCardStyle === "cautionStrip" ? "#FECDD3" : "#E11D48";
+          ctx.font = getFont("900", 12);
           ctx.textAlign = "right";
           ctx.fillText("Libur", itemX + leaveColW, itemY);
           ctx.textAlign = "left";
@@ -986,7 +1309,7 @@ export default function PosterStudioPage() {
       currY += leaveCardH + 18;
     }
 
-    // ── 4. DOCTOR CARD DRAW HELPER ──
+    // ── 4. DOCTOR CARD DRAW HELPER (8 Card Variants) ──
     const accentOf = (isCuti: boolean, isBedah: boolean) =>
       isCuti ? "#E11D48" :
       isBedah ? (visualStyle === "neonNoir" ? "#A78BFA" : "#3B82F6") :
@@ -1026,7 +1349,6 @@ export default function PosterStudioPage() {
         cx.fillStyle = accent;
         cx.beginPath(); cx.roundRect(x, y, 6, h, [r, 0, 0, r]); cx.fill();
 
-        // Specialty Icon or Monogram
         const avS = 28, avX = x + 14, avY = y + (h - avS) / 2;
         if (avatarMode === "specialtyIcon") {
           const ag = cx.createLinearGradient(avX, avY, avX + avS, avY + avS);
@@ -1040,20 +1362,95 @@ export default function PosterStudioPage() {
         const textLeftOffset = avatarMode === "specialtyIcon" ? 48 : 16;
         cx.textAlign = "left"; cx.textBaseline = "middle";
         cx.fillStyle = nameColor;
-        cx.font = d.replacement ? "800 11.5px sans-serif" : "800 13px sans-serif";
+        cx.font = getFont("800", d.replacement ? 11.5 : 13);
         cx.fillText(d.doctorName.slice(0, 24), x + textLeftOffset, d.replacement ? y + h * 0.38 : y + h * 0.55);
 
         if (d.replacement) {
-          cx.font = "700 10px sans-serif";
+          cx.font = getFont("700", 10);
           cx.fillStyle = visualStyle === "neonNoir" ? "#4ADE80" : "#059669";
           cx.fillText(`🔄 ${d.replacement.slice(0, 20)}`, x + textLeftOffset, y + h * 0.72);
         }
 
         const tText = isCuti ? "LIBUR 📅" : `🕒 ${d.time}`;
         cx.textAlign = "right";
-        cx.font = isCuti ? "900 11px sans-serif" : "700 10.5px monospace";
+        cx.font = isCuti ? getFont("900", 11) : getFont("700", 10.5);
         cx.fillStyle = isCuti ? "#E11D48" : colors.useCustom ? colors.timePillText : accent;
         cx.fillText(tText, x + w - 10, y + h * 0.55);
+
+      } else if (cardVariant === "cyberGlow") {
+        cx.fillStyle = isDark ? "#0D0D11" : "#FFFFFF";
+        cx.beginPath(); cx.roundRect(x, y, w, h, r); cx.fill();
+        cx.save();
+        cx.strokeStyle = accent;
+        cx.lineWidth = 1.2;
+        cx.shadowColor = accent;
+        cx.shadowBlur = 10;
+        cx.beginPath(); cx.roundRect(x, y, w, h, r); cx.stroke();
+        cx.restore();
+
+        const avS = 28, avX = x + 10, avY = y + (h - avS) / 2;
+        cx.fillStyle = accent;
+        cx.beginPath(); cx.roundRect(avX, avY, avS, avS, 6); cx.fill();
+        drawSpecialtyIcon(cx, avX, avY, avS, specName, "#FFFFFF");
+
+        cx.textAlign = "left"; cx.textBaseline = "middle";
+        cx.fillStyle = nameColor;
+        cx.font = getFont("900", 12.5);
+        cx.fillText(d.doctorName.slice(0, 24), x + 46, y + h * 0.52);
+
+        const tText = isCuti ? "LIBUR 📅" : `🕒 ${d.time}`;
+        cx.textAlign = "right";
+        cx.font = getFont("800", 10.5);
+        cx.fillStyle = accent;
+        cx.fillText(tText, x + w - 10, y + h * 0.52);
+
+      } else if (cardVariant === "floatingPill") {
+        const pillR = h / 2;
+        cx.shadowColor = "rgba(0,0,0,0.12)";
+        cx.shadowBlur = 12; cx.shadowOffsetY = 4;
+        cx.fillStyle = colors.useCustom ? colors.cardBgStart : isDark ? "#1E293B" : "#FFFFFF";
+        cx.beginPath(); cx.roundRect(x, y, w, h, pillR); cx.fill();
+        cx.shadowBlur = 0;
+
+        const avS = h - 8, avX = x + 4, avY = y + 4;
+        cx.fillStyle = accent;
+        cx.beginPath(); cx.arc(avX + avS / 2, avY + avS / 2, avS / 2, 0, Math.PI * 2); cx.fill();
+        drawSpecialtyIcon(cx, avX, avY, avS, specName, "#FFFFFF");
+
+        cx.textAlign = "left"; cx.textBaseline = "middle";
+        cx.fillStyle = nameColor;
+        cx.font = getFont("800", 12.5);
+        cx.fillText(d.doctorName.slice(0, 24), x + avS + 12, y + h * 0.52);
+
+        const pW = isCuti ? 74 : 110, pH = 24, pX = x + w - pW - 6, pY = y + (h - pH) / 2;
+        cx.fillStyle = isCuti ? "rgba(225,29,72,0.15)" : "rgba(16,185,129,0.15)";
+        cx.beginPath(); cx.roundRect(pX, pY, pW, pH, pH / 2); cx.fill();
+        cx.fillStyle = isCuti ? "#E11D48" : accent;
+        cx.font = getFont("900", 10);
+        cx.textAlign = "center";
+        cx.fillText(isCuti ? "LIBUR 📅" : `🕒 ${d.time}`, pX + pW / 2, pY + pH / 2);
+
+      } else if (cardVariant === "retroBadge") {
+        cx.fillStyle = colors.useCustom ? colors.cardBgStart : isDark ? "#18181B" : "#FFFFFF";
+        cx.beginPath(); cx.roundRect(x, y, w, h, 8); cx.fill();
+        cx.strokeStyle = "rgba(0,0,0,0.15)"; cx.lineWidth = 1;
+        ctx.stroke();
+
+        // Punch badge circle left
+        cx.fillStyle = isDark ? "#09090B" : "#EDF2F8";
+        cx.beginPath(); cx.arc(x, y + h / 2, 6, -Math.PI / 2, Math.PI / 2); cx.fill();
+        cx.beginPath(); cx.arc(x + w, y + h / 2, 6, Math.PI / 2, -Math.PI / 2); cx.fill();
+
+        cx.textAlign = "left"; cx.textBaseline = "middle";
+        cx.fillStyle = nameColor;
+        cx.font = getFont("800", 12.5);
+        cx.fillText(d.doctorName.slice(0, 24), x + 18, y + h * 0.52);
+
+        const tText = isCuti ? "LIBUR 📅" : `🕒 ${d.time}`;
+        cx.textAlign = "right";
+        cx.font = getFont("800", 11);
+        cx.fillStyle = isCuti ? "#E11D48" : accent;
+        cx.fillText(tText, x + w - 16, y + h * 0.52);
 
       } else if (cardVariant === "neumorphic") {
         const baseLight = isDark ? 26 : (visualStyle === "warmTerra" ? 253 : visualStyle === "sakuraZen" ? 255 : 246);
@@ -1080,16 +1477,16 @@ export default function PosterStudioPage() {
         if (avatarMode === "specialtyIcon") {
           drawSpecialtyIcon(cx, avX, avY, avS, specName, "#FFFFFF");
         } else {
-          cx.fillStyle = "#FFFFFF"; cx.font = "800 11px sans-serif";
+          cx.fillStyle = "#FFFFFF"; cx.font = getFont("800", 11);
           cx.textAlign = "center"; cx.textBaseline = "middle";
           cx.fillText(getInitials(d.doctorName), avX + avS / 2, avY + avS / 2);
         }
 
         cx.textAlign = "left"; cx.textBaseline = "alphabetic";
-        cx.fillStyle = nameColor; cx.font = "800 12.5px sans-serif";
+        cx.fillStyle = nameColor; cx.font = getFont("800", 12.5);
         cx.fillText(d.doctorName.slice(0, 24), x + 46, y + (d.replacement ? 19 : h / 2 + 4));
         if (d.replacement) {
-          cx.font = "700 10px sans-serif"; cx.fillStyle = accent;
+          cx.font = getFont("700", 10); cx.fillStyle = accent;
           cx.fillText(`🔄 ${d.replacement.slice(0, 20)}`, x + 46, y + h - 11);
         }
 
@@ -1097,7 +1494,7 @@ export default function PosterStudioPage() {
         cx.fillStyle = isDark ? "rgba(0,0,0,0.35)" : "rgba(0,0,0,0.07)";
         cx.beginPath(); cx.roundRect(pX, pY, pW, pH, pH / 2); cx.fill();
         cx.fillStyle = isCuti ? "#E11D48" : colors.useCustom ? colors.timePillText : accent;
-        cx.font = isCuti ? "800 10px sans-serif" : "700 10px monospace";
+        cx.font = isCuti ? getFont("800", 10) : getFont("700", 10);
         cx.textAlign = "center"; cx.textBaseline = "middle";
         cx.fillText(isCuti ? "LIBUR 📅" : `🕒 ${d.time}`, pX + pW / 2, pY + pH / 2);
 
@@ -1128,16 +1525,16 @@ export default function PosterStudioPage() {
         if (avatarMode === "specialtyIcon") {
           drawSpecialtyIcon(cx, avX, avY, avS, specName, "#FFFFFF");
         } else {
-          cx.fillStyle = "#FFFFFF"; cx.font = "900 11px sans-serif";
+          cx.fillStyle = "#FFFFFF"; cx.font = getFont("900", 11);
           cx.textAlign = "center"; cx.textBaseline = "middle";
           cx.fillText(getInitials(d.doctorName), avX + avS / 2, avY + avS / 2);
         }
 
         cx.textAlign = "left"; cx.textBaseline = "alphabetic";
-        cx.fillStyle = isDark ? "#FFFFFF" : nameColor; cx.font = "900 12.5px sans-serif";
+        cx.fillStyle = isDark ? "#FFFFFF" : nameColor; cx.font = getFont("900", 12.5);
         cx.fillText(d.doctorName.slice(0, 26), x + 48, y + (d.replacement ? 18 : h / 2 + 4));
         if (d.replacement) {
-          cx.font = "700 10px sans-serif"; cx.fillStyle = isDark ? "#4ADE80" : "#059669";
+          cx.font = getFont("700", 10); cx.fillStyle = isDark ? "#4ADE80" : "#059669";
           cx.fillText(`🔄 ${d.replacement.slice(0, 22)}`, x + 48, y + h - 11);
         }
 
@@ -1147,7 +1544,7 @@ export default function PosterStudioPage() {
         cx.strokeStyle = isDark ? "rgba(255,255,255,0.35)" : "rgba(255,255,255,0.9)";
         cx.lineWidth = 0.8; cx.beginPath(); cx.roundRect(pX, pY, pW, pH, pH / 2); cx.stroke();
         cx.fillStyle = isCuti ? "#E11D48" : (isDark ? "#FFFFFF" : colors.useCustom ? colors.timePillText : accent);
-        cx.font = isCuti ? "900 10.5px sans-serif" : "800 10px monospace";
+        cx.font = isCuti ? getFont("900", 10.5) : getFont("800", 10);
         cx.textAlign = "center"; cx.textBaseline = "middle";
         cx.fillText(isCuti ? "LIBUR 📅" : `🕒 ${d.time}`, pX + pW / 2, pY + pH / 2);
 
@@ -1173,22 +1570,22 @@ export default function PosterStudioPage() {
         if (avatarMode === "specialtyIcon") {
           drawSpecialtyIcon(cx, avX, avY, avS, specName, "#FFFFFF");
         } else {
-          cx.fillStyle = "#FFFFFF"; cx.font = "900 12px sans-serif";
+          cx.fillStyle = "#FFFFFF"; cx.font = getFont("900", 12);
           cx.textAlign = "center"; cx.textBaseline = "middle";
           cx.fillText(getInitials(d.doctorName), avX + avS / 2, avY + avS / 2);
         }
 
         cx.textAlign = "left"; cx.textBaseline = "alphabetic";
-        cx.fillStyle = nameColor; cx.font = "900 13px sans-serif";
+        cx.fillStyle = nameColor; cx.font = getFont("900", 13);
         cx.fillText(d.doctorName.slice(0, 26), x + 48, y + (d.replacement ? 21 : 28));
         if (d.replacement) {
-          cx.font = "900 10.5px sans-serif"; cx.fillStyle = visualStyle === "neonNoir" ? "#4ADE80" : "#059669";
+          cx.font = getFont("900", 10.5); cx.fillStyle = visualStyle === "neonNoir" ? "#4ADE80" : "#059669";
           cx.fillText(`🔄 Digantikan: ${d.replacement}`, x + 48, y + 38);
         }
         const pW = isCuti ? 84 : 130, pH = 30, pX = x + w - pW - 8, pY = y + 9;
         if (isCuti) {
           cx.fillStyle = "rgba(225,29,72,0.12)"; cx.beginPath(); cx.roundRect(pX, pY, pW, pH, 10); cx.fill();
-          cx.fillStyle = "#E11D48"; cx.font = "900 11.5px sans-serif";
+          cx.fillStyle = "#E11D48"; cx.font = getFont("900", 11.5);
           cx.textAlign = "center"; cx.textBaseline = "middle";
           cx.fillText("LIBUR 📅", pX + pW / 2, pY + pH / 2);
         } else {
@@ -1196,7 +1593,7 @@ export default function PosterStudioPage() {
           const tClr = colors.useCustom ? colors.timePillText : accent;
           cx.fillStyle = tBg;
           cx.beginPath(); cx.roundRect(pX, pY, pW, pH, 10); cx.fill();
-          cx.fillStyle = tClr; cx.font = "900 11.5px monospace";
+          cx.fillStyle = tClr; cx.font = getFont("900", 11.5);
           cx.textAlign = "center"; cx.textBaseline = "middle";
           cx.fillText(`🕒 ${d.time}`, pX + pW / 2, pY + pH / 2);
         }
@@ -1241,7 +1638,7 @@ export default function PosterStudioPage() {
           });
 
           ctx.fillStyle = specTextClr;
-          ctx.font = "900 11.5px sans-serif";
+          ctx.font = getFont("900", 11.5);
           ctx.textAlign = "center";
           ctx.fillText(specName, startX + colW / 2, colY + 18);
 
@@ -1269,7 +1666,7 @@ export default function PosterStudioPage() {
         });
 
         ctx.fillStyle = specTextClr;
-        ctx.font = "900 13px sans-serif";
+        ctx.font = getFont("900", 13);
         ctx.textAlign = "left";
         ctx.fillText(`🏥 POLI ${specName}`, pad + 16, stackY + 20);
 
@@ -1311,7 +1708,7 @@ export default function PosterStudioPage() {
           });
 
           ctx.fillStyle = specTextClr;
-          ctx.font = "900 13px sans-serif";
+          ctx.font = getFont("900", 13);
           ctx.textAlign = "center";
           ctx.fillText(specName, startX + colW / 2, colY + 20);
 
@@ -1349,11 +1746,11 @@ export default function PosterStudioPage() {
 
       ctx.textAlign = "left";
       ctx.fillStyle = colors.useCustom ? colors.footerText : "#FFFFFF";
-      ctx.font = "900 14px sans-serif";
+      ctx.font = getFont("900", 14);
       ctx.fillText(`📱 PENDAFTARAN VIA WHATSAPP : ${hotlinePhone}`, pad + 24, footerY + 34);
 
       ctx.fillStyle = colors.useCustom ? colors.footerSub : visualStyle === "neonNoir" ? "#A5F3FC" : visualStyle === "warmTerra" ? "#FED7AA" : visualStyle === "sakuraZen" ? "#FBCFE8" : "#A7F3D0";
-      ctx.font = "800 12px sans-serif";
+      ctx.font = getFont("800", 12);
       ctx.fillText(`🌐 Cek Live Jadwal & Antrean Dokter: ${websiteUrl}`, pad + 24, footerY + 58);
 
       if (showIgdBadge) {
@@ -1369,7 +1766,7 @@ export default function PosterStudioPage() {
         });
 
         ctx.fillStyle = "#FFE4E6";
-        ctx.font = "900 12px sans-serif";
+        ctx.font = getFont("900", 12);
         ctx.textAlign = "center";
         ctx.fillText("🚨 IGD & AMBULANS 24 JAM", igdBadgeX + 105, igdBadgeY + 25);
       }
@@ -1394,6 +1791,16 @@ export default function PosterStudioPage() {
       }
     }
 
+    // ── 7. OPTIONAL WATERMARK STAMP ──
+    if (watermarkText.trim()) {
+      ctx.save();
+      ctx.font = getFont("900", 14);
+      ctx.fillStyle = isDark ? "rgba(255,255,255,0.25)" : "rgba(0,0,0,0.18)";
+      ctx.textAlign = "center";
+      ctx.fillText(watermarkText.toUpperCase(), width / 2, height - 12);
+      ctx.restore();
+    }
+
   }, [
     scheduleData,
     selectedDate,
@@ -1401,9 +1808,12 @@ export default function PosterStudioPage() {
     layoutMode,
     visualStyle,
     cardVariant,
+    leaveCardStyle,
     avatarMode,
+    fontTheme,
     cardCornerRadius,
     headerEmblemIcon,
+    watermarkText,
     colors,
     showLeaveCard,
     showFooter,
@@ -1425,7 +1835,6 @@ export default function PosterStudioPage() {
   const handleDownload = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-
     const dateKey = selectedDate.toISOString().slice(0, 10);
     const link = document.createElement("a");
     link.download = `jadwal-dokter-siagamedika-${dateKey}-${layoutMode}-${visualStyle}.png`;
@@ -1436,13 +1845,10 @@ export default function PosterStudioPage() {
   const handleCopy = async () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-
     try {
       canvas.toBlob(async (blob) => {
         if (!blob) return;
-        await navigator.clipboard.write([
-          new ClipboardItem({ "image/png": blob })
-        ]);
+        await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
         setCopied(true);
         setTimeout(() => setCopied(false), 2500);
       });
@@ -1454,7 +1860,6 @@ export default function PosterStudioPage() {
   const handleNativeShare = async () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-
     try {
       canvas.toBlob(async (blob) => {
         if (!blob) return;
@@ -1476,12 +1881,8 @@ export default function PosterStudioPage() {
     }
   };
 
-  // Helper to sync preset colors into custom colors
   const syncPresetColors = () => {
-    setColors({
-      ...DEFAULT_CUSTOM_COLORS,
-      useCustom: true,
-    });
+    setColors({ ...DEFAULT_CUSTOM_COLORS, useCustom: true });
   };
 
   return (
@@ -1592,12 +1993,13 @@ export default function PosterStudioPage() {
         {/* ── LEFT CONTROL PANEL (5 Cols) ── */}
         <div className="lg:col-span-5 flex flex-col gap-4">
           {/* Studio Navigation Tabs */}
-          <div className="grid grid-cols-4 gap-1 p-1 rounded-[20px] clay-surface border border-zinc-200/50 dark:border-white/5">
+          <div className="grid grid-cols-5 gap-1 p-1 rounded-[20px] clay-surface border border-zinc-200/50 dark:border-white/5">
             {[
-              { id: "layout", label: "Tata Letak", icon: LayoutGrid },
+              { id: "layout", label: "Style", icon: LayoutGrid },
               { id: "colors", label: "Warna", icon: Paintbrush },
               { id: "elements", label: "Elemen", icon: Sliders },
-              { id: "branding", label: "Branding", icon: Award },
+              { id: "presets", label: "Simpan", icon: Bookmark },
+              { id: "branding", label: "Info RS", icon: Award },
             ].map((tab) => {
               const Icon = tab.icon;
               return (
@@ -1618,7 +2020,7 @@ export default function PosterStudioPage() {
             })}
           </div>
 
-          {/* TAB 1: TATA LETAK & STYLE */}
+          {/* TAB 1: TATA LETAK, STYLE & CARD VARIANT */}
           {activeTab === "layout" && (
             <div className="clay-surface rounded-[24px] p-4 sm:p-5 flex flex-col gap-4 border border-zinc-200/50 dark:border-white/5">
               {/* Layout Mode */}
@@ -1652,10 +2054,10 @@ export default function PosterStudioPage() {
                 </div>
               </div>
 
-              {/* Visual Style */}
+              {/* Visual Style (8 Styles) */}
               <div className="pt-2 border-t border-zinc-200/50 dark:border-white/5">
                 <label className="text-[11px] font-black text-zinc-600 dark:text-zinc-300 mb-1.5 block">
-                  Pilihan Style Visual Desain:
+                  8 Pilihan Style Visual Desain:
                 </label>
                 <div className="grid grid-cols-2 gap-2">
                   {[
@@ -1663,6 +2065,10 @@ export default function PosterStudioPage() {
                     { id: "neonNoir", label: "🌃 Neon Noir", sub: "Cyberpunk Cinematic" },
                     { id: "warmTerra", label: "🍊 Warm Terracotta", sub: "Editorial Magazine" },
                     { id: "sakuraZen", label: "🌸 Sakura Zen", sub: "Japanese Minimal" },
+                    { id: "auroraBorealis", label: "🌌 Aurora Cosmic", sub: "Iridescent Polar Glow" },
+                    { id: "monochromeSwiss", label: "🇨🇭 Swiss Bauhaus", sub: "High-Fashion Grid" },
+                    { id: "vintageBotanical", label: "🌿 Earthy Botanic", sub: "Apothecary & Gold" },
+                    { id: "metallicTitanium", label: "🛸 Titanium Metal", sub: "Precision Anodized" },
                   ].map((s) => (
                     <button
                       key={s.id}
@@ -1679,17 +2085,21 @@ export default function PosterStudioPage() {
                 </div>
               </div>
 
-              {/* Card Variant */}
+              {/* Card Variant (8 Card Designs) */}
               <div className="pt-2 border-t border-zinc-200/50 dark:border-white/5">
                 <label className="text-[11px] font-black text-zinc-600 dark:text-zinc-300 mb-1.5 block">
-                  Desain Card Dokter & Cuti:
+                  8 Pilihan Desain Card Dokter:
                 </label>
                 <div className="grid grid-cols-2 gap-2">
                   {[
-                    { id: "smooth", label: "🍏 Smooth Clay", sub: "Apple Soft Bevel" },
-                    { id: "accentBar", label: "▌ Accent Bar", sub: "Left Strip Minimal" },
-                    { id: "neumorphic", label: "◉ Neumorphic", sub: "Convex Raised 3D" },
-                    { id: "glassFrost", label: "❋ Glass Frost", sub: "Frosted Shimmer" },
+                    { id: "smooth", label: "🍏 Smooth Clay", sub: "Apple Inset Highlight" },
+                    { id: "accentBar", label: "▌ Accent Left Bar", sub: "Neon Strip Minimal" },
+                    { id: "neumorphic", label: "◉ Neumorphic 3D", sub: "Convex Raised Shadow" },
+                    { id: "glassFrost", label: "❋ Glass Frost", sub: "Frosted Reflection" },
+                    { id: "retroBadge", label: "🏷️ Retro Ticket", sub: "Perforated Cutout" },
+                    { id: "cyberGlow", label: "⚡ Cyber Dual Glow", sub: "Laser Border Glow" },
+                    { id: "floatingPill", label: "💊 Floating Capsule", sub: "Elevated Ultra-Pill" },
+                    { id: "minimalBorder", label: "🔲 Minimal Outline", sub: "Clean Hairline Frame" },
                   ].map((c) => (
                     <button
                       key={c.id}
@@ -1706,11 +2116,38 @@ export default function PosterStudioPage() {
                 </div>
               </div>
 
-              {/* Avatar Type: Specialty Icon vs Monogram */}
+              {/* Leave Card Box Style (4 Styles) */}
+              <div className="pt-2 border-t border-zinc-200/50 dark:border-white/5">
+                <label className="text-[11px] font-black text-zinc-600 dark:text-zinc-300 mb-1.5 block">
+                  Pilihan Desain Kotak Cuti Dokter:
+                </label>
+                <div className="grid grid-cols-2 gap-2">
+                  {[
+                    { id: "bentoBox", label: "🍱 Bento Island", sub: "Card Merah Keramik" },
+                    { id: "cautionStrip", label: "🚧 Caution Ribbon", sub: "Strip Garis Hazard" },
+                    { id: "glowFrame", label: "✨ Neon Rose Frame", sub: "Laser Edge Crimson" },
+                    { id: "minimalPill", label: "💊 Clean Minimal", sub: "Translucent Soft" },
+                  ].map((l) => (
+                    <button
+                      key={l.id}
+                      onClick={() => setLeaveCardStyle(l.id as LeaveCardStyle)}
+                      className={cn(
+                        "py-2 px-2.5 rounded-[14px] text-xs font-black transition-all flex flex-col items-start gap-0.5 text-left",
+                        leaveCardStyle === l.id ? "clay-pill-blue text-white shadow-xs" : "clay-button text-zinc-600 dark:text-zinc-300"
+                      )}
+                    >
+                      <span>{l.label}</span>
+                      <span className="text-[9.5px] opacity-75 font-normal">{l.sub}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Avatar Type */}
               <div className="pt-2 border-t border-zinc-200/50 dark:border-white/5">
                 <label className="text-[11px] font-black text-zinc-600 dark:text-zinc-300 mb-1.5 block flex items-center gap-1.5">
                   <Stethoscope size={13} className="text-emerald-500" />
-                  <span>Ikon / Profil Dokter:</span>
+                  <span>Ikon Profil Dokter:</span>
                 </label>
                 <div className="grid grid-cols-2 gap-2">
                   {[
@@ -1770,14 +2207,14 @@ export default function PosterStudioPage() {
             </div>
           )}
 
-          {/* TAB 2: PALET & CUSTOM COLOR PICKER */}
+          {/* TAB 2: PALET 2026 & CUSTOM COLOR PICKER */}
           {activeTab === "colors" && (
             <div className="clay-surface rounded-[24px] p-4 sm:p-5 flex flex-col gap-4 border border-zinc-200/50 dark:border-white/5">
               {/* Custom Color Toggle */}
               <div className="flex items-center justify-between p-3 rounded-[16px] clay-inset">
                 <div>
-                  <div className="text-xs font-black text-zinc-900 dark:text-zinc-100">Kustomisasi Warna Bebas</div>
-                  <div className="text-[10px] text-zinc-400">Atur hex color picker untuk setiap elemen</div>
+                  <div className="text-xs font-black text-zinc-900 dark:text-zinc-100">Kustomisasi Hex & Picker Bebas</div>
+                  <div className="text-[10px] text-zinc-400">Atur kode hex, color circle, dan chip warna</div>
                 </div>
                 <button
                   onClick={() => setColors({ ...colors, useCustom: !colors.useCustom })}
@@ -1795,30 +2232,36 @@ export default function PosterStudioPage() {
                 </button>
               </div>
 
-              {/* Preset Palettes */}
+              {/* Preset Palettes 2026 (12 Palettes) */}
               {!colors.useCustom && (
                 <div>
                   <label className="text-[11px] font-black text-zinc-600 dark:text-zinc-300 mb-1.5 block">
-                    Pilihan Palet Preset 2024:
+                    12 Pilihan Palet Tren 2026:
                   </label>
-                  <div className="grid grid-cols-3 gap-1.5">
+                  <div className="grid grid-cols-2 gap-1.5">
                     {[
-                      { id: "oceanBlue", label: "🌊 Ocean Blue", dot: "bg-cyan-600" },
-                      { id: "snowClear", label: "❄️ Snow Clear", dot: "bg-sky-300" },
-                      { id: "midnightInk", label: "🌌 Midnight Ink", dot: "bg-indigo-900" },
-                      { id: "peachSunset", label: "🌅 Peach Sunset", dot: "bg-orange-300" },
-                      { id: "mossForest", label: "🌿 Moss Forest", dot: "bg-green-900" },
-                      { id: "lavenderMist", label: "💜 Lavender Mist", dot: "bg-violet-300" },
+                      { id: "cyberEmerald", label: "⚡ Cyber Emerald", dot: "bg-emerald-500" },
+                      { id: "hyperViolet", label: "🔮 Hyper Violet", dot: "bg-purple-600" },
+                      { id: "oceanBlue", label: "🌊 Ocean Cyan", dot: "bg-cyan-500" },
+                      { id: "tokyoNeon", label: "🏙️ Tokyo Neon", dot: "bg-rose-500" },
+                      { id: "nordicCream", label: "🍦 Nordic Cream", dot: "bg-amber-200" },
+                      { id: "matchaZen", label: "🍵 Matcha Botanic", dot: "bg-emerald-800" },
+                      { id: "sunsetQuartz", label: "🌅 Sunset Quartz", dot: "bg-orange-400" },
+                      { id: "mochaVelvet", label: "☕ Mocha Bronze", dot: "bg-amber-900" },
+                      { id: "deepCobalt", label: "💎 Deep Cobalt", dot: "bg-blue-700" },
+                      { id: "snowTitanium", label: "❄️ Snow Titanium", dot: "bg-slate-300" },
+                      { id: "sakuraBlush", label: "🌸 Sakura Silk", dot: "bg-pink-400" },
+                      { id: "solarAmber", label: "☀️ Solar Gold", dot: "bg-yellow-500" },
                     ].map((t) => (
                       <button
                         key={t.id}
                         onClick={() => setThemeMode(t.id as ThemeType)}
                         className={cn(
-                          "py-2 px-2 rounded-[12px] text-xs font-black transition-all text-left flex items-center gap-1.5",
+                          "py-2 px-2.5 rounded-[12px] text-xs font-black transition-all text-left flex items-center gap-2",
                           themeMode === t.id ? "clay-pill-blue text-white shadow-xs" : "clay-button text-zinc-600 dark:text-zinc-300"
                         )}
                       >
-                        <span className={cn("w-2.5 h-2.5 rounded-full shrink-0", t.dot)} />
+                        <span className={cn("w-3 h-3 rounded-full shrink-0 shadow-sm", t.dot)} />
                         <span className="truncate">{t.label}</span>
                       </button>
                     ))}
@@ -1826,11 +2269,11 @@ export default function PosterStudioPage() {
                 </div>
               )}
 
-              {/* Granular Color Pickers */}
+              {/* Granular Color Pickers with Hex Input & Circular Swatches */}
               {colors.useCustom && (
-                <div className="flex flex-col gap-3.5 max-h-[500px] overflow-y-auto pr-1">
+                <div className="flex flex-col gap-3.5 max-h-[520px] overflow-y-auto pr-1">
                   <div className="flex items-center justify-between">
-                    <span className="text-[11px] font-black uppercase text-zinc-500">Color Pickers Granular</span>
+                    <span className="text-[11px] font-black uppercase text-zinc-500">Hex Code & Color Pickers</span>
                     <button
                       onClick={syncPresetColors}
                       className="text-[10px] font-bold text-blue-500 hover:underline flex items-center gap-1"
@@ -1840,164 +2283,103 @@ export default function PosterStudioPage() {
                     </button>
                   </div>
 
-                  {/* 1. Canvas Background */}
-                  <div className="p-2.5 rounded-[14px] bg-zinc-100/70 dark:bg-zinc-800/40 border border-zinc-200/50 dark:border-white/5 flex flex-col gap-2">
-                    <span className="text-[11px] font-black text-zinc-700 dark:text-zinc-300">🌄 Background Poster</span>
-                    <div className="grid grid-cols-2 gap-2">
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="color"
-                          value={colors.bgStart}
-                          onChange={(e) => setColors({ ...colors, bgStart: e.target.value })}
-                          className="w-7 h-7 rounded-lg cursor-pointer border-0 p-0 bg-transparent shrink-0"
-                        />
-                        <span className="text-[10px] text-zinc-500 font-mono">Start: {colors.bgStart}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="color"
-                          value={colors.bgEnd}
-                          onChange={(e) => setColors({ ...colors, bgEnd: e.target.value })}
-                          className="w-7 h-7 rounded-lg cursor-pointer border-0 p-0 bg-transparent shrink-0"
-                        />
-                        <span className="text-[10px] text-zinc-500 font-mono">End: {colors.bgEnd}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* 2. Header RS */}
-                  <div className="p-2.5 rounded-[14px] bg-zinc-100/70 dark:bg-zinc-800/40 border border-zinc-200/50 dark:border-white/5 flex flex-col gap-2">
-                    <span className="text-[11px] font-black text-zinc-700 dark:text-zinc-300">🏛️ Header RS</span>
-                    <div className="grid grid-cols-2 gap-2">
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="color"
-                          value={colors.headerBgStart}
-                          onChange={(e) => setColors({ ...colors, headerBgStart: e.target.value })}
-                          className="w-7 h-7 rounded-lg cursor-pointer border-0 p-0 bg-transparent shrink-0"
-                        />
-                        <span className="text-[10px] text-zinc-500 font-mono">BG: {colors.headerBgStart}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="color"
-                          value={colors.headerTitle}
-                          onChange={(e) => setColors({ ...colors, headerTitle: e.target.value })}
-                          className="w-7 h-7 rounded-lg cursor-pointer border-0 p-0 bg-transparent shrink-0"
-                        />
-                        <span className="text-[10px] text-zinc-500 font-mono">Judul: {colors.headerTitle}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* 3. Badge Spesialisasi */}
-                  <div className="p-2.5 rounded-[14px] bg-zinc-100/70 dark:bg-zinc-800/40 border border-zinc-200/50 dark:border-white/5 flex flex-col gap-2">
-                    <span className="text-[11px] font-black text-zinc-700 dark:text-zinc-300">🩺 Badge Spesialisasi / Poli</span>
-                    <div className="grid grid-cols-2 gap-2">
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="color"
-                          value={colors.specBgStart}
-                          onChange={(e) => setColors({ ...colors, specBgStart: e.target.value })}
-                          className="w-7 h-7 rounded-lg cursor-pointer border-0 p-0 bg-transparent shrink-0"
-                        />
-                        <span className="text-[10px] text-zinc-500 font-mono">BG: {colors.specBgStart}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="color"
-                          value={colors.specText}
-                          onChange={(e) => setColors({ ...colors, specText: e.target.value })}
-                          className="w-7 h-7 rounded-lg cursor-pointer border-0 p-0 bg-transparent shrink-0"
-                        />
-                        <span className="text-[10px] text-zinc-500 font-mono">Teks: {colors.specText}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* 4. Doctor Cards */}
-                  <div className="p-2.5 rounded-[14px] bg-zinc-100/70 dark:bg-zinc-800/40 border border-zinc-200/50 dark:border-white/5 flex flex-col gap-2">
-                    <span className="text-[11px] font-black text-zinc-700 dark:text-zinc-300">👨‍⚕️ Card Dokter</span>
-                    <div className="grid grid-cols-2 gap-2">
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="color"
-                          value={colors.cardBgStart}
-                          onChange={(e) => setColors({ ...colors, cardBgStart: e.target.value })}
-                          className="w-7 h-7 rounded-lg cursor-pointer border-0 p-0 bg-transparent shrink-0"
-                        />
-                        <span className="text-[10px] text-zinc-500 font-mono">Card: {colors.cardBgStart}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="color"
-                          value={colors.cardText}
-                          onChange={(e) => setColors({ ...colors, cardText: e.target.value })}
-                          className="w-7 h-7 rounded-lg cursor-pointer border-0 p-0 bg-transparent shrink-0"
-                        />
-                        <span className="text-[10px] text-zinc-500 font-mono">Nama: {colors.cardText}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="color"
-                          value={colors.timePillText}
-                          onChange={(e) => setColors({ ...colors, timePillText: e.target.value })}
-                          className="w-7 h-7 rounded-lg cursor-pointer border-0 p-0 bg-transparent shrink-0"
-                        />
-                        <span className="text-[10px] text-zinc-500 font-mono">Jam: {colors.timePillText}</span>
+                  {/* Component Color Editor Helper */}
+                  {[
+                    {
+                      title: "🌄 Background Poster",
+                      items: [
+                        { label: "Gradien Awal", key: "bgStart" as const },
+                        { label: "Gradien Akhir", key: "bgEnd" as const },
+                      ],
+                    },
+                    {
+                      title: "🏛️ Header Rumah Sakit",
+                      items: [
+                        { label: "Background Awal", key: "headerBgStart" as const },
+                        { label: "Background Akhir", key: "headerBgEnd" as const },
+                        { label: "Teks Judul RS", key: "headerTitle" as const },
+                        { label: "Teks Subtitle", key: "headerSub" as const },
+                      ],
+                    },
+                    {
+                      title: "🩺 Badge Poli / Spesialisasi",
+                      items: [
+                        { label: "Background Awal", key: "specBgStart" as const },
+                        { label: "Background Akhir", key: "specBgEnd" as const },
+                        { label: "Teks Judul Poli", key: "specText" as const },
+                      ],
+                    },
+                    {
+                      title: "👨‍⚕️ Card Dokter",
+                      items: [
+                        { label: "Background Card", key: "cardBgStart" as const },
+                        { label: "Nama Dokter", key: "cardText" as const },
+                        { label: "Teks Jam / Pill", key: "timePillText" as const },
+                      ],
+                    },
+                    {
+                      title: "📅 Kotak Dokter Cuti",
+                      items: [
+                        { label: "Background Box", key: "leaveBg" as const },
+                        { label: "Teks Cuti", key: "leaveText" as const },
+                        { label: "Border Box", key: "leaveBorder" as const },
+                      ],
+                    },
+                    {
+                      title: "📱 Footer Kontak & Web",
+                      items: [
+                        { label: "Background Awal", key: "footerBgStart" as const },
+                        { label: "Background Akhir", key: "footerBgEnd" as const },
+                        { label: "Teks WhatsApp", key: "footerText" as const },
+                        { label: "Teks Link Web", key: "footerSub" as const },
+                      ],
+                    },
+                  ].map((grp, gIdx) => (
+                    <div key={gIdx} className="p-3 rounded-[16px] bg-zinc-100/70 dark:bg-zinc-800/40 border border-zinc-200/50 dark:border-white/5 flex flex-col gap-2.5">
+                      <span className="text-[11px] font-black text-zinc-800 dark:text-zinc-200">{grp.title}</span>
+                      <div className="grid grid-cols-1 gap-2">
+                        {grp.items.map((item, iIdx) => (
+                          <div key={iIdx} className="flex flex-col gap-1">
+                            <div className="flex items-center justify-between text-[10.5px] font-bold text-zinc-500">
+                              <span>{item.label}:</span>
+                              <span className="font-mono text-zinc-700 dark:text-zinc-300">{colors[item.key]}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              {/* Circular Color Picker */}
+                              <div className="relative w-8 h-8 rounded-full overflow-hidden shrink-0 shadow-sm border-2 border-white dark:border-zinc-700">
+                                <input
+                                  type="color"
+                                  value={colors[item.key].startsWith("#") ? colors[item.key] : "#0F766E"}
+                                  onChange={(e) => setColors({ ...colors, [item.key]: e.target.value })}
+                                  className="absolute -top-2 -left-2 w-12 h-12 cursor-pointer border-0 p-0"
+                                />
+                              </div>
+                              {/* Direct Hex Input */}
+                              <input
+                                type="text"
+                                value={colors[item.key]}
+                                onChange={(e) => setColors({ ...colors, [item.key]: e.target.value })}
+                                className="clay-inset px-2.5 py-1 rounded-[10px] text-xs font-mono font-bold text-zinc-900 dark:text-zinc-100 outline-none w-28"
+                                placeholder="#RRGGBB"
+                              />
+                              {/* Quick Chip Swatches */}
+                              <div className="flex items-center gap-1 overflow-x-auto py-0.5">
+                                {QUICK_CHIPS.slice(0, 5).map((chip, cIdx) => (
+                                  <button
+                                    key={cIdx}
+                                    onClick={() => setColors({ ...colors, [item.key]: chip })}
+                                    style={{ backgroundColor: chip }}
+                                    className="w-4 h-4 rounded-full shrink-0 border border-black/20 active:scale-90 transition-transform"
+                                    title={chip}
+                                  />
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     </div>
-                  </div>
-
-                  {/* 5. Leave Box */}
-                  <div className="p-2.5 rounded-[14px] bg-zinc-100/70 dark:bg-zinc-800/40 border border-zinc-200/50 dark:border-white/5 flex flex-col gap-2">
-                    <span className="text-[11px] font-black text-zinc-700 dark:text-zinc-300">📅 Kotak Dokter Cuti</span>
-                    <div className="grid grid-cols-2 gap-2">
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="color"
-                          value={colors.leaveBg}
-                          onChange={(e) => setColors({ ...colors, leaveBg: e.target.value })}
-                          className="w-7 h-7 rounded-lg cursor-pointer border-0 p-0 bg-transparent shrink-0"
-                        />
-                        <span className="text-[10px] text-zinc-500 font-mono">BG: {colors.leaveBg}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="color"
-                          value={colors.leaveText}
-                          onChange={(e) => setColors({ ...colors, leaveText: e.target.value })}
-                          className="w-7 h-7 rounded-lg cursor-pointer border-0 p-0 bg-transparent shrink-0"
-                        />
-                        <span className="text-[10px] text-zinc-500 font-mono">Teks: {colors.leaveText}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* 6. Footer */}
-                  <div className="p-2.5 rounded-[14px] bg-zinc-100/70 dark:bg-zinc-800/40 border border-zinc-200/50 dark:border-white/5 flex flex-col gap-2">
-                    <span className="text-[11px] font-black text-zinc-700 dark:text-zinc-300">📱 Footer Kontak</span>
-                    <div className="grid grid-cols-2 gap-2">
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="color"
-                          value={colors.footerBgStart}
-                          onChange={(e) => setColors({ ...colors, footerBgStart: e.target.value })}
-                          className="w-7 h-7 rounded-lg cursor-pointer border-0 p-0 bg-transparent shrink-0"
-                        />
-                        <span className="text-[10px] text-zinc-500 font-mono">BG: {colors.footerBgStart}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="color"
-                          value={colors.footerText}
-                          onChange={(e) => setColors({ ...colors, footerText: e.target.value })}
-                          className="w-7 h-7 rounded-lg cursor-pointer border-0 p-0 bg-transparent shrink-0"
-                        />
-                        <span className="text-[10px] text-zinc-500 font-mono">Teks: {colors.footerText}</span>
-                      </div>
-                    </div>
-                  </div>
+                  ))}
                 </div>
               )}
             </div>
@@ -2045,16 +2427,44 @@ export default function PosterStudioPage() {
                 })}
               </div>
 
+              {/* Font Theme Selector */}
+              <div className="pt-2 border-t border-zinc-200/50 dark:border-white/5">
+                <label className="text-[11px] font-black text-zinc-600 dark:text-zinc-300 mb-1.5 block flex items-center gap-1.5">
+                  <Type size={13} />
+                  <span>Pilihan Tipografi Font:</span>
+                </label>
+                <div className="grid grid-cols-4 gap-1.5">
+                  {[
+                    { id: "sans", label: "Modern Sans" },
+                    { id: "serif", label: "Editorial Serif" },
+                    { id: "mono", label: "Tech Mono" },
+                    { id: "rounded", label: "Soft Round" },
+                  ].map((f) => (
+                    <button
+                      key={f.id}
+                      onClick={() => setFontTheme(f.id as FontTheme)}
+                      className={cn(
+                        "py-2 px-1 rounded-[12px] text-xs font-black transition-all text-center",
+                        fontTheme === f.id ? "clay-pill-blue text-white shadow-xs" : "clay-button text-zinc-600 dark:text-zinc-300"
+                      )}
+                    >
+                      {f.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               {/* Corner Radius */}
               <div className="pt-2 border-t border-zinc-200/50 dark:border-white/5">
                 <label className="text-[11px] font-black text-zinc-600 dark:text-zinc-300 mb-1.5 block">
                   Sudut Kelengkungan Card (Corner Radius):
                 </label>
-                <div className="grid grid-cols-3 gap-1.5 clay-inset p-1 rounded-[16px]">
+                <div className="grid grid-cols-4 gap-1.5 clay-inset p-1 rounded-[16px]">
                   {[
-                    { r: 8, label: "Tajam (8px)" },
-                    { r: 16, label: "Medium (16px)" },
-                    { r: 24, label: "Round (24px)" },
+                    { r: 8, label: "8px" },
+                    { r: 16, label: "16px" },
+                    { r: 24, label: "24px" },
+                    { r: 32, label: "32px" },
                   ].map((rad) => (
                     <button
                       key={rad.r}
@@ -2075,8 +2485,8 @@ export default function PosterStudioPage() {
                 <label className="text-[11px] font-black text-zinc-600 dark:text-zinc-300 mb-1.5 block">
                   Ikon Emblem Header:
                 </label>
-                <div className="grid grid-cols-6 gap-1.5">
-                  {["+", "🏥", "🩺", "❤️", "⭐", "⚕️"].map((sym) => (
+                <div className="grid grid-cols-8 gap-1">
+                  {["+", "🏥", "🩺", "❤️", "⭐", "⚕️", "🔬", "💊"].map((sym) => (
                     <button
                       key={sym}
                       onClick={() => setHeaderEmblemIcon(sym)}
@@ -2090,10 +2500,125 @@ export default function PosterStudioPage() {
                   ))}
                 </div>
               </div>
+
+              {/* Optional Watermark */}
+              <div className="pt-2 border-t border-zinc-200/50 dark:border-white/5">
+                <label className="text-[11px] font-black text-zinc-600 dark:text-zinc-300 mb-1 block">
+                  Teks Watermark / Footer Stamp (Opsional):
+                </label>
+                <input
+                  type="text"
+                  value={watermarkText}
+                  onChange={(e) => setWatermarkText(e.target.value)}
+                  placeholder="Contoh: DOKUMEN RESMI - UPDATE SETIAP HARI"
+                  className="clay-inset px-2.5 py-1.5 rounded-[12px] text-xs font-bold text-zinc-900 dark:text-zinc-100 outline-none w-full"
+                />
+              </div>
             </div>
           )}
 
-          {/* TAB 4: BRANDING & DATA */}
+          {/* TAB 4: SIMPAN & LOAD PRESET */}
+          {activeTab === "presets" && (
+            <div className="clay-surface rounded-[24px] p-4 sm:p-5 flex flex-col gap-4 border border-zinc-200/50 dark:border-white/5">
+              <div>
+                <label className="text-[11px] font-black uppercase tracking-wider text-zinc-500 dark:text-zinc-400 mb-1.5 block flex items-center gap-1.5">
+                  <Save size={13} />
+                  <span>Simpan Kustomisasi Saat Ini:</span>
+                </label>
+                <div className="flex gap-2 mt-1">
+                  <input
+                    type="text"
+                    value={newPresetName}
+                    onChange={(e) => setNewPresetName(e.target.value)}
+                    placeholder="Nama Preset (cth: Tema Instagram Night)"
+                    className="clay-inset px-3 py-2 rounded-[14px] text-xs font-bold text-zinc-900 dark:text-zinc-100 outline-none flex-1"
+                  />
+                  <button
+                    onClick={handleSaveCurrentPreset}
+                    disabled={!newPresetName.trim()}
+                    className="px-4 py-2 rounded-[14px] clay-pill-emerald text-white font-black text-xs disabled:opacity-50 active:scale-95 transition-all shadow-sm shrink-0"
+                  >
+                    Simpan
+                  </button>
+                </div>
+              </div>
+
+              {/* Saved Preset List */}
+              <div className="pt-2 border-t border-zinc-200/50 dark:border-white/5 flex flex-col gap-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-black text-zinc-600 dark:text-zinc-300">
+                    Daftar Preset Tersimpan ({savedPresets.length}):
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <input
+                      ref={fileImportRef}
+                      type="file"
+                      accept=".json"
+                      onChange={handleImportPresetsJson}
+                      className="hidden"
+                    />
+                    <button
+                      onClick={() => fileImportRef.current?.click()}
+                      className="text-[10px] font-bold text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 flex items-center gap-1"
+                      title="Import File JSON"
+                    >
+                      <FileUp size={11} />
+                      <span>Import</span>
+                    </button>
+                    {savedPresets.length > 0 && (
+                      <button
+                        onClick={handleExportPresetsJson}
+                        className="text-[10px] font-bold text-blue-500 hover:underline flex items-center gap-1"
+                        title="Export File JSON"
+                      >
+                        <FileDown size={11} />
+                        <span>Export</span>
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {savedPresets.length === 0 ? (
+                  <div className="text-center py-6 text-xs text-zinc-400 font-bold border border-dashed border-zinc-300 dark:border-zinc-700 rounded-[16px]">
+                    Belum ada preset tersimpan. Atur warna/style lalu klik Simpan!
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-2 max-h-[350px] overflow-y-auto pr-1">
+                    {savedPresets.map((preset) => (
+                      <div
+                        key={preset.id}
+                        className="p-3 rounded-[16px] bg-zinc-100/70 dark:bg-zinc-800/40 border border-zinc-200/50 dark:border-white/5 flex items-center justify-between gap-2"
+                      >
+                        <div className="flex flex-col">
+                          <span className="text-xs font-black text-zinc-900 dark:text-zinc-100">{preset.name}</span>
+                          <span className="text-[9.5px] text-zinc-400">
+                            {preset.date} • {preset.visualStyle} • {preset.cardVariant}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          <button
+                            onClick={() => handleLoadPreset(preset)}
+                            className="px-3 py-1.5 rounded-[10px] clay-pill-blue text-white font-bold text-[11px] active:scale-95 transition-all shadow-xs"
+                          >
+                            Terapkan
+                          </button>
+                          <button
+                            onClick={() => handleDeletePreset(preset.id)}
+                            className="p-1.5 rounded-[10px] clay-button text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 active:scale-95 transition-all"
+                            title="Hapus Preset"
+                          >
+                            <Trash2 size={13} />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* TAB 5: BRANDING & DATA */}
           {activeTab === "branding" && (
             <div className="clay-surface rounded-[24px] p-4 sm:p-5 flex flex-col gap-4 border border-zinc-200/50 dark:border-white/5">
               {/* Date Input */}
