@@ -351,14 +351,15 @@ export default function AccessManagementPage() {
             {/* Role Editor Modal */}
             {(editingRole || showNewRole) && (
               <div
-                className="fixed inset-0 z-[200] bg-black/60 backdrop-blur-md flex items-center justify-center p-4"
+                className="fixed inset-0 z-[200] bg-black/60 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4"
                 onClick={() => { setEditingRole(null); setShowNewRole(false); }}
               >
                 <div
-                  className="clay-surface rounded-[36px] shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6 sm:p-8"
+                  className="clay-surface rounded-t-[32px] sm:rounded-[36px] shadow-2xl w-full max-w-2xl max-h-[90dvh] sm:max-h-[88vh] overflow-hidden flex flex-col p-0"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <div className="flex items-center justify-between mb-6">
+                  {/* Header (Fixed) */}
+                  <div className="flex-shrink-0 flex items-center justify-between px-6 pt-5 pb-4 border-b border-zinc-200/60 dark:border-white/5">
                     <div className="flex items-center gap-3">
                       <div className="p-2.5 clay-pill-blue text-white rounded-2xl">
                         <Shield size={20} />
@@ -367,88 +368,92 @@ export default function AccessManagementPage() {
                         {editingRole ? `Edit: ${editingRole.name}` : "Buat Role Baru"}
                       </h2>
                     </div>
-                    <button onClick={() => { setEditingRole(null); setShowNewRole(false); }} className="p-2 clay-button text-zinc-500 rounded-full active:scale-95">
+                    <button onClick={() => { setEditingRole(null); setShowNewRole(false); }} className="p-2 clay-button text-zinc-500 rounded-[12px] active:scale-95">
                       <X size={18} />
                     </button>
                   </div>
 
-                  <div className="space-y-4 mb-6">
-                    <div>
-                      <label className="text-xs font-black text-zinc-500 uppercase tracking-widest">Nama Role</label>
-                      <input
-                        value={newRoleName}
-                        onChange={(e) => setNewRoleName(e.target.value)}
-                        className="w-full mt-1.5 px-4 py-2.5 clay-inset rounded-2xl text-xs font-bold text-zinc-800 dark:text-zinc-200 outline-none"
-                        placeholder="Contoh: Resepsionis"
-                        disabled={editingRole?.isSystem}
-                      />
+                  {/* Body (Scrollable) */}
+                  <div className="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-4 min-h-0">
+                    <div className="space-y-4">
+                      <div>
+                        <label className="text-xs font-black text-zinc-500 uppercase tracking-widest">Nama Role</label>
+                        <input
+                          value={newRoleName}
+                          onChange={(e) => setNewRoleName(e.target.value)}
+                          className="w-full mt-1.5 px-4 py-2.5 clay-inset rounded-2xl text-xs font-bold text-zinc-800 dark:text-zinc-200 outline-none"
+                          placeholder="Contoh: Resepsionis"
+                          disabled={editingRole?.isSystem}
+                        />
+                      </div>
+                      <div>
+                        <label className="text-xs font-black text-zinc-500 uppercase tracking-widest">Deskripsi</label>
+                        <input
+                          value={newRoleDesc}
+                          onChange={(e) => setNewRoleDesc(e.target.value)}
+                          className="w-full mt-1.5 px-4 py-2.5 clay-inset rounded-2xl text-xs font-bold text-zinc-800 dark:text-zinc-200 outline-none"
+                          placeholder="Deskripsi singkat tugas..."
+                        />
+                      </div>
                     </div>
-                    <div>
-                      <label className="text-xs font-black text-zinc-500 uppercase tracking-widest">Deskripsi</label>
-                      <input
-                        value={newRoleDesc}
-                        onChange={(e) => setNewRoleDesc(e.target.value)}
-                        className="w-full mt-1.5 px-4 py-2.5 clay-inset rounded-2xl text-xs font-bold text-zinc-800 dark:text-zinc-200 outline-none"
-                        placeholder="Deskripsi singkat tugas..."
-                      />
-                    </div>
-                  </div>
 
-                  {/* Permission Control Tiles */}
-                  <h3 className="text-xs font-black text-zinc-500 uppercase tracking-widest mb-3">Matriks Izin Akses</h3>
-                  <div className="grid grid-cols-1 gap-2.5">
-                    {RESOURCES.map((r) => {
-                      const canRead = rolePerms[r.key]?.read || false;
-                      const canWrite = rolePerms[r.key]?.write || false;
-                      const RIcon = getResourceIcon(r.icon) as React.FC<{ size?: number; strokeWidth?: number }>;
-                      return (
-                        <div key={r.key} className="flex items-center justify-between p-3.5 rounded-2xl clay-button">
-                          <div className="flex items-center gap-2.5 min-w-0">
-                            <div className={cn(
-                              "w-8 h-8 rounded-xl flex items-center justify-center shrink-0 shadow-sm",
-                              canWrite ? "clay-pill-emerald text-white" :
-                              canRead ? "clay-pill-blue text-white" :
-                              "clay-inset text-zinc-400"
-                            )}>
-                              <RIcon size={14} strokeWidth={2.5} />
+                    {/* Permission Control Tiles */}
+                    <h3 className="text-xs font-black text-zinc-500 uppercase tracking-widest pt-2">Matriks Izin Akses</h3>
+                    <div className="grid grid-cols-1 gap-2.5">
+                      {RESOURCES.map((r) => {
+                        const canRead = rolePerms[r.key]?.read || false;
+                        const canWrite = rolePerms[r.key]?.write || false;
+                        const RIcon = getResourceIcon(r.icon) as React.FC<{ size?: number; strokeWidth?: number }>;
+                        return (
+                          <div key={r.key} className="flex items-center justify-between p-3.5 rounded-2xl clay-button">
+                            <div className="flex items-center gap-2.5 min-w-0">
+                              <div className={cn(
+                                "w-8 h-8 rounded-xl flex items-center justify-center shrink-0 shadow-sm",
+                                canWrite ? "clay-pill-emerald text-white" :
+                                canRead ? "clay-pill-blue text-white" :
+                                "clay-inset text-zinc-400"
+                              )}>
+                                <RIcon size={14} strokeWidth={2.5} />
+                              </div>
+                              <span className={cn("text-xs font-black truncate", canWrite ? "text-emerald-600 dark:text-emerald-400" : canRead ? "text-blue-600 dark:text-blue-400" : "text-zinc-500")}>
+                                {r.label}
+                              </span>
                             </div>
-                            <span className={cn("text-xs font-black truncate", canWrite ? "text-emerald-600 dark:text-emerald-400" : canRead ? "text-blue-600 dark:text-blue-400" : "text-zinc-500")}>
-                              {r.label}
-                            </span>
+                            <div className="flex items-center gap-2 shrink-0">
+                              {/* Read Toggle */}
+                              <button
+                                type="button"
+                                onClick={() => setRolePerms(p => ({ ...p, [r.key]: { ...p[r.key], read: !canRead, write: canRead ? false : p[r.key]?.write } }))}
+                                className={cn(
+                                  "flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-black transition-all active:scale-95",
+                                  canRead ? "clay-pill-blue text-white shadow-sm" : "clay-button text-zinc-500"
+                                )}
+                              >
+                                <Eye size={12} /> Lihat
+                              </button>
+                              {/* Write Toggle */}
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const newWrite = !canWrite;
+                                  setRolePerms(p => ({ ...p, [r.key]: { read: newWrite ? true : p[r.key]?.read, write: newWrite } }));
+                                }}
+                                className={cn(
+                                  "flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-black transition-all active:scale-95",
+                                  canWrite ? "clay-pill-emerald text-white shadow-sm" : "clay-button text-zinc-500"
+                                )}
+                              >
+                                <Pencil size={12} /> Edit
+                              </button>
+                            </div>
                           </div>
-                          <div className="flex items-center gap-2 shrink-0">
-                            {/* Read Toggle */}
-                            <button
-                              type="button"
-                              onClick={() => setRolePerms(p => ({ ...p, [r.key]: { ...p[r.key], read: !canRead, write: canRead ? false : p[r.key]?.write } }))}
-                              className={cn(
-                                "flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-black transition-all active:scale-95",
-                                canRead ? "clay-pill-blue text-white shadow-sm" : "clay-button text-zinc-500"
-                              )}
-                            >
-                              <Eye size={12} /> Lihat
-                            </button>
-                            {/* Write Toggle */}
-                            <button
-                              type="button"
-                              onClick={() => {
-                                const newWrite = !canWrite;
-                                setRolePerms(p => ({ ...p, [r.key]: { read: newWrite ? true : p[r.key]?.read, write: newWrite } }));
-                              }}
-                              className={cn(
-                                "flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-black transition-all active:scale-95",
-                                canWrite ? "clay-pill-emerald text-white shadow-sm" : "clay-button text-zinc-500"
-                              )}
-                            >
-                              <Pencil size={12} /> Edit
-                            </button>
-                          </div>
-                        </div>
-                      );
-                    })}
+                        );
+                      })}
+                    </div>
                   </div>
 
-                  <div className="flex justify-end gap-2.5 mt-6 pt-5 border-t border-zinc-200/60 dark:border-white/5">
+                  {/* Sticky Footer */}
+                  <div className="flex-shrink-0 flex justify-end gap-2.5 px-6 py-3.5 border-t border-zinc-200/60 dark:border-white/5 bg-white/80 dark:bg-[#121620]/90 backdrop-blur-md pb-[max(env(safe-area-inset-bottom),1rem)] shadow-lg">
                     <button
                       onClick={() => { setEditingRole(null); setShowNewRole(false); }}
                       className="px-4 py-2 text-xs font-black clay-button text-zinc-600 dark:text-zinc-300 rounded-xl transition-all active:scale-95"

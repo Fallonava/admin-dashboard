@@ -570,26 +570,28 @@ export function RealtimeCalendar({ selectedDate, onDateChange, onOpenDoctorSched
 
       {/* ─── ADD SHIFT MODAL ─── */}
       {showAddModal && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="clay-surface rounded-[32px] p-6 lg:p-8 w-full max-w-md relative overflow-hidden animate-in zoom-in-95 duration-200 shadow-2xl border border-zinc-200/60 dark:border-white/10">
-            <div className="flex justify-between items-center mb-5 relative z-10">
+        <div className="fixed inset-0 z-[200] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200" onClick={() => setShowAddModal(false)}>
+          <div className="clay-surface rounded-t-[32px] sm:rounded-[32px] w-full max-w-md max-h-[90dvh] sm:max-h-[88vh] relative overflow-hidden animate-in zoom-in-95 duration-200 shadow-2xl border border-zinc-200/60 dark:border-white/10 flex flex-col" onClick={e => e.stopPropagation()}>
+            {/* Header (Fixed) */}
+            <div className="flex-shrink-0 flex justify-between items-center px-6 pt-5 pb-4 border-b border-zinc-200/60 dark:border-white/10 relative z-10">
               <div>
-                <h3 className="text-lg font-black text-zinc-900 dark:text-zinc-100 tracking-tight">
+                <h3 className="text-base sm:text-lg font-black text-zinc-900 dark:text-zinc-100 tracking-tight leading-tight">
                   Tambah Shift Dokter
                 </h3>
-                <p className="text-[10.5px] font-bold text-zinc-500 dark:text-zinc-400">
+                <p className="text-[10.5px] font-bold text-zinc-500 dark:text-zinc-400 mt-0.5">
                   Jadwalkan jam dinas dokter di poliklinik
                 </p>
               </div>
               <button
                 onClick={() => setShowAddModal(false)}
-                className="clay-button p-2 rounded-full text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-all active:scale-90"
+                className="clay-button p-2 rounded-[12px] text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-all active:scale-90"
               >
                 <X size={16} strokeWidth={2.5} />
               </button>
             </div>
 
-            <div className="space-y-3.5 relative z-10">
+            {/* Body (Scrollable) */}
+            <div className="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-3.5 min-h-0 relative z-10">
               <SearchableSelect
                 label="Pilih Dokter"
                 placeholder="Pilih Dokter..."
@@ -648,25 +650,26 @@ export function RealtimeCalendar({ selectedDate, onDateChange, onOpenDoctorSched
                 value={newShift.registrationTime}
                 onChange={(v) => setNewShift({ ...newShift, registrationTime: v })}
               />
+            </div>
 
-              <div className="pt-2 flex gap-2.5">
-                <button
-                  onClick={() => setShowAddModal(false)}
-                  className="flex-1 py-2.5 rounded-[16px] clay-button text-zinc-700 dark:text-zinc-300 text-xs font-black transition-all active:scale-95"
-                >
-                  Batal
-                </button>
-                <button
-                  onClick={handleAddShift}
-                  disabled={!newShift.doctorId}
-                  className={cn(
-                    "flex-1 py-2.5 rounded-[16px] text-white text-xs font-black transition-all active:scale-95 shadow-sm",
-                    newShift.doctorId ? "clay-pill-blue" : "clay-button text-zinc-400 cursor-not-allowed opacity-50"
-                  )}
-                >
-                  Simpan Shift
-                </button>
-              </div>
+            {/* Sticky Footer */}
+            <div className="flex-shrink-0 border-t border-zinc-200/60 dark:border-white/10 bg-white/80 dark:bg-[#121620]/90 backdrop-blur-md px-6 py-3.5 pb-[max(env(safe-area-inset-bottom),1rem)] flex gap-2.5 shadow-lg">
+              <button
+                onClick={() => setShowAddModal(false)}
+                className="flex-1 py-3 rounded-[16px] clay-button text-zinc-700 dark:text-zinc-300 text-xs font-black transition-all active:scale-95"
+              >
+                Batal
+              </button>
+              <button
+                onClick={handleAddShift}
+                disabled={!newShift.doctorId}
+                className={cn(
+                  "flex-[2] py-3 rounded-[16px] text-white text-xs font-black transition-all active:scale-95 shadow-md flex items-center justify-center gap-2",
+                  newShift.doctorId ? "clay-pill-blue" : "clay-button text-zinc-400 cursor-not-allowed opacity-50"
+                )}
+              >
+                Simpan Shift
+              </button>
             </div>
           </div>
         </div>

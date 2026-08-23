@@ -296,7 +296,7 @@ export default function BroadcastPage() {
 
             <Dialog.Portal>
               <Dialog.Overlay className="fixed inset-0 bg-black/60 backdrop-blur-md z-[200] animate-in fade-in" />
-              <Dialog.Content className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-5xl clay-surface rounded-[36px] shadow-2xl z-[200] flex flex-col overflow-hidden max-h-[92vh] transition-all">
+              <Dialog.Content className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-5xl clay-surface rounded-t-[32px] sm:rounded-[36px] shadow-2xl z-[200] flex flex-col overflow-y-auto max-h-[92dvh] sm:max-h-[92vh] custom-scrollbar transition-all">
                 <Dialog.Title className="sr-only">Buat Pesan Broadcast WhatsApp</Dialog.Title>
 
                 {/* Top Section (Editor & Preview) */}

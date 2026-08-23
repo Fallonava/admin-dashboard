@@ -110,36 +110,36 @@ export function DoctorFormModal({ isOpen, onClose, doctor, onSuccess }: DoctorFo
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby="doctor-modal-title"
-                className="clay-surface rounded-t-[32px] sm:rounded-[32px] w-full max-w-md flex flex-col max-h-[92vh] overflow-y-auto animate-in zoom-in-95 duration-300"
+                className="clay-surface rounded-t-[32px] sm:rounded-[32px] w-full max-w-md flex flex-col max-h-[90dvh] sm:max-h-[88vh] overflow-hidden animate-in zoom-in-95 duration-300 shadow-2xl"
                 onClick={e => e.stopPropagation()}
             >
-                {/* HEADER */}
-                <div className="flex items-center gap-4 px-6 pt-6 pb-5 border-b border-zinc-200/60 dark:border-[#222738]">
-                    <div className="w-12 h-12 rounded-[18px] clay-icon-blue text-white flex items-center justify-center flex-shrink-0">
+                {/* HEADER (FIXED) */}
+                <div className="flex-shrink-0 flex items-center gap-4 px-6 pt-5 pb-4 border-b border-zinc-200/60 dark:border-white/10">
+                    <div className="w-11 h-11 rounded-[16px] clay-icon-blue text-white flex items-center justify-center flex-shrink-0 shadow-sm">
                         {isEditing
                             ? <Stethoscope className="h-5 w-5 text-white relative z-10" strokeWidth={2.5} />
                             : <Plus className="h-5 w-5 text-white relative z-10" strokeWidth={2.5} />
                         }
                     </div>
                     <div className="flex-1 min-w-0">
-                        <h3 id="doctor-modal-title" className="text-[16px] font-black text-zinc-900 dark:text-zinc-100 tracking-tight">
+                        <h3 id="doctor-modal-title" className="text-[15px] font-black text-zinc-900 dark:text-zinc-100 tracking-tight leading-tight">
                             {isEditing ? 'Edit Profil Dokter' : 'Tambah Dokter Baru'}
                         </h3>
-                        <p className="text-[11.5px] text-zinc-500 dark:text-zinc-400 font-bold mt-0.5 truncate">
+                        <p className="text-[11px] text-zinc-500 dark:text-zinc-400 font-bold mt-0.5 truncate">
                             {isEditing ? doctor?.name : 'Isi identitas dokter di bawah ini'}
                         </p>
                     </div>
                     <button
                         onClick={onClose}
                         aria-label="Tutup"
-                        className="p-2.5 rounded-[14px] clay-button text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-all active:scale-90"
+                        className="p-2 rounded-[12px] clay-button text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-all active:scale-90"
                     >
                         <X size={16} strokeWidth={2.5} />
                     </button>
                 </div>
 
-                {/* FORM */}
-                <div className="p-6 space-y-4">
+                {/* FORM BODY (SCROLLABLE) */}
+                <div className="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-4 min-h-0">
                     {/* Nama */}
                     <div>
                         <label htmlFor="doc-name" className="flex items-center gap-1.5 text-[10.5px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-1.5">
@@ -151,7 +151,7 @@ export function DoctorFormModal({ isOpen, onClose, doctor, onSuccess }: DoctorFo
                             placeholder="dr. Ahmad Syauqi, Sp.B"
                             value={formData.name}
                             onChange={e => setFormData({ ...formData, name: e.target.value })}
-                            className="w-full clay-inset rounded-[16px] px-4 py-3 text-xs font-bold text-zinc-900 dark:text-zinc-100 outline-none placeholder:text-zinc-400"
+                            className="w-full clay-inset rounded-[16px] px-4 py-2.5 text-xs font-bold text-zinc-900 dark:text-zinc-100 outline-none placeholder:text-zinc-400"
                         />
                     </div>
 
@@ -165,7 +165,7 @@ export function DoctorFormModal({ isOpen, onClose, doctor, onSuccess }: DoctorFo
                             placeholder="Bedah Umum, Penyakit Dalam..."
                             value={formData.specialty}
                             onChange={e => setFormData({ ...formData, specialty: e.target.value })}
-                            className="w-full clay-inset rounded-[16px] px-4 py-3 text-xs font-bold text-zinc-900 dark:text-zinc-100 outline-none placeholder:text-zinc-400"
+                            className="w-full clay-inset rounded-[16px] px-4 py-2.5 text-xs font-bold text-zinc-900 dark:text-zinc-100 outline-none placeholder:text-zinc-400"
                         />
                     </div>
 
@@ -179,7 +179,7 @@ export function DoctorFormModal({ isOpen, onClose, doctor, onSuccess }: DoctorFo
                             placeholder="A-01"
                             value={formData.queueCode}
                             onChange={e => setFormData({ ...formData, queueCode: e.target.value })}
-                            className="w-full clay-inset rounded-[16px] px-4 py-3 text-xs font-black text-zinc-900 dark:text-zinc-100 outline-none text-center placeholder:text-zinc-400 uppercase"
+                            className="w-full clay-inset rounded-[16px] px-4 py-2.5 text-xs font-black text-zinc-900 dark:text-zinc-100 outline-none text-center placeholder:text-zinc-400 uppercase"
                         />
                     </div>
 
@@ -188,14 +188,14 @@ export function DoctorFormModal({ isOpen, onClose, doctor, onSuccess }: DoctorFo
                         <label className="flex items-center gap-1.5 text-[10.5px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-1.5">
                             Kategori
                         </label>
-                        <div className="clay-inset p-1.5 rounded-[20px] grid grid-cols-2 gap-2">
+                        <div className="clay-inset p-1.5 rounded-[18px] grid grid-cols-2 gap-2">
                             {CATEGORY_OPTIONS.map(opt => (
                                 <button
                                     key={opt.value}
                                     type="button"
                                     onClick={() => setFormData({ ...formData, category: opt.value as any })}
                                     className={cn(
-                                        "py-2.5 rounded-[16px] text-xs font-black transition-all",
+                                        "py-2 rounded-[14px] text-xs font-black transition-all",
                                         formData.category === opt.value
                                             ? opt.value === 'Bedah' ? "clay-pill-rose text-white" : "clay-pill-emerald text-white"
                                             : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900"
@@ -239,11 +239,11 @@ export function DoctorFormModal({ isOpen, onClose, doctor, onSuccess }: DoctorFo
                     </div>
                 </div>
 
-                {/* FOOTER */}
-                <div className="px-6 pb-6 pt-2 flex gap-3">
+                {/* STICKY PINNED FOOTER */}
+                <div className="flex-shrink-0 border-t border-zinc-200/60 dark:border-white/10 bg-white/80 dark:bg-[#121620]/90 backdrop-blur-md px-6 py-3.5 pb-[max(env(safe-area-inset-bottom),1rem)] flex gap-3 shadow-lg">
                     <button
                         onClick={onClose}
-                        className="flex-1 py-3 rounded-[16px] clay-button text-zinc-700 dark:text-zinc-300 text-xs font-black transition-all"
+                        className="flex-1 py-3 rounded-[16px] clay-button text-zinc-700 dark:text-zinc-300 text-xs font-black transition-all active:scale-95"
                     >
                         Batal
                     </button>
@@ -253,7 +253,7 @@ export function DoctorFormModal({ isOpen, onClose, doctor, onSuccess }: DoctorFo
                         className={cn(
                             "flex-[2] py-3 rounded-[16px] text-xs font-black transition-all flex items-center justify-center gap-2",
                             !loading && isValid
-                                ? "clay-pill-blue text-white active:scale-[0.98]"
+                                ? "clay-pill-blue text-white active:scale-[0.98] shadow-md"
                                 : "clay-button text-zinc-400 opacity-50 cursor-not-allowed"
                         )}
                     >
@@ -262,7 +262,7 @@ export function DoctorFormModal({ isOpen, onClose, doctor, onSuccess }: DoctorFo
                         ) : (
                             <>
                                 {isEditing ? <Save size={15} /> : <Plus size={15} strokeWidth={2.5} />}
-                                {isEditing ? 'Simpan Perubahan' : 'Tambah Dokter'}
+                                <span>{isEditing ? 'Simpan Perubahan' : 'Tambah Dokter'}</span>
                             </>
                         )}
                     </button>

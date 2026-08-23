@@ -91,21 +91,21 @@ export function LeaveRequestModal({ isOpen, onClose, onSubmit }: Props) {
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200"
+      className="fixed inset-0 z-[200] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200"
       onClick={onClose}
     >
       <div
-        className="clay-surface rounded-[32px] p-6 sm:p-7 w-full max-w-sm animate-in zoom-in-95 duration-200 relative overflow-hidden flex flex-col shadow-2xl border border-zinc-200/50 dark:border-white/5"
+        className="clay-surface rounded-t-[32px] sm:rounded-[32px] w-full max-w-sm sm:max-w-md max-h-[90dvh] sm:max-h-[88vh] animate-in zoom-in-95 duration-200 relative overflow-hidden flex flex-col shadow-2xl border border-zinc-200/50 dark:border-white/5"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
-        <div className="flex items-center justify-between mb-4 pb-3 border-b border-zinc-200/50 dark:border-white/5 relative z-10">
+        {/* Header (Fixed) */}
+        <div className="flex-shrink-0 flex items-center justify-between px-6 pt-5 pb-4 border-b border-zinc-200/50 dark:border-white/5 relative z-10">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-[14px] clay-icon-emerald flex items-center justify-center text-white shrink-0 shadow-sm">
               <CalendarDays className="h-5 w-5 relative z-10" strokeWidth={2.5} />
             </div>
             <div>
-              <h3 className="text-base font-black text-zinc-900 dark:text-zinc-100 tracking-tight">
+              <h3 className="text-base font-black text-zinc-900 dark:text-zinc-100 tracking-tight leading-tight">
                 Tambah Cuti Dokter
               </h3>
               <p className="text-[10px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-wider mt-0.5">
@@ -121,7 +121,8 @@ export function LeaveRequestModal({ isOpen, onClose, onSubmit }: Props) {
           </button>
         </div>
 
-        <div className="space-y-3 relative z-10">
+        {/* Body (Scrollable) */}
+        <div className="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-3.5 min-h-0 relative z-10">
           {/* Dokter Select with Avatar */}
           <SearchableSelect
             label="Nama Dokter"
@@ -272,11 +273,20 @@ export function LeaveRequestModal({ isOpen, onClose, onSubmit }: Props) {
               onChange={(e) => setForm({ ...form, reason: e.target.value })}
             />
           </div>
+        </div>
 
+        {/* Sticky Footer */}
+        <div className="flex-shrink-0 border-t border-zinc-200/60 dark:border-white/10 bg-white/80 dark:bg-[#121620]/90 backdrop-blur-md px-6 py-3.5 pb-[max(env(safe-area-inset-bottom),1rem)] flex gap-2.5 shadow-lg">
+          <button
+            onClick={onClose}
+            className="flex-1 py-3 rounded-[16px] clay-button text-zinc-700 dark:text-zinc-300 text-xs font-black transition-all active:scale-95"
+          >
+            Batal
+          </button>
           <button
             onClick={handleSubmit}
             disabled={!isValid || !!isEndBeforeStart || isSubmitting}
-            className="w-full h-11 mt-1 clay-pill-emerald text-white rounded-[18px] font-black text-xs transition-all disabled:opacity-50 disabled:cursor-not-allowed active:scale-95 flex items-center justify-center shadow-md"
+            className="flex-[2] py-3 clay-pill-emerald text-white rounded-[16px] font-black text-xs transition-all disabled:opacity-50 disabled:cursor-not-allowed active:scale-95 flex items-center justify-center shadow-md"
           >
             <span>{isSubmitting ? "Menyimpan..." : "Simpan Jadwal Cuti"}</span>
           </button>

@@ -22,11 +22,11 @@ export function AllLeavesModal({ isOpen, onClose, leaves, onDelete }: Props) {
 
     return createPortal(
         <div
-            className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200"
+            className="fixed inset-0 z-[200] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200"
             onClick={onClose}
         >
             <div
-                className="clay-surface rounded-[32px] p-6 sm:p-7 w-full max-w-lg max-h-[85vh] animate-in zoom-in-95 duration-200 flex flex-col relative overflow-hidden"
+                className="clay-surface rounded-t-[32px] sm:rounded-[32px] p-6 sm:p-7 w-full max-w-lg max-h-[90dvh] sm:max-h-[85vh] animate-in zoom-in-95 duration-200 flex flex-col relative overflow-hidden pb-[max(env(safe-area-inset-bottom),1.5rem)] shadow-2xl"
                 onClick={e => e.stopPropagation()}
             >
                 {/* Header */}

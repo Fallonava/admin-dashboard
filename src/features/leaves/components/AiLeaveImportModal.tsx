@@ -123,12 +123,12 @@ export function AiLeaveImportModal({ isOpen, onClose, doctors, onSuccess }: Prop
   };
 
   return createPortal(
-    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200" onClick={handleClose}>
-      <div className="w-full max-w-2xl clay-surface rounded-[32px] overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
+    <div className="fixed inset-0 z-[200] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200" onClick={handleClose}>
+      <div className="w-full max-w-2xl clay-surface rounded-t-[32px] sm:rounded-[32px] overflow-hidden flex flex-col max-h-[90dvh] sm:max-h-[88vh] animate-in zoom-in-95 duration-200 shadow-2xl" onClick={e => e.stopPropagation()}>
         {/* Header */}
-        <div className="px-6 py-5 border-b border-zinc-100 dark:border-zinc-800/60 flex items-center justify-between">
+        <div className="flex-shrink-0 px-6 py-5 border-b border-zinc-100 dark:border-zinc-800/60 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 clay-icon-violet rounded-[14px] flex items-center justify-center text-white shrink-0">
+            <div className="h-10 w-10 clay-icon-violet rounded-[14px] flex items-center justify-center text-white shrink-0 shadow-sm">
               <Sparkles size={19} className="relative z-10" strokeWidth={2.5} />
             </div>
             <div>
@@ -283,7 +283,7 @@ export function AiLeaveImportModal({ isOpen, onClose, doctors, onSuccess }: Prop
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-zinc-100 dark:border-zinc-800/60 flex items-center justify-between">
+        <div className="flex-shrink-0 px-6 py-4 border-t border-zinc-200/60 dark:border-white/5 flex items-center justify-between bg-white/80 dark:bg-[#121620]/90 backdrop-blur-md pb-[max(env(safe-area-inset-bottom),1rem)] shadow-lg">
           <button
             onClick={handleClose}
             className="px-4 py-2 rounded-[14px] text-xs font-black text-zinc-600 dark:text-zinc-400 clay-button transition-all active:scale-95"

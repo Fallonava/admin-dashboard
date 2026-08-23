@@ -271,12 +271,11 @@ export function ScheduleModal({ doctor, shifts, isOpen, onClose, onUpdate }: Sch
 
     return createPortal(
         <div
-            className="fixed inset-0 z-[9999] flex items-center justify-center p-4 lg:p-8 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
+            className="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center p-0 sm:p-4 lg:p-8 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
             onClick={onClose}
         >
             <div
-                className="clay-surface w-full max-w-2xl rounded-[32px] flex flex-col overflow-hidden animate-in zoom-in-95 duration-300"
-                style={{ maxHeight: '88vh' }}
+                className="clay-surface w-full max-w-2xl rounded-t-[32px] sm:rounded-[32px] flex flex-col overflow-hidden animate-in zoom-in-95 duration-300 max-h-[90dvh] sm:max-h-[88vh] shadow-2xl"
                 onClick={e => e.stopPropagation()}
             >
                 {/* ══ HEADER ══ */}
@@ -498,7 +497,7 @@ export function ScheduleModal({ doctor, shifts, isOpen, onClose, onUpdate }: Sch
                 </div>
 
                 {/* ══ FOOTER ══ */}
-                <div className="px-6 py-4 border-t border-zinc-200/60 dark:border-[#222738] flex items-center justify-between flex-shrink-0">
+                <div className="px-6 py-4 border-t border-zinc-200/60 dark:border-[#222738] flex items-center justify-between flex-shrink-0 bg-white/80 dark:bg-[#121620]/90 backdrop-blur-md pb-[max(env(safe-area-inset-bottom),1rem)] shadow-lg">
                     <div className="flex items-center gap-4 text-[11px] text-zinc-500 font-bold">
                         <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-emerald-500 inline-block" /> Aktif</span>
                         <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-rose-500 inline-block" /> Nonaktif</span>

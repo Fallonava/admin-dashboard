@@ -325,42 +325,49 @@ export function BroadcastControl() {
 
             {/* Claymorphic Modal */}
             {editingRule && (
-                <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-200">
-                    <div className="clay-surface rounded-[36px] p-8 w-full max-w-lg shadow-2xl relative overflow-hidden animate-in zoom-in-95 duration-300">
-                        <div className="flex justify-between items-center mb-6">
+                <div className="fixed inset-0 z-[200] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-200" onClick={() => { setEditingRule(null); setIsCreating(false); }}>
+                    <div className="clay-surface rounded-t-[32px] sm:rounded-[36px] w-full max-w-lg max-h-[90dvh] sm:max-h-[88vh] shadow-2xl relative overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col" onClick={e => e.stopPropagation()}>
+                        {/* Header (Fixed) */}
+                        <div className="flex-shrink-0 flex justify-between items-center px-6 sm:px-8 pt-5 pb-4 border-b border-zinc-200/60 dark:border-white/10 relative z-10">
                             <div className="flex items-center gap-3.5">
-                                <div className="p-3 rounded-[18px] clay-pill-amber text-white shadow-sm">
-                                    <Sparkles size={20} strokeWidth={2.5} />
+                                <div className="p-2.5 rounded-[16px] clay-pill-amber text-white shadow-sm">
+                                    <Sparkles size={18} strokeWidth={2.5} />
                                 </div>
-                                <h3 className="text-xl font-black text-zinc-900 dark:text-zinc-100 tracking-tight">
-                                    {isCreating ? "Buat Broadcast" : "Edit Broadcast"}
-                                </h3>
+                                <div>
+                                    <h3 className="text-lg font-black text-zinc-900 dark:text-zinc-100 tracking-tight leading-tight">
+                                        {isCreating ? "Buat Broadcast" : "Edit Broadcast"}
+                                    </h3>
+                                    <p className="text-[10.5px] font-bold text-zinc-500 dark:text-zinc-400 mt-0.5">
+                                        Siarkan pesan interaktif ke layar TV display
+                                    </p>
+                                </div>
                             </div>
                             <button
                                 onClick={() => { setEditingRule(null); setIsCreating(false); }}
-                                className="p-2.5 clay-button rounded-full text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-100 transition-colors active:scale-95"
+                                className="p-2 clay-button rounded-[12px] text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-100 transition-colors active:scale-95"
                             >
-                                <X size={18} strokeWidth={2.5} />
+                                <X size={16} strokeWidth={2.5} />
                             </button>
                         </div>
 
-                        <div className="space-y-5">
+                        {/* Body (Scrollable) */}
+                        <div className="flex-1 overflow-y-auto custom-scrollbar px-6 sm:px-8 py-5 space-y-4 min-h-0 relative z-10">
                             <div>
                                 <label className="text-[11px] text-zinc-500 dark:text-zinc-400 font-extrabold uppercase tracking-[0.2em] block mb-2 px-1">Pesan Broadcast</label>
                                 <textarea
-                                    className="w-full clay-inset rounded-[22px] p-4 text-[14px] font-bold text-zinc-800 dark:text-zinc-100 outline-none transition-all h-28 resize-none placeholder:text-zinc-400"
+                                    className="w-full clay-inset rounded-[20px] p-3.5 text-xs font-bold text-zinc-800 dark:text-zinc-100 outline-none transition-all h-24 resize-none placeholder:text-zinc-400"
                                     placeholder="Tulis pesan broadcast untuk ditampilkan di layar display..."
                                     value={editingRule.message}
                                     onChange={e => setEditingRule({ ...editingRule, message: e.target.value })}
                                 />
                             </div>
 
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-2 gap-3">
                                 <CustomDropdown 
                                     label="Level Alert"
                                     value={editingRule.alertLevel}
                                     options={[
-                                        { value: 'Information', label: 'ℹ️ Information' },
+                                        { value: 'Information', label: 'ℹ️ Info' },
                                         { value: 'Warning', label: '⚠️ Warning' },
                                         { value: 'Critical', label: '🚨 Critical' },
                                     ]}
@@ -378,39 +385,40 @@ export function BroadcastControl() {
                                 />
                             </div>
 
-                            <div className="clay-inset p-4 rounded-[22px]">
-                                <div className="flex justify-between mb-3 items-center px-1">
+                            <div className="clay-inset p-3.5 rounded-[20px]">
+                                <div className="flex justify-between mb-2 items-center px-1">
                                     <label className="text-[11px] text-zinc-500 dark:text-zinc-400 font-extrabold uppercase tracking-[0.2em]">Durasi (Menit)</label>
-                                    <span className="text-xs text-white font-mono font-black clay-pill-amber px-3 py-1 rounded-[10px]">{editingRule.duration}m</span>
+                                    <span className="text-xs text-white font-mono font-black clay-pill-amber px-2.5 py-0.5 rounded-[8px]">{editingRule.duration}m</span>
                                 </div>
                                 <input
                                     type="range"
                                     min="15" max="120" step="15"
                                     value={editingRule.duration}
                                     onChange={e => setEditingRule({ ...editingRule, duration: Number(e.target.value) })}
-                                    className="w-full h-3 bg-zinc-200 dark:bg-zinc-700 rounded-full appearance-none cursor-pointer accent-amber-500 transition-all"
+                                    className="w-full h-2.5 bg-zinc-200 dark:bg-zinc-700 rounded-full appearance-none cursor-pointer accent-amber-500 transition-all"
                                 />
-                                <div className="flex justify-between mt-2 px-2 text-[10px] text-zinc-400 font-mono font-black">
+                                <div className="flex justify-between mt-1.5 px-2 text-[10px] text-zinc-400 font-mono font-black">
                                     <span>15</span><span>60</span><span>120</span>
                                 </div>
                             </div>
+                        </div>
 
-                            <div className="flex gap-3 pt-2">
-                                <button
-                                    onClick={() => { setEditingRule(null); setIsCreating(false); }}
-                                    className="flex-1 py-3.5 rounded-2xl clay-button text-zinc-600 dark:text-zinc-300 text-[14px] font-black transition-all active:scale-95"
-                                >
-                                    Batal
-                                </button>
-                                <button
-                                    onClick={handleSave}
-                                    disabled={saving}
-                                    className="flex-1 py-3.5 rounded-2xl clay-pill-amber text-white text-[14px] font-black transition-all active:scale-95 flex items-center justify-center gap-2"
-                                >
-                                    {saving ? <div className="h-4 w-4 border-2 border-white/40 border-t-white rounded-full animate-spin" /> : <Zap size={18} strokeWidth={2.5} />}
-                                    {saving ? 'Menyimpan...' : isCreating ? 'Broadcast Sekarang' : 'Update Broadcast'}
-                                </button>
-                            </div>
+                        {/* Sticky Footer */}
+                        <div className="flex-shrink-0 border-t border-zinc-200/60 dark:border-white/10 bg-white/80 dark:bg-[#121620]/90 backdrop-blur-md px-6 sm:px-8 py-3.5 pb-[max(env(safe-area-inset-bottom),1.25rem)] flex gap-3 shadow-lg">
+                            <button
+                                onClick={() => { setEditingRule(null); setIsCreating(false); }}
+                                className="flex-1 py-3 rounded-2xl clay-button text-zinc-600 dark:text-zinc-300 text-xs font-black transition-all active:scale-95"
+                            >
+                                Batal
+                            </button>
+                            <button
+                                onClick={handleSave}
+                                disabled={saving}
+                                className="flex-[2] py-3 rounded-2xl clay-pill-amber text-white text-xs font-black transition-all active:scale-95 flex items-center justify-center gap-2 shadow-md"
+                            >
+                                {saving ? <div className="h-4 w-4 border-2 border-white/40 border-t-white rounded-full animate-spin" /> : <Zap size={16} strokeWidth={2.5} />}
+                                <span>{saving ? 'Menyimpan...' : isCreating ? 'Broadcast Sekarang' : 'Update Broadcast'}</span>
+                            </button>
                         </div>
                     </div>
                 </div>

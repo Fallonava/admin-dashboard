@@ -1,4 +1,4 @@
 declare module 'cosine-similarity' {
-  function cosineSimilarity(v1: number[], v2: number[]): number;
-  export default cosineSimilarity;
+  function cosineSimilarity(a: number[], b: number[]): number;
+  export = cosineSimilarity;
 }

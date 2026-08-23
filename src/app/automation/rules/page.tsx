@@ -113,14 +113,17 @@ export default function AutomationRulesPage() {
 
             {/* Editor dialog */}
             <Dialog open={open} onOpenChange={setOpen}>
-                <DialogContent className="max-w-lg clay-surface rounded-[36px] p-6 shadow-2xl">
-                    <div className="flex justify-between items-center mb-4">
-                        <DialogTitle className="text-lg font-black text-zinc-900 dark:text-zinc-100">{editing?.id ? 'Edit Rule' : 'Aturan Baru'}</DialogTitle>
+                <DialogContent className="max-w-lg clay-surface rounded-t-[32px] sm:rounded-[36px] p-0 shadow-2xl max-h-[90dvh] sm:max-h-[88vh] flex flex-col overflow-hidden">
+                    {/* Header (Fixed) */}
+                    <div className="flex-shrink-0 flex justify-between items-center px-6 pt-5 pb-4 border-b border-zinc-200/60 dark:border-white/10">
+                        <DialogTitle className="text-base sm:text-lg font-black text-zinc-900 dark:text-zinc-100">{editing?.id ? 'Edit Rule' : 'Aturan Baru'}</DialogTitle>
                         <DialogClose asChild>
-                            <button className="p-2 clay-button text-zinc-500 rounded-full active:scale-95"><X size={16}/></button>
+                            <button className="p-2 clay-button text-zinc-500 rounded-[12px] active:scale-95"><X size={16}/></button>
                         </DialogClose>
                     </div>
-                    <div className="space-y-4">
+
+                    {/* Body (Scrollable) */}
+                    <div className="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-4 min-h-0">
                         <div>
                             <label className="block text-xs font-black uppercase tracking-wider text-zinc-500 mb-1.5">Nama Rule</label>
                             <input
@@ -168,8 +171,25 @@ export default function AutomationRulesPage() {
                             />
                             <label htmlFor="active_check" className="text-xs font-black text-zinc-700 dark:text-zinc-300">Status Aktif</label>
                         </div>
+
+                        {preview && (
+                            <div className="mt-2 p-4 clay-inset rounded-2xl">
+                                <h3 className="font-black text-xs mb-2">Preview Pembaruan</h3>
+                                {preview.length > 0 ? (
+                                    <ul className="list-disc pl-5 text-xs font-mono">
+                                        {preview.map((u: any, idx: number) => (
+                                            <li key={idx}>{`id=${u.id} → status=${u.status}`}</li>
+                                        ))}
+                                    </ul>
+                                ) : (
+                                    <p className="text-xs text-zinc-400 font-bold">Tidak ada perubahan yang akan diterapkan.</p>
+                                )}
+                            </div>
+                        )}
                     </div>
-                    <div className="mt-6 flex flex-col sm:flex-row justify-end gap-2.5">
+
+                    {/* Sticky Footer */}
+                    <div className="flex-shrink-0 border-t border-zinc-200/60 dark:border-white/10 bg-white/80 dark:bg-[#121620]/90 backdrop-blur-md px-6 py-3.5 pb-[max(env(safe-area-inset-bottom),1rem)] flex flex-col sm:flex-row justify-end gap-2.5 shadow-lg">
                         <button
                             onClick={async () => {
                                 if (!editing) return;
@@ -190,20 +210,6 @@ export default function AutomationRulesPage() {
                         <button onClick={closeEditor} className="px-4 py-2.5 rounded-xl clay-button text-zinc-600 dark:text-zinc-300 font-black text-xs w-full sm:w-auto text-center active:scale-95">Batal</button>
                         <button onClick={saveRule} className="px-5 py-2.5 rounded-xl clay-pill-blue text-white font-black text-xs w-full sm:w-auto text-center active:scale-95 shadow-md">Simpan</button>
                     </div>
-                    {preview && (
-                        <div className="mt-4 p-4 clay-inset rounded-2xl">
-                            <h3 className="font-black text-xs mb-2">Preview Pembaruan</h3>
-                            {preview.length > 0 ? (
-                                <ul className="list-disc pl-5 text-xs font-mono">
-                                    {preview.map((u: any, idx: number) => (
-                                        <li key={idx}>{`id=${u.id} → status=${u.status}`}</li>
-                                    ))}
-                                </ul>
-                            ) : (
-                                <p className="text-xs text-zinc-400 font-bold">Tidak ada perubahan yang akan diterapkan.</p>
-                            )}
-                        </div>
-                    )}
                 </DialogContent>
             </Dialog>
         </div>
