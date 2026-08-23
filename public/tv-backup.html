@@ -8,8 +8,9 @@
     />
     <title>Jadwal Dokter - RSU Siaga Medika</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800;900&display=swap"
       rel="stylesheet"
     />
     <link
@@ -18,8 +19,6 @@
     />
     <style>
       /* Google Fonts Material Icons Round */
-      /* Google Fonts Material Icons Round loaded via <link> */
-
       .material-icons-round {
         font-family: "Material Icons Round";
         font-weight: normal;
@@ -32,72 +31,100 @@
         word-wrap: normal;
         white-space: nowrap;
         direction: ltr;
-
-        /* Support for all WebKit browsers. */
         -webkit-font-smoothing: antialiased;
-        /* Support for Safari and Chrome. */
         text-rendering: optimizeLegibility;
-
-        /* Support for Firefox. */
         -moz-osx-font-smoothing: grayscale;
-
-        /* Support for IE. */
         font-feature-settings: "liga";
       }
 
       :root {
-        /* Semantic Base Colors (Clinical Dark) */
-        --bg-body: #0B1120;
-        --bg-ambient: var(--bg-body); /* Neomorphism solid background */
-        --neo-shadow-dark: rgba(0, 0, 0, 0.5);
-        --neo-shadow-light: rgba(255, 255, 255, 0.08);
-        --neo-inset-dark: inset 4px 4px 8px rgba(0, 0, 0, 0.5);
-        --neo-inset-light: inset -4px -4px 8px rgba(255, 255, 255, 0.08);
+        /* ═══ MODERN SOFT CLAYMORPHISM 3D PALETTE (DARK) ═══ */
+        --bg-body: #080C14;
+        --bg-ambient: radial-gradient(circle at 50% 0%, #111A2E 0%, #080C14 75%);
+        --clay-bg-surface: #101726;
+        --clay-border: rgba(255, 255, 255, 0.08);
+        --clay-shadow-outer: 0 14px 32px -4px rgba(0, 0, 0, 0.6), 0 4px 12px -2px rgba(0, 0, 0, 0.4);
+        --clay-shadow-inner: inset 1px 1px 1px rgba(255, 255, 255, 0.14), inset -1px -1px 2px rgba(0, 0, 0, 0.5);
+        --clay-inset: inset 3px 3px 6px rgba(0, 0, 0, 0.55), inset -2px -2px 5px rgba(255, 255, 255, 0.05);
+
+        --neo-shadow-dark: rgba(0, 0, 0, 0.6);
+        --neo-shadow-light: rgba(255, 255, 255, 0.06);
+        --neo-inset-dark: inset 3px 3px 6px rgba(0, 0, 0, 0.55);
+        --neo-inset-light: inset -2px -2px 5px rgba(255, 255, 255, 0.05);
         
         --text-primary: #F8FAFC;
         --text-secondary: #94A3B8;
-        --glass-panel: var(--bg-body); /* Solid for Neomorphism */
-        --card-bg: var(--bg-body); /* Solid for Neomorphism */
+        --text-muted: #64748B;
+        --glass-panel: #101726;
+        --card-bg: #101726;
         --header-bg: transparent;
-        --border-light: transparent;
-        --platter-border: transparent; 
-        --footer-bg: var(--bg-body);
+        --border-light: rgba(255, 255, 255, 0.08);
+        --platter-border: rgba(255, 255, 255, 0.08); 
+        --footer-bg: #101726;
         --app-bg-overlay: transparent;
-        --shadow: 8px 8px 16px var(--neo-shadow-dark), -8px -8px 16px var(--neo-shadow-light);
-        --accent-blue: #0284C7; /* Medical Sky Blue */
-        --accent-purple: #7C3AED; /* Violet */
-        --accent-green: #10B981; /* Emerald / Safe */
-        --accent-orange: #F59E0B; /* Amber / Warning */
-        --accent-red: #E11D48; /* Rose / Critical */
+        --shadow: var(--clay-shadow-outer), var(--clay-shadow-inner);
+        
+        /* Vibrant 3D Clinical Statuses */
+        --accent-emerald: #10B981;
+        --accent-emerald-gradient: linear-gradient(135deg, #10B981 0%, #059669 100%);
+        --accent-emerald-glow: rgba(16, 185, 129, 0.4);
+
+        --accent-violet: #8B5CF6;
+        --accent-violet-gradient: linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%);
+        --accent-violet-glow: rgba(139, 92, 246, 0.4);
+
+        --accent-amber: #F59E0B;
+        --accent-amber-gradient: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+        --accent-amber-glow: rgba(245, 158, 11, 0.4);
+
+        --accent-rose: #F43F5E;
+        --accent-rose-gradient: linear-gradient(135deg, #F43F5E 0%, #E11D48 100%);
+        --accent-rose-glow: rgba(244, 63, 94, 0.4);
+
+        --accent-blue: #0EA5E9;
+        --accent-sky-gradient: linear-gradient(135deg, #0EA5E9 0%, #0284C7 100%);
+        --accent-sky-glow: rgba(14, 165, 233, 0.4);
+
+        --accent-purple: #7C3AED;
+        --accent-green: #10B981;
+        --accent-orange: #F59E0B;
+        --accent-red: #F43F5E;
         --logo-text: #ffffff;
       }
 
       /* Light Mode Theme (Clinical Light) */
       [data-theme="light"] {
-        --bg-body: #E0E5EC; /* Light Gray for Neomorphism */
-        --bg-ambient: var(--bg-body);
-        --neo-shadow-dark: #a3b1c6;
+        --bg-body: #EDF2F8;
+        --bg-ambient: radial-gradient(circle at 50% 0%, #FFFFFF 0%, #EDF2F8 80%);
+        --clay-bg-surface: #FFFFFF;
+        --clay-border: rgba(226, 232, 240, 0.9);
+        --clay-shadow-outer: 0 12px 28px -4px rgba(15, 23, 42, 0.08), 0 4px 10px -2px rgba(15, 23, 42, 0.04);
+        --clay-shadow-inner: inset 1px 1px 1px rgba(255, 255, 255, 0.95), inset -1px -1px 2px rgba(0, 0, 0, 0.04);
+        --clay-inset: inset 3px 3px 6px rgba(148, 163, 184, 0.25), inset -2px -2px 5px rgba(255, 255, 255, 0.9);
+
+        --neo-shadow-dark: rgba(148, 163, 184, 0.35);
         --neo-shadow-light: #ffffff;
-        --neo-inset-dark: inset 4px 4px 8px #a3b1c6;
-        --neo-inset-light: inset -4px -4px 8px #ffffff;
+        --neo-inset-dark: inset 3px 3px 6px rgba(148, 163, 184, 0.25);
+        --neo-inset-light: inset -2px -2px 5px rgba(255, 255, 255, 0.9);
 
         --text-primary: #0F172A;
-        --text-secondary: #5f6f87;
-        --glass-panel: var(--bg-body);
-        --card-bg: var(--bg-body);
+        --text-secondary: #475569;
+        --text-muted: #64748B;
+        --glass-panel: #FFFFFF;
+        --card-bg: #FFFFFF;
         --header-bg: transparent;
-        --border-light: transparent;
-        --platter-border: transparent;
-        --footer-bg: var(--bg-body);
+        --border-light: rgba(226, 232, 240, 0.9);
+        --platter-border: rgba(226, 232, 240, 0.9);
+        --footer-bg: #FFFFFF;
         --app-bg-overlay: transparent;
-        --shadow: 8px 8px 16px var(--neo-shadow-dark), -8px -8px 16px var(--neo-shadow-light);
+        --shadow: var(--clay-shadow-outer), var(--clay-shadow-inner);
         --logo-text: #0F172A;
         
-        --accent-blue: #0369A1; /* Darker Sky for contrast */
+        --accent-blue: #0284C7;
         --accent-purple: #6D28D9;
-        --accent-green: #0D9488; /* Teal for high visibility */
-        --accent-orange: #D97706; /* Darker Amber */
-        --accent-red: #BE123C; /* Darker Rose */
+        --accent-green: #059669;
+        --accent-orange: #D97706;
+        --accent-red: #E11D48;
       }
 
       /* ===== RESET & BASE ===== */
@@ -335,10 +362,10 @@
         flex: 1;
         display: flex;
         flex-direction: column;
-        background: var(--glass-panel); /* Kept solid via variable */
-        border-radius: 20px; 
-        box-shadow: var(--shadow); /* Refers to our new inset-heavy 3D shadow */
-        border: 1px solid var(--border-light);
+        background: var(--clay-bg-surface);
+        border-radius: 28px; 
+        box-shadow: var(--clay-shadow-outer), var(--clay-shadow-inner);
+        border: 1px solid var(--clay-border);
         overflow: hidden;
         transition: background 0.5s ease;
       }
@@ -349,59 +376,61 @@
         min-width: 300px;
         display: flex;
         flex-direction: column;
-        background: var(--bg-body);
+        background: var(--clay-bg-surface);
         border-right: none;
-        border-radius: 24px;
+        border-radius: 28px;
         margin-right: 0;
         overflow: hidden;
         z-index: 10;
-        /* Sidebar Neomorph Trough (Debossed) */
-        box-shadow: var(--neo-inset-dark), var(--neo-inset-light);
+        box-shadow: var(--clay-shadow-outer), var(--clay-shadow-inner);
+        border: 1px solid var(--clay-border);
       }
 
       .sidebar-panel .island-header {
         background: transparent;
-        border-bottom: 1px solid rgba(125, 125, 125, 0.06);
+        border-bottom: 1px solid var(--border-light);
+        padding: 12px 18px;
       }
 
-      /* Sidebar Item Tweaks - Mencegah konten bertumpuk pada layar 1080p */
+      /* Sidebar Compact Platter */
       .sidebar-panel .platter {
-        background: var(--bg-body);
-        border: none;
-        box-shadow: 4px 4px 10px var(--neo-shadow-dark), -4px -4px 10px var(--neo-shadow-light);
-        padding: 10px 12px;
-        border-radius: 12px;
+        background: var(--clay-bg-surface);
+        border: 1px solid var(--clay-border);
+        box-shadow: var(--clay-shadow-outer), var(--clay-shadow-inner);
+        padding: 12px 14px;
+        border-radius: 18px;
         transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         color: var(--text-primary);
         gap: 12px;
-        margin: 8px 16px;
+        margin: 6px 14px;
       }
 
       .sidebar-panel .platter-main {
-        gap: 8px;
+        gap: 10px;
         align-items: center;
       }
       
       .sidebar-panel .platter::before {
-        width: 3px;
-        top: 8px;
-        bottom: 8px;
+        width: 4px;
+        top: 10px;
+        bottom: 10px;
       }
 
       .sidebar-panel .initials {
-        width: 34px;
-        height: 34px;
-        font-size: 12px;
+        width: 38px;
+        height: 38px;
+        font-size: 13px;
+        border-radius: 12px;
         flex-shrink: 0;
       }
 
       .sidebar-panel .info-col {
         flex: 1;
-        min-width: 0; /* Ensures truncation works */
+        min-width: 0;
       }
 
       .sidebar-panel .doc-spec {
-        font-size: 13px;
+        font-size: 14px;
         line-height: 1.2;
         margin-bottom: 2px;
         white-space: nowrap;
@@ -410,7 +439,7 @@
       }
 
       .sidebar-panel .doc-name {
-        font-size: 11px;
+        font-size: 11.5px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -422,21 +451,23 @@
       }
 
       .sidebar-panel .status-pill {
-        padding: 4px 8px;
-        font-size: 8px;
+        padding: 3px 10px;
+        font-size: 9px;
       }
 
       .sidebar-panel .jam-val {
         font-size: 13px;
       }
 
-      /* Stat Panel */
+      /* Stat Panel - Modern Clay Inset */
       .stat-panel {
         display: flex;
         justify-content: space-around;
-        padding: 14px 16px;
-        background: transparent;
-        gap: 12px;
+        padding: 10px 14px;
+        background: var(--clay-inset);
+        margin: 6px 16px 12px 16px;
+        border-radius: 18px;
+        gap: 8px;
       }
 
       .stat-item {
@@ -444,11 +475,25 @@
         flex-direction: column;
         align-items: center;
         flex: 1;
-        background: var(--bg-body);
-        padding: 8px 0;
-        border-radius: 12px;
-        /* Extruded Neomorph Button inside Trough */
-        box-shadow: 4px 4px 8px var(--neo-shadow-dark), -4px -4px 8px var(--neo-shadow-light);
+        background: transparent;
+        padding: 4px 0;
+      }
+
+      .stat-count {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 20px;
+        font-weight: 800;
+        line-height: 1.1;
+      }
+
+      .stat-label {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 9.5px;
+        font-weight: 800;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin-top: 2px;
       }
 
       /* ===== 3D EMPTY STATE (NEO ORB) ===== */
@@ -706,64 +751,73 @@
         /* Hint to browser compositor */
       }
 
-      /* ===== PLATTER CARD (Neo-Bento Style) ===== */
+      /* ===== PLATTER CARD (Modern Soft Clay 3D Bento) ===== */
       .platter {
         display: flex;
         flex-direction: column;
         align-items: stretch;
-        gap: 10px;
-        padding: 14px 18px; 
-        background: var(--bg-body); /* Neomorphism needs match */
-        border-radius: 16px;
-        border: none;
-        box-shadow: 
-          8px 8px 16px var(--neo-shadow-dark),
-          -8px -8px 16px var(--neo-shadow-light);
+        gap: 12px;
+        padding: 16px 20px; 
+        background: var(--clay-bg-surface);
+        border-radius: 24px;
+        border: 1px solid var(--clay-border);
+        box-shadow: var(--clay-shadow-outer), var(--clay-shadow-inner);
         position: relative;
         overflow: hidden;
         transform: translateZ(0) translateY(0);
         opacity: 1; 
         transition:
           opacity 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),
-          transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1),
-          box-shadow 0.4s ease,
-          background-color 0.4s ease;
+          transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
+          box-shadow 0.3s ease,
+          background-color 0.3s ease;
       }
 
       [data-theme="light"] .platter {
         opacity: 1;
-        background: var(--bg-body);
+        background: #FFFFFF;
+        border: 1px solid rgba(226, 232, 240, 0.9);
+        box-shadow: 0 10px 24px -4px rgba(15, 23, 42, 0.07), inset 1px 1px 1px #ffffff;
       }
 
-      /* Status Edge Accent */
+      /* Status Edge Accent Glow */
       .platter::before {
         content: "";
         position: absolute;
         left: 0;
-        top: 16px;
-        bottom: 16px;
-        width: 4px;
+        top: 14px;
+        bottom: 14px;
+        width: 5px;
         background: var(--status-color);
-        border-radius: 0 4px 4px 0;
-        opacity: 0.8;
+        border-radius: 0 6px 6px 0;
+        box-shadow: 0 0 12px var(--status-color);
+        opacity: 0.9;
       }
 
-      /* Avatar */
+      /* 3D Clay Avatar */
       .initials {
-        width: 36px;
-        height: 36px;
-        border-radius: 10px;
-        background: var(--bg-body);
-        box-shadow: var(--neo-inset-dark), var(--neo-inset-light);
+        width: 44px;
+        height: 44px;
+        border-radius: 16px;
+        background: var(--clay-bg-surface);
+        box-shadow: var(--clay-shadow-inner), 0 4px 10px rgba(0, 0, 0, 0.35);
+        border: 1px solid rgba(255, 255, 255, 0.08);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 14px;
+        font-family: "Plus Jakarta Sans", "Inter", sans-serif;
+        font-size: 15px;
         font-weight: 800;
         letter-spacing: -0.02em;
         color: var(--text-primary);
         flex-shrink: 0;
         position: relative;
+      }
+
+      [data-theme="light"] .initials {
+        background: #F8FAFC;
+        border: 1px solid rgba(0, 0, 0, 0.06);
+        box-shadow: inset 1px 1px 1px #ffffff, 0 4px 10px rgba(0, 0, 0, 0.05);
       }
 
       /* Info */
@@ -772,14 +826,15 @@
         min-width: 0;
         display: flex;
         flex-direction: column;
-        gap: 2px;
+        gap: 3px;
       }
 
       .doc-name {
-        font-size: 13px; /* Name Integer - Non Blur */
-        font-weight: 600;
+        font-family: "Inter", -apple-system, sans-serif;
+        font-size: 13.5px;
+        font-weight: 700;
         color: var(--text-secondary);
-        white-space: normal; /* wrap */
+        white-space: normal;
         display: -webkit-box;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
@@ -790,13 +845,14 @@
       }
 
       .doc-spec {
-        font-size: 17px; /* Specialty - Huge and Prominent */
+        font-family: "Plus Jakarta Sans", "Inter", sans-serif;
+        font-size: 17.5px;
         font-weight: 800;
         color: var(--text-primary);
         text-transform: uppercase;
-        letter-spacing: 0.02em;
+        letter-spacing: 0.01em;
         margin-bottom: 2px;
-        line-height: 1.1;
+        line-height: 1.15;
       }
 
       /* Meta */
@@ -808,33 +864,36 @@
         flex-shrink: 0;
       }
 
+      /* ═══ 3D CLAY STATUS PILLS ═══ */
       .status-pill {
-        padding: 4px 12px;
-        border-radius: 8px;
-        font-size: 10px;
+        padding: 5px 14px;
+        border-radius: 9999px;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 10.5px;
         font-weight: 800;
         text-transform: uppercase;
         letter-spacing: 0.08em;
-        background: var(--bg-body);
-        color: var(--status-color);
+        background: var(--status-color);
+        color: #ffffff;
         display: flex;
         align-items: center;
         gap: 6px;
         position: relative; 
-        /* Debossed Neo */
-        box-shadow: var(--neo-inset-dark), var(--neo-inset-light);
+        box-shadow: 0 4px 14px var(--status-bg), inset 1px 1px 1px rgba(255, 255, 255, 0.4);
+        border: 1px solid rgba(255, 255, 255, 0.15);
       }
       
-      /* The Pulse Dot next to active or penuh pills */
-      .platter.active .status-pill::after, .platter.st-penuh .status-pill::after {
+      /* Pulse Dot next to active pills */
+      .platter.active .status-pill::after, .platter.st-penuh .status-pill::after, .platter.st-praktek .status-pill::after {
         content: '';
         display: block;
         width: 6px;
         height: 6px;
         border-radius: 50%;
-        background-color: var(--status-color);
+        background-color: #ffffff;
         animation: ecg-pulse 2s infinite;
-        margin-left: 4px;
+        margin-left: 2px;
+        box-shadow: 0 0 8px rgba(255, 255, 255, 0.9);
       }
 
       /* Jam / Call Info */
@@ -842,112 +901,107 @@
         display: flex;
         align-items: center;
         justify-content: flex-end;
+        background: var(--clay-inset);
+        padding: 4px 10px;
+        border-radius: 12px;
       }
 
       .jam-val {
-        font-size: 15px; /* Boosted visibility */
-        font-weight: 900;
+        font-family: "Plus Jakarta Sans", "Inter", sans-serif;
+        font-size: 14px;
+        font-weight: 800;
         color: var(--text-primary);
         font-variant-numeric: tabular-nums;
-        letter-spacing: -0.02em;
+        letter-spacing: 0.02em;
         line-height: 1;
       }
 
-      /* Status Styles - Synced with AI Automation (Brand Signature Palette) */
-      .st-praktek { --status-color: #10B981; --status-bg: rgba(16, 185, 129, 0.2); }
-      .st-pendaftaran { --status-color: #F97316; --status-bg: rgba(249, 115, 22, 0.2); }
-      .st-terjadwal { --status-color: #0EA5E9; --status-bg: rgba(14, 165, 233, 0.2); opacity: 0.8; }
-      .st-selesai { --status-color: #64748B; --status-bg: rgba(100, 116, 139, 0.2); opacity: 0.6; }
-      .st-penuh { --status-color: #F59E0B; --status-bg: rgba(245, 158, 11, 0.2); }
-      .st-operasi { --status-color: #8B5CF6; --status-bg: rgba(139, 92, 246, 0.2); }
-      .st-cuti { --status-color: #EF4444; --status-bg: rgba(239, 68, 68, 0.2); opacity: 0.65; }
-      .st-libur { --status-color: #8e8e93; --status-bg: rgba(142, 142, 147, 0.2); display: none; }
-      .platter.st-praktek .initials { background: var(--bg-body); color: #10B981; box-shadow: var(--neo-inset-dark), var(--neo-inset-light); }
-      .platter.st-pendaftaran .initials { background: var(--bg-body); color: #F97316; box-shadow: var(--neo-inset-dark), var(--neo-inset-light); }
-      .platter.st-terjadwal .initials { background: var(--bg-body); color: #0EA5E9; box-shadow: var(--neo-inset-dark), var(--neo-inset-light); }
-      .platter.st-selesai .initials { background: var(--bg-body); color: #64748B; box-shadow: var(--neo-inset-dark), var(--neo-inset-light); }
-      .platter.st-penuh .initials { background: var(--bg-body); color: #F59E0B; box-shadow: var(--neo-inset-dark), var(--neo-inset-light); }
-      .platter.st-cuti .initials { background: var(--bg-body); color: #EF4444; box-shadow: var(--neo-inset-dark), var(--neo-inset-light); }
-      .platter.st-operasi .initials { background: var(--bg-body); color: #8B5CF6; box-shadow: var(--neo-inset-dark), var(--neo-inset-light); }
+      /* Status Styles - Modern 3D Clinical Gradients */
+      .st-praktek { --status-color: #10B981; --status-bg: rgba(16, 185, 129, 0.4); }
+      .st-pendaftaran { --status-color: #F97316; --status-bg: rgba(249, 115, 22, 0.4); }
+      .st-terjadwal { --status-color: #0EA5E9; --status-bg: rgba(14, 165, 233, 0.4); }
+      .st-selesai { --status-color: #64748B; --status-bg: rgba(100, 116, 139, 0.3); opacity: 0.65; }
+      .st-penuh { --status-color: #F59E0B; --status-bg: rgba(245, 158, 11, 0.4); }
+      .st-operasi { --status-color: #8B5CF6; --status-bg: rgba(139, 92, 246, 0.4); }
+      .st-cuti { --status-color: #EF4444; --status-bg: rgba(239, 68, 68, 0.4); opacity: 0.7; }
+      .st-libur { --status-color: #64748B; --status-bg: rgba(100, 116, 139, 0.3); display: none; }
+
+      .platter.st-praktek .initials { color: #10B981; border-color: rgba(16, 185, 129, 0.3); box-shadow: var(--clay-shadow-inner), 0 0 14px rgba(16, 185, 129, 0.3); }
+      .platter.st-pendaftaran .initials { color: #F97316; border-color: rgba(249, 115, 22, 0.3); box-shadow: var(--clay-shadow-inner), 0 0 14px rgba(249, 115, 22, 0.3); }
+      .platter.st-terjadwal .initials { color: #0EA5E9; border-color: rgba(14, 165, 233, 0.3); }
+      .platter.st-selesai .initials { color: #64748B; }
+      .platter.st-penuh .initials { color: #F59E0B; border-color: rgba(245, 158, 11, 0.3); }
+      .platter.st-cuti .initials { color: #EF4444; border-color: rgba(239, 68, 68, 0.3); }
+      .platter.st-operasi .initials { color: #8B5CF6; border-color: rgba(139, 92, 246, 0.3); box-shadow: var(--clay-shadow-inner), 0 0 14px rgba(139, 92, 246, 0.3); }
 
       .platter.st-praktek, .platter.st-pendaftaran { z-index: 5; }
-      .platter.st-praktek { background: var(--bg-body); box-shadow: 0 0 10px rgba(16, 185, 129, 0.2), 8px 8px 16px var(--neo-shadow-dark), -8px -8px 16px var(--neo-shadow-light); }
-      .platter.st-pendaftaran { background: var(--bg-body); animation: pendaftaran-pulse 2s infinite; }
+      .platter.st-praktek { box-shadow: 0 0 20px rgba(16, 185, 129, 0.15), var(--clay-shadow-outer), var(--clay-shadow-inner); border-color: rgba(16, 185, 129, 0.25); }
+      .platter.st-pendaftaran { animation: pendaftaran-pulse 2s infinite; }
       @keyframes pendaftaran-pulse { 
-        0% { box-shadow: 0 0 5px rgba(249, 115, 22, 0.1), 8px 8px 16px var(--neo-shadow-dark), -8px -8px 16px var(--neo-shadow-light); } 
-        50% { box-shadow: 0 0 15px rgba(249, 115, 22, 0.4), 8px 8px 16px var(--neo-shadow-dark), -8px -8px 16px var(--neo-shadow-light); } 
-        100% { box-shadow: 0 0 5px rgba(249, 115, 22, 0.1), 8px 8px 16px var(--neo-shadow-dark), -8px -8px 16px var(--neo-shadow-light); } 
+        0% { box-shadow: 0 0 8px rgba(249, 115, 22, 0.2), var(--clay-shadow-outer); } 
+        50% { box-shadow: 0 0 22px rgba(249, 115, 22, 0.45), var(--clay-shadow-outer); } 
+        100% { box-shadow: 0 0 8px rgba(249, 115, 22, 0.2), var(--clay-shadow-outer); } 
       }
       
-      [data-theme="light"] .platter.st-praktek { background: var(--bg-body); box-shadow: 0 0 10px rgba(16, 185, 129, 0.15), 8px 8px 16px var(--neo-shadow-dark), -8px -8px 16px var(--neo-shadow-light); }
-      [data-theme="light"] .platter.st-pendaftaran { background: var(--bg-body); }
-      
-      .platter.st-praktek .jam-val, .platter.st-pendaftaran .jam-val { color: var(--status-color); font-size: 14px; }
+      .platter.st-praktek .jam-val { color: #10B981; }
+      .platter.st-pendaftaran .jam-val { color: #F97316; }
 
-      /* st-buka: Digunakan oleh panel Bedah & NonBedah untuk semua status aktif (PRAKTEK/PENDAFTARAN/TERJADWAL) */
-      .st-buka { --status-color: #10B981; --status-bg: rgba(16, 185, 129, 0.2); }
-      .st-buka .initials { background: var(--bg-body); color: #10B981; box-shadow: var(--neo-inset-dark), var(--neo-inset-light); }
-      .platter.st-buka {  }
-      .platter.st-buka.active { background: var(--bg-body) !important; box-shadow: var(--neo-inset-dark), var(--neo-inset-light), 0 0 15px rgba(16, 185, 129, 0.3) !important; }
-      [data-theme="light"] .platter.st-buka {  }
+      /* st-buka */
+      .st-buka { --status-color: #10B981; --status-bg: rgba(16, 185, 129, 0.35); }
+      .st-buka .initials { color: #10B981; }
+      .st-buka.active { background: var(--clay-bg-surface) !important; box-shadow: 0 0 20px rgba(16, 185, 129, 0.35), var(--clay-shadow-outer) !important; }
 
-      /* st-buka--terjadwal: Override untuk status TERJADWAL (belum mulai) — pakai warna biru */
-      .st-buka.st-terjadwal { --status-color: #0EA5E9; --status-bg: rgba(14, 165, 233, 0.2); opacity: 0.82; }
-      .st-buka.st-terjadwal .initials { background: var(--bg-body); color: #0EA5E9; box-shadow: var(--neo-inset-dark), var(--neo-inset-light); }
-      .platter.st-buka.st-terjadwal {  }
-      [data-theme="light"] .platter.st-buka.st-terjadwal {  }
+      .st-buka.st-terjadwal { --status-color: #0EA5E9; --status-bg: rgba(14, 165, 233, 0.35); }
+      .st-buka.st-terjadwal .initials { color: #0EA5E9; }
       
       /* ===== ACTIVE CALL HIGHLIGHT (NEW) ===== */
-
       .platter-main {
         display: flex;
         align-items: center;
-        gap: 14px;
+        gap: 16px;
         width: 100%;
       }
 
       .platter.active {
         z-index: 100;
-        background: var(--bg-body) !important;
-        border: none !important;
-        /* Neomorph Inset (Pressed) + Neon Glow */
+        background: var(--clay-bg-surface) !important;
+        border: 1px solid rgba(16, 185, 129, 0.4) !important;
         box-shadow: 
-          var(--neo-inset-dark), 
-          var(--neo-inset-light),
-          0 0 16px var(--status-bg) !important;
-        transform: translateZ(0) translateY(1px) scale(0.99); 
+          0 0 30px var(--status-bg),
+          var(--clay-shadow-outer), 
+          var(--clay-shadow-inner) !important;
+        transform: translateZ(0) translateY(-2px) scale(1.01); 
         opacity: 1 !important;
       }
 
       /* Light Mode Override */
       [data-theme="light"] .platter.active {
-        background: var(--bg-body) !important;
+        background: #FFFFFF !important;
+        border: 1px solid rgba(16, 185, 129, 0.5) !important;
         box-shadow: 
-          var(--neo-inset-dark), 
-          var(--neo-inset-light),
-          0 0 20px rgba(0,0,0,0.06) !important;
-        color: #000 !important;
+          0 10px 30px rgba(16, 185, 129, 0.25),
+          0 4px 10px rgba(0,0,0,0.05) !important;
+        color: #0F172A !important;
       }
 
       .platter.active::before {
         width: 6px;
         background: var(--status-color);
-        box-shadow: 0 0 10px var(--status-color);
-        display: block; /* Keep neon bar */
+        box-shadow: 0 0 16px var(--status-color);
+        display: block;
       }
       
       .platter.active .jam-box {
         display: none !important;
       }
       
-      /* Penghapusan Redundansi: Sembunyikan BUKA/PENDAFTARAN di pojok ketika kartu berekspansi bawah */
       .platter.active:not(.platter-mini) .status-pill {
         display: none !important;
       }
       
       .platter.active .initials {
-        background: var(--bg-body);
-        box-shadow: var(--neo-inset-dark), var(--neo-inset-light);
+        background: var(--clay-bg-surface);
+        box-shadow: var(--clay-shadow-inner), 0 0 16px var(--status-bg);
         color: var(--status-color);
       }
 
@@ -960,26 +1014,14 @@
       
       .platter.active .doc-name {
         color: var(--status-color) !important;
-        font-weight: 700;
+        font-weight: 800;
       }
       
       /* ECG Radar Pulse Indicator */
       @keyframes ecg-pulse {
-        0% { transform: scale(0.9); box-shadow: 0 0 0 0 var(--status-color); }
-        70% { transform: scale(1); box-shadow: 0 0 0 6px transparent; }
+        0% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7); }
+        70% { transform: scale(1.15); box-shadow: 0 0 0 6px transparent; }
         100% { transform: scale(0.9); box-shadow: 0 0 0 0 transparent; }
-      }
-
-      [data-theme="light"] .platter.active .doc-name {
-        color: #000 !important;
-      }
-
-      [data-theme="light"] .platter.active .detail-label {
-        color: rgba(0, 0, 0, 0.6);
-      }
-
-      [data-theme="light"] .platter.active .detail-time {
-        color: #000;
       }
 
       /* ===== SIDEBAR COMPACT PLATTER (NEW) ===== */
@@ -1249,7 +1291,7 @@
         }
       }
 
-      /* ===== DYNAMIC ISLAND (NEW) ===== */
+      /* ===== DYNAMIC ISLAND (Modern 3D Floating Capsule) ===== */
       .dynamic-island {
         position: absolute;
         top: 16px;
@@ -1257,28 +1299,35 @@
         transform: translateX(-50%) scale(0);
         height: 54px;
         width: 32px;
-        background: #000;
-        border-radius: 27px;
+        background: var(--clay-bg-surface);
+        border-radius: 9999px;
         z-index: 999;
         display: flex;
         align-items: center;
         justify-content: center;
         transition:
-          transform 0.4s ease,
-          width 0.4s ease,
+          transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),
+          width 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),
           opacity 0.3s ease;
-        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 16px 36px -4px rgba(0, 0, 0, 0.6), inset 1px 1px 1px rgba(255, 255, 255, 0.2);
+        border: 1px solid var(--clay-border);
         overflow: hidden;
         opacity: 0;
         will-change: transform, opacity;
       }
 
+      [data-theme="light"] .dynamic-island {
+        background: #FFFFFF;
+        border: 1px solid rgba(226, 232, 240, 0.9);
+        box-shadow: 0 12px 28px -4px rgba(15, 23, 42, 0.12), inset 1px 1px 1px #ffffff;
+      }
+
       .dynamic-island.expanded {
         transform: translateX(-50%) scale(1);
         opacity: 1;
-        width: 320px;
+        width: 340px;
         height: 54px;
-        border-radius: 27px;
+        border-radius: 9999px;
       }
 
       .di-content {
@@ -1286,10 +1335,10 @@
         align-items: center;
         gap: 12px;
         opacity: 0;
-        transform: scale(0.9);
+        transform: scale(0.95);
         transition: all 0.3s ease;
         width: 100%;
-        padding: 0 16px;
+        padding: 0 18px;
       }
 
       .dynamic-island.expanded .di-content {
@@ -1298,16 +1347,16 @@
       }
 
       .di-spinner {
-        width: 18px;
-        height: 18px;
-        border: 2px solid rgba(255, 255, 255, 0.3);
-        border-top: 2px solid #30d158;
+        width: 20px;
+        height: 20px;
+        border: 2.5px solid rgba(255, 255, 255, 0.2);
+        border-top: 2.5px solid var(--accent-emerald);
         border-radius: 50%;
         animation: spin 1s linear infinite;
       }
 
       .di-icon {
-        font-size: 20px;
+        font-size: 22px;
         color: #fff;
       }
 
@@ -1315,86 +1364,91 @@
         display: flex;
         flex-direction: column;
         line-height: 1.2;
+        min-width: 0;
       }
 
       .di-title {
+        font-family: "Plus Jakarta Sans", sans-serif;
         font-size: 11px;
-        font-weight: 700;
-        color: rgba(255, 255, 255, 0.6);
+        font-weight: 800;
+        color: var(--text-muted);
         text-transform: uppercase;
-        letter-spacing: 0.5px;
+        letter-spacing: 0.08em;
       }
 
       .di-msg {
-        font-size: 13px;
-        font-weight: 600;
-        color: #fff;
+        font-family: "Inter", sans-serif;
+        font-size: 13.5px;
+        font-weight: 700;
+        color: var(--text-primary);
         white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
 
       .di-warn .di-spinner {
-        border-top-color: #ff453a;
+        border-top-color: var(--accent-rose);
       }
 
       .di-warn .di-msg {
-        color: #ff453a;
+        color: var(--accent-rose);
       }
 
-      .material-icons-round.di-icon {
-        color: #fff;
-      }
-
-      /* Use a success class added via JS instead of invalid pseudo-selectors */
       .di-success .di-icon {
-        color: #30d158;
+        color: var(--accent-emerald);
       }
 
       @keyframes spin {
-        0% {
-          transform: rotate(0deg);
-        }
-
-        100% {
-          transform: rotate(360deg);
-        }
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
       }
 
-      /* ===== FOOTER ===== */
+      /* ===== FOOTER (Modern 3D Clay Floating Ticker) ===== */
       .footer {
-        height: 48px;
-        background: var(--footer-bg);
-        border-radius: 24px;
+        height: 52px;
+        background: var(--clay-bg-surface);
+        border-radius: 26px;
         display: flex;
         align-items: center;
         justify-content: space-between;
         padding: 0 20px;
-        border: 1px solid var(--border-light);
-        /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); */
+        border: 1px solid var(--clay-border);
+        box-shadow: var(--clay-shadow-outer), var(--clay-shadow-inner);
         overflow: hidden;
         flex-shrink: 0;
         transition: background 0.5s ease;
+      }
+
+      [data-theme="light"] .footer {
+        background: #FFFFFF;
+        border: 1px solid rgba(226, 232, 240, 0.9);
+        box-shadow: 0 10px 24px -4px rgba(15, 23, 42, 0.08), inset 1px 1px 1px #ffffff;
       }
 
       .legend {
         display: flex;
         gap: 16px;
         padding-right: 20px;
-        border-right: 1px solid rgba(255, 255, 255, 0.1);
+        border-right: 1px solid var(--border-light);
       }
 
       .lg-item {
         display: flex;
         align-items: center;
         gap: 6px;
+        font-family: "Plus Jakarta Sans", sans-serif;
         font-size: 11px;
         font-weight: 800;
-        opacity: 0.9; /* Solid visibility */
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
       }
 
       .dot {
-        width: 6px;
-        height: 6px;
+        width: 8px;
+        height: 8px;
         border-radius: 50%;
+        box-shadow: 0 0 8px currentColor;
       }
 
       .ticker {
@@ -1402,53 +1456,54 @@
         margin: 0 20px;
         position: relative;
         overflow: hidden;
-        height: 100%;
+        height: 36px;
         display: flex;
         align-items: center;
+        background: var(--clay-inset);
+        padding: 0 14px;
+        border-radius: 14px;
       }
 
       .ticker-inner {
         white-space: nowrap;
         animation: marquee 30s linear infinite;
-        font-size: 13px;
-        font-weight: 500;
+        font-family: "Inter", sans-serif;
+        font-size: 13.5px;
+        font-weight: 700;
         color: var(--text-primary);
+        letter-spacing: 0.02em;
       }
 
       @keyframes marquee {
-        0% {
-          transform: translateX(0);
-        }
-
-        100% {
-          transform: translateX(-100%);
-        }
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-100%); }
       }
 
       .status-pill-lg {
-        background: rgba(125, 125, 125, 0.15);
-        padding: 4px 12px;
-        border-radius: 100px;
-        font-size: 10px;
-        font-weight: 700;
-        letter-spacing: 0.05em;
+        background: var(--clay-inset);
+        padding: 5px 14px;
+        border-radius: 9999px;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.06em;
         display: flex;
         align-items: center;
-        gap: 6px;
+        gap: 8px;
         color: var(--text-primary);
       }
 
       .live-dot {
-        width: 6px;
-        height: 6px;
+        width: 7px;
+        height: 7px;
         border-radius: 50%;
-        background: #30d158;
-        /* box-shadow: 0 0 8px #30D158; */
+        background: var(--accent-emerald);
+        box-shadow: 0 0 10px var(--accent-emerald);
       }
 
       .live-dot.warn {
-        background: #ff9f0a;
-        box-shadow: none;
+        background: var(--accent-amber);
+        box-shadow: 0 0 10px var(--accent-amber);
         animation: blink 1s infinite;
       }
 
