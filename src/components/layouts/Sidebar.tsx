@@ -20,6 +20,7 @@ import {
   MonitorPlay,
   Key,
   BarChart3,
+  Palette,
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -74,6 +75,7 @@ export const menuConfig: MenuGroup[] = [
     title: "Publikasi",
     icon: Tv,
     items: [
+      { name: "Studio Poster", href: "/schedules/studio", icon: Palette, resource: "schedules" },
       { name: "Layar Smart TV", href: "/tv.html", icon: MonitorPlay, external: true, resource: "display_tv" },
       { name: "Monitoring Trafik", href: "/traffic", icon: BarChart3, resource: "display_tv" },
     ],

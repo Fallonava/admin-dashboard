@@ -2,7 +2,8 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
-import { X, Camera, Download, Copy, Check, Sparkles, RefreshCw, Wand2 } from "lucide-react";
+import Link from "next/link";
+import { X, Camera, Download, Copy, Check, Sparkles, RefreshCw, Wand2, ArrowUpRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Doctor, Shift, LeaveRequest } from "@/lib/data-service";
 import { getIndonesianHoliday } from "@/lib/holidays";
@@ -638,12 +639,21 @@ export function MedsosExportModal({
               </p>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center rounded-full clay-button text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-all active:scale-90"
-          >
-            <X size={15} strokeWidth={2.5} />
-          </button>
+          <div className="flex items-center gap-2">
+            <Link
+              href="/schedules/studio"
+              className="px-3 py-1.5 rounded-[12px] clay-button text-[11px] font-black text-emerald-600 dark:text-emerald-400 flex items-center gap-1 active:scale-95 transition-all shadow-xs"
+            >
+              <span>Layar Penuh</span>
+              <ArrowUpRight size={13} strokeWidth={2.5} />
+            </Link>
+            <button
+              onClick={onClose}
+              className="w-8 h-8 flex items-center justify-center rounded-full clay-button text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-all active:scale-90"
+            >
+              <X size={15} strokeWidth={2.5} />
+            </button>
+          </div>
         </div>
 
         {/* AI & Topic Toolbar */}
