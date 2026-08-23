@@ -1291,73 +1291,187 @@
         }
       }
 
-      /* ===== DYNAMIC ISLAND (Modern 3D Floating Capsule) ===== */
+      /* ===== APPLE iOS INTERACTIVE DYNAMIC ISLAND ===== */
       .dynamic-island {
         position: absolute;
-        top: 16px;
+        top: 14px;
         left: 50%;
-        transform: translateX(-50%) scale(0);
-        height: 54px;
-        width: 32px;
-        background: var(--clay-bg-surface);
+        transform: translateX(-50%) scale(1);
+        height: 42px;
+        width: 230px;
+        background: #000000;
         border-radius: 9999px;
         z-index: 999;
         display: flex;
         align-items: center;
         justify-content: center;
-        transition:
-          transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),
-          width 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),
-          opacity 0.3s ease;
-        box-shadow: 0 16px 36px -4px rgba(0, 0, 0, 0.6), inset 1px 1px 1px rgba(255, 255, 255, 0.2);
-        border: 1px solid var(--clay-border);
+        cursor: pointer;
+        user-select: none;
+        box-shadow: 
+          0 18px 45px rgba(0, 0, 0, 0.75), 
+          0 0 0 1px rgba(255, 255, 255, 0.16), 
+          inset 0 1px 1px rgba(255, 255, 255, 0.35);
         overflow: hidden;
-        opacity: 0;
-        will-change: transform, opacity;
-      }
-
-      [data-theme="light"] .dynamic-island {
-        background: #FFFFFF;
-        border: 1px solid rgba(226, 232, 240, 0.9);
-        box-shadow: 0 12px 28px -4px rgba(15, 23, 42, 0.12), inset 1px 1px 1px #ffffff;
-      }
-
-      .dynamic-island.expanded {
-        transform: translateX(-50%) scale(1);
         opacity: 1;
-        width: 340px;
-        height: 54px;
-        border-radius: 9999px;
+        transition:
+          transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1),
+          width 0.45s cubic-bezier(0.34, 1.56, 0.64, 1),
+          height 0.45s cubic-bezier(0.34, 1.56, 0.64, 1),
+          border-radius 0.45s cubic-bezier(0.34, 1.56, 0.64, 1),
+          box-shadow 0.4s ease;
+        will-change: width, height, transform, border-radius;
       }
 
-      .di-content {
+      /* Compact State (Default Idle) */
+      .dynamic-island.di-compact {
+        width: 240px;
+        height: 42px;
+        border-radius: 9999px;
+        padding: 0 14px;
+      }
+
+      /* Expanded State (Notification / Rotating Toast) */
+      .dynamic-island.di-expanded {
+        width: 440px;
+        height: 56px;
+        border-radius: 9999px;
+        padding: 0 18px;
+        box-shadow: 
+          0 24px 50px rgba(0, 0, 0, 0.85), 
+          0 0 0 1.5px rgba(255, 255, 255, 0.22), 
+          inset 0 1px 1.5px rgba(255, 255, 255, 0.45);
+      }
+
+      /* Deep Interactive Modal State (Clicked / Expanded Activity) */
+      .dynamic-island.di-modal {
+        width: 480px;
+        height: 220px;
+        border-radius: 36px;
+        padding: 16px 20px;
+        box-shadow: 
+          0 32px 75px rgba(0, 0, 0, 0.9), 
+          0 0 0 2px rgba(255, 255, 255, 0.25), 
+          inset 0 1px 2px rgba(255, 255, 255, 0.5);
+      }
+
+      /* Views Visibility Switcher */
+      .di-compact-view,
+      .di-expanded-view,
+      .di-modal-view {
+        width: 100%;
+        height: 100%;
+        display: none;
+        align-items: center;
+        opacity: 0;
+        transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+
+      .dynamic-island.di-compact .di-compact-view {
+        display: flex;
+        justify-content: space-between;
+        opacity: 1;
+      }
+
+      .dynamic-island.di-expanded .di-expanded-view {
+        display: flex;
+        justify-content: flex-start;
+        gap: 14px;
+        opacity: 1;
+      }
+
+      .dynamic-island.di-modal .di-modal-view {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        opacity: 1;
+      }
+
+      /* --- Compact View Items --- */
+      .di-leading {
         display: flex;
         align-items: center;
-        gap: 12px;
-        opacity: 0;
-        transform: scale(0.95);
-        transition: all 0.3s ease;
-        width: 100%;
-        padding: 0 18px;
+        gap: 8px;
       }
 
-      .dynamic-island.expanded .di-content {
-        opacity: 1;
-        transform: scale(1);
-      }
-
-      .di-spinner {
-        width: 20px;
-        height: 20px;
-        border: 2.5px solid rgba(255, 255, 255, 0.2);
-        border-top: 2.5px solid var(--accent-emerald);
+      .di-pulse-orb {
+        width: 10px;
+        height: 10px;
         border-radius: 50%;
-        animation: spin 1s linear infinite;
+        background: var(--accent-emerald);
+        box-shadow: 0 0 12px var(--accent-emerald);
+        animation: di-pulse-ring 2s infinite;
       }
 
-      .di-icon {
-        font-size: 22px;
-        color: #fff;
+      @keyframes di-pulse-ring {
+        0% { transform: scale(0.9); opacity: 0.8; }
+        50% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 16px var(--accent-emerald); }
+        100% { transform: scale(0.9); opacity: 0.8; }
+      }
+
+      .di-compact-label {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        color: #FFFFFF;
+        text-transform: uppercase;
+      }
+
+      .di-trailing {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .di-compact-time {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 12px;
+        font-weight: 800;
+        color: #94A3B8;
+        font-variant-numeric: tabular-nums;
+      }
+
+      /* iOS Style Audio Waveform */
+      .di-waveform {
+        display: flex;
+        align-items: center;
+        gap: 2px;
+        height: 14px;
+      }
+
+      .di-waveform .bar {
+        width: 2.5px;
+        background: var(--accent-emerald);
+        border-radius: 2px;
+        box-shadow: 0 0 6px var(--accent-emerald);
+        animation: di-waveform-anim 1.2s ease-in-out infinite alternate;
+      }
+      .di-waveform .bar-1 { height: 6px; animation-delay: 0.1s; }
+      .di-waveform .bar-2 { height: 14px; animation-delay: 0.3s; }
+      .di-waveform .bar-3 { height: 10px; animation-delay: 0.2s; }
+      .di-waveform .bar-4 { height: 7px; animation-delay: 0.4s; }
+
+      @keyframes di-waveform-anim {
+        0% { transform: scaleY(0.35); }
+        100% { transform: scaleY(1.25); }
+      }
+
+      /* --- Expanded Toast View Items --- */
+      .di-icon-box {
+        width: 36px;
+        height: 36px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+      }
+
+      .di-icon-box .material-icons-round {
+        font-size: 20px;
+        color: var(--accent-emerald);
       }
 
       .di-text {
@@ -1365,42 +1479,242 @@
         flex-direction: column;
         line-height: 1.2;
         min-width: 0;
+        flex: 1;
+      }
+
+      .di-title-row {
+        display: flex;
+        align-items: center;
+        gap: 6px;
       }
 
       .di-title {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 11px;
+        font-size: 10.5px;
         font-weight: 800;
-        color: var(--text-muted);
+        color: #94A3B8;
         text-transform: uppercase;
         letter-spacing: 0.08em;
+      }
+
+      .di-badge {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 9px;
+        font-weight: 800;
+        background: var(--accent-emerald-gradient);
+        color: #ffffff;
+        padding: 1px 6px;
+        border-radius: 9999px;
+        box-shadow: 0 0 8px var(--accent-emerald-glow);
       }
 
       .di-msg {
         font-family: "Inter", sans-serif;
         font-size: 13.5px;
         font-weight: 700;
-        color: var(--text-primary);
+        color: #FFFFFF;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
       }
 
-      .di-warn .di-spinner {
-        border-top-color: var(--accent-rose);
+      .di-tap-hint {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 9px;
+        font-weight: 800;
+        color: rgba(255, 255, 255, 0.4);
+        background: rgba(255, 255, 255, 0.08);
+        padding: 3px 8px;
+        border-radius: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
       }
 
-      .di-warn .di-msg {
-        color: var(--accent-rose);
+      /* --- Deep Modal View Items --- */
+      .di-modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        padding-bottom: 10px;
       }
 
-      .di-success .di-icon {
-        color: var(--accent-emerald);
+      .di-modal-brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
       }
 
-      @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
+      .di-modal-logo {
+        width: 32px;
+        height: 32px;
+        border-radius: 10px;
+        background: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+      }
+
+      .di-modal-logo img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .di-modal-title {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 13px;
+        font-weight: 800;
+        color: #FFFFFF;
+        line-height: 1.1;
+      }
+
+      .di-modal-subtitle {
+        font-family: "Inter", sans-serif;
+        font-size: 10px;
+        font-weight: 600;
+        color: #94A3B8;
+      }
+
+      .di-close-btn {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.12);
+        border: none;
+        color: #FFFFFF;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background 0.2s ease;
+      }
+
+      .di-close-btn:hover {
+        background: rgba(255, 255, 255, 0.25);
+      }
+
+      .di-close-btn .material-icons-round {
+        font-size: 16px;
+      }
+
+      .di-modal-body {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        width: 100%;
+        margin-top: 8px;
+      }
+
+      .di-modal-status-card {
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 18px;
+        padding: 10px 14px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .di-modal-avatar {
+        width: 38px;
+        height: 38px;
+        border-radius: 12px;
+        background: var(--accent-emerald-gradient);
+        color: #FFFFFF;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        box-shadow: 0 4px 12px var(--accent-emerald-glow);
+      }
+
+      .di-modal-avatar .material-icons-round {
+        font-size: 20px;
+      }
+
+      .di-modal-info {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .di-modal-status-pill {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 9px;
+        font-weight: 800;
+        color: #10B981;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      .di-modal-doc {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 13.5px;
+        font-weight: 800;
+        color: #FFFFFF;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .di-modal-spec {
+        font-family: "Inter", sans-serif;
+        font-size: 11px;
+        font-weight: 600;
+        color: #94A3B8;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .di-modal-stats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+      }
+
+      .di-stat-box {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 14px;
+        padding: 6px 10px;
+        text-align: center;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+      }
+
+      .di-stat-num {
+        display: block;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 16px;
+        font-weight: 800;
+        color: #FFFFFF;
+        line-height: 1.1;
+      }
+
+      .di-stat-lbl {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 8.5px;
+        font-weight: 800;
+        color: #94A3B8;
+        text-transform: uppercase;
+      }
+
+      .di-modal-footer {
+        width: 100%;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        padding-top: 8px;
+      }
+
+      .di-modal-marquee {
+        font-family: "Inter", sans-serif;
+        font-size: 11px;
+        font-weight: 600;
+        color: #CBD5E1;
+        display: block;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
 
       /* ===== FOOTER (Modern 3D Clay Floating Ticker) ===== */
@@ -2326,14 +2640,89 @@
     </style>
   </head>
 
-  <body>
-    <!-- DYNAMIC ISLAND PRE-MOUNT -->
-    <div id="dynamicIsland" class="dynamic-island">
-      <div class="di-content">
-        <div id="diIcon" class="di-spinner"></div>
+    <!-- ═══ APPLE iOS INTERACTIVE DYNAMIC ISLAND ═══ -->
+    <div id="dynamicIsland" class="dynamic-island di-compact" onclick="Island.toggleExpand()" title="Klik untuk interaksi Dynamic Island">
+      <!-- Compact View (Idle Pill) -->
+      <div class="di-compact-view">
+        <div class="di-leading">
+          <div id="diCompactIcon" class="di-pulse-orb"></div>
+          <span id="diCompactText" class="di-compact-label">SIAGA LIVE</span>
+        </div>
+        <div class="di-trailing">
+          <div class="di-waveform">
+            <span class="bar bar-1"></span>
+            <span class="bar bar-2"></span>
+            <span class="bar bar-3"></span>
+            <span class="bar bar-4"></span>
+          </div>
+          <span id="diCompactClock" class="di-compact-time">--:--</span>
+        </div>
+      </div>
+
+      <!-- Expanded Toast View (Rotating Custom Messages / Notifications) -->
+      <div class="di-expanded-view">
+        <div class="di-icon-box">
+          <span id="diIcon" class="material-icons-round di-icon">notifications_active</span>
+        </div>
         <div class="di-text">
-          <span id="diTitle" class="di-title">System</span>
-          <span id="diMsg" class="di-msg">Loading...</span>
+          <div class="di-title-row">
+            <span id="diTitle" class="di-title">INFORMASI RSU</span>
+            <span id="diBadge" class="di-badge">LIVE</span>
+          </div>
+          <span id="diMsg" class="di-msg">Memuat jadwal dokter...</span>
+        </div>
+        <div class="di-action-badge">
+          <span class="di-tap-hint">Detail</span>
+        </div>
+      </div>
+
+      <!-- Deep Interactive Modal View (Detailed Activity Widget) -->
+      <div class="di-modal-view">
+        <div class="di-modal-header">
+          <div class="di-modal-brand">
+            <div class="di-modal-logo">
+              <img src="/logo-rs.png" alt="RS" />
+            </div>
+            <div>
+              <h4 class="di-modal-title">RSU Siaga Medika</h4>
+              <p class="di-modal-subtitle">Pusat Layanan & Display TV</p>
+            </div>
+          </div>
+          <button class="di-close-btn" onclick="event.stopPropagation(); Island.collapse();" title="Tutup">
+            <span class="material-icons-round">close</span>
+          </button>
+        </div>
+
+        <div class="di-modal-body">
+          <div class="di-modal-status-card" id="diModalDoctorCard">
+            <div class="di-modal-avatar">
+              <span id="diModalAvatar" class="material-icons-round">medical_services</span>
+            </div>
+            <div class="di-modal-info">
+              <span id="diModalStatus" class="di-modal-status-pill">SEDANG PRAKTEK</span>
+              <h5 id="diModalDocName" class="di-modal-doc">Pelayanan Poliklinik</h5>
+              <p id="diModalDocSpec" class="di-modal-spec">Layanan Poliklinik Rawat Jalan Aktif</p>
+            </div>
+          </div>
+
+          <div class="di-modal-stats-grid">
+            <div class="di-stat-box">
+              <span class="di-stat-num" id="diStatActive">0</span>
+              <span class="di-stat-lbl">Dokter Buka</span>
+            </div>
+            <div class="di-stat-box">
+              <span class="di-stat-num" id="diStatWait">0</span>
+              <span class="di-stat-lbl">Terjadwal</span>
+            </div>
+            <div class="di-stat-box">
+              <span class="di-stat-num" id="diStatPenuh">0</span>
+              <span class="di-stat-lbl">Penuh/Cuti</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="di-modal-footer">
+          <span id="diModalMessage" class="di-modal-marquee">Terimakasih sudah menunggu dan tertib mengantre.</span>
         </div>
       </div>
     </div>
@@ -2927,68 +3316,107 @@
         s3 = new SmoothScroller("scrollSidebar");
       }
 
-      // Dynamic Island Controller (with Queue)
-      // Dynamic Island Controller (with Queue & Idle Cycle)
+      // ═══ APPLE iOS INTERACTIVE DYNAMIC ISLAND CONTROLLER ═══
       const Island = {
         _el: null,
         _icon: null,
         _queue: [],
         _isAnimating: false,
-        _idleTimer: null,
+        _state: "compact", // 'compact' | 'expanded' | 'modal'
+        _autoCycleTimer: null,
+        _modalDismissTimer: null,
 
         init() {
           this._el = $("dynamicIsland");
           this._icon = $("diIcon");
-          // #2 & #4: Mulai cycle idle message (sapaan / info)
-          this.startIdleCycle();
+          this.setCompact();
+          this.startAutoCycle();
         },
 
-        // #2: Sapaan Waktu Otomatis
-        getGreeting() {
-          const h = new Date().getHours();
-          if (h < 10) return "Selamat Pagi, Semangat Sehat! ☀️";
-          if (h < 15) return "Selamat Siang, Mohon Menunggu 🌤️";
-          if (h < 18) return "Selamat Sore 👋";
-          return "Selamat Malam 🌙";
+        // Toggle antara Compact dan Deep Interactive Modal saat diklik
+        toggleExpand() {
+          if (this._state === "modal") {
+            this.collapse();
+          } else {
+            this.openModal();
+          }
         },
 
-        // #4: Rotasi Info Edukasi
-        getIdleMessage() {
-          const msgs = [
-            this.getGreeting(),
-            "Dilarang Merokok di Area RS 🚭",
-            "Jagalah Kebersihan Ruang Tunggu 🗑️",
-            "Gunakan Masker Jika Batuk 😷",
-            "Antri Dengan Tertib 🚶‍♂️🚶‍♀️",
-            "Siapkan KTP & BPJS Anda 🆔",
-          ];
-          return msgs[Math.floor(Math.random() * msgs.length)];
+        openModal() {
+          if (!this._el) return;
+          this._state = "modal";
+          this._el.className = "dynamic-island di-modal";
+          
+          // Auto-update modal info dengan data dokter aktif saat ini
+          this.syncModalData();
+
+          // Auto-collapse modal jika tidak ada interaksi selama 12 detik
+          clearTimeout(this._modalDismissTimer);
+          this._modalDismissTimer = setTimeout(() => {
+            if (this._state === "modal") this.collapse();
+          }, 12000);
         },
 
-        startIdleCycle() {
-          // Diambil alih oleh Master Clock di App.init()
+        collapse() {
+          if (!this._el) return;
+          clearTimeout(this._modalDismissTimer);
+          this.setCompact();
         },
 
-        // show(title, msg, type, [icon], [duration])
+        setCompact() {
+          this._state = "compact";
+          if (this._el) {
+            this._el.className = "dynamic-island di-compact";
+          }
+        },
+
+        syncModalData() {
+          if (!App || !App._data) return;
+          const docs = App._data.doctors || [];
+          const activeDocs = docs.filter(d => (d.Status || "").toUpperCase().includes("PRAKTEK"));
+          const waitDocs = docs.filter(d => (d.Status || "").toUpperCase().includes("TERJADWAL") || (d.Status || "").toUpperCase().includes("PENDAFTARAN"));
+          const offDocs = docs.filter(d => ["CUTI", "PENUH", "OPERASI"].some(st => (d.Status || "").toUpperCase().includes(st)));
+
+          if ($("diStatActive")) $("diStatActive").textContent = activeDocs.length;
+          if ($("diStatWait")) $("diStatWait").textContent = waitDocs.length;
+          if ($("diStatPenuh")) $("diStatPenuh").textContent = offDocs.length;
+
+          // Featured Active Doctor di Modal
+          if (activeDocs.length > 0) {
+            const feat = activeDocs[0];
+            if ($("diModalDocName")) $("diModalDocName").textContent = feat.Dokter || "dr. Praktek";
+            if ($("diModalDocSpec")) $("diModalDocSpec").textContent = (feat.Spesialis || "Spesialis") + " • Sedang Melayani";
+            if ($("diModalStatus")) $("diModalStatus").textContent = "SEDANG PRAKTEK";
+          } else {
+            if ($("diModalDocName")) $("diModalDocName").textContent = "Poliklinik Rawat Jalan";
+            if ($("diModalDocSpec")) $("diModalDocSpec").textContent = "Layanan Terjadwal & Pendaftaran";
+            if ($("diModalStatus")) $("diModalStatus").textContent = "TERJADWAL";
+          }
+
+          // Custom message di modal footer
+          if (App._customMsgs && App._customMsgs.length > 0) {
+            const msg = App._customMsgs[App._customMsgIdx % App._customMsgs.length];
+            if ($("diModalMessage")) $("diModalMessage").textContent = msg.text || msg.message || "Terimakasih sudah menunggu.";
+          }
+        },
+
+        // Tampilkan notifikasi / rotating headline (Expanded Toast)
         async show(title, msg, type = "info", arg4 = null, arg5 = null) {
-          let duration = 8000;
+          let duration = 6500;
           let icon = null;
 
-          // Overload handling
-          if (typeof arg4 === "number") {
-            duration = arg4;
-          } else if (typeof arg4 === "string") {
+          if (typeof arg4 === "number") duration = arg4;
+          else if (typeof arg4 === "string") {
             icon = arg4;
             if (typeof arg5 === "number") duration = arg5;
           }
 
-          // Default icons
           if (!icon) {
             if (type === "success") icon = "check_circle";
-            else if (type === "warn") icon = "warning";
+            else if (type === "warn" || type === "warning") icon = "warning";
             else if (type === "error") icon = "error";
-            else if (type === "info") icon = "info";
-            else if (type === "idle") icon = "notifications";
+            else if (type === "info") icon = "notifications_active";
+            else icon = "campaign";
           }
 
           this._queue.push({ title, msg, type, icon, duration });
@@ -2996,45 +3424,57 @@
         },
 
         async processQueue() {
-          if (this._isAnimating || this._queue.length === 0) return;
+          if (this._isAnimating || this._state === "modal" || this._queue.length === 0) return;
 
           this._isAnimating = true;
           const item = this._queue.shift();
 
-          // 1. Reset Classes
-          this._el.className = `dynamic-island ${item.type}`;
+          if (!this._el) this._el = $("dynamicIsland");
 
-          // 2. Set Content
-          $("diTitle").textContent = item.title;
-          $("diMsg").textContent = item.msg;
-          // 3. Set Icon
-          const iconEl = this._icon;
-          if (iconEl) {
-            iconEl.textContent = item.icon || "info";
-            // Fix: Reset class to remove spinner
-            iconEl.className = "material-icons-round di-icon";
+          // 1. Set Expanded Toast Content
+          if ($("diTitle")) $("diTitle").textContent = item.title;
+          if ($("diMsg")) $("diMsg").textContent = item.msg;
+          if ($("diIcon")) {
+            $("diIcon").textContent = item.icon || "notifications";
+            $("diIcon").className = "material-icons-round di-icon";
           }
 
-          // Force layout recalc to restart transitions cleanly
-          void this._el.offsetWidth;
+          // 2. Morph to Expanded State
+          this._state = "expanded";
+          this._el.className = `dynamic-island di-expanded di-${item.type}`;
 
-          // 4. Expand Animation (in next frame for smoothness)
-          requestAnimationFrame(() => {
-            this._el.classList.add("expanded");
-          });
-
-          // 5. Wait Notification Duration
+          // 3. Hold for duration
           await new Promise((r) => setTimeout(r, item.duration));
 
-          // 5. Collapse Animation
-          this._el.classList.remove("expanded");
+          // 4. Smooth Morph back to Compact (hanya jika user tidak membuka modal)
+          if (this._state === "expanded") {
+            this._el.className = "dynamic-island di-compact";
+            this._state = "compact";
+          }
 
-          // 6. Cleanup & Next
+          // 5. Delay before next queue item
           setTimeout(() => {
             this._isAnimating = false;
-            this._el.className = "dynamic-island"; // Reset to base
-            this.processQueue();
-          }, 600); // 0.6s match CSS liquid render
+            if (this._queue.length > 0) this.processQueue();
+          }, 600);
+        },
+
+        startAutoCycle() {
+          // Clock update in compact view every second
+          setInterval(() => {
+            const now = new Date();
+            const timeStr = String(now.getHours()).padStart(2, "0") + ":" + String(now.getMinutes()).padStart(2, "0");
+            if ($("diCompactClock")) $("diCompactClock").textContent = timeStr;
+          }, 1000);
+
+          // Auto-rotate dynamic island announcements every 9 seconds if queue is idle
+          setInterval(() => {
+            if (this._state === "compact" && !this._isAnimating && this._queue.length === 0 && App._customMsgs && App._customMsgs.length > 0) {
+              const item = App._customMsgs[App._customMsgIdx % App._customMsgs.length];
+              App._customMsgIdx++;
+              this.show(item.title || "INFORMASI", item.text || item.message || "Selamat datang di RSU Siaga Medika", "info", 6000);
+            }
+          }, 9000);
         },
       };
 
