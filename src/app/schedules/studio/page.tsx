@@ -247,7 +247,70 @@ export default function PosterStudioPage() {
     return currY + lineHeight;
   };
 
-  // Canvas Drawing Engine (Ultra Apple iOS Native + 2-Column Split + Dedicated Leave Card)
+  // Helper: Draw 3D Apple Claymorphic Tile with Inset Bevel Lighting & Diffuse Drop Shadow
+  const drawClayTile = (
+    ctx: CanvasRenderingContext2D,
+    x: number,
+    y: number,
+    w: number,
+    h: number,
+    r: number,
+    options: {
+      fillTop?: string;
+      fillBottom?: string;
+      shadowColor?: string;
+      shadowBlur?: number;
+      shadowOffsetY?: number;
+      borderLight?: string;
+      borderDark?: string;
+    } = {}
+  ) => {
+    const {
+      fillTop = "#FFFFFF",
+      fillBottom = "#F1F5F9",
+      shadowColor = "rgba(15, 23, 42, 0.08)",
+      shadowBlur = 16,
+      shadowOffsetY = 6,
+      borderLight = "rgba(255, 255, 255, 0.9)",
+      borderDark = "rgba(0, 0, 0, 0.06)",
+    } = options;
+
+    ctx.save();
+    // 1. Soft Ambient Drop Shadow
+    ctx.shadowColor = shadowColor;
+    ctx.shadowBlur = shadowBlur;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = shadowOffsetY;
+
+    // 2. 3D Clay Body Fill
+    const grad = ctx.createLinearGradient(x, y, x, y + h);
+    grad.addColorStop(0, fillTop);
+    grad.addColorStop(1, fillBottom);
+    ctx.fillStyle = grad;
+
+    ctx.beginPath();
+    ctx.roundRect(x, y, w, h, r);
+    ctx.fill();
+    ctx.restore();
+
+    // 3. Crisp Top-Left Inset Highlight Bevel
+    ctx.save();
+    ctx.strokeStyle = borderLight;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.roundRect(x + 0.5, y + 0.5, w - 1, h - 1, r);
+    ctx.stroke();
+
+    // 4. Subtle Bottom Inset Shadow Edge
+    ctx.strokeStyle = borderDark;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.roundRect(x, y, w, h, r);
+    ctx.stroke();
+    ctx.restore();
+  };
+
+  // Canvas Drawing Engine (Ultra Apple Claymorphic 3D Bento Grid)
   const renderToCanvas = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -261,145 +324,164 @@ export default function PosterStudioPage() {
     canvas.height = height;
 
     const { specMap, leaveDoctors, holiday } = scheduleData();
+    const isDark = themeMode === "dark";
 
-    // ── 1. THEME BACKGROUND GRADIENTS ──
+    // ── 1. BACKGROUND CANVAS GRADIENTS ──
     if (themeMode === "sage") {
-      const bgGrad = ctx.createLinearGradient(0, 0, 0, height);
-      bgGrad.addColorStop(0, "#C7DDE3");
-      bgGrad.addColorStop(0.5, "#B8D4DC");
-      bgGrad.addColorStop(1, "#A8C7D0");
+      const bgGrad = ctx.createLinearGradient(0, 0, width, height);
+      bgGrad.addColorStop(0, "#D2E5EC");
+      bgGrad.addColorStop(0.5, "#BFDAE4");
+      bgGrad.addColorStop(1, "#ADCED9");
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, width, height);
 
-      const lightGlow = ctx.createRadialGradient(260, 200, 10, 260, 200, 500);
-      lightGlow.addColorStop(0, "rgba(255, 255, 255, 0.5)");
-      lightGlow.addColorStop(1, "rgba(255, 255, 255, 0)");
-      ctx.fillStyle = lightGlow;
+      // Ambient Clay Glowing Orbs
+      const lightGlow1 = ctx.createRadialGradient(280, 240, 20, 280, 240, 520);
+      lightGlow1.addColorStop(0, "rgba(255, 255, 255, 0.65)");
+      lightGlow1.addColorStop(1, "rgba(255, 255, 255, 0)");
+      ctx.fillStyle = lightGlow1;
+      ctx.fillRect(0, 0, width, height);
+
+      const lightGlow2 = ctx.createRadialGradient(880, 1100, 20, 880, 1100, 500);
+      lightGlow2.addColorStop(0, "rgba(75, 139, 155, 0.25)");
+      lightGlow2.addColorStop(1, "rgba(75, 139, 155, 0)");
+      ctx.fillStyle = lightGlow2;
       ctx.fillRect(0, 0, width, height);
     } else if (themeMode === "white") {
+      // Apple Pristine Ceramic White
       const bgGrad = ctx.createLinearGradient(0, 0, width, height);
       bgGrad.addColorStop(0, "#FFFFFF");
-      bgGrad.addColorStop(0.5, "#F8FAFC");
-      bgGrad.addColorStop(1, "#EFF6FF");
+      bgGrad.addColorStop(0.4, "#F8FAFC");
+      bgGrad.addColorStop(1, "#EEF4F8");
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, width, height);
 
-      const lightGlow = ctx.createRadialGradient(200, 150, 10, 200, 150, 450);
-      lightGlow.addColorStop(0, "rgba(16, 185, 129, 0.12)");
+      const lightGlow = ctx.createRadialGradient(200, 150, 10, 200, 150, 480);
+      lightGlow.addColorStop(0, "rgba(16, 185, 129, 0.14)");
       lightGlow.addColorStop(1, "rgba(16, 185, 129, 0)");
       ctx.fillStyle = lightGlow;
       ctx.fillRect(0, 0, width, height);
     } else {
-      // Midnight Dark Glass
+      // Apple Midnight Dark Glass
       const bgGrad = ctx.createLinearGradient(0, 0, width, height);
       bgGrad.addColorStop(0, "#080D1A");
       bgGrad.addColorStop(0.5, "#0F172A");
-      bgGrad.addColorStop(1, "#0B1120");
+      bgGrad.addColorStop(1, "#0A101D");
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, width, height);
 
-      const glowGrad = ctx.createRadialGradient(260, 200, 10, 260, 200, 500);
-      glowGrad.addColorStop(0, "rgba(16, 185, 129, 0.2)");
+      const glowGrad = ctx.createRadialGradient(260, 200, 10, 260, 200, 520);
+      glowGrad.addColorStop(0, "rgba(16, 185, 129, 0.22)");
       glowGrad.addColorStop(1, "rgba(16, 185, 129, 0)");
       ctx.fillStyle = glowGrad;
       ctx.fillRect(0, 0, width, height);
     }
 
-    const pad = 36;
-    const colGap = 24;
-    const leftColW = 460;
+    const pad = 34;
+    const colGap = 22;
+    const leftColW = 468;
     const rightColX = pad + leftColW + colGap;
     const rightColW = width - rightColX - pad;
 
-    const isDark = themeMode === "dark";
-
     // ═══════════════════════════════════════════════════════════════════
-    // ── LEFT COLUMN: ULTRA APPLE iOS HEADER, TITLE, DATE & EDU CARD ──
+    // ── LEFT COLUMN BENTO TILES (HERO, TITLE, DATE & HEALTH EDU) ──
     // ═══════════════════════════════════════════════════════════════════
-    let leftY = pad + 8;
+    let leftY = pad + 4;
 
-    // 2.1 Apple Glassmorphic Hospital Header Card
+    // ── BENTO TILE 1: HOSPITAL BRAND & KARS ACCREDITATION ──
     const headerBoxW = leftColW;
-    const headerBoxH = 68;
-    ctx.fillStyle = isDark ? "rgba(30, 41, 59, 0.85)" : "rgba(234, 242, 245, 0.95)";
-    ctx.strokeStyle = isDark ? "rgba(255, 255, 255, 0.12)" : "#FFFFFF";
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.roundRect(pad, leftY, headerBoxW, headerBoxH, 20);
-    ctx.fill();
-    ctx.stroke();
+    const headerBoxH = 72;
 
-    // Apple Health Radial Emblem (+)
-    const emblemGrad = ctx.createLinearGradient(pad + 12, leftY + 12, pad + 56, leftY + 56);
+    drawClayTile(ctx, pad, leftY, headerBoxW, headerBoxH, 22, {
+      fillTop: isDark ? "rgba(30, 41, 59, 0.95)" : "#FFFFFF",
+      fillBottom: isDark ? "rgba(15, 23, 42, 0.95)" : "#EDF4F7",
+      shadowColor: isDark ? "rgba(0,0,0,0.4)" : "rgba(15, 76, 92, 0.12)",
+      shadowBlur: 14,
+      shadowOffsetY: 5,
+      borderLight: isDark ? "rgba(255, 255, 255, 0.15)" : "#FFFFFF",
+      borderDark: isDark ? "rgba(0, 0, 0, 0.3)" : "rgba(0, 0, 0, 0.05)",
+    });
+
+    // 3D Emerald Apple Health Cross Emblem (+)
+    const emblemX = pad + 14;
+    const emblemY = leftY + 13;
+    const emblemSize = 46;
+
+    const emblemGrad = ctx.createLinearGradient(emblemX, emblemY, emblemX + emblemSize, emblemY + emblemSize);
     emblemGrad.addColorStop(0, "#10B981");
-    emblemGrad.addColorStop(1, "#059669");
+    emblemGrad.addColorStop(1, "#047857");
     ctx.fillStyle = emblemGrad;
     ctx.beginPath();
-    ctx.roundRect(pad + 12, leftY + 12, 44, 44, 14);
+    ctx.roundRect(emblemX, emblemY, emblemSize, emblemSize, 14);
     ctx.fill();
 
-    ctx.fillStyle = "#FFFFFF";
-    ctx.font = "900 24px sans-serif";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillText("+", pad + 34, leftY + 34);
-
-    // Hospital Name & City
-    ctx.textAlign = "left";
-    ctx.fillStyle = isDark ? "#34D399" : "#0F766E";
-    ctx.font = "900 13.5px sans-serif";
-    ctx.fillText("RSU SIAGA MEDIKA", pad + 66, leftY + 26);
-    ctx.fillStyle = isDark ? "#94A3B8" : "#64748B";
-    ctx.font = "800 10.5px sans-serif";
-    ctx.fillText("PURBALINGGA", pad + 66, leftY + 44);
-
-    // Header Vertical Divider
-    ctx.strokeStyle = isDark ? "rgba(255, 255, 255, 0.1)" : "#CBD5E1";
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(pad + 200, leftY + 14);
-    ctx.lineTo(pad + 200, leftY + headerBoxH - 14);
+    // Emblem Bevel Stroke
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.6)";
+    ctx.lineWidth = 1.5;
     ctx.stroke();
 
-    // KARS Accreditation Gold Pill
+    ctx.fillStyle = "#FFFFFF";
+    ctx.font = "900 26px sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("+", emblemX + emblemSize / 2, emblemY + emblemSize / 2);
+
+    // Hospital Name & Subtitle
+    ctx.textAlign = "left";
+    ctx.fillStyle = isDark ? "#34D399" : "#0F766E";
+    ctx.font = "900 14px sans-serif";
+    ctx.fillText("RSU SIAGA MEDIKA", pad + 72, leftY + 28);
+    ctx.fillStyle = isDark ? "#94A3B8" : "#64748B";
+    ctx.font = "800 10.5px sans-serif";
+    ctx.fillText("PURBALINGGA", pad + 72, leftY + 47);
+
+    // Vertical Bevel Divider
+    ctx.strokeStyle = isDark ? "rgba(255, 255, 255, 0.1)" : "#CBD5E1";
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(pad + 208, leftY + 16);
+    ctx.lineTo(pad + 208, leftY + headerBoxH - 16);
+    ctx.stroke();
+
+    // KARS Accreditation Gold Clay Pill
     ctx.fillStyle = "#D97706";
-    ctx.font = "900 10.5px sans-serif";
-    ctx.fillText("TERAKREDITASI", pad + 214, leftY + 26);
-    ctx.fillStyle = isDark ? "#FFFFFF" : "#1E293B";
-    ctx.font = "900 12px sans-serif";
-    ctx.fillText("PARIPURNA KARS ⭐", pad + 214, leftY + 44);
+    ctx.font = "900 11px sans-serif";
+    ctx.fillText("TERAKREDITASI", pad + 224, leftY + 28);
+    ctx.fillStyle = isDark ? "#F8FAFC" : "#1E293B";
+    ctx.font = "900 12.5px sans-serif";
+    ctx.fillText("PARIPURNA KARS ⭐", pad + 224, leftY + 47);
 
-    leftY += headerBoxH + 22;
+    leftY += headerBoxH + 20;
 
-    // 2.2 Headline: JADWAL POLIKLINIK & DOKTER SPESIALIS
+    // ── BENTO TILE 2: ELEGANT HEADLINE BANNER ──
     ctx.textAlign = "center";
     ctx.fillStyle = isDark ? "#F8FAFC" : "#164E63";
     ctx.font = "900 32px serif";
-    ctx.fillText("JADWAL", pad + leftColW / 2, leftY + 10);
-    leftY += 38;
+    ctx.fillText("JADWAL", pad + leftColW / 2, leftY + 8);
+    leftY += 36;
 
     ctx.font = "900 36px serif";
-    ctx.fillText("POLIKLINIK", pad + leftColW / 2, leftY + 10);
-    leftY += 34;
+    ctx.fillText("POLIKLINIK", pad + leftColW / 2, leftY + 8);
+    leftY += 32;
 
     ctx.strokeStyle = isDark ? "#38BDF8" : "#164E63";
     ctx.lineWidth = 1.5;
     ctx.beginPath();
     ctx.moveTo(pad + 60, leftY + 4);
-    ctx.lineTo(pad + 175, leftY + 4);
-    ctx.moveTo(pad + leftColW - 175, leftY + 4);
+    ctx.lineTo(pad + 180, leftY + 4);
+    ctx.moveTo(pad + leftColW - 180, leftY + 4);
     ctx.lineTo(pad + leftColW - 60, leftY + 4);
     ctx.stroke();
 
     ctx.font = "italic 900 24px serif";
     ctx.fillText("&", pad + leftColW / 2, leftY + 10);
-    leftY += 34;
+    leftY += 32;
 
     ctx.font = "900 30px serif";
     ctx.fillText("DOKTER SPESIALIS", pad + leftColW / 2, leftY + 10);
-    leftY += 38;
+    leftY += 36;
 
-    // 2.3 Date Banner + 3D Calendar Pin
+    // ── BENTO TILE 3: CERAMIC DATE BANNER + 3D CALENDAR PIN ──
     const dateFormatted = selectedDate.toLocaleDateString("id-ID", {
       weekday: "long",
       day: "numeric",
@@ -407,180 +489,233 @@ export default function PosterStudioPage() {
       year: "numeric",
     }).toUpperCase();
 
-    const dateBoxH = 50;
-    ctx.fillStyle = isDark ? "rgba(30, 41, 59, 0.85)" : "rgba(234, 242, 245, 0.95)";
-    ctx.strokeStyle = isDark ? "rgba(255, 255, 255, 0.1)" : "#FFFFFF";
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.roundRect(pad, leftY, headerBoxW, dateBoxH, 18);
-    ctx.fill();
-    ctx.stroke();
+    const dateBoxH = 52;
+    drawClayTile(ctx, pad, leftY, headerBoxW, dateBoxH, 18, {
+      fillTop: isDark ? "rgba(30, 41, 59, 0.95)" : "#FFFFFF",
+      fillBottom: isDark ? "rgba(15, 23, 42, 0.95)" : "#EDF4F7",
+      shadowColor: isDark ? "rgba(0,0,0,0.3)" : "rgba(15, 76, 92, 0.09)",
+      shadowBlur: 10,
+      shadowOffsetY: 4,
+    });
 
     ctx.textAlign = "left";
     ctx.fillStyle = isDark ? "#FFFFFF" : "#0F172A";
     ctx.font = "900 15px sans-serif";
-    ctx.fillText(dateFormatted, pad + 18, leftY + 31);
+    ctx.fillText(dateFormatted, pad + 18, leftY + 32);
 
+    // 3D Calendar Pin on Right Edge
     const dayShort = selectedDate.toLocaleDateString("id-ID", { weekday: "short" }).toUpperCase();
     const dateNum = selectedDate.getDate();
-    const calPinX = pad + headerBoxW - 64;
+    const calPinX = pad + headerBoxW - 66;
     const calPinY = leftY - 8;
+    const calPinW = 56;
+    const calPinH = 60;
 
-    ctx.fillStyle = "#FFFFFF";
-    ctx.strokeStyle = "#CBD5E1";
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.roundRect(calPinX, calPinY, 54, 58, 12);
-    ctx.fill();
-    ctx.stroke();
+    drawClayTile(ctx, calPinX, calPinY, calPinW, calPinH, 14, {
+      fillTop: "#FFFFFF",
+      fillBottom: "#F1F5F9",
+      shadowColor: "rgba(0,0,0,0.15)",
+      shadowBlur: 8,
+      shadowOffsetY: 3,
+    });
 
+    // Calendar Red Header
     ctx.fillStyle = "#E11D48";
     ctx.beginPath();
-    ctx.roundRect(calPinX, calPinY, 54, 20, [12, 12, 0, 0]);
+    ctx.roundRect(calPinX, calPinY, calPinW, 22, [14, 14, 0, 0]);
     ctx.fill();
 
     ctx.fillStyle = "#FFFFFF";
-    ctx.font = "900 10.5px sans-serif";
+    ctx.font = "900 11px sans-serif";
     ctx.textAlign = "center";
-    ctx.fillText(dayShort, calPinX + 27, calPinY + 14);
+    ctx.fillText(dayShort, calPinX + calPinW / 2, calPinY + 15);
 
     ctx.fillStyle = "#0F172A";
-    ctx.font = "900 20px sans-serif";
-    ctx.fillText(String(dateNum), calPinX + 27, calPinY + 44);
+    ctx.font = "900 21px sans-serif";
+    ctx.fillText(String(dateNum), calPinX + calPinW / 2, calPinY + 46);
 
-    leftY += dateBoxH + 22;
+    leftY += dateBoxH + 20;
 
-    // 2.4 Health Education Infographic Card
-    const eduBoxH = height - leftY - pad - 12;
-    ctx.fillStyle = isDark ? "rgba(30, 41, 59, 0.9)" : "rgba(241, 248, 250, 0.95)";
-    ctx.strokeStyle = isDark ? "rgba(255, 255, 255, 0.12)" : "#FFFFFF";
-    ctx.lineWidth = 2.5;
-    ctx.beginPath();
-    ctx.roundRect(pad, leftY, headerBoxW, eduBoxH, 24);
-    ctx.fill();
-    ctx.stroke();
+    // ── BENTO TILE 4: LARGE HERO HEALTH EDUCATION CARD ──
+    const eduBoxH = height - leftY - pad - 8;
 
-    let eduY = leftY + 26;
+    drawClayTile(ctx, pad, leftY, headerBoxW, eduBoxH, 26, {
+      fillTop: isDark ? "rgba(30, 41, 59, 0.95)" : "#FFFFFF",
+      fillBottom: isDark ? "rgba(15, 23, 42, 0.95)" : "#F0F6F9",
+      shadowColor: isDark ? "rgba(0,0,0,0.4)" : "rgba(15, 76, 92, 0.12)",
+      shadowBlur: 18,
+      shadowOffsetY: 8,
+      borderLight: isDark ? "rgba(255, 255, 255, 0.16)" : "#FFFFFF",
+    });
 
-    // If user uploaded a custom image, draw image at top of card
+    let eduY = leftY + 24;
+
+    // Custom Uploaded Image in Rounded Squircle Frame
     if (customImgRef.current && customImgRef.current.complete) {
       try {
-        const imgH = 120;
+        const imgH = 125;
         ctx.save();
         ctx.beginPath();
-        ctx.roundRect(pad + 20, eduY, headerBoxW - 40, imgH, 16);
+        ctx.roundRect(pad + 18, eduY, headerBoxW - 36, imgH, 18);
         ctx.clip();
-        ctx.drawImage(customImgRef.current, pad + 20, eduY, headerBoxW - 40, imgH);
+        ctx.drawImage(customImgRef.current, pad + 18, eduY, headerBoxW - 36, imgH);
         ctx.restore();
+
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.8)";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.roundRect(pad + 18, eduY, headerBoxW - 36, imgH, 18);
+        ctx.stroke();
+
         eduY += imgH + 16;
       } catch (e) {}
     }
 
-    // Tag / Category Pill
-    ctx.fillStyle = "#F97316";
-    ctx.font = "italic 900 17px sans-serif";
-    ctx.textAlign = "left";
-    ctx.fillText(currentTopic.tag || "EDUKASI KESEHATAN", pad + 24, eduY);
-    eduY += 32;
+    // 3D Clay Tag Pill (e.g. "LAYANAN UNGGULAN")
+    const tagText = currentTopic.tag || "EDUKASI KESEHATAN";
+    ctx.fillStyle = "rgba(249, 115, 22, 0.15)";
+    ctx.beginPath();
+    ctx.roundRect(pad + 22, eduY - 2, 200, 26, 10);
+    ctx.fill();
 
-    // Title
+    ctx.fillStyle = "#EA580C";
+    ctx.font = "900 12.5px sans-serif";
+    ctx.textAlign = "left";
+    ctx.fillText(`✨ ${tagText}`, pad + 32, eduY + 15);
+    eduY += 36;
+
+    // Main Topic Headline
     ctx.fillStyle = "#E11D48";
     ctx.font = "900 26px sans-serif";
-    eduY = wrapText(ctx, currentTopic.title, pad + 24, eduY, headerBoxW - 48, 32);
-    eduY += 10;
+    eduY = wrapText(ctx, currentTopic.title, pad + 22, eduY, headerBoxW - 44, 32);
+    eduY += 8;
 
-    // Summary
+    // Medical Summary
     ctx.fillStyle = isDark ? "#CBD5E1" : "#334155";
     ctx.font = "600 13px sans-serif";
-    eduY = wrapText(ctx, currentTopic.summary, pad + 24, eduY, headerBoxW - 48, 20);
+    eduY = wrapText(ctx, currentTopic.summary, pad + 22, eduY, headerBoxW - 44, 20);
     eduY += 12;
 
-    // Subtitle Pill
+    // Subtitle Capsule: "Pemeriksaan untuk Apa Saja :"
     const subTitleW = 250;
-    ctx.fillStyle = "#EA580C";
-    ctx.beginPath();
-    ctx.roundRect(pad + 24, eduY - 4, subTitleW, 26, 8);
-    ctx.fill();
+    const subTitleH = 26;
+    drawClayTile(ctx, pad + 22, eduY - 2, subTitleW, subTitleH, 10, {
+      fillTop: "#EA580C",
+      fillBottom: "#C2410C",
+      shadowColor: "rgba(234, 88, 12, 0.35)",
+      shadowBlur: 8,
+      shadowOffsetY: 2,
+      borderLight: "rgba(255, 255, 255, 0.4)",
+    });
 
     ctx.fillStyle = "#FFFFFF";
     ctx.font = "900 12px sans-serif";
-    ctx.fillText("Pemeriksaan untuk Apa Saja :", pad + 34, eduY + 14);
+    ctx.fillText("Pemeriksaan untuk Apa Saja :", pad + 34, eduY + 15);
     eduY += 38;
 
-    // Bullets
+    // 3D Spherical Checkmark Bullets
     currentTopic.bullets.slice(0, 5).forEach((b) => {
-      ctx.fillStyle = "#EA580C";
+      // 3D Coral Sphere
+      const sphereX = pad + 32;
+      const sphereY = eduY - 4;
+      const sphereR = 8.5;
+
+      const sphereGrad = ctx.createRadialGradient(sphereX - 2, sphereY - 2, 1, sphereX, sphereY, sphereR);
+      sphereGrad.addColorStop(0, "#FB923C");
+      sphereGrad.addColorStop(0.7, "#EA580C");
+      sphereGrad.addColorStop(1, "#9A3412");
+      ctx.fillStyle = sphereGrad;
       ctx.beginPath();
-      ctx.arc(pad + 34, eduY - 4, 8, 0, Math.PI * 2);
+      ctx.arc(sphereX, sphereY, sphereR, 0, Math.PI * 2);
       ctx.fill();
 
       ctx.fillStyle = "#FFFFFF";
       ctx.font = "900 10px sans-serif";
       ctx.textAlign = "center";
-      ctx.fillText("✓", pad + 34, eduY);
+      ctx.fillText("✓", sphereX, sphereY + 3.5);
 
       ctx.textAlign = "left";
       ctx.fillStyle = isDark ? "#F8FAFC" : "#0F172A";
       ctx.font = "800 12.5px sans-serif";
-      ctx.fillText(b, pad + 50, eduY);
+      ctx.fillText(b, pad + 48, eduY);
 
       eduY += 24;
     });
 
-    eduY += 8;
+    eduY += 6;
 
     // Closing CTA
     ctx.fillStyle = isDark ? "#94A3B8" : "#475569";
     ctx.font = "italic 600 11.5px sans-serif";
-    wrapText(ctx, currentTopic.note, pad + 24, eduY, headerBoxW - 48, 16);
+    wrapText(ctx, currentTopic.note, pad + 22, eduY, headerBoxW - 44, 16);
 
-    // ── Ultra Apple iOS Footer Hotline Capsule ──
-    const qrBoxY = leftY + eduBoxH - 86;
-    ctx.fillStyle = isDark ? "#064E3B" : "#0F766E";
-    ctx.beginPath();
-    ctx.roundRect(pad + 16, qrBoxY, headerBoxW - 32, 70, 18);
-    ctx.fill();
+    // ── BENTO TILE 5: ULTRA APPLE iOS FOOTER HOTLINE & QR HUB ──
+    const qrBoxY = leftY + eduBoxH - 88;
+    const qrBoxW = headerBoxW - 28;
+    const qrBoxH = 72;
+
+    drawClayTile(ctx, pad + 14, qrBoxY, qrBoxW, qrBoxH, 20, {
+      fillTop: isDark ? "#065F46" : "#0F766E",
+      fillBottom: isDark ? "#022C22" : "#044E48",
+      shadowColor: "rgba(4, 78, 72, 0.3)",
+      shadowBlur: 10,
+      shadowOffsetY: 4,
+      borderLight: "rgba(255, 255, 255, 0.3)",
+    });
 
     ctx.fillStyle = "#FFFFFF";
     ctx.font = "900 12px sans-serif";
-    ctx.fillText("📱 WA PENDAFTARAN: 0823-2344-6076", pad + 30, qrBoxY + 26);
-    ctx.font = "800 10.5px sans-serif";
+    ctx.fillText("📱 WA PENDAFTARAN: 0823-2344-6076", pad + 28, qrBoxY + 28);
+    ctx.font = "800 11px sans-serif";
     ctx.fillStyle = "#A7F3D0";
-    ctx.fillText("🌐 Cek Live: simed.fallonava.my.id/jadwal", pad + 30, qrBoxY + 48);
+    ctx.fillText("🌐 Cek Live: simed.fallonava.my.id/jadwal", pad + 28, qrBoxY + 50);
 
+    // Right QR Code Tile
     if (qrImageRef.current && qrImageRef.current.complete) {
       try {
-        ctx.fillStyle = "#FFFFFF";
-        ctx.beginPath();
-        ctx.roundRect(pad + headerBoxW - 76, qrBoxY + 8, 54, 54, 12);
-        ctx.fill();
-        ctx.drawImage(qrImageRef.current, pad + headerBoxW - 73, qrBoxY + 11, 48, 48);
+        const qrTileW = 56;
+        const qrTileH = 56;
+        const qrTileX = pad + qrBoxW - qrTileW - 4;
+        const qrTileY = qrBoxY + 8;
+
+        drawClayTile(ctx, qrTileX, qrTileY, qrTileW, qrTileH, 14, {
+          fillTop: "#FFFFFF",
+          fillBottom: "#F8FAFC",
+          shadowColor: "rgba(0,0,0,0.2)",
+          shadowBlur: 6,
+          shadowOffsetY: 2,
+        });
+
+        ctx.drawImage(qrImageRef.current, qrTileX + 3, qrTileY + 3, qrTileW - 6, qrTileH - 6);
       } catch (e) {}
     }
 
     // ═══════════════════════════════════════════════════════════════════
-    // ── RIGHT COLUMN: DEDICATED LEAVE CARD + SPECIALTY SCHEDULES ──
+    // ── RIGHT COLUMN: DEDICATED LEAVE BENTO + SCHEDULE CLAY TILES ──
     // ═══════════════════════════════════════════════════════════════════
-    let rightY = pad + 8;
+    let rightY = pad + 4;
 
-    // 3.1 DEDICATED "DOKTER CUTI HARI INI" CARD (If Enabled & Has Leaves)
+    // ── BENTO TILE 6: DEDICATED "DOKTER CUTI HARI INI" ──
     if (showLeaveCard && leaveDoctors.length > 0) {
-      const leaveCardH = 34 + leaveDoctors.length * 28 + 6;
-      ctx.fillStyle = isDark ? "rgba(225, 29, 72, 0.15)" : "#FFF1F2";
-      ctx.strokeStyle = "rgba(225, 29, 72, 0.4)";
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.roundRect(rightColX, rightY, rightColW, leaveCardH, 16);
-      ctx.fill();
-      ctx.stroke();
+      const leaveCardH = 36 + leaveDoctors.length * 28 + 6;
 
-      // Card Header
+      drawClayTile(ctx, rightColX, rightY, rightColW, leaveCardH, 18, {
+        fillTop: isDark ? "rgba(225, 29, 72, 0.2)" : "#FFF1F2",
+        fillBottom: isDark ? "rgba(159, 18, 57, 0.2)" : "#FFE4E6",
+        shadowColor: "rgba(225, 29, 72, 0.15)",
+        shadowBlur: 10,
+        shadowOffsetY: 3,
+        borderLight: "rgba(255, 255, 255, 0.6)",
+        borderDark: "rgba(225, 29, 72, 0.25)",
+      });
+
+      // Header
       ctx.fillStyle = "#E11D48";
       ctx.font = "900 12px sans-serif";
       ctx.textAlign = "left";
-      ctx.fillText("📅 DOKTER CUTI / TIDAK PRAKTEK HARI INI", rightColX + 16, rightY + 22);
+      ctx.fillText("📅 DOKTER CUTI / TIDAK PRAKTEK HARI INI", rightColX + 16, rightY + 23);
 
-      let leaveY = rightY + 46;
+      let leaveY = rightY + 48;
       leaveDoctors.forEach((ld) => {
         ctx.fillStyle = isDark ? "#FFFFFF" : "#0F172A";
         ctx.font = "800 12px sans-serif";
@@ -605,44 +740,45 @@ export default function PosterStudioPage() {
       rightY += leaveCardH + 12;
     }
 
-    // 3.2 SPECIALTY HEADERS & DOCTOR ROWS
+    // ── BENTO TILE 7: POLI HEADERS & DOCTOR SCHEDULES ──
     const specEntries = Object.entries(specMap);
     const maxSpecs = showLeaveCard && leaveDoctors.length > 0 ? 12 : 14;
     const displaySpecs = specEntries.slice(0, maxSpecs);
 
     displaySpecs.forEach(([specName, docList]) => {
-      const headerH = 26;
+      const headerH = 28;
       const rowH = 24;
       const totalDocRows = docList.length;
       const totalSectionH = headerH + totalDocRows * rowH + 6;
 
-      // Teal Clay Capsule Header
-      ctx.fillStyle = "#4B8B9B";
-      ctx.strokeStyle = "#FFFFFF";
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.roundRect(rightColX, rightY, rightColW, headerH, 13);
-      ctx.fill();
-      ctx.stroke();
+      // Marine Cyan/Teal 3D Clay Capsule Header
+      drawClayTile(ctx, rightColX, rightY, rightColW, headerH, 14, {
+        fillTop: "#569DAA",
+        fillBottom: "#3F7C8B",
+        shadowColor: "rgba(63, 124, 139, 0.25)",
+        shadowBlur: 6,
+        shadowOffsetY: 2,
+        borderLight: "rgba(255, 255, 255, 0.5)",
+      });
 
       ctx.fillStyle = "#FFFFFF";
-      ctx.font = "900 12px sans-serif";
+      ctx.font = "900 12.5px sans-serif";
       ctx.textAlign = "center";
-      ctx.fillText(specName, rightColX + rightColW / 2, rightY + 17);
+      ctx.fillText(specName, rightColX + rightColW / 2, rightY + 18);
 
-      // Doctor Box
+      // Doctor Card Container (3D White Clay)
       const docCardY = rightY + headerH - 1;
       const docCardH = totalDocRows * rowH + 6;
 
-      ctx.fillStyle = isDark ? "rgba(30, 41, 59, 0.85)" : "#F8FAFC";
-      ctx.strokeStyle = isDark ? "rgba(255, 255, 255, 0.08)" : "rgba(255, 255, 255, 0.8)";
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.roundRect(rightColX, docCardY, rightColW, docCardH, [0, 0, 14, 14]);
-      ctx.fill();
-      ctx.stroke();
+      drawClayTile(ctx, rightColX, docCardY, rightColW, docCardH, 14, {
+        fillTop: isDark ? "rgba(30, 41, 59, 0.95)" : "#FFFFFF",
+        fillBottom: isDark ? "rgba(15, 23, 42, 0.95)" : "#F6FAFC",
+        shadowColor: isDark ? "rgba(0,0,0,0.3)" : "rgba(15, 76, 92, 0.08)",
+        shadowBlur: 8,
+        shadowOffsetY: 3,
+      });
 
-      let rowY = docCardY + 18;
+      let rowY = docCardY + 19;
       docList.forEach((d) => {
         const isCuti = d.status === "CUTI";
 
@@ -743,14 +879,14 @@ export default function PosterStudioPage() {
           <div>
             <div className="flex items-center gap-2">
               <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                Ultra Apple iOS Studio
+                Apple Claymorphic 3D Studio
               </span>
             </div>
             <h1 className="text-xl sm:text-2xl font-black text-zinc-900 dark:text-zinc-100 tracking-tight mt-1">
               Studio Poster Selebaran Jadwal RS
             </h1>
             <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
-              Generator Poster Infografis 2-Kolom + Integrasi AI Edukasi Medis & Upload Gambar
+              Bento Claymorphic Grid + Integrasi AI Edukasi Medis & Upload Gambar
             </p>
           </div>
         </div>
@@ -828,7 +964,7 @@ export default function PosterStudioPage() {
                       : "clay-button text-zinc-600 dark:text-zinc-300"
                   )}
                 >
-                  <span>🌊 Sage Clean</span>
+                  <span>🌊 Sage Bento</span>
                   <span className="text-[9.5px] opacity-75 font-normal">Sesuai Referensi</span>
                 </button>
                 <button
@@ -987,7 +1123,7 @@ export default function PosterStudioPage() {
         <div className="lg:col-span-7 flex flex-col items-center justify-center p-4 sm:p-6 rounded-[32px] clay-inset bg-black/20 relative min-h-[600px]">
           <canvas
             ref={canvasRef}
-            className="rounded-[20px] shadow-2xl max-w-full max-h-[720px] object-contain border border-zinc-700/30"
+            className="rounded-[24px] shadow-2xl max-w-full max-h-[740px] object-contain border border-zinc-700/30"
           />
         </div>
       </div>
