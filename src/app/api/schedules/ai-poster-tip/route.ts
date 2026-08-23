@@ -113,7 +113,7 @@ export const DAILY_TOPIC_PRESETS: Record<number, HealthEducationTopic> = {
 };
 
 export async function POST(req: Request) {
-  const rateLimitErr = await withMutationRateLimit(req, 'ai-poster-tip', 15, 60000);
+  const rateLimitErr = await withMutationRateLimit(req, 'schedules');
   if (rateLimitErr) return rateLimitErr;
 
   const authErr = await requirePermission(req, 'schedules', 'read');
@@ -140,11 +140,13 @@ export async function POST(req: Request) {
     let modelInstance: any = null;
     const provider = aiConfig.provider;
 
-    if (provider === 'gemini' && (aiConfig.geminiKey || aiConfig.apiKey)) {
-      const google = createGoogleGenerativeAI({ apiKey: aiConfig.geminiKey || aiConfig.apiKey });
+    const key = (aiConfig.geminiKey || aiConfig.groqKey || aiConfig.apiKey) || undefined;
+
+    if (provider === 'gemini' && key) {
+      const google = createGoogleGenerativeAI({ apiKey: key });
       modelInstance = google(aiConfig.aiModel || 'gemini-1.5-flash');
-    } else if (provider === 'groq' && (aiConfig.groqKey || aiConfig.apiKey)) {
-      const groq = createGroq({ apiKey: aiConfig.groqKey || aiConfig.apiKey });
+    } else if (provider === 'groq' && key) {
+      const groq = createGroq({ apiKey: key });
       modelInstance = groq(aiConfig.aiModel || 'llama-3.3-70b-versatile');
     } else if (provider === 'ollama') {
       const ollama = createOllama({ baseURL: aiConfig.ollamaUrl || 'http://localhost:11434/api' });
