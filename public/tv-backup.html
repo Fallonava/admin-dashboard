@@ -92,29 +92,29 @@
         --logo-text: #ffffff;
       }
 
-      /* Light Mode Theme (Clinical Light) */
+      /* Light Mode Theme (Modern Apple iOS Soft Clay Ceramic) */
       [data-theme="light"] {
-        --bg-body: #EDF2F8;
-        --bg-ambient: radial-gradient(circle at 50% 0%, #FFFFFF 0%, #EDF2F8 80%);
+        --bg-body: #F4F7FB;
+        --bg-ambient: radial-gradient(at 0% 0%, rgba(224, 234, 252, 0.8) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(237, 231, 246, 0.7) 0px, transparent 50%), #F4F7FB;
         --clay-bg-surface: #FFFFFF;
-        --clay-border: rgba(226, 232, 240, 0.9);
-        --clay-shadow-outer: 0 12px 28px -4px rgba(15, 23, 42, 0.08), 0 4px 10px -2px rgba(15, 23, 42, 0.04);
-        --clay-shadow-inner: inset 1px 1px 1px rgba(255, 255, 255, 0.95), inset -1px -1px 2px rgba(0, 0, 0, 0.04);
-        --clay-inset: inset 3px 3px 6px rgba(148, 163, 184, 0.25), inset -2px -2px 5px rgba(255, 255, 255, 0.9);
+        --clay-border: rgba(255, 255, 255, 0.95);
+        --clay-shadow-outer: 0 10px 30px -4px rgba(45, 65, 95, 0.06), 0 2px 8px -2px rgba(45, 65, 95, 0.03);
+        --clay-shadow-inner: inset 0 2px 3px rgba(255, 255, 255, 0.98), inset 0 -2px 3px rgba(180, 195, 215, 0.12);
+        --clay-inset: inset 2px 2px 5px rgba(148, 163, 184, 0.16), inset -2px -2px 5px rgba(255, 255, 255, 0.95);
 
-        --neo-shadow-dark: rgba(148, 163, 184, 0.35);
+        --neo-shadow-dark: rgba(148, 163, 184, 0.25);
         --neo-shadow-light: #ffffff;
-        --neo-inset-dark: inset 3px 3px 6px rgba(148, 163, 184, 0.25);
-        --neo-inset-light: inset -2px -2px 5px rgba(255, 255, 255, 0.9);
+        --neo-inset-dark: inset 2px 2px 5px rgba(148, 163, 184, 0.16);
+        --neo-inset-light: inset -2px -2px 5px rgba(255, 255, 255, 0.95);
 
         --text-primary: #0F172A;
         --text-secondary: #475569;
-        --text-muted: #64748B;
+        --text-muted: #94A3B8;
         --glass-panel: #FFFFFF;
         --card-bg: #FFFFFF;
         --header-bg: transparent;
-        --border-light: rgba(226, 232, 240, 0.9);
-        --platter-border: rgba(226, 232, 240, 0.9);
+        --border-light: rgba(226, 234, 245, 0.85);
+        --platter-border: rgba(226, 234, 245, 0.85);
         --footer-bg: #FFFFFF;
         --app-bg-overlay: transparent;
         --shadow: var(--clay-shadow-outer), var(--clay-shadow-inner);
@@ -272,36 +272,29 @@
       .brand {
         display: flex;
         align-items: center;
-        gap: 14px;
+        gap: 12px;
       }
 
       .logo-box {
-        width: 44px;
-        height: 44px;
-        border-radius: 12px;
-        background: #ffffff; /* Memalsukan efek transparan logo */
+        width: 42px;
+        height: 42px;
+        border-radius: 14px;
+        background: #FFFFFF;
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: 
-          4px 4px 10px var(--neo-shadow-dark),
-          -4px -4px 10px var(--neo-shadow-light);
-        overflow: hidden; /* Mengunci pendaran gambar */
-        border: 1px solid rgba(255, 255, 255, 0.4); /* Glass-glint frame tipis */
+        box-shadow: 0 6px 16px -2px rgba(45, 65, 95, 0.08), inset 0 1.5px 1.5px #FFFFFF;
+        overflow: hidden;
+        border: 1px solid rgba(226, 234, 245, 0.9);
         animation: slow-breathe 4s ease-in-out infinite;
       }
 
       @keyframes slow-breathe {
         0%, 100% {
-          box-shadow: 
-            4px 4px 10px var(--neo-shadow-dark),
-            -4px -4px 10px var(--neo-shadow-light);
+          box-shadow: 0 6px 16px -2px rgba(45, 65, 95, 0.08), inset 0 1.5px 1.5px #FFFFFF;
         }
         50% {
-          box-shadow: 
-            4px 4px 10px var(--neo-shadow-dark),
-            -4px -4px 10px var(--neo-shadow-light),
-            0 0 15px rgba(16, 185, 129, 0.25); /* Emerald Green Status Aura */
+          box-shadow: 0 8px 20px -2px rgba(5, 150, 105, 0.2), inset 0 1.5px 1.5px #FFFFFF;
         }
       }
 
@@ -309,24 +302,24 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
-        mix-blend-mode: multiply; /* Membuang sisa offset putih, jika ada */
       }
 
       .title-group h1 {
-        font-size: 18px;
-        font-weight: 700;
-        letter-spacing: -0.02em;
-        line-height: 1.1;
-        color: var(--text-primary);
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 13.5px;
+        font-weight: 800;
+        letter-spacing: -0.01em;
+        line-height: 1.15;
+        color: #0F172A;
       }
 
       .title-group span {
-        font-size: 11px;
-        font-weight: 600;
-        opacity: 1; /* Diperkuat untuk aksesibilitas */
-        letter-spacing: 0.02em;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 9.5px;
+        font-weight: 800;
+        letter-spacing: 0.05em;
         text-transform: uppercase;
-        color: var(--text-secondary);
+        color: #64748B;
       }
 
       .time-group {
@@ -334,19 +327,22 @@
       }
 
       .clock {
-        font-size: 32px;
-        font-weight: 400;
-        letter-spacing: -0.03em;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 28px;
+        font-weight: 800;
+        letter-spacing: -0.02em;
         font-variant-numeric: tabular-nums;
         line-height: 1;
+        color: #0F172A;
       }
 
       .date {
-        font-size: 12px;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 10.5px;
         font-weight: 700;
-        opacity: 1; /* Diperkuat */
-        letter-spacing: 0.02em;
+        letter-spacing: 0.04em;
         text-transform: uppercase;
+        color: #64748B;
         margin-top: 2px;
       }
 
@@ -751,17 +747,17 @@
         /* Hint to browser compositor */
       }
 
-      /* ===== PLATTER CARD (Modern Soft Clay 3D Bento) ===== */
+      /* ===== PLATTER CARD (Modern Apple iOS Soft Clay Ceramic) ===== */
       .platter {
         display: flex;
         flex-direction: column;
         align-items: stretch;
         gap: 12px;
         padding: 16px 20px; 
-        background: var(--clay-bg-surface);
+        background: #FFFFFF;
         border-radius: 24px;
-        border: 1px solid var(--clay-border);
-        box-shadow: var(--clay-shadow-outer), var(--clay-shadow-inner);
+        border: 1px solid rgba(226, 234, 245, 0.85);
+        box-shadow: 0 10px 28px -4px rgba(45, 65, 95, 0.05), inset 0 1.5px 1.5px #FFFFFF;
         position: relative;
         overflow: hidden;
         transform: translateZ(0) translateY(0);
@@ -769,15 +765,14 @@
         transition:
           opacity 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),
           transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
-          box-shadow 0.3s ease,
-          background-color 0.3s ease;
+          box-shadow 0.3s ease;
       }
 
       [data-theme="light"] .platter {
         opacity: 1;
         background: #FFFFFF;
-        border: 1px solid rgba(226, 232, 240, 0.9);
-        box-shadow: 0 10px 24px -4px rgba(15, 23, 42, 0.07), inset 1px 1px 1px #ffffff;
+        border: 1px solid rgba(226, 234, 245, 0.85);
+        box-shadow: 0 10px 28px -4px rgba(45, 65, 95, 0.05), inset 0 1.5px 1.5px #FFFFFF;
       }
 
       /* Status Edge Accent Glow */
@@ -787,21 +782,21 @@
         left: 0;
         top: 14px;
         bottom: 14px;
-        width: 5px;
+        width: 4.5px;
         background: var(--status-color);
         border-radius: 0 6px 6px 0;
         box-shadow: 0 0 12px var(--status-color);
-        opacity: 0.9;
+        opacity: 0.95;
       }
 
-      /* 3D Clay Avatar */
+      /* 3D Clay Ceramic Avatar */
       .initials {
         width: 44px;
         height: 44px;
-        border-radius: 16px;
-        background: var(--clay-bg-surface);
-        box-shadow: var(--clay-shadow-inner), 0 4px 10px rgba(0, 0, 0, 0.35);
-        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 14px;
+        background: #F8FAFC;
+        box-shadow: inset 0 1.5px 2px #FFFFFF, 0 3px 8px rgba(45, 65, 95, 0.04);
+        border: 1px solid rgba(226, 232, 240, 0.9);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -809,15 +804,15 @@
         font-size: 15px;
         font-weight: 800;
         letter-spacing: -0.02em;
-        color: var(--text-primary);
+        color: #0F172A;
         flex-shrink: 0;
         position: relative;
       }
 
       [data-theme="light"] .initials {
         background: #F8FAFC;
-        border: 1px solid rgba(0, 0, 0, 0.06);
-        box-shadow: inset 1px 1px 1px #ffffff, 0 4px 10px rgba(0, 0, 0, 0.05);
+        border: 1px solid rgba(226, 232, 240, 0.9);
+        box-shadow: inset 0 1.5px 2px #FFFFFF, 0 3px 8px rgba(45, 65, 95, 0.04);
       }
 
       /* Info */
@@ -833,7 +828,7 @@
         font-family: "Inter", -apple-system, sans-serif;
         font-size: 13.5px;
         font-weight: 700;
-        color: var(--text-secondary);
+        color: #64748B;
         white-space: normal;
         display: -webkit-box;
         -webkit-line-clamp: 2;
@@ -846,11 +841,11 @@
 
       .doc-spec {
         font-family: "Plus Jakarta Sans", "Inter", sans-serif;
-        font-size: 17.5px;
+        font-size: 17px;
         font-weight: 800;
-        color: var(--text-primary);
+        color: #0F172A;
         text-transform: uppercase;
-        letter-spacing: 0.01em;
+        letter-spacing: -0.01em;
         margin-bottom: 2px;
         line-height: 1.15;
       }
@@ -879,8 +874,8 @@
         align-items: center;
         gap: 6px;
         position: relative; 
-        box-shadow: 0 4px 14px var(--status-bg), inset 1px 1px 1px rgba(255, 255, 255, 0.4);
-        border: 1px solid rgba(255, 255, 255, 0.15);
+        box-shadow: 0 4px 14px var(--status-bg), inset 0 1px 1px rgba(255, 255, 255, 0.45);
+        border: 1px solid rgba(255, 255, 255, 0.2);
       }
       
       /* Pulse Dot next to active pills */
@@ -901,7 +896,8 @@
         display: flex;
         align-items: center;
         justify-content: flex-end;
-        background: var(--clay-inset);
+        background: rgba(241, 245, 249, 0.9);
+        border: 1px solid rgba(226, 232, 240, 0.8);
         padding: 4px 10px;
         border-radius: 12px;
       }
@@ -910,49 +906,49 @@
         font-family: "Plus Jakarta Sans", "Inter", sans-serif;
         font-size: 14px;
         font-weight: 800;
-        color: var(--text-primary);
+        color: #0F172A;
         font-variant-numeric: tabular-nums;
         letter-spacing: 0.02em;
         line-height: 1;
       }
 
       /* Status Styles - Modern 3D Clinical Gradients */
-      .st-praktek { --status-color: #10B981; --status-bg: rgba(16, 185, 129, 0.4); }
-      .st-pendaftaran { --status-color: #F97316; --status-bg: rgba(249, 115, 22, 0.4); }
-      .st-terjadwal { --status-color: #0EA5E9; --status-bg: rgba(14, 165, 233, 0.4); }
-      .st-selesai { --status-color: #64748B; --status-bg: rgba(100, 116, 139, 0.3); opacity: 0.65; }
-      .st-penuh { --status-color: #F59E0B; --status-bg: rgba(245, 158, 11, 0.4); }
-      .st-operasi { --status-color: #8B5CF6; --status-bg: rgba(139, 92, 246, 0.4); }
-      .st-cuti { --status-color: #EF4444; --status-bg: rgba(239, 68, 68, 0.4); opacity: 0.7; }
-      .st-libur { --status-color: #64748B; --status-bg: rgba(100, 116, 139, 0.3); display: none; }
+      .st-praktek { --status-color: #059669; --status-bg: rgba(5, 150, 105, 0.28); }
+      .st-pendaftaran { --status-color: #D97706; --status-bg: rgba(217, 119, 6, 0.28); }
+      .st-terjadwal { --status-color: #0284C7; --status-bg: rgba(2, 132, 199, 0.28); }
+      .st-selesai { --status-color: #64748B; --status-bg: rgba(100, 116, 139, 0.2); opacity: 0.65; }
+      .st-penuh { --status-color: #D97706; --status-bg: rgba(217, 119, 6, 0.28); }
+      .st-operasi { --status-color: #7C3AED; --status-bg: rgba(124, 58, 237, 0.28); }
+      .st-cuti { --status-color: #DC2626; --status-bg: rgba(220, 38, 38, 0.28); opacity: 0.75; }
+      .st-libur { --status-color: #64748B; --status-bg: rgba(100, 116, 139, 0.2); display: none; }
 
-      .platter.st-praktek .initials { color: #10B981; border-color: rgba(16, 185, 129, 0.3); box-shadow: var(--clay-shadow-inner), 0 0 14px rgba(16, 185, 129, 0.3); }
-      .platter.st-pendaftaran .initials { color: #F97316; border-color: rgba(249, 115, 22, 0.3); box-shadow: var(--clay-shadow-inner), 0 0 14px rgba(249, 115, 22, 0.3); }
-      .platter.st-terjadwal .initials { color: #0EA5E9; border-color: rgba(14, 165, 233, 0.3); }
+      .platter.st-praktek .initials { color: #059669; border-color: rgba(5, 150, 105, 0.25); }
+      .platter.st-pendaftaran .initials { color: #D97706; border-color: rgba(217, 119, 6, 0.25); }
+      .platter.st-terjadwal .initials { color: #0284C7; border-color: rgba(2, 132, 199, 0.25); }
       .platter.st-selesai .initials { color: #64748B; }
-      .platter.st-penuh .initials { color: #F59E0B; border-color: rgba(245, 158, 11, 0.3); }
-      .platter.st-cuti .initials { color: #EF4444; border-color: rgba(239, 68, 68, 0.3); }
-      .platter.st-operasi .initials { color: #8B5CF6; border-color: rgba(139, 92, 246, 0.3); box-shadow: var(--clay-shadow-inner), 0 0 14px rgba(139, 92, 246, 0.3); }
+      .platter.st-penuh .initials { color: #D97706; border-color: rgba(217, 119, 6, 0.25); }
+      .platter.st-cuti .initials { color: #DC2626; border-color: rgba(220, 38, 38, 0.25); }
+      .platter.st-operasi .initials { color: #7C3AED; border-color: rgba(124, 58, 237, 0.25); }
 
       .platter.st-praktek, .platter.st-pendaftaran { z-index: 5; }
-      .platter.st-praktek { box-shadow: 0 0 20px rgba(16, 185, 129, 0.15), var(--clay-shadow-outer), var(--clay-shadow-inner); border-color: rgba(16, 185, 129, 0.25); }
-      .platter.st-pendaftaran { animation: pendaftaran-pulse 2s infinite; }
+      .platter.st-praktek { box-shadow: 0 12px 28px -4px rgba(5, 150, 105, 0.12), inset 0 1.5px 1.5px #FFFFFF; border-color: rgba(5, 150, 105, 0.25); }
+      .platter.st-pendaftaran { animation: pendaftaran-pulse 2.5s infinite; }
       @keyframes pendaftaran-pulse { 
-        0% { box-shadow: 0 0 8px rgba(249, 115, 22, 0.2), var(--clay-shadow-outer); } 
-        50% { box-shadow: 0 0 22px rgba(249, 115, 22, 0.45), var(--clay-shadow-outer); } 
-        100% { box-shadow: 0 0 8px rgba(249, 115, 22, 0.2), var(--clay-shadow-outer); } 
+        0% { box-shadow: 0 10px 24px -4px rgba(217, 119, 6, 0.1), inset 0 1.5px 1.5px #FFFFFF; } 
+        50% { box-shadow: 0 16px 36px -4px rgba(217, 119, 6, 0.22), inset 0 1.5px 1.5px #FFFFFF; } 
+        100% { box-shadow: 0 10px 24px -4px rgba(217, 119, 6, 0.1), inset 0 1.5px 1.5px #FFFFFF; } 
       }
       
-      .platter.st-praktek .jam-val { color: #10B981; }
-      .platter.st-pendaftaran .jam-val { color: #F97316; }
+      .platter.st-praktek .jam-val { color: #059669; }
+      .platter.st-pendaftaran .jam-val { color: #D97706; }
 
       /* st-buka */
-      .st-buka { --status-color: #10B981; --status-bg: rgba(16, 185, 129, 0.35); }
-      .st-buka .initials { color: #10B981; }
-      .st-buka.active { background: var(--clay-bg-surface) !important; box-shadow: 0 0 20px rgba(16, 185, 129, 0.35), var(--clay-shadow-outer) !important; }
+      .st-buka { --status-color: #059669; --status-bg: rgba(5, 150, 105, 0.28); }
+      .st-buka .initials { color: #059669; }
+      .st-buka.active { background: #FFFFFF !important; box-shadow: 0 16px 36px -4px rgba(5, 150, 105, 0.2), inset 0 1.5px 1.5px #FFFFFF !important; }
 
-      .st-buka.st-terjadwal { --status-color: #0EA5E9; --status-bg: rgba(14, 165, 233, 0.35); }
-      .st-buka.st-terjadwal .initials { color: #0EA5E9; }
+      .st-buka.st-terjadwal { --status-color: #0284C7; --status-bg: rgba(2, 132, 199, 0.28); }
+      .st-buka.st-terjadwal .initials { color: #0284C7; }
       
       /* ===== ACTIVE CALL HIGHLIGHT (NEW) ===== */
       .platter-main {
@@ -964,12 +960,11 @@
 
       .platter.active {
         z-index: 100;
-        background: var(--clay-bg-surface) !important;
-        border: 1px solid rgba(16, 185, 129, 0.4) !important;
+        background: #FFFFFF !important;
+        border: 1.5px solid rgba(5, 150, 105, 0.45) !important;
         box-shadow: 
-          0 0 30px var(--status-bg),
-          var(--clay-shadow-outer), 
-          var(--clay-shadow-inner) !important;
+          0 18px 40px -4px rgba(5, 150, 105, 0.22),
+          inset 0 2px 2px #FFFFFF !important;
         transform: translateZ(0) translateY(-2px) scale(1.01); 
         opacity: 1 !important;
       }
@@ -977,10 +972,10 @@
       /* Light Mode Override */
       [data-theme="light"] .platter.active {
         background: #FFFFFF !important;
-        border: 1px solid rgba(16, 185, 129, 0.5) !important;
+        border: 1.5px solid rgba(5, 150, 105, 0.45) !important;
         box-shadow: 
-          0 10px 30px rgba(16, 185, 129, 0.25),
-          0 4px 10px rgba(0,0,0,0.05) !important;
+          0 18px 40px -4px rgba(5, 150, 105, 0.22),
+          inset 0 2px 2px #FFFFFF !important;
         color: #0F172A !important;
       }
 
