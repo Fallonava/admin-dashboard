@@ -2137,16 +2137,16 @@
         font-size: 15px;
       }
 
-      /* 2-Column Apple Widget Body Grid (Current Doctor & Next Shift) */
+      /* 2-Column Apple Widget Body Grid (Critical Hourly Information Bulletin) */
       .di-modal-body-grid {
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 1.15fr 1fr;
         gap: 10px;
         width: 100%;
         margin: 5px 0 3px 0;
       }
 
-      /* Left: Active On-Duty Doctor Card */
+      /* Left: Main Operational Notice Card */
       .di-modal-hero-card {
         background: rgba(255, 255, 255, 0.06);
         border: 1px solid rgba(255, 255, 255, 0.12);
@@ -2155,7 +2155,7 @@
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        gap: 5px;
+        gap: 4px;
         position: relative;
         overflow: hidden;
       }
@@ -2178,7 +2178,7 @@
         25%, 100% { transform: translateX(100%) rotate(25deg); }
       }
 
-      /* Right: Next Shift Doctor Card */
+      /* Right: Clinical & Facility Notice Card */
       .di-modal-next-card {
         background: rgba(255, 255, 255, 0.04);
         border: 1px solid rgba(255, 255, 255, 0.08);
@@ -2187,7 +2187,7 @@
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        gap: 5px;
+        gap: 4px;
       }
 
       .di-hero-header {
@@ -2245,8 +2245,8 @@
       }
 
       .di-hero-avatar-box {
-        width: 38px;
-        height: 38px;
+        width: 36px;
+        height: 36px;
         border-radius: 12px;
         background: var(--accent-emerald-gradient);
         color: #FFFFFF;
@@ -2259,8 +2259,8 @@
       }
 
       .di-next-avatar-box {
-        width: 38px;
-        height: 38px;
+        width: 36px;
+        height: 36px;
         border-radius: 12px;
         background: linear-gradient(135deg, #0284C7, #0369A1);
         color: #FFFFFF;
@@ -2287,7 +2287,7 @@
 
       .di-hero-doc-name {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 13px;
+        font-size: 12.5px;
         font-weight: 800;
         color: #FFFFFF;
         white-space: nowrap;
@@ -2298,12 +2298,15 @@
 
       .di-hero-doc-spec {
         font-family: "Inter", sans-serif;
-        font-size: 10px;
-        font-weight: 600;
+        font-size: 9.5px;
+        font-weight: 500;
         color: #94A3B8;
-        white-space: nowrap;
+        white-space: normal;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
         overflow: hidden;
-        text-overflow: ellipsis;
+        line-height: 1.25;
         margin-top: 1px;
       }
 
@@ -2323,7 +2326,7 @@
         font-weight: 700;
         color: #CBD5E1;
         background: rgba(255, 255, 255, 0.08);
-        padding: 1.5px 6px;
+        padding: 1px 6px;
         border-radius: 5px;
       }
 
@@ -3070,48 +3073,48 @@
           </div>
         </div>
 
-        <!-- Middle Content: 2-Column Apple Widget Grid -->
+        <!-- Middle Content: 2-Column Apple Widget Grid (Critical Information Bulletin) -->
         <div class="di-modal-body-grid">
-          <!-- Left Column: Active Doctor (Sedang Melayani Saat Ini) -->
-          <div class="di-modal-hero-card" id="diModalDoctorCard">
+          <!-- Left Column: Main Operational & Queue Notice Card -->
+          <div class="di-modal-hero-card" id="diModalNoticeLeft">
             <div class="di-hero-header">
-              <span class="di-hero-tag" id="diHeroTag">DOKTER SEDANG PRAKTEK</span>
-              <span class="di-hero-status-badge" id="diModalStatus">MELAYANI PASIEN</span>
+              <span class="di-hero-tag" id="diInfoTagLeft">PENGUMUMAN ALUR ANTREAN</span>
+              <span class="di-hero-status-badge" id="diInfoBadgeLeft">PENTING</span>
             </div>
             <div class="di-hero-main-row">
               <div class="di-hero-avatar-box">
-                <span id="diModalAvatar" class="material-icons-round di-hero-avatar-icon">medical_services</span>
+                <span id="diInfoIconLeft" class="material-icons-round di-hero-avatar-icon">notifications_active</span>
               </div>
               <div class="di-hero-info">
-                <h5 id="diModalDocName" class="di-hero-doc-name">dr. Poliklinik Rawat Jalan</h5>
-                <p id="diModalDocSpec" class="di-hero-doc-spec">Spesialis Medis • Ruang Poliklinik</p>
+                <h5 id="diInfoTitleLeft" class="di-hero-doc-name">Perhatikan Panggilan Nomor Antrean</h5>
+                <p id="diInfoDescLeft" class="di-hero-doc-spec">Harap tetap berada di ruang tunggu. Nomor antrean dipanggil bertahap via layar dan pengeras suara.</p>
                 <div class="di-hero-meta-row">
-                  <span class="di-hero-meta-pill" id="diModalMetaPill">
-                    <span class="material-icons-round">schedule</span>
-                    <span id="diModalDocTime">Shift Pagi • Sedang Berlangsung</span>
+                  <span class="di-hero-meta-pill" id="diInfoPillLeft">
+                    <span class="material-icons-round">volume_up</span>
+                    <span id="diInfoActionLeft">Panggilan Layar & Audio Aktif</span>
                   </span>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Right Column: Next Shift Doctor (Dokter Shift Berikutnya) -->
-          <div class="di-modal-next-card" id="diModalNextCard">
+          <!-- Right Column: Administrative & Clinical Facility Notice Card -->
+          <div class="di-modal-next-card" id="diModalNoticeRight">
             <div class="di-hero-header">
-              <span class="di-next-tag" id="diNextTag">DOKTER SHIFT BERIKUTNYA</span>
-              <span class="di-next-status-badge" id="diNextStatus">SEGERA BUKA</span>
+              <span class="di-next-tag" id="diInfoTagRight">BERKAS & FASILITAS RS</span>
+              <span class="di-next-status-badge" id="diInfoBadgeRight">INFORMASI</span>
             </div>
             <div class="di-hero-main-row">
               <div class="di-next-avatar-box">
-                <span id="diNextAvatar" class="material-icons-round di-hero-avatar-icon">schedule</span>
+                <span id="diInfoIconRight" class="material-icons-round di-hero-avatar-icon">assignment_turned_in</span>
               </div>
               <div class="di-hero-info">
-                <h5 id="diNextDocName" class="di-hero-doc-name">dr. Shift Lanjutan</h5>
-                <p id="diNextDocSpec" class="di-hero-doc-spec">Poli Spesialis Terjadwal</p>
+                <h5 id="diInfoTitleRight" class="di-hero-doc-name">Kelengkapan Berkas & Resep Obat</h5>
+                <p id="diInfoDescRight" class="di-hero-doc-spec">Pastikan KTP/BPJS siap. Resep obat diserahkan ke loket Farmasi setelah selesai konsultasi dokter.</p>
                 <div class="di-hero-meta-row">
-                  <span class="di-hero-meta-pill" id="diNextMetaPill">
-                    <span class="material-icons-round">update</span>
-                    <span id="diNextDocTime">Shift Siang • 13:00 WIB</span>
+                  <span class="di-hero-meta-pill" id="diInfoPillRight">
+                    <span class="material-icons-round">local_pharmacy</span>
+                    <span id="diInfoActionRight">Farmasi, Lab & IGD Siaga</span>
                   </span>
                 </div>
               </div>
@@ -3770,108 +3773,111 @@
 
           if ($("diModalClockText")) $("diModalClockText").textContent = timeStr;
 
-          const docs = App._data.doctors || [];
-          const shifts = App._data.shifts || [];
-          const activeDocs = docs.filter(d => (d.Status || "").toUpperCase().includes("PRAKTEK"));
-          const waitDocs = docs.filter(d => (d.Status || "").toUpperCase().includes("TERJADWAL") || (d.Status || "").toUpperCase().includes("PENDAFTARAN"));
-
-          // 1. Cek apakah ada dokter shift baru jam ini
-          const newShiftDocs = [];
-          shifts.forEach(s => {
-            const time = s.formattedTime || s.title || "";
-            if (time.includes(String(curHour).padStart(2, "0") + ":") || time.includes(String(curHour) + ".")) {
-              const doc = docs.find(d => d.id === s.doctorId);
-              if (doc && !newShiftDocs.some(d => d.id === doc.id)) {
-                newShiftDocs.push({ ...doc, shiftTime: time });
+          // Rotasi Paket Informasi Penting Jam-an Rumah Sakit
+          const bulletins = [
+            {
+              left: {
+                tag: "PENGUMUMAN ALUR ANTREAN",
+                badge: "PENTING",
+                badgeColor: "#34D399",
+                icon: "notifications_active",
+                title: "Perhatikan Panggilan Nomor Antrean",
+                desc: "Nomor antrean dipanggil bertahap via layar TV dan pengeras suara. Pasien terlewat harap segera lapor petugas loket.",
+                action: "Panggilan Layar & Audio Aktif",
+                actionIcon: "volume_up"
+              },
+              right: {
+                tag: "BERKAS & FASILITAS RS",
+                badge: "INFORMASI",
+                badgeColor: "#38BDF8",
+                icon: "assignment_turned_in",
+                title: "Kelengkapan Berkas & Resep Obat",
+                desc: "Pastikan KTP/BPJS siap. Resep obat diserahkan ke loket Farmasi setelah selesai pemeriksaan poliklinik dokter.",
+                action: "Farmasi, Lab & IGD 24 Jam",
+                actionIcon: "local_pharmacy"
+              }
+            },
+            {
+              left: {
+                tag: "VERIFIKASI JAMINAN PASIEN",
+                badge: "WAJIB BPJS",
+                badgeColor: "#34D399",
+                icon: "verified_user",
+                title: "Persyaratan Kartu BPJS & Rujukan",
+                desc: "Pastikan status kepesertaan BPJS aktif dan surat rujukan FKTP masih berlaku untuk kelancaran penerbitan SEP.",
+                action: "Loket Verifikasi BPJS Siaga",
+                actionIcon: "badge"
+              },
+              right: {
+                tag: "LAYANAN PENUNJANG MEDIS",
+                badge: "SIAGA 24 JAM",
+                badgeColor: "#38BDF8",
+                icon: "health_and_safety",
+                title: "Laboratorium & Radiologi Lengkap",
+                desc: "Layanan cek darah, rontgen, USG, serta IGD siap melayani konsultasi dan rujukan medis darurat non-stop.",
+                action: "Hasil Cepat & Terintegrasi",
+                actionIcon: "biotech"
+              }
+            },
+            {
+              left: {
+                tag: "TATA TERTIB RUANG TUNGGU",
+                badge: "KETERTIBAN",
+                badgeColor: "#FBBF24",
+                icon: "groups",
+                title: "Kenyamanan & Kebersihan Bersama",
+                desc: "Harap menjaga ketenangan di ruang tunggu, dampingi lansia & anak-anak, serta buang sampah pada tempat yang tersedia.",
+                action: "Kawasan Tertib & Nyaman",
+                actionIcon: "clean_hands"
+              },
+              right: {
+                tag: "LAYANAN RAWAT JALAN & INAP",
+                badge: "PELAYANAN",
+                badgeColor: "#38BDF8",
+                icon: "local_hospital",
+                title: "Informasi Kamar & Rawat Inap",
+                desc: "Konsultasikan ketersediaan kamar rawat inap dan jadwal kontrol lanjutan dengan petugas admisi rumah sakit.",
+                action: "Pusat Informasi Siaga",
+                actionIcon: "info"
               }
             }
-          });
+          ];
 
-          // 2. Populate Left Card: Active Doctor
-          if (newShiftDocs.length > 0) {
-            const feat = newShiftDocs[0];
-            if ($("diHeroTag")) $("diHeroTag").textContent = "DOKTER SHIFT " + String(curHour).padStart(2, "0") + ":00 WIB";
-            if ($("diModalDocName")) $("diModalDocName").textContent = feat.name || "dr. Spesialis";
-            if ($("diModalDocSpec")) $("diModalDocSpec").textContent = (feat.specialty || "Spesialis") + (feat.Ruangan ? " • " + feat.Ruangan : "");
-            if ($("diModalDocTime")) $("diModalDocTime").textContent = feat.shiftTime || "Shift Jam Berjalan";
-            if ($("diModalStatus")) {
-              $("diModalStatus").textContent = "MULAI SHIFT";
-              $("diModalStatus").style.color = "#34D399";
-            }
-          } else if (activeDocs.length > 0) {
-            const feat = activeDocs[0];
-            if ($("diHeroTag")) $("diHeroTag").textContent = "DOKTER BERPRAKTEK SAAT INI";
-            if ($("diModalDocName")) $("diModalDocName").textContent = feat.Dokter || feat.name || "dr. Praktek";
-            if ($("diModalDocSpec")) $("diModalDocSpec").textContent = (feat.Spesialis || feat.specialty || "Spesialis") + (feat.Ruangan ? " • " + feat.Ruangan : " • Sedang Melayani");
-            if ($("diModalDocTime")) $("diModalDocTime").textContent = feat.Jam || feat.formattedTime || "Layanan Aktif";
-            if ($("diModalStatus")) {
-              $("diModalStatus").textContent = "SEDANG PRAKTEK";
-              $("diModalStatus").style.color = "#10B981";
-            }
-          } else {
-            if ($("diHeroTag")) $("diHeroTag").textContent = "STATUS POLIKLINIK RAWAT JALAN";
-            if ($("diModalDocName")) $("diModalDocName").textContent = "Poliklinik Siaga Medika";
-            if ($("diModalDocSpec")) $("diModalDocSpec").textContent = "Layanan Pendaftaran & Terjadwal";
-            if ($("diModalDocTime")) $("diModalDocTime").textContent = "08:00 - Selesai";
-            if ($("diModalStatus")) {
-              $("diModalStatus").textContent = "TERJADWAL";
-              $("diModalStatus").style.color = "#38BDF8";
-            }
-          }
+          const curBulletin = bulletins[curHour % bulletins.length];
 
-          // 3. Populate Right Card: Next Shift / Upcoming Doctor
-          let nextDoc = null;
-          for (let h = curHour + 1; h <= 21; h++) {
-            const foundShift = shifts.find(s => {
-              const time = s.formattedTime || s.title || "";
-              return time.includes(String(h).padStart(2, "0") + ":") || time.includes(String(h) + ".");
-            });
-            if (foundShift) {
-              const doc = docs.find(d => d.id === foundShift.doctorId);
-              if (doc) {
-                nextDoc = { ...doc, nextHour: h, timeStr: foundShift.formattedTime || (String(h).padStart(2, "0") + ":00 WIB") };
-                break;
-              }
-            }
-          }
-
-          if (!nextDoc && waitDocs.length > 0) {
-            const activeName = $("diModalDocName") ? $("diModalDocName").textContent : "";
-            const nextCandidate = waitDocs.find(d => (d.Dokter || d.name) !== activeName);
-            if (nextCandidate) {
-              nextDoc = {
-                name: nextCandidate.Dokter || nextCandidate.name,
-                specialty: nextCandidate.Spesialis || nextCandidate.specialty,
-                Ruangan: nextCandidate.Ruangan,
-                timeStr: nextCandidate.Jam || "Shift Berikutnya"
-              };
-            }
-          }
-
-          if (nextDoc) {
-            if ($("diNextTag")) $("diNextTag").textContent = "DOKTER SHIFT BERIKUTNYA";
-            if ($("diNextDocName")) $("diNextDocName").textContent = nextDoc.Dokter || nextDoc.name || "dr. Spesialis";
-            if ($("diNextDocSpec")) $("diNextDocSpec").textContent = (nextDoc.Spesialis || nextDoc.specialty || "Poli Spesialis") + (nextDoc.Ruangan ? " • " + nextDoc.Ruangan : "");
-            if ($("diNextDocTime")) $("diNextDocTime").textContent = nextDoc.timeStr || "Terjadwal";
-            if ($("diNextStatus")) {
-              $("diNextStatus").textContent = "SEGERA BUKA";
-              $("diNextStatus").style.color = "#38BDF8";
-            }
-          } else {
-            if ($("diNextTag")) $("diNextTag").textContent = "INFORMASI PELAYANAN";
-            if ($("diNextDocName")) $("diNextDocName").textContent = "Layanan Terpadu RS";
-            if ($("diNextDocSpec")) $("diNextDocSpec").textContent = "Farmasi, Lab & Radiologi Buka 24 Jam";
-            if ($("diNextDocTime")) $("diNextDocTime").textContent = "Siaga Non-Stop";
-            if ($("diNextStatus")) {
-              $("diNextStatus").textContent = "STANDBY";
-              $("diNextStatus").style.color = "#94A3B8";
-            }
-          }
-
-          // 4. Custom message di modal footer
+          // Priority: Jika ada pesan admin khusus, tampilkan di Left Card!
           if (App._customMsgs && App._customMsgs.length > 0) {
-            const msg = App._customMsgs[App._customMsgIdx % App._customMsgs.length];
-            if ($("diModalMessage")) $("diModalMessage").textContent = msg.text || msg.message || "Terima kasih sudah menunggu dan tertib mengantre.";
+            const adminMsg = App._customMsgs[App._customMsgIdx % App._customMsgs.length];
+            curBulletin.left.tag = adminMsg.title || "PENGUMUMAN MANAJEMEN RS";
+            curBulletin.left.badge = "SIARAN PUSAT";
+            curBulletin.left.title = adminMsg.text || adminMsg.message || curBulletin.left.title;
+          }
+
+          // Populate Left Card
+          if ($("diInfoTagLeft")) $("diInfoTagLeft").textContent = curBulletin.left.tag;
+          if ($("diInfoBadgeLeft")) {
+            $("diInfoBadgeLeft").textContent = curBulletin.left.badge;
+            $("diInfoBadgeLeft").style.color = curBulletin.left.badgeColor;
+          }
+          if ($("diInfoIconLeft")) $("diInfoIconLeft").textContent = curBulletin.left.icon;
+          if ($("diInfoTitleLeft")) $("diInfoTitleLeft").textContent = curBulletin.left.title;
+          if ($("diInfoDescLeft")) $("diInfoDescLeft").textContent = curBulletin.left.desc;
+          if ($("diInfoActionLeft")) $("diInfoActionLeft").textContent = curBulletin.left.action;
+
+          // Populate Right Card
+          if ($("diInfoTagRight")) $("diInfoTagRight").textContent = curBulletin.right.tag;
+          if ($("diInfoBadgeRight")) {
+            $("diInfoBadgeRight").textContent = curBulletin.right.badge;
+            $("diInfoBadgeRight").style.color = curBulletin.right.badgeColor;
+          }
+          if ($("diInfoIconRight")) $("diInfoIconRight").textContent = curBulletin.right.icon;
+          if ($("diInfoTitleRight")) $("diInfoTitleRight").textContent = curBulletin.right.title;
+          if ($("diInfoDescRight")) $("diInfoDescRight").textContent = curBulletin.right.desc;
+          if ($("diInfoActionRight")) $("diInfoActionRight").textContent = curBulletin.right.action;
+
+          // Custom message di modal footer
+          if ($("diModalMessage")) {
+            $("diModalMessage").textContent = "RSU Siaga Medika • Melayani dengan Sepenuh Hati • Harap perhatikan panggilan nomor antrean Anda.";
           }
         },
 
