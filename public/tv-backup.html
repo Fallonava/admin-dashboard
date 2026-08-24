@@ -2349,9 +2349,9 @@
 
       /* ===== OPTIMASI RESOLUSI 962x541 (Smart TV / Display Kiosk) ===== */
       @media (max-width: 1024px) and (max-height: 600px) {
-        /* --- CONTAINER: Padding lebih ketat --- */
+        /* --- CONTAINER: Padding lebih ketat dengan Safe Notch Space --- */
         .app-container {
-          padding: 8px 12px;
+          padding: 56px 12px 10px 12px;
           gap: 8px;
         }
 
@@ -2423,18 +2423,29 @@
         }
 
         .island-header {
-          height: 36px;
+          height: 44px;
           padding: 0 12px;
         }
 
-        .island-title {
-          font-size: 10px;
-          letter-spacing: 0.08em;
+        .island-icon-box {
+          width: 26px;
+          height: 26px;
+          border-radius: 8px;
         }
 
-        .island-badge {
-          font-size: 10px;
-          padding: 1px 6px;
+        .island-icon-box .material-icons-round {
+          font-size: 15px;
+        }
+
+        .island-title {
+          font-size: 11px;
+          font-weight: 800;
+          letter-spacing: 0.04em;
+        }
+
+        .island-live-badge {
+          font-size: 9px;
+          padding: 2px 7px;
         }
 
         /* --- SIDEBAR ISLAND HEADER --- */
@@ -2900,9 +2911,8 @@
 
       /* ===== SMART TV RESPONSIVE (960x540 / 720p series) ===== */
       @media (max-width: 1024px), (max-height: 600px) {
-        .app-container { gap: 10px; padding: 6px 12px 14px 12px; }
-        .header { margin-bottom: 10px; padding: 12px 14px 0 14px; gap: 8px; }
-        .island-header { height: 40px; padding: 0 16px; }
+        .app-container { gap: 10px; padding: 56px 12px 14px 12px; }
+        .island-header { height: 44px; padding: 0 14px; }
         
         /* Hindari bahaya overscan di dasar layar TV */
         .sidebar-panel { flex: 0 0 255px; min-width: 240px; padding-bottom: 12px; }
