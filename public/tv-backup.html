@@ -217,9 +217,8 @@
       }
 
       body.tv-optimized .ticker-inner {
-        animation: none !important;
-        /* Hentikan marquee */
-        transform: translateX(0) !important;
+        will-change: transform;
+        transform: translate3d(0, 0, 0);
       }
 
       body.tv-optimized .app-container,
@@ -3911,13 +3910,20 @@
         async init() {
           Island.init(); // Initialize Dynamic Island
 
-          // --- SMART TV OPTIMIZATION DETECTOR ---
+          // --- SMART TV & BROWSERHERE OPTIMIZATION DETECTOR ---
           const ua = navigator.userAgent.toLowerCase();
           if (
+            ua.includes("browserhere") ||
+            ua.includes("tcl") ||
+            ua.includes("android tv") ||
+            ua.includes("googletv") ||
+            ua.includes("aft") ||
             ua.includes("webos") ||
             ua.includes("tizen") ||
             ua.includes("smarttv") ||
-            ua.includes("netcast")
+            ua.includes("netcast") ||
+            ua.includes("crkey") ||
+            ua.includes("mibox")
           ) {
             document.body.classList.add("tv-optimized");
           }
