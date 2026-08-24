@@ -1608,9 +1608,10 @@
         border-radius: 9999px;
       }
 
-      /* Expanded State (Smooth Capsule Pill Toast) */
+      /* Expanded State (Smooth Adaptive Pill Toast) */
       .dynamic-island.di-expanded {
-        width: 580px;
+        min-width: 380px;
+        max-width: min(90vw, 840px);
         height: 54px;
         border-radius: 9999px;
         box-shadow: 
@@ -3591,6 +3592,7 @@
         openModal() {
           if (!this._el) return;
           this._state = "modal";
+          this._el.style.width = "";
           this._el.className = "dynamic-island di-modal";
           
           // Auto-update modal info dengan data dokter aktif saat ini
@@ -3612,6 +3614,7 @@
         setCompact() {
           this._state = "compact";
           if (this._el) {
+            this._el.style.width = "";
             this._el.className = "dynamic-island di-compact";
           }
         },
@@ -3690,20 +3693,28 @@
             $("diIcon").className = "material-icons-round di-icon";
           }
 
-          // 2. Morph to Expanded State
+          // 2. Compute dynamic adaptive target width in pixels
+          const msgLen = (item.msg || "").length;
+          const titleLen = (item.title || "").length;
+          const maxChar = Math.max(msgLen, titleLen * 1.6);
+          const targetWidth = Math.min(840, Math.max(380, Math.round(180 + maxChar * 8.2)));
+          this._el.style.width = `${targetWidth}px`;
+
+          // 3. Morph to Expanded State
           this._state = "expanded";
           this._el.className = `dynamic-island di-expanded di-${item.type}`;
 
-          // 3. Hold for duration
+          // 4. Hold for duration
           await new Promise((r) => setTimeout(r, item.duration));
 
-          // 4. Smooth Morph back to Compact (hanya jika user tidak membuka modal)
+          // 5. Smooth Morph back to Compact (hanya jika user tidak membuka modal)
           if (this._state === "expanded") {
+            this._el.style.width = "";
             this._el.className = "dynamic-island di-compact";
             this._state = "compact";
           }
 
-          // 5. Delay before next queue item
+          // 6. Delay before next queue item
           setTimeout(() => {
             this._isAnimating = false;
             if (this._queue.length > 0) this.processQueue();
