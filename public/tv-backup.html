@@ -1642,14 +1642,14 @@
           inset 0 1px 1.5px rgba(255, 255, 255, 0.45);
       }
 
-      /* Deep Interactive Modal State (Clicked / Expanded Activity) */
+      /* Deep Interactive Modal State (Downward Expanded Activity Widget) */
       .dynamic-island.di-modal {
-        width: 480px;
-        height: 220px;
-        border-radius: 36px;
+        width: 680px;
+        height: 235px;
+        border-radius: 38px;
         box-shadow: 
-          0 32px 75px rgba(0, 0, 0, 0.9), 
-          0 0 0 2px rgba(255, 255, 255, 0.25), 
+          0 32px 75px rgba(0, 0, 0, 0.95), 
+          0 0 0 1.5px rgba(16, 185, 129, 0.35), 
           inset 0 1px 2px rgba(255, 255, 255, 0.5);
       }
 
@@ -2780,9 +2780,15 @@
               <p class="di-modal-subtitle">Pusat Layanan & Display TV</p>
             </div>
           </div>
-          <button class="di-close-btn" onclick="event.stopPropagation(); Island.collapse();" title="Tutup">
-            <span class="material-icons-round">close</span>
-          </button>
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div class="di-hourly-pill-live" id="diModalClockBadge">
+              <span class="di-pulse-dot-sm"></span>
+              <span id="diModalClockText">--:-- WIB</span>
+            </div>
+            <button class="di-close-btn" onclick="event.stopPropagation(); Island.collapse();" title="Tutup">
+              <span class="material-icons-round">close</span>
+            </button>
+          </div>
         </div>
 
         <div class="di-modal-body">
@@ -3386,29 +3392,31 @@
           this.startAutoCycle();
         },
 
-        // Toggle antara Compact dan Hourly Showcase saat Dynamic Island diklik/disentuh
+        // Toggle antara Compact dan Downward Expanded Card saat Dynamic Island diklik/disentuh
         toggleExpand() {
-          if (this._state === "hourly" || this._state === "modal" || this._state === "expanded") {
+          if (this._state === "modal") {
             this.collapse();
           } else {
-            this.triggerHourlyBriefing(new Date());
+            this.openModal(15000);
           }
         },
 
-        openModal() {
+        openModal(duration = 18000) {
           if (!this._el) this._el = $("dynamicIsland");
           this._state = "modal";
           this._el.style.width = "";
           this._el.className = "dynamic-island di-modal";
+          this._isAnimating = true;
           
-          // Auto-update modal info dengan data dokter aktif saat ini
+          // Auto-update modal info dengan data dokter aktif & jam real-time
           this.syncModalData();
 
-          // Auto-collapse modal jika tidak ada interaksi selama 15 detik
+          // Auto-collapse modal jika tidak ada interaksi selama durasi
           clearTimeout(this._modalDismissTimer);
+          clearTimeout(this._hourlyTimer);
           this._modalDismissTimer = setTimeout(() => {
             if (this._state === "modal") this.collapse();
-          }, 15000);
+          }, duration);
         },
 
         collapse() {
@@ -3429,7 +3437,14 @@
 
         syncModalData() {
           if (!App || !App._data) return;
+          const now = new Date();
+          const curHour = now.getHours();
+          const timeStr = String(curHour).padStart(2, "0") + ":" + String(now.getMinutes()).padStart(2, "0") + " WIB";
+
+          if ($("diModalClockText")) $("diModalClockText").textContent = timeStr;
+
           const docs = App._data.doctors || [];
+          const shifts = App._data.shifts || [];
           const activeDocs = docs.filter(d => (d.Status || "").toUpperCase().includes("PRAKTEK"));
           const waitDocs = docs.filter(d => (d.Status || "").toUpperCase().includes("TERJADWAL") || (d.Status || "").toUpperCase().includes("PENDAFTARAN"));
           const offDocs = docs.filter(d => ["CUTI", "PENUH", "OPERASI"].some(st => (d.Status || "").toUpperCase().includes(st)));
@@ -3438,22 +3453,48 @@
           if ($("diStatWait")) $("diStatWait").textContent = waitDocs.length;
           if ($("diStatPenuh")) $("diStatPenuh").textContent = offDocs.length;
 
-          // Featured Active Doctor di Modal
-          if (activeDocs.length > 0) {
+          // Cek apakah ada dokter shift baru jam ini
+          const newShiftDocs = [];
+          shifts.forEach(s => {
+            const time = s.formattedTime || s.title || "";
+            if (time.includes(String(curHour).padStart(2, "0") + ":") || time.includes(String(curHour) + ".")) {
+              const doc = docs.find(d => d.id === s.doctorId);
+              if (doc && !newShiftDocs.some(d => d.id === doc.id)) {
+                newShiftDocs.push(doc);
+              }
+            }
+          });
+
+          // Featured Doctor di Modal Card
+          if (newShiftDocs.length > 0) {
+            const feat = newShiftDocs[0];
+            if ($("diModalDocName")) $("diModalDocName").textContent = feat.name || "dr. Praktek";
+            if ($("diModalDocSpec")) $("diModalDocSpec").textContent = (feat.specialty || "Spesialis") + " • Mulai Praktek Jam Ini";
+            if ($("diModalStatus")) {
+              $("diModalStatus").textContent = "SHIFT BARU " + String(curHour).padStart(2, "0") + ":00";
+              $("diModalStatus").style.color = "#34D399";
+            }
+          } else if (activeDocs.length > 0) {
             const feat = activeDocs[0];
-            if ($("diModalDocName")) $("diModalDocName").textContent = feat.Dokter || "dr. Praktek";
-            if ($("diModalDocSpec")) $("diModalDocSpec").textContent = (feat.Spesialis || "Spesialis") + " • Sedang Melayani";
-            if ($("diModalStatus")) $("diModalStatus").textContent = "SEDANG PRAKTEK";
+            if ($("diModalDocName")) $("diModalDocName").textContent = feat.Dokter || feat.name || "dr. Praktek";
+            if ($("diModalDocSpec")) $("diModalDocSpec").textContent = (feat.Spesialis || feat.specialty || "Spesialis") + " • Sedang Melayani";
+            if ($("diModalStatus")) {
+              $("diModalStatus").textContent = "SEDANG PRAKTEK";
+              $("diModalStatus").style.color = "#10B981";
+            }
           } else {
             if ($("diModalDocName")) $("diModalDocName").textContent = "Poliklinik Rawat Jalan";
             if ($("diModalDocSpec")) $("diModalDocSpec").textContent = "Layanan Terjadwal & Pendaftaran";
-            if ($("diModalStatus")) $("diModalStatus").textContent = "TERJADWAL";
+            if ($("diModalStatus")) {
+              $("diModalStatus").textContent = "TERJADWAL";
+              $("diModalStatus").style.color = "#38BDF8";
+            }
           }
 
           // Custom message di modal footer
           if (App._customMsgs && App._customMsgs.length > 0) {
             const msg = App._customMsgs[App._customMsgIdx % App._customMsgs.length];
-            if ($("diModalMessage")) $("diModalMessage").textContent = msg.text || msg.message || "Terimakasih sudah menunggu.";
+            if ($("diModalMessage")) $("diModalMessage").textContent = (msg.text || msg.message || "Terimakasih sudah menunggu.") + " • Hotline: 0823-2344-6076";
           }
         },
 
@@ -3562,60 +3603,8 @@
 
         // Trigger dynamic content computation for the current hour
         triggerHourlyBriefing(now = new Date()) {
-          const curHour = now.getHours();
-          const timeStr = String(curHour).padStart(2, "0") + ":00 WIB";
-
-          const docs = App._data.doctors || [];
-          const shifts = App._data.shifts || [];
-          const activeDocs = docs.filter(d => (d.Status || "").toUpperCase().includes("PRAKTEK"));
-          const offDocs = docs.filter(d => ["CUTI", "PENUH", "OPERASI"].some(st => (d.Status || "").toUpperCase().includes(st)));
-
-          const statsText = `${activeDocs.length} POLI AKTIF • ${offDocs.length} CUTI/PENUH`;
-
-          // 1. Cek apakah ada dokter yang mulai shift tepat di jam ini
-          const newShiftDocs = [];
-          shifts.forEach(s => {
-            const time = s.formattedTime || s.title || "";
-            if (time.includes(String(curHour).padStart(2, "0") + ":") || time.includes(String(curHour) + ".")) {
-              const doc = docs.find(d => d.id === s.doctorId);
-              if (doc && !newShiftDocs.some(d => d.id === doc.id)) {
-                newShiftDocs.push(doc);
-              }
-            }
-          });
-
-          let headline = "";
-          let subline = "";
-          let tag = "BRIEFING " + timeStr;
-
-          if (newShiftDocs.length > 0) {
-            const names = newShiftDocs.slice(0, 2).map(d => d.name).join(" & ");
-            const extra = newShiftDocs.length > 2 ? ` (+${newShiftDocs.length - 2} dokter lainnya)` : "";
-            headline = `${names}${extra} mulai melayani pasien jam ini.`;
-            subline = "Silakan persiapkan berkas pendaftaran dan perhatikan nomor antrean.";
-            tag = "DOKTER SHIFT " + timeStr;
-          } else if (App._customMsgs && App._customMsgs.length > 0 && Math.random() > 0.4) {
-            const item = App._customMsgs[App._customMsgIdx % App._customMsgs.length];
-            App._customMsgIdx++;
-            headline = item.text || item.message || "Selamat datang di RSU Siaga Medika.";
-            subline = "Informasi & pendaftaran WhatsApp: 0823-2344-6076";
-            tag = item.title || "INFORMASI RS";
-          } else {
-            // Rotasi Tips Edukasi & Layanan Jam-an
-            const tips = [
-              { h: "Pendaftaran Poliklinik Rawat Jalan & Farmasi Siap Melayani.", s: "Pastikan membawa KTP & Kartu BPJS aktif Anda." },
-              { h: "Layanan Poliklinik Spesialis Berjalan Tertib & Nyaman.", s: "Pendaftaran online dapat diakses via WhatsApp 0823-2344-6076." },
-              { h: "Jaga kebersihan & ketertiban bersama di area ruang tunggu.", s: "Harap mendengarkan panggilan nomor antrean di layar & audio." },
-              { h: "Layanan Laboratorium, Radiologi & Farmasi Buka Penuh.", s: "Konsultasikan hasil pemeriksaan Anda kepada dokter spesialis." },
-              { h: "Informasi Pelayanan Rawat Inap & IGD 24 Jam Non-Stop.", s: "RSU Siaga Medika siap melayani kebutuhan medis darurat Anda." },
-              { h: "Waktu Istirahat & Pergantian Shift Pelayanan Siang.", s: "Layanan poli siang & sore akan dilanjutkan sesuai jadwal dokter." }
-            ];
-            const tip = tips[curHour % tips.length];
-            headline = tip.h;
-            subline = tip.s;
-          }
-
-          this.showHourly(headline, subline, statsText, tag, timeStr, 18000);
+          this.syncModalData();
+          this.openModal(18000);
         },
 
         _lastHourlyTrigger: null,
