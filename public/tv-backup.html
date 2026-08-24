@@ -1653,9 +1653,21 @@
           inset 0 1px 2px rgba(255, 255, 255, 0.5);
       }
 
+      /* Hourly Expanded State (1 Hour Event Showcase) */
+      .dynamic-island.di-hourly {
+        width: 780px;
+        height: 94px;
+        border-radius: 47px;
+        box-shadow: 
+          0 28px 65px rgba(0, 0, 0, 0.9), 
+          0 0 0 1.5px rgba(16, 185, 129, 0.35), 
+          inset 0 1px 1.5px rgba(255, 255, 255, 0.45);
+      }
+
       /* GPU Accelerated Views Visibility Switcher */
       .di-compact-view,
       .di-expanded-view,
+      .di-hourly-view,
       .di-modal-view {
         position: absolute;
         inset: 0;
@@ -1667,7 +1679,7 @@
         opacity: 0;
         transform: scale(0.92) translateZ(0);
         pointer-events: none;
-        transition: opacity 0.25s ease, transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+        transition: opacity 0.28s ease, transform 0.38s cubic-bezier(0.32, 0.72, 0, 1);
         backface-visibility: hidden;
       }
 
@@ -1689,6 +1701,16 @@
         padding: 0 18px;
       }
 
+      .dynamic-island.di-hourly .di-hourly-view {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        opacity: 1;
+        transform: scale(1) translateZ(0);
+        pointer-events: auto;
+        padding: 10px 22px;
+      }
+
       .dynamic-island.di-modal .di-modal-view {
         display: flex;
         flex-direction: column;
@@ -1697,6 +1719,112 @@
         transform: scale(1) translateZ(0);
         pointer-events: auto;
         padding: 16px 20px;
+      }
+
+      /* --- Hourly Briefing View Items --- */
+      .di-hourly-badge-time {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        border-radius: 20px;
+        padding: 8px 14px;
+        flex-shrink: 0;
+        min-width: 90px;
+      }
+
+      .di-hourly-icon {
+        font-size: 20px;
+        color: var(--accent-emerald);
+        margin-bottom: 2px;
+      }
+
+      .di-hourly-clock {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 13px;
+        font-weight: 800;
+        color: #FFFFFF;
+        letter-spacing: -0.02em;
+        white-space: nowrap;
+      }
+
+      .di-hourly-divider {
+        width: 1px;
+        height: 52px;
+        background: rgba(255, 255, 255, 0.12);
+        flex-shrink: 0;
+      }
+
+      .di-hourly-body {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 3px;
+        flex: 1;
+        min-width: 0;
+      }
+
+      .di-hourly-top-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+      }
+
+      .di-hourly-tag {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 10px;
+        font-weight: 800;
+        color: var(--accent-emerald);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      .di-hourly-pill-live {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        background: rgba(5, 150, 105, 0.2);
+        border: 1px solid rgba(5, 150, 105, 0.4);
+        padding: 2px 8px;
+        border-radius: 9999px;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 9px;
+        font-weight: 800;
+        color: #34D399;
+        text-transform: uppercase;
+      }
+
+      .di-pulse-dot-sm {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: #34D399;
+        animation: pulse-glow 1.5s infinite;
+      }
+
+      .di-hourly-headline {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 13px;
+        font-weight: 700;
+        color: #FFFFFF;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        line-height: 1.2;
+      }
+
+      .di-hourly-subline {
+        font-family: "Inter", sans-serif;
+        font-size: 11px;
+        font-weight: 500;
+        color: #94A3B8;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        line-height: 1.2;
       }
 
       /* --- Compact View Items --- */
@@ -2615,8 +2743,23 @@
           </div>
           <span id="diMsg" class="di-msg">Memuat jadwal dokter...</span>
         </div>
-        <div class="di-action-badge">
-          <span class="di-tap-hint">Detail</span>
+      <!-- Hourly Briefing View (1 Hour Event Showcase) -->
+      <div class="di-hourly-view" id="diHourlyView">
+        <div class="di-hourly-badge-time">
+          <span class="material-icons-round di-hourly-icon">schedule</span>
+          <span id="diHourlyTime" class="di-hourly-clock">00:00 WIB</span>
+        </div>
+        <div class="di-hourly-divider"></div>
+        <div class="di-hourly-body">
+          <div class="di-hourly-top-row">
+            <span id="diHourlyTag" class="di-hourly-tag">UPDATE POLIKLINIK</span>
+            <span class="di-hourly-pill-live" id="diHourlyStatusPill">
+              <span class="di-pulse-dot-sm"></span>
+              <span id="diHourlyStatsText">LAYANAN AKTIF</span>
+            </span>
+          </div>
+          <div id="diHourlyHeadline" class="di-hourly-headline">Memuat jadwal dokter aktif...</div>
+          <div id="diHourlySubline" class="di-hourly-subline">Silakan persiapkan berkas pendaftaran dan tertib mengantre.</div>
         </div>
       </div>
 
@@ -3373,15 +3516,117 @@
           }, 600);
         },
 
+        // Tampilkan Hourly Clinic Briefing (Expanded XL Hero Showcase)
+        async showHourly(headline, subline, statsText, tag = "UPDATE POLIKLINIK", timeStr = null, duration = 18000) {
+          if (this._isAnimating || this._state === "modal") return;
+
+          this._isAnimating = true;
+          if (!this._el) this._el = $("dynamicIsland");
+
+          const now = new Date();
+          const clock = timeStr || (String(now.getHours()).padStart(2, "0") + ":00 WIB");
+
+          if ($("diHourlyTime")) $("diHourlyTime").textContent = clock;
+          if ($("diHourlyTag")) $("diHourlyTag").textContent = tag;
+          if ($("diHourlyStatsText")) $("diHourlyStatsText").textContent = statsText || "LAYANAN AKTIF";
+          if ($("diHourlyHeadline")) $("diHourlyHeadline").textContent = headline;
+          if ($("diHourlySubline")) $("diHourlySubline").textContent = subline;
+
+          this._state = "hourly";
+          this._el.style.width = "";
+          this._el.className = "dynamic-island di-hourly";
+
+          // Hold for 18 seconds
+          await new Promise((r) => setTimeout(r, duration));
+
+          if (this._state === "hourly") {
+            this.setCompact();
+          }
+
+          setTimeout(() => {
+            this._isAnimating = false;
+            if (this._queue.length > 0) this.processQueue();
+          }, 600);
+        },
+
+        // Trigger dynamic content computation for the current hour
+        triggerHourlyBriefing(now = new Date()) {
+          const curHour = now.getHours();
+          const timeStr = String(curHour).padStart(2, "0") + ":00 WIB";
+
+          const docs = App._data.doctors || [];
+          const shifts = App._data.shifts || [];
+          const activeDocs = docs.filter(d => (d.Status || "").toUpperCase().includes("PRAKTEK"));
+          const offDocs = docs.filter(d => ["CUTI", "PENUH", "OPERASI"].some(st => (d.Status || "").toUpperCase().includes(st)));
+
+          const statsText = `${activeDocs.length} POLI AKTIF • ${offDocs.length} CUTI/PENUH`;
+
+          // 1. Cek apakah ada dokter yang mulai shift tepat di jam ini
+          const newShiftDocs = [];
+          shifts.forEach(s => {
+            const time = s.formattedTime || s.title || "";
+            if (time.includes(String(curHour).padStart(2, "0") + ":") || time.includes(String(curHour) + ".")) {
+              const doc = docs.find(d => d.id === s.doctorId);
+              if (doc && !newShiftDocs.some(d => d.id === doc.id)) {
+                newShiftDocs.push(doc);
+              }
+            }
+          });
+
+          let headline = "";
+          let subline = "";
+          let tag = "BRIEFING " + timeStr;
+
+          if (newShiftDocs.length > 0) {
+            const names = newShiftDocs.slice(0, 2).map(d => d.name).join(" & ");
+            const extra = newShiftDocs.length > 2 ? ` (+${newShiftDocs.length - 2} dokter lainnya)` : "";
+            headline = `${names}${extra} mulai melayani pasien jam ini.`;
+            subline = "Silakan persiapkan berkas pendaftaran dan perhatikan nomor antrean.";
+            tag = "DOKTER SHIFT " + timeStr;
+          } else if (App._customMsgs && App._customMsgs.length > 0 && Math.random() > 0.4) {
+            const item = App._customMsgs[App._customMsgIdx % App._customMsgs.length];
+            App._customMsgIdx++;
+            headline = item.text || item.message || "Selamat datang di RSU Siaga Medika.";
+            subline = "Informasi & pendaftaran WhatsApp: 0823-2344-6076";
+            tag = item.title || "INFORMASI RS";
+          } else {
+            // Rotasi Tips Edukasi & Layanan Jam-an
+            const tips = [
+              { h: "Pendaftaran Poliklinik Rawat Jalan & Farmasi Siap Melayani.", s: "Pastikan membawa KTP & Kartu BPJS aktif Anda." },
+              { h: "Layanan Poliklinik Spesialis Berjalan Tertib & Nyaman.", s: "Pendaftaran online dapat diakses via WhatsApp 0823-2344-6076." },
+              { h: "Jaga kebersihan & ketertiban bersama di area ruang tunggu.", s: "Harap mendengarkan panggilan nomor antrean di layar & audio." },
+              { h: "Layanan Laboratorium, Radiologi & Farmasi Buka Penuh.", s: "Konsultasikan hasil pemeriksaan Anda kepada dokter spesialis." },
+              { h: "Informasi Pelayanan Rawat Inap & IGD 24 Jam Non-Stop.", s: "RSU Siaga Medika siap melayani kebutuhan medis darurat Anda." },
+              { h: "Waktu Istirahat & Pergantian Shift Pelayanan Siang.", s: "Layanan poli siang & sore akan dilanjutkan sesuai jadwal dokter." }
+            ];
+            const tip = tips[curHour % tips.length];
+            headline = tip.h;
+            subline = tip.s;
+          }
+
+          this.showHourly(headline, subline, statsText, tag, timeStr, 18000);
+        },
+
+        _lastHourlyTrigger: null,
+
         startAutoCycle() {
-          // Clock update in compact view every second
+          // Clock update in compact view every second + Hourly Trigger Check
           setInterval(() => {
             const now = new Date();
             const timeStr = String(now.getHours()).padStart(2, "0") + ":" + String(now.getMinutes()).padStart(2, "0");
             if ($("diCompactClock")) $("diCompactClock").textContent = timeStr;
+
+            // Trigger Hourly Briefing tepat di menit :00:00 setiap 1 jam
+            const curHour = now.getHours();
+            const curMin = now.getMinutes();
+            const curSec = now.getSeconds();
+            if (curMin === 0 && curSec === 0 && this._lastHourlyTrigger !== curHour) {
+              this._lastHourlyTrigger = curHour;
+              this.triggerHourlyBriefing(now);
+            }
           }, 1000);
 
-          // Auto-rotate dynamic island announcements every 48 seconds (8.5s hold, ~40s standby)
+          // Auto-rotate dynamic island regular announcements every 48 seconds (8.5s hold, ~40s standby)
           setInterval(() => {
             if (this._state === "compact" && !this._isAnimating && this._queue.length === 0 && App._customMsgs && App._customMsgs.length > 0) {
               const item = App._customMsgs[App._customMsgIdx % App._customMsgs.length];
@@ -3391,6 +3636,9 @@
           }, 48000);
         },
       };
+
+      // Expose window trigger for manual test/demo
+      window.triggerHourlyDemo = () => Island.triggerHourlyBriefing(new Date());
 
       // Main App Logic
       const App = {
