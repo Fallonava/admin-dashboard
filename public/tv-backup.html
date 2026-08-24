@@ -3279,6 +3279,9 @@
           this.scale();
           window.addEventListener("resize", () => this.scale());
           window.addEventListener("orientationchange", () => this.scale());
+          if (window.visualViewport) {
+            window.visualViewport.addEventListener("resize", () => this.scale());
+          }
           if (document.readyState === "loading") {
             document.addEventListener("DOMContentLoaded", () => this.scale());
           }
