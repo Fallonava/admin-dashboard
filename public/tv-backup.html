@@ -382,6 +382,49 @@
         border: 1px solid var(--clay-border);
       }
 
+      /* Sidebar Status Khusus Hero Header */
+      .sidebar-status-khusus-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 16px;
+        background: rgba(241, 245, 249, 0.7);
+        border-top: 1px solid rgba(226, 234, 245, 0.9);
+        border-bottom: 1px solid rgba(226, 234, 245, 0.9);
+      }
+
+      .sk-header-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .sk-icon {
+        font-size: 18px;
+        color: #D97706;
+      }
+
+      .sk-main-title {
+        display: block;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 11.5px;
+        font-weight: 900;
+        color: #0F172A;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        line-height: 1.15;
+      }
+
+      .sk-sub-title {
+        display: block;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 8px;
+        font-weight: 800;
+        color: #64748B;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+      }
+
       .sidebar-panel .island-header {
         background: transparent;
         border-bottom: 1px solid var(--border-light);
@@ -490,6 +533,155 @@
         text-transform: uppercase;
         letter-spacing: 0.08em;
         margin-top: 2px;
+      }
+
+      /* ===== 🚀 APPLE iOS SOFT CLAY SMART TV QR HERO CARD ===== */
+      .sidebar-qr-hotline {
+        padding: 12px 14px;
+        border-top: 1px solid rgba(226, 234, 245, 0.9);
+        background: #FFFFFF;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 10px;
+        flex-shrink: 0;
+      }
+
+      .tv-qr-hero-card {
+        width: 100%;
+        background: #FFFFFF;
+        border-radius: 20px;
+        padding: 10px 12px;
+        border: 1px solid rgba(226, 234, 245, 0.9);
+        box-shadow: 0 8px 24px -4px rgba(45, 65, 95, 0.06), inset 0 1.5px 1.5px #FFFFFF;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .tv-qr-header-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 3px 10px;
+        border-radius: 9999px;
+        background: #EFF6FF;
+        color: #0284C7;
+        border: 1px solid #BAE6FD;
+      }
+
+      .tv-qr-header-badge .radar-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #0284C7;
+        animation: radarPulse 1.4s infinite;
+        box-shadow: 0 0 8px rgba(2, 132, 199, 0.6);
+      }
+
+      @keyframes radarPulse {
+        0%, 100% { transform: scale(0.9); opacity: 0.7; }
+        50% { transform: scale(1.25); opacity: 1; }
+      }
+
+      .tv-qr-header-badge span {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 10px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .dynamic-qr-box {
+        width: 130px;
+        height: 130px;
+        border-radius: 14px;
+        background: #FFFFFF;
+        padding: 6px;
+        box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.06), 0 2px 6px rgba(15, 23, 42, 0.04);
+        border: 1px solid rgba(226, 232, 240, 0.9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+
+      .dynamic-qr-box svg {
+        width: 100% !important;
+        height: 100% !important;
+        display: block;
+        shape-rendering: crispEdges !important;
+        border-radius: 6px;
+      }
+
+      .tv-qr-url-pill {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 10px;
+        border-radius: 10px;
+        background: #F8FAFC;
+        border: 1px solid rgba(226, 232, 240, 0.9);
+        font-family: "Plus Jakarta Sans", monospace;
+        font-size: 10px;
+        font-weight: 800;
+        color: #0F172A;
+      }
+
+      .hotline-highlight-box {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 12px;
+        background: linear-gradient(135deg, #059669 0%, #047857 100%);
+        border-radius: 14px;
+        color: #FFFFFF;
+        text-decoration: none;
+        box-shadow: 0 6px 16px -2px rgba(5, 150, 105, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.35);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      .hotline-icon-wrap {
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .hotline-icon-wrap .material-icons-round {
+        font-size: 16px;
+        color: #FFFFFF;
+      }
+
+      .hotline-details {
+        display: flex;
+        flex-direction: column;
+        text-align: left;
+        flex: 1;
+        margin-left: 8px;
+      }
+
+      .hotline-tag {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 8px;
+        font-weight: 800;
+        letter-spacing: 0.05em;
+        opacity: 0.9;
+        text-transform: uppercase;
+      }
+
+      .hotline-num {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 12px;
+        font-weight: 900;
+        letter-spacing: 0.02em;
       }
 
       /* ===== 3D EMPTY STATE (NEO ORB) ===== */
@@ -688,33 +880,129 @@
         font-weight: 500;
       }
 
+      /* ===== MODERN APPLE iOS FROSTED CERAMIC ISLAND HEADERS ===== */
       .island-header {
         height: 52px;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 0 20px;
+        padding: 0 18px;
         flex-shrink: 0;
-        background: var(--header-bg);
-        border-bottom: 1px solid rgba(125, 125, 125, 0.08);
-        transition: background 0.5s ease;
+        background: rgba(248, 250, 252, 0.85);
+        border-bottom: 1px solid rgba(226, 234, 245, 0.95);
+        transition: background 0.3s ease;
+      }
+
+      .island-header-left {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 0;
+      }
+
+      .island-icon-box {
+        width: 32px;
+        height: 32px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+
+      .island-icon-box .material-icons-round {
+        font-size: 18px;
+        color: #FFFFFF;
+      }
+
+      .island-icon-bedah {
+        background: linear-gradient(135deg, #0EA5E9 0%, #0284C7 100%);
+        box-shadow: 0 3px 10px rgba(14, 165, 233, 0.35);
+      }
+
+      .island-icon-nonbedah {
+        background: linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%);
+        box-shadow: 0 3px 10px rgba(139, 92, 246, 0.35);
+      }
+
+      .island-title-stack {
+        display: flex;
+        flex-direction: column;
+        line-height: 1.15;
       }
 
       .island-title {
-        font-size: 12px;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 12.5px;
         font-weight: 800;
-        opacity: 1; /* Visibilitas tegak */
+        color: #0F172A;
         text-transform: uppercase;
-        letter-spacing: 0.1em;
+        letter-spacing: 0.04em;
+      }
+
+      .island-subtitle {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 8px;
+        font-weight: 800;
+        color: #64748B;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+
+      .island-live-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 10px;
+        border-radius: 9999px;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+      }
+
+      .island-badge-bedah {
+        background: #F0F9FF;
+        color: #0284C7;
+        border: 1px solid #BAE6FD;
+      }
+
+      .island-badge-bedah .badge-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #0284C7;
+        box-shadow: 0 0 8px rgba(2, 132, 199, 0.6);
+        animation: radarPulse 1.8s infinite;
+      }
+
+      .island-badge-nonbedah {
+        background: #F5F3FF;
+        color: #7C3AED;
+        border: 1px solid #DDD6FE;
+      }
+
+      .island-badge-nonbedah .badge-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #7C3AED;
+        box-shadow: 0 0 8px rgba(124, 58, 237, 0.6);
+        animation: radarPulse 1.8s infinite;
+      }
+
+      .badge-unit {
+        font-weight: 800;
       }
 
       .island-badge {
-        font-size: 12px;
-        font-weight: 700;
-        background: rgba(125, 125, 125, 0.15);
-        color: var(--text-primary);
-        padding: 2px 8px;
-        border-radius: 6px;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 11px;
+        font-weight: 800;
+        background: rgba(15, 23, 42, 0.06);
+        color: #0F172A;
+        padding: 3px 10px;
+        border-radius: 9999px;
       }
 
       .scroll-mask {
@@ -1318,10 +1606,10 @@
         will-change: width, height, transform, border-radius;
       }
 
-      /* Compact State (Default Idle) */
+      /* Compact State (Default Idle with Hospital Brand Logo) */
       .dynamic-island.di-compact {
-        width: 240px;
-        height: 42px;
+        width: 270px;
+        height: 44px;
         border-radius: 9999px;
         padding: 0 14px;
       }
@@ -1389,6 +1677,27 @@
         gap: 8px;
       }
 
+      .di-mini-logo {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: #FFFFFF;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        position: relative;
+        box-shadow: 0 0 10px rgba(5, 150, 105, 0.5);
+        flex-shrink: 0;
+        border: 1px solid rgba(255, 255, 255, 0.5);
+      }
+
+      .di-mini-logo img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
       .di-pulse-orb {
         width: 10px;
         height: 10px;
@@ -1408,7 +1717,7 @@
         font-family: "Plus Jakarta Sans", sans-serif;
         font-size: 11px;
         font-weight: 800;
-        letter-spacing: 0.08em;
+        letter-spacing: 0.06em;
         color: #FFFFFF;
         text-transform: uppercase;
       }
@@ -2641,8 +2950,10 @@
       <!-- Compact View (Idle Pill) -->
       <div class="di-compact-view">
         <div class="di-leading">
-          <div id="diCompactIcon" class="di-pulse-orb"></div>
-          <span id="diCompactText" class="di-compact-label">SIAGA LIVE</span>
+          <div class="di-mini-logo">
+            <img src="/logo-rs.png" alt="RS" />
+          </div>
+          <span id="diCompactText" class="di-compact-label">SIAGA MEDIKA</span>
         </div>
         <div class="di-trailing">
           <div class="di-waveform">
@@ -2743,25 +3054,8 @@
       <main class="content">
         <!-- Sidebar (Left - Integrated Header) -->
         <aside class="island sidebar-panel">
-          <!-- Header Component (Optimized) -->
-          <div class="header" style="margin-bottom: 0; padding-bottom: 12px">
-            <div class="brand">
-              <div class="logo-box" style="width: 36px; height: 36px">
-                <img src="/logo-rs.png" alt="RSU Siaga Medika Logo" />
-              </div>
-              <div class="title-group">
-                <h1 style="font-size: 14px; line-height: 1.1">
-                  RSU SIAGA MEDIKA<br />PURBALINGGA
-                </h1>
-                <span style="font-size: 9px; margin-top: 2px; display: block"
-                  >Antrian Pendaftaran</span
-                >
-              </div>
-            </div>
-          </div>
-
           <!-- Ringkasan Statistik -->
-          <div class="stat-panel">
+          <div class="stat-panel" style="margin-top: 14px;">
             <div class="stat-item">
               <span
                 class="stat-count"
@@ -2797,51 +3091,15 @@
             </div>
           </div>
 
-          <!-- Clock & Date (Moved below stats for better vertical flow) -->
-          <div
-            style="
-              padding: 10px 16px;
-              border-bottom: 1px solid var(--border-light);
-              display: flex;
-              justify-content: space-between;
-              align-items: flex-end;
-              background: rgba(0, 0, 0, 0.02);
-            "
-          >
-            <div
-              class="clock"
-              id="clock"
-              style="font-size: 28px; font-weight: 500"
-            >
-              00:00
+          <!-- Focused Status Khusus Hero Header -->
+          <div class="sidebar-status-khusus-header">
+            <div class="sk-header-title">
+              <span class="material-icons-round sk-icon">info</span>
+              <div>
+                <span class="sk-main-title">Status Khusus</span>
+                <span class="sk-sub-title">Cuti • Operasi • Penuh</span>
+              </div>
             </div>
-            <div
-              class="date"
-              id="date"
-              style="
-                font-size: 10px;
-                opacity: 0.6;
-                text-align: right;
-                line-height: 1.2;
-              "
-            >
-              -
-            </div>
-          </div>
-
-          <!-- Sidebar Status List (Penuh/Cuti) -->
-          <div
-            class="island-header"
-            style="
-              background: transparent;
-              border-bottom: 1px solid var(--border-light);
-              padding-top: 0;
-              height: 36px;
-            "
-          >
-            <span class="island-title" style="letter-spacing: 1px"
-              >Status Khusus</span
-            >
             <span class="island-badge" id="countSidebar">0</span>
           </div>
 
@@ -2853,48 +3111,34 @@
             ></div>
           </div>
 
-          <!-- Info Cards (Bottom pinned or scroll) -->
-          <div
-            style="
-              padding: 12px 16px;
-              border-top: 1px solid var(--border-light);
-              background: rgba(0, 0, 0, 0.05);
-            "
-          >
-            <div
-              style="
-                display: flex;
-                gap: 8px;
-                align-items: center;
-                margin-bottom: 6px;
-              "
-            >
-              <span
-                class="material-icons-round"
-                style="color: var(--accent-blue); font-size: 16px"
-                >info</span
-              >
-              <span
-                style="
-                  font-size: 10px;
-                  font-weight: 700;
-                  text-transform: uppercase;
-                  color: var(--text-secondary);
-                "
-                >Pesan Informasi</span
-              >
+          <!-- Dynamic QR Code & Highlighted Hotline Number -->
+          <div class="sidebar-qr-hotline">
+            <!-- Large High-Visibility TV QR Hero Card -->
+            <div class="tv-qr-hero-card">
+              <div class="tv-qr-header-badge">
+                <span class="radar-dot"></span>
+                <span>Scan Jadwal di HP</span>
+              </div>
+              <div class="dynamic-qr-box">
+                <div id="tvQrCode" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;"></div>
+              </div>
+              <div class="tv-qr-url-pill">
+                <span class="material-icons-round" style="font-size: 13px; color: #0284C7;">public</span>
+                <span>simed.fallonava.my.id/jadwal</span>
+              </div>
             </div>
-            <p
-              id="dynamicInfoBox"
-              style="
-                font-size: 10px;
-                line-height: 1.4;
-                color: var(--text-secondary);
-                transition: opacity 0.3s ease;
-              "
-            >
-              Memuat informasi terbaru...
-            </p>
+
+            <!-- Highlighted Hospital Information Number 0823-2344-6076 -->
+            <a href="https://wa.me/6282323446076" target="_blank" class="hotline-highlight-box">
+              <div class="hotline-icon-wrap">
+                <span class="material-icons-round">phone_in_talk</span>
+              </div>
+              <div class="hotline-details">
+                <span class="hotline-tag">INFORMASI & PENDAFTARAN RS</span>
+                <span class="hotline-num">0823-2344-6076</span>
+              </div>
+              <span class="material-icons-round" style="color: rgba(255,255,255,0.8); font-size: 18px;">chevron_right</span>
+            </a>
           </div>
 
 
@@ -2903,25 +3147,20 @@
         <!-- Bedah Island -->
         <section class="island">
           <div class="island-header">
-            <div
-              style="display: flex; align-items: center; gap: 8px; min-width: 0"
-            >
-              <span
-                class="material-icons-round"
-                style="font-size: 16px; color: var(--accent-blue); opacity: 0.8"
-                >local_hospital</span
-              >
-              <span class="island-title">Bedah</span>
+            <div class="island-header-left">
+              <div class="island-icon-box island-icon-bedah">
+                <span class="material-icons-round">local_hospital</span>
+              </div>
+              <div class="island-title-stack">
+                <span class="island-title">POLIKLINIK BEDAH</span>
+                <span class="island-subtitle">SPESIALISASI BEDAH & OPERATIF</span>
+              </div>
             </div>
-            <span
-              class="island-badge"
-              id="countBedah"
-              style="
-                background: rgba(10, 132, 255, 0.15);
-                color: var(--accent-blue);
-              "
-              >0</span
-            >
+            <div class="island-live-badge island-badge-bedah">
+              <span class="badge-dot"></span>
+              <span id="countBedah">0</span>
+              <span class="badge-unit">DOKTER</span>
+            </div>
           </div>
           <div class="scroll-mask" id="maskBedah">
             <div class="scroller" id="scrollBedah"></div>
@@ -2931,29 +3170,20 @@
         <!-- Non Bedah Island -->
         <section class="island">
           <div class="island-header">
-            <div
-              style="display: flex; align-items: center; gap: 8px; min-width: 0"
-            >
-              <span
-                class="material-icons-round"
-                style="
-                  font-size: 16px;
-                  color: var(--accent-purple);
-                  opacity: 0.8;
-                "
-                >medical_services</span
-              >
-              <span class="island-title">Non Bedah</span>
+            <div class="island-header-left">
+              <div class="island-icon-box island-icon-nonbedah">
+                <span class="material-icons-round">medical_services</span>
+              </div>
+              <div class="island-title-stack">
+                <span class="island-title">POLIKLINIK NON-BEDAH</span>
+                <span class="island-subtitle">PENYAKIT DALAM, ANAK, SARAF DLL</span>
+              </div>
             </div>
-            <span
-              class="island-badge"
-              id="countNonBedah"
-              style="
-                background: rgba(191, 90, 242, 0.15);
-                color: var(--accent-purple);
-              "
-              >0</span
-            >
+            <div class="island-live-badge island-badge-nonbedah">
+              <span class="badge-dot"></span>
+              <span id="countNonBedah">0</span>
+              <span class="badge-unit">DOKTER</span>
+            </div>
           </div>
           <div class="scroll-mask" id="maskNonBedah">
             <div class="scroller" id="scrollNonBedah"></div>
@@ -4543,6 +4773,416 @@
       };
 
       App.init();
+    </script>
+
+    <!-- ZERO-DEPENDENCY INLINE SVG QR CODE GENERATOR -->
+    <script>
+      var QRCodeLib = (function() {
+        function QR8bitByte(data) { this.mode = 4; this.data = data; }
+        QR8bitByte.prototype = {
+          getLength: function() { return this.data.length; },
+          write: function(buffer) {
+            for (var i = 0; i < this.data.length; i++) buffer.put(this.data.charCodeAt(i), 8);
+          }
+        };
+        function QRCodeModel(typeNumber, errorCorrectLevel) {
+          this.typeNumber = typeNumber;
+          this.errorCorrectLevel = errorCorrectLevel;
+          this.modules = null;
+          this.moduleCount = 0;
+          this.dataCache = null;
+          this.dataList = [];
+        }
+        QRCodeModel.prototype = {
+          addData: function(data) { this.dataList.push(new QR8bitByte(data)); },
+          isDark: function(row, col) { return this.modules[row][col]; },
+          getModuleCount: function() { return this.moduleCount; },
+          make: function() {
+            if (this.typeNumber < 1) {
+              for (var typeNumber = 1; typeNumber < 40; typeNumber++) {
+                var rsBlocks = QRRSBlock.getRSBlocks(typeNumber, this.errorCorrectLevel);
+                var buffer = new QRBitBuffer();
+                for (var i = 0; i < this.dataList.length; i++) {
+                  var data = this.dataList[i];
+                  buffer.put(data.mode, 4);
+                  buffer.put(data.getLength(), QRUtil.getLengthInBits(data.mode, typeNumber));
+                  data.write(buffer);
+                }
+                var totalDataCount = 0;
+                for (var i = 0; i < rsBlocks.length; i++) totalDataCount += rsBlocks[i].dataCount;
+                if (buffer.getLengthInBits() <= totalDataCount * 8) {
+                  this.typeNumber = typeNumber;
+                  break;
+                }
+              }
+            }
+            this.makeImpl(false, this.getBestMaskPattern());
+          },
+          makeImpl: function(test, maskPattern) {
+            this.moduleCount = this.typeNumber * 4 + 17;
+            this.modules = new Array(this.moduleCount);
+            for (var row = 0; row < this.moduleCount; row++) {
+              this.modules[row] = new Array(this.moduleCount);
+            }
+            this.setupPositionProbePattern(0, 0);
+            this.setupPositionProbePattern(this.moduleCount - 7, 0);
+            this.setupPositionProbePattern(0, this.moduleCount - 7);
+            this.setupPositionAdjustPattern();
+            this.setupTimingPattern();
+            this.setupTypeInfo(test, maskPattern);
+            if (this.typeNumber >= 7) this.setupTypeNumber(test);
+            if (this.dataCache == null) this.dataCache = QRCodeModel.createData(this.typeNumber, this.errorCorrectLevel, this.dataList);
+            this.mapData(this.dataCache, maskPattern);
+          },
+          setupPositionProbePattern: function(row, col) {
+            for (var r = -1; r <= 7; r++) {
+              if (row + r <= -1 || this.moduleCount <= row + r) continue;
+              for (var c = -1; c <= 7; c++) {
+                if (col + c <= -1 || this.moduleCount <= col + c) continue;
+                if ((0 <= r && r <= 6 && (c == 0 || c == 6)) || (0 <= c && c <= 6 && (r == 0 || r == 6)) || (2 <= r && r <= 4 && 2 <= c && c <= 4)) {
+                  this.modules[row + r][col + c] = true;
+                } else {
+                  this.modules[row + r][col + c] = false;
+                }
+              }
+            }
+          },
+          getBestMaskPattern: function() {
+            var minLostPoint = 0, pattern = 0;
+            for (var i = 0; i < 8; i++) {
+              this.makeImpl(true, i);
+              var lostPoint = QRUtil.getLostPoint(this);
+              if (i == 0 || minLostPoint > lostPoint) {
+                minLostPoint = lostPoint;
+                pattern = i;
+              }
+            }
+            return pattern;
+          },
+          setupTimingPattern: function() {
+            for (var r = 8; r < this.moduleCount - 8; r++) {
+              if (this.modules[r][6] != null) continue;
+              this.modules[r][6] = (r % 2 == 0);
+            }
+            for (var c = 8; c < this.moduleCount - 8; c++) {
+              if (this.modules[6][c] != null) continue;
+              this.modules[6][c] = (c % 2 == 0);
+            }
+          },
+          setupPositionAdjustPattern: function() {
+            var pos = QRUtil.getPatternPosition(this.typeNumber);
+            for (var i = 0; i < pos.length; i++) {
+              for (var j = 0; j < pos.length; j++) {
+                var row = pos[i], col = pos[j];
+                if (this.modules[row][col] != null) continue;
+                for (var r = -2; r <= 2; r++) {
+                  for (var c = -2; c <= 2; c++) {
+                    this.modules[row + r][col + c] = (r == -2 || r == 2 || c == -2 || c == 2 || (r == 0 && c == 0));
+                  }
+                }
+              }
+            }
+          },
+          setupTypeNumber: function(test) {
+            var bits = QRUtil.getBCHTypeNumber(this.typeNumber);
+            for (var i = 0; i < 18; i++) {
+              var mod = (!test && ((bits >> i) & 1) == 1);
+              this.modules[Math.floor(i / 3)][i % 3 + this.moduleCount - 8 - 3] = mod;
+              this.modules[i % 3 + this.moduleCount - 8 - 3][Math.floor(i / 3)] = mod;
+            }
+          },
+          setupTypeInfo: function(test, maskPattern) {
+            var data = (this.errorCorrectLevel << 3) | maskPattern;
+            var bits = QRUtil.getBCHTypeInfo(data);
+            for (var i = 0; i < 15; i++) {
+              var mod = (!test && ((bits >> i) & 1) == 1);
+              if (i < 6) this.modules[i][8] = mod;
+              else if (i < 8) this.modules[i + 1][8] = mod;
+              else this.modules[this.moduleCount - 15 + i][8] = mod;
+              if (i < 8) this.modules[8][this.moduleCount - i - 1] = mod;
+              else if (i < 9) this.modules[8][15 - i - 1 + 1] = mod;
+              else this.modules[8][15 - i - 1] = mod;
+            }
+            this.modules[this.moduleCount - 8][8] = !test;
+          },
+          mapData: function(data, maskPattern) {
+            var inc = -1, row = this.moduleCount - 1, bitIndex = 7, byteIndex = 0;
+            var maskFunc = QRUtil.getMaskFunction(maskPattern);
+            for (var col = this.moduleCount - 1; col > 0; col -= 2) {
+              if (col == 6) col--;
+              while (true) {
+                for (var c = 0; c < 2; c++) {
+                  if (this.modules[row][col - c] == null) {
+                    var dark = false;
+                    if (byteIndex < data.length) dark = (((data[byteIndex] >>> bitIndex) & 1) == 1);
+                    if (maskFunc(row, col - c)) dark = !dark;
+                    this.modules[row][col - c] = dark;
+                    bitIndex--;
+                    if (bitIndex == -1) { byteIndex++; bitIndex = 7; }
+                  }
+                }
+                row += inc;
+                if (row < 0 || this.moduleCount <= row) { row -= inc; inc = -inc; break; }
+              }
+            }
+          }
+        };
+        QRCodeModel.createData = function(typeNumber, errorCorrectLevel, dataList) {
+          var rsBlocks = QRRSBlock.getRSBlocks(typeNumber, errorCorrectLevel);
+          var buffer = new QRBitBuffer();
+          for (var i = 0; i < dataList.length; i++) {
+            var data = dataList[i];
+            buffer.put(data.mode, 4);
+            buffer.put(data.getLength(), QRUtil.getLengthInBits(data.mode, typeNumber));
+            data.write(buffer);
+          }
+          var totalDataCount = 0;
+          for (var i = 0; i < rsBlocks.length; i++) totalDataCount += rsBlocks[i].dataCount;
+          if (buffer.getLengthInBits() > totalDataCount * 8) throw new Error("code length overflow");
+          if (buffer.getLengthInBits() + 4 <= totalDataCount * 8) buffer.put(0, 4);
+          while (buffer.getLengthInBits() % 8 != 0) buffer.putBit(false);
+          while (true) {
+            if (buffer.getLengthInBits() >= totalDataCount * 8) break;
+            buffer.put(0xEC, 8);
+            if (buffer.getLengthInBits() >= totalDataCount * 8) break;
+            buffer.put(0x11, 8);
+          }
+          return QRCodeModel.createBytes(buffer, rsBlocks);
+        };
+        QRCodeModel.createBytes = function(buffer, rsBlocks) {
+          var offset = 0, maxDcCount = 0, maxEcCount = 0;
+          var dcdata = new Array(rsBlocks.length), ecdata = new Array(rsBlocks.length);
+          for (var r = 0; r < rsBlocks.length; r++) {
+            var dcCount = rsBlocks[r].dataCount, ecCount = rsBlocks[r].totalCount - dcCount;
+            maxDcCount = Math.max(maxDcCount, dcCount);
+            maxEcCount = Math.max(maxEcCount, ecCount);
+            dcdata[r] = new Array(dcCount);
+            for (var i = 0; i < dcdata[r].length; i++) dcdata[r][i] = 0xFF & buffer.buffer[i + offset];
+            offset += dcCount;
+            var rsPoly = QRUtil.getErrorCorrectPolynomial(ecCount);
+            var rawPoly = new QRPolynomial(dcdata[r], rsPoly.getLength() - 1);
+            var modPoly = rawPoly.mod(rsPoly);
+            ecdata[r] = new Array(rsPoly.getLength() - 1);
+            for (var i = 0; i < ecdata[r].length; i++) {
+              var modIndex = i + modPoly.getLength() - ecdata[r].length;
+              ecdata[r][i] = (modIndex >= 0) ? modPoly.get(modIndex) : 0;
+            }
+          }
+          var totalCodeCount = 0;
+          for (var i = 0; i < rsBlocks.length; i++) totalCodeCount += rsBlocks[i].totalCount;
+          var data = new Array(totalCodeCount), index = 0;
+          for (var i = 0; i < maxDcCount; i++) {
+            for (var r = 0; r < rsBlocks.length; r++) {
+              if (i < dcdata[r].length) data[index++] = dcdata[r][i];
+            }
+          }
+          for (var i = 0; i < maxEcCount; i++) {
+            for (var r = 0; r < rsBlocks.length; r++) {
+              if (i < ecdata[r].length) data[index++] = ecdata[r][i];
+            }
+          }
+          return data;
+        };
+        var QRErrorCorrectLevel = { L: 1, M: 0, Q: 3, H: 2 };
+        var QRUtil = {
+          PATTERN_POSITION_TABLE: [
+            [], [6, 18], [6, 22], [6, 26], [6, 30], [6, 34],
+            [6, 22, 38], [6, 24, 42], [6, 26, 46], [6, 28, 50], [6, 30, 54],
+            [6, 32, 58], [6, 34, 62], [6, 26, 46, 66], [6, 26, 48, 70],
+            [6, 26, 50, 74], [6, 30, 54, 78], [6, 30, 56, 82], [6, 30, 58, 86],
+            [6, 34, 62, 90], [6, 28, 50, 72, 94], [6, 26, 50, 74, 98],
+            [6, 30, 54, 78, 102], [6, 28, 54, 80, 106], [6, 32, 58, 84, 110],
+            [6, 30, 58, 86, 114], [6, 34, 62, 90, 118], [6, 26, 50, 74, 98, 122],
+            [6, 30, 54, 78, 102, 126], [6, 26, 52, 78, 104, 130], [6, 30, 56, 82, 108, 134],
+            [6, 34, 60, 86, 112, 138], [6, 30, 58, 86, 114, 142], [6, 34, 62, 90, 118, 146],
+            [6, 30, 54, 78, 102, 126, 150], [6, 24, 50, 76, 102, 128, 154],
+            [6, 28, 54, 80, 106, 132, 158], [6, 32, 58, 84, 110, 136, 162],
+            [6, 26, 54, 82, 110, 138, 166], [6, 30, 58, 86, 114, 142, 170]
+          ],
+          G15: (1 << 10) | (1 << 8) | (1 << 5) | (1 << 4) | (1 << 2) | (1 << 1) | (1 << 0),
+          G18: (1 << 12) | (1 << 11) | (1 << 10) | (1 << 9) | (1 << 8) | (1 << 5) | (1 << 2) | (1 << 0),
+          G15_MASK: (1 << 14) | (1 << 12) | (1 << 10) | (1 << 4) | (1 << 1),
+          getBCHTypeInfo: function(data) {
+            var d = data << 10;
+            while (QRUtil.getBCHDigit(d) - QRUtil.getBCHDigit(QRUtil.G15) >= 0) d ^= (QRUtil.G15 << (QRUtil.getBCHDigit(d) - QRUtil.getBCHDigit(QRUtil.G15)));
+            return ((data << 10) | d) ^ QRUtil.G15_MASK;
+          },
+          getBCHTypeNumber: function(data) {
+            var d = data << 12;
+            while (QRUtil.getBCHDigit(d) - QRUtil.getBCHDigit(QRUtil.G18) >= 0) d ^= (QRUtil.G18 << (QRUtil.getBCHDigit(d) - QRUtil.getBCHDigit(QRUtil.G18)));
+            return (data << 12) | d;
+          },
+          getBCHDigit: function(data) {
+            var digit = 0;
+            while (data != 0) { digit++; data >>>= 1; }
+            return digit;
+          },
+          getPatternPosition: function(typeNumber) { return QRUtil.PATTERN_POSITION_TABLE[typeNumber - 1]; },
+          getMaskFunction: function(maskPattern) {
+            switch (maskPattern) {
+              case 0: return function(i, j) { return (i + j) % 2 == 0; };
+              case 1: return function(i, j) { return i % 2 == 0; };
+              case 2: return function(i, j) { return j % 3 == 0; };
+              case 3: return function(i, j) { return (i + j) % 3 == 0; };
+              case 4: return function(i, j) { return (Math.floor(i / 2) + Math.floor(j / 3)) % 2 == 0; };
+              case 5: return function(i, j) { return (i * j) % 2 + (i * j) % 3 == 0; };
+              case 6: return function(i, j) { return ((i * j) % 2 + (i * j) % 3) % 2 == 0; };
+              case 7: return function(i, j) { return ((i * j) % 3 + (i + j) % 2) % 2 == 0; };
+              default: throw new Error("bad maskPattern:" + maskPattern);
+            }
+          },
+          getErrorCorrectPolynomial: function(errorCorrectLength) {
+            var a = new QRPolynomial([1], 0);
+            for (var i = 0; i < errorCorrectLength; i++) a = a.multiply(new QRPolynomial([1, QRMath.gexp(i)], 0));
+            return a;
+          },
+          getLengthInBits: function(mode, type) {
+            if (1 <= type && type < 10) return 8;
+            else if (type < 27) return 16;
+            else return 16;
+          },
+          getLostPoint: function(qrCode) {
+            var moduleCount = qrCode.getModuleCount(), lostPoint = 0;
+            for (var row = 0; row < moduleCount; row++) {
+              for (var col = 0; col < moduleCount; col++) {
+                var sameCount = 0, dark = qrCode.isDark(row, col);
+                for (var r = -1; r <= 1; r++) {
+                  if (row + r < 0 || moduleCount <= row + r) continue;
+                  for (var c = -1; c <= 1; c++) {
+                    if (col + c < 0 || moduleCount <= col + c || (r == 0 && c == 0)) continue;
+                    if (dark == qrCode.isDark(row + r, col + c)) sameCount++;
+                  }
+                }
+                if (sameCount > 5) lostPoint += (3 + sameCount - 5);
+              }
+            }
+            return lostPoint;
+          }
+        };
+        var QRMath = {
+          glog: function(n) { if (n < 1) throw new Error("glog(" + n + ")"); return QRMath.LOG_TABLE[n]; },
+          gexp: function(n) { while (n < 0) n += 255; while (n >= 256) n -= 255; return QRMath.EXP_TABLE[n]; },
+          EXP_TABLE: new Array(256),
+          LOG_TABLE: new Array(256)
+        };
+        for (var i = 0; i < 8; i++) QRMath.EXP_TABLE[i] = 1 << i;
+        for (var i = 8; i < 256; i++) QRMath.EXP_TABLE[i] = QRMath.EXP_TABLE[i - 4] ^ QRMath.EXP_TABLE[i - 5] ^ QRMath.EXP_TABLE[i - 6] ^ QRMath.EXP_TABLE[i - 8];
+        for (var i = 0; i < 255; i++) QRMath.LOG_TABLE[QRMath.EXP_TABLE[i]] = i;
+        function QRPolynomial(num, shift) {
+          var offset = 0;
+          while (offset < num.length && num[offset] == 0) offset++;
+          this.num = new Array(num.length - offset + shift);
+          for (var i = 0; i < num.length - offset; i++) this.num[i] = num[i + offset];
+        }
+        QRPolynomial.prototype = {
+          get: function(index) { return this.num[index]; },
+          getLength: function() { return this.num.length; },
+          multiply: function(e) {
+            var num = new Array(this.getLength() + e.getLength() - 1);
+            for (var i = 0; i < this.getLength(); i++) {
+              for (var j = 0; j < e.getLength(); j++) {
+                num[i + j] ^= QRMath.gexp(QRMath.glog(this.get(i)) + QRMath.glog(e.get(j)));
+              }
+            }
+            return new QRPolynomial(num, 0);
+          },
+          mod: function(e) {
+            if (this.getLength() - e.getLength() < 0) return this;
+            var ratio = QRMath.glog(this.get(0)) - QRMath.glog(e.get(0));
+            var num = new Array(this.getLength());
+            for (var i = 0; i < this.getLength(); i++) num[i] = this.get(i);
+            for (var i = 0; i < e.getLength(); i++) num[i] ^= QRMath.gexp(QRMath.glog(e.get(i)) + ratio);
+            return new QRPolynomial(num, 0).mod(e);
+          }
+        };
+        function QRRSBlock(totalCount, dataCount) {
+          this.totalCount = totalCount;
+          this.dataCount = dataCount;
+        }
+        QRRSBlock.RS_BLOCK_TABLE = [
+          [1, 26, 19], [1, 44, 34], [1, 70, 55], [1, 100, 80], [1, 134, 108],
+          [2, 86, 68], [2, 98, 78], [2, 121, 97], [2, 146, 116], [2, 86, 68, 2, 87, 69]
+        ];
+        QRRSBlock.getRSBlocks = function(typeNumber, errorCorrectLevel) {
+          var rsBlock = QRRSBlock.getRsBlockTable(typeNumber, errorCorrectLevel);
+          var list = [];
+          for (var i = 0; i < rsBlock.length; i += 3) {
+            var count = rsBlock[i], totalCount = rsBlock[i + 1], dataCount = rsBlock[i + 2];
+            for (var j = 0; j < count; j++) list.push(new QRRSBlock(totalCount, dataCount));
+          }
+          return list;
+        };
+        QRRSBlock.getRsBlockTable = function(typeNumber, errorCorrectLevel) {
+          switch (typeNumber) {
+            case 1: return [1, 26, 19];
+            case 2: return [1, 44, 34];
+            case 3: return [1, 70, 55];
+            case 4: return [1, 100, 80];
+            case 5: return [1, 134, 108];
+            default: return [2, 86, 68];
+          }
+        };
+        function QRBitBuffer() { this.buffer = []; this.length = 0; }
+        QRBitBuffer.prototype = {
+          get: function(index) {
+            var bufIndex = Math.floor(index / 8);
+            return ((this.buffer[bufIndex] >>> (7 - index % 8)) & 1) == 1;
+          },
+          put: function(num, length) {
+            for (var i = 0; i < length; i++) this.putBit(((num >>> (length - i - 1)) & 1) == 1);
+          },
+          getLengthInBits: function() { return this.length; },
+          putBit: function(bit) {
+            var bufIndex = Math.floor(this.length / 8);
+            if (this.buffer.length <= bufIndex) this.buffer.push(0);
+            if (bit) this.buffer[bufIndex] |= (0x80 >>> (this.length % 8));
+            this.length++;
+          }
+        };
+
+        return {
+          generateSVG: function(text, margin) {
+            if (margin === undefined) margin = 2;
+            var qr = new QRCodeModel(0, QRErrorCorrectLevel.M);
+            qr.addData(text);
+            qr.make();
+            var count = qr.getModuleCount();
+            var size = count + margin * 2;
+            var svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + size + ' ' + size + '" width="100%" height="100%" style="display:block; shape-rendering:crispEdges;">';
+            svg += '<rect width="100%" height="100%" fill="#FFFFFF" rx="1"/>';
+            for (var r = 0; r < count; r++) {
+              for (var c = 0; c < count; c++) {
+                if (qr.isDark(r, c)) {
+                  svg += '<rect x="' + (c + margin) + '" y="' + (r + margin) + '" width="1" height="1" fill="#0F172A"/>';
+                }
+              }
+            }
+            svg += '</svg>';
+            return svg;
+          }
+        };
+      })();
+    </script>
+
+    <script>
+      (function renderTvSvgQR() {
+        function doRender() {
+          try {
+            var container = document.getElementById("tvQrCode");
+            if (container) {
+              var targetUrl = (window.location.origin || "https://simed.fallonava.my.id") + "/jadwal";
+              container.innerHTML = QRCodeLib.generateSVG(targetUrl, 2);
+            }
+          } catch(e) {
+            console.error("TV QR render error:", e);
+          }
+        }
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", doRender);
+        } else {
+          doRender();
+        }
+      })();
     </script>
   </body>
 </html>
