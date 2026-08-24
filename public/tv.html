@@ -239,7 +239,7 @@
         height: 100%;
         display: flex;
         flex-direction: column;
-        padding: 34px 16px 14px 16px; /* Dynamic Island top notch safe breathing space */
+        padding: 60px 16px 14px 16px; /* Dynamic Island top floating clearance */
         gap: 0;
         background: var(--app-bg-overlay);
       }
@@ -1578,7 +1578,7 @@
       /* ===== APPLE iOS INTERACTIVE DYNAMIC ISLAND ===== */
       .dynamic-island {
         position: absolute;
-        top: 10px;
+        top: 8px;
         left: 50%;
         transform: translateX(-50%) scale(1);
         height: 42px;
@@ -3687,14 +3687,14 @@
             if ($("diCompactClock")) $("diCompactClock").textContent = timeStr;
           }, 1000);
 
-          // Auto-rotate dynamic island announcements every 9 seconds if queue is idle
+          // Auto-rotate dynamic island announcements every 48 seconds (8.5s hold, ~40s standby)
           setInterval(() => {
             if (this._state === "compact" && !this._isAnimating && this._queue.length === 0 && App._customMsgs && App._customMsgs.length > 0) {
               const item = App._customMsgs[App._customMsgIdx % App._customMsgs.length];
               App._customMsgIdx++;
-              this.show(item.title || "INFORMASI", item.text || item.message || "Selamat datang di RSU Siaga Medika", "info", 6000);
+              this.show(item.title || "INFORMASI", item.text || item.message || "Selamat datang di RSU Siaga Medika", "info", 8500);
             }
-          }, 9000);
+          }, 48000);
         },
       };
 
@@ -3810,6 +3810,24 @@
           this.clock();
           this.updateTheme();
           this.skel();
+
+          // Initial load of custom messages and display settings
+          fetch("/api/display")
+            .then((r) => r.json())
+            .then((data) => {
+              if (data && data.settings && Array.isArray(data.settings.customMessages) && data.settings.customMessages.length > 0) {
+                const validMsgs = data.settings.customMessages
+                  .map((m) => ({
+                    title: m.title || "INFORMASI",
+                    text: (m.text || m.message || "").trim(),
+                  }))
+                  .filter((m) => m.text.length > 0);
+                if (validMsgs.length > 0) {
+                  this._customMsgs = validMsgs;
+                }
+              }
+            })
+            .catch((e) => console.warn("Initial display settings fetch:", e));
 
           // Start SSE Realtime Connection
           this.connectRealtime();
@@ -3992,6 +4010,19 @@
           if (!partial) return;
           this._data = { ...this._data, ...partial };
           const res = this._data;
+
+          // Real-time synchronization of Admin Custom Messages for Dynamic Island
+          if (res.settings && Array.isArray(res.settings.customMessages) && res.settings.customMessages.length > 0) {
+            const validMsgs = res.settings.customMessages
+              .map((m) => ({
+                title: m.title || "INFORMASI",
+                text: (m.text || m.message || "").trim(),
+              }))
+              .filter((m) => m.text.length > 0);
+            if (validMsgs.length > 0) {
+              this._customMsgs = validMsgs;
+            }
+          }
 
           this._isFetching = true;
 
