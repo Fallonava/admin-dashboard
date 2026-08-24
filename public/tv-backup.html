@@ -1642,11 +1642,11 @@
           inset 0 1px 1.5px rgba(255, 255, 255, 0.45);
       }
 
-      /* Deep Interactive Modal State (Apple iOS Native Dynamic Island Expanded) */
+      /* Deep Interactive Modal State (Apple iOS Native Split-Tree Progress Tracker) */
       .dynamic-island.di-modal {
-        width: 640px;
-        height: 165px;
-        border-radius: 42px;
+        width: 740px;
+        height: 260px;
+        border-radius: 44px;
         box-shadow: 
           0 32px 75px rgba(0, 0, 0, 0.95), 
           0 0 0 1.5px rgba(255, 255, 255, 0.2), 
@@ -1997,7 +1997,7 @@
       }
 
       /* --- Deep Modal View Items (Apple iOS 18 Native Live Activity Sheet) --- */
-      /* --- Deep Modal View Items (Apple iOS Native Dynamic Island Expanded) --- */
+      /* --- Deep Modal View Items (Apple iOS Native Split-Tree Progress Tracker) --- */
       .dynamic-island.di-modal .di-modal-view {
         display: flex;
         flex-direction: column;
@@ -2005,9 +2005,10 @@
         opacity: 1;
         transform: scale(1) translateZ(0);
         pointer-events: auto;
-        padding: 14px 18px;
+        padding: 12px 18px;
         width: 100%;
         height: 100%;
+        gap: 6px;
       }
 
       .di-apple-main-row {
@@ -2015,24 +2016,26 @@
         align-items: center;
         justify-content: space-between;
         width: 100%;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        padding-bottom: 6px;
       }
 
       .di-apple-leading {
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: 10px;
       }
 
       .di-apple-icon-box {
-        width: 44px;
-        height: 44px;
-        border-radius: 14px;
+        width: 32px;
+        height: 32px;
+        border-radius: 10px;
         background: #ffffff;
         display: flex;
         align-items: center;
         justify-content: center;
         overflow: hidden;
-        box-shadow: 0 4px 16px rgba(16, 185, 129, 0.4);
+        box-shadow: 0 2px 10px rgba(16, 185, 129, 0.4);
         flex-shrink: 0;
       }
 
@@ -2045,12 +2048,12 @@
       .di-apple-brand-col {
         display: flex;
         flex-direction: column;
-        line-height: 1.2;
+        line-height: 1.15;
       }
 
       .di-apple-title {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 15px;
+        font-size: 13.5px;
         font-weight: 800;
         color: #FFFFFF;
         letter-spacing: -0.01em;
@@ -2058,62 +2061,61 @@
 
       .di-apple-subtitle {
         font-family: "Inter", sans-serif;
-        font-size: 11px;
-        font-weight: 500;
+        font-size: 10px;
+        font-weight: 600;
         color: #94A3B8;
-        margin-top: 1px;
       }
 
       .di-apple-center-pill {
         display: flex;
         align-items: center;
-        gap: 6px;
-        background: rgba(16, 185, 129, 0.18);
-        border: 1px solid rgba(16, 185, 129, 0.38);
-        padding: 4px 10px;
+        gap: 5px;
+        background: rgba(16, 185, 129, 0.16);
+        border: 1px solid rgba(16, 185, 129, 0.35);
+        padding: 3px 9px;
         border-radius: 9999px;
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 9.5px;
+        font-size: 8.5px;
         font-weight: 800;
         color: #34D399;
         text-transform: uppercase;
-        letter-spacing: 0.06em;
+        letter-spacing: 0.05em;
       }
 
       .di-apple-trailing {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 8px;
       }
 
       .di-apple-clock-group {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 6px;
         background: rgba(255, 255, 255, 0.08);
-        border: 1px solid rgba(255, 255, 255, 0.14);
-        padding: 5px 12px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        padding: 3px 9px;
         border-radius: 9999px;
       }
 
       .di-apple-clock {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 13.5px;
+        font-size: 12px;
         font-weight: 800;
         color: #FFFFFF;
         letter-spacing: -0.02em;
       }
 
-      /* Apple Waveform Equalizer Micro-Animation */
+      /* Apple Waveform Equalizer */
       .di-waveform {
         display: flex;
         align-items: center;
-        gap: 2.5px;
-        height: 13px;
+        gap: 2px;
+        height: 11px;
       }
 
       .di-wave-bar {
-        width: 2.5px;
+        width: 2px;
         height: 100%;
         background: #34D399;
         border-radius: 2px;
@@ -2131,8 +2133,8 @@
       }
 
       .di-close-btn {
-        width: 28px;
-        height: 28px;
+        width: 24px;
+        height: 24px;
         border-radius: 50%;
         background: rgba(255, 255, 255, 0.12);
         border: 1px solid rgba(255, 255, 255, 0.15);
@@ -2150,100 +2152,226 @@
       }
 
       .di-close-btn .material-icons-round {
-        font-size: 16px;
+        font-size: 14px;
       }
 
-      /* Apple Native Step Progress Bar */
-      .di-apple-step-bar {
+      /* ═══ Apple Split-Tree Progress Body Grid ═══ */
+      .di-tree-container {
         display: flex;
-        align-items: center;
-        justify-content: space-between;
-        width: 100%;
-        background: rgba(255, 255, 255, 0.04);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 16px;
-        padding: 10px 16px;
-      }
-
-      .di-apple-step {
-        display: flex;
-        align-items: center;
+        flex-direction: column;
         gap: 7px;
-      }
-
-      .di-step-dot {
-        width: 18px;
-        height: 18px;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.15);
-        display: flex;
-        align-items: center;
+        width: 100%;
+        flex: 1;
         justify-content: center;
       }
 
-      .di-apple-step.done .di-step-dot {
-        background: #10B981;
-        color: #FFFFFF;
+      .di-tree-branches-row {
+        display: grid;
+        grid-template-columns: 1fr 1.32fr;
+        gap: 8px;
+        width: 100%;
       }
 
-      .di-apple-step.done .di-step-dot .material-icons-round {
-        font-size: 12px;
-      }
-
-      .di-apple-step.active .di-step-dot {
-        width: 10px;
-        height: 10px;
-        background: #34D399;
-        box-shadow: 0 0 12px #34D399;
-        animation: appleStepPulse 1.5s infinite;
-      }
-
-      @keyframes appleStepPulse {
-        0%, 100% { transform: scale(1); opacity: 1; }
-        50% { transform: scale(1.35); opacity: 0.75; }
-      }
-
-      .di-step-name {
-        font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 11px;
-        font-weight: 700;
-        color: #64748B;
-      }
-
-      .di-apple-step.done .di-step-name {
-        color: #94A3B8;
-      }
-
-      .di-apple-step.active .di-step-name {
-        color: #FFFFFF;
-        font-weight: 800;
-      }
-
-      .di-step-line {
-        flex: 1;
-        height: 2px;
-        background: rgba(255, 255, 255, 0.1);
-        margin: 0 12px;
-        border-radius: 2px;
+      .di-tree-branch-card {
+        border-radius: 14px;
+        padding: 7px 10px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 5px;
         position: relative;
         overflow: hidden;
       }
 
-      .di-step-line.done {
-        background: linear-gradient(90deg, #10B981, #34D399);
+      .di-tree-branch-card.online {
+        background: linear-gradient(135deg, rgba(56, 189, 248, 0.08), rgba(255, 255, 255, 0.02));
+        border: 1px solid rgba(56, 189, 248, 0.25);
       }
 
-      .di-step-line.done::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.7), transparent);
-        animation: appleFlowLine 2s infinite linear;
+      .di-tree-branch-card.offline {
+        background: linear-gradient(135deg, rgba(251, 191, 36, 0.08), rgba(255, 255, 255, 0.02));
+        border: 1px solid rgba(251, 191, 36, 0.25);
       }
 
-      @keyframes appleFlowLine {
-        0% { transform: translateX(-100%); }
-        100% { transform: translateX(100%); }
+      .di-tree-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .di-tree-card-title {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 9px;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+
+      .di-tree-card-title.online { color: #38BDF8; }
+      .di-tree-card-title.offline { color: #FBBF24; }
+
+      .di-tree-badge {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 7.5px;
+        font-weight: 800;
+        padding: 1px 5px;
+        border-radius: 9999px;
+        text-transform: uppercase;
+      }
+
+      .di-tree-badge.online {
+        color: #38BDF8;
+        background: rgba(56, 189, 248, 0.2);
+        border: 1px solid rgba(56, 189, 248, 0.4);
+      }
+
+      .di-tree-badge.offline {
+        color: #FBBF24;
+        background: rgba(251, 191, 36, 0.2);
+        border: 1px solid rgba(251, 191, 36, 0.4);
+      }
+
+      .di-tree-flow-steps {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 4px;
+      }
+
+      .di-tree-node {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 9px;
+        padding: 3.5px 7px;
+        flex: 1;
+        min-width: 0;
+      }
+
+      .di-tree-node-icon {
+        width: 20px;
+        height: 20px;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        flex-shrink: 0;
+      }
+
+      .di-tree-node-icon.online {
+        background: rgba(56, 189, 248, 0.25);
+        color: #38BDF8;
+      }
+
+      .di-tree-node-icon.offline {
+        background: rgba(251, 191, 36, 0.25);
+        color: #FBBF24;
+      }
+
+      .di-tree-node-icon.merge {
+        background: rgba(16, 185, 129, 0.25);
+        color: #34D399;
+      }
+
+      .di-tree-node-text {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+      }
+
+      .di-tree-node-label {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 9.5px;
+        font-weight: 800;
+        color: #FFFFFF;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        line-height: 1.1;
+      }
+
+      .di-tree-node-sub {
+        font-family: "Inter", sans-serif;
+        font-size: 7.5px;
+        font-weight: 500;
+        color: #94A3B8;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .di-tree-arrow {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.3);
+        flex-shrink: 0;
+      }
+
+      /* ═══ Convergence / Merge Node (Tahap Berikutnya) ═══ */
+      .di-tree-merge-card {
+        background: linear-gradient(90deg, rgba(16, 185, 129, 0.12), rgba(255, 255, 255, 0.03));
+        border: 1px solid rgba(16, 185, 129, 0.3);
+        border-radius: 14px;
+        padding: 6px 10px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+      }
+
+      .di-tree-merge-tag-col {
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+        flex-shrink: 0;
+      }
+
+      .di-tree-merge-tag {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 8.5px;
+        font-weight: 800;
+        color: #34D399;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        display: flex;
+        align-items: center;
+        gap: 3px;
+      }
+
+      .di-tree-merge-sub {
+        font-family: "Inter", sans-serif;
+        font-size: 7.5px;
+        font-weight: 500;
+        color: #94A3B8;
+      }
+
+      .di-tree-merge-flow {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex: 1;
+        justify-content: flex-end;
+      }
+
+      .di-tree-node.merge {
+        border-color: rgba(16, 185, 129, 0.25);
+        background: rgba(16, 185, 129, 0.08);
+      }
+
+      .di-tree-node.merge.active {
+        border-color: rgba(52, 211, 153, 0.5);
+        box-shadow: 0 0 10px rgba(52, 211, 153, 0.2);
+        animation: appleMergePulse 2s infinite ease-in-out;
+      }
+
+      @keyframes appleMergePulse {
+        0%, 100% { border-color: rgba(52, 211, 153, 0.3); }
+        50% { border-color: rgba(52, 211, 153, 0.7); box-shadow: 0 0 14px rgba(52, 211, 153, 0.35); }
       }
 
       /* ===== FOOTER (Modern 3D Clay Floating Ticker) ===== */
@@ -2831,10 +2959,9 @@
         </div>
       </div>
 
-      <!-- ═══ APPLE iOS INTERACTIVE LIVE ACTIVITY SHEET ═══ -->
-      <!-- ═══ APPLE iOS NATIVE DYNAMIC ISLAND EXPANDED ═══ -->
+      <!-- ═══ APPLE iOS NATIVE SPLIT-TREE PROGRESS TRACKER ═══ -->
       <div class="di-modal-view">
-        <!-- Top Hero Row (Apple Native Island Activity Layout) -->
+        <!-- Top Hero Row: Apple Native Island Activity Layout -->
         <div class="di-apple-main-row">
           <!-- Leading: Hospital Brand & Logo -->
           <div class="di-apple-leading">
@@ -2843,14 +2970,14 @@
             </div>
             <div class="di-apple-brand-col">
               <h4 class="di-apple-title">RSU SIAGA MEDIKA</h4>
-              <p class="di-apple-subtitle">Sistem Antrean Poliklinik</p>
+              <p class="di-apple-subtitle">Alur Resmi Pendaftaran Pasien</p>
             </div>
           </div>
 
           <!-- Center: Dynamic Live Capsule Badge -->
           <div class="di-apple-center-pill">
             <span class="di-pulse-dot-sm"></span>
-            <span>LIVE ACTIVITY</span>
+            <span>PANDUAN ALUR</span>
           </div>
 
           <!-- Trailing: Digital Clock + Apple Waveform + Close -->
@@ -2871,21 +2998,112 @@
           </div>
         </div>
 
-        <!-- Bottom Row: Apple Native Patient Journey Progress Bar -->
-        <div class="di-apple-step-bar">
-          <div class="di-apple-step done">
-            <span class="di-step-dot"><span class="material-icons-round">check</span></span>
-            <span class="di-step-name">1. Pendaftaran</span>
+        <!-- Middle Body: Apple Split-Tree Flow (Online vs Offline Branches) -->
+        <div class="di-tree-container">
+          <!-- Dual Branch Stream Row -->
+          <div class="di-tree-branches-row">
+            <!-- Jalur Online (Cyan Glow / Fast Track) -->
+            <div class="di-tree-branch-card online">
+              <div class="di-tree-card-header">
+                <span class="di-tree-card-title online">
+                  <span class="material-icons-round" style="font-size: 11px;">smartphone</span> JALUR ONLINE
+                </span>
+                <span class="di-tree-badge online">⚡ FAST TRACK</span>
+              </div>
+              <div class="di-tree-flow-steps">
+                <div class="di-tree-node">
+                  <div class="di-tree-node-icon online">
+                    <span class="material-icons-round">app_shortcut</span>
+                  </div>
+                  <div class="di-tree-node-text">
+                    <span class="di-tree-node-label">Booking Online</span>
+                    <span class="di-tree-node-sub">Mobile JKN / Web</span>
+                  </div>
+                </div>
+                <span class="material-icons-round di-tree-arrow">arrow_forward</span>
+                <div class="di-tree-node">
+                  <div class="di-tree-node-icon online">
+                    <span class="material-icons-round">bolt</span>
+                  </div>
+                  <div class="di-tree-node-text">
+                    <span class="di-tree-node-label">Konfirmasi Loket</span>
+                    <span class="di-tree-node-sub">Tanpa Tiket Mesin</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Jalur Offline (Amber Glow / On-Site) -->
+            <div class="di-tree-branch-card offline">
+              <div class="di-tree-card-header">
+                <span class="di-tree-card-title offline">
+                  <span class="material-icons-round" style="font-size: 11px;">touch_app</span> JALUR OFFLINE
+                </span>
+                <span class="di-tree-badge offline">🎟️ ONSITE</span>
+              </div>
+              <div class="di-tree-flow-steps">
+                <div class="di-tree-node">
+                  <div class="di-tree-node-icon offline">
+                    <span class="material-icons-round">confirmation_number</span>
+                  </div>
+                  <div class="di-tree-node-text">
+                    <span class="di-tree-node-label">Mesin Antrean</span>
+                    <span class="di-tree-node-sub">Ambil Karcis</span>
+                  </div>
+                </div>
+                <span class="material-icons-round di-tree-arrow">arrow_forward</span>
+                <div class="di-tree-node">
+                  <div class="di-tree-node-icon offline">
+                    <span class="material-icons-round">event_seat</span>
+                  </div>
+                  <div class="di-tree-node-text">
+                    <span class="di-tree-node-label">Duduk Tunggu</span>
+                    <span class="di-tree-node-sub">Panggilan Layar</span>
+                  </div>
+                </div>
+                <span class="material-icons-round di-tree-arrow">arrow_forward</span>
+                <div class="di-tree-node">
+                  <div class="di-tree-node-icon offline">
+                    <span class="material-icons-round">how_to_reg</span>
+                  </div>
+                  <div class="di-tree-node-text">
+                    <span class="di-tree-node-label">Pendaftaran</span>
+                    <span class="di-tree-node-sub">Proses Loket</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="di-step-line done"></div>
-          <div class="di-apple-step active">
-            <span class="di-step-dot"></span>
-            <span class="di-step-name">2. Poli & Dokter</span>
-          </div>
-          <div class="di-step-line"></div>
-          <div class="di-apple-step">
-            <span class="di-step-dot"></span>
-            <span class="di-step-name">3. Farmasi & Obat</span>
+
+          <!-- Convergence Node: Penyatuan Alur (Tensi ➔ Poli) -->
+          <div class="di-tree-merge-card">
+            <div class="di-tree-merge-tag-col">
+              <span class="di-tree-merge-tag">
+                <span class="material-icons-round" style="font-size: 12px;">call_merge</span> TAHAP BERIKUTNYA
+              </span>
+              <span class="di-tree-merge-sub">Penyatuan Alur Pasien</span>
+            </div>
+            <div class="di-tree-merge-flow">
+              <div class="di-tree-node merge active">
+                <div class="di-tree-node-icon merge">
+                  <span class="material-icons-round">monitor_heart</span>
+                </div>
+                <div class="di-tree-node-text">
+                  <span class="di-tree-node-label">1. Pemeriksaan Tensi</span>
+                  <span class="di-tree-node-sub">Skrining Tanda Vital</span>
+                </div>
+              </div>
+              <span class="material-icons-round di-tree-arrow" style="color: #34D399;">trending_flat</span>
+              <div class="di-tree-node merge">
+                <div class="di-tree-node-icon merge">
+                  <span class="material-icons-round">meeting_room</span>
+                </div>
+                <div class="di-tree-node-text">
+                  <span class="di-tree-node-label">2. Ruang Tunggu Poli</span>
+                  <span class="di-tree-node-sub">Konsultasi Dokter</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
