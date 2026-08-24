@@ -5365,7 +5365,7 @@
           try {
             var container = document.getElementById("tvQrCode");
             if (container) {
-              var targetUrl = (window.location.origin || "https://simed.fallonava.my.id") + "/jadwal";
+              var targetUrl = "https://simed.fallonava.my.id/jadwal";
               container.innerHTML = QRCodeLib.generateSVG(targetUrl, 2);
             }
           } catch(e) {
