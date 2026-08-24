@@ -1478,15 +1478,15 @@
 
       /* #2: Border Expanded Detail Adaptif untuk Light Mode */
       [data-theme="light"] .platter.active .platter-detail {
-        border-top: 1px solid rgba(0, 0, 0, 0.08);
+        border-top: 1px solid rgba(226, 234, 245, 0.95);
       }
 
       .platter.active .platter-detail {
         max-height: 120px;
         opacity: 1;
-        margin-top: 12px;
-        padding-top: 12px;
-        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px solid rgba(226, 234, 245, 0.95);
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -1499,57 +1499,52 @@
       }
 
       .detail-label {
+        font-family: "Plus Jakarta Sans", sans-serif;
         font-size: 9px;
         font-weight: 800;
         text-transform: uppercase;
-        letter-spacing: 1px;
-        opacity: 0.95; /* Visibilitas tegak */
-        color: #fff;
+        letter-spacing: 0.06em;
+        color: #64748B !important;
       }
 
       .detail-time {
-        font-size: 20px;
-        font-weight: 700;
-        color: #fff;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 15px;
+        font-weight: 800;
+        color: #0F172A !important;
         font-variant-numeric: tabular-nums;
-        letter-spacing: -0.5px;
+        letter-spacing: -0.02em;
       }
 
-      /* Neomorphism 3D Button Style untuk Banner Sedang Melayani */
+      /* Apple iOS Style Live Status Pill */
       .live-status {
         display: flex;
         align-items: center;
-        gap: 8px;
-        background: var(--bg-body);
-        color: var(--status-color);
-        padding: 6px 14px;
-        border-radius: 20px;
-        border: none;
-        box-shadow: 
-          4px 4px 8px var(--neo-shadow-dark),
-          -4px -4px 8px var(--neo-shadow-light),
-          inset 0 0 10px var(--status-bg);
+        gap: 6px;
+        background: #F0FDF4;
+        color: #059669;
+        padding: 4px 10px;
+        border-radius: 9999px;
+        border: 1px solid #BBF7D0;
+        box-shadow: 0 1px 3px rgba(5, 150, 105, 0.1);
       }
 
       .pulse-dot {
-        width: 8px;
-        height: 8px;
-        background: var(--status-color);
+        width: 6px;
+        height: 6px;
+        background: #059669;
         border-radius: 50%;
-        box-shadow: 0 0 8px var(--status-color);
-        animation: pulse-glow 2s infinite;
+        box-shadow: 0 0 8px rgba(5, 150, 105, 0.6);
+        animation: pulse-glow 1.8s infinite;
       }
 
       .live-text {
-        font-size: 10px;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 9.5px;
         font-weight: 800;
-        color: var(--text-primary);
-        letter-spacing: 0.5px;
+        color: #059669 !important;
+        letter-spacing: 0.04em;
         text-transform: uppercase;
-      }
-      
-      [data-theme="light"] .live-text {
-        color: var(--status-color);
       }
 
       /* Pulse: Offload GPU animation to opacity only */
