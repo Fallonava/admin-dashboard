@@ -108,11 +108,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         });
 
         if (res.ok) {
-          // Re-fetch session immediately so sidebar & all consumers update
-          await fetchUser();
-          // Navigate to dashboard
-          router.push("/");
-          router.refresh();
+          // Navigate to dashboard with full page reload to ensure all cookies & sessions apply
+          window.location.href = "/";
           return { success: true };
         }
 

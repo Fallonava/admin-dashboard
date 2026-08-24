@@ -149,8 +149,8 @@ export async function revokeAllRefreshTokens(userId: string): Promise<void> {
 // ─── Cookie Helpers ───
 const SECURE_BASE = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === 'production',
-  sameSite: 'strict' as const,
+  secure: false,
+  sameSite: 'lax' as const,
   path: '/',
 };
 
