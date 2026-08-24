@@ -4887,7 +4887,7 @@
           try {
             var container = document.getElementById("patientQrCode");
             if (container) {
-              var targetUrl = "https://simed.fallonava.my.id/jadwal.html";
+              var targetUrl = "https://simed.fallonava.my.id/jadwal";
               container.innerHTML = QRCodeLib.generateSVG(targetUrl, 2);
             }
           } catch(e) {}
@@ -4905,7 +4905,7 @@
           modal.classList.add("active");
           var bigContainer = document.getElementById("modalBigQrCode");
           if (bigContainer && !bigContainer.hasChildNodes()) {
-            var targetUrl = "https://simed.fallonava.my.id/jadwal.html";
+            var targetUrl = "https://simed.fallonava.my.id/jadwal";
             bigContainer.innerHTML = QRCodeLib.generateSVG(targetUrl, 2);
           }
         }

@@ -1,3 +1,4 @@
+import fs from 'fs';
 import path from 'path';
 import dotenv from 'dotenv';
 dotenv.config({ path: path.resolve(__dirname, '.env') });
@@ -47,6 +48,20 @@ async function getCachedOrFreshSnapshot() {
 app.prepare().then(() => {
   const httpServer = createServer((req, res) => {
     const parsedUrl = parse(req.url!, true);
+    const pathname = parsedUrl.pathname;
+
+    // Fast-path Direct Static Serving for clean professional URLs
+    if (pathname === '/jadwal' || pathname === '/mobile') {
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      fs.createReadStream(path.join(process.cwd(), 'public', 'jadwal.html')).pipe(res);
+      return;
+    }
+    if (pathname === '/tv') {
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      fs.createReadStream(path.join(process.cwd(), 'public', 'tv.html')).pipe(res);
+      return;
+    }
+
     handle(req, res, parsedUrl);
   });
 
