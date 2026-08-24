@@ -137,8 +137,8 @@
 
       html,
       body {
-        width: 100%;
-        height: 100%;
+        width: 100vw;
+        height: 100vh;
         margin: 0;
         padding: 0;
         overflow: hidden;
@@ -150,9 +150,7 @@
         color: var(--text-primary);
         user-select: none;
         cursor: none;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        position: relative;
         transition:
           background 0.5s ease,
           color 0.5s ease;
@@ -160,11 +158,13 @@
 
       /* ===== 1080P PROPORTIONAL GOLDEN STAGE CANVAS ===== */
       .tv-stage {
-        position: relative;
+        position: absolute;
+        top: 50%;
+        left: 50%;
         width: 1920px;
         height: 1080px;
+        transform: translate(-50%, -50%) scale(1);
         transform-origin: center center;
-        flex-shrink: 0;
         overflow: hidden;
         display: flex;
         flex-direction: column;
@@ -2743,6 +2743,11 @@
           </div>
           <span id="diMsg" class="di-msg">Memuat jadwal dokter...</span>
         </div>
+        <div class="di-action-badge">
+          <span class="di-tap-hint">Detail</span>
+        </div>
+      </div>
+
       <!-- Hourly Briefing View (1 Hour Event Showcase) -->
       <div class="di-hourly-view" id="diHourlyView">
         <div class="di-hourly-badge-time">
@@ -2996,24 +3001,30 @@
           const isMobile = window.innerWidth <= 768 && window.innerHeight > window.innerWidth;
           if (isMobile) {
             stage.style.transform = "";
-            stage.style.width = "";
-            stage.style.height = "";
+            stage.style.position = "static";
+            stage.style.width = "100%";
+            stage.style.height = "auto";
             return;
           }
 
           const TARGET_W = 1920;
           const TARGET_H = 1080;
-          const curW = window.innerWidth;
-          const curH = window.innerHeight;
+          const curW = window.innerWidth || document.documentElement.clientWidth || 1920;
+          const curH = window.innerHeight || document.documentElement.clientHeight || 1080;
+
+          if (curW <= 0 || curH <= 0) return;
 
           // Calculate exact proportional scale factor
           const scaleX = curW / TARGET_W;
           const scaleY = curH / TARGET_H;
-          const scale = Math.min(scaleX, scaleY);
+          const scale = Math.max(0.2, Math.min(scaleX, scaleY));
 
+          stage.style.position = "absolute";
+          stage.style.top = "50%";
+          stage.style.left = "50%";
           stage.style.width = `${TARGET_W}px`;
           stage.style.height = `${TARGET_H}px`;
-          stage.style.transform = `scale(${scale})`;
+          stage.style.transform = `translate(-50%, -50%) scale(${scale})`;
           stage.style.transformOrigin = "center center";
         },
       };
