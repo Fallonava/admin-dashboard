@@ -3052,7 +3052,7 @@
                 <span class="di-modal-title">RSU SIAGA MEDIKA</span>
                 <span class="di-modal-live-tag">LIVE ACTIVITY</span>
               </div>
-              <span class="di-modal-subtitle">Poliklinik Rawat Jalan Terpadu</span>
+              <span class="di-modal-subtitle">Pusat Informasi & Pelayanan Pasien</span>
             </div>
           </div>
           <div class="di-modal-controls">
@@ -3777,68 +3777,90 @@
           const bulletins = [
             {
               left: {
-                tag: "PENGUMUMAN ALUR ANTREAN",
+                tag: "PENGUMUMAN PANGGILAN ANTREAN",
                 badge: "PENTING",
                 badgeColor: "#34D399",
                 icon: "notifications_active",
-                title: "Perhatikan Panggilan Nomor Antrean",
-                desc: "Nomor antrean dipanggil bertahap via layar TV dan pengeras suara. Pasien terlewat harap segera lapor petugas loket.",
+                title: "Perhatikan Nomor Antrean di Layar & Speaker",
+                desc: "Panggilan dilakukan otomatis. Pasien yang nomornya terlewat saat dipanggil 3x harap segera melapor ke petugas loket untuk dipanggil ulang.",
                 action: "Panggilan Layar & Audio Aktif",
                 actionIcon: "volume_up"
               },
               right: {
-                tag: "BERKAS & FASILITAS RS",
-                badge: "INFORMASI",
+                tag: "ALUR RESEP FARMASI",
+                badge: "PANDUAN",
                 badgeColor: "#38BDF8",
-                icon: "assignment_turned_in",
-                title: "Kelengkapan Berkas & Resep Obat",
-                desc: "Pastikan KTP/BPJS siap. Resep obat diserahkan ke loket Farmasi setelah selesai pemeriksaan poliklinik dokter.",
-                action: "Farmasi, Lab & IGD 24 Jam",
-                actionIcon: "local_pharmacy"
+                icon: "local_pharmacy",
+                title: "Penyerahan Resep & Pengambilan Obat",
+                desc: "Setelah selesai konsultasi dokter, langsung serahkan lembar resep ke Loket Farmasi. Tunggu panggilan nama pasien di area tunggu obat.",
+                action: "Waktu Racik Obat 15-30 Menit",
+                actionIcon: "schedule"
               }
             },
             {
               left: {
-                tag: "VERIFIKASI JAMINAN PASIEN",
-                badge: "WAJIB BPJS",
+                tag: "KELENGKAPAN BERKAS BPJS",
+                badge: "WAJIB SIAP",
                 badgeColor: "#34D399",
                 icon: "verified_user",
-                title: "Persyaratan Kartu BPJS & Rujukan",
-                desc: "Pastikan status kepesertaan BPJS aktif dan surat rujukan FKTP masih berlaku untuk kelancaran penerbitan SEP.",
-                action: "Loket Verifikasi BPJS Siaga",
+                title: "Pastikan KTP Asli & BPJS Aktif Siap",
+                desc: "Siapkan KTP/Kartu Keluarga dan kartu BPJS Kesehatan aktif beserta surat rujukan FKTP yang masih berlaku untuk penerbitan SEP.",
+                action: "KTP, BPJS & Rujukan Valid",
                 actionIcon: "badge"
               },
               right: {
-                tag: "LAYANAN PENUNJANG MEDIS",
-                badge: "SIAGA 24 JAM",
+                tag: "JALUR PRIORITAS KHUSUS",
+                badge: "FAST TRACK",
                 badgeColor: "#38BDF8",
-                icon: "health_and_safety",
-                title: "Laboratorium & Radiologi Lengkap",
-                desc: "Layanan cek darah, rontgen, USG, serta IGD siap melayani konsultasi dan rujukan medis darurat non-stop.",
-                action: "Hasil Cepat & Terintegrasi",
-                actionIcon: "biotech"
+                icon: "accessible",
+                title: "Pelayanan Pasien Rentan & Khusus",
+                desc: "Pasien lansia (di atas 60 th), ibu hamil, balita, dan penyandang disabilitas mendapatkan prioritas pendampingan & tempat duduk khusus.",
+                action: "Kursi Prioritas Depan Loket",
+                actionIcon: "chair"
               }
             },
             {
               left: {
-                tag: "TATA TERTIB RUANG TUNGGU",
-                badge: "KETERTIBAN",
+                tag: "PENUNJANG MEDIS CEPAT",
+                badge: "SIAGA",
+                badgeColor: "#34D399",
+                icon: "biotech",
+                title: "Pemeriksaan Darah, Lab & Rontgen",
+                desc: "Jika dokter memberikan pengantar Lab/Radiologi, segera menuju loket penunjang medis. Hasil pemeriksaan langsung terintegrasi ke poli.",
+                action: "Hasil Terhubung ke Dokter",
+                actionIcon: "speed"
+              },
+              right: {
+                tag: "JADWAL KONTROL ULANG",
+                badge: "JADWAL",
+                badgeColor: "#38BDF8",
+                icon: "event_note",
+                title: "Surat Kontrol & Jadwal Berobat Berikutnya",
+                desc: "Minta Surat Kontrol kepada dokter sebelum meninggalkan ruangan jika Anda memerlukan pemeriksaan lanjutan di minggu/bulan depan.",
+                action: "Simpan Surat Kontrol Anda",
+                actionIcon: "edit_calendar"
+              }
+            },
+            {
+              left: {
+                tag: "KAWASAN SEHAT & TERTIB",
+                badge: "PERATURAN",
                 badgeColor: "#FBBF24",
-                icon: "groups",
-                title: "Kenyamanan & Kebersihan Bersama",
-                desc: "Harap menjaga ketenangan di ruang tunggu, dampingi lansia & anak-anak, serta buang sampah pada tempat yang tersedia.",
-                action: "Kawasan Tertib & Nyaman",
+                icon: "health_and_safety",
+                title: "Area Bebas Asap Rokok & Ketenangan",
+                desc: "Dilarang merokok di seluruh area RS. Mohon menjaga ketenangan demi kenyamanan pasien yang sedang menjalani pemeriksaan.",
+                action: "Lingkungan Bersih & Tenang",
                 actionIcon: "clean_hands"
               },
               right: {
-                tag: "LAYANAN RAWAT JALAN & INAP",
-                badge: "PELAYANAN",
+                tag: "PUSAT BANTUAN PASIEN",
+                badge: "SIAP BANTU",
                 badgeColor: "#38BDF8",
-                icon: "local_hospital",
-                title: "Informasi Kamar & Rawat Inap",
-                desc: "Konsultasikan ketersediaan kamar rawat inap dan jadwal kontrol lanjutan dengan petugas admisi rumah sakit.",
-                action: "Pusat Informasi Siaga",
-                actionIcon: "info"
+                icon: "contact_support",
+                title: "Butuh Bantuan Petugas Medis?",
+                desc: "Petugas Customer Service & Informasi siap membantu pertanyaan mengenai alur poli, jadwal dokter, maupun kendala berkas antrean.",
+                action: "Petugas Informasi Siaga",
+                actionIcon: "support_agent"
               }
             }
           ];
