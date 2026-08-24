@@ -1642,15 +1642,15 @@
           inset 0 1px 1.5px rgba(255, 255, 255, 0.45);
       }
 
-      /* Deep Interactive Modal State (Downward Expanded Activity Widget) */
+      /* Deep Interactive Modal State (Apple iOS Native Dynamic Island Expanded) */
       .dynamic-island.di-modal {
-        width: 680px;
-        height: 235px;
-        border-radius: 38px;
+        width: 640px;
+        height: 165px;
+        border-radius: 42px;
         box-shadow: 
           0 32px 75px rgba(0, 0, 0, 0.95), 
-          0 0 0 1.5px rgba(16, 185, 129, 0.35), 
-          inset 0 1px 2px rgba(255, 255, 255, 0.5);
+          0 0 0 1.5px rgba(255, 255, 255, 0.2), 
+          inset 0 1.5px 2px rgba(255, 255, 255, 0.5);
       }
 
       /* Hourly Expanded State (1 Hour Event Showcase) */
@@ -1997,80 +1997,111 @@
       }
 
       /* --- Deep Modal View Items (Apple iOS 18 Native Live Activity Sheet) --- */
-      .di-modal-header {
+      /* --- Deep Modal View Items (Apple iOS Native Dynamic Island Expanded) --- */
+      .dynamic-island.di-modal .di-modal-view {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        opacity: 1;
+        transform: scale(1) translateZ(0);
+        pointer-events: auto;
+        padding: 14px 18px;
+        width: 100%;
+        height: 100%;
+      }
+
+      .di-apple-main-row {
         display: flex;
         align-items: center;
         justify-content: space-between;
         width: 100%;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        padding-bottom: 8px;
       }
 
-      .di-modal-brand {
+      .di-apple-leading {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 12px;
       }
 
-      .di-modal-logo {
-        width: 30px;
-        height: 30px;
-        border-radius: 10px;
+      .di-apple-icon-box {
+        width: 44px;
+        height: 44px;
+        border-radius: 14px;
         background: #ffffff;
         display: flex;
         align-items: center;
         justify-content: center;
         overflow: hidden;
-        box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
+        box-shadow: 0 4px 16px rgba(16, 185, 129, 0.4);
+        flex-shrink: 0;
       }
 
-      .di-modal-logo img {
+      .di-apple-icon-box img {
         width: 100%;
         height: 100%;
         object-fit: cover;
       }
 
-      .di-modal-brand-row {
+      .di-apple-brand-col {
         display: flex;
-        align-items: center;
-        gap: 8px;
+        flex-direction: column;
+        line-height: 1.2;
       }
 
-      .di-modal-title {
+      .di-apple-title {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 13px;
+        font-size: 15px;
         font-weight: 800;
         color: #FFFFFF;
-        letter-spacing: 0.02em;
-        line-height: 1.1;
+        letter-spacing: -0.01em;
       }
 
-      .di-modal-live-tag {
+      .di-apple-subtitle {
+        font-family: "Inter", sans-serif;
+        font-size: 11px;
+        font-weight: 500;
+        color: #94A3B8;
+        margin-top: 1px;
+      }
+
+      .di-apple-center-pill {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(16, 185, 129, 0.18);
+        border: 1px solid rgba(16, 185, 129, 0.38);
+        padding: 4px 10px;
+        border-radius: 9999px;
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 8.5px;
+        font-size: 9.5px;
         font-weight: 800;
         color: #34D399;
-        background: rgba(16, 185, 129, 0.2);
-        border: 1px solid rgba(16, 185, 129, 0.4);
-        padding: 1.5px 6px;
-        border-radius: 9999px;
         text-transform: uppercase;
         letter-spacing: 0.06em;
       }
 
-      .di-modal-subtitle {
-        font-family: "Inter", sans-serif;
-        font-size: 10px;
-        font-weight: 600;
-        color: #94A3B8;
-        display: block;
-        margin-top: 1px;
+      .di-apple-trailing {
+        display: flex;
+        align-items: center;
+        gap: 10px;
       }
 
-      .di-modal-controls {
+      .di-apple-clock-group {
         display: flex;
         align-items: center;
         gap: 8px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        padding: 5px 12px;
+        border-radius: 9999px;
+      }
+
+      .di-apple-clock {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 13.5px;
+        font-weight: 800;
+        color: #FFFFFF;
+        letter-spacing: -0.02em;
       }
 
       /* Apple Waveform Equalizer Micro-Animation */
@@ -2078,8 +2109,7 @@
         display: flex;
         align-items: center;
         gap: 2.5px;
-        height: 14px;
-        padding: 0 4px;
+        height: 13px;
       }
 
       .di-wave-bar {
@@ -2100,23 +2130,9 @@
         100% { transform: scaleY(1); opacity: 1; }
       }
 
-      .di-modal-clock-pill {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        background: rgba(255, 255, 255, 0.08);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        padding: 4px 10px;
-        border-radius: 9999px;
-        font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 11px;
-        font-weight: 800;
-        color: #FFFFFF;
-      }
-
       .di-close-btn {
-        width: 26px;
-        height: 26px;
+        width: 28px;
+        height: 28px;
         border-radius: 50%;
         background: rgba(255, 255, 255, 0.12);
         border: 1px solid rgba(255, 255, 255, 0.15);
@@ -2134,324 +2150,100 @@
       }
 
       .di-close-btn .material-icons-round {
-        font-size: 15px;
+        font-size: 16px;
       }
 
-      /* 2-Column Apple Widget Body Grid (Critical Hourly Information Bulletin) */
-      .di-modal-body-grid {
-        display: grid;
-        grid-template-columns: 1.15fr 1fr;
-        gap: 10px;
-        width: 100%;
-        margin: 5px 0 3px 0;
-      }
-
-      /* Left: Main Operational Notice Card */
-      .di-modal-hero-card {
-        background: rgba(255, 255, 255, 0.06);
-        border: 1px solid rgba(255, 255, 255, 0.12);
-        border-radius: 18px;
-        padding: 9px 12px;
+      /* Apple Native Step Progress Bar */
+      .di-apple-step-bar {
         display: flex;
-        flex-direction: column;
+        align-items: center;
         justify-content: space-between;
-        gap: 4px;
-        position: relative;
-        overflow: hidden;
-      }
-
-      .di-modal-hero-card::after {
-        content: "";
-        position: absolute;
-        top: -50%;
-        left: -50%;
-        width: 200%;
-        height: 200%;
-        background: linear-gradient(60deg, transparent 40%, rgba(255, 255, 255, 0.04) 50%, transparent 60%);
-        transform: rotate(25deg);
-        animation: appleShimmer 6s infinite;
-        pointer-events: none;
-      }
-
-      @keyframes appleShimmer {
-        0% { transform: translateX(-100%) rotate(25deg); }
-        25%, 100% { transform: translateX(100%) rotate(25deg); }
-      }
-
-      /* Right: Clinical & Facility Notice Card */
-      .di-modal-next-card {
+        width: 100%;
         background: rgba(255, 255, 255, 0.04);
         border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 18px;
-        padding: 9px 12px;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        gap: 4px;
+        border-radius: 16px;
+        padding: 10px 16px;
       }
 
-      .di-hero-header {
+      .di-apple-step {
         display: flex;
         align-items: center;
-        justify-content: space-between;
+        gap: 7px;
       }
 
-      .di-hero-tag {
-        font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 8.5px;
-        font-weight: 800;
-        color: var(--accent-emerald);
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
-      }
-
-      .di-next-tag {
-        font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 8.5px;
-        font-weight: 800;
-        color: #38BDF8;
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
-      }
-
-      .di-hero-status-badge {
-        font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 8px;
-        font-weight: 800;
-        color: #34D399;
-        background: rgba(5, 150, 105, 0.25);
-        border: 1px solid rgba(5, 150, 105, 0.45);
-        padding: 1.5px 6px;
-        border-radius: 9999px;
-        text-transform: uppercase;
-      }
-
-      .di-next-status-badge {
-        font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 8px;
-        font-weight: 800;
-        color: #38BDF8;
-        background: rgba(56, 189, 248, 0.2);
-        border: 1px solid rgba(56, 189, 248, 0.4);
-        padding: 1.5px 6px;
-        border-radius: 9999px;
-        text-transform: uppercase;
-      }
-
-      .di-hero-main-row {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
-
-      .di-hero-avatar-box {
-        width: 36px;
-        height: 36px;
-        border-radius: 12px;
-        background: var(--accent-emerald-gradient);
-        color: #FFFFFF;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-        box-shadow: 0 4px 14px var(--accent-emerald-glow);
-        animation: appleHalo 3s ease-in-out infinite alternate;
-      }
-
-      .di-next-avatar-box {
-        width: 36px;
-        height: 36px;
-        border-radius: 12px;
-        background: linear-gradient(135deg, #0284C7, #0369A1);
-        color: #FFFFFF;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-        box-shadow: 0 4px 12px rgba(2, 132, 199, 0.35);
-      }
-
-      @keyframes appleHalo {
-        0% { box-shadow: 0 0 8px rgba(16, 185, 129, 0.4); }
-        100% { box-shadow: 0 0 16px rgba(16, 185, 129, 0.85); }
-      }
-
-      .di-hero-avatar-icon {
-        font-size: 20px;
-      }
-
-      .di-hero-info {
-        flex: 1;
-        min-width: 0;
-      }
-
-      .di-hero-doc-name {
-        font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 12.5px;
-        font-weight: 800;
-        color: #FFFFFF;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        line-height: 1.2;
-      }
-
-      .di-hero-doc-spec {
-        font-family: "Inter", sans-serif;
-        font-size: 9.5px;
-        font-weight: 500;
-        color: #94A3B8;
-        white-space: normal;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-        line-height: 1.25;
-        margin-top: 1px;
-      }
-
-      .di-hero-meta-row {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        margin-top: 2px;
-      }
-
-      .di-hero-meta-pill {
-        display: inline-flex;
-        align-items: center;
-        gap: 3px;
-        font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 8.5px;
-        font-weight: 700;
-        color: #CBD5E1;
-        background: rgba(255, 255, 255, 0.08);
-        padding: 1px 6px;
-        border-radius: 5px;
-      }
-
-      .di-hero-meta-pill .material-icons-round {
-        font-size: 10px;
-        color: var(--accent-emerald);
-      }
-
-      /* Apple Live Patient Journey Step Flow Tracker */
-      .di-modal-flow-tracker {
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 12px;
-        padding: 5px 12px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        width: 100%;
-        margin-top: 2px;
-      }
-
-      .di-flow-step {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-      }
-
-      .di-flow-dot {
-        width: 7px;
-        height: 7px;
+      .di-step-dot {
+        width: 18px;
+        height: 18px;
         border-radius: 50%;
-        background: rgba(255, 255, 255, 0.25);
+        background: rgba(255, 255, 255, 0.15);
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
 
-      .di-flow-step.done .di-flow-dot {
+      .di-apple-step.done .di-step-dot {
         background: #10B981;
+        color: #FFFFFF;
       }
 
-      .di-flow-step.active .di-flow-dot {
+      .di-apple-step.done .di-step-dot .material-icons-round {
+        font-size: 12px;
+      }
+
+      .di-apple-step.active .di-step-dot {
+        width: 10px;
+        height: 10px;
         background: #34D399;
-        box-shadow: 0 0 10px #34D399;
+        box-shadow: 0 0 12px #34D399;
         animation: appleStepPulse 1.5s infinite;
       }
 
       @keyframes appleStepPulse {
         0%, 100% { transform: scale(1); opacity: 1; }
-        50% { transform: scale(1.4); opacity: 0.7; }
+        50% { transform: scale(1.35); opacity: 0.75; }
       }
 
-      .di-flow-label {
+      .di-step-name {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 9px;
+        font-size: 11px;
         font-weight: 700;
         color: #64748B;
-        text-transform: uppercase;
-        letter-spacing: 0.03em;
       }
 
-      .di-flow-step.done .di-flow-label {
+      .di-apple-step.done .di-step-name {
         color: #94A3B8;
       }
 
-      .di-flow-step.active .di-flow-label {
-        color: #34D399;
+      .di-apple-step.active .di-step-name {
+        color: #FFFFFF;
         font-weight: 800;
       }
 
-      .di-flow-line {
+      .di-step-line {
         flex: 1;
         height: 2px;
         background: rgba(255, 255, 255, 0.1);
-        margin: 0 8px;
+        margin: 0 12px;
         border-radius: 2px;
         position: relative;
         overflow: hidden;
       }
 
-      .di-flow-line.done {
+      .di-step-line.done {
         background: linear-gradient(90deg, #10B981, #34D399);
       }
 
-      .di-flow-line.done::after {
+      .di-step-line.done::after {
         content: "";
         position: absolute;
         inset: 0;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.7), transparent);
         animation: appleFlowLine 2s infinite linear;
       }
 
       @keyframes appleFlowLine {
         0% { transform: translateX(-100%); }
         100% { transform: translateX(100%); }
-      }
-
-      /* Bottom Footer Sub-ticker */
-      .di-modal-footer {
-        width: 100%;
-        border-top: 1px solid rgba(255, 255, 255, 0.08);
-        padding-top: 5px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-
-      .di-footer-icon {
-        font-size: 13px;
-        color: #FBBF24;
-        flex-shrink: 0;
-      }
-
-      .di-footer-marquee-box {
-        flex: 1;
-        min-width: 0;
-        overflow: hidden;
-      }
-
-      .di-modal-marquee {
-        font-family: "Inter", sans-serif;
-        font-size: 10px;
-        font-weight: 600;
-        color: #CBD5E1;
-        display: block;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
       }
 
       /* ===== FOOTER (Modern 3D Clay Floating Ticker) ===== */
@@ -3040,32 +2832,38 @@
       </div>
 
       <!-- ═══ APPLE iOS INTERACTIVE LIVE ACTIVITY SHEET ═══ -->
+      <!-- ═══ APPLE iOS NATIVE DYNAMIC ISLAND EXPANDED ═══ -->
       <div class="di-modal-view">
-        <!-- Top Bar: Apple Dynamic Island Leading & Trailing -->
-        <div class="di-modal-header">
-          <div class="di-modal-brand">
-            <div class="di-modal-logo">
+        <!-- Top Hero Row (Apple Native Island Activity Layout) -->
+        <div class="di-apple-main-row">
+          <!-- Leading: Hospital Brand & Logo -->
+          <div class="di-apple-leading">
+            <div class="di-apple-icon-box">
               <img src="/logo-rs.png" alt="RS" />
             </div>
-            <div class="di-modal-title-col">
-              <div class="di-modal-brand-row">
-                <span class="di-modal-title">RSU SIAGA MEDIKA</span>
-                <span class="di-modal-live-tag">LIVE ACTIVITY</span>
-              </div>
-              <span class="di-modal-subtitle">Pusat Informasi & Pelayanan Pasien</span>
+            <div class="di-apple-brand-col">
+              <h4 class="di-apple-title">RSU SIAGA MEDIKA</h4>
+              <p class="di-apple-subtitle">Sistem Antrean Poliklinik</p>
             </div>
           </div>
-          <div class="di-modal-controls">
-            <!-- Apple Waveform Equalizer Micro-Animation -->
-            <div class="di-waveform" title="Live Broadcast Active">
-              <span class="di-wave-bar"></span>
-              <span class="di-wave-bar"></span>
-              <span class="di-wave-bar"></span>
-              <span class="di-wave-bar"></span>
-            </div>
-            <div class="di-modal-clock-pill">
-              <span class="di-pulse-dot-sm"></span>
-              <span id="diModalClockText">--:-- WIB</span>
+
+          <!-- Center: Dynamic Live Capsule Badge -->
+          <div class="di-apple-center-pill">
+            <span class="di-pulse-dot-sm"></span>
+            <span>LIVE ACTIVITY</span>
+          </div>
+
+          <!-- Trailing: Digital Clock + Apple Waveform + Close -->
+          <div class="di-apple-trailing">
+            <div class="di-apple-clock-group">
+              <span id="diModalClockText" class="di-apple-clock">--:-- WIB</span>
+              <!-- Apple Waveform Equalizer Micro-Animation -->
+              <div class="di-waveform" title="Live Broadcast Active">
+                <span class="di-wave-bar"></span>
+                <span class="di-wave-bar"></span>
+                <span class="di-wave-bar"></span>
+                <span class="di-wave-bar"></span>
+              </div>
             </div>
             <button class="di-close-btn" onclick="event.stopPropagation(); Island.collapse();" title="Tutup">
               <span class="material-icons-round">close</span>
@@ -3073,83 +2871,21 @@
           </div>
         </div>
 
-        <!-- Middle Content: 2-Column Apple Widget Grid (Critical Information Bulletin) -->
-        <div class="di-modal-body-grid">
-          <!-- Left Column: Main Operational & Queue Notice Card -->
-          <div class="di-modal-hero-card" id="diModalNoticeLeft">
-            <div class="di-hero-header">
-              <span class="di-hero-tag" id="diInfoTagLeft">PENGUMUMAN ALUR ANTREAN</span>
-              <span class="di-hero-status-badge" id="diInfoBadgeLeft">PENTING</span>
-            </div>
-            <div class="di-hero-main-row">
-              <div class="di-hero-avatar-box">
-                <span id="diInfoIconLeft" class="material-icons-round di-hero-avatar-icon">notifications_active</span>
-              </div>
-              <div class="di-hero-info">
-                <h5 id="diInfoTitleLeft" class="di-hero-doc-name">Perhatikan Panggilan Nomor Antrean</h5>
-                <p id="diInfoDescLeft" class="di-hero-doc-spec">Harap tetap berada di ruang tunggu. Nomor antrean dipanggil bertahap via layar dan pengeras suara.</p>
-                <div class="di-hero-meta-row">
-                  <span class="di-hero-meta-pill" id="diInfoPillLeft">
-                    <span class="material-icons-round">volume_up</span>
-                    <span id="diInfoActionLeft">Panggilan Layar & Audio Aktif</span>
-                  </span>
-                </div>
-              </div>
-            </div>
+        <!-- Bottom Row: Apple Native Patient Journey Progress Bar -->
+        <div class="di-apple-step-bar">
+          <div class="di-apple-step done">
+            <span class="di-step-dot"><span class="material-icons-round">check</span></span>
+            <span class="di-step-name">1. Pendaftaran</span>
           </div>
-
-          <!-- Right Column: Administrative & Clinical Facility Notice Card -->
-          <div class="di-modal-next-card" id="diModalNoticeRight">
-            <div class="di-hero-header">
-              <span class="di-next-tag" id="diInfoTagRight">BERKAS & FASILITAS RS</span>
-              <span class="di-next-status-badge" id="diInfoBadgeRight">INFORMASI</span>
-            </div>
-            <div class="di-hero-main-row">
-              <div class="di-next-avatar-box">
-                <span id="diInfoIconRight" class="material-icons-round di-hero-avatar-icon">assignment_turned_in</span>
-              </div>
-              <div class="di-hero-info">
-                <h5 id="diInfoTitleRight" class="di-hero-doc-name">Kelengkapan Berkas & Resep Obat</h5>
-                <p id="diInfoDescRight" class="di-hero-doc-spec">Pastikan KTP/BPJS siap. Resep obat diserahkan ke loket Farmasi setelah selesai konsultasi dokter.</p>
-                <div class="di-hero-meta-row">
-                  <span class="di-hero-meta-pill" id="diInfoPillRight">
-                    <span class="material-icons-round">local_pharmacy</span>
-                    <span id="diInfoActionRight">Farmasi, Lab & IGD Siaga</span>
-                  </span>
-                </div>
-              </div>
-            </div>
+          <div class="di-step-line done"></div>
+          <div class="di-apple-step active">
+            <span class="di-step-dot"></span>
+            <span class="di-step-name">2. Poli & Dokter</span>
           </div>
-        </div>
-
-        <!-- Apple Live Patient Journey Step Flow Tracker -->
-        <div class="di-modal-flow-tracker">
-          <div class="di-flow-step done">
-            <span class="di-flow-dot"></span>
-            <span class="di-flow-label">1. Pendaftaran</span>
-          </div>
-          <div class="di-flow-line done"></div>
-          <div class="di-flow-step done">
-            <span class="di-flow-dot"></span>
-            <span class="di-flow-label">2. Ruang Tunggu</span>
-          </div>
-          <div class="di-flow-line done"></div>
-          <div class="di-flow-step active">
-            <span class="di-flow-dot"></span>
-            <span class="di-flow-label">3. Poli & Dokter</span>
-          </div>
-          <div class="di-flow-line"></div>
-          <div class="di-flow-step">
-            <span class="di-flow-dot"></span>
-            <span class="di-flow-label">4. Farmasi / Obat</span>
-          </div>
-        </div>
-
-        <!-- Bottom Footer: Apple Style Sub-ticker -->
-        <div class="di-modal-footer">
-          <span class="material-icons-round di-footer-icon">campaign</span>
-          <div class="di-footer-marquee-box">
-            <span id="diModalMessage" class="di-modal-marquee">Harap perhatikan panggilan nomor antrean Anda di layar dan audio • Siapkan KTP & Kartu BPJS.</span>
+          <div class="di-step-line"></div>
+          <div class="di-apple-step">
+            <span class="di-step-dot"></span>
+            <span class="di-step-name">3. Farmasi & Obat</span>
           </div>
         </div>
       </div>
@@ -3766,141 +3502,10 @@
         },
 
         syncModalData() {
-          if (!App || !App._data) return;
           const now = new Date();
           const curHour = now.getHours();
           const timeStr = String(curHour).padStart(2, "0") + ":" + String(now.getMinutes()).padStart(2, "0") + " WIB";
-
           if ($("diModalClockText")) $("diModalClockText").textContent = timeStr;
-
-          // Rotasi Paket Informasi Penting Jam-an Rumah Sakit
-          const bulletins = [
-            {
-              left: {
-                tag: "PENGUMUMAN PANGGILAN ANTREAN",
-                badge: "PENTING",
-                badgeColor: "#34D399",
-                icon: "notifications_active",
-                title: "Perhatikan Nomor Antrean di Layar & Speaker",
-                desc: "Panggilan dilakukan otomatis. Pasien yang nomornya terlewat saat dipanggil 3x harap segera melapor ke petugas loket untuk dipanggil ulang.",
-                action: "Panggilan Layar & Audio Aktif",
-                actionIcon: "volume_up"
-              },
-              right: {
-                tag: "ALUR RESEP FARMASI",
-                badge: "PANDUAN",
-                badgeColor: "#38BDF8",
-                icon: "local_pharmacy",
-                title: "Penyerahan Resep & Pengambilan Obat",
-                desc: "Setelah selesai konsultasi dokter, langsung serahkan lembar resep ke Loket Farmasi. Tunggu panggilan nama pasien di area tunggu obat.",
-                action: "Waktu Racik Obat 15-30 Menit",
-                actionIcon: "schedule"
-              }
-            },
-            {
-              left: {
-                tag: "KELENGKAPAN BERKAS BPJS",
-                badge: "WAJIB SIAP",
-                badgeColor: "#34D399",
-                icon: "verified_user",
-                title: "Pastikan KTP Asli & BPJS Aktif Siap",
-                desc: "Siapkan KTP/Kartu Keluarga dan kartu BPJS Kesehatan aktif beserta surat rujukan FKTP yang masih berlaku untuk penerbitan SEP.",
-                action: "KTP, BPJS & Rujukan Valid",
-                actionIcon: "badge"
-              },
-              right: {
-                tag: "JALUR PRIORITAS KHUSUS",
-                badge: "FAST TRACK",
-                badgeColor: "#38BDF8",
-                icon: "accessible",
-                title: "Pelayanan Pasien Rentan & Khusus",
-                desc: "Pasien lansia (di atas 60 th), ibu hamil, balita, dan penyandang disabilitas mendapatkan prioritas pendampingan & tempat duduk khusus.",
-                action: "Kursi Prioritas Depan Loket",
-                actionIcon: "chair"
-              }
-            },
-            {
-              left: {
-                tag: "PENUNJANG MEDIS CEPAT",
-                badge: "SIAGA",
-                badgeColor: "#34D399",
-                icon: "biotech",
-                title: "Pemeriksaan Darah, Lab & Rontgen",
-                desc: "Jika dokter memberikan pengantar Lab/Radiologi, segera menuju loket penunjang medis. Hasil pemeriksaan langsung terintegrasi ke poli.",
-                action: "Hasil Terhubung ke Dokter",
-                actionIcon: "speed"
-              },
-              right: {
-                tag: "JADWAL KONTROL ULANG",
-                badge: "JADWAL",
-                badgeColor: "#38BDF8",
-                icon: "event_note",
-                title: "Surat Kontrol & Jadwal Berobat Berikutnya",
-                desc: "Minta Surat Kontrol kepada dokter sebelum meninggalkan ruangan jika Anda memerlukan pemeriksaan lanjutan di minggu/bulan depan.",
-                action: "Simpan Surat Kontrol Anda",
-                actionIcon: "edit_calendar"
-              }
-            },
-            {
-              left: {
-                tag: "KAWASAN SEHAT & TERTIB",
-                badge: "PERATURAN",
-                badgeColor: "#FBBF24",
-                icon: "health_and_safety",
-                title: "Area Bebas Asap Rokok & Ketenangan",
-                desc: "Dilarang merokok di seluruh area RS. Mohon menjaga ketenangan demi kenyamanan pasien yang sedang menjalani pemeriksaan.",
-                action: "Lingkungan Bersih & Tenang",
-                actionIcon: "clean_hands"
-              },
-              right: {
-                tag: "PUSAT BANTUAN PASIEN",
-                badge: "SIAP BANTU",
-                badgeColor: "#38BDF8",
-                icon: "contact_support",
-                title: "Butuh Bantuan Petugas Medis?",
-                desc: "Petugas Customer Service & Informasi siap membantu pertanyaan mengenai alur poli, jadwal dokter, maupun kendala berkas antrean.",
-                action: "Petugas Informasi Siaga",
-                actionIcon: "support_agent"
-              }
-            }
-          ];
-
-          const curBulletin = bulletins[curHour % bulletins.length];
-
-          // Priority: Jika ada pesan admin khusus, tampilkan di Left Card!
-          if (App._customMsgs && App._customMsgs.length > 0) {
-            const adminMsg = App._customMsgs[App._customMsgIdx % App._customMsgs.length];
-            curBulletin.left.tag = adminMsg.title || "PENGUMUMAN MANAJEMEN RS";
-            curBulletin.left.badge = "SIARAN PUSAT";
-            curBulletin.left.title = adminMsg.text || adminMsg.message || curBulletin.left.title;
-          }
-
-          // Populate Left Card
-          if ($("diInfoTagLeft")) $("diInfoTagLeft").textContent = curBulletin.left.tag;
-          if ($("diInfoBadgeLeft")) {
-            $("diInfoBadgeLeft").textContent = curBulletin.left.badge;
-            $("diInfoBadgeLeft").style.color = curBulletin.left.badgeColor;
-          }
-          if ($("diInfoIconLeft")) $("diInfoIconLeft").textContent = curBulletin.left.icon;
-          if ($("diInfoTitleLeft")) $("diInfoTitleLeft").textContent = curBulletin.left.title;
-          if ($("diInfoDescLeft")) $("diInfoDescLeft").textContent = curBulletin.left.desc;
-          if ($("diInfoActionLeft")) $("diInfoActionLeft").textContent = curBulletin.left.action;
-
-          // Populate Right Card
-          if ($("diInfoTagRight")) $("diInfoTagRight").textContent = curBulletin.right.tag;
-          if ($("diInfoBadgeRight")) {
-            $("diInfoBadgeRight").textContent = curBulletin.right.badge;
-            $("diInfoBadgeRight").style.color = curBulletin.right.badgeColor;
-          }
-          if ($("diInfoIconRight")) $("diInfoIconRight").textContent = curBulletin.right.icon;
-          if ($("diInfoTitleRight")) $("diInfoTitleRight").textContent = curBulletin.right.title;
-          if ($("diInfoDescRight")) $("diInfoDescRight").textContent = curBulletin.right.desc;
-          if ($("diInfoActionRight")) $("diInfoActionRight").textContent = curBulletin.right.action;
-
-          // Custom message di modal footer
-          if ($("diModalMessage")) {
-            $("diModalMessage").textContent = "RSU Siaga Medika • Melayani dengan Sepenuh Hati • Harap perhatikan panggilan nomor antrean Anda.";
-          }
         },
 
         // Tampilkan notifikasi / rotating headline (Expanded Toast)
