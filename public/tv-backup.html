@@ -1996,7 +1996,7 @@
         letter-spacing: 0.06em;
       }
 
-      /* --- Deep Modal View Items --- */
+      /* --- Deep Modal View Items (Apple iOS Live Activity Sheet) --- */
       .di-modal-header {
         display: flex;
         align-items: center;
@@ -2021,6 +2021,7 @@
         align-items: center;
         justify-content: center;
         overflow: hidden;
+        box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
       }
 
       .di-modal-logo img {
@@ -2029,12 +2030,32 @@
         object-fit: cover;
       }
 
+      .di-modal-brand-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
       .di-modal-title {
         font-family: "Plus Jakarta Sans", sans-serif;
         font-size: 13px;
         font-weight: 800;
         color: #FFFFFF;
+        letter-spacing: 0.02em;
         line-height: 1.1;
+      }
+
+      .di-modal-live-tag {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 8.5px;
+        font-weight: 800;
+        color: #34D399;
+        background: rgba(16, 185, 129, 0.2);
+        border: 1px solid rgba(16, 185, 129, 0.4);
+        padding: 1.5px 6px;
+        border-radius: 9999px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
       }
 
       .di-modal-subtitle {
@@ -2042,6 +2063,28 @@
         font-size: 10px;
         font-weight: 600;
         color: #94A3B8;
+        display: block;
+        margin-top: 1px;
+      }
+
+      .di-modal-controls {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .di-modal-clock-pill {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        padding: 4px 10px;
+        border-radius: 9999px;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 11px;
+        font-weight: 800;
+        color: #FFFFFF;
       }
 
       .di-close-btn {
@@ -2049,73 +2092,101 @@
         height: 28px;
         border-radius: 50%;
         background: rgba(255, 255, 255, 0.12);
-        border: none;
+        border: 1px solid rgba(255, 255, 255, 0.15);
         color: #FFFFFF;
         display: flex;
         align-items: center;
         justify-content: center;
         cursor: pointer;
-        transition: background 0.2s ease;
+        transition: background 0.2s ease, transform 0.2s ease;
       }
 
       .di-close-btn:hover {
         background: rgba(255, 255, 255, 0.25);
+        transform: scale(1.08);
       }
 
       .di-close-btn .material-icons-round {
         font-size: 16px;
       }
 
-      .di-modal-body {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
+      /* 2-Column Apple Widget Body Grid */
+      .di-modal-body-grid {
+        display: grid;
+        grid-template-columns: 1.35fr 1fr;
+        gap: 12px;
         width: 100%;
-        margin-top: 8px;
+        margin: 6px 0;
       }
 
-      .di-modal-status-card {
+      /* Left: Hero Doctor Card */
+      .di-modal-hero-card {
         background: rgba(255, 255, 255, 0.06);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 18px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 20px;
         padding: 10px 14px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 6px;
+      }
+
+      .di-hero-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .di-hero-tag {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 9px;
+        font-weight: 800;
+        color: var(--accent-emerald);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+
+      .di-hero-status-badge {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 8.5px;
+        font-weight: 800;
+        color: #34D399;
+        background: rgba(5, 150, 105, 0.25);
+        border: 1px solid rgba(5, 150, 105, 0.45);
+        padding: 2px 7px;
+        border-radius: 9999px;
+        text-transform: uppercase;
+      }
+
+      .di-hero-main-row {
         display: flex;
         align-items: center;
         gap: 12px;
       }
 
-      .di-modal-avatar {
-        width: 38px;
-        height: 38px;
-        border-radius: 12px;
+      .di-hero-avatar-box {
+        width: 42px;
+        height: 42px;
+        border-radius: 14px;
         background: var(--accent-emerald-gradient);
         color: #FFFFFF;
         display: flex;
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
-        box-shadow: 0 4px 12px var(--accent-emerald-glow);
+        box-shadow: 0 4px 14px var(--accent-emerald-glow);
       }
 
-      .di-modal-avatar .material-icons-round {
-        font-size: 20px;
+      .di-hero-avatar-icon {
+        font-size: 22px;
       }
 
-      .di-modal-info {
+      .di-hero-info {
         flex: 1;
         min-width: 0;
       }
 
-      .di-modal-status-pill {
-        font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 9px;
-        font-weight: 800;
-        color: #10B981;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-      }
-
-      .di-modal-doc {
+      .di-hero-doc-name {
         font-family: "Plus Jakarta Sans", sans-serif;
         font-size: 13.5px;
         font-weight: 800;
@@ -2123,58 +2194,158 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        line-height: 1.2;
       }
 
-      .di-modal-spec {
+      .di-hero-doc-spec {
         font-family: "Inter", sans-serif;
-        font-size: 11px;
+        font-size: 10.5px;
         font-weight: 600;
         color: #94A3B8;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        margin-top: 1px;
+      }
+
+      .di-hero-meta-row {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 3px;
+      }
+
+      .di-hero-meta-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 9px;
+        font-weight: 700;
+        color: #CBD5E1;
+        background: rgba(255, 255, 255, 0.08);
+        padding: 2px 7px;
+        border-radius: 6px;
+      }
+
+      .di-hero-meta-pill .material-icons-round {
+        font-size: 11px;
+        color: var(--accent-emerald);
+      }
+
+      /* Right: Apple 3D Counter Grid & WhatsApp */
+      .di-modal-side-col {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 6px;
       }
 
       .di-modal-stats-grid {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        gap: 8px;
+        gap: 6px;
       }
 
       .di-stat-box {
-        background: rgba(255, 255, 255, 0.05);
+        background: rgba(255, 255, 255, 0.06);
         border-radius: 14px;
-        padding: 6px 10px;
+        padding: 6px 4px;
         text-align: center;
-        border: 1px solid rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.1);
       }
 
       .di-stat-num {
         display: block;
         font-family: "Plus Jakarta Sans", sans-serif;
         font-size: 16px;
-        font-weight: 800;
-        color: #FFFFFF;
+        font-weight: 900;
         line-height: 1.1;
       }
 
       .di-stat-lbl {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 8.5px;
+        font-size: 8px;
         font-weight: 800;
         color: #94A3B8;
         text-transform: uppercase;
+        margin-top: 2px;
+        letter-spacing: 0.04em;
       }
 
+      /* WhatsApp Online Registration Banner */
+      .di-modal-wa-banner {
+        background: rgba(37, 211, 102, 0.12);
+        border: 1px solid rgba(37, 211, 102, 0.28);
+        border-radius: 14px;
+        padding: 6px 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .di-wa-icon-box {
+        width: 22px;
+        height: 22px;
+        border-radius: 6px;
+        background: #25D366;
+        color: #FFFFFF;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+
+      .di-wa-icon-box .material-icons-round {
+        font-size: 14px;
+      }
+
+      .di-wa-text-col {
+        display: flex;
+        flex-direction: column;
+        line-height: 1.1;
+      }
+
+      .di-wa-label {
+        font-family: "Inter", sans-serif;
+        font-size: 8.5px;
+        font-weight: 600;
+        color: #86EFAC;
+      }
+
+      .di-wa-number {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 11px;
+        font-weight: 800;
+        color: #FFFFFF;
+        letter-spacing: 0.02em;
+      }
+
+      /* Bottom Footer Sub-ticker */
       .di-modal-footer {
         width: 100%;
         border-top: 1px solid rgba(255, 255, 255, 0.08);
-        padding-top: 8px;
+        padding-top: 6px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .di-footer-icon {
+        font-size: 14px;
+        color: #FBBF24;
+        flex-shrink: 0;
+      }
+
+      .di-footer-marquee-box {
+        flex: 1;
+        min-width: 0;
+        overflow: hidden;
       }
 
       .di-modal-marquee {
         font-family: "Inter", sans-serif;
-        font-size: 11px;
+        font-size: 10.5px;
         font-weight: 600;
         color: #CBD5E1;
         display: block;
@@ -2768,20 +2939,24 @@
         </div>
       </div>
 
-      <!-- Deep Interactive Modal View (Detailed Activity Widget) -->
+      <!-- ═══ APPLE iOS INTERACTIVE LIVE ACTIVITY SHEET ═══ -->
       <div class="di-modal-view">
+        <!-- Top Bar: Apple Dynamic Island Leading & Trailing -->
         <div class="di-modal-header">
           <div class="di-modal-brand">
             <div class="di-modal-logo">
               <img src="/logo-rs.png" alt="RS" />
             </div>
-            <div>
-              <h4 class="di-modal-title">RSU Siaga Medika</h4>
-              <p class="di-modal-subtitle">Pusat Layanan & Display TV</p>
+            <div class="di-modal-title-col">
+              <div class="di-modal-brand-row">
+                <span class="di-modal-title">RSU SIAGA MEDIKA</span>
+                <span class="di-modal-live-tag">LIVE ACTIVITY</span>
+              </div>
+              <span class="di-modal-subtitle">Poliklinik Rawat Jalan Terpadu</span>
             </div>
           </div>
-          <div style="display: flex; align-items: center; gap: 10px;">
-            <div class="di-hourly-pill-live" id="diModalClockBadge">
+          <div class="di-modal-controls">
+            <div class="di-modal-clock-pill">
               <span class="di-pulse-dot-sm"></span>
               <span id="diModalClockText">--:-- WIB</span>
             </div>
@@ -2791,36 +2966,67 @@
           </div>
         </div>
 
-        <div class="di-modal-body">
-          <div class="di-modal-status-card" id="diModalDoctorCard">
-            <div class="di-modal-avatar">
-              <span id="diModalAvatar" class="material-icons-round">medical_services</span>
+        <!-- Middle Content: 2-Column Apple Widget Grid -->
+        <div class="di-modal-body-grid">
+          <!-- Left Column: Featured Doctor / Active Shift Card -->
+          <div class="di-modal-hero-card" id="diModalDoctorCard">
+            <div class="di-hero-header">
+              <span class="di-hero-tag" id="diHeroTag">DOKTER SHIFT BERJALAN</span>
+              <span class="di-hero-status-badge" id="diModalStatus">SEDANG MELAYANI</span>
             </div>
-            <div class="di-modal-info">
-              <span id="diModalStatus" class="di-modal-status-pill">SEDANG PRAKTEK</span>
-              <h5 id="diModalDocName" class="di-modal-doc">Pelayanan Poliklinik</h5>
-              <p id="diModalDocSpec" class="di-modal-spec">Layanan Poliklinik Rawat Jalan Aktif</p>
+            <div class="di-hero-main-row">
+              <div class="di-hero-avatar-box">
+                <span id="diModalAvatar" class="material-icons-round di-hero-avatar-icon">medical_services</span>
+              </div>
+              <div class="di-hero-info">
+                <h5 id="diModalDocName" class="di-hero-doc-name">dr. Poliklinik Rawat Jalan</h5>
+                <p id="diModalDocSpec" class="di-hero-doc-spec">Spesialis Medis • Ruang Poliklinik</p>
+                <div class="di-hero-meta-row">
+                  <span class="di-hero-meta-pill" id="diModalMetaPill">
+                    <span class="material-icons-round">schedule</span>
+                    <span id="diModalDocTime">Layanan Berlangsung</span>
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
 
-          <div class="di-modal-stats-grid">
-            <div class="di-stat-box">
-              <span class="di-stat-num" id="diStatActive">0</span>
-              <span class="di-stat-lbl">Dokter Buka</span>
+          <!-- Right Column: Apple Health-Style 3D Counter Grid & Quick WA -->
+          <div class="di-modal-side-col">
+            <div class="di-modal-stats-grid">
+              <div class="di-stat-box di-stat-box-green">
+                <span class="di-stat-num" id="diStatActive" style="color: #34D399;">0</span>
+                <span class="di-stat-lbl">BUKA</span>
+              </div>
+              <div class="di-stat-box di-stat-box-blue">
+                <span class="di-stat-num" id="diStatWait" style="color: #38BDF8;">0</span>
+                <span class="di-stat-lbl">JADWAL</span>
+              </div>
+              <div class="di-stat-box di-stat-box-red">
+                <span class="di-stat-num" id="diStatPenuh" style="color: #F87171;">0</span>
+                <span class="di-stat-lbl">OFF/CUTI</span>
+              </div>
             </div>
-            <div class="di-stat-box">
-              <span class="di-stat-num" id="diStatWait">0</span>
-              <span class="di-stat-lbl">Terjadwal</span>
-            </div>
-            <div class="di-stat-box">
-              <span class="di-stat-num" id="diStatPenuh">0</span>
-              <span class="di-stat-lbl">Penuh/Cuti</span>
+
+            <!-- Quick WhatsApp Contact Banner -->
+            <div class="di-modal-wa-banner">
+              <div class="di-wa-icon-box">
+                <span class="material-icons-round">chat</span>
+              </div>
+              <div class="di-wa-text-col">
+                <span class="di-wa-label">Pendaftaran Online WhatsApp</span>
+                <span class="di-wa-number">0823-2344-6076</span>
+              </div>
             </div>
           </div>
         </div>
 
+        <!-- Bottom Footer: Apple Style Sub-ticker -->
         <div class="di-modal-footer">
-          <span id="diModalMessage" class="di-modal-marquee">Terimakasih sudah menunggu dan tertib mengantre.</span>
+          <span class="material-icons-round di-footer-icon">campaign</span>
+          <div class="di-footer-marquee-box">
+            <span id="diModalMessage" class="di-modal-marquee">Harap perhatikan panggilan nomor antrean Anda di layar dan audio • Siapkan KTP & Kartu BPJS.</span>
+          </div>
         </div>
       </div>
     </div>
@@ -3460,7 +3666,7 @@
             if (time.includes(String(curHour).padStart(2, "0") + ":") || time.includes(String(curHour) + ".")) {
               const doc = docs.find(d => d.id === s.doctorId);
               if (doc && !newShiftDocs.some(d => d.id === doc.id)) {
-                newShiftDocs.push(doc);
+                newShiftDocs.push({ ...doc, shiftTime: time });
               }
             }
           });
@@ -3468,23 +3674,29 @@
           // Featured Doctor di Modal Card
           if (newShiftDocs.length > 0) {
             const feat = newShiftDocs[0];
-            if ($("diModalDocName")) $("diModalDocName").textContent = feat.name || "dr. Praktek";
-            if ($("diModalDocSpec")) $("diModalDocSpec").textContent = (feat.specialty || "Spesialis") + " • Mulai Praktek Jam Ini";
+            if ($("diHeroTag")) $("diHeroTag").textContent = "DOKTER SHIFT " + String(curHour).padStart(2, "0") + ":00 WIB";
+            if ($("diModalDocName")) $("diModalDocName").textContent = feat.name || "dr. Spesialis";
+            if ($("diModalDocSpec")) $("diModalDocSpec").textContent = (feat.specialty || "Spesialis") + (feat.Ruangan ? " • " + feat.Ruangan : "");
+            if ($("diModalDocTime")) $("diModalDocTime").textContent = feat.shiftTime || "Shift Jam Berjalan";
             if ($("diModalStatus")) {
-              $("diModalStatus").textContent = "SHIFT BARU " + String(curHour).padStart(2, "0") + ":00";
+              $("diModalStatus").textContent = "MULAI SHIFT";
               $("diModalStatus").style.color = "#34D399";
             }
           } else if (activeDocs.length > 0) {
             const feat = activeDocs[0];
+            if ($("diHeroTag")) $("diHeroTag").textContent = "DOKTER BERPRAKTEK SAAT INI";
             if ($("diModalDocName")) $("diModalDocName").textContent = feat.Dokter || feat.name || "dr. Praktek";
-            if ($("diModalDocSpec")) $("diModalDocSpec").textContent = (feat.Spesialis || feat.specialty || "Spesialis") + " • Sedang Melayani";
+            if ($("diModalDocSpec")) $("diModalDocSpec").textContent = (feat.Spesialis || feat.specialty || "Spesialis") + (feat.Ruangan ? " • " + feat.Ruangan : " • Sedang Melayani");
+            if ($("diModalDocTime")) $("diModalDocTime").textContent = feat.Jam || feat.formattedTime || "Layanan Aktif";
             if ($("diModalStatus")) {
               $("diModalStatus").textContent = "SEDANG PRAKTEK";
               $("diModalStatus").style.color = "#10B981";
             }
           } else {
-            if ($("diModalDocName")) $("diModalDocName").textContent = "Poliklinik Rawat Jalan";
-            if ($("diModalDocSpec")) $("diModalDocSpec").textContent = "Layanan Terjadwal & Pendaftaran";
+            if ($("diHeroTag")) $("diHeroTag").textContent = "STATUS POLIKLINIK RAWAT JALAN";
+            if ($("diModalDocName")) $("diModalDocName").textContent = "Poliklinik Siaga Medika";
+            if ($("diModalDocSpec")) $("diModalDocSpec").textContent = "Layanan Pendaftaran & Terjadwal";
+            if ($("diModalDocTime")) $("diModalDocTime").textContent = "08:00 - Selesai";
             if ($("diModalStatus")) {
               $("diModalStatus").textContent = "TERJADWAL";
               $("diModalStatus").style.color = "#38BDF8";
@@ -3494,7 +3706,7 @@
           // Custom message di modal footer
           if (App._customMsgs && App._customMsgs.length > 0) {
             const msg = App._customMsgs[App._customMsgIdx % App._customMsgs.length];
-            if ($("diModalMessage")) $("diModalMessage").textContent = (msg.text || msg.message || "Terimakasih sudah menunggu.") + " • Hotline: 0823-2344-6076";
+            if ($("diModalMessage")) $("diModalMessage").textContent = (msg.text || msg.message || "Terima kasih sudah menunggu dan tertib mengantre.") + " • Hotline: 0823-2344-6076";
           }
         },
 
