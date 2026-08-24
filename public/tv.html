@@ -3386,17 +3386,17 @@
           this.startAutoCycle();
         },
 
-        // Toggle antara Compact dan Deep Interactive Modal saat diklik
+        // Toggle antara Compact dan Hourly Showcase saat Dynamic Island diklik/disentuh
         toggleExpand() {
-          if (this._state === "modal") {
+          if (this._state === "hourly" || this._state === "modal" || this._state === "expanded") {
             this.collapse();
           } else {
-            this.openModal();
+            this.triggerHourlyBriefing(new Date());
           }
         },
 
         openModal() {
-          if (!this._el) return;
+          if (!this._el) this._el = $("dynamicIsland");
           this._state = "modal";
           this._el.style.width = "";
           this._el.className = "dynamic-island di-modal";
@@ -3404,16 +3404,18 @@
           // Auto-update modal info dengan data dokter aktif saat ini
           this.syncModalData();
 
-          // Auto-collapse modal jika tidak ada interaksi selama 12 detik
+          // Auto-collapse modal jika tidak ada interaksi selama 15 detik
           clearTimeout(this._modalDismissTimer);
           this._modalDismissTimer = setTimeout(() => {
             if (this._state === "modal") this.collapse();
-          }, 12000);
+          }, 15000);
         },
 
         collapse() {
-          if (!this._el) return;
+          if (!this._el) this._el = $("dynamicIsland");
           clearTimeout(this._modalDismissTimer);
+          clearTimeout(this._hourlyTimer);
+          this._isAnimating = false;
           this.setCompact();
         },
 
@@ -3529,10 +3531,11 @@
 
         // Tampilkan Hourly Clinic Briefing (Expanded XL Hero Showcase)
         async showHourly(headline, subline, statsText, tag = "UPDATE POLIKLINIK", timeStr = null, duration = 18000) {
-          if (this._isAnimating || this._state === "modal") return;
-
-          this._isAnimating = true;
           if (!this._el) this._el = $("dynamicIsland");
+
+          clearTimeout(this._modalDismissTimer);
+          clearTimeout(this._hourlyTimer);
+          this._isAnimating = true;
 
           const now = new Date();
           const clock = timeStr || (String(now.getHours()).padStart(2, "0") + ":00 WIB");
@@ -3547,17 +3550,14 @@
           this._el.style.width = "";
           this._el.className = "dynamic-island di-hourly";
 
-          // Hold for 18 seconds
-          await new Promise((r) => setTimeout(r, duration));
-
-          if (this._state === "hourly") {
-            this.setCompact();
-          }
-
-          setTimeout(() => {
-            this._isAnimating = false;
-            if (this._queue.length > 0) this.processQueue();
-          }, 600);
+          // Hold for 18 seconds (or until user clicks to collapse)
+          this._hourlyTimer = setTimeout(() => {
+            if (this._state === "hourly") {
+              this.setCompact();
+              this._isAnimating = false;
+              if (this._queue.length > 0) this.processQueue();
+            }
+          }, duration);
         },
 
         // Trigger dynamic content computation for the current hour
