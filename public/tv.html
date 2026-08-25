@@ -5195,9 +5195,9 @@
             updateList,
           );
 
-          $("countBedah").textContent = group.Bedah.length;
-          $("countNonBedah").textContent = group.NonBedah.length;
-          $("countSidebar").textContent =
+          if ($("countBedah")) $("countBedah").textContent = group.Bedah.length;
+          if ($("countNonBedah")) $("countNonBedah").textContent = group.NonBedah.length;
+          if ($("countSidebar")) $("countSidebar").textContent =
             group.SidebarPenuh.length + group.SidebarCuti.length;
 
           // Only reset scroller if list structure changed (avoid jumpiness on simple updates)
