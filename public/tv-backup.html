@@ -1012,7 +1012,7 @@
         /* Hint to browser compositor */
       }
 
-      /* ===== PLATTER CARD (Modern Apple iOS Soft Clay Ceramic) ===== */
+      /* ===== PLATTER CARD (Apple tvOS 18 Glass Specular & Ambient Glow) ===== */
       .platter {
         display: flex;
         flex-direction: column;
@@ -1021,8 +1021,12 @@
         padding: 18px 22px; 
         background: #FFFFFF;
         border-radius: 26px;
-        border: 1px solid rgba(226, 234, 245, 0.85);
-        box-shadow: 0 10px 28px -4px rgba(45, 65, 95, 0.05), inset 0 1.5px 1.5px #FFFFFF;
+        border: 1px solid rgba(226, 234, 245, 0.95);
+        box-shadow: 
+          0 14px 34px -4px rgba(45, 65, 95, 0.07),
+          0 2px 6px -1px rgba(45, 65, 95, 0.03),
+          inset 0 1.5px 1.5px #FFFFFF,
+          inset 0 -1px 1px rgba(15, 23, 42, 0.03);
         position: relative;
         overflow: hidden;
         transform: translateZ(0) translateY(0);
@@ -1036,8 +1040,24 @@
       [data-theme="light"] .platter {
         opacity: 1;
         background: #FFFFFF;
-        border: 1px solid rgba(226, 234, 245, 0.85);
-        box-shadow: 0 10px 28px -4px rgba(45, 65, 95, 0.05), inset 0 1.5px 1.5px #FFFFFF;
+        border: 1px solid rgba(226, 234, 245, 0.95);
+        box-shadow: 
+          0 14px 34px -4px rgba(45, 65, 95, 0.07),
+          0 2px 6px -1px rgba(45, 65, 95, 0.03),
+          inset 0 1.5px 1.5px #FFFFFF,
+          inset 0 -1px 1px rgba(15, 23, 42, 0.03);
+      }
+
+      /* Apple Specular Top Rim Light */
+      .platter::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 20px;
+        right: 20px;
+        height: 1.5px;
+        background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.98) 50%, transparent 100%);
+        pointer-events: none;
       }
 
       /* Status Edge Accent Glow */
@@ -1197,7 +1217,14 @@
       .platter.st-operasi .initials { color: #7C3AED; border-color: rgba(124, 58, 237, 0.25); }
 
       .platter.st-praktek, .platter.st-pendaftaran { z-index: 5; }
-      .platter.st-praktek { box-shadow: 0 12px 28px -4px rgba(5, 150, 105, 0.12), inset 0 1.5px 1.5px #FFFFFF; border-color: rgba(5, 150, 105, 0.25); }
+      .platter.st-praktek { 
+        box-shadow: 
+          0 16px 36px -4px rgba(5, 150, 105, 0.16), 
+          0 4px 10px -2px rgba(5, 150, 105, 0.08), 
+          inset 0 2px 2px #FFFFFF, 
+          0 0 0 1.5px rgba(5, 150, 105, 0.3) !important; 
+        border-color: rgba(5, 150, 105, 0.4) !important; 
+      }
       .platter.st-pendaftaran { animation: pendaftaran-pulse 2.5s infinite; }
       @keyframes pendaftaran-pulse { 
         0% { box-shadow: 0 10px 24px -4px rgba(217, 119, 6, 0.1), inset 0 1.5px 1.5px #FFFFFF; } 
@@ -1958,6 +1985,35 @@
         border-radius: 8px;
         text-transform: uppercase;
         letter-spacing: 0.06em;
+      }
+
+      /* Apple Dynamic Waveform Equalizer */
+      .di-waveform-eq {
+        display: flex;
+        align-items: center;
+        gap: 3px;
+        height: 18px;
+        padding: 4px 8px;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 9999px;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+      }
+      .di-waveform-eq .eq-bar {
+        width: 3px;
+        background: #10B981;
+        border-radius: 2px;
+        box-shadow: 0 0 8px #10B981;
+        animation: eq-pulse 0.9s ease-in-out infinite alternate;
+      }
+      .di-waveform-eq .eq-1 { height: 8px; animation-delay: 0.1s; }
+      .di-waveform-eq .eq-2 { height: 16px; animation-delay: 0.35s; }
+      .di-waveform-eq .eq-3 { height: 12px; animation-delay: 0.15s; }
+      .di-waveform-eq .eq-4 { height: 18px; animation-delay: 0.4s; }
+      .di-waveform-eq .eq-5 { height: 10px; animation-delay: 0.25s; }
+
+      @keyframes eq-pulse {
+        0% { transform: scaleY(0.3); opacity: 0.7; }
+        100% { transform: scaleY(1.2); opacity: 1; }
       }
 
       /* --- Deep Modal View Items (Apple iOS 18 Native Live Activity Sheet) --- */
@@ -2899,7 +2955,13 @@
           <span id="diMsg" class="di-msg">Memuat jadwal dokter...</span>
         </div>
         <div class="di-action-badge">
-          <span class="di-tap-hint">Detail</span>
+          <div class="di-waveform-eq" title="Live Broadcast Active">
+            <span class="eq-bar eq-1"></span>
+            <span class="eq-bar eq-2"></span>
+            <span class="eq-bar eq-3"></span>
+            <span class="eq-bar eq-4"></span>
+            <span class="eq-bar eq-5"></span>
+          </div>
         </div>
       </div>
 
