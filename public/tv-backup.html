@@ -3884,6 +3884,17 @@
           if ($("diModalClockText")) $("diModalClockText").textContent = timeStr;
         },
 
+        getIdleMessage() {
+          const msgs = [
+            "Selamat datang di RSU Siaga Medika Purbalingga",
+            "Gunakan Mobile JKN untuk pendaftaran antrean online",
+            "Siapkan KTP & Kartu BPJS sebelum ke loket pendaftaran",
+            "Harap datang 30 menit sebelum jam praktek dokter",
+            "Informasi lebih lanjut hubungi WhatsApp 0823-2344-6076"
+          ];
+          return msgs[Math.floor(Math.random() * msgs.length)];
+        },
+
         // Tampilkan notifikasi / rotating headline (Expanded Toast)
         async show(title, msg, type = "info", arg4 = null, arg5 = null) {
           let duration = 8500;
