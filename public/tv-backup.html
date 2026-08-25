@@ -473,97 +473,122 @@
         padding: 14px 20px;
       }
 
-      /* ===== tvOS VITALS ARC RING STAT PANEL ===== */
-      .stat-panel {
+      /* ===== 🪟 tvOS STANDBY AMBIENT GLANCE CARD ===== */
+      .standby-glance-card {
         display: flex;
-        justify-content: space-around;
+        align-items: stretch;
+        background: #FFFFFF;
+        margin: 12px 12px 10px 12px;
+        border-radius: 20px;
+        border: 1px solid rgba(226, 234, 245, 0.98);
+        box-shadow: 
+          0 6px 20px -2px rgba(45, 65, 95, 0.07),
+          inset 0 1.5px 1px #FFFFFF,
+          inset 0 -1px 1px rgba(15, 23, 42, 0.02);
+        position: relative;
+        overflow: hidden;
+      }
+
+      /* Top specular rim */
+      .standby-glance-card::before {
+        content: "";
+        position: absolute;
+        top: 0; left: 16px; right: 16px;
+        height: 1.5px;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,1) 50%, transparent);
+        pointer-events: none;
+      }
+
+      /* Left Side: Live StandBy Clock */
+      .standby-clock-pane {
+        flex: 1.1;
+        padding: 12px 14px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        border-right: 1px solid rgba(226, 234, 245, 0.9);
+        background: linear-gradient(135deg, rgba(248, 250, 252, 0.9) 0%, rgba(241, 245, 249, 0.5) 100%);
+      }
+
+      .standby-clock-time {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 26px;
+        font-weight: 900;
+        color: #0F172A;
+        line-height: 1;
+        letter-spacing: -0.02em;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .standby-clock-date {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 9.5px;
+        font-weight: 800;
+        color: #64748B;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-top: 4px;
+      }
+
+      /* Right Side: Live Status Counters Stack */
+      .standby-stats-pane {
+        flex: 1.2;
+        padding: 8px 10px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 5px;
+      }
+
+      .standby-stat-row {
+        display: flex;
         align-items: center;
-        padding: 14px 10px;
-        background: var(--clay-inset);
-        margin: 14px 14px 12px 14px;
-        border-radius: 22px;
+        justify-content: space-between;
+        padding: 3px 8px;
+        border-radius: 8px;
+        background: rgba(248, 250, 252, 0.8);
+      }
+
+      .standby-stat-label-group {
+        display: flex;
+        align-items: center;
         gap: 6px;
       }
 
-      .stat-item {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        flex: 1;
-        background: transparent;
-        padding: 4px 0;
-        position: relative;
-      }
-
-      /* Vitals Ring Container */
-      .stat-ring-wrap {
-        position: relative;
-        width: 68px;
-        height: 68px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+      .standby-stat-dot {
+        width: 6.5px;
+        height: 6.5px;
+        border-radius: 50%;
         flex-shrink: 0;
       }
 
-      .stat-ring-svg {
-        position: absolute;
-        top: 0; left: 0;
-        width: 100%; height: 100%;
-        transform: rotate(-90deg);
-      }
-
-      .stat-ring-track {
-        fill: none;
-        stroke: rgba(226, 234, 245, 0.7);
-        stroke-width: 5;
-      }
-
-      .stat-ring-fill {
-        fill: none;
-        stroke-width: 5;
-        stroke-linecap: round;
-        transition: stroke-dashoffset 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-      }
-
-      .stat-ring-inner {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        z-index: 1;
-        gap: 0;
-      }
-
-      /* ===== tvOS MOTION FLIP COUNTER ===== */
-      .stat-count {
+      .standby-stat-label {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 22px;
-        font-weight: 900;
-        line-height: 1;
-        font-variant-numeric: tabular-nums;
-        transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s ease;
+        font-size: 10px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #475569;
       }
 
-      .stat-count.flip-anim {
+      .standby-stat-num {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 14px;
+        font-weight: 900;
+        font-variant-numeric: tabular-nums;
+        line-height: 1;
+        transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+
+      .standby-stat-num.flip-anim {
         animation: stat-flip 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94);
       }
 
       @keyframes stat-flip {
         0%  { transform: translateY(0) scaleY(1); opacity: 1; }
-        30% { transform: translateY(-10px) scaleY(0.7); opacity: 0; }
-        31% { transform: translateY(10px) scaleY(0.7); opacity: 0; }
+        30% { transform: translateY(-8px) scaleY(0.7); opacity: 0; }
+        31% { transform: translateY(8px) scaleY(0.7); opacity: 0; }
         100%{ transform: translateY(0) scaleY(1); opacity: 1; }
-      }
-
-      .stat-label {
-        font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 10px;
-        font-weight: 800;
-        color: var(--text-muted);
-        text-transform: uppercase;
-        letter-spacing: 0.07em;
-        margin-top: 2px;
       }
 
       /* ===== 🚀 APPLE WALLET DIGITAL PASS HERO CARD ===== */
@@ -3340,54 +3365,38 @@
       <main class="content">
         <!-- Sidebar (Left - Integrated Header) -->
         <aside class="island sidebar-panel">
-          <!-- tvOS Vitals Arc Ring KPI Panel -->
-          <div class="stat-panel" style="margin-top: 14px;">
-            <!-- Ring: Buka -->
-            <div class="stat-item">
-              <div class="stat-ring-wrap">
-                <svg class="stat-ring-svg" viewBox="0 0 68 68">
-                  <circle class="stat-ring-track" cx="34" cy="34" r="28"/>
-                  <circle class="stat-ring-fill" id="ringBuka" cx="34" cy="34" r="28"
-                    stroke="#059669"
-                    stroke-dasharray="175.93"
-                    stroke-dashoffset="175.93"/>
-                </svg>
-                <div class="stat-ring-inner">
-                  <span class="stat-count" id="statBuka" style="color:#059669">0</span>
-                  <span class="stat-label" style="color:#059669">Buka</span>
-                </div>
-              </div>
+          <!-- 🪟 tvOS StandBy Ambient Glance Card (Live Clock + Poli Status) -->
+          <div class="standby-glance-card">
+            <!-- Left Pane: Live Clock & Date -->
+            <div class="standby-clock-pane">
+              <span class="standby-clock-time" id="sbClock">--:--</span>
+              <span class="standby-clock-date" id="sbDate">--</span>
             </div>
-            <!-- Ring: Penuh -->
-            <div class="stat-item">
-              <div class="stat-ring-wrap">
-                <svg class="stat-ring-svg" viewBox="0 0 68 68">
-                  <circle class="stat-ring-track" cx="34" cy="34" r="28"/>
-                  <circle class="stat-ring-fill" id="ringPenuh" cx="34" cy="34" r="28"
-                    stroke="#B45309"
-                    stroke-dasharray="175.93"
-                    stroke-dashoffset="175.93"/>
-                </svg>
-                <div class="stat-ring-inner">
-                  <span class="stat-count" id="statPenuh" style="color:#B45309">0</span>
-                  <span class="stat-label" style="color:#B45309">Penuh</span>
+            <!-- Right Pane: Status Counter Rows -->
+            <div class="standby-stats-pane">
+              <!-- Row: Buka -->
+              <div class="standby-stat-row">
+                <div class="standby-stat-label-group">
+                  <span class="standby-stat-dot" style="background:#059669;box-shadow:0 0 6px rgba(5,150,105,0.6);"></span>
+                  <span class="standby-stat-label">Buka</span>
                 </div>
+                <span class="standby-stat-num" id="statBuka" style="color:#059669;">0</span>
               </div>
-            </div>
-            <!-- Ring: Cuti -->
-            <div class="stat-item">
-              <div class="stat-ring-wrap">
-                <svg class="stat-ring-svg" viewBox="0 0 68 68">
-                  <circle class="stat-ring-track" cx="34" cy="34" r="28"/>
-                  <circle class="stat-ring-fill" id="ringCuti" cx="34" cy="34" r="28"
-                    stroke="#DC2626"
-                    stroke-dasharray="175.93"
-                    stroke-dashoffset="175.93"/>
-                </svg>
-                <div class="stat-ring-inner">
-                  <span class="stat-count" id="statCuti" style="color:#DC2626">0</span>
-                  <span class="stat-label" style="color:#DC2626">Cuti</span>
+              <!-- Row: Penuh -->
+              <div class="standby-stat-row">
+                <div class="standby-stat-label-group">
+                  <span class="standby-stat-dot" style="background:#B45309;box-shadow:0 0 6px rgba(180,83,9,0.6);"></span>
+                  <span class="standby-stat-label">Penuh</span>
                 </div>
+                <span class="standby-stat-num" id="statPenuh" style="color:#B45309;">0</span>
+              </div>
+              <!-- Row: Cuti -->
+              <div class="standby-stat-row">
+                <div class="standby-stat-label-group">
+                  <span class="standby-stat-dot" style="background:#DC2626;box-shadow:0 0 6px rgba(220,38,38,0.6);"></span>
+                  <span class="standby-stat-label">Cuti</span>
+                </div>
+                <span class="standby-stat-num" id="statCuti" style="color:#DC2626;">0</span>
               </div>
             </div>
           </div>
@@ -4313,6 +4322,10 @@
           if (clockEl && clockEl.textContent !== clockVal)
             clockEl.textContent = clockVal;
 
+          const sbClockEl = $("sbClock");
+          if (sbClockEl && sbClockEl.textContent !== clockVal)
+            sbClockEl.textContent = clockVal;
+
           const dateVal = d
             .toLocaleDateString("id-ID", {
               weekday: "long",
@@ -4323,6 +4336,15 @@
           const dateEl = $("date");
           if (dateEl && dateEl.textContent !== dateVal)
             dateEl.textContent = dateVal;
+
+          const sbDateVal = d.toLocaleDateString("id-ID", {
+            weekday: "short",
+            day: "numeric",
+            month: "short",
+          }).toUpperCase();
+          const sbDateEl = $("sbDate");
+          if (sbDateEl && sbDateEl.textContent !== sbDateVal)
+            sbDateEl.textContent = sbDateVal;
 
           const h = d.getHours();
           const m = d.getMinutes();
@@ -4779,30 +4801,23 @@
               else if (s === "PENUH") countPenuh++;
             else if (s.includes("CUTI")) countCuti++;
           });
-          // Flip Counter + Arc Ring updater
-          const updateStat = (elId, ringId, newVal, total) => {
+          // tvOS Motion Flip Counter Updater for StandBy Glance Pane
+          const updateStat = (elId, newVal) => {
             const el = $(elId);
             if (!el) return;
             const oldVal = parseInt(el.textContent) || 0;
             if (oldVal !== newVal) {
               el.classList.remove("flip-anim");
-              void el.offsetWidth; // reflow
+              void el.offsetWidth; // force reflow for restart
               el.classList.add("flip-anim");
               el.textContent = newVal;
               el.addEventListener("animationend", () => el.classList.remove("flip-anim"), { once: true });
             }
-            // Update arc ring
-            const ring = $(ringId);
-            if (ring) {
-              const circumference = 175.93;
-              const safePct = total > 0 ? Math.min(newVal / total, 1) : 0;
-              ring.style.strokeDashoffset = circumference * (1 - safePct);
-            }
           };
 
-          updateStat("statBuka",  "ringBuka",  countBuka,  countBuka + countPenuh + countCuti);
-          updateStat("statPenuh", "ringPenuh", countPenuh, countBuka + countPenuh + countCuti);
-          updateStat("statCuti",  "ringCuti",  countCuti,  countBuka + countPenuh + countCuti);
+          updateStat("statBuka",  countBuka);
+          updateStat("statPenuh", countPenuh);
+          updateStat("statCuti",  countCuti);
 
           const group = { Bedah: [], NonBedah: [], Sidebar: [] };
 
