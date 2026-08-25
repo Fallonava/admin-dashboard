@@ -845,6 +845,28 @@
         background: rgba(248, 250, 252, 0.85);
         border-bottom: 1px solid rgba(226, 234, 245, 0.95);
         transition: background 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      /* Apple TV-style Visual Paging Timeline */
+      .island-progress-track {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 3.5px;
+        background: rgba(226, 234, 245, 0.6);
+        overflow: hidden;
+      }
+
+      .island-progress-bar {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, #0284C7 0%, #10B981 100%);
+        border-radius: 9999px;
+        transition: width 0.1s linear;
+        box-shadow: 0 0 8px rgba(2, 132, 199, 0.5);
       }
 
       .island-header-left {
@@ -1071,7 +1093,7 @@
         font-family: "Inter", -apple-system, sans-serif;
         font-size: 18px;
         font-weight: 700;
-        color: #334155;
+        color: #0F172A;
         white-space: normal;
         display: -webkit-box;
         -webkit-line-clamp: 2;
@@ -1113,6 +1135,7 @@
         letter-spacing: 0.06em;
         background: var(--status-color);
         color: #ffffff;
+        text-shadow: 0 1px 1px rgba(0, 0, 0, 0.25);
         display: flex;
         align-items: center;
         gap: 7px;
@@ -1139,8 +1162,8 @@
         display: flex;
         align-items: center;
         justify-content: flex-end;
-        background: rgba(241, 245, 249, 0.9);
-        border: 1px solid rgba(226, 232, 240, 0.8);
+        background: #F1F5F9;
+        border: 1px solid #CBD5E1;
         padding: 6px 14px;
         border-radius: 14px;
       }
@@ -1157,10 +1180,10 @@
 
       /* Status Styles - Modern 3D Clinical Gradients */
       .st-praktek { --status-color: #059669; --status-bg: rgba(5, 150, 105, 0.28); }
-      .st-pendaftaran { --status-color: #D97706; --status-bg: rgba(217, 119, 6, 0.28); }
+      .st-pendaftaran { --status-color: #B45309; --status-bg: rgba(180, 83, 9, 0.28); }
       .st-terjadwal { --status-color: #0284C7; --status-bg: rgba(2, 132, 199, 0.28); }
       .st-selesai { --status-color: #64748B; --status-bg: rgba(100, 116, 139, 0.2); opacity: 0.65; }
-      .st-penuh { --status-color: #D97706; --status-bg: rgba(217, 119, 6, 0.28); }
+      .st-penuh { --status-color: #B45309; --status-bg: rgba(180, 83, 9, 0.28); }
       .st-operasi { --status-color: #7C3AED; --status-bg: rgba(124, 58, 237, 0.28); }
       .st-cuti { --status-color: #DC2626; --status-bg: rgba(220, 38, 38, 0.28); opacity: 0.75; }
       .st-libur { --status-color: #64748B; --status-bg: rgba(100, 116, 139, 0.2); display: none; }
@@ -3174,6 +3197,9 @@
               <span id="countBedah">0</span>
               <span class="badge-unit">DOKTER</span>
             </div>
+            <div class="island-progress-track">
+              <div class="island-progress-bar" id="progressBedah"></div>
+            </div>
           </div>
           <div class="scroll-mask" id="maskBedah">
             <div class="scroller" id="scrollBedah"></div>
@@ -3193,6 +3219,9 @@
               <span class="badge-dot"></span>
               <span id="countNonBedah">0</span>
               <span class="badge-unit">DOKTER</span>
+            </div>
+            <div class="island-progress-track">
+              <div class="island-progress-bar" id="progressNonBedah"></div>
             </div>
           </div>
           <div class="scroll-mask" id="maskNonBedah">
@@ -3380,11 +3409,11 @@
       };
 
 
-      // ===== PROFESSIONAL SCROLLER (Item-by-Item with Easing) =====
-      // Pola: Scroll satu item → pause → scroll item berikutnya → ... → sampai bawah → pause lama → fade reset ke atas → ulangi
+      // ===== PROFESSIONAL SCROLLER (Item-by-Item with Easing & Visual Timeline) =====
       class SmoothScroller {
-        constructor(id) {
+        constructor(id, progressBarId = null) {
           this.el = $(id);
+          this.progressBar = progressBarId ? $(progressBarId) : null;
           this.y = 0;
           this.targetY = 0;
           this.currentItem = 0;
@@ -3396,6 +3425,22 @@
           this.timer = null;
 
           window.addEventListener("resize", () => this.updateMetrics());
+        }
+
+        // Animate sleek Apple TV-style timeline progress bar
+        _runProgressBar(durationMs) {
+          if (!this.progressBar) return;
+          this.progressBar.style.transition = "none";
+          this.progressBar.style.width = "0%";
+          void this.progressBar.offsetWidth; // force reflow
+          this.progressBar.style.transition = `width ${durationMs / 1000}s linear`;
+          this.progressBar.style.width = "100%";
+        }
+
+        _resetProgressBar() {
+          if (!this.progressBar) return;
+          this.progressBar.style.transition = "none";
+          this.progressBar.style.width = "0%";
         }
 
         // Hitung posisi setiap item kartu
@@ -3411,13 +3456,14 @@
             this.itemOffsets.push(children[i].offsetTop);
           }
 
-          // Jika konten tidak perlu scroll, reset
+          // Jika konten tidak perlu scroll, reset & sembunyikan progress bar
           if (this.h <= this.vh) {
             this.y = 0;
             this.targetY = 0;
             this.currentItem = 0;
             this.el.style.transform = "translate3d(0,0,0)";
             this.el.style.opacity = "1";
+            this._resetProgressBar();
           }
         }
 
@@ -3430,6 +3476,7 @@
         _animateTo(target, duration, callback) {
           if (this.animating) return;
           this.animating = true;
+          this._resetProgressBar();
           const startY = this.y;
           const delta = target - startY;
 
@@ -3455,7 +3502,6 @@
             this.el.style.transform = `translate3d(0, -${this.y}px, 0)`;
 
             if (progress < 1) {
-              // Jika mode tv optimized, pelankan simulasi ke ~30FPS untuk mendinginkan CPU
               if (document.body.classList.contains("tv-optimized")) {
                 setTimeout(() => step(performance.now()), 33);
               } else {
@@ -3473,22 +3519,19 @@
 
         // Fade out → reset ke atas → fade in (loop seamless)
         _fadeResetToTop(callback) {
-          // Fade out
+          this._resetProgressBar();
           this.el.style.transition = "opacity 0.5s ease";
           this.el.style.opacity = "0";
 
           setTimeout(() => {
-            // Snap ke atas (tersembunyi)
             this.y = 0;
             this.targetY = 0;
             this.currentItem = 0;
             this.el.style.transition = "none";
             this.el.style.transform = "translate3d(0, 0, 0)";
 
-            // Force reflow
-            void this.el.offsetHeight;
+            void this.el.offsetHeight; // Force reflow
 
-            // Fade in
             this.el.style.transition = "opacity 0.5s ease";
             this.el.style.opacity = "1";
 
@@ -3499,28 +3542,22 @@
           }, 500);
         }
 
-        // Loop utama: scroll item demi item
+        // Loop utama: scroll item demi item dengan progress bar sinkron
         _scheduleNext() {
           if (!this.active) return;
           if (this.h <= this.vh) return; // Tidak perlu scroll
 
           const maxScroll = this.h - this.vh;
-
-          // Hitung berapa item yang masih bisa di-scroll
-          // Cari item berikutnya yang offset-nya masih dalam batas
           let nextItem = this.currentItem + 1;
 
-          // Pastikan ada item berikutnya
           if (nextItem < this.itemOffsets.length) {
-            // Scroll ke item berikutnya — clamp ke maxScroll agar tidak overshoot
             this.currentItem = nextItem;
-            // Jika item terakhir atau offset melebihi maxScroll, scroll ke maxScroll
-            // agar konten paling bawah terlihat sepenuhnya
             this.targetY = Math.min(this.itemOffsets[nextItem], maxScroll);
             if (this.y >= maxScroll - 1) {
-              // Sudah di posisi paling bawah, tidak perlu scroll lagi
+              this._runProgressBar(CFG.SCROLL_EDGE_PAUSE);
               this.timer = setTimeout(() => {
                 this._fadeResetToTop(() => {
+                  this._runProgressBar(CFG.SCROLL_EDGE_PAUSE);
                   this.timer = setTimeout(
                     () => this._scheduleNext(),
                     CFG.SCROLL_EDGE_PAUSE,
@@ -3531,18 +3568,19 @@
             }
 
             this._animateTo(this.targetY, CFG.SCROLL_DURATION, () => {
-              // Pause setelah sampai, lalu lanjut
+              this._runProgressBar(CFG.SCROLL_ITEM_PAUSE);
               this.timer = setTimeout(
                 () => this._scheduleNext(),
                 CFG.SCROLL_ITEM_PAUSE,
               );
             });
           } else {
-            // Sudah melewati semua item — scroll ke maxScroll jika belum
             if (this.y < maxScroll - 1) {
               this._animateTo(maxScroll, CFG.SCROLL_DURATION, () => {
+                this._runProgressBar(CFG.SCROLL_EDGE_PAUSE);
                 this.timer = setTimeout(() => {
                   this._fadeResetToTop(() => {
+                    this._runProgressBar(CFG.SCROLL_EDGE_PAUSE);
                     this.timer = setTimeout(
                       () => this._scheduleNext(),
                       CFG.SCROLL_EDGE_PAUSE,
@@ -3551,10 +3589,10 @@
                 }, CFG.SCROLL_EDGE_PAUSE);
               });
             } else {
-              // Sudah di ujung bawah — pause lama, lalu fade reset
+              this._runProgressBar(CFG.SCROLL_EDGE_PAUSE);
               this.timer = setTimeout(() => {
                 this._fadeResetToTop(() => {
-                  // Pause di atas, lalu mulai scroll lagi
+                  this._runProgressBar(CFG.SCROLL_EDGE_PAUSE);
                   this.timer = setTimeout(
                     () => this._scheduleNext(),
                     CFG.SCROLL_EDGE_PAUSE,
@@ -3566,7 +3604,9 @@
         }
 
         start() {
-          // Pause awal di posisi atas sebelum mulai scroll
+          if (this.h > this.vh) {
+            this._runProgressBar(CFG.SCROLL_EDGE_PAUSE);
+          }
           this.timer = setTimeout(
             () => this._scheduleNext(),
             CFG.SCROLL_EDGE_PAUSE,
@@ -3574,18 +3614,20 @@
         }
 
         reset() {
-          // Bersihkan semua timer dan state
           if (this.timer) clearTimeout(this.timer);
           this.animating = false;
           this.y = 0;
           this.targetY = 0;
           this.currentItem = 0;
+          this._resetProgressBar();
           if (this.el) {
             this.el.style.transition = "none";
             this.el.style.transform = "translate3d(0, 0, 0)";
             this.el.style.opacity = "1";
           }
-          // Restart cycle setelah metrics diupdate
+          if (this.h > this.vh) {
+            this._runProgressBar(CFG.SCROLL_EDGE_PAUSE);
+          }
           this.timer = setTimeout(
             () => this._scheduleNext(),
             CFG.SCROLL_EDGE_PAUSE,
@@ -3598,8 +3640,8 @@
       let s1, s2, s3;
 
       if (!isMobile) {
-        s1 = new SmoothScroller("scrollBedah");
-        s2 = new SmoothScroller("scrollNonBedah");
+        s1 = new SmoothScroller("scrollBedah", "progressBedah");
+        s2 = new SmoothScroller("scrollNonBedah", "progressNonBedah");
         s3 = new SmoothScroller("scrollSidebar");
       }
 
@@ -3930,7 +3972,24 @@
 
           this.clock();
           this.updateTheme();
-          this.skel();
+
+          // Safe Offline Resilient Engine: Instantly restore last known doctor schedule from local cache
+          try {
+            const cached = localStorage.getItem("simed_tv_snapshot_v2");
+            if (cached) {
+              const parsed = JSON.parse(cached);
+              if (Array.isArray(parsed) && parsed.length > 0) {
+                this.render(parsed);
+                this.status("OFFLINE CACHE", false);
+              } else {
+                this.skel();
+              }
+            } else {
+              this.skel();
+            }
+          } catch (e) {
+            this.skel();
+          }
 
           // Initial load of custom messages and display settings
           fetch("/api/display")
@@ -3960,9 +4019,6 @@
             s2.start();
             s3.start();
           }
-
-          // Watchdog: Auto-reload every 1 hour to clear memory (3600 detik)
-          setTimeout(() => window.location.reload(), 3600000);
         },
 
         clock() {
@@ -3991,6 +4047,12 @@
           const h = d.getHours();
           const m = d.getMinutes();
           const s = d.getSeconds();
+
+          // 24/7 Smart TV Anti-Freeze & Memory Purge: Silent Auto-Reload at 03:00:00 Subuh
+          if (h === 3 && m === 0 && s === 0) {
+            console.log("Nightly 03:00 AM Smart TV Memory Purge Executing...");
+            window.location.reload(true);
+          }
 
           // Custom Rotating Notification every 5 minutes (avoid clash with break time at 12:00)
           if (m % 5 === 0 && s === 0 && h !== 12) {
@@ -4093,6 +4155,10 @@
         connectRealtime() {
           const es = new EventSource("/api/stream/live");
 
+          es.onopen = () => {
+            this.status("LIVE STREAM", false);
+          };
+
           // Legacy/Initial snapshot (unnamed)
           es.onmessage = (e) => {
             try {
@@ -4117,13 +4183,7 @@
           });
 
           es.onerror = () => {
-            Island.show(
-              "Koneksi",
-              "Mencoba menyambung kembali...",
-              "warn",
-              5000,
-            );
-            this.status("OFFLINE MODE", true);
+            this.status("RECONNECTING...", true);
           };
         },
 
@@ -4255,6 +4315,11 @@
 
             // Detect doctor status changes before render
             this._detectChanges(mappedData);
+
+            // Cache snapshot for offline resiliency
+            try {
+              localStorage.setItem("simed_tv_snapshot_v2", JSON.stringify(mappedData));
+            } catch (err) {}
 
             this.render(mappedData);
             this.status("LIVE STREAM", false);
