@@ -61,6 +61,11 @@ app.prepare().then(() => {
       fs.createReadStream(path.join(process.cwd(), 'public', 'tv.html')).pipe(res);
       return;
     }
+    if (pathname === '/tv-backup' || pathname === '/tv-large') {
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      fs.createReadStream(path.join(process.cwd(), 'public', 'tv-backup.html')).pipe(res);
+      return;
+    }
 
     handle(req, res, parsedUrl);
   });
