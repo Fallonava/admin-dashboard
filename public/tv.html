@@ -3696,39 +3696,41 @@
         const st = (d.Status || "").toUpperCase();
         let icon = statusIcon;
         let label = statusLabel;
-        let passCategory = "INFORMASI KHUSUS";
-        let passHint = "LIHAT JADWAL";
+        let passCategory = "";
+        let passHint = "";
         
         if (st.includes("CUTI")) {
           icon = "event_busy";
           label = "CUTI";
-          passCategory = "CUTI PRAKTEK";
-
-          // Format tanggal real dari data admin (l.endDate / CutiSampai)
-          if (d.CutiSampai) {
+          // Fokus langsung ke jadwal buka real dari admin
+          if (d.NextBuka) {
+            passCategory = "BUKA KEMBALI";
+            passHint = esc(d.NextBuka);
+          } else if (d.CutiSampai) {
             try {
-              // Misal tanggal selesai cuti adalah 2026-08-28 -> buka praktek kembali hari berikutnya (atau tanggal akhir cuti)
               const [y, m, day] = d.CutiSampai.split("-").map(Number);
-              const endDateObj = new Date(y, m - 1, day);
-              // Tambah 1 hari untuk estimasi praktek kembali
-              const returnDate = new Date(endDateObj);
+              const returnDate = new Date(y, m - 1, day);
               returnDate.setDate(returnDate.getDate() + 1);
-
               const formattedReturn = returnDate.toLocaleDateString("id-ID", {
                 weekday: "short",
                 day: "numeric",
                 month: "short",
               });
-              passHint = `BUKA LAGI ${formattedReturn.toUpperCase()}`;
+              passCategory = "BUKA KEMBALI";
+              passHint = formattedReturn.toUpperCase();
             } catch (err) {
-              passHint = `CUTI S/D ${d.CutiSampai}`;
+              passCategory = "CUTI SAMPAI";
+              passHint = d.CutiSampai;
             }
           } else if (d.CutiCatatan) {
+            passCategory = "INFO CUTI";
             passHint = esc(d.CutiCatatan.toUpperCase());
           } else if (d.DocNote) {
+            passCategory = "INFO DOKTER";
             passHint = esc(d.DocNote.toUpperCase());
           } else {
-            passHint = "TIDAK MELAYANI";
+            passCategory = "JADWAL DOKTER";
+            passHint = "KONFIRMASI LOKET";
           }
         } else if (st.includes("OPERASI")) {
           icon = "local_hospital";
@@ -4672,6 +4674,37 @@
               // Find matched active leave for this doctor today
               const activeLeave = leaves.find(l => l.doctorId === doc.id && l.startDate <= todayStr && l.endDate >= todayStr);
 
+              // Cari jadwal real berikutnya setelah tanggal selesai cuti
+              let nextBukaText = null;
+              if (activeLeave && activeLeave.endDate) {
+                try {
+                  const [y, m, dNum] = activeLeave.endDate.split("-").map(Number);
+                  const endObj = new Date(y, m - 1, dNum);
+                  
+                  // Scan hingga 14 hari ke depan mencari shift aktif pertama dokter ini
+                  for (let offset = 1; offset <= 14; offset++) {
+                    const checkDate = new Date(endObj);
+                    checkDate.setDate(checkDate.getDate() + offset);
+                    const checkDayIdx = checkDate.getDay() === 0 ? 6 : checkDate.getDay() - 1;
+                    const checkIso = checkDate.toISOString().split("T")[0];
+
+                    // Cek apakah ada cuti lain di tanggal ini
+                    const isStillLeave = leaves.some(l => l.doctorId === doc.id && l.startDate <= checkIso && l.endDate >= checkIso);
+                    if (isStillLeave) continue;
+
+                    // Cari shift dokter di hari ini
+                    const docShift = shifts.find(s => s.doctorId === doc.id && s.dayIdx === checkDayIdx && isShiftActiveForDate(s.extra, checkDate));
+                    if (docShift) {
+                      const dayName = checkDate.toLocaleDateString("id-ID", { weekday: "short", day: "numeric", month: "short" });
+                      const sTime = docShift.formattedTime || docShift.title || "";
+                      const startHour = sTime.split("-")[0].replace(/\./g, ":").trim();
+                      nextBukaText = `${dayName} ${startHour ? 'JAM ' + startHour : ''}`.trim().toUpperCase();
+                      break;
+                    }
+                  }
+                } catch (err) {}
+              }
+
               mappedData.push({
                 Dokter: doc.name,
                 Spesialis: doc.specialty,
@@ -4684,6 +4717,7 @@
                 "Code Antrian": doc.queueCode,
                 _shiftId: shift.id || index,
                 CutiSampai: activeLeave ? activeLeave.endDate : null,
+                NextBuka: nextBukaText,
                 CutiCatatan: activeLeave ? (activeLeave.notes || activeLeave.reason || null) : null,
                 DocNote: doc.notes || null,
               });
