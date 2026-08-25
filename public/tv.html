@@ -1019,14 +1019,14 @@
         pointer-events: none;
       }
 
-      /* Apple TV-style Visual Paging Timeline */
+      /* Apple tvOS 18 Visual Scroll Journey Track */
       .island-progress-track {
         position: absolute;
         bottom: 0;
         left: 0;
         right: 0;
         height: 4px;
-        background: rgba(226, 234, 245, 0.6);
+        background: rgba(226, 234, 245, 0.45);
         overflow: hidden;
         border-radius: 0 0 22px 22px;
       }
@@ -1035,17 +1035,41 @@
         height: 100%;
         width: 0%;
         border-radius: 9999px;
-        transition: width 0.1s linear;
+        position: relative;
+        transition: width 0.08s ease-out, opacity 0.4s ease;
+        will-change: width;
+      }
+
+      .island-progress-bar::after {
+        content: "";
+        position: absolute;
+        right: 0;
+        top: -1px;
+        bottom: -1px;
+        width: 8px;
+        background: #FFFFFF;
+        border-radius: 9999px;
+        box-shadow: 0 0 8px #FFFFFF, 0 0 16px rgba(255, 255, 255, 0.8);
+        opacity: 0.95;
       }
 
       #progressBedah {
-        background: linear-gradient(90deg, #0EA5E9 0%, #38BDF8 50%, #0284C7 100%);
-        box-shadow: 0 0 10px rgba(14, 165, 233, 0.6);
+        background: linear-gradient(90deg, #0284C7 0%, #38BDF8 70%, #BAE6FD 100%);
+        box-shadow: 0 0 10px rgba(14, 165, 233, 0.7);
       }
 
       #progressNonBedah {
-        background: linear-gradient(90deg, #8B5CF6 0%, #A78BFA 50%, #7C3AED 100%);
-        box-shadow: 0 0 10px rgba(139, 92, 246, 0.6);
+        background: linear-gradient(90deg, #7C3AED 0%, #A78BFA 70%, #DDD6FE 100%);
+        box-shadow: 0 0 10px rgba(139, 92, 246, 0.7);
+      }
+
+      .island-progress-bar.at-bottom::after {
+        animation: laserPulse 1.2s infinite ease-in-out;
+      }
+
+      @keyframes laserPulse {
+        0%, 100% { opacity: 0.8; transform: scaleX(1); }
+        50% { opacity: 1; transform: scaleX(1.4); box-shadow: 0 0 14px #FFFFFF, 0 0 24px rgba(255, 255, 255, 1); }
       }
 
       .island-header-left {
@@ -3768,7 +3792,7 @@
       };
 
 
-      // ===== PROFESSIONAL SCROLLER (Item-by-Item with Easing & Visual Timeline) =====
+      // ===== PROFESSIONAL SCROLLER (Item-by-Item with Real-Time Scroll Journey Track) =====
       class SmoothScroller {
         constructor(id, progressBarId = null) {
           this.el = $(id);
@@ -3786,20 +3810,30 @@
           window.addEventListener("resize", () => this.updateMetrics());
         }
 
-        // Animate sleek Apple TV-style timeline progress bar
-        _runProgressBar(durationMs) {
+        // Real-Time Progress Bar: updates width based on actual scroll depth
+        _updateProgress(customPercent = null) {
           if (!this.progressBar) return;
-          this.progressBar.style.transition = "none";
-          this.progressBar.style.width = "0%";
-          void this.progressBar.offsetWidth; // force reflow
-          this.progressBar.style.transition = `width ${durationMs / 1000}s linear`;
-          this.progressBar.style.width = "100%";
+          if (this.h <= this.vh) {
+            this.progressBar.style.width = "0%";
+            this.progressBar.classList.remove("at-bottom");
+            return;
+          }
+          const maxScroll = this.h - this.vh;
+          let percent = customPercent !== null ? customPercent : (maxScroll > 0 ? (this.y / maxScroll) * 100 : 0);
+          percent = Math.max(0, Math.min(100, percent));
+          this.progressBar.style.width = `${percent}%`;
+
+          if (percent >= 99.5) {
+            this.progressBar.classList.add("at-bottom");
+          } else {
+            this.progressBar.classList.remove("at-bottom");
+          }
         }
 
-        _resetProgressBar() {
+        _resetProgress() {
           if (!this.progressBar) return;
-          this.progressBar.style.transition = "none";
           this.progressBar.style.width = "0%";
+          this.progressBar.classList.remove("at-bottom");
         }
 
         // Hitung posisi setiap item kartu
@@ -3822,7 +3856,9 @@
             this.currentItem = 0;
             this.el.style.transform = "translate3d(0,0,0)";
             this.el.style.opacity = "1";
-            this._resetProgressBar();
+            this._resetProgress();
+          } else {
+            this._updateProgress();
           }
         }
 
@@ -3831,16 +3867,16 @@
           return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
         }
 
-        // Animasi scroll dari posisi saat ini ke target
+        // Animasi scroll dari posisi saat ini ke target (progress bar berjalan sinkron real-time)
         _animateTo(target, duration, callback) {
           if (this.animating) return;
           this.animating = true;
-          this._resetProgressBar();
           const startY = this.y;
           const delta = target - startY;
 
           if (Math.abs(delta) < 1) {
             this.animating = false;
+            this._updateProgress();
             if (callback) callback();
             return;
           }
@@ -3859,6 +3895,7 @@
 
             this.y = startY + delta * easedProgress;
             this.el.style.transform = `translate3d(0, -${this.y}px, 0)`;
+            this._updateProgress();
 
             if (progress < 1) {
               if (document.body.classList.contains("tv-optimized")) {
@@ -3870,6 +3907,7 @@
               this.y = target;
               this.el.style.transform = `translate3d(0, -${this.y}px, 0)`;
               this.animating = false;
+              this._updateProgress();
               if (callback) callback();
             }
           };
@@ -3878,9 +3916,13 @@
 
         // Fade out → reset ke atas → fade in (loop seamless)
         _fadeResetToTop(callback) {
-          this._resetProgressBar();
           this.el.style.transition = "opacity 0.5s ease";
           this.el.style.opacity = "0";
+
+          if (this.progressBar) {
+            this.progressBar.style.transition = "opacity 0.4s ease, width 0.4s ease";
+            this.progressBar.style.opacity = "0";
+          }
 
           setTimeout(() => {
             this.y = 0;
@@ -3888,11 +3930,17 @@
             this.currentItem = 0;
             this.el.style.transition = "none";
             this.el.style.transform = "translate3d(0, 0, 0)";
+            this._resetProgress();
 
             void this.el.offsetHeight; // Force reflow
 
             this.el.style.transition = "opacity 0.5s ease";
             this.el.style.opacity = "1";
+
+            if (this.progressBar) {
+              this.progressBar.style.opacity = "1";
+              this.progressBar.style.transition = "width 0.08s ease-out, opacity 0.4s ease";
+            }
 
             setTimeout(() => {
               this.el.style.transition = "";
@@ -3901,7 +3949,7 @@
           }, 500);
         }
 
-        // Loop utama: scroll item demi item dengan progress bar sinkron
+        // Loop utama: jeda baca di kartu, lalu scroll bergerak dengan progress bar real-time
         _scheduleNext() {
           if (!this.active) return;
           if (this.h <= this.vh) return; // Tidak perlu scroll
@@ -3913,10 +3961,8 @@
             this.currentItem = nextItem;
             this.targetY = Math.min(this.itemOffsets[nextItem], maxScroll);
             if (this.y >= maxScroll - 1) {
-              this._runProgressBar(CFG.SCROLL_EDGE_PAUSE);
               this.timer = setTimeout(() => {
                 this._fadeResetToTop(() => {
-                  this._runProgressBar(CFG.SCROLL_EDGE_PAUSE);
                   this.timer = setTimeout(
                     () => this._scheduleNext(),
                     CFG.SCROLL_EDGE_PAUSE,
@@ -3927,7 +3973,6 @@
             }
 
             this._animateTo(this.targetY, CFG.SCROLL_DURATION, () => {
-              this._runProgressBar(CFG.SCROLL_ITEM_PAUSE);
               this.timer = setTimeout(
                 () => this._scheduleNext(),
                 CFG.SCROLL_ITEM_PAUSE,
@@ -3936,10 +3981,8 @@
           } else {
             if (this.y < maxScroll - 1) {
               this._animateTo(maxScroll, CFG.SCROLL_DURATION, () => {
-                this._runProgressBar(CFG.SCROLL_EDGE_PAUSE);
                 this.timer = setTimeout(() => {
                   this._fadeResetToTop(() => {
-                    this._runProgressBar(CFG.SCROLL_EDGE_PAUSE);
                     this.timer = setTimeout(
                       () => this._scheduleNext(),
                       CFG.SCROLL_EDGE_PAUSE,
@@ -3948,10 +3991,8 @@
                 }, CFG.SCROLL_EDGE_PAUSE);
               });
             } else {
-              this._runProgressBar(CFG.SCROLL_EDGE_PAUSE);
               this.timer = setTimeout(() => {
                 this._fadeResetToTop(() => {
-                  this._runProgressBar(CFG.SCROLL_EDGE_PAUSE);
                   this.timer = setTimeout(
                     () => this._scheduleNext(),
                     CFG.SCROLL_EDGE_PAUSE,
@@ -3963,9 +4004,7 @@
         }
 
         start() {
-          if (this.h > this.vh) {
-            this._runProgressBar(CFG.SCROLL_EDGE_PAUSE);
-          }
+          this._updateProgress();
           this.timer = setTimeout(
             () => this._scheduleNext(),
             CFG.SCROLL_EDGE_PAUSE,
@@ -3978,15 +4017,13 @@
           this.y = 0;
           this.targetY = 0;
           this.currentItem = 0;
-          this._resetProgressBar();
+          this._resetProgress();
           if (this.el) {
             this.el.style.transition = "none";
             this.el.style.transform = "translate3d(0, 0, 0)";
             this.el.style.opacity = "1";
           }
-          if (this.h > this.vh) {
-            this._runProgressBar(CFG.SCROLL_EDGE_PAUSE);
-          }
+          this._updateProgress();
           this.timer = setTimeout(
             () => this._scheduleNext(),
             CFG.SCROLL_EDGE_PAUSE,
