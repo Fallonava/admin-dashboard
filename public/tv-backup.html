@@ -146,7 +146,7 @@
           "Inter",
           -apple-system,
           sans-serif;
-        background: var(--bg-body);
+        background: #0B1120;
         color: var(--text-primary);
         user-select: none;
         cursor: none;
@@ -158,10 +158,13 @@
 
       /* ===== 1080P PROPORTIONAL GOLDEN STAGE CANVAS ===== */
       .tv-stage {
-        position: fixed;
-        inset: 0;
-        width: 100vw;
-        height: 100vh;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 1920px;
+        height: 1080px;
+        transform: translate(-50%, -50%) scale(1);
+        transform-origin: center center;
         overflow: hidden;
         display: flex;
         flex-direction: column;
@@ -210,6 +213,7 @@
       body.tv-optimized .bg-grid {
         animation: none !important;
         display: none !important;
+        /* Hilangkan sepenuhnya pembakar GPU ini */
       }
 
       body.tv-optimized .ticker-inner {
@@ -217,31 +221,29 @@
         transform: translate3d(0, 0, 0);
       }
 
-      body.tv-optimized .app-container {
-        backdrop-filter: none !important;
-        background: transparent !important;
-      }
-
+      body.tv-optimized .app-container,
       body.tv-optimized .island,
       body.tv-optimized .sidebar-panel,
       body.tv-optimized .footer {
         backdrop-filter: none !important;
-        background: #FFFFFF !important;
+        background: rgba(20, 20, 22, 1) !important;
+      }
+
+      body.tv-optimized .logo-box {
+        /* box-shadow left alone to allow glow */
       }
 
       body.tv-optimized .platter {
-        border: 1px solid rgba(226, 234, 245, 0.95) !important;
-        background: #FFFFFF !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
       }
 
       body.tv-optimized .platter.active {
-        background: #FFFFFF !important;
-        border: 1.5px solid rgba(5, 150, 105, 0.45) !important;
+        box-shadow: none !important;
         transform: translateZ(0) scale(1) !important;
       }
 
       body.tv-optimized .dynamic-island {
-        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35) !important;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5) !important;
       }
 
       *, *::before, *::after {
@@ -402,15 +404,35 @@
         border: 1px solid var(--clay-border);
       }
 
-      /* Sidebar Status Khusus Hero Header */
+      /* ===== visionOS SPATIAL LAYER BADGE — Status Khusus Header ===== */
       .sidebar-status-khusus-header {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 12px 20px;
-        background: rgba(241, 245, 249, 0.7);
-        border-top: 1px solid rgba(226, 234, 245, 0.9);
-        border-bottom: 1px solid rgba(226, 234, 245, 0.9);
+        padding: 12px 16px;
+        margin: 0 12px 6px 12px;
+        background: rgba(255, 255, 255, 0.97);
+        border-radius: 18px;
+        border: 1px solid rgba(226, 234, 245, 0.98);
+        /* Multi-layer shadow: simulates Z-axis floating depth */
+        box-shadow:
+          0 1px 0 rgba(255,255,255,0.9) inset,
+          0 -1px 0 rgba(15,23,42,0.04) inset,
+          0 4px 12px -2px rgba(45, 65, 95, 0.10),
+          0 10px 28px -8px rgba(45, 65, 95, 0.12),
+          0 0 0 1px rgba(226, 234, 245, 0.5);
+        position: relative;
+        overflow: hidden;
+      }
+
+      /* Specular top rim for visionOS depth */
+      .sidebar-status-khusus-header::before {
+        content: "";
+        position: absolute;
+        top: 0; left: 16px; right: 16px;
+        height: 1.5px;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,1) 50%, transparent);
+        pointer-events: none;
       }
 
       .sk-header-title {
@@ -451,25 +473,16 @@
         padding: 14px 20px;
       }
 
-      /* Stat Panel - Modern Clay Inset */
+      /* ===== tvOS VITALS ARC RING STAT PANEL ===== */
       .stat-panel {
         display: flex;
         justify-content: space-around;
-      /* Stat Panel - Apple Activity Gauge Card */
-      .stat-panel {
-        display: flex;
-        flex-direction: column;
-        padding: 14px 16px;
+        align-items: center;
+        padding: 14px 10px;
         background: var(--clay-inset);
-        margin: 16px 14px 10px 14px;
-        border-radius: 20px;
-        gap: 10px;
-      }
-
-      .stat-items-row {
-        display: flex;
-        justify-content: space-around;
-        width: 100%;
+        margin: 14px 14px 12px 14px;
+        border-radius: 22px;
+        gap: 6px;
       }
 
       .stat-item {
@@ -478,108 +491,91 @@
         align-items: center;
         flex: 1;
         background: transparent;
-        padding: 2px 0;
+        padding: 4px 0;
+        position: relative;
       }
 
+      /* Vitals Ring Container */
+      .stat-ring-wrap {
+        position: relative;
+        width: 68px;
+        height: 68px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+
+      .stat-ring-svg {
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        transform: rotate(-90deg);
+      }
+
+      .stat-ring-track {
+        fill: none;
+        stroke: rgba(226, 234, 245, 0.7);
+        stroke-width: 5;
+      }
+
+      .stat-ring-fill {
+        fill: none;
+        stroke-width: 5;
+        stroke-linecap: round;
+        transition: stroke-dashoffset 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+
+      .stat-ring-inner {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 1;
+        gap: 0;
+      }
+
+      /* ===== tvOS MOTION FLIP COUNTER ===== */
       .stat-count {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 24px;
+        font-size: 22px;
         font-weight: 900;
-        line-height: 1.1;
+        line-height: 1;
+        font-variant-numeric: tabular-nums;
+        transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s ease;
+      }
+
+      .stat-count.flip-anim {
+        animation: stat-flip 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      }
+
+      @keyframes stat-flip {
+        0%  { transform: translateY(0) scaleY(1); opacity: 1; }
+        30% { transform: translateY(-10px) scaleY(0.7); opacity: 0; }
+        31% { transform: translateY(10px) scaleY(0.7); opacity: 0; }
+        100%{ transform: translateY(0) scaleY(1); opacity: 1; }
       }
 
       .stat-label {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 11px;
+        font-size: 10px;
         font-weight: 800;
         color: var(--text-muted);
         text-transform: uppercase;
-        letter-spacing: 0.08em;
-        margin-top: 3px;
-      }
-
-      /* Apple Segmented Activity Gauge Track */
-      .activity-gauge-track {
-        width: 100%;
-        height: 6px;
-        background: rgba(226, 234, 245, 0.85);
-        border-radius: 9999px;
-        overflow: hidden;
-        display: flex;
-        box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.08);
-      }
-
-      .gauge-seg {
-        height: 100%;
-        transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-      }
-      .gauge-buka { background: #059669; }
-      .gauge-penuh { background: #B45309; }
-      .gauge-cuti { background: #DC2626; }
-
-      /* Sidebar Status Khusus Header with Apple Micro-Pills */
-      .sidebar-status-khusus-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 10px 16px;
-        background: rgba(241, 245, 249, 0.7);
-        border-top: 1px solid rgba(226, 234, 245, 0.9);
-        border-bottom: 1px solid rgba(226, 234, 245, 0.9);
-      }
-
-      .sk-pill-counters {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-      }
-
-      .sk-micro-pill {
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-        padding: 3px 8px;
-        border-radius: 9999px;
-        font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 11px;
-        font-weight: 800;
-        letter-spacing: 0.02em;
-      }
-      .sk-pill-cuti { background: #FEE2E2; color: #DC2626; border: 1px solid #FECACA; }
-      .sk-pill-operasi { background: #F3E8FF; color: #7C3AED; border: 1px solid #E9D5FF; }
-      .sk-pill-penuh { background: #FEF3C7; color: #B45309; border: 1px solid #FDE68A; }
-
-      /* Apple AirDrop Pulse Wave on QR Card */
-      .airdrop-icon-wrapper {
-        position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      .airdrop-ring-1, .airdrop-ring-2 {
-        position: absolute;
-        border-radius: 50%;
-        border: 1px solid rgba(2, 132, 199, 0.45);
-        pointer-events: none;
-        animation: airdrop-wave 2.4s infinite cubic-bezier(0.2, 0.8, 0.2, 1);
-      }
-      .airdrop-ring-1 { width: 34px; height: 34px; animation-delay: 0s; }
-      .airdrop-ring-2 { width: 46px; height: 46px; animation-delay: 0.8s; }
-      @keyframes airdrop-wave {
-        0% { transform: scale(0.6); opacity: 0.8; }
-        100% { transform: scale(1.4); opacity: 0; }
+        letter-spacing: 0.07em;
+        margin-top: 2px;
       }
 
       /* ===== 🚀 APPLE WALLET DIGITAL PASS HERO CARD ===== */
       .sidebar-qr-hotline {
-        padding: 14px 16px;
+        padding: 14px 18px;
         border-top: 1px solid rgba(226, 234, 245, 0.9);
         background: #FFFFFF;
         display: flex;
         flex-direction: column;
         align-items: center;
         text-align: center;
-        gap: 10px;
+        gap: 12px;
         flex-shrink: 0;
       }
 
@@ -680,6 +676,39 @@
         line-height: 1.25;
       }
 
+      .tv-qr-header-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 5px 14px;
+        border-radius: 9999px;
+        background: #EFF6FF;
+        color: #0284C7;
+        border: 1px solid #BAE6FD;
+      }
+
+      .tv-qr-header-badge .radar-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #0284C7;
+        animation: radarPulse 1.4s infinite;
+        box-shadow: 0 0 10px rgba(2, 132, 199, 0.6);
+      }
+
+      @keyframes radarPulse {
+        0%, 100% { transform: scale(0.9); opacity: 0.7; }
+        50% { transform: scale(1.25); opacity: 1; }
+      }
+
+      .tv-qr-header-badge span {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 13px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
       .dynamic-qr-box {
         width: 160px;
         height: 160px;
@@ -716,7 +745,6 @@
         color: #0F172A;
       }
 
-      /* Apple Glass Action Button (WhatsApp Hotline) */
       .hotline-highlight-box {
         width: 100%;
         display: flex;
@@ -728,20 +756,8 @@
         color: #FFFFFF;
         text-decoration: none;
         box-shadow: 0 8px 20px -2px rgba(5, 150, 105, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.35);
-        border: 1px solid rgba(255, 255, 255, 0.25);
-        position: relative;
-        overflow: hidden;
-      }
-
-      .hotline-highlight-box::after {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 20px;
-        right: 20px;
-        height: 1px;
-        background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.8) 50%, transparent 100%);
-        pointer-events: none;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
       }
 
       .hotline-icon-wrap {
@@ -769,7 +785,7 @@
 
       .hotline-tag {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 8.5px;
+        font-size: 9px;
         font-weight: 800;
         letter-spacing: 0.05em;
         opacity: 0.9;
@@ -779,6 +795,60 @@
       .hotline-num {
         font-family: "Plus Jakarta Sans", sans-serif;
         font-size: 14px;
+        font-weight: 900;
+        letter-spacing: 0.02em;
+      }
+
+      .hotline-highlight-box {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 12px;
+        background: linear-gradient(135deg, #059669 0%, #047857 100%);
+        border-radius: 14px;
+        color: #FFFFFF;
+        text-decoration: none;
+        box-shadow: 0 6px 16px -2px rgba(5, 150, 105, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.35);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      .hotline-icon-wrap {
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .hotline-icon-wrap .material-icons-round {
+        font-size: 16px;
+        color: #FFFFFF;
+      }
+
+      .hotline-details {
+        display: flex;
+        flex-direction: column;
+        text-align: left;
+        flex: 1;
+        margin-left: 8px;
+      }
+
+      .hotline-tag {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 8px;
+        font-weight: 800;
+        letter-spacing: 0.05em;
+        opacity: 0.9;
+        text-transform: uppercase;
+      }
+
+      .hotline-num {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 12px;
         font-weight: 900;
         letter-spacing: 0.02em;
       }
@@ -1135,6 +1205,21 @@
         min-height: 0;
         overflow: hidden;
         position: relative;
+        /* Fade masks for scroll feel — bawah lebih tipis agar konten terakhir terlihat */
+        mask-image: linear-gradient(
+          to bottom,
+          transparent,
+          black 16px,
+          black calc(100% - 6px),
+          transparent
+        );
+        -webkit-mask-image: linear-gradient(
+          to bottom,
+          transparent,
+          black 16px,
+          black calc(100% - 6px),
+          transparent
+        );
       }
 
       .scroller {
@@ -3214,31 +3299,59 @@
       <main class="content">
         <!-- Sidebar (Left - Integrated Header) -->
         <aside class="island sidebar-panel">
-          <!-- Ringkasan Statistik & Apple Activity Gauge -->
+          <!-- tvOS Vitals Arc Ring KPI Panel -->
           <div class="stat-panel" style="margin-top: 14px;">
-            <div class="stat-items-row">
-              <div class="stat-item">
-                <span class="stat-count" id="statBuka" style="color: var(--accent-green)">0</span>
-                <span class="stat-label">Buka</span>
-              </div>
-              <div class="stat-item" style="border-left: 1px solid var(--border-light); border-right: 1px solid var(--border-light);">
-                <span class="stat-count" id="statPenuh" style="color: var(--accent-orange)">0</span>
-                <span class="stat-label">Penuh</span>
-              </div>
-              <div class="stat-item">
-                <span class="stat-count" id="statCuti" style="color: var(--accent-red)">0</span>
-                <span class="stat-label">Cuti</span>
+            <!-- Ring: Buka -->
+            <div class="stat-item">
+              <div class="stat-ring-wrap">
+                <svg class="stat-ring-svg" viewBox="0 0 68 68">
+                  <circle class="stat-ring-track" cx="34" cy="34" r="28"/>
+                  <circle class="stat-ring-fill" id="ringBuka" cx="34" cy="34" r="28"
+                    stroke="#059669"
+                    stroke-dasharray="175.93"
+                    stroke-dashoffset="175.93"/>
+                </svg>
+                <div class="stat-ring-inner">
+                  <span class="stat-count" id="statBuka" style="color:#059669">0</span>
+                  <span class="stat-label" style="color:#059669">Buka</span>
+                </div>
               </div>
             </div>
-            <!-- Segmented Activity Gauge Bar -->
-            <div class="activity-gauge-track" title="Rasio Ketersediaan Dokter Hari Ini">
-              <div class="gauge-seg gauge-buka" id="gaugeBuka" style="width: 70%;"></div>
-              <div class="gauge-seg gauge-penuh" id="gaugePenuh" style="width: 15%;"></div>
-              <div class="gauge-seg gauge-cuti" id="gaugeCuti" style="width: 15%;"></div>
+            <!-- Ring: Penuh -->
+            <div class="stat-item">
+              <div class="stat-ring-wrap">
+                <svg class="stat-ring-svg" viewBox="0 0 68 68">
+                  <circle class="stat-ring-track" cx="34" cy="34" r="28"/>
+                  <circle class="stat-ring-fill" id="ringPenuh" cx="34" cy="34" r="28"
+                    stroke="#B45309"
+                    stroke-dasharray="175.93"
+                    stroke-dashoffset="175.93"/>
+                </svg>
+                <div class="stat-ring-inner">
+                  <span class="stat-count" id="statPenuh" style="color:#B45309">0</span>
+                  <span class="stat-label" style="color:#B45309">Penuh</span>
+                </div>
+              </div>
+            </div>
+            <!-- Ring: Cuti -->
+            <div class="stat-item">
+              <div class="stat-ring-wrap">
+                <svg class="stat-ring-svg" viewBox="0 0 68 68">
+                  <circle class="stat-ring-track" cx="34" cy="34" r="28"/>
+                  <circle class="stat-ring-fill" id="ringCuti" cx="34" cy="34" r="28"
+                    stroke="#DC2626"
+                    stroke-dasharray="175.93"
+                    stroke-dashoffset="175.93"/>
+                </svg>
+                <div class="stat-ring-inner">
+                  <span class="stat-count" id="statCuti" style="color:#DC2626">0</span>
+                  <span class="stat-label" style="color:#DC2626">Cuti</span>
+                </div>
+              </div>
             </div>
           </div>
 
-          <!-- Focused Status Khusus Hero Header with Segmented Micro-Pills -->
+          <!-- Focused Status Khusus Hero Header -->
           <div class="sidebar-status-khusus-header">
             <div class="sk-header-title">
               <span class="material-icons-round sk-icon">info</span>
@@ -3247,11 +3360,7 @@
                 <span class="sk-sub-title">Cuti • Operasi • Penuh</span>
               </div>
             </div>
-            <div class="sk-pill-counters">
-              <span class="sk-micro-pill sk-pill-cuti" id="skPillCuti" style="display:none;">⛔ <span id="skCountCuti">0</span></span>
-              <span class="sk-micro-pill sk-pill-operasi" id="skPillOperasi" style="display:none;">🏥 <span id="skCountOperasi">0</span></span>
-              <span class="sk-micro-pill sk-pill-penuh" id="skPillPenuh" style="display:none;">🔒 <span id="skCountPenuh">0</span></span>
-            </div>
+            <span class="island-badge" id="countSidebar">0</span>
           </div>
 
           <div class="scroll-mask" id="maskSidebar">
@@ -3264,15 +3373,11 @@
 
           <!-- Dynamic QR Code & Highlighted Hotline Number -->
           <div class="sidebar-qr-hotline">
-            <!-- Apple Wallet-Style Digital Pass Hero Card with AirDrop Wave -->
+            <!-- Apple Wallet-Style Digital Pass Hero Card -->
             <div class="tv-qr-hero-card">
               <div class="wallet-pass-header">
                 <div class="wallet-pass-brand">
-                  <div class="airdrop-icon-wrapper">
-                    <span class="material-icons-round wallet-pass-icon">wifi_tethering</span>
-                    <span class="airdrop-ring-1"></span>
-                    <span class="airdrop-ring-2"></span>
-                  </div>
+                  <span class="material-icons-round wallet-pass-icon">smartphone</span>
                   <div class="wallet-pass-title-group">
                     <span class="wallet-pass-tag">DIGITAL PASS RS</span>
                     <span class="wallet-pass-sub">Jadwal Real-Time HP</span>
@@ -3280,7 +3385,7 @@
                 </div>
                 <div class="wallet-pass-badge">
                   <span class="radar-dot"></span>
-                  <span>LIVE PASS</span>
+                  <span>LIVE WEB</span>
                 </div>
               </div>
               <div class="dynamic-qr-box">
@@ -3293,16 +3398,16 @@
               <span class="wallet-pass-hint">Arahkan kamera smartphone ke barcode untuk pantau jadwal dokter di HP</span>
             </div>
 
-            <!-- Apple Glass Action Button (WhatsApp Hotline) -->
+            <!-- Highlighted Hospital Information Number 0823-2344-6076 -->
             <a href="https://wa.me/6282323446076" target="_blank" class="hotline-highlight-box">
               <div class="hotline-icon-wrap">
-                <span class="material-icons-round">support_agent</span>
+                <span class="material-icons-round">phone_in_talk</span>
               </div>
               <div class="hotline-details">
-                <span class="hotline-tag">BUTUH BANTUAN? HUBUNGI PETUGAS</span>
+                <span class="hotline-tag">INFORMASI & PENDAFTARAN RS</span>
                 <span class="hotline-num">0823-2344-6076</span>
               </div>
-              <span class="material-icons-round" style="color: rgba(255,255,255,0.85); font-size: 20px;">chevron_right</span>
+              <span class="material-icons-round" style="color: rgba(255,255,255,0.8); font-size: 18px;">chevron_right</span>
             </a>
           </div>
 
@@ -3369,7 +3474,7 @@
         SCROLL_DURATION: 800, // Durasi animasi geser per item (ms)
       };
 
-      // ===== UNIVERSAL TV AUTO-SCALE ENGINE =====
+      // ===== UNIVERSAL TV AUTO-SCALE ENGINE (1080p Golden Canvas) =====
       const StageScaler = {
         init() {
           this.scale();
@@ -3386,13 +3491,35 @@
           const stage = document.getElementById("tvStage");
           if (!stage) return;
 
-          // Pure fluid layout: TV Stage always fills 100% of viewport without transform scale bugs
-          stage.style.position = "fixed";
-          stage.style.top = "0";
-          stage.style.left = "0";
-          stage.style.width = "100vw";
-          stage.style.height = "100vh";
-          stage.style.transform = "none";
+          // Mobile Portrait Bypass: maintain native phone touch scroll
+          const isMobile = window.innerWidth <= 768 && window.innerHeight > window.innerWidth;
+          if (isMobile) {
+            stage.style.transform = "";
+            stage.style.position = "static";
+            stage.style.width = "100%";
+            stage.style.height = "auto";
+            return;
+          }
+
+          const TARGET_W = 1920;
+          const TARGET_H = 1080;
+          const curW = window.innerWidth || document.documentElement.clientWidth || 1920;
+          const curH = window.innerHeight || document.documentElement.clientHeight || 1080;
+
+          if (curW <= 0 || curH <= 0) return;
+
+          // Calculate exact proportional scale factor
+          const scaleX = curW / TARGET_W;
+          const scaleY = curH / TARGET_H;
+          const scale = Math.max(0.2, Math.min(scaleX, scaleY));
+
+          stage.style.position = "absolute";
+          stage.style.top = "50%";
+          stage.style.left = "50%";
+          stage.style.width = `${TARGET_W}px`;
+          stage.style.height = `${TARGET_H}px`;
+          stage.style.transform = `translate(-50%, -50%) scale(${scale})`;
+          stage.style.transformOrigin = "center center";
         },
       };
       StageScaler.init();
@@ -3435,26 +3562,6 @@
         return "health_and_safety";
       };
 
-      const getSpecialistTheme = (spec) => {
-        const s = (spec || "").toLowerCase();
-        if (s.includes("kandungan") || s.includes("obgyn") || s.includes("anak")) {
-          return { bg: "#FFE4E6", color: "#E11D48", border: "#FECDD3" }; // Soft Rose
-        }
-        if (s.includes("bedah") || s.includes("ortopedi") || s.includes("urologi")) {
-          return { bg: "#E0F2FE", color: "#0284C7", border: "#BAE6FD" }; // Soft Cyan
-        }
-        if (s.includes("dalam") || s.includes("jantung") || s.includes("paru")) {
-          return { bg: "#ECFDF5", color: "#059669", border: "#A7F3D0" }; // Soft Emerald
-        }
-        if (s.includes("saraf") || s.includes("mata") || s.includes("tht") || s.includes("jiwa")) {
-          return { bg: "#EDE9FE", color: "#7C3AED", border: "#DDD6FE" }; // Soft Violet
-        }
-        if (s.includes("gigi") || s.includes("mulut") || s.includes("kulit") || s.includes("rehab")) {
-          return { bg: "#FEF3C7", color: "#D97706", border: "#FDE68A" }; // Soft Amber
-        }
-        return { bg: "#F8FAFC", color: "#0F172A", border: "#E2E8F0" }; // Neutral Slate
-      };
-
       // Helper: Tentukan apakah dokter dalam status "aktif" (sedang melayani/bisa daftar)
       // Satu definisi tunggal dipakai di _detectChanges DAN render()
       const isActive = (st) =>
@@ -3476,11 +3583,10 @@
           : formatJam((d.JamPraktek || "").split("-")[0]);
           
         const isCPO = ["CUTI", "PENUH", "OPERASI"].some(st => (d.Status || "").toUpperCase().includes(st));
-        const theme = getSpecialistTheme(d.Spesialis);
 
         return `
           <div class="platter-main">
-            <div class="initials" style="background:${theme.bg}; color:${theme.color}; border:1.5px solid ${theme.border};">${avatarText}</div>
+            <div class="initials">${avatarText}</div>
             <div class="info-col">
               <div class="doc-spec">${esc(d.Spesialis)}</div>
               <div class="doc-name">${esc(d.Dokter)}</div>
@@ -3522,11 +3628,9 @@
           label = "PENUH";
         }
 
-        const theme = getSpecialistTheme(d.Spesialis);
-
         return `
           <div class="platter-main" style="display:flex; align-items:center; gap:12px; width:100%; position:relative; z-index:1;">
-            <div class="initials" style="background:${theme.bg}; color:${theme.color}; border:1.5px solid ${theme.border};">${avatarText}</div>
+            <div class="initials">${avatarText}</div>
             <div class="info-col" style="flex:1; min-width:0; display:flex; flex-direction:column; gap:2px;">
               <div class="doc-spec" style="font-size:12.5px; font-weight:800; color:#64748B; text-transform:uppercase; letter-spacing:0.04em;">${esc(d.Spesialis)}</div>
               <div class="doc-name" style="font-size:16px; font-weight:700; color:#0F172A; line-height:1.25; white-space:normal; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${esc(d.Dokter)}</div>
@@ -3844,17 +3948,6 @@
           if ($("diModalClockText")) $("diModalClockText").textContent = timeStr;
         },
 
-        getIdleMessage() {
-          const msgs = [
-            "Selamat datang di RSU Siaga Medika Purbalingga",
-            "Gunakan Mobile JKN untuk pendaftaran antrean online",
-            "Siapkan KTP & Kartu BPJS sebelum ke loket pendaftaran",
-            "Harap datang 30 menit sebelum jam praktek dokter",
-            "Informasi lebih lanjut hubungi WhatsApp 0823-2344-6076"
-          ];
-          return msgs[Math.floor(Math.random() * msgs.length)];
-        },
-
         // Tampilkan notifikasi / rotating headline (Expanded Toast)
         async show(title, msg, type = "info", arg4 = null, arg5 = null) {
           let duration = 8500;
@@ -4134,24 +4227,19 @@
             this.skel();
           }
 
-          // Initial load of full schedule data, custom messages and display settings
+          // Initial load of custom messages and display settings
           fetch("/api/display")
             .then((r) => r.json())
             .then((data) => {
-              if (data) {
-                if (data.doctors && Array.isArray(data.doctors) && data.doctors.length > 0) {
-                  this.processData(data);
-                }
-                if (data.settings && Array.isArray(data.settings.customMessages) && data.settings.customMessages.length > 0) {
-                  const validMsgs = data.settings.customMessages
-                    .map((m) => ({
-                      title: m.title || "INFORMASI",
-                      text: (m.text || m.message || "").trim(),
-                    }))
-                    .filter((m) => m.text.length > 0);
-                  if (validMsgs.length > 0) {
-                    this._customMsgs = validMsgs;
-                  }
+              if (data && data.settings && Array.isArray(data.settings.customMessages) && data.settings.customMessages.length > 0) {
+                const validMsgs = data.settings.customMessages
+                  .map((m) => ({
+                    title: m.title || "INFORMASI",
+                    text: (m.text || m.message || "").trim(),
+                  }))
+                  .filter((m) => m.text.length > 0);
+                if (validMsgs.length > 0) {
+                  this._customMsgs = validMsgs;
                 }
               }
             })
@@ -4637,29 +4725,40 @@
         render(data) {
           if (!data) return;
 
-          // 0. Calculate Stats & Apple Activity Gauge
+          // 0. Calculate Stats
           let countBuka = 0,
             countPenuh = 0,
             countCuti = 0;
           data.forEach((d) => {
             const s = (d.Status || "").toUpperCase();
             if (["PRAKTEK", "PENDAFTARAN", "TERJADWAL"].includes(s)) countBuka++;
-            else if (s === "PENUH") countPenuh++;
+              else if (s === "PENUH") countPenuh++;
             else if (s.includes("CUTI")) countCuti++;
           });
-          $("statBuka").textContent = countBuka;
-          $("statPenuh").textContent = countPenuh;
-          $("statCuti").textContent = countCuti;
+          // Flip Counter + Arc Ring updater
+          const updateStat = (elId, ringId, newVal, total) => {
+            const el = $(elId);
+            if (!el) return;
+            const oldVal = parseInt(el.textContent) || 0;
+            if (oldVal !== newVal) {
+              el.classList.remove("flip-anim");
+              void el.offsetWidth; // reflow
+              el.classList.add("flip-anim");
+              el.textContent = newVal;
+              el.addEventListener("animationend", () => el.classList.remove("flip-anim"), { once: true });
+            }
+            // Update arc ring
+            const ring = $(ringId);
+            if (ring) {
+              const circumference = 175.93;
+              const safePct = total > 0 ? Math.min(newVal / total, 1) : 0;
+              ring.style.strokeDashoffset = circumference * (1 - safePct);
+            }
+          };
 
-          // Update Segmented Activity Gauge Bar
-          const totalStats = countBuka + countPenuh + countCuti || 1;
-          const pctBuka = Math.round((countBuka / totalStats) * 100);
-          const pctPenuh = Math.round((countPenuh / totalStats) * 100);
-          const pctCuti = Math.max(0, 100 - pctBuka - pctPenuh);
-          const gBuka = $("gaugeBuka"), gPenuh = $("gaugePenuh"), gCuti = $("gaugeCuti");
-          if (gBuka) gBuka.style.width = `${pctBuka}%`;
-          if (gPenuh) gPenuh.style.width = `${pctPenuh}%`;
-          if (gCuti) gCuti.style.width = `${pctCuti}%`;
+          updateStat("statBuka",  "ringBuka",  countBuka,  countBuka + countPenuh + countCuti);
+          updateStat("statPenuh", "ringPenuh", countPenuh, countBuka + countPenuh + countCuti);
+          updateStat("statCuti",  "ringCuti",  countCuti,  countBuka + countPenuh + countCuti);
 
           const group = { Bedah: [], NonBedah: [], Sidebar: [] };
 
@@ -4931,25 +5030,8 @@
 
           $("countBedah").textContent = group.Bedah.length;
           $("countNonBedah").textContent = group.NonBedah.length;
-
-          // Update Status Khusus Segmented Micro-Pill Counters
-          const countOp = group.SidebarOperasi.length;
-          const countPn = group.SidebarPenuh.length;
-          const countCt = group.SidebarCuti.length;
-
-          const pillCuti = $("skPillCuti"), pillOp = $("skPillOperasi"), pillPn = $("skPillPenuh");
-          if (pillCuti) {
-            $("skCountCuti").textContent = countCt;
-            pillCuti.style.display = countCt > 0 ? "inline-flex" : "none";
-          }
-          if (pillOp) {
-            $("skCountOperasi").textContent = countOp;
-            pillOp.style.display = countOp > 0 ? "inline-flex" : "none";
-          }
-          if (pillPn) {
-            $("skCountPenuh").textContent = countPn;
-            pillPn.style.display = countPn > 0 ? "inline-flex" : "none";
-          }
+          $("countSidebar").textContent =
+            group.SidebarPenuh.length + group.SidebarCuti.length;
 
           // Only reset scroller if list structure changed (avoid jumpiness on simple updates)
           if (!isMobile) {
