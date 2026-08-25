@@ -213,7 +213,6 @@
       body.tv-optimized .bg-grid {
         animation: none !important;
         display: none !important;
-        /* Hilangkan sepenuhnya pembakar GPU ini */
       }
 
       body.tv-optimized .ticker-inner {
@@ -221,29 +220,31 @@
         transform: translate3d(0, 0, 0);
       }
 
-      body.tv-optimized .app-container,
+      body.tv-optimized .app-container {
+        backdrop-filter: none !important;
+        background: transparent !important;
+      }
+
       body.tv-optimized .island,
       body.tv-optimized .sidebar-panel,
       body.tv-optimized .footer {
         backdrop-filter: none !important;
-        background: rgba(20, 20, 22, 1) !important;
-      }
-
-      body.tv-optimized .logo-box {
-        /* box-shadow left alone to allow glow */
+        background: #FFFFFF !important;
       }
 
       body.tv-optimized .platter {
-        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        border: 1px solid rgba(226, 234, 245, 0.95) !important;
+        background: #FFFFFF !important;
       }
 
       body.tv-optimized .platter.active {
-        box-shadow: none !important;
+        background: #FFFFFF !important;
+        border: 1.5px solid rgba(5, 150, 105, 0.45) !important;
         transform: translateZ(0) scale(1) !important;
       }
 
       body.tv-optimized .dynamic-island {
-        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5) !important;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35) !important;
       }
 
       *, *::before, *::after {
@@ -4162,19 +4163,24 @@
             this.skel();
           }
 
-          // Initial load of custom messages and display settings
+          // Initial load of full schedule data, custom messages and display settings
           fetch("/api/display")
             .then((r) => r.json())
             .then((data) => {
-              if (data && data.settings && Array.isArray(data.settings.customMessages) && data.settings.customMessages.length > 0) {
-                const validMsgs = data.settings.customMessages
-                  .map((m) => ({
-                    title: m.title || "INFORMASI",
-                    text: (m.text || m.message || "").trim(),
-                  }))
-                  .filter((m) => m.text.length > 0);
-                if (validMsgs.length > 0) {
-                  this._customMsgs = validMsgs;
+              if (data) {
+                if (data.doctors && Array.isArray(data.doctors) && data.doctors.length > 0) {
+                  this.processData(data);
+                }
+                if (data.settings && Array.isArray(data.settings.customMessages) && data.settings.customMessages.length > 0) {
+                  const validMsgs = data.settings.customMessages
+                    .map((m) => ({
+                      title: m.title || "INFORMASI",
+                      text: (m.text || m.message || "").trim(),
+                    }))
+                    .filter((m) => m.text.length > 0);
+                  if (validMsgs.length > 0) {
+                    this._customMsgs = validMsgs;
+                  }
                 }
               }
             })
