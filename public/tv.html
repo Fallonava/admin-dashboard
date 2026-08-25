@@ -4671,11 +4671,18 @@
                 }
               }
 
-              // Helper normalisasi tanggal YYYY-MM-DD
+              // Helper normalisasi tanggal YYYY-MM-DD (menggunakan zona waktu lokal)
               const toYmd = (dt) => {
                 if (!dt) return "";
-                if (typeof dt === "string") return dt.split("T")[0];
-                return new Date(dt).toISOString().split("T")[0];
+                if (typeof dt === "string") {
+                  if (dt.includes("T")) {
+                    const dObj = new Date(dt);
+                    return dObj.getFullYear() + "-" + String(dObj.getMonth() + 1).padStart(2, "0") + "-" + String(dObj.getDate()).padStart(2, "0");
+                  }
+                  return dt.split(" ")[0];
+                }
+                const dObj = new Date(dt);
+                return dObj.getFullYear() + "-" + String(dObj.getMonth() + 1).padStart(2, "0") + "-" + String(dObj.getDate()).padStart(2, "0");
               };
 
               // Cari data cuti aktif dokter (dari array leaves atau leaveRequests internal dokter)
@@ -4697,13 +4704,11 @@
               if (endDateStr) {
                 try {
                   const [y, m, dNum] = endDateStr.split("-").map(Number);
-                  const endObj = new Date(y, m - 1, dNum);
                   
                   for (let offset = 1; offset <= 21; offset++) {
-                    const checkDate = new Date(endObj);
-                    checkDate.setDate(checkDate.getDate() + offset);
+                    const checkDate = new Date(y, m - 1, dNum + offset);
                     const checkDayIdx = checkDate.getDay() === 0 ? 6 : checkDate.getDay() - 1;
-                    const checkIso = checkDate.toISOString().split("T")[0];
+                    const checkIso = toYmd(checkDate);
 
                     // Cek apakah masih cuti di tanggal tersebut
                     const isStillLeave = allDocLeaves.some(l => {
@@ -4713,10 +4718,10 @@
                     });
                     if (isStillLeave) continue;
 
-                    // Cari shift dokter
+                    // Cari shift dokter di hari ini
                     const docShift = shifts.find(s => s.doctorId === doc.id && s.dayIdx === checkDayIdx && isShiftActiveForDate(s.extra, checkDate));
                     if (docShift) {
-                      const dayName = checkDate.toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "short" });
+                      const dayName = checkDate.toLocaleDateString("id-ID", { weekday: "short", day: "numeric", month: "short" });
                       const sTime = docShift.formattedTime || docShift.title || "";
                       const startHour = sTime.split("-")[0].replace(/\./g, ":").trim();
                       nextBukaText = `${dayName} ${startHour ? 'JAM ' + startHour : ''}`.trim().toUpperCase();
