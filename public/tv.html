@@ -404,23 +404,22 @@
         border: 1px solid var(--clay-border);
       }
 
-      /* ===== visionOS SPATIAL LAYER BADGE — Status Khusus Header ===== */
+      /* ===== visionOS & tvOS 18 PRIMARY SIDEBAR HEADER — Status Khusus ===== */
       .sidebar-status-khusus-header {
+        height: 76px;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 12px 16px;
-        margin: 0 12px 6px 12px;
-        background: rgba(255, 255, 255, 0.97);
-        border-radius: 18px;
+        padding: 0 18px;
+        margin: 0 0 10px 0;
+        flex-shrink: 0;
+        background: rgba(255, 255, 255, 0.96);
+        border-radius: 22px;
         border: 1px solid rgba(226, 234, 245, 0.98);
-        /* Multi-layer shadow: simulates Z-axis floating depth */
-        box-shadow:
-          0 1px 0 rgba(255,255,255,0.9) inset,
-          0 -1px 0 rgba(15,23,42,0.04) inset,
-          0 4px 12px -2px rgba(45, 65, 95, 0.10),
-          0 10px 28px -8px rgba(45, 65, 95, 0.12),
-          0 0 0 1px rgba(226, 234, 245, 0.5);
+        box-shadow: 
+          0 10px 30px -4px rgba(45, 65, 95, 0.08), 
+          0 2px 6px -1px rgba(45, 65, 95, 0.03),
+          inset 0 1.5px 1.5px #FFFFFF;
         position: relative;
         overflow: hidden;
       }
@@ -429,7 +428,7 @@
       .sidebar-status-khusus-header::before {
         content: "";
         position: absolute;
-        top: 0; left: 16px; right: 16px;
+        top: 0; left: 18px; right: 18px;
         height: 1.5px;
         background: linear-gradient(90deg, transparent, rgba(255,255,255,1) 50%, transparent);
         pointer-events: none;
@@ -438,21 +437,37 @@
       .sk-header-title {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 12px;
       }
 
-      .sk-icon {
-        font-size: 22px;
-        color: #D97706;
+      .island-icon-khusus {
+        background: linear-gradient(145deg, #F59E0B 0%, #D97706 60%, #B45309 100%);
+        box-shadow: 0 6px 16px -2px rgba(217, 119, 6, 0.45), inset 0 1px 1px rgba(255,255,255,0.4);
+        border: 1px solid rgba(255,255,255,0.25);
+      }
+
+      .island-badge-khusus {
+        background: #FFFBEB;
+        color: #B45309;
+        border: 1px solid #FDE68A;
+      }
+
+      .island-badge-khusus .badge-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #B45309;
+        box-shadow: 0 0 10px rgba(180, 83, 9, 0.7);
+        animation: radarPulse 1.8s infinite;
       }
 
       .sk-main-title {
         display: block;
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 15px;
+        font-size: 20px;
         font-weight: 900;
         color: #0F172A;
-        letter-spacing: 0.04em;
+        letter-spacing: 0.02em;
         text-transform: uppercase;
         line-height: 1.15;
       }
@@ -460,135 +475,11 @@
       .sk-sub-title {
         display: block;
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 10px;
+        font-size: 11px;
         font-weight: 800;
         color: #64748B;
         letter-spacing: 0.05em;
         text-transform: uppercase;
-      }
-
-      .sidebar-panel .island-header {
-        background: transparent;
-        border-bottom: 1px solid var(--border-light);
-        padding: 14px 20px;
-      }
-
-      /* ===== 🪟 tvOS STANDBY AMBIENT GLANCE CARD ===== */
-      .standby-glance-card {
-        display: flex;
-        align-items: stretch;
-        background: #FFFFFF;
-        margin: 12px 12px 10px 12px;
-        border-radius: 20px;
-        border: 1px solid rgba(226, 234, 245, 0.98);
-        box-shadow: 
-          0 6px 20px -2px rgba(45, 65, 95, 0.07),
-          inset 0 1.5px 1px #FFFFFF,
-          inset 0 -1px 1px rgba(15, 23, 42, 0.02);
-        position: relative;
-        overflow: hidden;
-      }
-
-      /* Top specular rim */
-      .standby-glance-card::before {
-        content: "";
-        position: absolute;
-        top: 0; left: 16px; right: 16px;
-        height: 1.5px;
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,1) 50%, transparent);
-        pointer-events: none;
-      }
-
-      /* Left Side: Live StandBy Clock */
-      .standby-clock-pane {
-        flex: 1.1;
-        padding: 12px 14px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        border-right: 1px solid rgba(226, 234, 245, 0.9);
-        background: linear-gradient(135deg, rgba(248, 250, 252, 0.9) 0%, rgba(241, 245, 249, 0.5) 100%);
-      }
-
-      .standby-clock-time {
-        font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 26px;
-        font-weight: 900;
-        color: #0F172A;
-        line-height: 1;
-        letter-spacing: -0.02em;
-        font-variant-numeric: tabular-nums;
-      }
-
-      .standby-clock-date {
-        font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 9.5px;
-        font-weight: 800;
-        color: #64748B;
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
-        margin-top: 4px;
-      }
-
-      /* Right Side: Live Status Counters Stack */
-      .standby-stats-pane {
-        flex: 1.2;
-        padding: 8px 10px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        gap: 5px;
-      }
-
-      .standby-stat-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 3px 8px;
-        border-radius: 8px;
-        background: rgba(248, 250, 252, 0.8);
-      }
-
-      .standby-stat-label-group {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-      }
-
-      .standby-stat-dot {
-        width: 6.5px;
-        height: 6.5px;
-        border-radius: 50%;
-        flex-shrink: 0;
-      }
-
-      .standby-stat-label {
-        font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 10px;
-        font-weight: 800;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        color: #475569;
-      }
-
-      .standby-stat-num {
-        font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 14px;
-        font-weight: 900;
-        font-variant-numeric: tabular-nums;
-        line-height: 1;
-        transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-      }
-
-      .standby-stat-num.flip-anim {
-        animation: stat-flip 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-      }
-
-      @keyframes stat-flip {
-        0%  { transform: translateY(0) scaleY(1); opacity: 1; }
-        30% { transform: translateY(-8px) scaleY(0.7); opacity: 0; }
-        31% { transform: translateY(8px) scaleY(0.7); opacity: 0; }
-        100%{ transform: translateY(0) scaleY(1); opacity: 1; }
       }
 
       /* ===== 🚀 APPLE WALLET DIGITAL PASS HERO CARD ===== */
@@ -3385,52 +3276,22 @@
       <main class="content">
         <!-- Sidebar (Left - Integrated Header) -->
         <aside class="island sidebar-panel">
-          <!-- 🪟 tvOS StandBy Ambient Glance Card (Live Clock + Poli Status) -->
-          <div class="standby-glance-card">
-            <!-- Left Pane: Live Clock & Date -->
-            <div class="standby-clock-pane">
-              <span class="standby-clock-time" id="sbClock">--:--</span>
-              <span class="standby-clock-date" id="sbDate">--</span>
-            </div>
-            <!-- Right Pane: Status Counter Rows -->
-            <div class="standby-stats-pane">
-              <!-- Row: Buka -->
-              <div class="standby-stat-row">
-                <div class="standby-stat-label-group">
-                  <span class="standby-stat-dot" style="background:#059669;box-shadow:0 0 6px rgba(5,150,105,0.6);"></span>
-                  <span class="standby-stat-label">Buka</span>
-                </div>
-                <span class="standby-stat-num" id="statBuka" style="color:#059669;">0</span>
-              </div>
-              <!-- Row: Penuh -->
-              <div class="standby-stat-row">
-                <div class="standby-stat-label-group">
-                  <span class="standby-stat-dot" style="background:#B45309;box-shadow:0 0 6px rgba(180,83,9,0.6);"></span>
-                  <span class="standby-stat-label">Penuh</span>
-                </div>
-                <span class="standby-stat-num" id="statPenuh" style="color:#B45309;">0</span>
-              </div>
-              <!-- Row: Cuti -->
-              <div class="standby-stat-row">
-                <div class="standby-stat-label-group">
-                  <span class="standby-stat-dot" style="background:#DC2626;box-shadow:0 0 6px rgba(220,38,38,0.6);"></span>
-                  <span class="standby-stat-label">Cuti</span>
-                </div>
-                <span class="standby-stat-num" id="statCuti" style="color:#DC2626;">0</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Focused Status Khusus Hero Header -->
+          <!-- 🌟 PRIMARY ISLAND HEADER: Status Khusus (Cuti • Operasi • Penuh) -->
           <div class="sidebar-status-khusus-header">
-            <div class="sk-header-title">
-              <span class="material-icons-round sk-icon">info</span>
-              <div>
-                <span class="sk-main-title">Status Khusus</span>
-                <span class="sk-sub-title">Cuti • Operasi • Penuh</span>
+            <div class="island-header-left">
+              <div class="island-icon-box island-icon-khusus">
+                <span class="material-icons-round">medical_information</span>
+              </div>
+              <div class="island-title-stack">
+                <span class="sk-main-title">STATUS KHUSUS</span>
+                <span class="sk-sub-title">CUTI • OPERASI • PENUH</span>
               </div>
             </div>
-            <span class="island-badge" id="countSidebar">0</span>
+            <div class="island-live-badge island-badge-khusus">
+              <span class="badge-dot"></span>
+              <span id="countSidebar">0</span>
+              <span class="badge-unit">DOKTER</span>
+            </div>
           </div>
 
           <div class="scroll-mask" id="maskSidebar">
@@ -4811,34 +4672,6 @@
 
         render(data) {
           if (!data) return;
-
-          // 0. Calculate Stats
-          let countBuka = 0,
-            countPenuh = 0,
-            countCuti = 0;
-          data.forEach((d) => {
-            const s = (d.Status || "").toUpperCase();
-            if (["PRAKTEK", "PENDAFTARAN", "TERJADWAL"].includes(s)) countBuka++;
-              else if (s === "PENUH") countPenuh++;
-            else if (s.includes("CUTI")) countCuti++;
-          });
-          // tvOS Motion Flip Counter Updater for StandBy Glance Pane
-          const updateStat = (elId, newVal) => {
-            const el = $(elId);
-            if (!el) return;
-            const oldVal = parseInt(el.textContent) || 0;
-            if (oldVal !== newVal) {
-              el.classList.remove("flip-anim");
-              void el.offsetWidth; // force reflow for restart
-              el.classList.add("flip-anim");
-              el.textContent = newVal;
-              el.addEventListener("animationend", () => el.classList.remove("flip-anim"), { once: true });
-            }
-          };
-
-          updateStat("statBuka",  countBuka);
-          updateStat("statPenuh", countPenuh);
-          updateStat("statCuti",  countCuti);
 
           const group = { Bedah: [], NonBedah: [], Sidebar: [] };
 
