@@ -1599,57 +1599,118 @@
         border-radius: 9999px;
       }
       
-      /* ===== tvOS / visionOS TINTED STATUS CARDS ===== */
-
-      /* CUTI — Red tinted card with left accent bar */
-      .platter.platter-mini.st-cuti {
-        background: rgba(254, 242, 242, 0.92);
-        border-color: rgba(252, 165, 165, 0.6);
-        border-left: 4px solid #DC2626;
-        box-shadow:
-          0 4px 16px rgba(220, 38, 38, 0.08),
-          inset 0 1px 0 rgba(255,255,255,0.9);
+      /* ===== 🗂️ Apple Wallet "Stacked Passes" Style (Sidebar Cards) ===== */
+      .platter-mini {
+        padding: 12px 14px 10px 14px;
+        min-height: 0;
+        border-radius: 20px;
+        margin: 6px 12px;
+        background: #FFFFFF;
+        border: 1px solid rgba(226, 234, 245, 0.95);
+        box-shadow: 0 4px 14px rgba(45, 65, 95, 0.05), inset 0 1px 1px #FFFFFF;
+        position: relative;
+        overflow: hidden;
       }
 
-      .platter.platter-mini.st-cuti .initials {
-        background: rgba(220, 38, 38, 0.12);
-        color: #DC2626;
+      /* Apple Pass Header Strip */
+      .pass-header-strip {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-bottom: 6px;
+        margin-bottom: 6px;
+        border-bottom: 1px dashed rgba(203, 213, 225, 0.7);
       }
 
-      /* PENUH — Amber tinted card */
-      .platter.platter-mini.st-penuh {
-        background: rgba(255, 251, 235, 0.95);
-        border-color: rgba(252, 211, 77, 0.5);
-        border-left: 4px solid #B45309;
-        box-shadow:
-          0 4px 16px rgba(180, 83, 9, 0.08),
-          inset 0 1px 0 rgba(255,255,255,0.9);
+      .pass-category-tag {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 9px;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        display: flex;
+        align-items: center;
+        gap: 4px;
       }
 
-      .platter.platter-mini.st-penuh .initials {
-        background: rgba(180, 83, 9, 0.10);
-        color: #B45309;
+      .pass-meta-hint {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 9px;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        opacity: 0.9;
+        text-transform: uppercase;
       }
 
-      /* OPERASI — Purple tinted card with breathing border glow */
+      /* ===== 🗂️ APPLE WALLET PASS COLORWAYS ===== */
+
+      /* OPERASI — Royal Purple Pass */
       .platter.platter-mini.st-operasi {
-        background: rgba(245, 243, 255, 0.95);
-        border-color: rgba(196, 181, 253, 0.6);
-        border-left: 4px solid #7C3AED;
+        background: linear-gradient(180deg, rgba(245, 243, 255, 0.98) 0%, rgba(237, 233, 254, 0.85) 100%);
+        border-color: rgba(196, 181, 253, 0.8);
+        border-left: 5px solid #7C3AED;
         box-shadow:
-          0 4px 16px rgba(124, 58, 237, 0.08),
-          inset 0 1px 0 rgba(255,255,255,0.9);
+          0 6px 18px rgba(124, 58, 237, 0.10),
+          inset 0 1.5px 1px #FFFFFF;
         animation: operasi-breathing 4s ease-in-out infinite;
       }
 
-      @keyframes operasi-breathing {
-        0%,100% { box-shadow: 0 4px 16px rgba(124,58,237,0.08), inset 0 1px 0 rgba(255,255,255,0.9); }
-        50%      { box-shadow: 0 4px 24px rgba(124,58,237,0.18), 0 0 0 1px rgba(167,139,250,0.35), inset 0 1px 0 rgba(255,255,255,0.9); }
+      .platter.platter-mini.st-operasi .pass-header-strip {
+        border-bottom-color: rgba(196, 181, 253, 0.6);
+      }
+      .platter.platter-mini.st-operasi .pass-category-tag { color: #7C3AED; }
+      .platter.platter-mini.st-operasi .pass-meta-hint { color: #6D28D9; }
+      .platter.platter-mini.st-operasi .initials {
+        background: rgba(124, 58, 237, 0.12);
+        color: #7C3AED;
+        border-color: rgba(167, 139, 250, 0.4);
       }
 
-      .platter.platter-mini.st-operasi .initials {
-        background: rgba(124, 58, 237, 0.10);
-        color: #7C3AED;
+      @keyframes operasi-breathing {
+        0%,100% { box-shadow: 0 6px 18px rgba(124,58,237,0.10), inset 0 1.5px 1px #FFFFFF; }
+        50%      { box-shadow: 0 8px 24px rgba(124,58,237,0.20), 0 0 0 1px rgba(167,139,250,0.4), inset 0 1.5px 1px #FFFFFF; }
+      }
+
+      /* PENUH — Amber Gold Pass */
+      .platter.platter-mini.st-penuh {
+        background: linear-gradient(180deg, rgba(255, 251, 235, 0.98) 0%, rgba(254, 243, 199, 0.85) 100%);
+        border-color: rgba(252, 211, 77, 0.8);
+        border-left: 5px solid #B45309;
+        box-shadow:
+          0 6px 18px rgba(180, 83, 9, 0.10),
+          inset 0 1.5px 1px #FFFFFF;
+      }
+
+      .platter.platter-mini.st-penuh .pass-header-strip {
+        border-bottom-color: rgba(252, 211, 77, 0.6);
+      }
+      .platter.platter-mini.st-penuh .pass-category-tag { color: #B45309; }
+      .platter.platter-mini.st-penuh .pass-meta-hint { color: #92400E; }
+      .platter.platter-mini.st-penuh .initials {
+        background: rgba(180, 83, 9, 0.12);
+        color: #B45309;
+        border-color: rgba(251, 191, 36, 0.4);
+      }
+
+      /* CUTI — Crimson Red Pass */
+      .platter.platter-mini.st-cuti {
+        background: linear-gradient(180deg, rgba(254, 242, 242, 0.98) 0%, rgba(254, 226, 226, 0.85) 100%);
+        border-color: rgba(252, 165, 165, 0.8);
+        border-left: 5px solid #DC2626;
+        box-shadow:
+          0 6px 18px rgba(220, 38, 38, 0.10),
+          inset 0 1.5px 1px #FFFFFF;
+      }
+
+      .platter.platter-mini.st-cuti .pass-header-strip {
+        border-bottom-color: rgba(252, 165, 165, 0.6);
+      }
+      .platter.platter-mini.st-cuti .pass-category-tag { color: #DC2626; }
+      .platter.platter-mini.st-cuti .pass-meta-hint { color: #B91C1C; }
+      .platter.platter-mini.st-cuti .initials {
+        background: rgba(220, 38, 38, 0.12);
+        color: #DC2626;
+        border-color: rgba(248, 113, 113, 0.4);
       }
 
 
@@ -3638,18 +3699,34 @@
         const st = (d.Status || "").toUpperCase();
         let icon = statusIcon;
         let label = statusLabel;
+        let passCategory = "INFORMASI KHUSUS";
+        let passHint = "LIHAT JADWAL";
+        
         if (st.includes("CUTI")) {
           icon = "event_busy";
           label = "CUTI";
+          passCategory = "CUTI PRAKTEK";
+          passHint = d.JamDaftar && d.JamDaftar !== "-" ? `KEMBALI ${esc(d.JamDaftar)}` : "TIDAK MELAYANI";
         } else if (st.includes("OPERASI")) {
           icon = "local_hospital";
           label = "OPERASI";
+          passCategory = "RUANG OPERASI";
+          passHint = "TINDAKAN MEDIS";
         } else if (st.includes("PENUH")) {
           icon = "lock";
           label = "PENUH";
+          passCategory = "KUOTA HABIS";
+          passHint = "DAFTAR BESOK / ONLINE";
         }
 
         return `
+          <div class="pass-header-strip">
+            <div class="pass-category-tag">
+              <span class="material-icons-round" style="font-size:11px">${icon}</span>
+              <span>${passCategory}</span>
+            </div>
+            <span class="pass-meta-hint">${passHint}</span>
+          </div>
           <div class="platter-main" style="display:flex; align-items:center; gap:12px; width:100%; position:relative; z-index:1;">
             <div class="initials">${avatarText}</div>
             <div class="info-col" style="flex:1; min-width:0; display:flex; flex-direction:column; gap:2px;">
