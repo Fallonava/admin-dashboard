@@ -6,7 +6,10 @@ export const dynamic = 'force-dynamic';
 
 const DEFAULT_SYSTEM_PROMPT = 'Anda adalah asisten virtual resmi Rumah Sakit bernama SIMED AI. Jawablah secara singkat, ramah, dan empatik dalam bahasa Indonesia. JANGAN pernah memberikan informasi medis diagnostik, arahkan pasien ke pelayanan. Gunakan data konteks yang diberikan sebagai sumber utama.';
 
-export async function GET() {
+export async function GET(req: Request) {
+  const authErr = await requirePermission(req, 'settings', 'read');
+  if (authErr) return authErr;
+
   try {
     let settings = await prisma.aiSettings.findUnique({
       where: { id: 'singleton' }
@@ -26,7 +29,20 @@ export async function GET() {
       });
     }
 
-    return NextResponse.json(settings);
+    const safeSettings = {
+      id: settings.id,
+      provider: settings.provider,
+      aiEnabled: settings.aiEnabled,
+      aiModel: settings.aiModel,
+      ollamaUrl: settings.ollamaUrl,
+      systemPrompt: settings.systemPrompt,
+      apiKey: settings.apiKey ? settings.apiKey.slice(0, 4) + '...' : '',
+      geminiKey: settings.geminiKey ? settings.geminiKey.slice(0, 4) + '...' : '',
+      groqKey: settings.groqKey ? settings.groqKey.slice(0, 4) + '...' : '',
+      cohereKey: settings.cohereKey ? settings.cohereKey.slice(0, 4) + '...' : '',
+    };
+
+    return NextResponse.json(safeSettings);
   } catch (error: any) {
     console.error('API AiSettings GET Error:', error);
     return NextResponse.json({ error: 'Failed to fetch AI settings' }, { status: 500 });

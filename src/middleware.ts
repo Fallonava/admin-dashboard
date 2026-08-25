@@ -17,7 +17,6 @@ const PUBLIC_PATHS = [
   '/api/stream/live',     // SSE live stream for TV displays
   '/api/automation',      // Broadcast rules for TV display (GET is public)
   '/api/traffic/track',   // Beacon tracker for public schedule visits
-  '/api/settings/ai',     // AI Settings (for public assistant)
   '/mobile',              // Clean professional URL for Mobile display
   '/jadwal',              // Clean alias for Mobile display
   '/jadwal.html',         // Mobile First Apple iOS 2026 Display
