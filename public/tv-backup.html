@@ -4671,38 +4671,73 @@
                 }
               }
 
-              // Find matched active leave for this doctor today
-              const activeLeave = leaves.find(l => l.doctorId === doc.id && l.startDate <= todayStr && l.endDate >= todayStr);
+              // Helper normalisasi tanggal YYYY-MM-DD
+              const toYmd = (dt) => {
+                if (!dt) return "";
+                if (typeof dt === "string") return dt.split("T")[0];
+                return new Date(dt).toISOString().split("T")[0];
+              };
 
-              // Cari jadwal real berikutnya setelah tanggal selesai cuti
+              // Cari data cuti aktif dokter (dari array leaves atau leaveRequests internal dokter)
+              const allDocLeaves = [
+                ...leaves.filter(l => l.doctorId === doc.id),
+                ...(doc.leaveRequests || []).filter(l => l.status === "Approved" || l.status === "Disetujui" || !l.status)
+              ];
+
+              const activeLeave = allDocLeaves.find(l => {
+                const s = toYmd(l.startDate);
+                const e = toYmd(l.endDate);
+                return s && e && s <= todayStr && e >= todayStr;
+              });
+
+              // Cari jadwal shift real berikutnya dokter ini
               let nextBukaText = null;
-              if (activeLeave && activeLeave.endDate) {
+              const endDateStr = activeLeave ? toYmd(activeLeave.endDate) : todayStr;
+              
+              if (endDateStr) {
                 try {
-                  const [y, m, dNum] = activeLeave.endDate.split("-").map(Number);
+                  const [y, m, dNum] = endDateStr.split("-").map(Number);
                   const endObj = new Date(y, m - 1, dNum);
                   
-                  // Scan hingga 14 hari ke depan mencari shift aktif pertama dokter ini
-                  for (let offset = 1; offset <= 14; offset++) {
+                  for (let offset = 1; offset <= 21; offset++) {
                     const checkDate = new Date(endObj);
                     checkDate.setDate(checkDate.getDate() + offset);
                     const checkDayIdx = checkDate.getDay() === 0 ? 6 : checkDate.getDay() - 1;
                     const checkIso = checkDate.toISOString().split("T")[0];
 
-                    // Cek apakah ada cuti lain di tanggal ini
-                    const isStillLeave = leaves.some(l => l.doctorId === doc.id && l.startDate <= checkIso && l.endDate >= checkIso);
+                    // Cek apakah masih cuti di tanggal tersebut
+                    const isStillLeave = allDocLeaves.some(l => {
+                      const s = toYmd(l.startDate);
+                      const e = toYmd(l.endDate);
+                      return s && e && s <= checkIso && e >= checkIso;
+                    });
                     if (isStillLeave) continue;
 
-                    // Cari shift dokter di hari ini
+                    // Cari shift dokter
                     const docShift = shifts.find(s => s.doctorId === doc.id && s.dayIdx === checkDayIdx && isShiftActiveForDate(s.extra, checkDate));
                     if (docShift) {
-                      const dayName = checkDate.toLocaleDateString("id-ID", { weekday: "short", day: "numeric", month: "short" });
+                      const dayName = checkDate.toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "short" });
                       const sTime = docShift.formattedTime || docShift.title || "";
                       const startHour = sTime.split("-")[0].replace(/\./g, ":").trim();
                       nextBukaText = `${dayName} ${startHour ? 'JAM ' + startHour : ''}`.trim().toUpperCase();
                       break;
                     }
                   }
-                } catch (err) {}
+                } catch (err) {
+                  console.error("NextBuka Error:", err);
+                }
+              }
+
+              // Fallback: Jika tidak ada jadwal shift di masa depan, cari shift reguler hari apa saja yang dimiliki dokter
+              if (!nextBukaText) {
+                const anyShift = shifts.find(s => s.doctorId === doc.id);
+                if (anyShift) {
+                  const dayNames = ["SENIN", "SELASA", "RABU", "KAMIS", "JUMAT", "SABTU", "MINGGU"];
+                  const dayStr = dayNames[anyShift.dayIdx] || "HARI KERJA";
+                  const sTime = anyShift.formattedTime || anyShift.title || "";
+                  const startHour = sTime.split("-")[0].replace(/\./g, ":").trim();
+                  nextBukaText = `${dayStr} ${startHour ? 'JAM ' + startHour : ''}`.trim().toUpperCase();
+                }
               }
 
               mappedData.push({
@@ -4716,9 +4751,9 @@
                 Jenis: doc.category,
                 "Code Antrian": doc.queueCode,
                 _shiftId: shift.id || index,
-                CutiSampai: activeLeave ? activeLeave.endDate : null,
+                CutiSampai: activeLeave ? toYmd(activeLeave.endDate) : null,
                 NextBuka: nextBukaText,
-                CutiCatatan: activeLeave ? (activeLeave.notes || activeLeave.reason || null) : null,
+                CutiCatatan: activeLeave ? (activeLeave.reason || activeLeave.notes || null) : null,
                 DocNote: doc.notes || null,
               });
             });
