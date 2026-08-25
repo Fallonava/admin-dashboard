@@ -297,9 +297,9 @@
       }
 
       .logo-box {
-        width: 42px;
-        height: 42px;
-        border-radius: 14px;
+        width: 58px;
+        height: 58px;
+        border-radius: 18px;
         background: #FFFFFF;
         display: flex;
         align-items: center;
@@ -327,8 +327,8 @@
 
       .title-group h1 {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 13.5px;
-        font-weight: 800;
+        font-size: 20px;
+        font-weight: 900;
         letter-spacing: -0.01em;
         line-height: 1.15;
         color: #0F172A;
@@ -336,9 +336,9 @@
 
       .title-group span {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 9.5px;
+        font-size: 13px;
         font-weight: 800;
-        letter-spacing: 0.05em;
+        letter-spacing: 0.06em;
         text-transform: uppercase;
         color: #64748B;
       }
@@ -349,8 +349,8 @@
 
       .clock {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 28px;
-        font-weight: 800;
+        font-size: 46px;
+        font-weight: 900;
         letter-spacing: -0.02em;
         font-variant-numeric: tabular-nums;
         line-height: 1;
@@ -359,12 +359,12 @@
 
       .date {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 10.5px;
-        font-weight: 700;
+        font-size: 14.5px;
+        font-weight: 800;
         letter-spacing: 0.04em;
         text-transform: uppercase;
         color: #64748B;
-        margin-top: 2px;
+        margin-top: 3px;
       }
 
       /* ===== CONTENT GRID ===== */
@@ -388,9 +388,9 @@
       }
 
       .sidebar-panel {
-        flex: 0 0 320px;
-        max-width: 340px;
-        min-width: 300px;
+        flex: 0 0 380px;
+        max-width: 400px;
+        min-width: 360px;
         display: flex;
         flex-direction: column;
         background: var(--clay-bg-surface);
@@ -408,7 +408,7 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 10px 16px;
+        padding: 12px 20px;
         background: rgba(241, 245, 249, 0.7);
         border-top: 1px solid rgba(226, 234, 245, 0.9);
         border-bottom: 1px solid rgba(226, 234, 245, 0.9);
@@ -417,21 +417,21 @@
       .sk-header-title {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 10px;
       }
 
       .sk-icon {
-        font-size: 18px;
+        font-size: 22px;
         color: #D97706;
       }
 
       .sk-main-title {
         display: block;
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 11.5px;
+        font-size: 15px;
         font-weight: 900;
         color: #0F172A;
-        letter-spacing: 0.06em;
+        letter-spacing: 0.04em;
         text-transform: uppercase;
         line-height: 1.15;
       }
@@ -439,7 +439,7 @@
       .sk-sub-title {
         display: block;
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 8px;
+        font-size: 10px;
         font-weight: 800;
         color: #64748B;
         letter-spacing: 0.05em;
@@ -449,85 +449,18 @@
       .sidebar-panel .island-header {
         background: transparent;
         border-bottom: 1px solid var(--border-light);
-        padding: 12px 18px;
-      }
-
-      /* Sidebar Compact Platter */
-      .sidebar-panel .platter {
-        background: var(--clay-bg-surface);
-        border: 1px solid var(--clay-border);
-        box-shadow: var(--clay-shadow-outer), var(--clay-shadow-inner);
-        padding: 12px 14px;
-        border-radius: 18px;
-        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-        color: var(--text-primary);
-        gap: 12px;
-        margin: 6px 14px;
-      }
-
-      .sidebar-panel .platter-main {
-        gap: 10px;
-        align-items: center;
-      }
-      
-      .sidebar-panel .platter::before {
-        width: 4px;
-        top: 10px;
-        bottom: 10px;
-      }
-
-      .sidebar-panel .initials {
-        width: 38px;
-        height: 38px;
-        font-size: 13px;
-        border-radius: 12px;
-        flex-shrink: 0;
-      }
-
-      .sidebar-panel .info-col {
-        flex: 1;
-        min-width: 0;
-      }
-
-      .sidebar-panel .doc-spec {
-        font-size: 14px;
-        line-height: 1.2;
-        margin-bottom: 2px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-
-      .sidebar-panel .doc-name {
-        font-size: 11.5px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-
-      .sidebar-panel .meta-col {
-        flex-shrink: 0;
-        align-items: flex-end;
-      }
-
-      .sidebar-panel .status-pill {
-        padding: 3px 10px;
-        font-size: 9px;
-      }
-
-      .sidebar-panel .jam-val {
-        font-size: 13px;
+        padding: 14px 20px;
       }
 
       /* Stat Panel - Modern Clay Inset */
       .stat-panel {
         display: flex;
         justify-content: space-around;
-        padding: 10px 14px;
+        padding: 12px 16px;
         background: var(--clay-inset);
-        margin: 36px 16px 12px 16px;
-        border-radius: 18px;
-        gap: 8px;
+        margin: 20px 18px 12px 18px;
+        border-radius: 20px;
+        gap: 10px;
       }
 
       .stat-item {
@@ -541,52 +474,52 @@
 
       .stat-count {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 20px;
-        font-weight: 800;
+        font-size: 24px;
+        font-weight: 900;
         line-height: 1.1;
       }
 
       .stat-label {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 9.5px;
+        font-size: 11px;
         font-weight: 800;
         color: var(--text-muted);
         text-transform: uppercase;
         letter-spacing: 0.08em;
-        margin-top: 2px;
+        margin-top: 3px;
       }
 
       /* ===== 🚀 APPLE iOS SOFT CLAY SMART TV QR HERO CARD ===== */
       .sidebar-qr-hotline {
-        padding: 12px 14px;
+        padding: 14px 18px;
         border-top: 1px solid rgba(226, 234, 245, 0.9);
         background: #FFFFFF;
         display: flex;
         flex-direction: column;
         align-items: center;
         text-align: center;
-        gap: 10px;
+        gap: 12px;
         flex-shrink: 0;
       }
 
       .tv-qr-hero-card {
         width: 100%;
         background: #FFFFFF;
-        border-radius: 20px;
-        padding: 10px 12px;
+        border-radius: 22px;
+        padding: 12px 14px;
         border: 1px solid rgba(226, 234, 245, 0.9);
         box-shadow: 0 8px 24px -4px rgba(45, 65, 95, 0.06), inset 0 1.5px 1.5px #FFFFFF;
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 8px;
+        gap: 10px;
       }
 
       .tv-qr-header-badge {
         display: inline-flex;
         align-items: center;
-        gap: 6px;
-        padding: 3px 10px;
+        gap: 8px;
+        padding: 5px 14px;
         border-radius: 9999px;
         background: #EFF6FF;
         color: #0284C7;
@@ -594,12 +527,12 @@
       }
 
       .tv-qr-header-badge .radar-dot {
-        width: 6px;
-        height: 6px;
+        width: 8px;
+        height: 8px;
         border-radius: 50%;
         background: #0284C7;
         animation: radarPulse 1.4s infinite;
-        box-shadow: 0 0 8px rgba(2, 132, 199, 0.6);
+        box-shadow: 0 0 10px rgba(2, 132, 199, 0.6);
       }
 
       @keyframes radarPulse {
@@ -609,18 +542,18 @@
 
       .tv-qr-header-badge span {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 10px;
+        font-size: 13px;
         font-weight: 800;
         text-transform: uppercase;
         letter-spacing: 0.05em;
       }
 
       .dynamic-qr-box {
-        width: 130px;
-        height: 130px;
-        border-radius: 14px;
+        width: 160px;
+        height: 160px;
+        border-radius: 18px;
         background: #FFFFFF;
-        padding: 6px;
+        padding: 8px;
         box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.06), 0 2px 6px rgba(15, 23, 42, 0.04);
         border: 1px solid rgba(226, 232, 240, 0.9);
         display: flex;
@@ -634,19 +567,19 @@
         height: 100% !important;
         display: block;
         shape-rendering: crispEdges !important;
-        border-radius: 6px;
+        border-radius: 8px;
       }
 
       .tv-qr-url-pill {
         display: flex;
         align-items: center;
-        gap: 5px;
-        padding: 4px 10px;
-        border-radius: 10px;
+        gap: 6px;
+        padding: 5px 14px;
+        border-radius: 12px;
         background: #F8FAFC;
         border: 1px solid rgba(226, 232, 240, 0.9);
         font-family: "Plus Jakarta Sans", monospace;
-        font-size: 10px;
+        font-size: 13px;
         font-weight: 800;
         color: #0F172A;
       }
@@ -903,11 +836,11 @@
 
       /* ===== MODERN APPLE iOS FROSTED CERAMIC ISLAND HEADERS ===== */
       .island-header {
-        height: 80px;
+        height: 82px;
         display: flex;
         align-items: flex-end;
         justify-content: space-between;
-        padding: 0 20px 12px 20px;
+        padding: 0 24px 14px 24px;
         flex-shrink: 0;
         background: rgba(248, 250, 252, 0.85);
         border-bottom: 1px solid rgba(226, 234, 245, 0.95);
@@ -917,14 +850,14 @@
       .island-header-left {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 12px;
         min-width: 0;
       }
 
       .island-icon-box {
-        width: 32px;
-        height: 32px;
-        border-radius: 10px;
+        width: 44px;
+        height: 44px;
+        border-radius: 14px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -932,7 +865,7 @@
       }
 
       .island-icon-box .material-icons-round {
-        font-size: 18px;
+        font-size: 24px;
         color: #FFFFFF;
       }
 
@@ -954,30 +887,30 @@
 
       .island-title {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 12.5px;
-        font-weight: 800;
+        font-size: 22px;
+        font-weight: 900;
         color: #0F172A;
         text-transform: uppercase;
-        letter-spacing: 0.04em;
+        letter-spacing: 0.02em;
       }
 
       .island-subtitle {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 8px;
+        font-size: 12px;
         font-weight: 800;
         color: #64748B;
         text-transform: uppercase;
-        letter-spacing: 0.04em;
+        letter-spacing: 0.05em;
       }
 
       .island-live-badge {
         display: inline-flex;
         align-items: center;
-        gap: 6px;
-        padding: 4px 10px;
+        gap: 8px;
+        padding: 6px 14px;
         border-radius: 9999px;
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 10px;
+        font-size: 13px;
         font-weight: 800;
         letter-spacing: 0.04em;
       }
@@ -989,11 +922,11 @@
       }
 
       .island-badge-bedah .badge-dot {
-        width: 6px;
-        height: 6px;
+        width: 8px;
+        height: 8px;
         border-radius: 50%;
         background: #0284C7;
-        box-shadow: 0 0 8px rgba(2, 132, 199, 0.6);
+        box-shadow: 0 0 10px rgba(2, 132, 199, 0.6);
         animation: radarPulse 1.8s infinite;
       }
 
@@ -1004,11 +937,11 @@
       }
 
       .island-badge-nonbedah .badge-dot {
-        width: 6px;
-        height: 6px;
+        width: 8px;
+        height: 8px;
         border-radius: 50%;
         background: #7C3AED;
-        box-shadow: 0 0 8px rgba(124, 58, 237, 0.6);
+        box-shadow: 0 0 10px rgba(124, 58, 237, 0.6);
         animation: radarPulse 1.8s infinite;
       }
 
@@ -1018,11 +951,11 @@
 
       .island-badge {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 11px;
+        font-size: 13px;
         font-weight: 800;
         background: rgba(15, 23, 42, 0.06);
         color: #0F172A;
-        padding: 3px 10px;
+        padding: 4px 12px;
         border-radius: 9999px;
       }
 
@@ -1049,10 +982,10 @@
       }
 
       .scroller {
-        padding: 16px 16px 24px 16px;
+        padding: 16px 20px 24px 20px;
         display: flex;
         flex-direction: column;
-        gap: 6px;
+        gap: 10px;
         will-change: transform;
         /* Hint to browser compositor */
       }
@@ -1063,9 +996,9 @@
         flex-direction: column;
         align-items: stretch;
         gap: 12px;
-        padding: 16px 20px; 
+        padding: 18px 22px; 
         background: #FFFFFF;
-        border-radius: 24px;
+        border-radius: 26px;
         border: 1px solid rgba(226, 234, 245, 0.85);
         box-shadow: 0 10px 28px -4px rgba(45, 65, 95, 0.05), inset 0 1.5px 1.5px #FFFFFF;
         position: relative;
@@ -1090,20 +1023,20 @@
         content: "";
         position: absolute;
         left: 0;
-        top: 14px;
-        bottom: 14px;
-        width: 4.5px;
+        top: 16px;
+        bottom: 16px;
+        width: 6px;
         background: var(--status-color);
         border-radius: 0 6px 6px 0;
-        box-shadow: 0 0 12px var(--status-color);
+        box-shadow: 0 0 14px var(--status-color);
         opacity: 0.95;
       }
 
       /* 3D Clay Ceramic Avatar */
       .initials {
-        width: 44px;
-        height: 44px;
-        border-radius: 14px;
+        width: 56px;
+        height: 56px;
+        border-radius: 16px;
         background: #F8FAFC;
         box-shadow: inset 0 1.5px 2px #FFFFFF, 0 3px 8px rgba(45, 65, 95, 0.04);
         border: 1px solid rgba(226, 232, 240, 0.9);
@@ -1111,7 +1044,7 @@
         align-items: center;
         justify-content: center;
         font-family: "Plus Jakarta Sans", "Inter", sans-serif;
-        font-size: 15px;
+        font-size: 20px;
         font-weight: 800;
         letter-spacing: -0.02em;
         color: #0F172A;
@@ -1131,14 +1064,14 @@
         min-width: 0;
         display: flex;
         flex-direction: column;
-        gap: 3px;
+        gap: 4px;
       }
 
       .doc-name {
         font-family: "Inter", -apple-system, sans-serif;
-        font-size: 13.5px;
+        font-size: 18px;
         font-weight: 700;
-        color: #64748B;
+        color: #334155;
         white-space: normal;
         display: -webkit-box;
         -webkit-line-clamp: 2;
@@ -1151,8 +1084,8 @@
 
       .doc-spec {
         font-family: "Plus Jakarta Sans", "Inter", sans-serif;
-        font-size: 17px;
-        font-weight: 800;
+        font-size: 23px;
+        font-weight: 900;
         color: #0F172A;
         text-transform: uppercase;
         letter-spacing: -0.01em;
@@ -1165,24 +1098,24 @@
         display: flex;
         flex-direction: column;
         align-items: flex-end;
-        gap: 6px;
+        gap: 8px;
         flex-shrink: 0;
       }
 
       /* ═══ 3D CLAY STATUS PILLS ═══ */
       .status-pill {
-        padding: 5px 14px;
+        padding: 7px 18px;
         border-radius: 9999px;
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 10.5px;
+        font-size: 14px;
         font-weight: 800;
         text-transform: uppercase;
-        letter-spacing: 0.08em;
+        letter-spacing: 0.06em;
         background: var(--status-color);
         color: #ffffff;
         display: flex;
         align-items: center;
-        gap: 6px;
+        gap: 7px;
         position: relative; 
         box-shadow: 0 4px 14px var(--status-bg), inset 0 1px 1px rgba(255, 255, 255, 0.45);
         border: 1px solid rgba(255, 255, 255, 0.2);
@@ -1192,8 +1125,8 @@
       .platter.active .status-pill::after, .platter.st-penuh .status-pill::after, .platter.st-praktek .status-pill::after {
         content: '';
         display: block;
-        width: 6px;
-        height: 6px;
+        width: 8px;
+        height: 8px;
         border-radius: 50%;
         background-color: #ffffff;
         animation: ecg-pulse 2s infinite;
@@ -1208,14 +1141,14 @@
         justify-content: flex-end;
         background: rgba(241, 245, 249, 0.9);
         border: 1px solid rgba(226, 232, 240, 0.8);
-        padding: 4px 10px;
-        border-radius: 12px;
+        padding: 6px 14px;
+        border-radius: 14px;
       }
 
       .jam-val {
         font-family: "Plus Jakarta Sans", "Inter", sans-serif;
-        font-size: 14px;
-        font-weight: 800;
+        font-size: 20px;
+        font-weight: 900;
         color: #0F172A;
         font-variant-numeric: tabular-nums;
         letter-spacing: 0.02em;
@@ -1331,26 +1264,32 @@
 
       /* ===== SIDEBAR COMPACT PLATTER (NEW) ===== */
       .platter-mini {
-        padding: 10px 12px;
+        padding: 12px 16px;
         min-height: 0;
+        border-radius: 20px;
+        margin: 6px 16px;
+        background: #FFFFFF;
+        border: 1px solid rgba(226, 234, 245, 0.9);
       }
       .platter-mini .platter-main {
-        gap: 10px;
+        gap: 12px;
       }
       .platter-mini .initials {
-        width: 32px;
-        height: 32px;
-        border-radius: 8px;
-        font-size: 14px;
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: 800;
       }
       .platter-mini .initials .material-icons-round,
       .platter-mini .initials svg {
-        font-size: 18px !important;
-        width: 18px !important;
-        height: 18px !important;
+        font-size: 22px !important;
+        width: 22px !important;
+        height: 22px !important;
       }
       .platter-mini .doc-name {
-        font-size: 11px;
+        font-size: 14.5px;
+        font-weight: 700;
         line-height: 1.25;
         white-space: normal;
         display: -webkit-box;
@@ -1358,16 +1297,19 @@
         -webkit-box-orient: vertical;
       }
       .platter-mini .doc-spec {
-        font-size: 9px;
+        font-size: 13px;
+        font-weight: 800;
         margin-bottom: 2px;
+        text-transform: uppercase;
       }
       .platter-mini .meta-col {
-        gap: 0;
-        align-self: flex-start;
+        gap: 4px;
+        align-self: center;
       }
       .platter-mini .status-pill {
-        padding: 4px 6px;
-        font-size: 8px;
+        padding: 5px 12px;
+        font-size: 12px;
+        font-weight: 800;
         letter-spacing: 0.05em;
       }
       
