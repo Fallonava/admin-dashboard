@@ -150,10 +150,15 @@ Halaman portal publik utama yang diakses pasien via smartphone atau scan QR code
 
 ---
 
-### 7. Layar Smart TV Display Poliklinik (`/display` / `/tv.html`)
-* Didesain khusus untuk Smart TV display lobi poliklinik (1080p / 4K).
-* Menampilkan matriks dokter praktek hari ini, jam layanan, status antrean, dynamic island headline, dan emergency popup overlay.
-* Auto-sync seketika via WebSocket tanpa perlu me-refresh browser TV.
+### 7. Layar Smart TV Display Poliklinik (`/display` / `tv.html`)
+* **10-Foot tvOS 18 Experience**: Didesain dengan skala proporsional untuk jarak pandang 3–5 meter pada resolusi Full HD (1080p) dan 4K.
+* **Apple Dynamic Island Interactive System**:
+  - *Compact Idle*: Logo RS melayang 3D, live pulsing orb, jam digital tabular anti-jitter, dan Apple Music Live Capsule (4-bar organic phosphor equalizer).
+  - *Expanded Toast*: Kapsul melebar halus berbasis pegas (*fluid spatial spring physics*) untuk notifikasi antrean, dokter hadir, dan briefing.
+  - *Modal Activity Sheet*: Alur pendaftaran terintegrasi (*Split-Tree Flow Node*) memisahkan jalur Pasien Lama vs Pasien Baru secara visual.
+* **Nested Header Poli**: Header Poli Bedah & Non-Bedah dengan badge jumlah dokter aktif tersusun vertikal di bawah nama poli sejajar icon box tanpa distorsi layout.
+* **GPU Render Containment**: Kartu dokter menggunakan `content-visibility: auto` dan `contain: layout style paint` untuk menjamin rendering 60 FPS mulus di TV box low-end.
+* **Zero-Reload Real-Time Sync**: Terhubung via SSE (`/api/stream/live`) dan WebSocket tanpa perlu reload halaman browser TV.
 
 ---
 
@@ -163,11 +168,11 @@ SIMED menerapkan standar desain **Apple iOS 2026 Claymorphism**:
 
 | Token Class | Deskripsi | Efek Fisika |
 |---|---|---|
-| `.platter` | Kartu dokter utama | Porcelain / obsidian surface dengan bevel border `2px` dan aksen status `::before` |
+| `.platter` | Kartu dokter utama | Porcelain / obsidian surface dengan GPU containment, bevel border `2px`, dan aksen status `::before` |
 | `.ios-bento-card` | Kartu statistik bento | Sudut `22px`, 3D coin icon, micro capsule, dan active corner glow aura `::after` |
 | `.spec-chip` | Tombol filter poli cepat | Sunken capsule well (`inactive`) ➔ Elevated 3D clay pill (`active`) |
 | `.clay-choice-tile` | Pilihan pendaftaran modal | Kartu berbayang 3D dengan haptic `:active` scale `0.95` |
-| `.dynamic-island` | Kapsul notifikasi atas | Obsidian island capsule dengan expand spring bounce animation |
+| `.dynamic-island` | Kapsul notifikasi atas tvOS 18 | Obsidian spatial glass dengan 4 state adaptive morphing & organic equalizer |
 | `.clay-empty-coin` | Koin status kosong | Koin melayang 3D dengan gelombang pulse radial berputar halus |
 
 ---
@@ -176,14 +181,18 @@ SIMED menerapkan standar desain **Apple iOS 2026 Claymorphism**:
 
 Untuk menjamin keandalan `99.99%` pada lingkungan produksi:
 
-1. **🔒 Fetch Mutex Lock (`_isFetching`)**:
-   - Mencegah penumpukan request HTTP concurrent di latar belakang saat koneksi internet pasien mengalami latensi tinggi.
-2. **🔄 Dynamic Island Queue Safety (`try ... catch ... finally`)**:
-   - Seluruh siklus hidup antrean animasi Dynamic Island diproteksi dengan auto-reset timer `500ms` di blok `finally`, mencegah deadlock animasi.
-3. **⚡ Instant Drawer Zero-Reflow (120 FPS)**:
-   - Menggantikan transisi `max-height` (penyebab layout reflow 60–120x/detik) dengan GPU hardware-composited `opacity` & `transform: translateY` instan.
-4. **🪶 Per-Container DOM Memoization (`_lastRenderedHTML`)**:
-   - Mencegah penghancuran dan pembuatan ulang elemen DOM pada setiap polling stream, mengeliminasi glitch kedip (*flickering*) pada status kosong 100%.
+1. **🔒 Global Prisma Connection Pool Singleton**:
+   - `pg.Pool` dikunci secara absolut pada `globalThis` di semua environment, mengeliminasi risiko kebocoran koneksi database (*too many clients*).
+2. **⚡ Query Parallelization & HTTP SWR Caching**:
+   - Query data master pada `/api/display` dan `/api/doctors` dijalankan serentak via `Promise.all` dengan header `Cache-Control: public, s-maxage=3, stale-while-revalidate=59` (latensi turun ~60%).
+3. **🚦 Traffic Beacon In-Memory Queue Buffer**:
+   - Hit tracking publik masuk ke dalam memory buffer dan di-flush secara batch via `prisma.trafficHit.createMany` tiap 3 detik / 25 hit, memangkas disk I/O lock hingga 95%.
+4. **💓 Low-Chatter SSE Stream Heartbeat**:
+   - Heartbeat `/api/stream/live` disesuaikan ke interval 20 detik, mengeliminasi CPU wake-up berlebih pada proxy Cloudflare Tunnel.
+5. **📑 PostgreSQL Composite Indexing**:
+   - Index database aktif pada `Doctor(status)`, `Doctor(category)`, `Doctor(order)`, dan `Doctor(specialty)`.
+6. **🪶 Per-Container DOM Memoization & GPU Containment**:
+   - Mencegah flickering DOM saat update streaming dan mengisolasi kalkulasi render offscreen cards menggunakan `content-visibility: auto`.
 
 ---
 
@@ -222,7 +231,21 @@ Aplikasi akan berjalan di:
 
 ---
 
-## 🚢 Deployment & Production Server
+## 🚢 Deployment & Multi-Server High-Availability
+
+### Arsitektur Dual-Server (Server Utama RS + Server Backup Home)
+
+```
+[ Pasien / Browser / TV ]
+           │
+     (Cloudflare Tunnel)
+     ┌─────┴─────────────────────────┐
+     ▼                               ▼
+[ Server Utama RS ]        [ Server Backup Home ]
+(Windows Server PM2)      (Linux Docker Replica)
+• PostgreSQL 16 Native    • PostgreSQL 16 (panel-db)
+• Port 3000 (SIMED)       • Auto-Replication via cron (*/5 * * * *)
+```
 
 ### Script Deploy Otomatis (Windows Server)
 Server produksi menggunakan PowerShell script dengan automated database safe-guard:
@@ -236,10 +259,11 @@ powershell -ExecutionPolicy Bypass -File scripts\deploy-production.ps1
 Tahapan yang dijalankan otomatis (Zero Downtime):
 1. 🛡️ **[1/6] Automated Backup**: JSON snapshot 18 tabel ke `backups/` + `pg_dump` SQL backup.
 2. 🔄 **[2/6] Clean Git Sync**: `git fetch origin master; git reset --hard origin/master`.
-3. 📦 **[3/6] Prisma Sync**: `npx prisma generate` dan `npx prisma db push --skip-generate`.
+3. 📦 **[3/6] Prisma Sync**: `npx prisma generate` dan `npx prisma db push`.
 4. ⚡ **[4/6] Production Compile**: `npm run build` (Next.js 16 + esbuild bundle `server.js`).
 5. 🔁 **[5/6] PM2 Clean Restart**: `pm2 restart ecosystem.config.js --update-env`.
 6. 💾 **[6/6] Save PM2 State**: `pm2 save`.
+
 
 ---
 

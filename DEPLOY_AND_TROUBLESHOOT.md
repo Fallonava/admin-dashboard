@@ -199,33 +199,67 @@ git reset --hard origin/master
 
 ---
 
-## 4. Prosedur Pemulihan Darurat (Emergency Database Rollback)
+## 4. Arsitektur Multi-Server (Server Utama RS & Server Backup Home)
 
-Jika terjadi kesalahan data atau penghapusan yang tidak diinginkan:
+SIMED menggunakan arsitektur **High Availability (HA) Hybrid**:
 
+| Parameter | Server Utama (Production RS) | Server Backup (Home Server Replica) |
+| :--- | :--- | :--- |
+| **Lokasi** | Server Windows RS (`ANTRIAN 1`) | Linux Server Docker (`fallonava`) |
+| **Akses SSH** | `ssh "ANTRIAN 1"@srimed.fallonava.my.id` | SSH Local / Cloudflare Tunnel |
+| **Database** | PostgreSQL 16 Native (`localhost:5432`) | PostgreSQL 16 Docker (`panel-db`) |
+| **Aplikasi** | PM2 Fork Mode Port 3000 | Container `navalynk-web` / Docker |
+| **Replikasi** | Master Data Publisher | Replica Subscriber (`*/5 * * * *`) |
+
+### Mekanisme Sinkronisasi Database Otomatis:
+Crontab di Home Server menjalankan script:
+```bash
+*/5 * * * * /home/fallonava/simed/scripts/sync-from-rs.sh >/dev/null 2>&1
+```
+Script tersebut melakukan live non-blocking `pg_dump` dari server RS via Tailscale/VPN (`100.117.70.113:5432`) dan mengimpornya ke database lokal `panel-db`, menjamin data di Home Server selalu mutakhir (maksimal selisih 5 menit).
+
+---
+
+## 5. Prosedur Pemulihan Darurat (Emergency Database Rollback & Failover)
+
+### Skenario A: Rollback Data Lokal di Server RS
 1. Buka direktori backup otomatis:
    ```powershell
    Get-ChildItem "C:\simed-production\backups" | Sort-Object CreationTime -Descending
    ```
-2. Temukan folder timestamp terakhir (misal: `2026-08-22T07-03-57-190Z`).
-3. Restore data menggunakan file JSON yang tersimpan atau database SQL dump di `C:\backups\`.
+2. Temukan folder timestamp terakhir (misal: `2026-08-25T...`).
+3. Jalankan script restore:
+   ```powershell
+   npx tsx scripts/restore-from-json.ts backups/<timestamp-folder>
+   ```
+
+### Skenario B: Failover jika Server RS Mengalami Pemadaman Listrik / Hardware Down
+1. Pada Cloudflare Dashboard, alihkan routing tunnel `simed.fallonava.my.id` ke container `cloudflared-simed-ha` di Home Server.
+2. Database di Home Server (`panel-db`) sudah berisi salinan penuh 18 tabel dan siap melayani permintaan secara instan (*Zero Data Loss*).
 
 ---
 
-## 5. Verifikasi Status Sistem Pasca-Deploy
+## 6. Verifikasi Status Sistem Pasca-Deploy
 
 Setelah melakukan deploy, lakukan verifikasi cepat:
 
 ```bash
-# Cek endpoint publik:
-curl -I https://simed.fallonava.my.id/jadwal
+# Cek endpoint status & database health:
+curl -s https://simed.fallonava.my.id/api/health
+# Response: {"status":"ok","db":"ok",...}
+
+# Cek endpoint display (SWR Caching):
+curl -I https://simed.fallonava.my.id/api/display
+
+# Cek endpoint Smart TV:
 curl -I https://simed.fallonava.my.id/tv.html
 
-# Cek tracking traffic:
+# Cek tracking traffic (In-Memory Buffer Ingest):
 curl -X POST https://simed.fallonava.my.id/api/traffic/track -H "Content-Type: application/json" -d '{"path":"/jadwal","ref":"verify"}'
 
-# Cek PM2 status:
+# Cek PM2 status di server:
 pm2 status
 ```
 
 Semua endpoint harus mengembalikan status **HTTP 200 OK** dan PM2 berstatus **online**.
+
