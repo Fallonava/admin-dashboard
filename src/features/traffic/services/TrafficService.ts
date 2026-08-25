@@ -90,8 +90,45 @@ export class TrafficService {
     }
   }
 
+  private static buffer: any[] = [];
+  private static flushTimer: NodeJS.Timeout | null = null;
+  private static isFlushing = false;
+
+  private static ensureFlushTimer() {
+    if (!this.flushTimer) {
+      this.flushTimer = setInterval(() => {
+        this.flushBuffer().catch((err) => console.error("[TrafficService] Auto-flush error:", err));
+      }, 3000);
+      if (this.flushTimer.unref) {
+        this.flushTimer.unref(); // Allow Node process to exit gracefully
+      }
+    }
+  }
+
+  static async flushBuffer() {
+    if (this.isFlushing || this.buffer.length === 0) return;
+    this.isFlushing = true;
+    const toFlush = [...this.buffer];
+    this.buffer = [];
+
+    try {
+      await (prisma as any).trafficHit.createMany({
+        data: toFlush,
+        skipDuplicates: false,
+      });
+    } catch (error) {
+      console.error("[TrafficService] Batch flush error:", error);
+      // Re-insert failed items back into buffer if not overflowing
+      if (this.buffer.length < 500) {
+        this.buffer.unshift(...toFlush);
+      }
+    } finally {
+      this.isFlushing = false;
+    }
+  }
+
   /**
-   * Record a single hit asynchronously (non-blocking)
+   * Record a single hit asynchronously (buffered non-blocking)
    */
   static async recordHit(input: TrafficHitInput) {
     try {
@@ -105,17 +142,23 @@ export class TrafficService {
         cleanPath = cleanPath.slice(0, -1);
       }
 
-      await (prisma as any).trafficHit.create({
-        data: {
-          path: cleanPath,
-          ipHash,
-          userAgent: input.userAgent ? input.userAgent.slice(0, 500) : null,
-          device,
-          os,
-          browser,
-          referrer,
-        },
+      this.buffer.push({
+        path: cleanPath,
+        ipHash,
+        userAgent: input.userAgent ? input.userAgent.slice(0, 500) : null,
+        device,
+        os,
+        browser,
+        referrer,
       });
+
+      this.ensureFlushTimer();
+
+      // If buffer threshold reached, trigger immediate flush
+      if (this.buffer.length >= 25) {
+        this.flushBuffer().catch(() => {});
+      }
+
       return { success: true };
     } catch (error) {
       console.error("[TrafficService] Failed to record hit:", error);

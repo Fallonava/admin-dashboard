@@ -35,9 +35,6 @@ const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClientSingleton | undefined;
 };
 
-// Memaksa reload Prisma Client (menghapus cache dari memori dev server)
-delete (globalForPrisma as any).prisma;
-
 export const prisma = globalForPrisma.prisma ?? prismaClientSingleton();
 
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
+globalForPrisma.prisma = prisma;

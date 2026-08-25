@@ -9,7 +9,7 @@ export class DoctorService {
   static async getDoctors(page: number = 1, limit: number = 100) {
     const skip = (page - 1) * limit;
 
-    const [doctors, total] = await Promise.all([
+    const [doctors, total, shifts] = await Promise.all([
       prisma.doctor.findMany({
         skip,
         take: limit,
@@ -19,10 +19,9 @@ export class DoctorService {
           { name: 'asc' }
         ]
       }),
-      prisma.doctor.count()
+      prisma.doctor.count(),
+      prisma.shift.findMany()
     ]);
-
-    const shifts = await prisma.shift.findMany();
 
     // Calculate Today's Index using WIB timezone
     const now = new Date();

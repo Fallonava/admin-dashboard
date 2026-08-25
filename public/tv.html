@@ -1230,6 +1230,10 @@
         position: relative;
         overflow: hidden;
         transform: translateZ(0) translateY(0);
+        will-change: transform;
+        content-visibility: auto;
+        contain-intrinsic-size: 0 110px;
+        contain: layout style paint;
         opacity: 1; 
         transition:
           opacity 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),

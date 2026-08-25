@@ -22,6 +22,11 @@ model Doctor {
   lastManualOverride BigInt?
   leaveRequests      LeaveRequest[]
   shifts             Shift[]
+
+  @@index([status])
+  @@index([category])
+  @@index([order])
+  @@index([specialty])
 }
 
 model Shift {

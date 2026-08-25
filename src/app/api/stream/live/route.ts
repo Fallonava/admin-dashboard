@@ -100,10 +100,10 @@ export async function GET(req: Request) {
             automationBroadcaster.on('settings', onSettingsUpdate);
             automationBroadcaster.on('shifts', onShiftUpdate);
 
-            // ── 5. Heartbeat every 25s (keeps connection through proxies) ──
+            // ── 5. Heartbeat every 20s (keeps connection alive through proxies without CPU chatter) ──
             const hb = setInterval(() => {
                 send(': heartbeat\n\n');
-            }, 2_000);
+            }, 20_000);
 
             // ── 6. Cleanup on client disconnect ──
             req.signal.addEventListener('abort', () => {

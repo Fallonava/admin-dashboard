@@ -6,18 +6,21 @@ import { isShiftActiveForDate } from '@/lib/schedule-utils';
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
-    const allDoctors = await prisma.doctor.findMany({
-        orderBy: [
-            { specialty: 'asc' },
-            { name: 'asc' }
-        ]
-    });
-    const shifts = await prisma.shift.findMany();
-    const leaves = await (prisma.leaveRequest as any).findMany({
-        where: { doctorId: { not: "" } },
-        include: { doctor: true },
-        orderBy: { startDate: 'desc' }
-    });
+    const [allDoctors, shifts, leaves, allSettings] = await Promise.all([
+        prisma.doctor.findMany({
+            orderBy: [
+                { specialty: 'asc' },
+                { name: 'asc' }
+            ]
+        }),
+        prisma.shift.findMany(),
+        (prisma.leaveRequest as any).findMany({
+            where: { doctorId: { not: "" } },
+            include: { doctor: true },
+            orderBy: { startDate: 'desc' }
+        }),
+        prisma.settings.findMany({ take: 1 })
+    ]);
 
     const now = new Date();
     const wibNow = new Date(now.getTime() + (7 * 60 * 60 * 1000));
@@ -46,7 +49,6 @@ export async function GET() {
         };
     });
 
-    const allSettings = await prisma.settings.findMany();
     let settings = allSettings.length > 0 ? allSettings[0] : {
         id: "1",
         automationEnabled: false,
@@ -97,6 +99,7 @@ export async function GET() {
         settings: { ...settings, id: String(settings.id) }
     }, {
         headers: {
+            'Cache-Control': 'public, s-maxage=3, stale-while-revalidate=59',
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
             'Access-Control-Allow-Headers': 'Content-Type',
