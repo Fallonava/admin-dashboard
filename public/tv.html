@@ -1455,145 +1455,70 @@
         100% { transform: scale(0.9); box-shadow: 0 0 0 0 transparent; }
       }
 
-      /* ===== SIDEBAR COMPACT PLATTER (NEW) ===== */
+      /* ===== SIDEBAR COMPACT PLATTER (Apple tvOS 18 Scale) ===== */
       .platter-mini {
-        padding: 12px 16px;
+        padding: 12px 14px;
         min-height: 0;
         border-radius: 20px;
-        margin: 6px 16px;
+        margin: 6px 12px;
         background: #FFFFFF;
-        border: 1px solid rgba(226, 234, 245, 0.9);
+        border: 1px solid rgba(226, 234, 245, 0.95);
+        box-shadow: 0 4px 14px rgba(45, 65, 95, 0.05), inset 0 1px 1px #FFFFFF;
+        position: relative;
+        overflow: hidden;
       }
       .platter-mini .platter-main {
+        display: flex;
+        align-items: center;
         gap: 12px;
+        width: 100%;
       }
       .platter-mini .initials {
-        width: 44px;
-        height: 44px;
-        border-radius: 12px;
-        font-size: 16px;
+        width: 46px;
+        height: 46px;
+        border-radius: 14px;
+        font-size: 18px;
         font-weight: 800;
+        flex-shrink: 0;
       }
       .platter-mini .initials .material-icons-round,
       .platter-mini .initials svg {
-        font-size: 22px !important;
-        width: 22px !important;
-        height: 22px !important;
+        font-size: 24px !important;
+        width: 24px !important;
+        height: 24px !important;
+      }
+      .platter-mini .doc-spec {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 12.5px;
+        font-weight: 800;
+        color: #64748B;
+        margin-bottom: 2px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
       }
       .platter-mini .doc-name {
-        font-size: 14.5px;
+        font-family: "Inter", -apple-system, sans-serif;
+        font-size: 16px;
         font-weight: 700;
+        color: #0F172A;
         line-height: 1.25;
         white-space: normal;
         display: -webkit-box;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
-      }
-      .platter-mini .doc-spec {
-        font-size: 13px;
-        font-weight: 800;
-        margin-bottom: 2px;
-        text-transform: uppercase;
+        overflow: hidden;
       }
       .platter-mini .meta-col {
-        gap: 4px;
-        align-self: center;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
       }
       .platter-mini .status-pill {
         padding: 5px 12px;
         font-size: 12px;
         font-weight: 800;
-        letter-spacing: 0.05em;
-      }
-      
-      /* Danger Striping for CUTI */
-      .platter.platter-mini.st-cuti::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: repeating-linear-gradient(
-          -45deg,
-          transparent,
-          transparent 8px,
-          var(--status-bg) 8px,
-          var(--status-bg) 16px
-        );
-        opacity: 0.25;
-        pointer-events: none;
-        z-index: 0;
-        border-radius: 16px;
-      }
-
-      /* Inset Neomorphism for PENUH (Lock-down) */
-      .platter.platter-mini.st-penuh {
-        box-shadow: inset 5px 5px 12px var(--neo-shadow-dark), inset -5px -5px 12px var(--neo-shadow-light);
-        background: var(--bg-body) !important;
-        border: 1px solid rgba(245, 158, 11, 0.1);
-      }
-      
-      /* Modern Compact Status Line for PENUH */
-      .platter.platter-mini.st-penuh::before {
-        top: 10px !important;
-        bottom: 10px !important;
-        height: auto !important;
-        width: 3px !important;
-        left: 0;
-        border-radius: 0 4px 4px 0;
-        box-shadow: 0 0 6px var(--status-color);
-        opacity: 1 !important;
-      }
-
-      .platter.platter-mini.st-penuh .meta-col {
-        display: flex !important;
-      }
-      
-      .platter.platter-mini.st-penuh .status-pill {
-        display: none !important;
-      }
-      
-      .platter.platter-mini.st-penuh .jam-sidebar {
-        display: flex !important;
-      }
-      
-      .platter.platter-mini.st-penuh .doc-name {
-        color: var(--text-primary) !important;
-        text-shadow: -1px -1px 1px var(--neo-shadow-dark), 1px 1px 1px var(--neo-shadow-light);
-        opacity: 0.9;
-        display: flex;
-        align-items: center;
-      }
-      
-      .platter.platter-mini.st-penuh .doc-name::after {
-        content: "lock";
-        font-family: "Material Icons Round";
-        font-size: 13px;
-        color: var(--status-color);
-        margin-left: 6px;
-        text-shadow: 0 0 8px var(--status-color);
-        animation: breath-lock 2.5s infinite;
-      }
-      
-      @keyframes breath-lock {
-        0%, 100% { opacity: 0.6; text-shadow: 0 0 4px var(--status-color); }
-        50% { opacity: 1; text-shadow: 0 0 12px var(--status-color); }
-      }
-
-      .platter.platter-mini.st-penuh::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: repeating-linear-gradient(
-          -45deg,
-          transparent,
-          transparent 6px,
-          rgba(0,0,0,0.03) 6px,
-          rgba(0,0,0,0.03) 12px
-        );
-        box-shadow: inset 2px 2px 6px rgba(0,0,0,0.2);
-        opacity: 1;
-        pointer-events: none;
-        z-index: 0;
-        border-radius: 12px;
+        letter-spacing: 0.04em;
+        border-radius: 9999px;
       }
       
       [data-theme="dark"] .platter.platter-mini.st-penuh::after {
@@ -3598,27 +3523,32 @@
       };
 
       const buildSidebarCardHTML = (d, avatarText, statusIcon, statusLabel) => {
-        const jamTampil = d.JamDaftar !== "-"
-          ? esc(d.JamDaftar)
-          : formatJam((d.JamPraktek || "").split("-")[0]);
-          
+        const st = (d.Status || "").toUpperCase();
+        let icon = statusIcon;
+        let label = statusLabel;
+        if (st.includes("CUTI")) {
+          icon = "event_busy";
+          label = "CUTI";
+        } else if (st.includes("OPERASI")) {
+          icon = "local_hospital";
+          label = "OPERASI";
+        } else if (st.includes("PENUH")) {
+          icon = "lock";
+          label = "PENUH";
+        }
+
         return `
-          <div class="platter-mini-grid" style="position:relative; z-index:1; display:flex; flex-direction:column; gap:8px; width:100%;">
-            <div class="mini-top-row" style="display:flex; justify-content:space-between; align-items:flex-start; width:100%;">
-              <div class="initials">${avatarText}</div>
-              <div class="meta-col" style="flex-shrink:0;">
-                <div class="status-pill" style="background:var(--status-bg);color:var(--status-color)">
-                  <span class="material-icons-round" style="font-size:10px; margin-right:2px;">${statusIcon}</span>${statusLabel}
-                </div>
-                <div class="jam-sidebar" style="display:none; align-items:center; gap:4px; background:rgba(125,125,125,0.08); padding:3px 8px; border-radius:6px; box-shadow:var(--neo-inset-dark), var(--neo-inset-light);">
-                  <span class="material-icons-round" style="font-size:12px; color:var(--text-secondary);">schedule</span>
-                  <span class="jam-val-daftar" style="font-size:12px; font-weight:800; color:var(--text-primary); font-variant-numeric: tabular-nums;">${jamTampil}</span>
-                </div>
-              </div>
+          <div class="platter-main" style="display:flex; align-items:center; gap:12px; width:100%; position:relative; z-index:1;">
+            <div class="initials">${avatarText}</div>
+            <div class="info-col" style="flex:1; min-width:0; display:flex; flex-direction:column; gap:2px;">
+              <div class="doc-spec" style="font-size:12.5px; font-weight:800; color:#64748B; text-transform:uppercase; letter-spacing:0.04em;">${esc(d.Spesialis)}</div>
+              <div class="doc-name" style="font-size:16px; font-weight:700; color:#0F172A; line-height:1.25; white-space:normal; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${esc(d.Dokter)}</div>
             </div>
-            <div class="info-col" style="display:flex; flex-direction:column; gap:4px; margin-top:2px;">
-              <div class="doc-name" style="font-size:11.5px; font-weight:700;">${esc(d.Dokter)}</div>
-              <div class="doc-spec" style="font-size:9.5px; opacity:0.75;">${esc(d.Spesialis)}</div>
+            <div class="meta-col" style="flex-shrink:0; display:flex; align-items:center;">
+              <div class="status-pill" style="background:var(--status-bg); color:var(--status-color); padding:5px 12px; font-size:12px; font-weight:800; border-radius:9999px; display:inline-flex; align-items:center; gap:4px; letter-spacing:0.04em;">
+                <span class="material-icons-round" style="font-size:13px">${icon}</span>
+                <span>${label}</span>
+              </div>
             </div>
           </div>`;
       };
@@ -5090,7 +5020,7 @@
                 if (stPill) {
                   stPill.style.background = `var(--status-bg)`;
                   stPill.style.color = `var(--status-color)`;
-                  stPill.innerHTML = `<span class="material-icons-round" style="font-size:12px">${i}</span>${l}`;
+                  stPill.innerHTML = `<span class="material-icons-round" style="font-size:13px">${i}</span><span>${l}</span>`;
                 }
 
                 const jValDaftar = el.querySelector(".jam-val-daftar");
