@@ -146,7 +146,7 @@
           "Inter",
           -apple-system,
           sans-serif;
-        background: #0B1120;
+        background: var(--bg-body);
         color: var(--text-primary);
         user-select: none;
         cursor: none;
@@ -158,13 +158,10 @@
 
       /* ===== 1080P PROPORTIONAL GOLDEN STAGE CANVAS ===== */
       .tv-stage {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 1920px;
-        height: 1080px;
-        transform: translate(-50%, -50%) scale(1);
-        transform-origin: center center;
+        position: fixed;
+        inset: 0;
+        width: 100vw;
+        height: 100vh;
         overflow: hidden;
         display: flex;
         flex-direction: column;
@@ -1138,21 +1135,6 @@
         min-height: 0;
         overflow: hidden;
         position: relative;
-        /* Fade masks for scroll feel — bawah lebih tipis agar konten terakhir terlihat */
-        mask-image: linear-gradient(
-          to bottom,
-          transparent,
-          black 16px,
-          black calc(100% - 6px),
-          transparent
-        );
-        -webkit-mask-image: linear-gradient(
-          to bottom,
-          transparent,
-          black 16px,
-          black calc(100% - 6px),
-          transparent
-        );
       }
 
       .scroller {
@@ -3387,7 +3369,7 @@
         SCROLL_DURATION: 800, // Durasi animasi geser per item (ms)
       };
 
-      // ===== UNIVERSAL TV AUTO-SCALE ENGINE (1080p Golden Canvas) =====
+      // ===== UNIVERSAL TV AUTO-SCALE ENGINE =====
       const StageScaler = {
         init() {
           this.scale();
@@ -3404,35 +3386,13 @@
           const stage = document.getElementById("tvStage");
           if (!stage) return;
 
-          // Mobile Portrait Bypass: maintain native phone touch scroll
-          const isMobile = window.innerWidth <= 768 && window.innerHeight > window.innerWidth;
-          if (isMobile) {
-            stage.style.transform = "";
-            stage.style.position = "static";
-            stage.style.width = "100%";
-            stage.style.height = "auto";
-            return;
-          }
-
-          const TARGET_W = 1920;
-          const TARGET_H = 1080;
-          const curW = window.innerWidth || document.documentElement.clientWidth || 1920;
-          const curH = window.innerHeight || document.documentElement.clientHeight || 1080;
-
-          if (curW <= 0 || curH <= 0) return;
-
-          // Calculate exact proportional scale factor
-          const scaleX = curW / TARGET_W;
-          const scaleY = curH / TARGET_H;
-          const scale = Math.max(0.2, Math.min(scaleX, scaleY));
-
-          stage.style.position = "absolute";
-          stage.style.top = "50%";
-          stage.style.left = "50%";
-          stage.style.width = `${TARGET_W}px`;
-          stage.style.height = `${TARGET_H}px`;
-          stage.style.transform = `translate(-50%, -50%) scale(${scale})`;
-          stage.style.transformOrigin = "center center";
+          // Pure fluid layout: TV Stage always fills 100% of viewport without transform scale bugs
+          stage.style.position = "fixed";
+          stage.style.top = "0";
+          stage.style.left = "0";
+          stage.style.width = "100vw";
+          stage.style.height = "100vh";
+          stage.style.transform = "none";
         },
       };
       StageScaler.init();
