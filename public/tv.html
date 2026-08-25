@@ -3706,12 +3706,38 @@
           icon = "event_busy";
           label = "CUTI";
           passCategory = "CUTI PRAKTEK";
-          passHint = d.JamDaftar && d.JamDaftar !== "-" ? `KEMBALI ${esc(d.JamDaftar)}` : "TIDAK MELAYANI";
+
+          // Format tanggal real dari data admin (l.endDate / CutiSampai)
+          if (d.CutiSampai) {
+            try {
+              // Misal tanggal selesai cuti adalah 2026-08-28 -> buka praktek kembali hari berikutnya (atau tanggal akhir cuti)
+              const [y, m, day] = d.CutiSampai.split("-").map(Number);
+              const endDateObj = new Date(y, m - 1, day);
+              // Tambah 1 hari untuk estimasi praktek kembali
+              const returnDate = new Date(endDateObj);
+              returnDate.setDate(returnDate.getDate() + 1);
+
+              const formattedReturn = returnDate.toLocaleDateString("id-ID", {
+                weekday: "short",
+                day: "numeric",
+                month: "short",
+              });
+              passHint = `BUKA LAGI ${formattedReturn.toUpperCase()}`;
+            } catch (err) {
+              passHint = `CUTI S/D ${d.CutiSampai}`;
+            }
+          } else if (d.CutiCatatan) {
+            passHint = esc(d.CutiCatatan.toUpperCase());
+          } else if (d.DocNote) {
+            passHint = esc(d.DocNote.toUpperCase());
+          } else {
+            passHint = "TIDAK MELAYANI";
+          }
         } else if (st.includes("OPERASI")) {
           icon = "local_hospital";
           label = "OPERASI";
           passCategory = "RUANG OPERASI";
-          passHint = "TINDAKAN MEDIS";
+          passHint = d.JamPraktek && d.JamPraktek !== "-" ? `JADWAL ${formatJam(d.JamPraktek)}` : "TINDAKAN MEDIS";
         } else if (st.includes("PENUH")) {
           icon = "lock";
           label = "PENUH";
@@ -4646,6 +4672,9 @@
                 }
               }
 
+              // Find matched active leave for this doctor today
+              const activeLeave = leaves.find(l => l.doctorId === doc.id && l.startDate <= todayStr && l.endDate >= todayStr);
+
               mappedData.push({
                 Dokter: doc.name,
                 Spesialis: doc.specialty,
@@ -4657,6 +4686,9 @@
                 Jenis: doc.category,
                 "Code Antrian": doc.queueCode,
                 _shiftId: shift.id || index,
+                CutiSampai: activeLeave ? activeLeave.endDate : null,
+                CutiCatatan: activeLeave ? (activeLeave.notes || activeLeave.reason || null) : null,
+                DocNote: doc.notes || null,
               });
             });
 
