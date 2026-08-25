@@ -1017,16 +1017,29 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 0 20px;
+        padding: 0 22px;
         margin: 0 0 10px 0;
         flex-shrink: 0;
-        background: rgba(255, 255, 255, 0.95);
-        border-radius: 20px;
-        border: 1px solid rgba(226, 234, 245, 0.95);
-        box-shadow: 0 8px 24px -4px rgba(45, 65, 95, 0.06), inset 0 1.5px 1.5px #FFFFFF;
+        background: rgba(255, 255, 255, 0.96);
+        border-radius: 22px;
+        border: 1px solid rgba(226, 234, 245, 0.98);
+        box-shadow: 
+          0 10px 30px -4px rgba(45, 65, 95, 0.08), 
+          0 2px 6px -1px rgba(45, 65, 95, 0.03),
+          inset 0 1.5px 1.5px #FFFFFF;
         transition: background 0.3s ease;
         position: relative;
         overflow: hidden;
+      }
+
+      /* Specular rim on top of header */
+      .island-header::before {
+        content: "";
+        position: absolute;
+        top: 0; left: 24px; right: 24px;
+        height: 1.5px;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,1) 50%, transparent);
+        pointer-events: none;
       }
 
       /* Apple TV-style Visual Paging Timeline */
@@ -1035,51 +1048,73 @@
         bottom: 0;
         left: 0;
         right: 0;
-        height: 3.5px;
+        height: 4px;
         background: rgba(226, 234, 245, 0.6);
         overflow: hidden;
-        border-radius: 0 0 20px 20px;
+        border-radius: 0 0 22px 22px;
       }
 
       .island-progress-bar {
         height: 100%;
         width: 0%;
-        background: linear-gradient(90deg, #0284C7 0%, #10B981 100%);
         border-radius: 9999px;
         transition: width 0.1s linear;
-        box-shadow: 0 0 8px rgba(2, 132, 199, 0.5);
+      }
+
+      #progressBedah {
+        background: linear-gradient(90deg, #0EA5E9 0%, #38BDF8 50%, #0284C7 100%);
+        box-shadow: 0 0 10px rgba(14, 165, 233, 0.6);
+      }
+
+      #progressNonBedah {
+        background: linear-gradient(90deg, #8B5CF6 0%, #A78BFA 50%, #7C3AED 100%);
+        box-shadow: 0 0 10px rgba(139, 92, 246, 0.6);
       }
 
       .island-header-left {
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: 14px;
         min-width: 0;
       }
 
       .island-icon-box {
-        width: 44px;
-        height: 44px;
-        border-radius: 14px;
+        width: 48px;
+        height: 48px;
+        border-radius: 16px;
         display: flex;
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .island-icon-box::before {
+        content: "";
+        position: absolute;
+        top: 0; left: 0; right: 0; height: 50%;
+        background: linear-gradient(180deg, rgba(255,255,255,0.3) 0%, transparent 100%);
+        border-radius: 16px 16px 0 0;
+        pointer-events: none;
       }
 
       .island-icon-box .material-icons-round {
-        font-size: 24px;
+        font-size: 26px;
         color: #FFFFFF;
+        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
       }
 
       .island-icon-bedah {
-        background: linear-gradient(135deg, #0EA5E9 0%, #0284C7 100%);
-        box-shadow: 0 3px 10px rgba(14, 165, 233, 0.35);
+        background: linear-gradient(145deg, #38BDF8 0%, #0284C7 60%, #0369A1 100%);
+        box-shadow: 0 6px 16px -2px rgba(2, 132, 199, 0.45), inset 0 1px 1px rgba(255,255,255,0.4);
+        border: 1px solid rgba(255,255,255,0.25);
       }
 
       .island-icon-nonbedah {
-        background: linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%);
-        box-shadow: 0 3px 10px rgba(139, 92, 246, 0.35);
+        background: linear-gradient(145deg, #A78BFA 0%, #7C3AED 60%, #6D28D9 100%);
+        box-shadow: 0 6px 16px -2px rgba(124, 58, 237, 0.45), inset 0 1px 1px rgba(255,255,255,0.4);
+        border: 1px solid rgba(255,255,255,0.25);
       }
 
       .island-title-stack {
@@ -1116,6 +1151,7 @@
         font-size: 13px;
         font-weight: 800;
         letter-spacing: 0.04em;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.03);
       }
 
       .island-badge-bedah {
@@ -1129,7 +1165,7 @@
         height: 8px;
         border-radius: 50%;
         background: #0284C7;
-        box-shadow: 0 0 10px rgba(2, 132, 199, 0.6);
+        box-shadow: 0 0 10px rgba(2, 132, 199, 0.7);
         animation: radarPulse 1.8s infinite;
       }
 
@@ -1144,7 +1180,7 @@
         height: 8px;
         border-radius: 50%;
         background: #7C3AED;
-        box-shadow: 0 0 10px rgba(124, 58, 237, 0.6);
+        box-shadow: 0 0 10px rgba(124, 58, 237, 0.7);
         animation: radarPulse 1.8s infinite;
       }
 
@@ -1162,25 +1198,26 @@
         border-radius: 9999px;
       }
 
+      /* visionOS Smooth Scroll Mask with Top/Bottom Gradient Fade */
       .scroll-mask {
         flex: 1 1 0%;
         min-height: 0;
         overflow: hidden;
         position: relative;
-        /* Fade masks for scroll feel — bawah lebih tipis agar konten terakhir terlihat */
+        /* visionOS extended silky gradient mask */
         mask-image: linear-gradient(
           to bottom,
-          transparent,
-          black 16px,
-          black calc(100% - 6px),
-          transparent
+          transparent 0%,
+          black 24px,
+          black calc(100% - 28px),
+          transparent 100%
         );
         -webkit-mask-image: linear-gradient(
           to bottom,
-          transparent,
-          black 16px,
-          black calc(100% - 6px),
-          transparent
+          transparent 0%,
+          black 24px,
+          black calc(100% - 28px),
+          transparent 100%
         );
       }
 
