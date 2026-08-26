@@ -943,6 +943,12 @@
         border: 1px solid #BAE6FD;
       }
 
+      .tag-amber {
+        background: #FFFBEB;
+        color: #D97706;
+        border: 1px solid #FDE68A;
+      }
+
       .prayer-hero-row {
         display: flex;
         align-items: center;
@@ -969,7 +975,7 @@
 
       .prayer-hero-name {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 17px;
+        font-size: 15px;
         font-weight: 900;
         color: #0F172A;
         line-height: 1.15;
@@ -979,14 +985,124 @@
         color: #FFFFFF;
       }
 
-      .prayer-hero-countdown {
-        font-family: "Plus Jakarta Sans", monospace;
-        font-size: 18px;
+      .prayer-active-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        background: #0284C7;
+        color: #FFFFFF;
+        padding: 3px 10px;
+        border-radius: 9999px;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.03em;
+        box-shadow: 0 2px 8px rgba(2, 132, 199, 0.35);
+      }
+
+      /* ===== ⛅ APPLE tvOS WEATHER COMPLICATION ===== */
+      .weather-hero-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(56, 189, 248, 0.04) 100%);
+        border: 1px solid rgba(245, 158, 11, 0.2);
+        border-radius: 14px;
+        padding: 8px 12px;
+      }
+
+      [data-theme="dark"] .weather-hero-row {
+        background: linear-gradient(135deg, rgba(245, 158, 11, 0.12) 0%, rgba(56, 189, 248, 0.05) 100%);
+        border-color: rgba(245, 158, 11, 0.25);
+      }
+
+      .weather-temp-group {
+        display: flex;
+        align-items: baseline;
+        gap: 2px;
+      }
+
+      .weather-temp-val {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 26px;
         font-weight: 900;
-        color: #0284C7;
-        font-variant-numeric: tabular-nums;
+        color: #0F172A;
+        line-height: 1;
         letter-spacing: -0.02em;
-        text-align: right;
+      }
+
+      [data-theme="dark"] .weather-temp-val {
+        color: #FFFFFF;
+      }
+
+      .weather-temp-unit {
+        font-size: 15px;
+        font-weight: 800;
+        color: #D97706;
+      }
+
+      .weather-condition-group {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .weather-condition-icon {
+        font-size: 26px;
+        line-height: 1;
+      }
+
+      .weather-condition-text {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 13px;
+        font-weight: 800;
+        color: #0F172A;
+        line-height: 1.15;
+      }
+
+      [data-theme="dark"] .weather-condition-text {
+        color: #F8FAFC;
+      }
+
+      .weather-metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 5px;
+      }
+
+      .weather-metric-item {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        background: rgba(248, 250, 252, 0.8);
+        border: 1px solid rgba(226, 234, 245, 0.8);
+        border-radius: 9px;
+        padding: 5px 6px;
+      }
+
+      [data-theme="dark"] .weather-metric-item {
+        background: rgba(255, 255, 255, 0.03);
+        border-color: rgba(255, 255, 255, 0.06);
+      }
+
+      .weather-metric-label {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 9px;
+        font-weight: 800;
+        color: #64748B;
+        text-transform: uppercase;
+      }
+
+      .weather-metric-val {
+        font-family: "Plus Jakarta Sans", monospace;
+        font-size: 10.5px;
+        font-weight: 900;
+        color: #0F172A;
+        margin-left: auto;
+      }
+
+      [data-theme="dark"] .weather-metric-val {
+        color: #FFFFFF;
       }
 
       .prayer-grid {
@@ -4555,18 +4671,11 @@
         _lastHourlyTrigger: null,
 
         startAutoCycle() {
-          // Clock update in compact view every second + Hourly Trigger Check + Complications countdown
+          // Clock update in compact view every second + Hourly Trigger Check
           setInterval(() => {
             const now = new Date();
             const timeStr = String(now.getHours()).padStart(2, "0") + ":" + String(now.getMinutes()).padStart(2, "0");
             if ($("diCompactClock")) $("diCompactClock").textContent = timeStr;
-
-            // Real-Time Apple Watch Prayer Complications countdown update
-            if ($("prayerHeroCountdown") && typeof App.getPrayerInfo === "function") {
-              const pInfo = App.getPrayerInfo();
-              $("prayerHeroCountdown").textContent = pInfo.countdownStr;
-              if ($("prayerHeroName")) $("prayerHeroName").textContent = `${pInfo.nextPrayer.name} (${pInfo.nextPrayer.timeStr})`;
-            }
 
             // Trigger Hourly Briefing tepat di menit :00:00 setiap 1 jam
             const curHour = now.getHours();
@@ -4628,6 +4737,84 @@
           "Pastikan data diri Anda sudah sesuai dengan kartu identitas.",
           "Informasi lebih lanjut hubungi <strong>INFORMASI</strong> atau <strong>0823-2344-6076</strong>.",
         ],
+
+        // Apple tvOS Weather Complication (Purbalingga, Central Java)
+        _weatherCache: {
+          temp: 28,
+          humidity: 72,
+          apparent: 31,
+          windSpeed: 5,
+          code: 2,
+          condition: "Sebagian Berawan",
+          icon: "⛅",
+          lastFetched: 0
+        },
+
+        async fetchWeather() {
+          const now = Date.now();
+          if (now - this._weatherCache.lastFetched < 900000 && this._weatherCache.lastFetched > 0) {
+            return this._weatherCache;
+          }
+          try {
+            const res = await fetch("https://api.open-meteo.com/v1/forecast?latitude=-7.3888&longitude=109.3639&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m&timezone=Asia%2FJakarta");
+            if (res.ok) {
+              const data = await res.json();
+              if (data && data.current) {
+                const cur = data.current;
+                const code = cur.weather_code;
+                let condition = "Cerah Berawan";
+                let icon = "⛅";
+                const isNight = new Date().getHours() >= 18 || new Date().getHours() < 6;
+
+                if (code === 0) {
+                  condition = isNight ? "Cerah Berbintang" : "Cerah Terang";
+                  icon = isNight ? "🌙" : "☀️";
+                } else if (code <= 3) {
+                  condition = "Sebagian Berawan";
+                  icon = isNight ? "☁️" : "⛅";
+                } else if (code <= 48) {
+                  condition = "Udara Berkabut";
+                  icon = "🌫️";
+                } else if (code <= 57) {
+                  condition = "Hujan Gerimis";
+                  icon = "🌦️";
+                } else if (code <= 67 || (code >= 80 && code <= 82)) {
+                  condition = "Hujan Ringan";
+                  icon = "🌧️";
+                } else if (code >= 95) {
+                  condition = "Hujan Petir";
+                  icon = "⛈️";
+                }
+
+                this._weatherCache = {
+                  temp: Math.round(cur.temperature_2m),
+                  humidity: Math.round(cur.relative_humidity_2m),
+                  apparent: Math.round(cur.apparent_temperature),
+                  windSpeed: Math.round(cur.wind_speed_10m),
+                  code,
+                  condition,
+                  icon,
+                  lastFetched: now
+                };
+
+                this.updateWeatherUI();
+              }
+            }
+          } catch(e) {
+            console.warn("Weather fetch fallback:", e);
+          }
+          return this._weatherCache;
+        },
+
+        updateWeatherUI() {
+          const w = this._weatherCache;
+          if ($("tvWeatherTemp")) $("tvWeatherTemp").textContent = w.temp;
+          if ($("tvWeatherCondition")) $("tvWeatherCondition").textContent = w.condition;
+          if ($("tvWeatherIcon")) $("tvWeatherIcon").textContent = w.icon;
+          if ($("tvWeatherHumidity")) $("tvWeatherHumidity").textContent = `${w.humidity}%`;
+          if ($("tvWeatherApparent")) $("tvWeatherApparent").textContent = `${w.apparent}°C`;
+          if ($("tvWeatherWind")) $("tvWeatherWind").textContent = `${w.windSpeed} km/j`;
+        },
 
         // Apple Watch Complication: Astronomical Solar Prayer Schedule for Purbalingga (Jawa Tengah)
         getPrayerInfo() {
@@ -4701,31 +4888,20 @@
           const curSeconds = now.getSeconds();
 
           let nextPrayer = null;
-          let diffSec = 0;
 
           for (const p of prayers) {
             const pMinutes = p.h * 60 + p.m;
             if (pMinutes * 60 > curMinutes * 60 + curSeconds) {
               nextPrayer = p;
-              diffSec = pMinutes * 60 - (curMinutes * 60 + curSeconds);
               break;
             }
           }
 
           if (!nextPrayer) {
             nextPrayer = prayers[0];
-            const totalDaySec = 24 * 60 * 60;
-            const subuhSec = (prayers[0].h * 60 + prayers[0].m) * 60;
-            diffSec = totalDaySec - (curMinutes * 60 + curSeconds) + subuhSec;
           }
 
-          const cdHours = Math.floor(diffSec / 3600);
-          const cdMins = Math.floor((diffSec % 3600) / 60);
-          const cdSecs = diffSec % 60;
-
-          const countdownStr = `-${String(cdHours).padStart(2, "0")}:${String(cdMins).padStart(2, "0")}:${String(cdSecs).padStart(2, "0")}`;
-
-          return { prayers, nextPrayer, countdownStr };
+          return { prayers, nextPrayer };
         },
 
         buildSidebarComplicationsHTML() {
@@ -4738,6 +4914,8 @@
           if (dayOfWeek === 0) todayScheduleTag = "POLI TUTUP (MINGGU)";
           else if (dayOfWeek === 6) todayScheduleTag = "HARI INI: 06:00 – 18:00";
           else todayScheduleTag = "HARI INI: 06:00 – 20:00";
+
+          const w = this._weatherCache;
 
           const prayerPillsHTML = pInfo.prayers.map((p) => {
             const isActive = p.name === nextName ? "active" : "";
@@ -4761,22 +4939,62 @@
                 </div>
               </div>
 
-              <!-- Complication 1: Waktu Sholat Purbalingga (Jawa Tengah) -->
+              <!-- Complication 1: Apple tvOS Weather Widget (Purbalingga) -->
+              <div class="complication-card">
+                <div class="complication-header">
+                  <div class="complication-title">
+                    <span class="material-icons-round" style="font-size:15px; color:#D97706;">wb_sunny</span>
+                    <span>CUACA &amp; SUHU PURBALINGGA</span>
+                  </div>
+                  <span class="complication-tag tag-amber">LIVE BMKG</span>
+                </div>
+
+                <div class="weather-hero-row">
+                  <div class="weather-temp-group">
+                    <span class="weather-temp-val" id="tvWeatherTemp">${w.temp}</span>
+                    <span class="weather-temp-unit">°C</span>
+                  </div>
+                  <div class="weather-condition-group">
+                    <span class="weather-condition-icon" id="tvWeatherIcon">${w.icon}</span>
+                    <span class="weather-condition-text" id="tvWeatherCondition">${w.condition}</span>
+                  </div>
+                </div>
+
+                <div class="weather-metrics-grid">
+                  <div class="weather-metric-item">
+                    <span class="weather-metric-label">Lembab</span>
+                    <span class="weather-metric-val" id="tvWeatherHumidity">${w.humidity}%</span>
+                  </div>
+                  <div class="weather-metric-item">
+                    <span class="weather-metric-label">Terasa</span>
+                    <span class="weather-metric-val" id="tvWeatherApparent">${w.apparent}°C</span>
+                  </div>
+                  <div class="weather-metric-item">
+                    <span class="weather-metric-label">Angin</span>
+                    <span class="weather-metric-val" id="tvWeatherWind">${w.windSpeed} km/j</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Complication 2: Waktu Sholat Purbalingga (Jawa Tengah) -->
               <div class="complication-card">
                 <div class="complication-header">
                   <div class="complication-title">
                     <span class="material-icons-round" style="font-size:15px; color:#0284C7;">schedule</span>
-                    <span>WAKTU SHOLAT &amp; HITUNG MUNDUR</span>
+                    <span>JADWAL SHOLAT PURBALINGGA</span>
                   </div>
-                  <span class="complication-tag tag-sky">PURBALINGGA</span>
+                  <span class="complication-tag tag-sky">KEMENAG RI</span>
                 </div>
 
                 <div class="prayer-hero-row">
                   <div class="prayer-hero-col">
                     <span class="prayer-hero-label">SHOLAT BERIKUTNYA</span>
-                    <span class="prayer-hero-name" id="prayerHeroName">${nextName} (${pInfo.nextPrayer.timeStr})</span>
+                    <span class="prayer-hero-name" id="prayerHeroName">${nextName} (${pInfo.nextPrayer.timeStr} WIB)</span>
                   </div>
-                  <div class="prayer-hero-countdown" id="prayerHeroCountdown">${pInfo.countdownStr}</div>
+                  <div class="prayer-active-pill">
+                    <span class="material-icons-round" style="font-size:12px;">notifications_active</span>
+                    <span>SELANJUTNYA</span>
+                  </div>
                 </div>
 
                 <div class="prayer-grid">
@@ -4784,7 +5002,7 @@
                 </div>
               </div>
 
-              <!-- Complication 2: Jam Operasional Pelayanan RS -->
+              <!-- Complication 3: Jam Operasional Pelayanan RS -->
               <div class="complication-card">
                 <div class="complication-header">
                   <div class="complication-title">
@@ -4831,6 +5049,8 @@
 
         async init() {
           Island.init(); // Initialize Dynamic Island
+          this.fetchWeather(); // Fetch live Apple Weather for Purbalingga
+          setInterval(() => this.fetchWeather(), 900000); // 15-minute background refresh
 
           // Clean up entry boot animation after 1.2s to restore 100% idle GPU state
           setTimeout(() => {
