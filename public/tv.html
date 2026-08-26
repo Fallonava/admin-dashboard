@@ -863,6 +863,270 @@
         margin-top: 4px;
       }
 
+      /* ===== 🕌 APPLE WATCH COMPLICATIONS EMPTY STATE WIDGET ===== */
+      .sidebar-complications {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        width: 100%;
+        padding: 4px 6px;
+        box-sizing: border-box;
+      }
+
+      .complication-card {
+        background: #FFFFFF;
+        border-radius: 20px;
+        border: 1px solid rgba(226, 234, 245, 0.95);
+        box-shadow: 
+          0 6px 18px -2px rgba(45, 65, 95, 0.06),
+          inset 0 1.5px 1.5px #FFFFFF;
+        padding: 12px 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      [data-theme="dark"] .complication-card {
+        background: #101726;
+        border-color: rgba(255, 255, 255, 0.08);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+      }
+
+      .complication-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid rgba(226, 234, 245, 0.7);
+        padding-bottom: 7px;
+      }
+
+      [data-theme="dark"] .complication-header {
+        border-bottom-color: rgba(255, 255, 255, 0.08);
+      }
+
+      .complication-title {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: #0F172A;
+      }
+
+      [data-theme="dark"] .complication-title {
+        color: #F8FAFC;
+      }
+
+      .complication-tag {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 9.5px;
+        font-weight: 800;
+        padding: 2.5px 8px;
+        border-radius: 9999px;
+        text-transform: uppercase;
+      }
+
+      .tag-emerald {
+        background: #F0FDF4;
+        color: #059669;
+        border: 1px solid #BBF7D0;
+      }
+
+      .tag-sky {
+        background: #F0F9FF;
+        color: #0284C7;
+        border: 1px solid #BAE6FD;
+      }
+
+      .prayer-hero-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: linear-gradient(135deg, rgba(2, 132, 199, 0.08) 0%, rgba(56, 189, 248, 0.02) 100%);
+        border: 1px solid rgba(2, 132, 199, 0.2);
+        border-radius: 14px;
+        padding: 8px 12px;
+      }
+
+      .prayer-hero-col {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .prayer-hero-label {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 10px;
+        font-weight: 800;
+        color: #0284C7;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+
+      .prayer-hero-name {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 17px;
+        font-weight: 900;
+        color: #0F172A;
+        line-height: 1.15;
+      }
+
+      [data-theme="dark"] .prayer-hero-name {
+        color: #FFFFFF;
+      }
+
+      .prayer-hero-countdown {
+        font-family: "Plus Jakarta Sans", monospace;
+        font-size: 18px;
+        font-weight: 900;
+        color: #0284C7;
+        font-variant-numeric: tabular-nums;
+        letter-spacing: -0.02em;
+        text-align: right;
+      }
+
+      .prayer-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 5px;
+      }
+
+      .prayer-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: rgba(241, 245, 249, 0.85);
+        border: 1px solid rgba(226, 232, 240, 0.9);
+        border-radius: 10px;
+        padding: 5px 2px;
+        transition: all 0.2s ease;
+      }
+
+      [data-theme="dark"] .prayer-item {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.08);
+      }
+
+      .prayer-item.active {
+        background: #0284C7;
+        border-color: #0284C7;
+        box-shadow: 0 4px 10px rgba(2, 132, 199, 0.35);
+      }
+
+      .prayer-item-name {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 9px;
+        font-weight: 800;
+        color: #64748B;
+        text-transform: uppercase;
+      }
+
+      .prayer-item.active .prayer-item-name {
+        color: rgba(255, 255, 255, 0.85);
+      }
+
+      .prayer-item-time {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 11px;
+        font-weight: 900;
+        color: #0F172A;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .prayer-item.active .prayer-item-time {
+        color: #FFFFFF;
+      }
+
+      .clinic-hours-list {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+      }
+
+      .clinic-hour-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 6px 10px;
+        background: rgba(248, 250, 252, 0.8);
+        border-radius: 10px;
+        border: 1px solid rgba(226, 234, 245, 0.8);
+      }
+
+      [data-theme="dark"] .clinic-hour-row {
+        background: rgba(255, 255, 255, 0.03);
+        border-color: rgba(255, 255, 255, 0.06);
+      }
+
+      .clinic-hour-label {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 11.5px;
+        font-weight: 700;
+        color: #334155;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      [data-theme="dark"] .clinic-hour-label {
+        color: #CBD5E1;
+      }
+
+      .clinic-hour-val {
+        font-family: "Plus Jakarta Sans", monospace;
+        font-size: 12px;
+        font-weight: 800;
+        color: #059669;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .all-optimal-banner {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%);
+        border: 1px solid #BBF7D0;
+        border-radius: 14px;
+        padding: 8px 12px;
+        box-shadow: 0 2px 8px rgba(5, 150, 105, 0.08);
+      }
+
+      [data-theme="dark"] .all-optimal-banner {
+        background: linear-gradient(135deg, rgba(5, 150, 105, 0.15) 0%, rgba(16, 185, 129, 0.05) 100%);
+        border-color: rgba(5, 150, 105, 0.35);
+      }
+
+      .all-optimal-icon {
+        width: 28px;
+        height: 28px;
+        border-radius: 9px;
+        background: #059669;
+        color: #FFFFFF;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+
+      .all-optimal-text {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 11px;
+        font-weight: 800;
+        color: #065F46;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        line-height: 1.2;
+      }
+
+      [data-theme="dark"] .all-optimal-text {
+        color: #6EE7B7;
+      }
+
       /* Force dark text in sidebar when in light mode, but adapt in dark mode */
       [data-theme="light"] .sidebar-panel {
         color: #1d1d1f;
@@ -4291,11 +4555,18 @@
         _lastHourlyTrigger: null,
 
         startAutoCycle() {
-          // Clock update in compact view every second + Hourly Trigger Check
+          // Clock update in compact view every second + Hourly Trigger Check + Complications countdown
           setInterval(() => {
             const now = new Date();
             const timeStr = String(now.getHours()).padStart(2, "0") + ":" + String(now.getMinutes()).padStart(2, "0");
             if ($("diCompactClock")) $("diCompactClock").textContent = timeStr;
+
+            // Real-Time Apple Watch Prayer Complications countdown update
+            if ($("prayerHeroCountdown") && typeof App.getPrayerInfo === "function") {
+              const pInfo = App.getPrayerInfo();
+              $("prayerHeroCountdown").textContent = pInfo.countdownStr;
+              if ($("prayerHeroName")) $("prayerHeroName").textContent = `${pInfo.nextPrayer.name} (${pInfo.nextPrayer.timeStr})`;
+            }
 
             // Trigger Hourly Briefing tepat di menit :00:00 setiap 1 jam
             const curHour = now.getHours();
@@ -4357,6 +4628,135 @@
           "Pastikan data diri Anda sudah sesuai dengan kartu identitas.",
           "Informasi lebih lanjut hubungi <strong>INFORMASI</strong> atau <strong>0823-2344-6076</strong>.",
         ],
+
+        // Apple Watch Complication: Real-Time Prayer Schedule (Purbalingga) & Countdown
+        getPrayerInfo() {
+          const now = new Date();
+          const curMinutes = now.getHours() * 60 + now.getMinutes();
+          const curSeconds = now.getSeconds();
+
+          const prayers = [
+            { name: "Subuh", h: 4, m: 35, timeStr: "04:35" },
+            { name: "Dzuhur", h: 12, m: 2, timeStr: "12:02" },
+            { name: "Ashar", h: 15, m: 18, timeStr: "15:18" },
+            { name: "Maghrib", h: 18, m: 3, timeStr: "18:03" },
+            { name: "Isya", h: 19, m: 14, timeStr: "19:14" },
+          ];
+
+          let nextPrayer = null;
+          let diffSec = 0;
+
+          for (const p of prayers) {
+            const pMinutes = p.h * 60 + p.m;
+            if (pMinutes * 60 > curMinutes * 60 + curSeconds) {
+              nextPrayer = p;
+              diffSec = pMinutes * 60 - (curMinutes * 60 + curSeconds);
+              break;
+            }
+          }
+
+          if (!nextPrayer) {
+            nextPrayer = prayers[0];
+            const totalDaySec = 24 * 60 * 60;
+            const subuhSec = (prayers[0].h * 60 + prayers[0].m) * 60;
+            diffSec = totalDaySec - (curMinutes * 60 + curSeconds) + subuhSec;
+          }
+
+          const cdHours = Math.floor(diffSec / 3600);
+          const cdMins = Math.floor((diffSec % 3600) / 60);
+          const cdSecs = diffSec % 60;
+
+          const countdownStr = `-${String(cdHours).padStart(2, "0")}:${String(cdMins).padStart(2, "0")}:${String(cdSecs).padStart(2, "0")}`;
+
+          return { prayers, nextPrayer, countdownStr };
+        },
+
+        buildSidebarComplicationsHTML() {
+          const pInfo = this.getPrayerInfo();
+          const nextName = pInfo.nextPrayer.name;
+
+          const prayerPillsHTML = pInfo.prayers.map((p) => {
+            const isActive = p.name === nextName ? "active" : "";
+            return `
+              <div class="prayer-item ${isActive}">
+                <span class="prayer-item-name">${p.name}</span>
+                <span class="prayer-item-time">${p.timeStr}</span>
+              </div>
+            `;
+          }).join("");
+
+          return `
+            <div class="sidebar-complications">
+              <!-- Live All Optimal Banner -->
+              <div class="all-optimal-banner">
+                <div class="all-optimal-icon">
+                  <span class="material-icons-round" style="font-size:18px;">verified</span>
+                </div>
+                <div class="all-optimal-text">
+                  SEMUA POLIKLINIK NORMAL &amp; SESUAI JADWAL
+                </div>
+              </div>
+
+              <!-- Complication 1: Waktu Sholat Purbalingga -->
+              <div class="complication-card">
+                <div class="complication-header">
+                  <div class="complication-title">
+                    <span class="material-icons-round" style="font-size:15px; color:#0284C7;">schedule</span>
+                    <span>WAKTU SHOLAT &amp; HITUNG MUNDUR</span>
+                  </div>
+                  <span class="complication-tag tag-sky">PURBALINGGA</span>
+                </div>
+
+                <div class="prayer-hero-row">
+                  <div class="prayer-hero-col">
+                    <span class="prayer-hero-label">SHOLAT BERIKUTNYA</span>
+                    <span class="prayer-hero-name" id="prayerHeroName">${nextName} (${pInfo.nextPrayer.timeStr})</span>
+                  </div>
+                  <div class="prayer-hero-countdown" id="prayerHeroCountdown">${pInfo.countdownStr}</div>
+                </div>
+
+                <div class="prayer-grid">
+                  ${prayerPillsHTML}
+                </div>
+              </div>
+
+              <!-- Complication 2: Jam Operasional Pelayanan RS -->
+              <div class="complication-card">
+                <div class="complication-header">
+                  <div class="complication-title">
+                    <span class="material-icons-round" style="font-size:15px; color:#059669;">medical_information</span>
+                    <span>JAM OPERASIONAL PELAYANAN</span>
+                  </div>
+                  <span class="complication-tag tag-emerald">SIAGA RS</span>
+                </div>
+
+                <div class="clinic-hours-list">
+                  <div class="clinic-hour-row">
+                    <span class="clinic-hour-label">
+                      <span class="material-icons-round" style="font-size:14px; color:#0284C7;">wb_sunny</span>
+                      Poli Spesialis Pagi
+                    </span>
+                    <span class="clinic-hour-val">07:30 - 14:00</span>
+                  </div>
+                  <div class="clinic-hour-row">
+                    <span class="clinic-hour-label">
+                      <span class="material-icons-round" style="font-size:14px; color:#8B5CF6;">wb_twilight</span>
+                      Poli Spesialis Sore
+                    </span>
+                    <span class="clinic-hour-val">14:00 - 20:00</span>
+                  </div>
+                  <div class="clinic-hour-row">
+                    <span class="clinic-hour-label">
+                      <span class="material-icons-round" style="font-size:14px; color:#10B981;">emergency</span>
+                      IGD &amp; Farmasi 24 Jam
+                    </span>
+                    <span class="clinic-hour-val" style="color:#059669;">SIAGA 24 JAM</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+        },
 
         async init() {
           Island.init(); // Initialize Dynamic Island
@@ -5471,41 +5871,56 @@
             return el;
           };
 
-          // --- Build grouped layout ---
-          if (operasiList.length > 0) {
-            allElements.push(
-              makeSectionHeader(
-                "Tindakan Operasi",
-                "#BF5AF2",
-                operasiList.length,
-                "sec-operasi",
-              ),
-            );
-            operasiList.forEach((d) => allElements.push(makeCard(d)));
-          }
+          // --- Build grouped layout or Apple Watch Complications if empty ---
+          if (operasiList.length === 0 && penuhList.length === 0 && cutiList.length === 0) {
+            let el = container.querySelector(".sidebar-complications");
+            if (!el) {
+              const wrapper = document.createElement("div");
+              wrapper.dataset.id = "sec-complications";
+              wrapper.innerHTML = this.buildSidebarComplicationsHTML();
+              allElements.push(wrapper);
+              hasLayoutChange = true;
+            } else {
+              const wrapper = el.parentElement;
+              wrapper.dataset.id = "sec-complications";
+              allElements.push(wrapper);
+            }
+          } else {
+            if (operasiList.length > 0) {
+              allElements.push(
+                makeSectionHeader(
+                  "Tindakan Operasi",
+                  "#BF5AF2",
+                  operasiList.length,
+                  "sec-operasi",
+                ),
+              );
+              operasiList.forEach((d) => allElements.push(makeCard(d)));
+            }
 
-          if (penuhList.length > 0) {
-            allElements.push(
-              makeSectionHeader(
-                "Kuota Penuh",
-                "#FF9F0A",
-                penuhList.length,
-                "sec-penuh",
-              ),
-            );
-            penuhList.forEach((d) => allElements.push(makeCard(d)));
-          }
+            if (penuhList.length > 0) {
+              allElements.push(
+                makeSectionHeader(
+                  "Kuota Penuh",
+                  "#FF9F0A",
+                  penuhList.length,
+                  "sec-penuh",
+                ),
+              );
+              penuhList.forEach((d) => allElements.push(makeCard(d)));
+            }
 
-          if (cutiList.length > 0) {
-            allElements.push(
-              makeSectionHeader(
-                "Sedang Cuti",
-                "#FF453A",
-                cutiList.length,
-                "sec-cuti",
-              ),
-            );
-            cutiList.forEach((d) => allElements.push(makeCard(d)));
+            if (cutiList.length > 0) {
+              allElements.push(
+                makeSectionHeader(
+                  "Sedang Cuti",
+                  "#FF453A",
+                  cutiList.length,
+                  "sec-cuti",
+                ),
+              );
+              cutiList.forEach((d) => allElements.push(makeCard(d)));
+            }
           }
 
           // Update visionOS Segment Bar counts
