@@ -4976,34 +4976,97 @@
         ],
 
         // Enterprise Apple Weather SF Vector Icon Standard Generator
-        getWeatherIconSVG(c, isDay, size = 32) {
+        getWeatherIconSVG(type, size = 32) {
           const w = size;
           const h = size;
           const uid = Math.random().toString(36).substring(2, 6);
-          
-          if (c === 0) {
-            if (isDay) {
+
+          switch (type) {
+            case "sun":
+            case "mostly-sunny":
               return `<svg viewBox="0 0 32 32" width="${w}" height="${h}" class="apple-weather-svg svg-sun"><defs><linearGradient id="sg_${uid}" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FFD60A"/><stop offset="100%" stop-color="#FF9F0A"/></linearGradient></defs><circle cx="16" cy="16" r="6.5" fill="url(#sg_${uid})"/><g stroke="url(#sg_${uid})" stroke-width="2" stroke-linecap="round"><line x1="16" y1="3" x2="16" y2="5.5"/><line x1="16" y1="26.5" x2="16" y2="29"/><line x1="3" y1="16" x2="5.5" y2="16"/><line x1="26.5" y1="16" x2="29" y2="16"/><line x1="6.8" y1="6.8" x2="8.6" y2="8.6"/><line x1="23.4" y1="23.4" x2="25.2" y2="25.2"/><line x1="6.8" y1="25.2" x2="8.6" y2="23.4"/><line x1="23.4" y1="8.6" x2="25.2" y2="6.8"/></g></svg>`;
-            } else {
+
+            case "moon":
+            case "mostly-moon":
               return `<svg viewBox="0 0 32 32" width="${w}" height="${h}" class="apple-weather-svg svg-moon"><defs><linearGradient id="mg_${uid}" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#F1F5F9"/><stop offset="100%" stop-color="#94A3B8"/></linearGradient></defs><path d="M21 4.5a11.5 11.5 0 1 0 6.5 21A10.5 10.5 0 0 1 21 4.5z" fill="url(#mg_${uid})"/><circle cx="23" cy="8" r="1.2" fill="#38BDF8" opacity="0.9"/></svg>`;
-            }
-          } else if (c <= 2) {
-            if (isDay) {
+
+            case "partly-cloudy-day":
               return `<svg viewBox="0 0 32 32" width="${w}" height="${h}" class="apple-weather-svg svg-partly-cloudy"><defs><linearGradient id="ps_${uid}" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FFD60A"/><stop offset="100%" stop-color="#FF9F0A"/></linearGradient><linearGradient id="pc_${uid}" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#FFFFFF"/><stop offset="100%" stop-color="#CBD5E1"/></linearGradient></defs><circle cx="12" cy="12" r="5.5" fill="url(#ps_${uid})"/><path d="M25 24H10a5.5 5.5 0 0 1-1-10.9A7 7 0 0 1 22.5 15 4.5 4.5 0 0 1 25 24z" fill="url(#pc_${uid})"/></svg>`;
-            } else {
+
+            case "partly-cloudy-night":
               return `<svg viewBox="0 0 32 32" width="${w}" height="${h}" class="apple-weather-svg svg-partly-cloudy-night"><defs><linearGradient id="pmn_${uid}" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#E2E8F0"/><stop offset="100%" stop-color="#94A3B8"/></linearGradient><linearGradient id="pnc_${uid}" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#94A3B8"/><stop offset="100%" stop-color="#475569"/></linearGradient></defs><path d="M15 6a7 7 0 0 0 4 12.8 6.5 6.5 0 0 1-4-12.8z" fill="url(#pmn_${uid})"/><path d="M25 24H10a5.5 5.5 0 0 1-1-10.9A7 7 0 0 1 22.5 15 4.5 4.5 0 0 1 25 24z" fill="url(#pnc_${uid})"/></svg>`;
-            }
-          } else if (c <= 3) {
-            return `<svg viewBox="0 0 32 32" width="${w}" height="${h}" class="apple-weather-svg svg-cloudy"><defs><linearGradient id="oc_${uid}" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#E2E8F0"/><stop offset="100%" stop-color="#94A3B8"/></linearGradient></defs><path d="M26 23H9a6 6 0 0 1-1.2-11.8A7.5 7.5 0 0 1 23 13.5 5 5 0 0 1 26 23z" fill="url(#oc_${uid})"/></svg>`;
-          } else if (c <= 48) {
-            return `<svg viewBox="0 0 32 32" width="${w}" height="${h}" class="apple-weather-svg svg-fog"><defs><linearGradient id="fg_${uid}" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#94A3B8"/><stop offset="100%" stop-color="#CBD5E1"/></linearGradient></defs><path d="M23 15H11a4.5 4.5 0 0 1-.8-8.9A5.5 5.5 0 0 1 21 7.5 4 4 0 0 1 23 15z" fill="url(#fg_${uid})" opacity="0.6"/><line x1="6" y1="19" x2="26" y2="19" stroke="#94A3B8" stroke-width="2" stroke-linecap="round"/><line x1="8" y1="23" x2="24" y2="23" stroke="#94A3B8" stroke-width="2" stroke-linecap="round"/><line x1="10" y1="27" x2="22" y2="27" stroke="#94A3B8" stroke-width="2" stroke-linecap="round"/></svg>`;
-          } else if (c <= 57) {
-            return `<svg viewBox="0 0 32 32" width="${w}" height="${h}" class="apple-weather-svg svg-drizzle"><defs><linearGradient id="dz_${uid}" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#CBD5E1"/><stop offset="100%" stop-color="#64748B"/></linearGradient></defs><path d="M25 17H10a5 5 0 0 1-1-9.8A6.5 6.5 0 0 1 21.5 9 4.5 4.5 0 0 1 25 17z" fill="url(#dz_${uid})"/><g stroke="#38BDF8" stroke-width="1.8" stroke-linecap="round"><line x1="12" y1="20" x2="11" y2="24"/><line x1="17" y1="20" x2="16" y2="24"/><line x1="22" y1="20" x2="21" y2="24"/></g></svg>`;
-          } else if (c <= 67 || (c >= 80 && c <= 82)) {
-            return `<svg viewBox="0 0 32 32" width="${w}" height="${h}" class="apple-weather-svg svg-rain"><defs><linearGradient id="rn_${uid}" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#94A3B8"/><stop offset="100%" stop-color="#475569"/></linearGradient></defs><path d="M25 17H10a5 5 0 0 1-1-9.8A6.5 6.5 0 0 1 21.5 9 4.5 4.5 0 0 1 25 17z" fill="url(#rn_${uid})"/><g stroke="#0284C7" stroke-width="2" stroke-linecap="round"><line x1="11" y1="20" x2="9.5" y2="26"/><line x1="16" y1="20" x2="14.5" y2="26"/><line x1="21" y1="20" x2="19.5" y2="26"/></g></svg>`;
-          } else {
-            return `<svg viewBox="0 0 32 32" width="${w}" height="${h}" class="apple-weather-svg svg-storm"><defs><linearGradient id="st_${uid}" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#475569"/><stop offset="100%" stop-color="#1E293B"/></linearGradient></defs><path d="M25 16H10a5 5 0 0 1-1-9.8A6.5 6.5 0 0 1 21.5 8 4.5 4.5 0 0 1 25 16z" fill="url(#st_${uid})"/><polygon points="16,15 12,22 15.5,22 13.5,28 20,20 16.5,20" fill="#FACC15" filter="drop-shadow(0 0 4px #FACC15)"/></svg>`;
+
+            case "cloudy":
+              return `<svg viewBox="0 0 32 32" width="${w}" height="${h}" class="apple-weather-svg svg-cloudy"><defs><linearGradient id="oc_${uid}" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#E2E8F0"/><stop offset="100%" stop-color="#94A3B8"/></linearGradient></defs><path d="M26 23H9a6 6 0 0 1-1.2-11.8A7.5 7.5 0 0 1 23 13.5 5 5 0 0 1 26 23z" fill="url(#oc_${uid})"/></svg>`;
+
+            case "fog":
+              return `<svg viewBox="0 0 32 32" width="${w}" height="${h}" class="apple-weather-svg svg-fog"><defs><linearGradient id="fg_${uid}" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#94A3B8"/><stop offset="100%" stop-color="#CBD5E1"/></linearGradient></defs><path d="M23 15H11a4.5 4.5 0 0 1-.8-8.9A5.5 5.5 0 0 1 21 7.5 4 4 0 0 1 23 15z" fill="url(#fg_${uid})" opacity="0.6"/><line x1="6" y1="19" x2="26" y2="19" stroke="#94A3B8" stroke-width="2" stroke-linecap="round"/><line x1="8" y1="23" x2="24" y2="23" stroke="#94A3B8" stroke-width="2" stroke-linecap="round"/><line x1="10" y1="27" x2="22" y2="27" stroke="#94A3B8" stroke-width="2" stroke-linecap="round"/></svg>`;
+
+            case "drizzle":
+              return `<svg viewBox="0 0 32 32" width="${w}" height="${h}" class="apple-weather-svg svg-drizzle"><defs><linearGradient id="dz_${uid}" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#CBD5E1"/><stop offset="100%" stop-color="#64748B"/></linearGradient></defs><path d="M25 17H10a5 5 0 0 1-1-9.8A6.5 6.5 0 0 1 21.5 9 4.5 4.5 0 0 1 25 17z" fill="url(#dz_${uid})"/><g stroke="#38BDF8" stroke-width="1.8" stroke-linecap="round"><line x1="12" y1="20" x2="11" y2="24"/><line x1="17" y1="20" x2="16" y2="24"/><line x1="22" y1="20" x2="21" y2="24"/></g></svg>`;
+
+            case "rain":
+              return `<svg viewBox="0 0 32 32" width="${w}" height="${h}" class="apple-weather-svg svg-rain"><defs><linearGradient id="rn_${uid}" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#94A3B8"/><stop offset="100%" stop-color="#475569"/></linearGradient></defs><path d="M25 17H10a5 5 0 0 1-1-9.8A6.5 6.5 0 0 1 21.5 9 4.5 4.5 0 0 1 25 17z" fill="url(#rn_${uid})"/><g stroke="#0284C7" stroke-width="2" stroke-linecap="round"><line x1="11" y1="20" x2="9.5" y2="26"/><line x1="16" y1="20" x2="14.5" y2="26"/><line x1="21" y1="20" x2="19.5" y2="26"/></g></svg>`;
+
+            case "storm":
+            default:
+              return `<svg viewBox="0 0 32 32" width="${w}" height="${h}" class="apple-weather-svg svg-storm"><defs><linearGradient id="st_${uid}" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#475569"/><stop offset="100%" stop-color="#1E293B"/></linearGradient></defs><path d="M25 16H10a5 5 0 0 1-1-9.8A6.5 6.5 0 0 1 21.5 8 4.5 4.5 0 0 1 25 16z" fill="url(#st_${uid})"/><polygon points="16,15 12,22 15.5,22 13.5,28 20,20 16.5,20" fill="#FACC15" filter="drop-shadow(0 0 4px #FACC15)"/></svg>`;
           }
+        },
+
+        getWeatherMeta(code, isDay, precip = 0) {
+          let condition = "Cerah Berawan";
+          let theme = isDay ? "day-cloudy" : "night-cloudy";
+          let iconType = isDay ? "partly-cloudy-day" : "partly-cloudy-night";
+
+          if (code === 0) {
+            condition = isDay ? "Cerah Terang" : "Cerah Berbintang";
+            theme = isDay ? "day-sunny" : "night-clear";
+            iconType = isDay ? "sun" : "moon";
+          } else if (code === 1) {
+            condition = "Cerah Berawan";
+            theme = isDay ? "day-sunny" : "night-clear";
+            iconType = isDay ? "mostly-sunny" : "mostly-moon";
+          } else if (code === 2) {
+            condition = "Sebagian Berawan";
+            theme = isDay ? "day-cloudy" : "night-cloudy";
+            iconType = isDay ? "partly-cloudy-day" : "partly-cloudy-night";
+          } else if (code === 3) {
+            condition = "Mendung";
+            theme = "day-cloudy";
+            iconType = "cloudy";
+          } else if (code === 45 || code === 48) {
+            condition = "Udara Berkabut";
+            theme = "day-cloudy";
+            iconType = "fog";
+          } else if (code >= 51 && code <= 57) {
+            // Gerimis/Embun: Jika probabilitas hujan rendah (<25%), kondisi riil adalah Pagi Berembun / Berawan Tipis
+            if (precip < 25) {
+              condition = isDay ? "Cerah Berawan" : "Berawan Tipis";
+              theme = isDay ? "day-cloudy" : "night-cloudy";
+              iconType = isDay ? "partly-cloudy-day" : "partly-cloudy-night";
+            } else {
+              condition = "Gerimis";
+              theme = "rainy";
+              iconType = "drizzle";
+            }
+          } else if (code === 61 || code === 80) {
+            condition = "Hujan Ringan";
+            theme = "rainy";
+            iconType = "drizzle";
+          } else if (code === 63 || code === 65 || code === 81 || code === 82) {
+            condition = code === 65 || code === 82 ? "Hujan Lebat" : "Hujan";
+            theme = "rainy";
+            iconType = "rain";
+          } else if (code >= 95) {
+            condition = "Hujan Petir";
+            theme = "rainy";
+            iconType = "storm";
+          }
+
+          const heroIconSVG = this.getWeatherIconSVG(iconType, 40);
+          const miniIconSVG = this.getWeatherIconSVG(iconType, 18);
+          return { condition, theme, iconType, heroIconSVG, miniIconSVG };
         },
 
         // Apple tvOS Weather Complication (Purbalingga, Central Java)
@@ -5037,35 +5100,7 @@
                 const code = cur.weather_code;
                 const isDay = cur.is_day === 1;
 
-                const getMeta = (c, dayFlag) => {
-                  let condition = "Cerah Berawan";
-                  let theme = dayFlag ? "day-clear" : "night-clear";
-
-                  if (c === 0) {
-                    condition = dayFlag ? "Cerah Terang" : "Cerah Berbintang";
-                    theme = dayFlag ? "day-sunny" : "night-clear";
-                  } else if (c <= 3) {
-                    condition = c === 1 ? "Sebagian Berawan" : (c === 2 ? "Berawan" : "Mendung");
-                    theme = dayFlag ? "day-cloudy" : "night-cloudy";
-                  } else if (c <= 48) {
-                    condition = "Udara Berkabut";
-                    theme = "day-cloudy";
-                  } else if (c <= 57) {
-                    condition = "Hujan Gerimis";
-                    theme = "rainy";
-                  } else if (c <= 67 || (c >= 80 && code <= 82)) {
-                    condition = "Hujan";
-                    theme = "rainy";
-                  } else if (c >= 95) {
-                    condition = "Hujan Petir";
-                    theme = "rainy";
-                  }
-                  const heroIconSVG = this.getWeatherIconSVG(c, dayFlag, 40);
-                  const miniIconSVG = this.getWeatherIconSVG(c, dayFlag, 18);
-                  return { condition, theme, heroIconSVG, miniIconSVG };
-                };
-
-                const currentMeta = getMeta(code, isDay);
+                const currentMeta = this.getWeatherMeta(code, isDay, 0);
 
                 // Timezone-safe Jakarta index resolution directly from satellite time
                 let matchIdx = -1;
@@ -5099,7 +5134,7 @@
                     }
 
                     const hIsDay = hourNum >= 6 && hourNum < 18;
-                    const hMeta = getMeta(hCode, hIsDay);
+                    const hMeta = this.getWeatherMeta(hCode, hIsDay, hPrecip);
                     const timeLabel = i === 0 ? "Kini" : `${String(hourNum).padStart(2, "0")}:00`;
                     hourlyList.push({
                       timeStr: timeLabel,
@@ -5179,11 +5214,12 @@
           for (let i = 0; i < 5; i++) {
             const h = (jkHour + i) % 24;
             const hIsDay = h >= 6 && h < 18;
+            const meta = this.getWeatherMeta(2, hIsDay, 0);
             list.push({
               timeStr: i === 0 ? "Kini" : `${String(h).padStart(2, "0")}:00`,
               temp: 25,
               precip: 0,
-              iconSVG: this.getWeatherIconSVG(2, hIsDay, 18)
+              iconSVG: meta.miniIconSVG
             });
           }
           return list;
