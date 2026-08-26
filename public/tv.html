@@ -1105,242 +1105,186 @@
         color: #FFFFFF;
       }
 
-      .prayer-grid {
-        display: grid;
-        grid-template-columns: repeat(5, 1fr);
-        gap: 5px;
-      }
-
-      .prayer-item {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        background: rgba(241, 245, 249, 0.85);
-        border: 1px solid rgba(226, 232, 240, 0.9);
-        border-radius: 10px;
-        padding: 5px 2px;
-        transition: all 0.2s ease;
-      }
-
-      [data-theme="dark"] .prayer-item {
-        background: rgba(255, 255, 255, 0.05);
-        border-color: rgba(255, 255, 255, 0.08);
-      }
-
-      .prayer-item.active {
-        background: #0284C7;
-        border-color: #0284C7;
-        box-shadow: 0 4px 10px rgba(2, 132, 199, 0.35);
-      }
-
-      .prayer-item-name {
-        font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 9px;
-        font-weight: 800;
-        color: #64748B;
-        text-transform: uppercase;
-      }
-
-      .prayer-item.active .prayer-item-name {
-        color: rgba(255, 255, 255, 0.85);
-      }
-
-      .prayer-item-time {
-        font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 11px;
-        font-weight: 900;
-        color: #0F172A;
-        font-variant-numeric: tabular-nums;
-      }
-
-      .prayer-item.active .prayer-item-time {
-        color: #FFFFFF;
-      }
-
-      /* ===== 🫀 APPLE HEALTH ECG VITALS MONITOR WIDGET ===== */
-      .complication-ecg-card {
+      /* ===== 🕌 APPLE tvOS ULTRA-MODERN PRAYER SCHEDULE COMPLICATION ===== */
+      .complication-prayer-card {
         background: #FFFFFF;
         border-radius: 20px;
         position: relative;
         overflow: hidden;
       }
 
-      [data-theme="dark"] .complication-ecg-card {
+      [data-theme="dark"] .complication-prayer-card {
         background: #101726;
       }
 
-      .ecg-monitor-box {
+      .prayer-hero-spotlight {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 2px 0;
+        background: linear-gradient(135deg, rgba(2, 132, 199, 0.08) 0%, rgba(56, 189, 248, 0.03) 100%);
+        border: 1px solid rgba(2, 132, 199, 0.22);
+        border-radius: 14px;
+        padding: 10px 12px;
+        margin: 2px 0 6px 0;
       }
 
-      .ecg-leading-group {
+      [data-theme="dark"] .prayer-hero-spotlight {
+        background: linear-gradient(135deg, rgba(2, 132, 199, 0.14) 0%, rgba(56, 189, 248, 0.04) 100%);
+        border-color: rgba(2, 132, 199, 0.3);
+      }
+
+      .prayer-spotlight-left {
         display: flex;
         align-items: center;
-        gap: 9px;
+        gap: 10px;
       }
 
-      .ecg-heart-box {
-        width: 32px;
-        height: 32px;
-        border-radius: 10px;
-        background: linear-gradient(135deg, #10B981 0%, #059669 100%);
-        border: 1px solid rgba(255, 255, 255, 0.4);
+      .prayer-spotlight-icon-box {
+        width: 38px;
+        height: 38px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #38BDF8 0%, #0284C7 100%);
         display: flex;
         align-items: center;
         justify-content: center;
-        flex-shrink: 0;
-        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
-        animation: appleHeartSpring 1.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) infinite;
-      }
-
-      .ecg-heart-icon {
-        font-size: 18px;
         color: #FFFFFF;
+        box-shadow: 0 4px 12px rgba(2, 132, 199, 0.35);
+        flex-shrink: 0;
       }
 
-      @keyframes appleHeartSpring {
-        0%, 100% { transform: scale(1); }
-        15% { transform: scale(1.18); }
-        30% { transform: scale(0.98); }
-        45% { transform: scale(1.12); }
-        60% { transform: scale(1); }
+      .prayer-spotlight-icon-box .material-icons-round {
+        font-size: 22px;
       }
 
-      .ecg-vitals-meta {
+      .prayer-spotlight-meta {
         display: flex;
         flex-direction: column;
         line-height: 1.15;
       }
 
-      .ecg-vitals-status {
+      .prayer-spotlight-tag {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 12.5px;
+        font-size: 9.5px;
         font-weight: 800;
+        color: #0284C7;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+
+      .prayer-spotlight-name {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 16.5px;
+        font-weight: 900;
         color: #0F172A;
         letter-spacing: -0.01em;
       }
 
-      [data-theme="dark"] .ecg-vitals-status {
+      [data-theme="dark"] .prayer-spotlight-name {
         color: #FFFFFF;
       }
 
-      .ecg-vitals-sub {
-        font-family: "Inter", sans-serif;
-        font-size: 10px;
-        font-weight: 600;
-        color: #64748B;
+      .prayer-spotlight-right {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        line-height: 1.1;
       }
 
-      .ecg-rate-badge {
-        padding: 3px 9px;
-        border-radius: 9999px;
-        background: #F0FDF4;
-        border: 1px solid #BBF7D0;
+      .prayer-spotlight-time {
+        font-family: "Plus Jakarta Sans", monospace;
+        font-size: 22px;
+        font-weight: 900;
+        color: #0284C7;
+        letter-spacing: -0.02em;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .prayer-spotlight-badge {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 10.5px;
+        font-size: 9px;
         font-weight: 800;
         color: #059669;
-        letter-spacing: 0.04em;
+        background: #F0FDF4;
+        border: 1px solid #BBF7D0;
+        padding: 2px 7px;
+        border-radius: 9999px;
+        text-transform: uppercase;
+        margin-top: 2px;
       }
 
-      [data-theme="dark"] .ecg-rate-badge {
+      [data-theme="dark"] .prayer-spotlight-badge {
         background: rgba(16, 185, 129, 0.15);
         border-color: rgba(16, 185, 129, 0.35);
         color: #34D399;
       }
 
-      .ecg-wave-container {
-        position: relative;
-        width: 100%;
-        height: 42px;
-        background: rgba(248, 250, 252, 0.85);
-        border: 1px solid rgba(226, 234, 245, 0.8);
-        border-radius: 12px;
-        overflow: hidden;
-        margin: 4px 0;
-      }
-
-      [data-theme="dark"] .ecg-wave-container {
-        background: rgba(0, 0, 0, 0.25);
-        border-color: rgba(255, 255, 255, 0.06);
-      }
-
-      .ecg-svg {
-        width: 100%;
-        height: 100%;
-        display: block;
-      }
-
-      .ecg-path-bg {
-        fill: none;
-        stroke: rgba(16, 185, 129, 0.18);
-        stroke-width: 2;
-      }
-
-      .ecg-path-live {
-        fill: none;
-        stroke: #10B981;
-        stroke-width: 2.2;
-        stroke-linecap: round;
-        stroke-linejoin: round;
-        stroke-dasharray: 80 260;
-        animation: ecgWaveflow 2.4s linear infinite;
-        filter: drop-shadow(0 0 4px rgba(16, 185, 129, 0.7));
-      }
-
-      @keyframes ecgWaveflow {
-        0% { stroke-dashoffset: 340; }
-        100% { stroke-dashoffset: 0; }
-      }
-
-      .ecg-scan-line {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        width: 20px;
-        background: linear-gradient(90deg, rgba(16, 185, 129, 0) 0%, rgba(16, 185, 129, 0.25) 80%, rgba(255, 255, 255, 0.6) 100%);
-        pointer-events: none;
-        animation: ecgScan 2.4s linear infinite;
-      }
-
-      @keyframes ecgScan {
-        0% { left: -20px; }
-        100% { left: 100%; }
-      }
-
-      .ecg-indicators-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding-top: 2px;
-      }
-
-      .ecg-ind-item {
-        display: flex;
-        align-items: center;
+      .prayer-grid-modern {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
         gap: 5px;
+        margin-top: 2px;
       }
 
-      .ecg-ind-dot {
-        width: 6px;
-        height: 6px;
-        border-radius: 50%;
-        flex-shrink: 0;
+      .prayer-pill-modern {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: rgba(241, 245, 249, 0.95);
+        border: 1px solid rgba(226, 232, 240, 0.95);
+        border-radius: 12px;
+        padding: 7px 3px;
+        gap: 2px;
+        transition: all 0.25s ease;
       }
 
-      .ecg-ind-text {
+      [data-theme="dark"] .prayer-pill-modern {
+        background: rgba(255, 255, 255, 0.04);
+        border-color: rgba(255, 255, 255, 0.08);
+      }
+
+      .prayer-pill-modern.active {
+        background: linear-gradient(145deg, #0284C7 0%, #0369A1 100%);
+        border-color: rgba(56, 189, 248, 0.5);
+        box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.4);
+      }
+
+      .prayer-pill-icon {
+        font-size: 15px;
+        color: #64748B;
+      }
+
+      .prayer-pill-modern.active .prayer-pill-icon {
+        color: #BAE6FD;
+      }
+
+      .prayer-pill-name {
         font-family: "Plus Jakarta Sans", sans-serif;
         font-size: 9.5px;
-        font-weight: 700;
-        color: #475569;
+        font-weight: 800;
+        color: #64748B;
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
       }
 
-      [data-theme="dark"] .ecg-ind-text {
-        color: #94A3B8;
+      .prayer-pill-modern.active .prayer-pill-name {
+        color: #E0F2FE;
+      }
+
+      .prayer-pill-time {
+        font-family: "Plus Jakarta Sans", monospace;
+        font-size: 12.5px;
+        font-weight: 900;
+        color: #0F172A;
+        font-variant-numeric: tabular-nums;
+      }
+
+      [data-theme="dark"] .prayer-pill-modern .prayer-pill-time {
+        color: #FFFFFF;
+      }
+
+      .prayer-pill-modern.active .prayer-pill-time {
+        color: #FFFFFF;
       }
 
       /* Force dark text in sidebar when in light mode, but adapt in dark mode */
@@ -5017,12 +4961,22 @@
 
           const w = this._weatherCache;
 
+          const prayerIcons = {
+            Subuh: "wb_twilight",
+            Dzuhur: "wb_sunny",
+            Ashar: "filter_drama",
+            Maghrib: "bedtime",
+            Isya: "nights_stay"
+          };
+
           const prayerPillsHTML = pInfo.prayers.map((p) => {
             const isActive = p.name === nextName ? "active" : "";
+            const icon = prayerIcons[p.name] || "schedule";
             return `
-              <div class="prayer-item ${isActive}">
-                <span class="prayer-item-name">${p.name}</span>
-                <span class="prayer-item-time">${p.timeStr}</span>
+              <div class="prayer-pill-modern ${isActive}">
+                <span class="material-icons-round prayer-pill-icon">${icon}</span>
+                <span class="prayer-pill-name">${p.name}</span>
+                <span class="prayer-pill-time">${p.timeStr}</span>
               </div>
             `;
           }).join("");
@@ -5066,8 +5020,8 @@
                 </div>
               </div>
 
-              <!-- Complication 2: Waktu Sholat Purbalingga (Jawa Tengah) -->
-              <div class="complication-card">
+              <!-- Complication 2: 🕌 Apple tvOS Ultra-Modern Prayer Schedule -->
+              <div class="complication-card complication-prayer-card">
                 <div class="complication-header">
                   <div class="complication-title">
                     <span class="material-icons-round" style="font-size:15px; color:#0284C7;">schedule</span>
@@ -5076,69 +5030,24 @@
                   <span class="complication-tag tag-sky">KEMENAG RI</span>
                 </div>
 
-                <div class="prayer-hero-row">
-                  <div class="prayer-hero-col">
-                    <span class="prayer-hero-label">SHOLAT BERIKUTNYA</span>
-                    <span class="prayer-hero-name" id="prayerHeroName">${nextName} (${pInfo.nextPrayer.timeStr} WIB)</span>
+                <div class="prayer-hero-spotlight">
+                  <div class="prayer-spotlight-left">
+                    <div class="prayer-spotlight-icon-box">
+                      <span class="material-icons-round">${prayerIcons[nextName] || "schedule"}</span>
+                    </div>
+                    <div class="prayer-spotlight-meta">
+                      <span class="prayer-spotlight-tag">SHOLAT BERIKUTNYA</span>
+                      <span class="prayer-spotlight-name">${nextName}</span>
+                    </div>
                   </div>
-                  <div class="prayer-active-pill">
-                    <span class="material-icons-round" style="font-size:12px;">notifications_active</span>
-                    <span>SELANJUTNYA</span>
+                  <div class="prayer-spotlight-right">
+                    <span class="prayer-spotlight-time">${pInfo.nextPrayer.timeStr} <small style="font-size:11px;font-weight:800;">WIB</small></span>
+                    <span class="prayer-spotlight-badge">SELANJUTNYA</span>
                   </div>
                 </div>
 
-                <div class="prayer-grid">
+                <div class="prayer-grid-modern">
                   ${prayerPillsHTML}
-                </div>
-              </div>
-
-              <!-- Complication 3: 🫀 Apple Health Live ECG Vitals Monitor -->
-              <div class="complication-card complication-ecg-card">
-                <div class="complication-header">
-                  <div class="complication-title">
-                    <span class="material-icons-round" style="font-size:15px; color:#10B981;">monitor_heart</span>
-                    <span>STATUS KLINIS &amp; KESIAPAN RS</span>
-                  </div>
-                  <span class="complication-tag tag-emerald">OPTIMAL 100%</span>
-                </div>
-
-                <div class="ecg-monitor-box">
-                  <div class="ecg-leading-group">
-                    <div class="ecg-heart-box">
-                      <span class="material-icons-round ecg-heart-icon">favorite</span>
-                    </div>
-                    <div class="ecg-vitals-meta">
-                      <span class="ecg-vitals-status">PELAYANAN AKTIF</span>
-                      <span class="ecg-vitals-sub">Seluruh Poli Beroperasi Sesuai Jadwal</span>
-                    </div>
-                  </div>
-                  <div class="ecg-rate-badge">
-                    <span>NORMAL</span>
-                  </div>
-                </div>
-
-                <!-- Live Continuous SVG ECG Waveform -->
-                <div class="ecg-wave-container">
-                  <svg class="ecg-svg" viewBox="0 0 340 42" preserveAspectRatio="none">
-                    <path class="ecg-path-bg" d="M0,21 L40,21 L48,21 L54,10 L60,32 L66,3 L72,38 L78,21 L86,21 L96,15 L104,21 L140,21 L148,21 L154,10 L160,32 L166,3 L172,38 L178,21 L186,21 L196,15 L204,21 L240,21 L248,21 L254,10 L260,32 L266,3 L272,38 L278,21 L286,21 L296,15 L304,21 L340,21" />
-                    <path class="ecg-path-live" d="M0,21 L40,21 L48,21 L54,10 L60,32 L66,3 L72,38 L78,21 L86,21 L96,15 L104,21 L140,21 L148,21 L154,10 L160,32 L166,3 L172,38 L178,21 L186,21 L196,15 L204,21 L240,21 L248,21 L254,10 L260,32 L266,3 L272,38 L278,21 L286,21 L296,15 L304,21 L340,21" />
-                  </svg>
-                  <div class="ecg-scan-line"></div>
-                </div>
-
-                <div class="ecg-indicators-row">
-                  <div class="ecg-ind-item">
-                    <span class="ecg-ind-dot" style="background:#10B981; box-shadow:0 0 6px #10B981;"></span>
-                    <span class="ecg-ind-text">Admisi: Lancar</span>
-                  </div>
-                  <div class="ecg-ind-item">
-                    <span class="ecg-ind-dot" style="background:#0284C7; box-shadow:0 0 6px #0284C7;"></span>
-                    <span class="ecg-ind-text">Farmasi: Cepat</span>
-                  </div>
-                  <div class="ecg-ind-item">
-                    <span class="ecg-ind-dot" style="background:#8B5CF6; box-shadow:0 0 6px #8B5CF6;"></span>
-                    <span class="ecg-ind-text">IGD: Siaga 24 Jam</span>
-                  </div>
                 </div>
               </div>
             </div>
