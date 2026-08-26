@@ -1287,6 +1287,135 @@
         color: #FFFFFF;
       }
 
+      /* ===== ⚡ APPLE tvOS LIVE SERVICE READINESS ORNAMENT ===== */
+      .apple-service-capsule {
+        background: #FFFFFF;
+        border-radius: 16px;
+        border: 1px solid rgba(226, 234, 245, 0.95);
+        box-shadow: 0 4px 14px rgba(45, 65, 95, 0.05), inset 0 1px 1px #FFFFFF;
+        padding: 9px 12px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      [data-theme="dark"] .apple-service-capsule {
+        background: #101726;
+        border-color: rgba(255, 255, 255, 0.08);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.08);
+      }
+
+      .service-capsule-left {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+      }
+
+      .beacon-container {
+        position: relative;
+        width: 16px;
+        height: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+
+      .beacon-radar-ring {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background: rgba(16, 185, 129, 0.4);
+        animation: beaconPulse 2s cubic-bezier(0.2, 0.8, 0.2, 1) infinite;
+      }
+
+      .beacon-core-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #10B981;
+        box-shadow: 0 0 8px #10B981;
+        position: relative;
+        z-index: 2;
+      }
+
+      @keyframes beaconPulse {
+        0% { transform: scale(0.6); opacity: 0.9; }
+        80%, 100% { transform: scale(2.2); opacity: 0; }
+      }
+
+      .service-capsule-meta {
+        display: flex;
+        flex-direction: column;
+        line-height: 1.15;
+      }
+
+      .service-capsule-title {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 11px;
+        font-weight: 800;
+        color: #0F172A;
+        letter-spacing: -0.01em;
+      }
+
+      [data-theme="dark"] .service-capsule-title {
+        color: #FFFFFF;
+      }
+
+      .service-capsule-sub {
+        font-family: "Inter", sans-serif;
+        font-size: 9.5px;
+        font-weight: 600;
+        color: #64748B;
+      }
+
+      .service-capsule-tags {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .service-micro-tag {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 9px;
+        font-weight: 800;
+        padding: 2.5px 7px;
+        border-radius: 9999px;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+        display: flex;
+        align-items: center;
+        gap: 3px;
+      }
+
+      .tag-igd {
+        background: #F0FDF4;
+        color: #059669;
+        border: 1px solid #BBF7D0;
+      }
+
+      [data-theme="dark"] .tag-igd {
+        background: rgba(16, 185, 129, 0.15);
+        border-color: rgba(16, 185, 129, 0.3);
+        color: #34D399;
+      }
+
+      .tag-pharmacy {
+        background: #F0F9FF;
+        color: #0284C7;
+        border: 1px solid #BAE6FD;
+      }
+
+      [data-theme="dark"] .tag-pharmacy {
+        background: rgba(2, 132, 199, 0.15);
+        border-color: rgba(2, 132, 199, 0.3);
+        color: #38BDF8;
+      }
+
       /* Force dark text in sidebar when in light mode, but adapt in dark mode */
       [data-theme="light"] .sidebar-panel {
         color: #1d1d1f;
@@ -5048,6 +5177,30 @@
 
                 <div class="prayer-grid-modern">
                   ${prayerPillsHTML}
+                </div>
+              </div>
+
+              <!-- Ornament: ⚡ Apple tvOS Live Service Readiness Capsule -->
+              <div class="apple-service-capsule">
+                <div class="service-capsule-left">
+                  <div class="beacon-container">
+                    <div class="beacon-radar-ring"></div>
+                    <div class="beacon-core-dot"></div>
+                  </div>
+                  <div class="service-capsule-meta">
+                    <span class="service-capsule-title">KESIAPAN LAYANAN RS</span>
+                    <span class="service-capsule-sub">Siaga Penuh &amp; Siap Melayani</span>
+                  </div>
+                </div>
+                <div class="service-capsule-tags">
+                  <span class="service-micro-tag tag-igd">
+                    <span class="material-icons-round" style="font-size:11px;">emergency</span>
+                    <span>IGD 24 JAM</span>
+                  </span>
+                  <span class="service-micro-tag tag-pharmacy">
+                    <span class="material-icons-round" style="font-size:11px;">local_pharmacy</span>
+                    <span>FARMASI</span>
+                  </span>
                 </div>
               </div>
             </div>
