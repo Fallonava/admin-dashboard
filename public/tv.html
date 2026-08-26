@@ -949,86 +949,112 @@
         border: 1px solid #FDE68A;
       }
 
-      .prayer-hero-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        background: linear-gradient(135deg, rgba(2, 132, 199, 0.08) 0%, rgba(56, 189, 248, 0.02) 100%);
-        border: 1px solid rgba(2, 132, 199, 0.2);
-        border-radius: 14px;
-        padding: 8px 12px;
+      /* ===== ⛅ APPLE tvOS NATIVE LIVING WEATHER COMPLICATION ===== */
+      .complication-weather-card {
+        background: #FFFFFF;
+        border-radius: 20px;
+        position: relative;
+        overflow: hidden;
+        transition: background 0.6s ease, border-color 0.6s ease;
       }
 
-      .prayer-hero-col {
-        display: flex;
-        flex-direction: column;
+      [data-theme="dark"] .complication-weather-card {
+        background: #101726;
       }
 
-      .prayer-hero-label {
-        font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 10px;
-        font-weight: 800;
-        color: #0284C7;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
+      /* Apple Atmospheric Themed Gradient Backgrounds */
+      .weather-theme-day-sunny {
+        background: linear-gradient(145deg, #F0F9FF 0%, #E0F2FE 50%, #BAE6FD 100%) !important;
+        border-color: #7DD3FC !important;
+      }
+      [data-theme="dark"] .weather-theme-day-sunny {
+        background: linear-gradient(145deg, #0C4A6E 0%, #075985 60%, #0284C7 100%) !important;
+        border-color: rgba(56, 189, 248, 0.4) !important;
       }
 
-      .prayer-hero-name {
-        font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 15px;
-        font-weight: 900;
-        color: #0F172A;
-        line-height: 1.15;
+      .weather-theme-day-cloudy {
+        background: linear-gradient(145deg, #F8FAFC 0%, #EDF2F7 50%, #E2E8F0 100%) !important;
+        border-color: #CBD5E1 !important;
+      }
+      [data-theme="dark"] .weather-theme-day-cloudy {
+        background: linear-gradient(145deg, #1E293B 0%, #0F172A 100%) !important;
+        border-color: rgba(255, 255, 255, 0.12) !important;
       }
 
-      [data-theme="dark"] .prayer-hero-name {
-        color: #FFFFFF;
+      .weather-theme-night-clear, .weather-theme-night-cloudy {
+        background: linear-gradient(145deg, #F8FAFC 0%, #EEF2F6 100%) !important;
+        border-color: #E2E8F0 !important;
+      }
+      [data-theme="dark"] .weather-theme-night-clear, [data-theme="dark"] .weather-theme-night-cloudy {
+        background: linear-gradient(145deg, #090D16 0%, #111827 50%, #1E1B4B 100%) !important;
+        border-color: rgba(99, 102, 241, 0.35) !important;
       }
 
-      .prayer-active-pill {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        background: #0284C7;
-        color: #FFFFFF;
-        padding: 3px 10px;
-        border-radius: 9999px;
-        font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 11px;
-        font-weight: 800;
-        letter-spacing: 0.03em;
-        box-shadow: 0 2px 8px rgba(2, 132, 199, 0.35);
+      .weather-theme-rainy {
+        background: linear-gradient(145deg, #F0FDFA 0%, #CCFBF1 100%) !important;
+        border-color: #99F6E4 !important;
+      }
+      [data-theme="dark"] .weather-theme-rainy {
+        background: linear-gradient(145deg, #042F2E 0%, #134E4A 50%, #0F172A 100%) !important;
+        border-color: rgba(45, 212, 191, 0.35) !important;
       }
 
-      /* ===== ⛅ APPLE tvOS WEATHER COMPLICATION ===== */
+      /* Apple Living Sun/Moon Ambient Halo Beam */
+      .weather-ambient-halo {
+        position: absolute;
+        top: -24px;
+        right: -24px;
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(56, 189, 248, 0.4) 0%, rgba(56, 189, 248, 0) 70%);
+        pointer-events: none;
+        animation: appleAtmosphereGlow 4s ease-in-out infinite alternate;
+      }
+
+      @keyframes appleAtmosphereGlow {
+        0% { transform: scale(0.85) translate3d(0, 0, 0); opacity: 0.5; }
+        100% { transform: scale(1.2) translate3d(0, 0, 0); opacity: 0.95; }
+      }
+
+      /* Dynamic Floating Weather Icon */
+      .weather-icon-animated {
+        font-size: 34px;
+        line-height: 1;
+        display: inline-block;
+        filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.15));
+        animation: appleWeatherFloat 3.5s ease-in-out infinite alternate;
+      }
+
+      @keyframes appleWeatherFloat {
+        0% { transform: translateY(0) rotate(0deg); }
+        50% { transform: translateY(-4px) rotate(2deg); }
+        100% { transform: translateY(0) rotate(-1deg); }
+      }
+
+      /* Apple Hero Temperature Layout */
       .weather-hero-row {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        background: linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(56, 189, 248, 0.04) 100%);
-        border: 1px solid rgba(245, 158, 11, 0.2);
-        border-radius: 14px;
-        padding: 8px 12px;
-      }
-
-      [data-theme="dark"] .weather-hero-row {
-        background: linear-gradient(135deg, rgba(245, 158, 11, 0.12) 0%, rgba(56, 189, 248, 0.05) 100%);
-        border-color: rgba(245, 158, 11, 0.25);
+        padding: 4px 2px 8px 2px;
+        position: relative;
+        z-index: 1;
       }
 
       .weather-temp-group {
         display: flex;
-        align-items: baseline;
-        gap: 2px;
+        align-items: flex-start;
       }
 
       .weather-temp-val {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 26px;
+        font-size: 38px;
         font-weight: 900;
         color: #0F172A;
-        line-height: 1;
-        letter-spacing: -0.02em;
+        line-height: 0.95;
+        letter-spacing: -0.04em;
+        font-variant-numeric: tabular-nums;
       }
 
       [data-theme="dark"] .weather-temp-val {
@@ -1036,53 +1062,133 @@
       }
 
       .weather-temp-unit {
-        font-size: 15px;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 20px;
         font-weight: 800;
-        color: #D97706;
+        color: #0284C7;
+        margin-left: 2px;
+        line-height: 1;
+      }
+
+      [data-theme="dark"] .weather-temp-unit {
+        color: #38BDF8;
       }
 
       .weather-condition-group {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 10px;
       }
 
-      .weather-condition-icon {
-        font-size: 26px;
-        line-height: 1;
+      .weather-condition-meta {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        line-height: 1.15;
       }
 
       .weather-condition-text {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 13px;
-        font-weight: 800;
+        font-size: 14.5px;
+        font-weight: 900;
         color: #0F172A;
-        line-height: 1.15;
+        letter-spacing: -0.01em;
       }
 
       [data-theme="dark"] .weather-condition-text {
-        color: #F8FAFC;
+        color: #FFFFFF;
       }
 
+      .weather-range-text {
+        font-family: "Plus Jakarta Sans", monospace;
+        font-size: 10.5px;
+        font-weight: 700;
+        color: #64748B;
+        margin-top: 2px;
+      }
+
+      [data-theme="dark"] .weather-range-text {
+        color: #94A3B8;
+      }
+
+      /* Apple Hourly Forecast Timeline Strip */
+      .weather-hourly-strip {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 4px;
+        background: rgba(241, 245, 249, 0.7);
+        border: 1px solid rgba(226, 232, 240, 0.8);
+        border-radius: 12px;
+        padding: 6px 4px;
+        margin: 2px 0 8px 0;
+        position: relative;
+        z-index: 1;
+      }
+
+      [data-theme="dark"] .weather-hourly-strip {
+        background: rgba(0, 0, 0, 0.25);
+        border-color: rgba(255, 255, 255, 0.08);
+      }
+
+      .weather-hourly-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
+      }
+
+      .weather-hourly-time {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 9.5px;
+        font-weight: 800;
+        color: #64748B;
+        text-transform: uppercase;
+      }
+
+      [data-theme="dark"] .weather-hourly-time {
+        color: #94A3B8;
+      }
+
+      .weather-hourly-icon {
+        font-size: 15px;
+        line-height: 1;
+        margin: 1px 0;
+      }
+
+      .weather-hourly-temp {
+        font-family: "Plus Jakarta Sans", monospace;
+        font-size: 11px;
+        font-weight: 900;
+        color: #0F172A;
+      }
+
+      [data-theme="dark"] .weather-hourly-temp {
+        color: #FFFFFF;
+      }
+
+      /* Apple 3-Metrics Grid */
       .weather-metrics-grid {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         gap: 5px;
+        position: relative;
+        z-index: 1;
       }
 
       .weather-metric-item {
         display: flex;
         align-items: center;
-        gap: 4px;
-        background: rgba(248, 250, 252, 0.8);
+        gap: 5px;
+        background: rgba(255, 255, 255, 0.8);
         border: 1px solid rgba(226, 234, 245, 0.8);
-        border-radius: 9px;
-        padding: 5px 6px;
+        border-radius: 10px;
+        padding: 5px 8px;
       }
 
       [data-theme="dark"] .weather-metric-item {
-        background: rgba(255, 255, 255, 0.03);
-        border-color: rgba(255, 255, 255, 0.06);
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.08);
       }
 
       .weather-metric-label {
@@ -1091,6 +1197,10 @@
         font-weight: 800;
         color: #64748B;
         text-transform: uppercase;
+      }
+
+      [data-theme="dark"] .weather-metric-label {
+        color: #94A3B8;
       }
 
       .weather-metric-val {
@@ -1285,135 +1395,6 @@
 
       .prayer-pill-modern.active .prayer-pill-time {
         color: #FFFFFF;
-      }
-
-      /* ===== ⚡ APPLE tvOS LIVE SERVICE READINESS ORNAMENT ===== */
-      .apple-service-capsule {
-        background: #FFFFFF;
-        border-radius: 16px;
-        border: 1px solid rgba(226, 234, 245, 0.95);
-        box-shadow: 0 4px 14px rgba(45, 65, 95, 0.05), inset 0 1px 1px #FFFFFF;
-        padding: 9px 12px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 8px;
-        position: relative;
-        overflow: hidden;
-      }
-
-      [data-theme="dark"] .apple-service-capsule {
-        background: #101726;
-        border-color: rgba(255, 255, 255, 0.08);
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.08);
-      }
-
-      .service-capsule-left {
-        display: flex;
-        align-items: center;
-        gap: 9px;
-      }
-
-      .beacon-container {
-        position: relative;
-        width: 16px;
-        height: 16px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-      }
-
-      .beacon-radar-ring {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        border-radius: 50%;
-        background: rgba(16, 185, 129, 0.4);
-        animation: beaconPulse 2s cubic-bezier(0.2, 0.8, 0.2, 1) infinite;
-      }
-
-      .beacon-core-dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background: #10B981;
-        box-shadow: 0 0 8px #10B981;
-        position: relative;
-        z-index: 2;
-      }
-
-      @keyframes beaconPulse {
-        0% { transform: scale(0.6); opacity: 0.9; }
-        80%, 100% { transform: scale(2.2); opacity: 0; }
-      }
-
-      .service-capsule-meta {
-        display: flex;
-        flex-direction: column;
-        line-height: 1.15;
-      }
-
-      .service-capsule-title {
-        font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 11px;
-        font-weight: 800;
-        color: #0F172A;
-        letter-spacing: -0.01em;
-      }
-
-      [data-theme="dark"] .service-capsule-title {
-        color: #FFFFFF;
-      }
-
-      .service-capsule-sub {
-        font-family: "Inter", sans-serif;
-        font-size: 9.5px;
-        font-weight: 600;
-        color: #64748B;
-      }
-
-      .service-capsule-tags {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-      }
-
-      .service-micro-tag {
-        font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 9px;
-        font-weight: 800;
-        padding: 2.5px 7px;
-        border-radius: 9999px;
-        letter-spacing: 0.02em;
-        text-transform: uppercase;
-        display: flex;
-        align-items: center;
-        gap: 3px;
-      }
-
-      .tag-igd {
-        background: #F0FDF4;
-        color: #059669;
-        border: 1px solid #BBF7D0;
-      }
-
-      [data-theme="dark"] .tag-igd {
-        background: rgba(16, 185, 129, 0.15);
-        border-color: rgba(16, 185, 129, 0.3);
-        color: #34D399;
-      }
-
-      .tag-pharmacy {
-        background: #F0F9FF;
-        color: #0284C7;
-        border: 1px solid #BAE6FD;
-      }
-
-      [data-theme="dark"] .tag-pharmacy {
-        background: rgba(2, 132, 199, 0.15);
-        border-color: rgba(2, 132, 199, 0.3);
-        color: #38BDF8;
       }
 
       /* Force dark text in sidebar when in light mode, but adapt in dark mode */
@@ -4913,13 +4894,24 @@
 
         // Apple tvOS Weather Complication (Purbalingga, Central Java)
         _weatherCache: {
-          temp: 28,
-          humidity: 72,
+          temp: 27,
+          humidity: 73,
           apparent: 31,
           windSpeed: 5,
-          code: 2,
+          tempMax: 31,
+          tempMin: 24,
+          isDay: 0,
+          code: 3,
           condition: "Sebagian Berawan",
           icon: "⛅",
+          atmosphereTheme: "night-cloudy",
+          hourly: [
+            { timeStr: "Kini", temp: 27, icon: "⛅" },
+            { timeStr: "19:00", temp: 26, icon: "☁️" },
+            { timeStr: "20:00", temp: 26, icon: "🌙" },
+            { timeStr: "21:00", temp: 25, icon: "🌙" },
+            { timeStr: "22:00", temp: 25, icon: "🌧️" }
+          ],
           lastFetched: 0
         },
 
@@ -4929,44 +4921,84 @@
             return this._weatherCache;
           }
           try {
-            const res = await fetch("https://api.open-meteo.com/v1/forecast?latitude=-7.3888&longitude=109.3639&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m&timezone=Asia%2FJakarta");
+            const res = await fetch("https://api.open-meteo.com/v1/forecast?latitude=-7.3888&longitude=109.3639&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,is_day&hourly=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min&timezone=Asia%2FJakarta&forecast_days=1");
             if (res.ok) {
               const data = await res.json();
               if (data && data.current) {
                 const cur = data.current;
                 const code = cur.weather_code;
-                let condition = "Cerah Berawan";
-                let icon = "⛅";
-                const isNight = new Date().getHours() >= 18 || new Date().getHours() < 6;
+                const isDay = cur.is_day === 1;
 
-                if (code === 0) {
-                  condition = isNight ? "Cerah Berbintang" : "Cerah Terang";
-                  icon = isNight ? "🌙" : "☀️";
-                } else if (code <= 3) {
-                  condition = "Sebagian Berawan";
-                  icon = isNight ? "☁️" : "⛅";
-                } else if (code <= 48) {
-                  condition = "Udara Berkabut";
-                  icon = "🌫️";
-                } else if (code <= 57) {
-                  condition = "Hujan Gerimis";
-                  icon = "🌦️";
-                } else if (code <= 67 || (code >= 80 && code <= 82)) {
-                  condition = "Hujan Ringan";
-                  icon = "🌧️";
-                } else if (code >= 95) {
-                  condition = "Hujan Petir";
-                  icon = "⛈️";
+                const getMeta = (c, dayFlag) => {
+                  let condition = "Cerah Berawan";
+                  let icon = "⛅";
+                  let theme = dayFlag ? "day-clear" : "night-clear";
+
+                  if (c === 0) {
+                    condition = dayFlag ? "Cerah Terang" : "Cerah Berbintang";
+                    icon = dayFlag ? "☀️" : "🌙";
+                    theme = dayFlag ? "day-sunny" : "night-clear";
+                  } else if (c <= 3) {
+                    condition = c === 1 ? "Sebagian Berawan" : (c === 2 ? "Berawan" : "Mendung");
+                    icon = dayFlag ? (c === 1 ? "🌤️" : "⛅") : "☁️";
+                    theme = dayFlag ? "day-cloudy" : "night-cloudy";
+                  } else if (c <= 48) {
+                    condition = "Udara Berkabut";
+                    icon = "🌫️";
+                    theme = "day-cloudy";
+                  } else if (c <= 57) {
+                    condition = "Hujan Gerimis";
+                    icon = "🌦️";
+                    theme = "rainy";
+                  } else if (c <= 67 || (c >= 80 && code <= 82)) {
+                    condition = "Hujan";
+                    icon = "🌧️";
+                    theme = "rainy";
+                  } else if (c >= 95) {
+                    condition = "Hujan Petir";
+                    icon = "⛈️";
+                    theme = "rainy";
+                  }
+                  return { condition, icon, theme };
+                };
+
+                const currentMeta = getMeta(code, isDay);
+
+                // Hourly slice next 5 hours
+                const currentHour = new Date().getHours();
+                const hourlyList = [];
+                if (data.hourly && data.hourly.time && data.hourly.temperature_2m) {
+                  for (let i = 0; i < 5; i++) {
+                    const targetIdx = (currentHour + i) % 24;
+                    const hTemp = Math.round(data.hourly.temperature_2m[targetIdx]);
+                    const hCode = data.hourly.weather_code ? data.hourly.weather_code[targetIdx] : code;
+                    const hIsDay = (currentHour + i) % 24 >= 6 && (currentHour + i) % 24 < 18;
+                    const hMeta = getMeta(hCode, hIsDay);
+                    const timeLabel = i === 0 ? "Kini" : `${String((currentHour + i) % 24).padStart(2, "0")}:00`;
+                    hourlyList.push({
+                      timeStr: timeLabel,
+                      temp: hTemp,
+                      icon: hMeta.icon
+                    });
+                  }
                 }
+
+                const tempMax = data.daily && data.daily.temperature_2m_max ? Math.round(data.daily.temperature_2m_max[0]) : Math.round(cur.temperature_2m) + 3;
+                const tempMin = data.daily && data.daily.temperature_2m_min ? Math.round(data.daily.temperature_2m_min[0]) : Math.round(cur.temperature_2m) - 4;
 
                 this._weatherCache = {
                   temp: Math.round(cur.temperature_2m),
                   humidity: Math.round(cur.relative_humidity_2m),
                   apparent: Math.round(cur.apparent_temperature),
                   windSpeed: Math.round(cur.wind_speed_10m),
+                  tempMax,
+                  tempMin,
+                  isDay,
                   code,
-                  condition,
-                  icon,
+                  condition: currentMeta.condition,
+                  icon: currentMeta.icon,
+                  atmosphereTheme: currentMeta.theme,
+                  hourly: hourlyList,
                   lastFetched: now
                 };
 
@@ -4987,6 +5019,7 @@
           if ($("tvWeatherHumidity")) $("tvWeatherHumidity").textContent = `${w.humidity}%`;
           if ($("tvWeatherApparent")) $("tvWeatherApparent").textContent = `${w.apparent}°C`;
           if ($("tvWeatherWind")) $("tvWeatherWind").textContent = `${w.windSpeed} km/j`;
+          if ($("tvWeatherRange")) $("tvWeatherRange").textContent = `H:${w.tempMax}° • L:${w.tempMin}°`;
         },
 
         // Apple Watch Complication: Astronomical Solar Prayer Schedule for Purbalingga (Jawa Tengah)
@@ -5110,27 +5143,44 @@
             `;
           }).join("");
 
+          const hourlyPillsHTML = (w.hourly || []).map((h) => `
+            <div class="weather-hourly-item">
+              <span class="weather-hourly-time">${h.timeStr}</span>
+              <span class="weather-hourly-icon">${h.icon}</span>
+              <span class="weather-hourly-temp">${h.temp}°</span>
+            </div>
+          `).join("");
+
           return `
             <div class="sidebar-complications">
-              <!-- Complication 1: Apple tvOS Weather Widget (Purbalingga) -->
-              <div class="complication-card">
+              <!-- Complication 1: ⛅ Apple tvOS Native Living Weather Widget (Purbalingga) -->
+              <div class="complication-card complication-weather-card weather-theme-${w.atmosphereTheme}">
+                <div class="weather-ambient-halo"></div>
                 <div class="complication-header">
                   <div class="complication-title">
-                    <span class="material-icons-round" style="font-size:15px; color:#D97706;">wb_sunny</span>
-                    <span>CUACA &amp; SUHU PURBALINGGA</span>
+                    <span class="material-icons-round" style="font-size:15px; color:#0284C7;">wb_sunny</span>
+                    <span>CUACA PURBALINGGA</span>
                   </div>
-                  <span class="complication-tag tag-amber">LIVE BMKG</span>
+                  <span class="complication-tag tag-sky">LIVE BMKG</span>
                 </div>
 
                 <div class="weather-hero-row">
                   <div class="weather-temp-group">
                     <span class="weather-temp-val" id="tvWeatherTemp">${w.temp}</span>
-                    <span class="weather-temp-unit">°C</span>
+                    <span class="weather-temp-unit">°</span>
                   </div>
                   <div class="weather-condition-group">
-                    <span class="weather-condition-icon" id="tvWeatherIcon">${w.icon}</span>
-                    <span class="weather-condition-text" id="tvWeatherCondition">${w.condition}</span>
+                    <div class="weather-condition-meta">
+                      <span class="weather-condition-text" id="tvWeatherCondition">${w.condition}</span>
+                      <span class="weather-range-text" id="tvWeatherRange">H:${w.tempMax}° • L:${w.tempMin}°</span>
+                    </div>
+                    <span class="weather-icon-animated" id="tvWeatherIcon">${w.icon}</span>
                   </div>
+                </div>
+
+                <!-- Apple 5-Hour Forecast Timeline Strip -->
+                <div class="weather-hourly-strip">
+                  ${hourlyPillsHTML}
                 </div>
 
                 <div class="weather-metrics-grid">
@@ -5177,30 +5227,6 @@
 
                 <div class="prayer-grid-modern">
                   ${prayerPillsHTML}
-                </div>
-              </div>
-
-              <!-- Ornament: ⚡ Apple tvOS Live Service Readiness Capsule -->
-              <div class="apple-service-capsule">
-                <div class="service-capsule-left">
-                  <div class="beacon-container">
-                    <div class="beacon-radar-ring"></div>
-                    <div class="beacon-core-dot"></div>
-                  </div>
-                  <div class="service-capsule-meta">
-                    <span class="service-capsule-title">KESIAPAN LAYANAN RS</span>
-                    <span class="service-capsule-sub">Siaga Penuh &amp; Siap Melayani</span>
-                  </div>
-                </div>
-                <div class="service-capsule-tags">
-                  <span class="service-micro-tag tag-igd">
-                    <span class="material-icons-round" style="font-size:11px;">emergency</span>
-                    <span>IGD 24 JAM</span>
-                  </span>
-                  <span class="service-micro-tag tag-pharmacy">
-                    <span class="material-icons-round" style="font-size:11px;">local_pharmacy</span>
-                    <span>FARMASI</span>
-                  </span>
                 </div>
               </div>
             </div>
