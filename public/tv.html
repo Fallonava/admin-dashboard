@@ -999,37 +999,93 @@
         border-color: rgba(45, 212, 191, 0.35) !important;
       }
 
-      /* Apple Living Sun/Moon Ambient Halo Beam */
+      /* Dynamic Solar Ambient Halo Beam (Changes color dynamically with the solar cycle) */
       .weather-ambient-halo {
         position: absolute;
-        top: -24px;
-        right: -24px;
-        width: 120px;
-        height: 120px;
+        top: -30px;
+        right: -30px;
+        width: 140px;
+        height: 140px;
         border-radius: 50%;
-        background: radial-gradient(circle, rgba(56, 189, 248, 0.4) 0%, rgba(56, 189, 248, 0) 70%);
         pointer-events: none;
         animation: appleAtmosphereGlow 4s ease-in-out infinite alternate;
+        transition: background 1s ease;
+      }
+
+      /* 🌅 Dawn (05:00 - 07:00 WIB) - Warm Sunrise Peach & Amber */
+      .solar-dawn .weather-ambient-halo {
+        background: radial-gradient(circle, rgba(251, 146, 60, 0.6) 0%, rgba(244, 63, 94, 0.3) 45%, transparent 70%);
+      }
+
+      /* ☀️ Day (07:00 - 15:00 WIB) - Radiant Sunbeam Gold & Azure */
+      .solar-day .weather-ambient-halo {
+        background: radial-gradient(circle, rgba(250, 204, 21, 0.6) 0%, rgba(56, 189, 248, 0.35) 45%, transparent 70%);
+      }
+
+      /* 🌇 Dusk / Sunset (15:00 - 18:00 WIB) - Burning Orange & Twilight Violet */
+      .solar-dusk .weather-ambient-halo {
+        background: radial-gradient(circle, rgba(249, 115, 22, 0.6) 0%, rgba(168, 85, 247, 0.35) 45%, transparent 70%);
+      }
+
+      /* 🌙 Night (18:00 - 05:00 WIB) - Deep Moonlit Sapphire & Electric Indigo */
+      .solar-night .weather-ambient-halo {
+        background: radial-gradient(circle, rgba(99, 102, 241, 0.55) 0%, rgba(56, 189, 248, 0.25) 45%, transparent 70%);
+      }
+
+      /* 🌧️ Rainy Override */
+      .weather-theme-rainy .weather-ambient-halo {
+        background: radial-gradient(circle, rgba(45, 212, 191, 0.5) 0%, rgba(14, 165, 233, 0.3) 45%, transparent 70%) !important;
       }
 
       @keyframes appleAtmosphereGlow {
         0% { transform: scale(0.85) translate3d(0, 0, 0); opacity: 0.5; }
-        100% { transform: scale(1.2) translate3d(0, 0, 0); opacity: 0.95; }
+        100% { transform: scale(1.25) translate3d(0, 0, 0); opacity: 0.95; }
+      }
+
+      /* ✨ Apple iOS Specular Starlight / Solar Ray Micro-Sparkles */
+      .weather-sparkle {
+        position: absolute;
+        font-size: 11px;
+        pointer-events: none;
+        z-index: 2;
+        user-select: none;
+        animation: appleSparkleTwinkle 3.2s ease-in-out infinite alternate;
+      }
+
+      .weather-sparkle-1 {
+        top: 10px;
+        right: 32px;
+        animation-delay: 0s;
+        color: rgba(255, 255, 255, 0.9);
+      }
+
+      .weather-sparkle-2 {
+        top: 24px;
+        right: 12px;
+        animation-delay: 1.6s;
+        font-size: 8px;
+        color: rgba(255, 255, 255, 0.7);
+      }
+
+      @keyframes appleSparkleTwinkle {
+        0% { transform: scale(0.4) rotate(0deg); opacity: 0.15; }
+        50% { transform: scale(1.2) rotate(90deg); opacity: 0.95; filter: drop-shadow(0 0 4px #FFFFFF); }
+        100% { transform: scale(0.4) rotate(180deg); opacity: 0.15; }
       }
 
       /* Dynamic Floating Weather Icon */
       .weather-icon-animated {
-        font-size: 34px;
+        font-size: 36px;
         line-height: 1;
         display: inline-block;
-        filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.15));
-        animation: appleWeatherFloat 3.5s ease-in-out infinite alternate;
+        filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.18));
+        animation: appleWeatherFloat 4s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate;
       }
 
       @keyframes appleWeatherFloat {
-        0% { transform: translateY(0) rotate(0deg); }
-        50% { transform: translateY(-4px) rotate(2deg); }
-        100% { transform: translateY(0) rotate(-1deg); }
+        0% { transform: translateY(0) rotate(0deg) scale(1); }
+        50% { transform: translateY(-5px) rotate(3deg) scale(1.04); }
+        100% { transform: translateY(0) rotate(-2deg) scale(1); }
       }
 
       /* Apple Hero Temperature Layout */
@@ -1136,6 +1192,21 @@
         align-items: center;
         justify-content: center;
         gap: 2px;
+        padding: 4px 2px;
+        border-radius: 8px;
+        transition: all 0.25s ease;
+      }
+
+      /* Apple Active Hour Glass Pill & Live Radar Dot */
+      .weather-hourly-item.active-hour {
+        background: rgba(255, 255, 255, 0.85);
+        border: 1px solid rgba(2, 132, 199, 0.35);
+        box-shadow: 0 2px 8px rgba(2, 132, 199, 0.15);
+      }
+
+      [data-theme="dark"] .weather-hourly-item.active-hour {
+        background: rgba(255, 255, 255, 0.12);
+        border-color: rgba(56, 189, 248, 0.4);
       }
 
       .weather-hourly-time {
@@ -1144,6 +1215,24 @@
         font-weight: 800;
         color: #64748B;
         text-transform: uppercase;
+        display: flex;
+        align-items: center;
+      }
+
+      .hour-live-dot {
+        width: 4px;
+        height: 4px;
+        border-radius: 50%;
+        background: #0284C7;
+        box-shadow: 0 0 6px #0284C7;
+        display: inline-block;
+        margin-left: 2px;
+        animation: appleDotPulse 1.8s ease-in-out infinite alternate;
+      }
+
+      @keyframes appleDotPulse {
+        0% { opacity: 0.4; transform: scale(0.8); }
+        100% { opacity: 1; transform: scale(1.3); }
       }
 
       [data-theme="dark"] .weather-hourly-time {
@@ -5143,19 +5232,34 @@
             `;
           }).join("");
 
-          const hourlyPillsHTML = (w.hourly || []).map((h) => `
-            <div class="weather-hourly-item">
-              <span class="weather-hourly-time">${h.timeStr}</span>
-              <span class="weather-hourly-icon">${h.icon}</span>
-              <span class="weather-hourly-temp">${h.temp}°</span>
-            </div>
-          `).join("");
+          const hour = now.getHours();
+          let solarPhase = "solar-night";
+          if (hour >= 5 && hour < 7) solarPhase = "solar-dawn";
+          else if (hour >= 7 && hour < 15) solarPhase = "solar-day";
+          else if (hour >= 15 && hour < 18) solarPhase = "solar-dusk";
+          else solarPhase = "solar-night";
+
+          const hourlyPillsHTML = (w.hourly || []).map((h, idx) => {
+            const isCurrent = idx === 0;
+            return `
+              <div class="weather-hourly-item ${isCurrent ? "active-hour" : ""}">
+                <span class="weather-hourly-time">
+                  ${h.timeStr}
+                  ${isCurrent ? '<span class="hour-live-dot"></span>' : ""}
+                </span>
+                <span class="weather-hourly-icon">${h.icon}</span>
+                <span class="weather-hourly-temp">${h.temp}°</span>
+              </div>
+            `;
+          }).join("");
 
           return `
             <div class="sidebar-complications">
               <!-- Complication 1: ⛅ Apple tvOS Native Living Weather Widget (Purbalingga) -->
-              <div class="complication-card complication-weather-card weather-theme-${w.atmosphereTheme}">
+              <div class="complication-card complication-weather-card weather-theme-${w.atmosphereTheme} ${solarPhase}">
                 <div class="weather-ambient-halo"></div>
+                <div class="weather-sparkle weather-sparkle-1">✦</div>
+                <div class="weather-sparkle weather-sparkle-2">✦</div>
                 <div class="complication-header">
                   <div class="complication-title">
                     <span class="material-icons-round" style="font-size:15px; color:#0284C7;">wb_sunny</span>
