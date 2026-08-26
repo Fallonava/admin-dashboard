@@ -6567,17 +6567,16 @@
 
           // --- Build grouped layout or Apple Watch Complications if empty ---
           if (operasiList.length === 0 && penuhList.length === 0 && cutiList.length === 0) {
-            let el = container.querySelector(".sidebar-complications");
-            if (!el) {
-              const wrapper = document.createElement("div");
+            let wrapper = container.querySelector('[data-id="sec-complications"]');
+            if (!wrapper) {
+              wrapper = document.createElement("div");
               wrapper.dataset.id = "sec-complications";
               wrapper.innerHTML = this.buildSidebarComplicationsHTML();
               allElements.push(wrapper);
               hasLayoutChange = true;
             } else {
-              const wrapper = el.parentElement;
-              wrapper.dataset.id = "sec-complications";
               allElements.push(wrapper);
+              oldMap.delete("sec-complications");
             }
           } else {
             if (operasiList.length > 0) {
