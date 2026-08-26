@@ -4629,19 +4629,76 @@
           "Informasi lebih lanjut hubungi <strong>INFORMASI</strong> atau <strong>0823-2344-6076</strong>.",
         ],
 
-        // Apple Watch Complication: Real-Time Prayer Schedule (Purbalingga) & Countdown
+        // Apple Watch Complication: Astronomical Solar Prayer Schedule for Purbalingga (Jawa Tengah)
         getPrayerInfo() {
           const now = new Date();
-          const curMinutes = now.getHours() * 60 + now.getMinutes();
-          const curSeconds = now.getSeconds();
+          const lat = -7.3888; // Purbalingga Latitude
+          const lng = 109.3639; // Purbalingga Longitude
+          const tz = 7; // WIB
+
+          // Day of year calculation
+          const start = new Date(now.getFullYear(), 0, 0);
+          const diff = now - start;
+          const oneDay = 1000 * 60 * 60 * 24;
+          const day = Math.floor(diff / oneDay);
+
+          // Solar declination & equation of time
+          const B = (2 * Math.PI * (day - 81)) / 365;
+          const EoT = 9.87 * Math.sin(2 * B) - 7.53 * Math.cos(B) - 1.5 * Math.sin(B);
+          const delta = 23.45 * Math.sin((2 * Math.PI * (284 + day)) / 365) * (Math.PI / 180);
+
+          // Solar transit (Dzuhur) in decimal hours + 2 min ihtiyat (Kemenag standard)
+          const transit = 12 + (tz * 15 - lng) / 15 - EoT / 60;
+          const dzuhurDec = transit + 2 / 60;
+
+          const rad = (d) => (d * Math.PI) / 180;
+          const deg = (r) => (r * 180) / Math.PI;
+          const latRad = rad(lat);
+
+          const hourAngle = (altDeg) => {
+            const altRad = rad(altDeg);
+            const cosHA = (Math.sin(altRad) - Math.sin(latRad) * Math.sin(delta)) / (Math.cos(latRad) * Math.cos(delta));
+            if (cosHA < -1 || cosHA > 1) return null;
+            return deg(Math.acos(cosHA)) / 15;
+          };
+
+          // Subuh (-20° Kemenag angle)
+          const haSubuh = hourAngle(-20);
+          const subuhDec = transit - haSubuh + 2 / 60;
+
+          // Terbit / Syuruq (-0.833°)
+          const haTerbit = hourAngle(-0.833);
+
+          // Ashar (shadow ratio = 1)
+          const asharAlt = deg(Math.atan(1 / (1 + Math.tan(Math.abs(latRad - delta)))));
+          const haAshar = hourAngle(asharAlt);
+          const asharDec = transit + haAshar + 2 / 60;
+
+          // Maghrib (-0.833°)
+          const maghribDec = transit + haTerbit + 2 / 60;
+
+          // Isya (-18° Kemenag angle)
+          const haIsya = hourAngle(-18);
+          const isyaDec = transit + haIsya + 2 / 60;
+
+          const toTimeObj = (name, dec) => {
+            const totalMinutes = Math.round(dec * 60);
+            const h = Math.floor(totalMinutes / 60);
+            const m = totalMinutes % 60;
+            const timeStr = `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+            return { name, h, m, timeStr };
+          };
 
           const prayers = [
-            { name: "Subuh", h: 4, m: 35, timeStr: "04:35" },
-            { name: "Dzuhur", h: 12, m: 2, timeStr: "12:02" },
-            { name: "Ashar", h: 15, m: 18, timeStr: "15:18" },
-            { name: "Maghrib", h: 18, m: 3, timeStr: "18:03" },
-            { name: "Isya", h: 19, m: 14, timeStr: "19:14" },
+            toTimeObj("Subuh", subuhDec),
+            toTimeObj("Dzuhur", dzuhurDec),
+            toTimeObj("Ashar", asharDec),
+            toTimeObj("Maghrib", maghribDec),
+            toTimeObj("Isya", isyaDec),
           ];
+
+          const curMinutes = now.getHours() * 60 + now.getMinutes();
+          const curSeconds = now.getSeconds();
 
           let nextPrayer = null;
           let diffSec = 0;
@@ -4674,6 +4731,13 @@
         buildSidebarComplicationsHTML() {
           const pInfo = this.getPrayerInfo();
           const nextName = pInfo.nextPrayer.name;
+          const now = new Date();
+          const dayOfWeek = now.getDay(); // 0 = Minggu, 6 = Sabtu
+
+          let todayScheduleTag = "BUKA HARI INI";
+          if (dayOfWeek === 0) todayScheduleTag = "POLI TUTUP (MINGGU)";
+          else if (dayOfWeek === 6) todayScheduleTag = "HARI INI: 06:00 – 18:00";
+          else todayScheduleTag = "HARI INI: 06:00 – 20:00";
 
           const prayerPillsHTML = pInfo.prayers.map((p) => {
             const isActive = p.name === nextName ? "active" : "";
@@ -4697,7 +4761,7 @@
                 </div>
               </div>
 
-              <!-- Complication 1: Waktu Sholat Purbalingga -->
+              <!-- Complication 1: Waktu Sholat Purbalingga (Jawa Tengah) -->
               <div class="complication-card">
                 <div class="complication-header">
                   <div class="complication-title">
@@ -4725,32 +4789,39 @@
                 <div class="complication-header">
                   <div class="complication-title">
                     <span class="material-icons-round" style="font-size:15px; color:#059669;">medical_information</span>
-                    <span>JAM OPERASIONAL PELAYANAN</span>
+                    <span>JAM PELAYANAN POLIKLINIK</span>
                   </div>
-                  <span class="complication-tag tag-emerald">SIAGA RS</span>
+                  <span class="complication-tag tag-emerald">${todayScheduleTag}</span>
                 </div>
 
                 <div class="clinic-hours-list">
-                  <div class="clinic-hour-row">
+                  <div class="clinic-hour-row ${dayOfWeek >= 1 && dayOfWeek <= 5 ? "active-today" : ""}">
                     <span class="clinic-hour-label">
-                      <span class="material-icons-round" style="font-size:14px; color:#0284C7;">wb_sunny</span>
-                      Poli Spesialis Pagi
+                      <span class="material-icons-round" style="font-size:14px; color:#0284C7;">calendar_today</span>
+                      Senin – Jumat
                     </span>
-                    <span class="clinic-hour-val">07:30 - 14:00</span>
+                    <span class="clinic-hour-val">06:00 – 20:00 WIB</span>
                   </div>
-                  <div class="clinic-hour-row">
+                  <div class="clinic-hour-row ${dayOfWeek === 6 ? "active-today" : ""}">
                     <span class="clinic-hour-label">
-                      <span class="material-icons-round" style="font-size:14px; color:#8B5CF6;">wb_twilight</span>
-                      Poli Spesialis Sore
+                      <span class="material-icons-round" style="font-size:14px; color:#8B5CF6;">event</span>
+                      Khusus Sabtu
                     </span>
-                    <span class="clinic-hour-val">14:00 - 20:00</span>
+                    <span class="clinic-hour-val">06:00 – 18:00 WIB</span>
                   </div>
-                  <div class="clinic-hour-row">
+                  <div class="clinic-hour-row ${dayOfWeek === 0 ? "active-today" : ""}">
                     <span class="clinic-hour-label">
+                      <span class="material-icons-round" style="font-size:14px; color:#DC2626;">event_busy</span>
+                      Minggu (Poli Tutup)
+                    </span>
+                    <span class="clinic-hour-val" style="color:#DC2626;">LIBUR</span>
+                  </div>
+                  <div class="clinic-hour-row" style="background:rgba(5, 150, 105, 0.08); border-color:rgba(5, 150, 105, 0.25);">
+                    <span class="clinic-hour-label" style="color:#059669; font-weight:800;">
                       <span class="material-icons-round" style="font-size:14px; color:#10B981;">emergency</span>
-                      IGD &amp; Farmasi 24 Jam
+                      IGD &amp; Farmasi
                     </span>
-                    <span class="clinic-hour-val" style="color:#059669;">SIAGA 24 JAM</span>
+                    <span class="clinic-hour-val" style="color:#059669; font-weight:900;">24 JAM SETIAP HARI</span>
                   </div>
                 </div>
               </div>
