@@ -4966,24 +4966,18 @@
 
         // Apple tvOS Weather Complication (Purbalingga, Central Java)
         _weatherCache: {
-          temp: 27,
-          humidity: 73,
-          apparent: 31,
+          temp: 25,
+          humidity: 75,
+          apparent: 28,
           windSpeed: 5,
           tempMax: 31,
-          tempMin: 24,
+          tempMin: 23,
           isDay: 0,
-          code: 3,
+          code: 2,
           condition: "Sebagian Berawan",
           icon: "⛅",
-          atmosphereTheme: "night-cloudy",
-          hourly: [
-            { timeStr: "Kini", temp: 27, icon: "⛅" },
-            { timeStr: "19:00", temp: 26, icon: "☁️" },
-            { timeStr: "20:00", temp: 26, icon: "🌙" },
-            { timeStr: "21:00", temp: 25, icon: "🌙" },
-            { timeStr: "22:00", temp: 25, icon: "🌧️" }
-          ],
+          atmosphereTheme: "day-cloudy",
+          hourly: [],
           lastFetched: 0
         },
 
@@ -5036,19 +5030,40 @@
 
                 const currentMeta = getMeta(code, isDay);
 
-                // Hourly slice: current hour + next 4 hours
-                const currentHour = new Date().getHours();
+                // Timezone-safe Jakarta index resolution directly from satellite time
+                let matchIdx = -1;
+                if (data.current && data.current.time && data.hourly && data.hourly.time) {
+                  const curHourPrefix = data.current.time.slice(0, 13);
+                  matchIdx = data.hourly.time.findIndex((t) => t.startsWith(curHourPrefix));
+                }
+                if (matchIdx < 0) {
+                  try {
+                    const jkHourStr = new Intl.DateTimeFormat("en-GB", { timeZone: "Asia/Jakarta", hour: "2-digit", hour12: false }).format(new Date());
+                    matchIdx = parseInt(jkHourStr, 10) || 0;
+                  } catch(e) {
+                    matchIdx = new Date().getHours();
+                  }
+                }
+
                 const hourlyList = [];
                 if (data.hourly && data.hourly.time && data.hourly.temperature_2m) {
                   for (let i = 0; i < 5; i++) {
-                    const targetIdx = currentHour + i;
-                    const hTemp = Math.round(data.hourly.temperature_2m[targetIdx]);
-                    const hCode = data.hourly.weather_code ? data.hourly.weather_code[targetIdx] : code;
-                    const hPrecip = data.hourly.precipitation_probability ? data.hourly.precipitation_probability[targetIdx] : 0;
-                    const actualHour = (currentHour + i) % 24;
-                    const hIsDay = actualHour >= 6 && actualHour < 18;
+                    const targetIdx = matchIdx + i;
+                    const hTemp = Math.round(data.hourly.temperature_2m[targetIdx] !== undefined ? data.hourly.temperature_2m[targetIdx] : cur.temperature_2m);
+                    const hCode = data.hourly.weather_code && data.hourly.weather_code[targetIdx] !== undefined ? data.hourly.weather_code[targetIdx] : code;
+                    const hPrecip = data.hourly.precipitation_probability && data.hourly.precipitation_probability[targetIdx] !== undefined ? data.hourly.precipitation_probability[targetIdx] : 0;
+                    
+                    const isoTime = data.hourly.time[targetIdx];
+                    let hourNum = 0;
+                    if (isoTime && isoTime.includes("T")) {
+                      hourNum = parseInt(isoTime.split("T")[1].split(":")[0], 10);
+                    } else {
+                      hourNum = (matchIdx + i) % 24;
+                    }
+
+                    const hIsDay = hourNum >= 6 && hourNum < 18;
                     const hMeta = getMeta(hCode, hIsDay);
-                    const timeLabel = i === 0 ? "Kini" : `${String(actualHour).padStart(2, "0")}:00`;
+                    const timeLabel = i === 0 ? "Kini" : `${String(hourNum).padStart(2, "0")}:00`;
                     hourlyList.push({
                       timeStr: timeLabel,
                       temp: i === 0 ? Math.round(cur.temperature_2m) : hTemp,
@@ -5095,6 +5110,24 @@
           if ($("tvWeatherApparent")) $("tvWeatherApparent").textContent = `${w.apparent}°C`;
           if ($("tvWeatherWind")) $("tvWeatherWind").textContent = `${w.windSpeed} km/j`;
           if ($("tvWeatherRange")) $("tvWeatherRange").textContent = `H:${w.tempMax}° • L:${w.tempMin}°`;
+
+          if ($("tvWeatherHourlyStrip") && w.hourly && w.hourly.length > 0) {
+            $("tvWeatherHourlyStrip").innerHTML = w.hourly.map((h, idx) => {
+              const isCurrent = idx === 0;
+              const precipHTML = h.precip >= 15 ? `<span class="weather-hourly-precip">💧${h.precip}%</span>` : "";
+              return `
+                <div class="weather-hourly-item ${isCurrent ? "active-hour" : ""}">
+                  <span class="weather-hourly-time">
+                    ${h.timeStr}
+                    ${isCurrent ? '<span class="hour-live-dot"></span>' : ""}
+                  </span>
+                  <span class="weather-hourly-icon">${h.icon}</span>
+                  ${precipHTML}
+                  <span class="weather-hourly-temp">${h.temp}°</span>
+                </div>
+              `;
+            }).join("");
+          }
         },
 
         // Apple Watch Complication: Astronomical Solar Prayer Schedule for Purbalingga (Jawa Tengah)
@@ -5268,7 +5301,7 @@
                 </div>
 
                 <!-- Apple 5-Hour Forecast Timeline Strip -->
-                <div class="weather-hourly-strip">
+                <div class="weather-hourly-strip" id="tvWeatherHourlyStrip">
                   ${hourlyPillsHTML}
                 </div>
 
