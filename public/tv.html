@@ -1158,89 +1158,189 @@
         color: #FFFFFF;
       }
 
-      .clinic-hours-list {
-        display: flex;
-        flex-direction: column;
-        gap: 5px;
+      /* ===== 🫀 APPLE HEALTH ECG VITALS MONITOR WIDGET ===== */
+      .complication-ecg-card {
+        background: #FFFFFF;
+        border-radius: 20px;
+        position: relative;
+        overflow: hidden;
       }
 
-      .clinic-hour-row {
+      [data-theme="dark"] .complication-ecg-card {
+        background: #101726;
+      }
+
+      .ecg-monitor-box {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 6px 10px;
-        background: rgba(248, 250, 252, 0.8);
+        padding: 2px 0;
+      }
+
+      .ecg-leading-group {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+      }
+
+      .ecg-heart-box {
+        width: 32px;
+        height: 32px;
         border-radius: 10px;
-        border: 1px solid rgba(226, 234, 245, 0.8);
-      }
-
-      [data-theme="dark"] .clinic-hour-row {
-        background: rgba(255, 255, 255, 0.03);
-        border-color: rgba(255, 255, 255, 0.06);
-      }
-
-      .clinic-hour-label {
-        font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 11.5px;
-        font-weight: 700;
-        color: #334155;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-      }
-
-      [data-theme="dark"] .clinic-hour-label {
-        color: #CBD5E1;
-      }
-
-      .clinic-hour-val {
-        font-family: "Plus Jakarta Sans", monospace;
-        font-size: 12px;
-        font-weight: 800;
-        color: #059669;
-        font-variant-numeric: tabular-nums;
-      }
-
-      .all-optimal-banner {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        background: linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%);
-        border: 1px solid #BBF7D0;
-        border-radius: 14px;
-        padding: 8px 12px;
-        box-shadow: 0 2px 8px rgba(5, 150, 105, 0.08);
-      }
-
-      [data-theme="dark"] .all-optimal-banner {
-        background: linear-gradient(135deg, rgba(5, 150, 105, 0.15) 0%, rgba(16, 185, 129, 0.05) 100%);
-        border-color: rgba(5, 150, 105, 0.35);
-      }
-
-      .all-optimal-icon {
-        width: 28px;
-        height: 28px;
-        border-radius: 9px;
-        background: #059669;
-        color: #FFFFFF;
+        background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+        border: 1px solid rgba(255, 255, 255, 0.4);
         display: flex;
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+        animation: appleHeartSpring 1.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) infinite;
       }
 
-      .all-optimal-text {
+      .ecg-heart-icon {
+        font-size: 18px;
+        color: #FFFFFF;
+      }
+
+      @keyframes appleHeartSpring {
+        0%, 100% { transform: scale(1); }
+        15% { transform: scale(1.18); }
+        30% { transform: scale(0.98); }
+        45% { transform: scale(1.12); }
+        60% { transform: scale(1); }
+      }
+
+      .ecg-vitals-meta {
+        display: flex;
+        flex-direction: column;
+        line-height: 1.15;
+      }
+
+      .ecg-vitals-status {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 11px;
+        font-size: 12.5px;
         font-weight: 800;
-        color: #065F46;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-        line-height: 1.2;
+        color: #0F172A;
+        letter-spacing: -0.01em;
       }
 
-      [data-theme="dark"] .all-optimal-text {
-        color: #6EE7B7;
+      [data-theme="dark"] .ecg-vitals-status {
+        color: #FFFFFF;
+      }
+
+      .ecg-vitals-sub {
+        font-family: "Inter", sans-serif;
+        font-size: 10px;
+        font-weight: 600;
+        color: #64748B;
+      }
+
+      .ecg-rate-badge {
+        padding: 3px 9px;
+        border-radius: 9999px;
+        background: #F0FDF4;
+        border: 1px solid #BBF7D0;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 10.5px;
+        font-weight: 800;
+        color: #059669;
+        letter-spacing: 0.04em;
+      }
+
+      [data-theme="dark"] .ecg-rate-badge {
+        background: rgba(16, 185, 129, 0.15);
+        border-color: rgba(16, 185, 129, 0.35);
+        color: #34D399;
+      }
+
+      .ecg-wave-container {
+        position: relative;
+        width: 100%;
+        height: 42px;
+        background: rgba(248, 250, 252, 0.85);
+        border: 1px solid rgba(226, 234, 245, 0.8);
+        border-radius: 12px;
+        overflow: hidden;
+        margin: 4px 0;
+      }
+
+      [data-theme="dark"] .ecg-wave-container {
+        background: rgba(0, 0, 0, 0.25);
+        border-color: rgba(255, 255, 255, 0.06);
+      }
+
+      .ecg-svg {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+
+      .ecg-path-bg {
+        fill: none;
+        stroke: rgba(16, 185, 129, 0.18);
+        stroke-width: 2;
+      }
+
+      .ecg-path-live {
+        fill: none;
+        stroke: #10B981;
+        stroke-width: 2.2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-dasharray: 80 260;
+        animation: ecgWaveflow 2.4s linear infinite;
+        filter: drop-shadow(0 0 4px rgba(16, 185, 129, 0.7));
+      }
+
+      @keyframes ecgWaveflow {
+        0% { stroke-dashoffset: 340; }
+        100% { stroke-dashoffset: 0; }
+      }
+
+      .ecg-scan-line {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 20px;
+        background: linear-gradient(90deg, rgba(16, 185, 129, 0) 0%, rgba(16, 185, 129, 0.25) 80%, rgba(255, 255, 255, 0.6) 100%);
+        pointer-events: none;
+        animation: ecgScan 2.4s linear infinite;
+      }
+
+      @keyframes ecgScan {
+        0% { left: -20px; }
+        100% { left: 100%; }
+      }
+
+      .ecg-indicators-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-top: 2px;
+      }
+
+      .ecg-ind-item {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+
+      .ecg-ind-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+
+      .ecg-ind-text {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 9.5px;
+        font-weight: 700;
+        color: #475569;
+      }
+
+      [data-theme="dark"] .ecg-ind-text {
+        color: #94A3B8;
       }
 
       /* Force dark text in sidebar when in light mode, but adapt in dark mode */
@@ -4929,16 +5029,6 @@
 
           return `
             <div class="sidebar-complications">
-              <!-- Live All Optimal Banner -->
-              <div class="all-optimal-banner">
-                <div class="all-optimal-icon">
-                  <span class="material-icons-round" style="font-size:18px;">verified</span>
-                </div>
-                <div class="all-optimal-text">
-                  SEMUA POLIKLINIK NORMAL &amp; SESUAI JADWAL
-                </div>
-              </div>
-
               <!-- Complication 1: Apple tvOS Weather Widget (Purbalingga) -->
               <div class="complication-card">
                 <div class="complication-header">
@@ -5002,44 +5092,52 @@
                 </div>
               </div>
 
-              <!-- Complication 3: Jam Operasional Pelayanan RS -->
-              <div class="complication-card">
+              <!-- Complication 3: 🫀 Apple Health Live ECG Vitals Monitor -->
+              <div class="complication-card complication-ecg-card">
                 <div class="complication-header">
                   <div class="complication-title">
-                    <span class="material-icons-round" style="font-size:15px; color:#059669;">medical_information</span>
-                    <span>JAM PELAYANAN POLIKLINIK</span>
+                    <span class="material-icons-round" style="font-size:15px; color:#10B981;">monitor_heart</span>
+                    <span>STATUS KLINIS &amp; KESIAPAN RS</span>
                   </div>
-                  <span class="complication-tag tag-emerald">${todayScheduleTag}</span>
+                  <span class="complication-tag tag-emerald">OPTIMAL 100%</span>
                 </div>
 
-                <div class="clinic-hours-list">
-                  <div class="clinic-hour-row ${dayOfWeek >= 1 && dayOfWeek <= 5 ? "active-today" : ""}">
-                    <span class="clinic-hour-label">
-                      <span class="material-icons-round" style="font-size:14px; color:#0284C7;">calendar_today</span>
-                      Senin – Jumat
-                    </span>
-                    <span class="clinic-hour-val">06:00 – 20:00 WIB</span>
+                <div class="ecg-monitor-box">
+                  <div class="ecg-leading-group">
+                    <div class="ecg-heart-box">
+                      <span class="material-icons-round ecg-heart-icon">favorite</span>
+                    </div>
+                    <div class="ecg-vitals-meta">
+                      <span class="ecg-vitals-status">PELAYANAN AKTIF</span>
+                      <span class="ecg-vitals-sub">Seluruh Poli Beroperasi Sesuai Jadwal</span>
+                    </div>
                   </div>
-                  <div class="clinic-hour-row ${dayOfWeek === 6 ? "active-today" : ""}">
-                    <span class="clinic-hour-label">
-                      <span class="material-icons-round" style="font-size:14px; color:#8B5CF6;">event</span>
-                      Khusus Sabtu
-                    </span>
-                    <span class="clinic-hour-val">06:00 – 18:00 WIB</span>
+                  <div class="ecg-rate-badge">
+                    <span>NORMAL</span>
                   </div>
-                  <div class="clinic-hour-row ${dayOfWeek === 0 ? "active-today" : ""}">
-                    <span class="clinic-hour-label">
-                      <span class="material-icons-round" style="font-size:14px; color:#DC2626;">event_busy</span>
-                      Minggu (Poli Tutup)
-                    </span>
-                    <span class="clinic-hour-val" style="color:#DC2626;">LIBUR</span>
+                </div>
+
+                <!-- Live Continuous SVG ECG Waveform -->
+                <div class="ecg-wave-container">
+                  <svg class="ecg-svg" viewBox="0 0 340 42" preserveAspectRatio="none">
+                    <path class="ecg-path-bg" d="M0,21 L40,21 L48,21 L54,10 L60,32 L66,3 L72,38 L78,21 L86,21 L96,15 L104,21 L140,21 L148,21 L154,10 L160,32 L166,3 L172,38 L178,21 L186,21 L196,15 L204,21 L240,21 L248,21 L254,10 L260,32 L266,3 L272,38 L278,21 L286,21 L296,15 L304,21 L340,21" />
+                    <path class="ecg-path-live" d="M0,21 L40,21 L48,21 L54,10 L60,32 L66,3 L72,38 L78,21 L86,21 L96,15 L104,21 L140,21 L148,21 L154,10 L160,32 L166,3 L172,38 L178,21 L186,21 L196,15 L204,21 L240,21 L248,21 L254,10 L260,32 L266,3 L272,38 L278,21 L286,21 L296,15 L304,21 L340,21" />
+                  </svg>
+                  <div class="ecg-scan-line"></div>
+                </div>
+
+                <div class="ecg-indicators-row">
+                  <div class="ecg-ind-item">
+                    <span class="ecg-ind-dot" style="background:#10B981; box-shadow:0 0 6px #10B981;"></span>
+                    <span class="ecg-ind-text">Admisi: Lancar</span>
                   </div>
-                  <div class="clinic-hour-row" style="background:rgba(5, 150, 105, 0.08); border-color:rgba(5, 150, 105, 0.25);">
-                    <span class="clinic-hour-label" style="color:#059669; font-weight:800;">
-                      <span class="material-icons-round" style="font-size:14px; color:#10B981;">emergency</span>
-                      IGD &amp; Farmasi
-                    </span>
-                    <span class="clinic-hour-val" style="color:#059669; font-weight:900;">24 JAM SETIAP HARI</span>
+                  <div class="ecg-ind-item">
+                    <span class="ecg-ind-dot" style="background:#0284C7; box-shadow:0 0 6px #0284C7;"></span>
+                    <span class="ecg-ind-text">Farmasi: Cepat</span>
+                  </div>
+                  <div class="ecg-ind-item">
+                    <span class="ecg-ind-dot" style="background:#8B5CF6; box-shadow:0 0 6px #8B5CF6;"></span>
+                    <span class="ecg-ind-text">IGD: Siaga 24 Jam</span>
                   </div>
                 </div>
               </div>
