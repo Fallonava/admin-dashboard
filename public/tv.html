@@ -1751,6 +1751,222 @@
         font-weight: 900;
       }
 
+      /* ===== 🚶 APPLE tvOS PATIENT ADMISSION JOURNEY FLOW COMPLICATION ===== */
+      .complication-journey-card {
+        background: #FFFFFF !important;
+        border-radius: 24px;
+        position: relative;
+        box-sizing: border-box;
+        padding: 15px 18px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.95);
+        box-shadow: 
+          0 18px 44px -6px rgba(14, 165, 233, 0.18),
+          0 6px 16px -2px rgba(15, 23, 42, 0.06),
+          inset 0 1.5px 1.5px #FFFFFF,
+          inset 0 -1px 1px rgba(0, 0, 0, 0.02);
+        transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.5s ease;
+      }
+
+      /* Dynamic 3D Spatial Ambient Backdrop Glow Layer */
+      .complication-journey-card::before {
+        content: "";
+        position: absolute;
+        inset: -6px -8px -14px -8px;
+        border-radius: 28px;
+        background: radial-gradient(ellipse at 50% 65%, rgba(14, 165, 233, 0.25) 0%, transparent 72%);
+        filter: blur(20px);
+        opacity: 0.8;
+        pointer-events: none;
+        z-index: -1;
+      }
+
+      [data-theme="dark"] .complication-journey-card {
+        background: #121824 !important;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 
+          0 20px 48px -6px rgba(56, 189, 248, 0.2),
+          0 8px 20px -2px rgba(0, 0, 0, 0.55),
+          inset 0 1px 1px rgba(255, 255, 255, 0.12);
+      }
+
+      [data-theme="dark"] .complication-journey-card::before {
+        opacity: 0.7;
+        filter: blur(22px);
+      }
+
+      .journey-track-section {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+      }
+
+      .journey-track-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .journey-track-title {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 10px;
+        font-weight: 800;
+        color: #0F172A;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      [data-theme="dark"] .journey-track-title {
+        color: #F1F5F9;
+      }
+
+      .journey-track-badge {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 8.5px;
+        font-weight: 800;
+        padding: 2px 6px;
+        border-radius: 9999px;
+        letter-spacing: 0.02em;
+      }
+
+      .badge-online-fast {
+        background: #ECFDF5;
+        color: #059669;
+        border: 1px solid #A7F3D0;
+      }
+
+      [data-theme="dark"] .badge-online-fast {
+        background: rgba(16, 185, 129, 0.2);
+        color: #6EE7B7;
+        border-color: rgba(52, 211, 153, 0.35);
+      }
+
+      .badge-reguler-lobby {
+        background: #F1F5F9;
+        color: #475569;
+        border: 1px solid #E2E8F0;
+      }
+
+      [data-theme="dark"] .badge-reguler-lobby {
+        background: rgba(255, 255, 255, 0.08);
+        color: #CBD5E1;
+        border-color: rgba(255, 255, 255, 0.12);
+      }
+
+      .journey-flow-row {
+        display: flex;
+        align-items: center;
+        gap: 3px;
+        width: 100%;
+      }
+
+      .journey-step-capsule {
+        flex: 1;
+        min-width: 0;
+        background: rgba(255, 255, 255, 0.7);
+        border: 1px solid rgba(226, 232, 240, 0.95);
+        box-shadow: inset 0 1px 1px #FFFFFF, 0 2px 6px rgba(0, 0, 0, 0.02);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-radius: 12px;
+        padding: 6px 4px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 1px;
+      }
+
+      [data-theme="dark"] .journey-step-capsule {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.09);
+        box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
+      }
+
+      .journey-step-num {
+        font-family: "Plus Jakarta Sans", monospace;
+        font-size: 8px;
+        font-weight: 900;
+        color: #0284C7;
+        line-height: 1;
+      }
+
+      [data-theme="dark"] .journey-step-num {
+        color: #38BDF8;
+      }
+
+      .journey-step-title {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 9.5px;
+        font-weight: 800;
+        color: #0F172A;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+        line-height: 1.15;
+      }
+
+      [data-theme="dark"] .journey-step-title {
+        color: #FFFFFF;
+      }
+
+      .journey-step-sub {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 8px;
+        font-weight: 600;
+        color: #64748B;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+        line-height: 1;
+      }
+
+      [data-theme="dark"] .journey-step-sub {
+        color: #94A3B8;
+      }
+
+      .journey-arrow-icon {
+        font-family: inherit;
+        font-size: 10px;
+        font-weight: 900;
+        color: #94A3B8;
+        flex-shrink: 0;
+        line-height: 1;
+        user-select: none;
+      }
+
+      [data-theme="dark"] .journey-arrow-icon {
+        color: #64748B;
+      }
+
+      .journey-priority-footer {
+        background: #F8FAFC;
+        border: 1px dashed rgba(203, 213, 225, 0.9);
+        border-radius: 12px;
+        padding: 5px 8px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 8.5px;
+        font-weight: 700;
+        color: #475569;
+        line-height: 1.2;
+      }
+
+      [data-theme="dark"] .journey-priority-footer {
+        background: rgba(255, 255, 255, 0.04);
+        border-color: rgba(255, 255, 255, 0.12);
+        color: #CBD5E1;
+      }
+
       /* Force dark text in sidebar when in light mode, but adapt in dark mode */
       [data-theme="light"] .sidebar-panel {
         color: #1d1d1f;
@@ -5639,6 +5855,102 @@
                   <div class="weather-master-hourly-strip" id="tvWeatherHourlyStrip">
                     ${hourlyPillsHTML}
                   </div>
+                </div>
+              </div>
+
+              <!-- 🚶 APPLE tvOS PATIENT ADMISSION JOURNEY CARD -->
+              <div class="complication-card complication-journey-card">
+                <!-- 1. Header Bar -->
+                <div class="complication-header">
+                  <div class="complication-title">
+                    <span class="material-icons-round" style="font-size:15px; color:#0284C7;">alt_route</span>
+                    <span>ALUR PELAYANAN PASIEN</span>
+                  </div>
+                  <span class="complication-tag tag-sky">PANDUAN LOBI ADMISI</span>
+                </div>
+
+                <!-- 2. Jalur 1: Pendaftaran Online (Mobile JKN / Web RS) -->
+                <div class="journey-track-section">
+                  <div class="journey-track-header">
+                    <span class="journey-track-title">
+                      <span class="material-icons-round" style="font-size:12px; color:#10B981;">smartphone</span>
+                      <span>JALUR ONLINE (MOBILE JKN / WEB)</span>
+                    </span>
+                    <span class="journey-track-badge badge-online-fast">LEBIH CEPAT ⚡</span>
+                  </div>
+                  <div class="journey-flow-row">
+                    <div class="journey-step-capsule">
+                      <span class="journey-step-num">01</span>
+                      <span class="journey-step-title">BUKTI QR</span>
+                      <span class="journey-step-sub">Buka di HP</span>
+                    </div>
+                    <span class="journey-arrow-icon">➔</span>
+                    <div class="journey-step-capsule">
+                      <span class="journey-step-num">02</span>
+                      <span class="journey-step-title">KONFIRMASI</span>
+                      <span class="journey-step-sub">Loket Admisi</span>
+                    </div>
+                    <span class="journey-arrow-icon">➔</span>
+                    <div class="journey-step-capsule">
+                      <span class="journey-step-num">03</span>
+                      <span class="journey-step-title">CEK TENSI</span>
+                      <span class="journey-step-sub">Nurse Station</span>
+                    </div>
+                    <span class="journey-arrow-icon">➔</span>
+                    <div class="journey-step-capsule">
+                      <span class="journey-step-num">04</span>
+                      <span class="journey-step-title">KE POLI</span>
+                      <span class="journey-step-sub">Konsul Dokter</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 3. Jalur 2: Pendaftaran Langsung / Reguler (Kios Lobi) -->
+                <div class="journey-track-section">
+                  <div class="journey-track-header">
+                    <span class="journey-track-title">
+                      <span class="material-icons-round" style="font-size:12px; color:#0284C7;">confirmation_number</span>
+                      <span>JALUR REGULER (DAFTAR LANGSUNG)</span>
+                    </span>
+                    <span class="journey-track-badge badge-reguler-lobby">KIOS LOBI</span>
+                  </div>
+                  <div class="journey-flow-row">
+                    <div class="journey-step-capsule">
+                      <span class="journey-step-num">01</span>
+                      <span class="journey-step-title">ANTREAN</span>
+                      <span class="journey-step-sub">Kios Lobi</span>
+                    </div>
+                    <span class="journey-arrow-icon">➔</span>
+                    <div class="journey-step-capsule">
+                      <span class="journey-step-num">02</span>
+                      <span class="journey-step-title">BERKAS</span>
+                      <span class="journey-step-sub">KTP / BPJS</span>
+                    </div>
+                    <span class="journey-arrow-icon">➔</span>
+                    <div class="journey-step-capsule">
+                      <span class="journey-step-num">03</span>
+                      <span class="journey-step-title">LOKET</span>
+                      <span class="journey-step-sub">Registrasi</span>
+                    </div>
+                    <span class="journey-arrow-icon">➔</span>
+                    <div class="journey-step-capsule">
+                      <span class="journey-step-num">04</span>
+                      <span class="journey-step-title">TENSI</span>
+                      <span class="journey-step-sub">Nurse Stat</span>
+                    </div>
+                    <span class="journey-arrow-icon">➔</span>
+                    <div class="journey-step-capsule">
+                      <span class="journey-step-num">05</span>
+                      <span class="journey-step-title">KE POLI</span>
+                      <span class="journey-step-sub">Pemeriksaan</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 4. Jalur Prioritas Footer -->
+                <div class="journey-priority-footer">
+                  <span class="material-icons-round" style="font-size:14px; color:#F59E0B;">accessible_forward</span>
+                  <span>JALUR PRIORITAS: Pasien Lansia, Ibu Hamil & Disabilitas langsung menuju Loket 3</span>
                 </div>
               </div>
             </div>
