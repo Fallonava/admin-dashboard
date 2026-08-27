@@ -8193,8 +8193,8 @@
             return 0;
           };
 
-          // Helper: Parse Jam Pemanggilan / Jam Mulai Praktek ke Menit (e.g. "08:00" -> 480, "11.00 - 13.00" -> 660, "13:00 - Selesai" -> 780)
-          const parseJamMinutes = (str) => {
+          // 1. Helper Parse String Jam ke Menit (e.g. "08:30" -> 510)
+          const parseMinutes = (str) => {
             if (!str || str === "-") return 9999;
             const clean = String(str).replace(/\s/g, "").replace(/\./g, ":");
             const match = clean.match(/(\d{1,2}):(\d{2})/);
@@ -8205,36 +8205,75 @@
             return h * 60 + m;
           };
 
-          const getJamSortVal = (d) => {
-            // Prioritaskan jam mulai praktek / pelayanan di poli
-            const pMins = parseJamMinutes(d.JamPraktek || d.Jam);
-            if (pMins !== 9999) return pMins;
-            const dMins = parseJamMinutes(d.JamDaftar);
+          // 2. Helper Ekstraksi 3 Patokan Waktu:
+          // A. Jam Daftar / Registrasi
+          const getJamDaftarVal = (d) => {
+            const dMins = parseMinutes(d.JamDaftar);
             if (dMins !== 9999) return dMins;
+            // Fallback: Jika JamDaftar tidak diisi, gunakan jam mulai praktek
+            const pMins = parseMinutes(d.JamPraktek || d.Jam);
+            if (pMins !== 9999) return pMins;
+            return 9999;
+          };
+
+          // B. Jam Mulai Praktek
+          const getJamMulaiVal = (d) => {
+            const str = d.JamPraktek || d.Jam || "";
+            const parts = String(str).replace(/\s/g, "").replace(/\./g, ":").match(/(\d{1,2}:\d{2})/g);
+            if (parts && parts.length > 0) {
+              return parseMinutes(parts[0]);
+            }
+            return 9999;
+          };
+
+          // C. Jam Selesai Praktek
+          const getJamSelesaiVal = (d) => {
+            const str = d.JamPraktek || d.Jam || "";
+            const parts = String(str).replace(/\s/g, "").replace(/\./g, ":").match(/(\d{1,2}:\d{2})/g);
+            if (parts && parts.length >= 2) {
+              const start = parseMinutes(parts[0]);
+              let end = parseMinutes(parts[1]);
+              if (end < start) end += 24 * 60; // Melewati tengah malam
+              return end;
+            }
+            if (String(str).toLowerCase().includes("selesai")) {
+              const start = getJamMulaiVal(d);
+              return start !== 9999 ? start + 240 : 9999; // Default 4 jam jika "sampai selesai"
+            }
             return 9999;
           };
 
           const sortFn = (a, b) => {
-            // Priority 1: Active (Dokter Sedang Dipanggil / Praktek Aktif Teratas)
+            // Priority 1: Active State (Dokter Sedang Dipanggil / Praktek Aktif Teratas)
             if (a._isActive && !b._isActive) return -1;
             if (!a._isActive && b._isActive) return 1;
 
-            // Priority 2: Jam Mulai Praktek / Pemanggilan (Urut Kronologis Waktu: 06.00 -> 08.00 -> 11.00 [dr. Oke] -> 13.00 [dr. Rahageng])
-            const jamA = getJamSortVal(a);
-            const jamB = getJamSortVal(b);
-            if (jamA !== jamB) return jamA - jamB;
+            // Priority 2: Jam Daftar / Registrasi (Paling awal di atas)
+            const daftarA = getJamDaftarVal(a);
+            const daftarB = getJamDaftarVal(b);
+            if (daftarA !== daftarB) return daftarA - daftarB;
 
-            // Priority 3: Status Score (Jika Jam Sama, urutkan: PRAKTEK/PENDAFTARAN (4) > PENUH (3) > TERJADWAL (2.5) > OPERASI (2) > CUTI (1))
+            // Priority 3: Jam Mulai Praktek (Paling awal di atas)
+            const mulaiA = getJamMulaiVal(a);
+            const mulaiB = getJamMulaiVal(b);
+            if (mulaiA !== mulaiB) return mulaiA - mulaiB;
+
+            // Priority 4: Jam Selesai Praktek (Paling awal di atas)
+            const selesaiA = getJamSelesaiVal(a);
+            const selesaiB = getJamSelesaiVal(b);
+            if (selesaiA !== selesaiB) return selesaiA - selesaiB;
+
+            // Priority 5: Status Score (PRAKTEK/PENDAFTARAN (4) > PENUH (3) > TERJADWAL (2.5) > OPERASI (2) > CUTI (1))
             const diff = score(b.Status) - score(a.Status);
             if (diff !== 0) return diff;
 
-            // Priority 4: Specialty (Poliklinik A-Z)
+            // Priority 6: Specialty (Poliklinik A-Z)
             const specA = (a.Spesialis || "").toUpperCase();
             const specB = (b.Spesialis || "").toUpperCase();
             if (specA < specB) return -1;
             if (specA > specB) return 1;
 
-            // Priority 5: Doctor Name (A-Z)
+            // Priority 7: Doctor Name (A-Z)
             const docA = (a.Dokter || "").toUpperCase();
             const docB = (b.Dokter || "").toUpperCase();
             if (docA < docB) return -1;
