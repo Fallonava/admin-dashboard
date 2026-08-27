@@ -571,6 +571,40 @@
         line-height: 1.1;
       }
 
+      /* Dark Mode Status Khusus Overrides */
+      [data-theme="dark"] .sidebar-status-khusus-header {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 10px 30px -4px rgba(0, 0, 0, 0.4), inset 0 1.5px 1.5px rgba(255, 255, 255, 0.12);
+      }
+
+      [data-theme="dark"] .sk-main-title {
+        color: #F8FAFC;
+      }
+
+      [data-theme="dark"] .sk-segment-bar {
+        background: rgba(255, 255, 255, 0.04);
+        border-color: rgba(255, 255, 255, 0.09);
+        box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
+      }
+
+      [data-theme="dark"] .sk-segment-item {
+        background: rgba(255, 255, 255, 0.06);
+        border-color: rgba(255, 255, 255, 0.1);
+      }
+      [data-theme="dark"] .sk-segment-item.seg-op {
+        background: rgba(124, 58, 237, 0.15);
+        border-color: rgba(139, 92, 246, 0.3);
+      }
+      [data-theme="dark"] .sk-segment-item.seg-penuh {
+        background: rgba(217, 119, 6, 0.15);
+        border-color: rgba(245, 158, 11, 0.3);
+      }
+      [data-theme="dark"] .sk-segment-item.seg-cuti {
+        background: rgba(225, 29, 72, 0.15);
+        border-color: rgba(244, 63, 94, 0.3);
+      }
+
       /* ===== 🚀 APPLE WALLET DIGITAL PASS HERO CARD ===== */
       .sidebar-qr-hotline {
         padding: 14px 18px;
@@ -812,6 +846,63 @@
         line-height: 1.1;
         color: #0F172A;
         font-variant-numeric: tabular-nums;
+      }
+
+      /* Dark Mode QR & Hotline Overrides */
+      [data-theme="dark"] .sidebar-qr-hotline {
+        background: #101726;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      [data-theme="dark"] .tv-qr-hero-card {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 14px 36px -4px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.12);
+      }
+
+      [data-theme="dark"] .wallet-pass-header {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      [data-theme="dark"] .wallet-pass-icon {
+        color: #38BDF8;
+        background: rgba(2, 132, 199, 0.2);
+        border-color: rgba(56, 189, 248, 0.35);
+      }
+
+      [data-theme="dark"] .wallet-pass-tag {
+        color: #F8FAFC;
+      }
+
+      [data-theme="dark"] .wallet-pass-sub,
+      [data-theme="dark"] .wallet-pass-hint {
+        color: #94A3B8;
+      }
+
+      [data-theme="dark"] .dynamic-qr-box {
+        background: #FFFFFF;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+      }
+
+      [data-theme="dark"] .tv-qr-url-pill {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        color: #38BDF8;
+      }
+
+      [data-theme="dark"] .hotline-info-banner {
+        background: rgba(34, 197, 94, 0.12);
+        border-color: rgba(34, 197, 94, 0.25);
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+      }
+
+      [data-theme="dark"] .hotline-tag {
+        color: #4ADE80;
+      }
+
+      [data-theme="dark"] .hotline-num {
+        color: #F0FDF4;
       }
 
       /* ===== 3D EMPTY STATE (NEO ORB) ===== */
@@ -2702,6 +2793,32 @@
           inset 0 -1px 1px rgba(15, 23, 42, 0.03);
       }
 
+      [data-theme="dark"] .platter {
+        opacity: 1;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 
+          0 14px 34px -4px rgba(0, 0, 0, 0.5),
+          0 2px 6px -1px rgba(0, 0, 0, 0.3),
+          inset 0 1.5px 1.5px rgba(255, 255, 255, 0.12),
+          inset 0 -1px 1px rgba(0, 0, 0, 0.2);
+      }
+
+      [data-theme="dark"] .platter .doc-name {
+        color: #F8FAFC;
+      }
+
+      [data-theme="dark"] .platter .doc-spec {
+        color: #94A3B8;
+      }
+
+      [data-theme="dark"] .platter .initials {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
+        color: #FFFFFF;
+      }
+
       /* Apple Specular Top Rim Light */
       .platter::after {
         content: "";
@@ -2912,7 +3029,8 @@
       /* st-buka */
       .st-buka { --status-color: #059669; --status-bg: rgba(5, 150, 105, 0.28); }
       .st-buka .initials { color: #059669; }
-      .st-buka.active { background: #FFFFFF !important; box-shadow: 0 16px 36px -4px rgba(5, 150, 105, 0.2), inset 0 1.5px 1.5px #FFFFFF !important; }
+      [data-theme="light"] .st-buka.active { background: #FFFFFF !important; box-shadow: 0 16px 36px -4px rgba(5, 150, 105, 0.2), inset 0 1.5px 1.5px #FFFFFF !important; }
+      [data-theme="dark"] .st-buka.active { background: rgba(16, 185, 129, 0.15) !important; box-shadow: 0 16px 36px -4px rgba(16, 185, 129, 0.35), inset 0 1.5px 1.5px rgba(255, 255, 255, 0.18) !important; }
 
       .st-buka.st-terjadwal { --status-color: #0284C7; --status-bg: rgba(2, 132, 199, 0.28); }
       .st-buka.st-terjadwal .initials { color: #0284C7; }
@@ -2927,11 +3045,7 @@
 
       .platter.active {
         z-index: 100;
-        background: #FFFFFF !important;
         border: 1.5px solid rgba(5, 150, 105, 0.45) !important;
-        box-shadow: 
-          0 18px 40px -4px rgba(5, 150, 105, 0.22),
-          inset 0 2px 2px #FFFFFF !important;
         transform: translateZ(0) translateY(-2px) scale(1.01); 
         opacity: 1 !important;
       }
@@ -2944,6 +3058,16 @@
           0 18px 40px -4px rgba(5, 150, 105, 0.22),
           inset 0 2px 2px #FFFFFF !important;
         color: #0F172A !important;
+      }
+
+      /* Dark Mode Override */
+      [data-theme="dark"] .platter.active {
+        background: rgba(16, 185, 129, 0.14) !important;
+        border: 1.5px solid rgba(52, 211, 153, 0.6) !important;
+        box-shadow: 
+          0 18px 40px -4px rgba(16, 185, 129, 0.35),
+          inset 0 2px 2px rgba(255, 255, 255, 0.18) !important;
+        color: #FFFFFF !important;
       }
 
       .platter.active::before {
@@ -2998,6 +3122,21 @@
         position: relative;
         overflow: hidden;
       }
+
+      [data-theme="dark"] .platter-mini {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.12);
+      }
+
+      [data-theme="dark"] .platter-mini .doc-name {
+        color: #F8FAFC;
+      }
+
+      [data-theme="dark"] .platter-mini .doc-spec {
+        color: #94A3B8;
+      }
+
       .platter-mini .platter-main {
         display: flex;
         align-items: center;
