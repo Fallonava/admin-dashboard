@@ -3830,6 +3830,133 @@
 
 
 
+      /* ═══════════════════════════════════════════════════════
+         📺 APPLE tvOS SIDEBAR CAROUSEL — Auto-Cycle 3 Slides
+         Weather → Alur → Status Khusus (if any)
+         ═══════════════════════════════════════════════════════ */
+
+      /* Carousel viewport — clips overflow, fills sidebar content area */
+      .sidebar-carousel-viewport {
+        flex: 1;
+        min-height: 0;
+        overflow: hidden;
+        position: relative;
+      }
+
+      /* Track — horizontal flex of slides */
+      .sidebar-carousel-track {
+        display: flex;
+        width: 100%;
+        height: 100%;
+        transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+        will-change: transform;
+      }
+
+      /* Each slide fills the viewport exactly */
+      .carousel-slide {
+        flex: 0 0 100%;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* Carousel slide content: scroll-mask + scroller */
+      .carousel-slide .scroller {
+        padding: 10px;
+        gap: 8px;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        overflow: hidden;
+        box-sizing: border-box;
+      }
+
+      /* Weather & Alur slides use complications layout */
+      .carousel-slide .sidebar-complications {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: stretch;
+        padding: 6px;
+        gap: 10px;
+        box-sizing: border-box;
+        opacity: 1;
+      }
+
+      /* ── Dots Indicator ── */
+      .carousel-dots {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 8px 0 6px 0;
+        flex-shrink: 0;
+      }
+
+      .carousel-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.22);
+        transition: width 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+                    background 0.35s ease,
+                    opacity 0.35s ease;
+        flex-shrink: 0;
+      }
+
+      .carousel-dot.active {
+        width: 18px;
+        border-radius: 3px;
+        background: rgba(255, 255, 255, 0.75);
+      }
+
+      [data-theme="light"] .carousel-dot {
+        background: rgba(60, 60, 67, 0.18);
+      }
+      [data-theme="light"] .carousel-dot.active {
+        background: rgba(60, 60, 67, 0.55);
+      }
+
+      /* Slide label chip — small pill at top of each slide */
+      .carousel-slide-label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 10px 6px 10px;
+        flex-shrink: 0;
+      }
+
+      .carousel-slide-label .csl-icon {
+        font-size: 13px;
+        color: var(--text-muted);
+      }
+
+      .carousel-slide-label .csl-text {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 10.5px;
+        font-weight: 800;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+      }
+
+      /* Status Khusus slide — keeps existing styles, full height */
+      .carousel-slide-khusus .scroller {
+        padding: 6px;
+        overflow-y: auto;
+        overflow-x: hidden;
+      }
+
+      /* ── Suppress old sidebar-mode-weather toggle — carousel handles it ── */
+      .sidebar-panel.sidebar-carousel-active .sidebar-status-khusus-header,
+      .sidebar-panel.sidebar-carousel-active .sk-segment-bar,
+      .sidebar-panel.sidebar-carousel-active .scroll-mask {
+        display: none !important;
+      }
+
+
       /* ===== EXPANDED DETAIL (Apple Live Activity Drawer) ===== */
       /* ─── Smooth Expand: grid-rows trick (no max-height pop) ─── */
       .platter-detail-wrap {
@@ -5684,58 +5811,18 @@
             </div>
           </div>
 
-          <div class="scroll-mask" id="maskSidebar">
-            <div
-              class="scroller"
-              id="scrollSidebar"
-              style="padding: 10px; gap: 8px"
-            ></div>
-          </div>
-
-          <!-- Dynamic QR Code & Highlighted Hotline Number -->
-          <div class="sidebar-qr-hotline">
-            <!-- Apple Wallet-Style Digital Pass Hero Card -->
-            <div class="tv-qr-hero-card">
-              <div class="wallet-pass-header">
-                <div class="wallet-pass-brand">
-                  <span class="material-icons-round wallet-pass-icon">smartphone</span>
-                  <div class="wallet-pass-title-group">
-                    <span class="wallet-pass-tag">DIGITAL PASS RS</span>
-                    <span class="wallet-pass-sub">Jadwal Real-Time HP</span>
-                  </div>
-                </div>
-                <div class="wallet-pass-badge">
-                  <span class="radar-dot"></span>
-                  <span>LIVE WEB</span>
-                </div>
-              </div>
-              <div class="dynamic-qr-box">
-                <div id="tvQrCode" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;"></div>
-              </div>
-              <div class="tv-qr-url-pill">
-                <span class="material-icons-round" style="font-size: 13px; color: #0284C7;">public</span>
-                <span>simed.fallonava.my.id/jadwal</span>
-              </div>
-              <span class="wallet-pass-hint">Arahkan kamera smartphone ke barcode untuk pantau jadwal dokter di HP</span>
-            </div>
-
-            <!-- Apple tvOS View-Only WhatsApp Hotline Widget -->
-            <div class="hotline-info-banner">
-              <div class="hotline-icon-wrap">
-                <!-- WhatsApp SVG icon -->
-                <svg class="hotline-wa-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
-                </svg>
-              </div>
-              <div class="hotline-details">
-                <span class="hotline-tag">INFORMASI &amp; PENDAFTARAN RS</span>
-                <span class="hotline-num">0823-2344-6076</span>
-              </div>
+      <!-- 🌐 SIDEBAR CAROUSEL VIEWPORT -->
+          <div class="sidebar-carousel-viewport" id="sidebarCarouselViewport">
+            <div class="sidebar-carousel-track" id="sidebarCarouselTrack">
+              <!-- Slides injected by SidebarCarousel.init() -->
             </div>
           </div>
 
+          <!-- Dots Indicator -->
+          <div class="carousel-dots" id="carouselDots"></div>
 
         </aside>
+
 
         <!-- Bedah Island -->
         <section class="island island-bedah">
@@ -6562,6 +6649,146 @@
       window.triggerHourlyDemo = () => Island.triggerHourlyBriefing(new Date());
 
       // Main App Logic
+      /* ══════════════════════════════════════════════════
+         📺 SidebarCarousel — Apple tvOS Auto-Cycle Carousel
+         Slides: [Weather] [Alur] [Status Khusus?]
+         ══════════════════════════════════════════════════ */
+      const SidebarCarousel = {
+        _slides: [],       // slide configs: { id, html }
+        _current: 0,
+        _timer: null,
+        _interval: 15000,  // 15 seconds per slide
+        _track: null,
+        _dotsEl: null,
+        _appRef: null,
+
+        init(appRef) {
+          this._appRef = appRef;
+          this._track = document.getElementById("sidebarCarouselTrack");
+          this._dotsEl = document.getElementById("carouselDots");
+          // Mark sidebar as carousel-active to suppress old headers
+          const panel = document.querySelector(".sidebar-panel");
+          if (panel) panel.classList.add("sidebar-carousel-active");
+        },
+
+        update(hasKhusus, operasiList, penuhList, cutiList, appCtx) {
+          if (!this._track) return;
+
+          // Build slide list
+          const newSlides = [];
+
+          // Slide 0: Weather — always first
+          newSlides.push({ id: "weather", html: appCtx.buildWeatherSlideHTML() });
+
+          // Slide 1: Alur — always second
+          newSlides.push({ id: "alur", html: this._buildAlurHTML() });
+
+          // Slide 2+: Status Khusus — only if exists
+          if (hasKhusus) {
+            newSlides.push({ id: "khusus", html: this._buildKhususHTML(operasiList, penuhList, cutiList) });
+          }
+
+          this._slides = newSlides;
+
+          // Re-render track
+          this._track.innerHTML = newSlides.map(s => s.html).join("");
+
+          // Clamp current index
+          if (this._current >= newSlides.length) this._current = 0;
+
+          this._renderPosition(false);
+          this._renderDots();
+          this._startTimer();
+        },
+
+        _buildAlurHTML() {
+          // Grab alur content from the complication template in App
+          const w = this._appRef ? this._appRef._weatherCache : {};
+          return `
+            <div class="carousel-slide carousel-slide-alur">
+              <div class="carousel-slide-label">
+                <span class="material-icons-round csl-icon">account_tree</span>
+                <span class="csl-text">Alur Pelayanan Pasien</span>
+              </div>
+              <div class="sidebar-complications" style="padding:4px 6px; flex:1;">
+                ${this._appRef ? this._appRef.buildSidebarComplicationsHTML().replace(/<div class="complication-card complication-weather-master[\s\S]*?<\/div>\s*<\/div>\s*<\/div>/, '') : ''}
+              </div>
+            </div>`;
+        },
+
+        _buildKhususHTML(operasiList, penuhList, cutiList) {
+          const statusColor = { operasi:"#BF5AF2", penuh:"#F59E0B", cuti:"#EF4444" };
+          let cards = "";
+
+          const makeKhususCard = (d, color, icon, label) => `
+            <div class="platter platter-mini st-${label.toLowerCase()}" style="border-left:5px solid ${color}; background:#FFFFFF; margin-bottom:6px;">
+              <div class="platter-main">
+                <div class="initials" style="background:${color}18; border-color:${color}44; color:${color};">
+                  <span class="material-icons-round" style="font-size:18px;">${icon}</span>
+                </div>
+                <div class="info-col">
+                  <div class="doc-spec-badge" style="background:${color}14; border-color:${color}30; color:${color}; padding:2px 8px; border-radius:999px; font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:0.06em; display:inline-flex; align-items:center; gap:4px; margin-bottom:4px; width:fit-content;">
+                    <span style="width:5px;height:5px;border-radius:50%;background:${color};flex-shrink:0;"></span>
+                    ${label}
+                  </div>
+                  <div class="doc-name" style="font-size:13px; font-weight:700; color:#0F172A; line-height:1.2;">${d.Dokter}</div>
+                </div>
+              </div>
+            </div>`;
+
+          operasiList.forEach(d => { cards += makeKhususCard(d, statusColor.operasi, "local_hospital", "OPERASI"); });
+          penuhList.forEach(d => { cards += makeKhususCard(d, statusColor.penuh, "front_hand", "PENUH"); });
+          cutiList.forEach(d => { cards += makeKhususCard(d, statusColor.cuti, "flight", "CUTI"); });
+
+          return `
+            <div class="carousel-slide carousel-slide-khusus">
+              <div class="carousel-slide-label">
+                <span class="material-icons-round csl-icon" style="color:#EF4444;">medical_information</span>
+                <span class="csl-text" style="color:#EF4444;">Status Khusus</span>
+              </div>
+              <div class="scroller" style="flex:1; overflow-y:auto; padding:6px 8px; gap:0;">
+                ${cards}
+              </div>
+            </div>`;
+        },
+
+        _startTimer() {
+          if (this._timer) clearInterval(this._timer);
+          if (this._slides.length < 2) return;
+          this._timer = setInterval(() => this.next(), this._interval);
+        },
+
+        next() {
+          this._current = (this._current + 1) % this._slides.length;
+          this._renderPosition(true);
+          this._renderDots();
+        },
+
+        _renderPosition(animate) {
+          if (!this._track) return;
+          if (!animate) {
+            this._track.style.transition = "none";
+            // Force reflow
+            void this._track.offsetWidth;
+          } else {
+            this._track.style.transition = "transform 0.55s cubic-bezier(0.22, 1, 0.36, 1)";
+          }
+          this._track.style.transform = `translateX(-${this._current * 100}%)`;
+        },
+
+        _renderDots() {
+          if (!this._dotsEl) return;
+          this._dotsEl.innerHTML = this._slides.map((_, i) =>
+            `<span class="carousel-dot${i === this._current ? ' active' : ''}"></span>`
+          ).join("");
+        },
+
+        destroy() {
+          if (this._timer) clearInterval(this._timer);
+          this._timer = null;
+        }
+      };
+
       const App = {
         _data: { doctors: [], shifts: [], leaves: [], settings: {} },
         _prevDoctors: {}, // Track previous doctor states for change detection
@@ -6895,6 +7122,67 @@
           return list;
         },
 
+        /* ── Sidebar Carousel Slide Builders ── */
+        buildWeatherSlideHTML() {
+          const w = this._weatherCache;
+          const heroIconMarkup = w.iconHTML || this.getWeatherIconSVG("partly-cloudy-day", 44);
+          return `
+            <div class="carousel-slide carousel-slide-weather">
+              <div class="carousel-slide-label">
+                <span class="material-icons-round csl-icon">wb_sunny</span>
+                <span class="csl-text">Cuaca &amp; Lingkungan</span>
+              </div>
+              <div class="sidebar-complications">
+                <div class="complication-card complication-weather-master weather-theme-${w.atmosphereTheme}">
+                  <div class="complication-header">
+                    <div class="complication-title">
+                      <span class="material-icons-round" style="font-size:14px; color:#0284C7;">wb_sunny</span>
+                      <span>CUACA PURBALINGGA</span>
+                    </div>
+                    <span class="complication-tag tag-sky">LIVE BMKG</span>
+                  </div>
+                  <div class="weather-master-hero-row">
+                    <div class="weather-master-hero-left">
+                      <div class="weather-temp-master-group">
+                        <span class="weather-temp-master-val" id="tvWeatherTemp">${w.temp}</span>
+                        <span class="weather-temp-master-unit">°C</span>
+                      </div>
+                      <div class="weather-condition-master-text" id="tvWeatherCondition">${w.condition}</div>
+                      <div class="weather-range-master-text" id="tvWeatherRange">Suhu Harian: H: ${w.tempMax}° • L: ${w.tempMin}°</div>
+                    </div>
+                    <div class="weather-master-hero-right">
+                      <div class="weather-master-icon-wrap" id="tvWeatherIcon">${heroIconMarkup}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>`;
+        },
+
+        buildAlurSlideHTML() {
+          return `
+            <div class="carousel-slide carousel-slide-alur">
+              <div class="carousel-slide-label">
+                <span class="material-icons-round csl-icon">account_tree</span>
+                <span class="csl-text">Alur Pelayanan Pasien</span>
+              </div>
+              <div class="sidebar-complications">
+                <div class="complication-card complication-journey-card">
+                  <div class="complication-header">
+                    <div class="complication-title">
+                      <span class="material-icons-round" style="font-size:15px; color:#0284C7;">account_tree</span>
+                      <span>ALUR PELAYANAN PASIEN</span>
+                    </div>
+                    <span class="complication-tag tag-sky">PANDUAN LOBI</span>
+                  </div>
+                  ${document.querySelector('.complication-journey-card')
+                    ? document.querySelector('.complication-journey-card').innerHTML.replace(/<div class="complication-header">[\s\S]*?<\/div>\s*<\/div>/, '')
+                    : this._alurInnerHTML || ''}
+                </div>
+              </div>
+            </div>`;
+        },
+
         buildSidebarComplicationsHTML() {
           const w = this._weatherCache;
           const heroIconMarkup = w.iconHTML || this.getWeatherIconSVG("partly-cloudy-day", 44);
@@ -7070,6 +7358,11 @@
 
         async init() {
           Island.init(); // Initialize Dynamic Island
+
+          // Init Sidebar Carousel — always-on weather + alur, khusus on-demand
+          App._sidebarCarousel = SidebarCarousel;
+          SidebarCarousel.init(this);
+
           this.fetchWeather(); // Fetch live Apple Weather for Purbalingga
           setInterval(() => this.fetchWeather(), 900000); // 15-minute background refresh
 
@@ -8183,28 +8476,12 @@
             return el;
           };
 
-          const isComplicationMode = (operasiList.length === 0 && penuhList.length === 0 && cutiList.length === 0);
-          const sidebarPanel = document.querySelector(".sidebar-panel");
-          if (sidebarPanel) {
-            sidebarPanel.classList.toggle("sidebar-mode-weather", isComplicationMode);
-          }
 
-          // --- Build grouped layout or Apple Watch Complications if empty ---
-          if (isComplicationMode) {
-            if (s3) s3.stop();
-            let wrapper = container.querySelector('[data-id="sec-complications"]');
-            if (!wrapper) {
-              wrapper = document.createElement("div");
-              wrapper.dataset.id = "sec-complications";
-              wrapper.style.height = "100%";
-              wrapper.innerHTML = this.buildSidebarComplicationsHTML();
-              allElements.push(wrapper);
-              hasLayoutChange = true;
-            } else {
-              allElements.push(wrapper);
-              oldMap.delete("sec-complications");
-            }
-          } else {
+          // ── Sidebar Carousel: always show weather + alur, add khusus slide if needed ──
+          const hasKhusus = (operasiList.length > 0 || penuhList.length > 0 || cutiList.length > 0);
+          App._sidebarCarousel.update(hasKhusus, operasiList, penuhList, cutiList, this);
+
+          if (!hasKhusus) {
             if (s3) s3.active = true;
             if (operasiList.length > 0) {
               allElements.push(
