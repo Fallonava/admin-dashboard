@@ -8193,20 +8193,25 @@
             return 0;
           };
 
-          // Helper: Parse Jam Pemanggilan / Jam Mulai Praktek ke Menit (e.g. "08:00" -> 480)
+          // Helper: Parse Jam Pemanggilan / Jam Mulai Praktek ke Menit (e.g. "08:00" -> 480, "11.00 - 13.00" -> 660, "13:00 - Selesai" -> 780)
           const parseJamMinutes = (str) => {
             if (!str || str === "-") return 9999;
-            const match = String(str).match(/(\d{1,2})[:.](\d{2})/);
+            const clean = String(str).replace(/\s/g, "").replace(/\./g, ":");
+            const match = clean.match(/(\d{1,2}):(\d{2})/);
             if (!match) return 9999;
-            return parseInt(match[1], 10) * 60 + parseInt(match[2], 10);
+            const h = parseInt(match[1], 10);
+            const m = parseInt(match[2], 10);
+            if (isNaN(h) || isNaN(m)) return 9999;
+            return h * 60 + m;
           };
 
           const getJamSortVal = (d) => {
-            const st = (d.Status || "").toUpperCase();
-            if (st === "PENDAFTARAN" && d.JamDaftar && d.JamDaftar !== "-") {
-              return parseJamMinutes(d.JamDaftar);
-            }
-            return parseJamMinutes(d.JamPraktek || d.Jam || d.JamDaftar);
+            // Prioritaskan jam mulai praktek / pelayanan di poli
+            const pMins = parseJamMinutes(d.JamPraktek || d.Jam);
+            if (pMins !== 9999) return pMins;
+            const dMins = parseJamMinutes(d.JamDaftar);
+            if (dMins !== 9999) return dMins;
+            return 9999;
           };
 
           const sortFn = (a, b) => {
@@ -8214,23 +8219,24 @@
             if (a._isActive && !b._isActive) return -1;
             if (!a._isActive && b._isActive) return 1;
 
-            // Priority 2: Status Score (PRAKTEK > PENDAFTARAN > PENUH > TERJADWAL > OPERASI > CUTI)
+            // Priority 2: Jam Mulai Praktek / Pemanggilan (Urut Kronologis Waktu: 06.00 -> 08.00 -> 11.00 [dr. Oke] -> 13.00 [dr. Rahageng])
+            const jamA = getJamSortVal(a);
+            const jamB = getJamSortVal(b);
+            if (jamA !== jamB) return jamA - jamB;
+
+            // Priority 3: Status Score (Jika Jam Sama, urutkan: PRAKTEK/PENDAFTARAN (4) > PENUH (3) > TERJADWAL (2.5) > OPERASI (2) > CUTI (1))
             const diff = score(b.Status) - score(a.Status);
             if (diff !== 0) return diff;
 
-            // Priority 2.5: Jam Pemanggilan / Jam Praktek (Paling Awal di Atas)
-            const jamDiff = getJamSortVal(a) - getJamSortVal(b);
-            if (jamDiff !== 0) return jamDiff;
-
-            // Priority 3: Specialty (Poliklinik A-Z)
-            const specA = a.Spesialis || "";
-            const specB = b.Spesialis || "";
+            // Priority 4: Specialty (Poliklinik A-Z)
+            const specA = (a.Spesialis || "").toUpperCase();
+            const specB = (b.Spesialis || "").toUpperCase();
             if (specA < specB) return -1;
             if (specA > specB) return 1;
 
-            // Priority 4: Doctor Name (A-Z)
-            const docA = a.Dokter || "";
-            const docB = b.Dokter || "";
+            // Priority 5: Doctor Name (A-Z)
+            const docA = (a.Dokter || "").toUpperCase();
+            const docB = (b.Dokter || "").toUpperCase();
             if (docA < docB) return -1;
             if (docA > docB) return 1;
             return 0;
