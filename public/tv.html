@@ -972,24 +972,39 @@
         border-color: rgba(56, 189, 248, 0.4) !important;
       }
 
-      /* ===== 🌅 SUBTLE & LUXURIOUS APPLE DIURNAL THEMES (PURE WHITE CARD BACKGROUND) ===== */
-      /* Base Master Card is ALWAYS clean crystal white in light mode, dark obsidian in dark mode */
-      .complication-weather-master {
-        background: #FFFFFF !important;
-        border-color: rgba(226, 234, 245, 0.95) !important;
-        box-shadow: 
-          0 14px 34px -4px rgba(45, 65, 95, 0.08),
-          inset 0 1.5px 1.5px #FFFFFF !important;
-      }
-      [data-theme="dark"] .complication-weather-master {
-        background: #101726 !important;
-        border-color: rgba(255, 255, 255, 0.08) !important;
-        box-shadow: 0 14px 36px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.1) !important;
+      /* ===== 💎 APPLE SPECULAR PRISM RIM LIGHT SWEEP & GRADIENT FLOW THEMES ===== */
+      /* Dynamic Hero Temperature Typographic Gradient Flow */
+      .weather-temp-master-val {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 78px;
+        font-weight: 900;
+        line-height: 0.88;
+        letter-spacing: -0.045em;
+        font-variant-numeric: tabular-nums;
+        background: linear-gradient(135deg, #0F172A 0%, var(--temp-gradient-end, #0284C7) 100%);
+        background-size: 200% 200%;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: appleTempFlow 8s ease-in-out infinite alternate;
       }
 
-      /* --- 1. PAGI (Dawn Gold & Amber Accent) --- */
-      .weather-theme-pagi .weather-master-corona {
-        background: radial-gradient(circle, rgba(253, 230, 138, 0.45) 0%, rgba(245, 158, 11, 0.2) 60%, transparent 100%);
+      [data-theme="dark"] .weather-temp-master-val {
+        background: linear-gradient(135deg, #FFFFFF 0%, var(--temp-gradient-dark, #38BDF8) 100%);
+        background-size: 200% 200%;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      @keyframes appleTempFlow {
+        0% { background-position: 0% 50%; }
+        100% { background-position: 100% 50%; }
+      }
+
+      /* --- 1. PAGI (Amber Sunrise Prism & Golden Typography) --- */
+      .weather-theme-pagi {
+        --prism-color: rgba(245, 158, 11, 0.75);
+        --temp-gradient-end: #D97706;
+        --temp-gradient-dark: #FBBF24;
       }
       .weather-theme-pagi .complication-tag {
         background: #FEF3C7 !important;
@@ -1014,9 +1029,11 @@
         box-shadow: 0 3px 10px rgba(245, 158, 11, 0.15);
       }
 
-      /* --- 2. SIANG (Azure Sky Accent) --- */
-      .weather-theme-siang .weather-master-corona {
-        background: radial-gradient(circle, rgba(186, 230, 253, 0.45) 0%, rgba(2, 132, 199, 0.18) 60%, transparent 100%);
+      /* --- 2. SIANG (Azure Sky Prism & Sky Gradient Typography) --- */
+      .weather-theme-siang {
+        --prism-color: rgba(2, 132, 199, 0.75);
+        --temp-gradient-end: #0284C7;
+        --temp-gradient-dark: #38BDF8;
       }
       .weather-theme-siang .complication-tag {
         background: #E0F2FE !important;
@@ -1041,9 +1058,11 @@
         box-shadow: 0 3px 10px rgba(2, 132, 199, 0.15);
       }
 
-      /* --- 3. SORE (Sunset Coral & Rose Tangerine Accent) --- */
-      .weather-theme-sore .weather-master-corona {
-        background: radial-gradient(circle, rgba(253, 164, 175, 0.45) 0%, rgba(244, 63, 94, 0.18) 60%, transparent 100%);
+      /* --- 3. SORE (Sunset Coral Prism & Crimson Rose Typography) --- */
+      .weather-theme-sore {
+        --prism-color: rgba(244, 63, 94, 0.8);
+        --temp-gradient-end: #E11D48;
+        --temp-gradient-dark: #FB7185;
       }
       .weather-theme-sore .complication-tag {
         background: #FFE4E6 !important;
@@ -1068,9 +1087,11 @@
         box-shadow: 0 3px 10px rgba(225, 29, 72, 0.15);
       }
 
-      /* --- 4. MALAM (Starlight Sapphire & Indigo Accent) --- */
-      .weather-theme-malam .weather-master-corona {
-        background: radial-gradient(circle, rgba(129, 140, 248, 0.4) 0%, rgba(99, 102, 241, 0.18) 60%, transparent 100%);
+      /* --- 4. MALAM (Starlight Sapphire Prism & Indigo Typography) --- */
+      .weather-theme-malam {
+        --prism-color: rgba(99, 102, 241, 0.75);
+        --temp-gradient-end: #6366F1;
+        --temp-gradient-dark: #818CF8;
       }
       .weather-theme-malam .complication-tag {
         background: #EEF2FF !important;
@@ -1095,9 +1116,11 @@
         box-shadow: 0 3px 10px rgba(99, 102, 241, 0.15);
       }
 
-      /* --- 5. HUJAN (Rainy Aqua Teal Accent) --- */
-      .weather-theme-rainy .weather-master-corona {
-        background: radial-gradient(circle, rgba(103, 232, 249, 0.4) 0%, rgba(13, 148, 136, 0.18) 60%, transparent 100%);
+      /* --- 5. HUJAN (Aqua Teal Prism & Ocean Typography) --- */
+      .weather-theme-rainy {
+        --prism-color: rgba(13, 148, 136, 0.75);
+        --temp-gradient-end: #0D9488;
+        --temp-gradient-dark: #2DD4BF;
       }
       .weather-theme-rainy .complication-tag {
         background: #CCFBF1 !important;
@@ -1668,67 +1691,49 @@
 
       .complication-weather-master {
         height: 100%;
-        background: #FFFFFF;
-        border-radius: 26px;
-        border: 1px solid rgba(255, 255, 255, 0.85);
-        box-shadow: 
-          0 18px 42px -6px rgba(45, 65, 95, 0.1),
-          inset 0 1.5px 2px rgba(255, 255, 255, 0.95),
-          inset 0 -1.5px 2px rgba(0, 0, 0, 0.03);
-        padding: 16px 18px;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        gap: 12px;
+        background: #FFFFFF !important;
+        border-radius: 28px;
         position: relative;
         overflow: hidden;
         box-sizing: border-box;
+        padding: 20px 18px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 14px;
+        border: 1px solid rgba(226, 234, 245, 0.95);
+        box-shadow: 
+          0 16px 36px -6px rgba(45, 65, 95, 0.08),
+          inset 0 1.5px 1.5px #FFFFFF;
+      }
+
+      /* Apple Specular Prism Rim (1px Animated Light Sweep along Card Border) */
+      .complication-weather-master::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: 28px;
+        padding: 1.5px;
+        background: linear-gradient(120deg, transparent 20%, var(--prism-color, rgba(2, 132, 199, 0.6)) 50%, transparent 80%);
+        background-size: 300% 300%;
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        pointer-events: none;
+        animation: applePrismRimSweep 10s ease-in-out infinite alternate;
+        z-index: 2;
+      }
+
+      @keyframes applePrismRimSweep {
+        0% { background-position: 0% 0%; }
+        50% { background-position: 100% 100%; }
+        100% { background-position: 0% 0%; }
       }
 
       [data-theme="dark"] .complication-weather-master {
-        background: #101726;
-        border-color: rgba(255, 255, 255, 0.12);
-        box-shadow: 
-          0 22px 48px rgba(0, 0, 0, 0.55),
-          inset 0 1.5px 1.5px rgba(255, 255, 255, 0.18),
-          inset 0 -1px 1px rgba(0, 0, 0, 0.4);
-      }
-
-      /* Apple Atmospheric Corona Ambient Light */
-      .weather-master-corona {
-        position: absolute;
-        top: -40px;
-        right: -30px;
-        width: 170px;
-        height: 170px;
-        border-radius: 50%;
-        filter: blur(38px);
-        opacity: 0.65;
-        pointer-events: none;
-        z-index: 0;
-        animation: appleCoronaBreathe 6s ease-in-out infinite alternate;
-      }
-
-      .weather-theme-pagi .weather-master-corona {
-        background: radial-gradient(circle, #FDE68A 0%, rgba(245, 158, 11, 0.45) 55%, transparent 100%);
-      }
-      .weather-theme-siang .weather-master-corona {
-        background: radial-gradient(circle, #BAE6FD 0%, rgba(2, 132, 199, 0.45) 55%, transparent 100%);
-      }
-      .weather-theme-sore .weather-master-corona {
-        background: radial-gradient(circle, #FDA4AF 0%, rgba(244, 63, 94, 0.45) 55%, transparent 100%);
-      }
-      .weather-theme-malam .weather-master-corona {
-        background: radial-gradient(circle, #818CF8 0%, rgba(99, 102, 241, 0.4) 55%, transparent 100%);
-      }
-      .weather-theme-rainy .weather-master-corona {
-        background: radial-gradient(circle, #67E8F9 0%, rgba(13, 148, 136, 0.4) 55%, transparent 100%);
-      }
-
-      @keyframes appleCoronaBreathe {
-        0% { transform: scale(0.9) translate(0, 0); opacity: 0.55; }
-        50% { transform: scale(1.18) translate(-6px, 6px); opacity: 0.85; }
-        100% { transform: scale(0.95) translate(4px, -4px); opacity: 0.6; }
+        background: #101726 !important;
+        border-color: rgba(255, 255, 255, 0.08);
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.1);
       }
 
       .weather-master-hero-row {
@@ -1751,23 +1756,9 @@
         align-items: flex-start;
       }
 
-      .weather-temp-master-val {
-        font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 68px;
-        font-weight: 900;
-        color: #0F172A;
-        line-height: 0.9;
-        letter-spacing: -0.04em;
-        font-variant-numeric: tabular-nums;
-      }
-
-      [data-theme="dark"] .weather-temp-master-val {
-        color: #FFFFFF;
-      }
-
       .weather-temp-master-unit {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 30px;
+        font-size: 32px;
         font-weight: 900;
         color: #0284C7;
         margin-left: 2px;
@@ -1781,7 +1772,7 @@
 
       .weather-condition-master-text {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 18.5px;
+        font-size: 19.5px;
         font-weight: 900;
         color: #0F172A;
         letter-spacing: -0.01em;
@@ -1794,7 +1785,7 @@
 
       .weather-range-master-text {
         font-family: "Plus Jakarta Sans", monospace;
-        font-size: 12.5px;
+        font-size: 13px;
         font-weight: 800;
         color: #64748B;
         margin-top: 4px;
@@ -1805,12 +1796,12 @@
       }
 
       .weather-master-icon-wrap {
-        width: 64px;
-        height: 64px;
+        width: 72px;
+        height: 72px;
         display: flex;
         align-items: center;
         justify-content: center;
-        filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.16));
+        filter: drop-shadow(0 10px 22px rgba(0, 0, 0, 0.16));
         animation: appleWeatherFloat 4s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate;
         position: relative;
         z-index: 1;
@@ -1819,14 +1810,14 @@
       .weather-master-section {
         display: flex;
         flex-direction: column;
-        gap: 6px;
+        gap: 7px;
         position: relative;
         z-index: 1;
       }
 
       .weather-section-label {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 10px;
+        font-size: 10.5px;
         font-weight: 800;
         color: #64748B;
         letter-spacing: 0.05em;
@@ -1844,13 +1835,13 @@
         display: grid;
         grid-template-columns: repeat(6, 1fr);
         gap: 6px;
-        background: rgba(255, 255, 255, 0.6);
+        background: rgba(255, 255, 255, 0.65);
         border: 1px solid rgba(255, 255, 255, 0.85);
         box-shadow: inset 0 1px 1px #FFFFFF, 0 3px 10px rgba(0, 0, 0, 0.02);
         backdrop-filter: blur(14px);
         -webkit-backdrop-filter: blur(14px);
-        border-radius: 16px;
-        padding: 8px 5px;
+        border-radius: 18px;
+        padding: 9px 5px;
         margin: 0;
       }
 
@@ -1861,8 +1852,8 @@
       }
 
       .weather-master-hourly-strip .weather-hourly-item {
-        padding: 6px 2px;
-        border-radius: 11px;
+        padding: 7px 2px;
+        border-radius: 12px;
       }
 
       .weather-master-hourly-strip .weather-hourly-time {
@@ -1870,93 +1861,13 @@
       }
 
       .weather-master-hourly-strip .weather-hourly-icon {
-        width: 22px;
-        height: 22px;
+        width: 24px;
+        height: 24px;
       }
 
       .weather-master-hourly-strip .weather-hourly-temp {
-        font-size: 12.5px;
+        font-size: 13.5px;
         font-weight: 900;
-      }
-
-      .weather-master-env-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 8px;
-        margin-top: 0;
-      }
-
-      .weather-master-env-grid .weather-env-tile {
-        background: rgba(255, 255, 255, 0.65);
-        border: 1px solid rgba(255, 255, 255, 0.85);
-        box-shadow: inset 0 1px 1px #FFFFFF, 0 3px 10px rgba(0, 0, 0, 0.03);
-        backdrop-filter: blur(14px);
-        -webkit-backdrop-filter: blur(14px);
-        padding: 10px 12px;
-        border-radius: 16px;
-        min-height: 64px;
-        transition: transform 0.2s ease;
-      }
-
-      [data-theme="dark"] .weather-master-env-grid .weather-env-tile {
-        background: rgba(255, 255, 255, 0.05);
-        border-color: rgba(255, 255, 255, 0.1);
-        box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.12), 0 4px 12px rgba(0, 0, 0, 0.3);
-      }
-
-      .weather-master-env-grid .weather-env-label {
-        font-size: 10px;
-      }
-
-      .weather-master-env-grid .weather-env-val {
-        font-size: 15.5px;
-      }
-
-      .weather-master-env-grid .weather-env-sub {
-        font-size: 10.5px;
-      }
-
-      .env-mini-badge {
-        font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 8px;
-        font-weight: 800;
-        padding: 2px 6px;
-        border-radius: 9999px;
-        margin-left: auto;
-        letter-spacing: 0.02em;
-        text-transform: uppercase;
-      }
-      .badge-uv {
-        background: rgba(245, 158, 11, 0.15);
-        color: #D97706;
-      }
-      [data-theme="dark"] .badge-uv {
-        background: rgba(245, 158, 11, 0.25);
-        color: #FCD34D;
-      }
-      .badge-sunset {
-        background: rgba(249, 115, 22, 0.15);
-        color: #EA580C;
-      }
-      [data-theme="dark"] .badge-sunset {
-        background: rgba(249, 115, 22, 0.25);
-        color: #FDBA74;
-      }
-      .badge-hum {
-        background: rgba(2, 132, 199, 0.15);
-        color: #0284C7;
-      }
-      [data-theme="dark"] .badge-hum {
-        background: rgba(56, 189, 248, 0.25);
-        color: #7DD3FC;
-      }
-      .badge-wind {
-        background: rgba(16, 185, 129, 0.15);
-        color: #059669;
-      }
-      [data-theme="dark"] .badge-wind {
-        background: rgba(16, 185, 129, 0.25);
-        color: #6EE7B7;
       }
 
       /* Force dark text in sidebar when in light mode, but adapt in dark mode */
@@ -5809,30 +5720,7 @@
           if ($("tvWeatherTemp")) $("tvWeatherTemp").textContent = w.temp;
           if ($("tvWeatherCondition")) $("tvWeatherCondition").textContent = w.condition;
           if ($("tvWeatherIcon") && w.iconHTML) $("tvWeatherIcon").innerHTML = w.iconHTML;
-          if ($("tvWeatherHumidity")) $("tvWeatherHumidity").textContent = `${w.humidity}%`;
-          if ($("tvWeatherApparent")) $("tvWeatherApparent").textContent = `${w.apparent}°C`;
-          if ($("tvWeatherWind")) $("tvWeatherWind").textContent = `${w.windSpeed} km/j`;
-          if ($("tvWeatherRange")) $("tvWeatherRange").textContent = `H:${w.tempMax}° • L:${w.tempMin}°`;
-
-          const sInfo = this.getSolarInfo(w.sunrise, w.sunset);
-          if ($("tvWeatherSolarStatus")) $("tvWeatherSolarStatus").textContent = sInfo.statusText;
-          if ($("tvWeatherSolarFill")) $("tvWeatherSolarFill").style.width = `${sInfo.percent}%`;
-          if ($("tvWeatherSolarOrb")) $("tvWeatherSolarOrb").style.left = `${sInfo.percent}%`;
-          if ($("tvWeatherSolarSunrise")) $("tvWeatherSolarSunrise").textContent = `🌅 Terbit: ${w.sunrise}`;
-          if ($("tvWeatherSolarSunset")) $("tvWeatherSolarSunset").textContent = `🌇 Terbenam: ${w.sunset}`;
-
-          if ($("tvWeatherUVVal")) $("tvWeatherUVVal").textContent = `${w.uvIndex} ${w.uvLabel}`;
-          if ($("tvWeatherUVSub")) $("tvWeatherUVSub").textContent = `Maks: ${w.uvMax} hari ini`;
-          if ($("tvWeatherUVBadge")) $("tvWeatherUVBadge").textContent = `MAKS ${w.uvMax}`;
-          if ($("tvWeatherSunsetVal")) $("tvWeatherSunsetVal").textContent = w.sunset;
-          if ($("tvWeatherSunsetSub")) $("tvWeatherSunsetSub").textContent = `Terbit: ${w.sunrise}`;
-          if ($("tvWeatherSunsetBadge")) $("tvWeatherSunsetBadge").textContent = `TERBIT ${w.sunrise.replace(" WIB", "")}`;
-          if ($("tvWeatherHumVal")) $("tvWeatherHumVal").textContent = `${w.humidity}%`;
-          if ($("tvWeatherHumSub")) $("tvWeatherHumSub").textContent = `Terasa: ${w.apparent}°C`;
-          if ($("tvWeatherHumBadge")) $("tvWeatherHumBadge").textContent = `TERASA ${w.apparent}°`;
-          if ($("tvWeatherWindVisVal")) $("tvWeatherWindVisVal").textContent = `${w.windSpeed} km/j • ${w.visibility}`;
-          if ($("tvWeatherWindVisSub")) $("tvWeatherWindVisSub").textContent = `Tekanan: ${w.pressure} hPa`;
-          if ($("tvWeatherWindBadge")) $("tvWeatherWindBadge").textContent = `${w.pressure} hPa`;
+          if ($("tvWeatherRange")) $("tvWeatherRange").textContent = `H: ${w.tempMax}° • L: ${w.tempMin}°`;
 
           if ($("tvWeatherHourlyStrip") && w.hourly && w.hourly.length > 0) {
             $("tvWeatherHourlyStrip").innerHTML = w.hourly.map((h, idx) => {
@@ -5964,9 +5852,6 @@
             <div class="sidebar-complications">
               <!-- ⛅ MASTER UNIFIED APPLE tvOS LIVING WEATHER EXPERIENCE CARD -->
               <div class="complication-card complication-weather-master weather-theme-${w.atmosphereTheme}">
-                <!-- Ambient Atmospheric Corona Glow -->
-                <div class="weather-master-corona"></div>
-
                 <!-- 1. Header Bar -->
                 <div class="complication-header">
                   <div class="complication-title">
@@ -6010,59 +5895,6 @@
                   </div>
                   <div class="weather-master-daily-strip" id="tvWeatherDailyStrip">
                     ${dailyCapsulesHTML}
-                  </div>
-                </div>
-
-                <!-- 5. Atmospheric Environmental Matrix Grid (4 High-Contrast Glass Tiles) -->
-                <div class="weather-master-section">
-                  <div class="weather-section-label">
-                    <span class="material-icons-round" style="font-size:13px; color:#0284C7;">speed</span>
-                    <span>METRIK & KUALITAS ATMOSFER</span>
-                  </div>
-                  <div class="weather-master-env-grid">
-                    <!-- Tile 1: UV Index -->
-                    <div class="weather-env-tile">
-                      <div class="weather-env-header">
-                        <span class="material-icons-round weather-env-icon" style="color:#F59E0B; font-size:16px;">light_mode</span>
-                        <span class="weather-env-label">Indeks UV</span>
-                        <span class="env-mini-badge badge-uv" id="tvWeatherUVBadge">MAKS ${w.uvMax}</span>
-                      </div>
-                      <div class="weather-env-val" id="tvWeatherUVVal">${w.uvIndex || "5.0"} ${w.uvLabel || "SEDANG"}</div>
-                      <div class="weather-env-sub" id="tvWeatherUVSub">Maks: ${w.uvMax || "8.5"} hari ini</div>
-                    </div>
-
-                    <!-- Tile 2: Sunset & Sunrise -->
-                    <div class="weather-env-tile">
-                      <div class="weather-env-header">
-                        <span class="material-icons-round weather-env-icon" style="color:#F97316; font-size:16px;">wb_twilight</span>
-                        <span class="weather-env-label">Terbenam</span>
-                        <span class="env-mini-badge badge-sunset" id="tvWeatherSunsetBadge">TERBIT ${w.sunrise.replace(" WIB", "")}</span>
-                      </div>
-                      <div class="weather-env-val" id="tvWeatherSunsetVal">${w.sunset || "17:42 WIB"}</div>
-                      <div class="weather-env-sub" id="tvWeatherSunsetSub">Terbit: ${w.sunrise || "05:45 WIB"}</div>
-                    </div>
-
-                    <!-- Tile 3: Humidity & RealFeel -->
-                    <div class="weather-env-tile">
-                      <div class="weather-env-header">
-                        <span class="material-icons-round weather-env-icon" style="color:#0284C7; font-size:16px;">water_drop</span>
-                        <span class="weather-env-label">Kelembaban</span>
-                        <span class="env-mini-badge badge-hum" id="tvWeatherHumBadge">TERASA ${w.apparent}°</span>
-                      </div>
-                      <div class="weather-env-val" id="tvWeatherHumVal">${w.humidity}%</div>
-                      <div class="weather-env-sub" id="tvWeatherHumSub">Suhu Terasa: ${w.apparent}°C</div>
-                    </div>
-
-                    <!-- Tile 4: Wind & Visibility / Barometer -->
-                    <div class="weather-env-tile">
-                      <div class="weather-env-header">
-                        <span class="material-icons-round weather-env-icon" style="color:#10B981; font-size:16px;">air</span>
-                        <span class="weather-env-label">Angin & Jarak</span>
-                        <span class="env-mini-badge badge-wind" id="tvWeatherWindBadge">${w.pressure} hPa</span>
-                      </div>
-                      <div class="weather-env-val" id="tvWeatherWindVisVal">${w.windSpeed} km/j • ${w.visibility || "16 km"}</div>
-                      <div class="weather-env-sub" id="tvWeatherWindVisSub">Tekanan: ${w.pressure || "1008"} hPa</div>
-                    </div>
                   </div>
                 </div>
               </div>
