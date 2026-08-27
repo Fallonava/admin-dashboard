@@ -6573,8 +6573,27 @@
         },
 
         updateTheme() {
-          // Locked to Light Mode
-          document.documentElement.setAttribute("data-theme", "light");
+          const urlParams = new URLSearchParams(window.location.search);
+          const overrideTheme = urlParams.get("theme");
+          let targetTheme = "light";
+
+          if (overrideTheme === "dark") {
+            targetTheme = "dark";
+          } else if (overrideTheme === "light") {
+            targetTheme = "light";
+          } else {
+            // Auto Dynamic Day/Night Mode:
+            // Pagi - Sore (06:00 - 17:59) => Light Mode
+            // Malam - Subuh (18:00 - 05:59) => Dark Mode
+            const hour = new Date().getHours();
+            targetTheme = (hour >= 6 && hour < 18) ? "light" : "dark";
+          }
+
+          const currentTheme = document.documentElement.getAttribute("data-theme");
+          if (currentTheme !== targetTheme) {
+            document.documentElement.setAttribute("data-theme", targetTheme);
+            console.log(`[SIMED TV] Theme updated to: ${targetTheme} (mode: ${overrideTheme ? 'override' : 'auto day/night'})`);
+          }
         },
 
         skel() {
