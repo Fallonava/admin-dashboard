@@ -3288,7 +3288,7 @@
       .st-buka.st-terjadwal { --status-color: #0284C7; --status-bg: rgba(2, 132, 199, 0.28); }
       .st-buka.st-terjadwal .initials { color: #0284C7; }
       
-      /* ===== ACTIVE CALL HIGHLIGHT (Apple Live Activity Aura) ===== */
+      /* ===== ACTIVE CALL HIGHLIGHT (Apple Live Activity State) ===== */
       .platter-main {
         display: flex;
         align-items: center;
@@ -3299,38 +3299,7 @@
       .platter.active {
         z-index: 50;
         transform: translate3d(0, -3px, 0) scale(1.01); 
-        border: 1.5px solid rgba(5, 150, 105, 0.6) !important;
-        border-left: 6.5px solid #059669 !important;
-        background: linear-gradient(180deg, #FFFFFF 0%, rgba(240, 253, 244, 0.85) 100%) !important;
-        box-shadow: 
-          0 18px 42px -4px rgba(5, 150, 105, 0.22),
-          0 0 24px rgba(16, 185, 129, 0.16),
-          inset 0 1.5px 1.5px #FFFFFF !important;
         opacity: 1 !important;
-      }
-
-      /* Light Mode Override */
-      [data-theme="light"] .platter.active {
-        background: linear-gradient(180deg, #FFFFFF 0%, rgba(240, 253, 244, 0.85) 100%) !important;
-        border: 1.5px solid rgba(5, 150, 105, 0.6) !important;
-        border-left: 6.5px solid #059669 !important;
-        box-shadow: 
-          0 18px 42px -4px rgba(5, 150, 105, 0.22),
-          0 0 24px rgba(16, 185, 129, 0.16),
-          inset 0 1.5px 1.5px #FFFFFF !important;
-        color: #0F172A !important;
-      }
-
-      /* Dark Mode Override */
-      [data-theme="dark"] .platter.active {
-        background: linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(16, 185, 129, 0.16) 100%) !important;
-        border: 1.5px solid rgba(52, 211, 153, 0.6) !important;
-        border-left: 6.5px solid #10B981 !important;
-        box-shadow: 
-          0 18px 42px -4px rgba(0, 0, 0, 0.6),
-          0 0 24px rgba(16, 185, 129, 0.25),
-          inset 0 1.5px 1.5px rgba(255, 255, 255, 0.15) !important;
-        color: #FFFFFF !important;
       }
 
       .platter.active::before {
@@ -3344,28 +3313,172 @@
       .platter.active:not(.platter-mini) .status-pill {
         display: none !important;
       }
-      
-      .platter.active .initials {
+
+      /* 🟢 PRAKTEK ACTIVE — Emerald Halo */
+      .platter.st-praktek.active,
+      .platter.st-buka.active {
+        border: 1.5px solid rgba(5, 150, 105, 0.6) !important;
+        border-left: 6.5px solid #059669 !important;
+        background: linear-gradient(180deg, #FFFFFF 0%, rgba(240, 253, 244, 0.85) 100%) !important;
+        box-shadow: 
+          0 18px 42px -4px rgba(5, 150, 105, 0.22),
+          0 0 24px rgba(16, 185, 129, 0.16),
+          inset 0 1.5px 1.5px #FFFFFF !important;
+      }
+
+      .platter.st-praktek.active .initials,
+      .platter.st-buka.active .initials {
         background: rgba(5, 150, 105, 0.14) !important;
         color: #059669 !important;
         border-color: rgba(5, 150, 105, 0.4) !important;
         box-shadow: 0 0 16px rgba(5, 150, 105, 0.25), inset 0 1.5px 2px #FFFFFF !important;
       }
 
-      [data-theme="dark"] .platter.active .initials {
-        background: rgba(16, 185, 129, 0.2) !important;
-        color: #34D399 !important;
-        border-color: rgba(52, 211, 153, 0.5) !important;
-        box-shadow: 0 0 16px rgba(52, 211, 153, 0.35), inset 0 1.5px 1.5px rgba(255, 255, 255, 0.2) !important;
-      }
-
-      .platter.active .doc-name {
+      .platter.st-praktek.active .doc-name,
+      .platter.st-buka.active .doc-name {
         color: #059669 !important;
         font-weight: 800;
       }
 
-      [data-theme="dark"] .platter.active .doc-name {
+      .platter.st-praktek.active .platter-detail,
+      .platter.st-buka.active .platter-detail {
+        border-top: 1px dashed rgba(5, 150, 105, 0.35);
+      }
+
+      .platter.st-praktek.active .detail-clock-icon,
+      .platter.st-praktek.active .detail-label,
+      .platter.st-buka.active .detail-clock-icon,
+      .platter.st-buka.active .detail-label {
+        color: #059669 !important;
+      }
+
+      .platter.st-praktek.active .live-status,
+      .platter.st-buka.active .live-status {
+        background: rgba(5, 150, 105, 0.12);
+        color: #059669;
+        border: 1px solid rgba(5, 150, 105, 0.3);
+        box-shadow: 0 2px 8px rgba(5, 150, 105, 0.12), inset 0 1px 1px #FFFFFF;
+      }
+
+      .platter.st-praktek.active .wave-bar,
+      .platter.st-buka.active .wave-bar {
+        background: #059669;
+      }
+
+      .platter.st-praktek.active .live-text,
+      .platter.st-buka.active .live-text {
+        color: #059669 !important;
+      }
+
+      /* 🟡 PENDAFTARAN ACTIVE — Amber Gold Halo */
+      .platter.st-pendaftaran.active {
+        border: 1.5px solid rgba(217, 119, 6, 0.6) !important;
+        border-left: 6.5px solid #D97706 !important;
+        background: linear-gradient(180deg, #FFFFFF 0%, rgba(255, 251, 235, 0.9) 100%) !important;
+        box-shadow: 
+          0 18px 42px -4px rgba(217, 119, 6, 0.22),
+          0 0 24px rgba(245, 158, 11, 0.16),
+          inset 0 1.5px 1.5px #FFFFFF !important;
+      }
+
+      .platter.st-pendaftaran.active .initials {
+        background: rgba(217, 119, 6, 0.14) !important;
+        color: #D97706 !important;
+        border-color: rgba(217, 119, 6, 0.4) !important;
+        box-shadow: 0 0 16px rgba(217, 119, 6, 0.25), inset 0 1.5px 2px #FFFFFF !important;
+      }
+
+      .platter.st-pendaftaran.active .doc-name {
+        color: #B45309 !important;
+        font-weight: 800;
+      }
+
+      .platter.st-pendaftaran.active .platter-detail {
+        border-top: 1px dashed rgba(217, 119, 6, 0.35);
+      }
+
+      .platter.st-pendaftaran.active .detail-clock-icon,
+      .platter.st-pendaftaran.active .detail-label {
+        color: #D97706 !important;
+      }
+
+      .platter.st-pendaftaran.active .live-status {
+        background: rgba(217, 119, 6, 0.12);
+        color: #D97706;
+        border: 1px solid rgba(217, 119, 6, 0.3);
+        box-shadow: 0 2px 8px rgba(217, 119, 6, 0.12), inset 0 1px 1px #FFFFFF;
+      }
+
+      .platter.st-pendaftaran.active .wave-bar {
+        background: #D97706;
+      }
+
+      .platter.st-pendaftaran.active .live-text {
+        color: #D97706 !important;
+      }
+
+      /* Dark Mode Overrides for Active States */
+      [data-theme="dark"] .platter.st-praktek.active,
+      [data-theme="dark"] .platter.st-buka.active {
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(16, 185, 129, 0.16) 100%) !important;
+        border: 1.5px solid rgba(52, 211, 153, 0.6) !important;
+        border-left: 6.5px solid #10B981 !important;
+        box-shadow: 
+          0 18px 42px -4px rgba(0, 0, 0, 0.6),
+          0 0 24px rgba(16, 185, 129, 0.25),
+          inset 0 1.5px 1.5px rgba(255, 255, 255, 0.15) !important;
+      }
+
+      [data-theme="dark"] .platter.st-praktek.active .initials,
+      [data-theme="dark"] .platter.st-buka.active .initials {
+        background: rgba(16, 185, 129, 0.2) !important;
         color: #34D399 !important;
+        border-color: rgba(52, 211, 153, 0.5) !important;
+      }
+
+      [data-theme="dark"] .platter.st-praktek.active .doc-name,
+      [data-theme="dark"] .platter.st-buka.active .doc-name {
+        color: #34D399 !important;
+      }
+
+      [data-theme="dark"] .platter.st-pendaftaran.active {
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(245, 158, 11, 0.16) 100%) !important;
+        border: 1.5px solid rgba(251, 191, 36, 0.6) !important;
+        border-left: 6.5px solid #F59E0B !important;
+        box-shadow: 
+          0 18px 42px -4px rgba(0, 0, 0, 0.6),
+          0 0 24px rgba(245, 158, 11, 0.25),
+          inset 0 1.5px 1.5px rgba(255, 255, 255, 0.15) !important;
+      }
+
+      [data-theme="dark"] .platter.st-pendaftaran.active .initials {
+        background: rgba(245, 158, 11, 0.2) !important;
+        color: #FBBF24 !important;
+        border-color: rgba(251, 191, 36, 0.5) !important;
+      }
+
+      [data-theme="dark"] .platter.st-pendaftaran.active .doc-name {
+        color: #FBBF24 !important;
+      }
+
+      [data-theme="dark"] .platter.st-pendaftaran.active .detail-clock-icon,
+      [data-theme="dark"] .platter.st-pendaftaran.active .detail-label {
+        color: #FBBF24 !important;
+      }
+
+      [data-theme="dark"] .platter.st-pendaftaran.active .live-status {
+        background: rgba(245, 158, 11, 0.2);
+        color: #FBBF24;
+        border-color: rgba(251, 191, 36, 0.4);
+      }
+
+      [data-theme="dark"] .platter.st-pendaftaran.active .wave-bar {
+        background: #FBBF24;
+        box-shadow: 0 0 6px rgba(251, 191, 36, 0.6);
+      }
+
+      [data-theme="dark"] .platter.st-pendaftaran.active .live-text {
+        color: #FBBF24 !important;
       }
       
       /* ECG Radar Pulse Indicator */
@@ -7644,7 +7757,7 @@
               const avatarText = avatarIcon.startsWith("<svg") ? avatarIcon : `<span class="material-icons-round" style="font-size:24px;">${avatarIcon}</span>`;
               if (d._isActive) c += " active";
 
-              let labelJam = "REGISTRASI DIBUKA";
+              let labelJam = "JADWAL PRAKTEK";
               let labelLive = "SEDANG MELAYANI";
               if (st.includes("OPERASI")) {
                 labelJam = "TINDAKAN MEDIS";
@@ -7655,6 +7768,9 @@
               } else if (st.includes("CUTI")) {
                 labelJam = "JADWAL CUTI";
                 labelLive = "TIDAK MELAYANI";
+              } else if (st === "PENDAFTARAN") {
+                labelJam = "REGISTRASI DIBUKA";
+                labelLive = "LOKET DIBUKA";
               } else if (st === "TERJADWAL") {
                 labelJam = "MENUNGGU SHIFT";
                 labelLive = "BELUM MULAI";
@@ -7795,7 +7911,7 @@
             const avatarText = avatarIcon.startsWith("<svg") ? avatarIcon : `<span class="material-icons-round" style="font-size:24px;">${avatarIcon}</span>`;
             if (d._isActive) c += " active";
 
-            let labelJam = "REGISTRASI DIBUKA";
+            let labelJam = "JADWAL PRAKTEK";
             let labelLive = "SEDANG MELAYANI";
             if (st.includes("OPERASI")) {
               labelJam = "TINDAKAN MEDIS";
@@ -7806,6 +7922,9 @@
             } else if (st.includes("CUTI")) {
               labelJam = "JADWAL CUTI";
               labelLive = "TIDAK MELAYANI";
+            } else if (st === "PENDAFTARAN") {
+              labelJam = "REGISTRASI DIBUKA";
+              labelLive = "LOKET DIBUKA";
             } else if (st === "TERJADWAL") {
               labelJam = "MENUNGGU SHIFT";
               labelLive = "BELUM MULAI";
