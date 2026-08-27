@@ -1729,8 +1729,9 @@
         font-weight: 900;
       }
 
-      /* ===== 🚶 APPLE tvOS PATIENT ADMISSION JOURNEY FLOW COMPLICATION ===== */
+      /* ===== 🚶 APPLE tvOS PATIENT ADMISSION CONVERGING PIPELINE COMPLICATION ===== */
       .complication-journey-card {
+        flex: 1;
         background: #FFFFFF !important;
         border-radius: 22px;
         position: relative;
@@ -1738,7 +1739,8 @@
         padding: 16px 18px;
         display: flex;
         flex-direction: column;
-        gap: 13px;
+        justify-content: space-between;
+        gap: 10px;
         border: 1px solid rgba(226, 234, 245, 0.95);
         box-shadow: 
           0 10px 28px -4px rgba(15, 23, 42, 0.05),
@@ -1757,7 +1759,7 @@
       .journey-track-section {
         display: flex;
         flex-direction: column;
-        gap: 7px;
+        gap: 5px;
       }
 
       .journey-track-header {
@@ -1768,14 +1770,14 @@
 
       .journey-track-title {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 11px;
+        font-size: 10.5px;
         font-weight: 900;
         color: #0F172A;
         letter-spacing: 0.02em;
         text-transform: uppercase;
         display: flex;
         align-items: center;
-        gap: 5px;
+        gap: 4px;
       }
 
       [data-theme="dark"] .journey-track-title {
@@ -1784,9 +1786,9 @@
 
       .journey-track-badge {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 9px;
+        font-size: 8.5px;
         font-weight: 900;
-        padding: 2.5px 7px;
+        padding: 2px 6.5px;
         border-radius: 9999px;
         letter-spacing: 0.03em;
       }
@@ -1818,7 +1820,7 @@
       .journey-flow-row {
         display: flex;
         align-items: center;
-        gap: 3px;
+        gap: 4px;
         width: 100%;
       }
 
@@ -1830,13 +1832,13 @@
         box-shadow: inset 0 1px 1px #FFFFFF, 0 2px 6px rgba(0, 0, 0, 0.02);
         backdrop-filter: blur(12px);
         -webkit-backdrop-filter: blur(12px);
-        border-radius: 14px;
-        padding: 8px 3px;
+        border-radius: 12px;
+        padding: 7px 3px;
         display: flex;
         flex-direction: column;
         align-items: center;
         text-align: center;
-        gap: 3px;
+        gap: 2px;
         position: relative;
         transition: transform 0.2s ease, box-shadow 0.2s ease;
       }
@@ -1847,17 +1849,106 @@
         box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
       }
 
-      /* Apple SF Micro-Icon Container with specularity */
-      .journey-step-icon-wrap {
-        width: 28px;
-        height: 28px;
-        border-radius: 9px;
+      .journey-step-capsule-wide {
+        flex: 1;
+        background: rgba(248, 250, 252, 0.85);
+        border: 1px solid rgba(226, 232, 240, 0.95);
+        box-shadow: inset 0 1px 1px #FFFFFF, 0 2px 6px rgba(0, 0, 0, 0.02);
+        border-radius: 12px;
+        padding: 6px 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        text-align: left;
+      }
+
+      [data-theme="dark"] .journey-step-capsule-wide {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.09);
+        box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
+      }
+
+      /* Apple Convergence Divider Bar */
+      .journey-convergence-divider {
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-bottom: 2px;
+        gap: 6px;
+        margin: 1px 0;
+      }
+
+      .journey-divider-line {
+        flex: 1;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(2, 132, 199, 0.35), transparent);
+      }
+
+      .journey-convergence-badge {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 8px;
+        font-weight: 900;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: #0284C7;
+        background: #E0F2FE;
+        border: 1px solid #BAE6FD;
+        padding: 2px 8px;
+        border-radius: 9999px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        box-shadow: 0 2px 6px rgba(2, 132, 199, 0.1);
+      }
+
+      [data-theme="dark"] .journey-convergence-badge {
+        color: #7DD3FC;
+        background: rgba(2, 132, 199, 0.2);
+        border-color: rgba(56, 189, 248, 0.35);
+      }
+
+      .journey-unified-section {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        background: rgba(240, 249, 255, 0.65);
+        border: 1px solid rgba(186, 230, 253, 0.8);
+        border-radius: 16px;
+        padding: 9px 8px;
+      }
+
+      [data-theme="dark"] .journey-unified-section {
+        background: rgba(2, 132, 199, 0.08);
+        border-color: rgba(56, 189, 248, 0.2);
+      }
+
+      .journey-unified-title {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 10px;
+        font-weight: 900;
+        color: #0369A1;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      [data-theme="dark"] .journey-unified-title {
+        color: #38BDF8;
+      }
+
+      /* Apple SF Micro-Icon Container with specularity */
+      .journey-step-icon-wrap {
+        width: 26px;
+        height: 26px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1px;
         position: relative;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04);
+        flex-shrink: 0;
       }
 
       [data-theme="dark"] .journey-step-icon-wrap {
@@ -1873,39 +1964,6 @@
         color: #6EE7B7;
         background: rgba(16, 185, 129, 0.2);
         border-color: rgba(52, 211, 153, 0.35);
-      }
-
-      .icon-online-2 {
-        color: #0284C7;
-        background: #E0F2FE;
-        border: 1px solid #BAE6FD;
-      }
-      [data-theme="dark"] .icon-online-2 {
-        color: #38BDF8;
-        background: rgba(2, 132, 199, 0.2);
-        border-color: rgba(56, 189, 248, 0.35);
-      }
-
-      .icon-online-3 {
-        color: #E11D48;
-        background: #FFE4E6;
-        border: 1px solid #FDA4AF;
-      }
-      [data-theme="dark"] .icon-online-3 {
-        color: #FB7185;
-        background: rgba(225, 29, 72, 0.2);
-        border-color: rgba(251, 113, 133, 0.35);
-      }
-
-      .icon-online-4 {
-        color: #6366F1;
-        background: #EEF2FF;
-        border: 1px solid #C7D2FE;
-      }
-      [data-theme="dark"] .icon-online-4 {
-        color: #818CF8;
-        background: rgba(99, 102, 241, 0.2);
-        border-color: rgba(129, 140, 248, 0.35);
       }
 
       .icon-reg-1 {
@@ -1930,34 +1988,34 @@
         border-color: rgba(56, 189, 248, 0.35);
       }
 
-      .icon-reg-3 {
-        color: #059669;
-        background: #ECFDF5;
-        border: 1px solid #A7F3D0;
+      .icon-unified-1 {
+        color: #0284C7;
+        background: #E0F2FE;
+        border: 1px solid #BAE6FD;
       }
-      [data-theme="dark"] .icon-reg-3 {
-        color: #6EE7B7;
-        background: rgba(16, 185, 129, 0.2);
-        border-color: rgba(52, 211, 153, 0.35);
+      [data-theme="dark"] .icon-unified-1 {
+        color: #38BDF8;
+        background: rgba(2, 132, 199, 0.2);
+        border-color: rgba(56, 189, 248, 0.35);
       }
 
-      .icon-reg-4 {
+      .icon-unified-2 {
         color: #E11D48;
         background: #FFE4E6;
         border: 1px solid #FDA4AF;
       }
-      [data-theme="dark"] .icon-reg-4 {
+      [data-theme="dark"] .icon-unified-2 {
         color: #FB7185;
         background: rgba(225, 29, 72, 0.2);
         border-color: rgba(251, 113, 133, 0.35);
       }
 
-      .icon-reg-5 {
+      .icon-unified-3 {
         color: #6366F1;
         background: #EEF2FF;
         border: 1px solid #C7D2FE;
       }
-      [data-theme="dark"] .icon-reg-5 {
+      [data-theme="dark"] .icon-unified-3 {
         color: #818CF8;
         background: rgba(99, 102, 241, 0.2);
         border-color: rgba(129, 140, 248, 0.35);
@@ -2002,7 +2060,7 @@
 
       .journey-step-num {
         font-family: "Plus Jakarta Sans", monospace;
-        font-size: 8px;
+        font-size: 7.5px;
         font-weight: 900;
         color: #0284C7;
         line-height: 1;
@@ -2014,7 +2072,7 @@
 
       .journey-step-title {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 10.5px;
+        font-size: 10px;
         font-weight: 900;
         color: #0F172A;
         white-space: nowrap;
@@ -2030,7 +2088,7 @@
 
       .journey-step-sub {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 8.5px;
+        font-size: 8px;
         font-weight: 700;
         color: #64748B;
         white-space: nowrap;
@@ -2056,7 +2114,7 @@
       }
 
       .journey-connector-arrow {
-        font-size: 14px;
+        font-size: 13px;
         color: #94A3B8;
         font-weight: 900;
         line-height: 1;
@@ -5933,7 +5991,7 @@
                 </div>
               </div>
 
-              <!-- 🚶 APPLE tvOS PATIENT ADMISSION JOURNEY CARD -->
+              <!-- 🚶 APPLE tvOS PATIENT ADMISSION CONVERGING PIPELINE CARD -->
               <div class="complication-card complication-journey-card">
                 <!-- 1. Header Bar -->
                 <div class="complication-header">
@@ -5944,66 +6002,32 @@
                   <span class="complication-tag tag-sky">PANDUAN LOBI ADMISI</span>
                 </div>
 
-                <!-- 2. Jalur 1: Pendaftaran Online (MJKN / NUHA) -->
+                <!-- 2. Cabang 1: Jalur Online (MJKN / NUHA) -->
                 <div class="journey-track-section">
                   <div class="journey-track-header">
                     <span class="journey-track-title">
                       <span class="material-icons-round" style="font-size:13px; color:#059669;">smartphone</span>
-                      <span>JALUR ONLINE (MJKN / NUHA)</span>
+                      <span>1. JALUR ONLINE (MJKN / NUHA)</span>
                     </span>
                     <span class="journey-track-badge badge-online-fast">LEBIH CEPAT ⚡</span>
                   </div>
-                  <div class="journey-flow-row">
-                    <div class="journey-step-capsule">
-                      <div class="journey-step-icon-wrap icon-online-1 anim-scan-pulse">
-                        <span class="material-icons-round" style="font-size:15px;">qr_code_scanner</span>
-                      </div>
-                      <span class="journey-step-num">01</span>
-                      <span class="journey-step-title">BUKTI QR</span>
-                      <span class="journey-step-sub">MJKN / NUHA</span>
+                  <div class="journey-step-capsule-wide">
+                    <div class="journey-step-icon-wrap icon-online-1 anim-scan-pulse">
+                      <span class="material-icons-round" style="font-size:15px;">qr_code_scanner</span>
                     </div>
-                    <div class="journey-connector">
-                      <span class="material-icons-round journey-connector-arrow">chevron_right</span>
-                    </div>
-                    <div class="journey-step-capsule">
-                      <div class="journey-step-icon-wrap icon-online-2">
-                        <span class="material-icons-round" style="font-size:15px;">how_to_reg</span>
-                      </div>
-                      <span class="journey-step-num">02</span>
-                      <span class="journey-step-title">REGISTRASI</span>
-                      <span class="journey-step-sub">Loket Pendaftaran</span>
-                    </div>
-                    <div class="journey-connector">
-                      <span class="material-icons-round journey-connector-arrow">chevron_right</span>
-                    </div>
-                    <div class="journey-step-capsule">
-                      <div class="journey-step-icon-wrap icon-online-3 anim-heartbeat">
-                        <span class="material-icons-round" style="font-size:15px;">monitor_heart</span>
-                      </div>
-                      <span class="journey-step-num">03</span>
-                      <span class="journey-step-title">NURSE STATION</span>
-                      <span class="journey-step-sub">Pemeriksaan Tensi</span>
-                    </div>
-                    <div class="journey-connector">
-                      <span class="material-icons-round journey-connector-arrow">chevron_right</span>
-                    </div>
-                    <div class="journey-step-capsule">
-                      <div class="journey-step-icon-wrap icon-online-4 anim-float-subtle">
-                        <span class="material-icons-round" style="font-size:15px;">stethoscope</span>
-                      </div>
-                      <span class="journey-step-num">04</span>
-                      <span class="journey-step-title">RUANG POLI</span>
-                      <span class="journey-step-sub">Pemeriksaan Dokter</span>
+                    <div style="display:flex; flex-direction:column; line-height:1.2;">
+                      <span class="journey-step-title" style="color:#059669;">01. BUKTI QR / TIKET ONLINE</span>
+                      <span class="journey-step-sub">Buka kode booking di Aplikasi Mobile JKN / NUHA</span>
                     </div>
                   </div>
                 </div>
 
-                <!-- 3. Jalur 2: Pendaftaran Langsung / Reguler (Kios Lobi) -->
+                <!-- 3. Cabang 2: Jalur Reguler (Kios Lobi) -->
                 <div class="journey-track-section">
                   <div class="journey-track-header">
                     <span class="journey-track-title">
                       <span class="material-icons-round" style="font-size:13px; color:#0284C7;">confirmation_number</span>
-                      <span>JALUR REGULER (DAFTAR LANGSUNG)</span>
+                      <span>2. JALUR REGULER (LANGSUNG)</span>
                     </span>
                     <span class="journey-track-badge badge-reguler-lobby">KIOS LOBI</span>
                   </div>
@@ -6027,36 +6051,57 @@
                       <span class="journey-step-title">SIAPKAN BERKAS</span>
                       <span class="journey-step-sub">KTP & BPJS</span>
                     </div>
-                    <div class="journey-connector">
-                      <span class="material-icons-round journey-connector-arrow">chevron_right</span>
-                    </div>
-                    <div class="journey-step-capsule">
-                      <div class="journey-step-icon-wrap icon-reg-3">
-                        <span class="material-icons-round" style="font-size:15px;">support_agent</span>
+                  </div>
+                </div>
+
+                <!-- 4. Convergence Divider Bar (Titik Temu) -->
+                <div class="journey-convergence-divider">
+                  <div class="journey-divider-line"></div>
+                  <div class="journey-convergence-badge">
+                    <span class="material-icons-round" style="font-size:12px;">merge_type</span>
+                    <span>TITIK TEMU PELAYANAN</span>
+                    <span class="material-icons-round" style="font-size:12px;">arrow_downward</span>
+                  </div>
+                  <div class="journey-divider-line"></div>
+                </div>
+
+                <!-- 5. Unified Shared Pipeline (Proses Pelayanan Terpadu) -->
+                <div class="journey-unified-section">
+                  <div class="journey-unified-title">
+                    <span class="material-icons-round" style="font-size:12px; color:#0284C7;">verified</span>
+                    <span>PROSES PELAYANAN TERPADU</span>
+                  </div>
+                  <div class="journey-flow-row">
+                    <!-- Step 1: Registrasi -->
+                    <div class="journey-step-capsule" style="background:#FFFFFF;">
+                      <div class="journey-step-icon-wrap icon-unified-1">
+                        <span class="material-icons-round" style="font-size:15px;">how_to_reg</span>
                       </div>
-                      <span class="journey-step-num">03</span>
+                      <span class="journey-step-num">TAHAP 1</span>
                       <span class="journey-step-title">REGISTRASI</span>
                       <span class="journey-step-sub">Loket Pendaftaran</span>
                     </div>
                     <div class="journey-connector">
                       <span class="material-icons-round journey-connector-arrow">chevron_right</span>
                     </div>
-                    <div class="journey-step-capsule">
-                      <div class="journey-step-icon-wrap icon-reg-4 anim-heartbeat">
-                        <span class="material-icons-round" style="font-size:15px;">vital_signs</span>
+                    <!-- Step 2: Nurse Station -->
+                    <div class="journey-step-capsule" style="background:#FFFFFF;">
+                      <div class="journey-step-icon-wrap icon-unified-2 anim-heartbeat">
+                        <span class="material-icons-round" style="font-size:15px;">monitor_heart</span>
                       </div>
-                      <span class="journey-step-num">04</span>
+                      <span class="journey-step-num">TAHAP 2</span>
                       <span class="journey-step-title">NURSE STATION</span>
                       <span class="journey-step-sub">Pemeriksaan Tensi</span>
                     </div>
                     <div class="journey-connector">
                       <span class="material-icons-round journey-connector-arrow">chevron_right</span>
                     </div>
-                    <div class="journey-step-capsule">
-                      <div class="journey-step-icon-wrap icon-reg-5 anim-float-subtle">
-                        <span class="material-icons-round" style="font-size:15px;">meeting_room</span>
+                    <!-- Step 3: Ruang Poli -->
+                    <div class="journey-step-capsule" style="background:#FFFFFF;">
+                      <div class="journey-step-icon-wrap icon-unified-3 anim-float-subtle">
+                        <span class="material-icons-round" style="font-size:15px;">stethoscope</span>
                       </div>
-                      <span class="journey-step-num">05</span>
+                      <span class="journey-step-num">TAHAP 3</span>
                       <span class="journey-step-title">RUANG POLI</span>
                       <span class="journey-step-sub">Pemeriksaan Dokter</span>
                     </div>
