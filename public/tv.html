@@ -2987,20 +2987,21 @@
         align-items: center;
         gap: 7px;
         width: fit-content;
-        padding: 3.5px 12px 3.5px 10px;
+        padding: 4px 13px 4px 10px;
         border-radius: 9999px;
         background: rgba(2, 132, 199, 0.09);
         border: 1px solid rgba(2, 132, 199, 0.25);
         box-shadow: inset 0 1px 1px #FFFFFF, 0 2px 5px rgba(2, 132, 199, 0.05);
         margin-bottom: 4px;
+        transition: all 0.3s ease;
       }
 
       .spec-dot {
         width: 7.5px;
         height: 7.5px;
         border-radius: 50%;
-        background: var(--status-color);
-        box-shadow: 0 0 8px var(--status-color);
+        background: currentColor;
+        box-shadow: 0 0 8px currentColor;
         flex-shrink: 0;
       }
 
@@ -3008,21 +3009,48 @@
         font-family: "Plus Jakarta Sans", sans-serif;
         font-size: 15px;
         font-weight: 900;
-        color: #0369A1;
+        color: inherit;
         text-transform: uppercase;
         letter-spacing: 0.04em;
         line-height: 1.15;
       }
 
+      /* 🩺 PROFESSIONAL DYNAMIC CLINICAL DEPARTMENT PALETTES */
+      /* Jantung / Kardiovaskular — Crimson Rose */
+      .doc-spec-badge.spec-jantung { color: #BE123C; background: rgba(225, 29, 72, 0.09); border-color: rgba(225, 29, 72, 0.28); }
+      /* Anak & Pediatri — Fresh Mint */
+      .doc-spec-badge.spec-anak { color: #047857; background: rgba(5, 150, 105, 0.09); border-color: rgba(5, 150, 105, 0.28); }
+      /* Kandungan & Obgyn — Orchid Fuchsia */
+      .doc-spec-badge.spec-kandungan { color: #A21CAF; background: rgba(192, 38, 211, 0.09); border-color: rgba(192, 38, 211, 0.28); }
+      /* Penyakit Dalam / Interna — Royal Indigo */
+      .doc-spec-badge.spec-dalam { color: #1D4ED8; background: rgba(37, 99, 235, 0.09); border-color: rgba(37, 99, 235, 0.28); }
+      /* Mata (Oftalmologi) — Deep Teal */
+      .doc-spec-badge.spec-mata { color: #0F766E; background: rgba(13, 148, 136, 0.09); border-color: rgba(13, 148, 136, 0.28); }
+      /* Saraf & Psikiatri — Royal Violet */
+      .doc-spec-badge.spec-saraf { color: #6D28D9; background: rgba(124, 58, 237, 0.09); border-color: rgba(124, 58, 237, 0.28); }
+      /* Gigi & Mulut — Amber Warm */
+      .doc-spec-badge.spec-gigi { color: #B45309; background: rgba(217, 119, 6, 0.09); border-color: rgba(217, 119, 6, 0.28); }
+      /* Kulit & Kelamin — Tangerine Coral */
+      .doc-spec-badge.spec-kulit { color: #C2410C; background: rgba(234, 88, 12, 0.09); border-color: rgba(234, 88, 12, 0.28); }
+      /* THT & Paru — Marine Blue */
+      .doc-spec-badge.spec-tht { color: #0369A1; background: rgba(2, 132, 199, 0.09); border-color: rgba(2, 132, 199, 0.28); }
+      /* Bedah & Ortopedi — Cyan Sky */
+      .doc-spec-badge.spec-bedah { color: #0284C7; background: rgba(2, 132, 199, 0.09); border-color: rgba(2, 132, 199, 0.28); }
+
+      /* Dark Mode Dynamic Colorways */
       [data-theme="dark"] .doc-spec-badge {
-        background: rgba(56, 189, 248, 0.15);
-        border: 1px solid rgba(56, 189, 248, 0.35);
         box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.12);
       }
-
-      [data-theme="dark"] .doc-spec {
-        color: #38BDF8;
-      }
+      [data-theme="dark"] .doc-spec-badge.spec-jantung { color: #FB7185; background: rgba(225, 29, 72, 0.18); border-color: rgba(251, 113, 133, 0.35); }
+      [data-theme="dark"] .doc-spec-badge.spec-anak { color: #34D399; background: rgba(5, 150, 105, 0.18); border-color: rgba(52, 211, 153, 0.35); }
+      [data-theme="dark"] .doc-spec-badge.spec-kandungan { color: #E879F9; background: rgba(192, 38, 211, 0.18); border-color: rgba(232, 121, 249, 0.35); }
+      [data-theme="dark"] .doc-spec-badge.spec-dalam { color: #60A5FA; background: rgba(37, 99, 235, 0.18); border-color: rgba(96, 165, 250, 0.35); }
+      [data-theme="dark"] .doc-spec-badge.spec-mata { color: #2DD4BF; background: rgba(13, 148, 136, 0.18); border-color: rgba(45, 212, 191, 0.35); }
+      [data-theme="dark"] .doc-spec-badge.spec-saraf { color: #A78BFA; background: rgba(124, 58, 237, 0.18); border-color: rgba(167, 139, 250, 0.35); }
+      [data-theme="dark"] .doc-spec-badge.spec-gigi { color: #FBBF24; background: rgba(217, 119, 6, 0.18); border-color: rgba(251, 191, 36, 0.35); }
+      [data-theme="dark"] .doc-spec-badge.spec-kulit { color: #FB923C; background: rgba(234, 88, 12, 0.18); border-color: rgba(251, 146, 60, 0.35); }
+      [data-theme="dark"] .doc-spec-badge.spec-tht { color: #38BDF8; background: rgba(2, 132, 199, 0.18); border-color: rgba(56, 189, 248, 0.35); }
+      [data-theme="dark"] .doc-spec-badge.spec-bedah { color: #38BDF8; background: rgba(2, 132, 199, 0.18); border-color: rgba(56, 189, 248, 0.35); }
 
       .doc-name {
         font-family: "Plus Jakarta Sans", -apple-system, sans-serif;
@@ -5730,6 +5758,22 @@
         return "health_and_safety";
       };
 
+      // 🩺 Helper: Dynamic Professional Clinical Department Palette
+      const getSpecialistTheme = (spec) => {
+        const s = (spec || "").toLowerCase();
+        if (s.includes("jantung") || s.includes("kardio")) return "spec-jantung";
+        if (s.includes("anak") || s.includes("pediatri")) return "spec-anak";
+        if (s.includes("kandungan") || s.includes("obgyn") || s.includes("kebidanan")) return "spec-kandungan";
+        if (s.includes("dalam") || s.includes("interna")) return "spec-dalam";
+        if (s.includes("mata") || s.includes("oftalm")) return "spec-mata";
+        if (s.includes("saraf") || s.includes("neuro") || s.includes("jiwa") || s.includes("psikiatri")) return "spec-saraf";
+        if (s.includes("gigi") || s.includes("dental") || s.includes("konservasi") || s.includes("mulut")) return "spec-gigi";
+        if (s.includes("kulit") || s.includes("kelamin") || s.includes("dermato")) return "spec-kulit";
+        if (s.includes("tht") || s.includes("tth") || s.includes("paru") || s.includes("pulmo")) return "spec-tht";
+        if (s.includes("bedah") || s.includes("ortopedi") || s.includes("urologi")) return "spec-bedah";
+        return "spec-default";
+      };
+
       // Helper: Tentukan apakah dokter dalam status "aktif" (sedang melayani/bisa daftar)
       // Satu definisi tunggal dipakai di _detectChanges DAN render()
       const isActive = (st) =>
@@ -5792,12 +5836,13 @@
           : formatJam((d.JamPraktek || "").split("-")[0]);
           
         const isCPO = ["CUTI", "PENUH", "OPERASI"].some(st => (d.Status || "").toUpperCase().includes(st));
+        const specTheme = getSpecialistTheme(d.Spesialis);
 
         return `
           <div class="platter-main">
             <div class="initials">${avatarText}</div>
             <div class="info-col">
-              <div class="doc-spec-badge">
+              <div class="doc-spec-badge ${specTheme}">
                 <span class="spec-dot"></span>
                 <span class="doc-spec">${esc(d.Spesialis)}</span>
               </div>
@@ -7720,8 +7765,8 @@
             const newElements = list.map((d) => {
               // Unique ID: Name + Shift Time so duplicate doctors don't overwrite each other
               const shiftJam = d.Jam && d.Jam !== "-" ? d.Jam : "no-time";
-              const id = `${d.Dokter}_${shiftJam}`;
-              const hash = `${d.Status}|${d.Jam}|${d._isActive}|${d["Code Antrian"] || ""}|${d.JamDaftar}`;
+              const specTheme = getSpecialistTheme(d.Spesialis);
+              const hash = `${d.Status}|${d.Jam}|${d._isActive}|${specTheme}|${d["Code Antrian"] || ""}|${d.JamDaftar}`;
 
               // Helpers for styles
               const st = d.Status.toUpperCase();
@@ -7779,8 +7824,8 @@
               let el = oldMap.get(id);
 
               if (el) {
-                // If the element has old DOM structure without live-wave or hash changed, rebuild it
-                if (!el.querySelector(".live-wave") || el.dataset.hash !== hash) {
+                // If the element has old DOM structure without dynamic specTheme or hash changed, rebuild it
+                if (!el.querySelector("." + specTheme) || el.dataset.hash !== hash) {
                   el.className = `platter ${c}`;
                   el.innerHTML = buildCardHTML(d, avatarText, i, l, labelJam, labelLive);
                   el.dataset.hash = hash;
