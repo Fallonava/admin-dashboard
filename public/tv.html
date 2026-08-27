@@ -1797,10 +1797,10 @@
         width: 100%;
         height: 100%;
         opacity: 0;
-        transform: scale(0.96) translateY(4px);
+        transform: scale(0.96) translateY(5px);
         pointer-events: none;
-        transition: opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1),
-                    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+        transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1),
+                    transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
         box-sizing: border-box;
       }
 
@@ -1826,7 +1826,7 @@
         height: 5px;
         border-radius: 50%;
         background: rgba(60, 60, 67, 0.25);
-        transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+        transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);
       }
 
       .smart-stack-dot.active {
@@ -1895,7 +1895,7 @@
         display: flex;
         width: 100%;
         height: 100%;
-        transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+        transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
         will-change: transform;
       }
 
@@ -1918,6 +1918,13 @@
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
+        animation: applePlatterFloat 3.8s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate;
+        will-change: transform;
+      }
+
+      @keyframes applePlatterFloat {
+        0% { transform: scale(1) translateY(0); }
+        100% { transform: scale(1.04) translateY(-1px); }
       }
 
       .sk-hero-icon-box.box-cuti {
@@ -8821,16 +8828,16 @@
               if (totalDocs > 1) {
                 this.scheduleDoctorSubSlides(totalDocs);
               } else {
-                this._smartStackTimer = setTimeout(stepCarousel, 8000);
+                this._smartStackTimer = setTimeout(stepCarousel, 8500);
               }
             } else {
               this._smartStackCurrentSlide = 0;
               this.updateSmartStackSlideUI(0, 0, totalDocs);
-              this._smartStackTimer = setTimeout(stepCarousel, 8000);
+              this._smartStackTimer = setTimeout(stepCarousel, 11000);
             }
           };
 
-          this._smartStackTimer = setTimeout(stepCarousel, 8000);
+          this._smartStackTimer = setTimeout(stepCarousel, 11000);
         },
 
         scheduleDoctorSubSlides(totalDocs) {
@@ -8840,17 +8847,17 @@
             if (currentSub < totalDocs && this._smartStackCurrentSlide === 1) {
               this._skDoctorIndex = currentSub;
               this.updateDoctorSlideUI(currentSub, totalDocs);
-              this._smartStackTimer = setTimeout(subStep, 4200);
+              this._smartStackTimer = setTimeout(subStep, 6500);
             } else {
               this._smartStackCurrentSlide = 0;
               this.updateSmartStackSlideUI(0, 0, totalDocs);
               this._smartStackTimer = setTimeout(() => {
                 this._smartStackTimer = null;
                 this.startSmartStackRotation();
-              }, 8000);
+              }, 11000);
             }
           };
-          this._smartStackTimer = setTimeout(subStep, 4200);
+          this._smartStackTimer = setTimeout(subStep, 6500);
         },
 
         updateDoctorSlideUI(idx, totalDocs) {
