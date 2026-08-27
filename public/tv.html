@@ -1797,10 +1797,10 @@
         width: 100%;
         height: 100%;
         opacity: 0;
-        transform: scale(0.96) translateY(5px);
+        transform: scale(0.96) translateY(4px);
         pointer-events: none;
-        transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1),
-                    transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+        transition: opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+                    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
         box-sizing: border-box;
       }
 
@@ -1826,7 +1826,7 @@
         height: 5px;
         border-radius: 50%;
         background: rgba(60, 60, 67, 0.25);
-        transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+        transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
       }
 
       .smart-stack-dot.active {
@@ -1895,7 +1895,7 @@
         display: flex;
         width: 100%;
         height: 100%;
-        transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+        transition: transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
         will-change: transform;
       }
 
@@ -1905,59 +1905,99 @@
         height: 100%;
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 11px;
         box-sizing: border-box;
-        padding: 2px 1px;
+        padding: 2px 2px;
+        opacity: 0.35;
+        transform: scale(0.96);
+        transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1),
+                    transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .sk-hero-slide.active-doctor-slide {
+        opacity: 1;
+        transform: scale(1);
       }
 
       .sk-hero-icon-box {
-        width: 40px;
-        height: 40px;
-        border-radius: 12px;
+        width: 42px;
+        height: 42px;
+        border-radius: 13px;
         display: flex;
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
-        animation: applePlatterFloat 3.8s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate;
-        will-change: transform;
-      }
-
-      @keyframes applePlatterFloat {
-        0% { transform: scale(1) translateY(0); }
-        100% { transform: scale(1.04) translateY(-1px); }
+        position: relative;
+        transition: transform 0.4s ease;
       }
 
       .sk-hero-icon-box.box-cuti {
         background: #FEF2F2;
         color: #EF4444;
         border: 1px solid #FECACA;
+        animation: appleCutiPulse 3.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
       }
       [data-theme="dark"] .sk-hero-icon-box.box-cuti {
-        background: rgba(239, 68, 68, 0.2);
+        background: rgba(239, 68, 68, 0.18);
         color: #F87171;
         border-color: rgba(239, 68, 68, 0.35);
+      }
+
+      @keyframes appleCutiPulse {
+        0%, 100% {
+          transform: scale(1);
+          box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.25);
+        }
+        50% {
+          transform: scale(1.04);
+          box-shadow: 0 0 0 5px rgba(239, 68, 68, 0);
+        }
       }
 
       .sk-hero-icon-box.box-op {
         background: #FAF5FF;
         color: #A855F7;
         border: 1px solid #E9D5FF;
+        animation: appleOpPulse 3.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
       }
       [data-theme="dark"] .sk-hero-icon-box.box-op {
-        background: rgba(168, 85, 247, 0.2);
+        background: rgba(168, 85, 247, 0.18);
         color: #C084FC;
         border-color: rgba(168, 85, 247, 0.35);
+      }
+
+      @keyframes appleOpPulse {
+        0%, 100% {
+          transform: scale(1);
+          box-shadow: 0 0 0 0 rgba(168, 85, 247, 0.25);
+        }
+        50% {
+          transform: scale(1.04);
+          box-shadow: 0 0 0 5px rgba(168, 85, 247, 0);
+        }
       }
 
       .sk-hero-icon-box.box-penuh {
         background: #FFFBEB;
         color: #F59E0B;
         border: 1px solid #FDE68A;
+        animation: applePenuhPulse 3.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
       }
       [data-theme="dark"] .sk-hero-icon-box.box-penuh {
-        background: rgba(245, 158, 11, 0.2);
+        background: rgba(245, 158, 11, 0.18);
         color: #FCD34D;
         border-color: rgba(245, 158, 11, 0.35);
+      }
+
+      @keyframes applePenuhPulse {
+        0%, 100% {
+          transform: scale(1);
+          box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.25);
+        }
+        50% {
+          transform: scale(1.04);
+          box-shadow: 0 0 0 5px rgba(245, 158, 11, 0);
+        }
       }
 
       .sk-hero-content {
@@ -1980,44 +2020,72 @@
         font-family: "Plus Jakarta Sans", sans-serif;
         font-size: 8px;
         font-weight: 900;
-        padding: 1.5px 5.5px;
-        border-radius: 4px;
+        padding: 2px 6px;
+        border-radius: 9999px;
         letter-spacing: 0.03em;
         text-transform: uppercase;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
         flex-shrink: 0;
       }
 
+      .sk-pill-dot {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        display: inline-block;
+      }
+
+      .dot-cuti {
+        background: #EF4444;
+        animation: appleRadarDot 1.8s ease-in-out infinite;
+      }
+      .dot-op {
+        background: #A855F7;
+        animation: appleRadarDot 1.8s ease-in-out infinite;
+      }
+      .dot-penuh {
+        background: #F59E0B;
+        animation: appleRadarDot 1.8s ease-in-out infinite;
+      }
+
+      @keyframes appleRadarDot {
+        0%, 100% { opacity: 0.45; transform: scale(0.85); }
+        50% { opacity: 1; transform: scale(1.2); }
+      }
+
       .pill-cuti {
-        background: rgba(239, 68, 68, 0.15);
+        background: rgba(239, 68, 68, 0.14);
         color: #DC2626;
-        border: 1px solid rgba(239, 68, 68, 0.3);
+        border: 1px solid rgba(239, 68, 68, 0.28);
       }
       [data-theme="dark"] .pill-cuti {
-        background: rgba(239, 68, 68, 0.25);
+        background: rgba(239, 68, 68, 0.22);
         color: #F87171;
-        border-color: rgba(239, 68, 68, 0.4);
+        border-color: rgba(239, 68, 68, 0.38);
       }
 
       .pill-op {
-        background: rgba(168, 85, 247, 0.15);
+        background: rgba(168, 85, 247, 0.14);
         color: #9333EA;
-        border: 1px solid rgba(168, 85, 247, 0.3);
+        border: 1px solid rgba(168, 85, 247, 0.28);
       }
       [data-theme="dark"] .pill-op {
-        background: rgba(168, 85, 247, 0.25);
+        background: rgba(168, 85, 247, 0.22);
         color: #C084FC;
-        border-color: rgba(168, 85, 247, 0.4);
+        border-color: rgba(168, 85, 247, 0.38);
       }
 
       .pill-penuh {
-        background: rgba(245, 158, 11, 0.15);
+        background: rgba(245, 158, 11, 0.14);
         color: #D97706;
-        border: 1px solid rgba(245, 158, 11, 0.3);
+        border: 1px solid rgba(245, 158, 11, 0.28);
       }
       [data-theme="dark"] .pill-penuh {
-        background: rgba(245, 158, 11, 0.25);
+        background: rgba(245, 158, 11, 0.22);
         color: #FCD34D;
-        border-color: rgba(245, 158, 11, 0.4);
+        border-color: rgba(245, 158, 11, 0.38);
       }
 
       .sk-hero-poli-tag {
@@ -2074,24 +2142,26 @@
       .sk-pills-bar {
         display: flex;
         align-items: center;
-        gap: 3px;
-        margin-top: 1px;
+        gap: 3.5px;
+        margin-top: 2px;
       }
 
       .sk-pill-bar {
         height: 2.5px;
         flex: 1;
         border-radius: 9999px;
-        background: rgba(60, 60, 67, 0.15);
+        background: rgba(60, 60, 67, 0.12);
+        overflow: hidden;
+        position: relative;
         transition: background 0.3s ease;
+      }
+
+      [data-theme="dark"] .sk-pill-bar {
+        background: rgba(255, 255, 255, 0.12);
       }
 
       .sk-pill-bar.active {
         background: #AF52DE;
-      }
-
-      [data-theme="dark"] .sk-pill-bar {
-        background: rgba(255, 255, 255, 0.15);
       }
 
       [data-theme="dark"] .sk-pill-bar.active {
@@ -8762,19 +8832,22 @@
                 </div>
               `;
             } else {
-              trackEl.innerHTML = items.map(item => `
-                <div class="sk-hero-slide">
+              trackEl.innerHTML = items.map((item, idx) => `
+                <div class="sk-hero-slide ${idx === 0 ? "active-doctor-slide" : ""}" data-index="${idx}">
                   <div class="sk-hero-icon-box box-${item.type}">
                     <span class="material-icons-round" style="font-size: 22px;">${item.icon}</span>
                   </div>
                   <div class="sk-hero-content">
                     <div class="sk-hero-top-row">
-                      <span class="sk-hero-status-pill pill-${item.type}">${item.badge}</span>
+                      <span class="sk-hero-status-pill pill-${item.type}">
+                        <span class="sk-pill-dot dot-${item.type}"></span>
+                        <span>${item.badge}</span>
+                      </span>
                       <span class="sk-hero-poli-tag">${esc(item.poli)}</span>
                     </div>
                     <div class="sk-hero-doctor-name">${esc(item.name)}</div>
                     <div class="sk-hero-meta-row">
-                      <span class="material-icons-round" style="font-size: 11.5px;">${item.metaIcon}</span>
+                      <span class="material-icons-round" style="font-size: 12px;">${item.metaIcon}</span>
                       <span>${item.metaText}</span>
                     </div>
                   </div>
@@ -8828,16 +8901,16 @@
               if (totalDocs > 1) {
                 this.scheduleDoctorSubSlides(totalDocs);
               } else {
-                this._smartStackTimer = setTimeout(stepCarousel, 8500);
+                this._smartStackTimer = setTimeout(stepCarousel, 6500);
               }
             } else {
               this._smartStackCurrentSlide = 0;
               this.updateSmartStackSlideUI(0, 0, totalDocs);
-              this._smartStackTimer = setTimeout(stepCarousel, 11000);
+              this._smartStackTimer = setTimeout(stepCarousel, 10000);
             }
           };
 
-          this._smartStackTimer = setTimeout(stepCarousel, 11000);
+          this._smartStackTimer = setTimeout(stepCarousel, 10000);
         },
 
         scheduleDoctorSubSlides(totalDocs) {
@@ -8854,7 +8927,7 @@
               this._smartStackTimer = setTimeout(() => {
                 this._smartStackTimer = null;
                 this.startSmartStackRotation();
-              }, 11000);
+              }, 10000);
             }
           };
           this._smartStackTimer = setTimeout(subStep, 6500);
@@ -8867,6 +8940,8 @@
 
           if (trackEl) {
             trackEl.style.transform = `translateX(-${idx * 100}%)`;
+            const slides = trackEl.querySelectorAll(".sk-hero-slide");
+            slides.forEach((s, i) => s.classList.toggle("active-doctor-slide", i === idx));
           }
           if (badgeEl) {
             badgeEl.textContent = `${idx + 1} / ${totalDocs} DOKTER`;
