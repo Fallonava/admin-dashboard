@@ -1729,31 +1729,32 @@
         font-weight: 900;
       }
 
-      /* ===== 🌳 APPLE tvOS PATIENT ADMISSION VERTICAL TREE FLOW COMPLICATION ===== */
+      /* ===== 🌳 APPLE tvOS / VISIONOS PATIENT ADMISSION VERTICAL TREE FLOW ===== */
       .complication-journey-card {
         flex: 1;
         background: #FFFFFF !important;
-        border-radius: 22px;
+        border-radius: 24px;
         position: relative;
         box-sizing: border-box;
-        padding: 14px 16px;
+        padding: 15px 16px;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
         gap: 8px;
         border: 1px solid rgba(226, 234, 245, 0.95);
         box-shadow: 
-          0 10px 28px -4px rgba(15, 23, 42, 0.05),
+          0 12px 32px -4px rgba(15, 23, 42, 0.06),
+          0 4px 12px -2px rgba(15, 23, 42, 0.03),
           inset 0 1.5px 1.5px #FFFFFF;
         transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
       }
 
       [data-theme="dark"] .complication-journey-card {
-        background: #121824 !important;
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: #111722 !important;
+        border: 1px solid rgba(255, 255, 255, 0.12);
         box-shadow: 
-          0 12px 30px -4px rgba(0, 0, 0, 0.45),
-          inset 0 1px 1px rgba(255, 255, 255, 0.12);
+          0 14px 36px -4px rgba(0, 0, 0, 0.5),
+          inset 0 1px 1px rgba(255, 255, 255, 0.15);
       }
 
       /* Tree Grid: Top 2 Branches (Online vs Reguler) */
@@ -1798,7 +1799,7 @@
         font-family: "Plus Jakarta Sans", sans-serif;
         font-size: 8px;
         font-weight: 900;
-        padding: 1.5px 6px;
+        padding: 1.5px 6.5px;
         border-radius: 9999px;
         letter-spacing: 0.02em;
       }
@@ -1807,6 +1808,7 @@
         background: #ECFDF5;
         color: #059669;
         border: 1px solid #A7F3D0;
+        box-shadow: 0 1px 3px rgba(16, 185, 129, 0.15);
       }
       [data-theme="dark"] .badge-online-fast {
         background: rgba(16, 185, 129, 0.2);
@@ -1814,29 +1816,19 @@
         border-color: rgba(52, 211, 153, 0.35);
       }
 
-      .badge-reguler-lobby {
-        background: #F1F5F9;
-        color: #334155;
-        border: 1px solid #E2E8F0;
-      }
-      [data-theme="dark"] .badge-reguler-lobby {
-        background: rgba(255, 255, 255, 0.08);
-        color: #E2E8F0;
-        border-color: rgba(255, 255, 255, 0.12);
-      }
-
-      /* Tree Step Card */
+      /* Apple visionOS Frosted Step Card */
       .tree-step-card {
-        background: rgba(248, 250, 252, 0.9);
+        background: rgba(248, 250, 252, 0.95);
         border: 1px solid rgba(226, 232, 240, 0.95);
-        box-shadow: inset 0 1px 1px #FFFFFF, 0 2px 6px rgba(0, 0, 0, 0.02);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border-radius: 12px;
+        box-shadow: inset 0 1px 1px #FFFFFF, 0 3px 8px rgba(15, 23, 42, 0.03);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border-radius: 14px;
         padding: 6px 8px;
         display: flex;
         align-items: center;
-        gap: 6px;
+        gap: 7px;
+        transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
       }
 
       [data-theme="dark"] .tree-step-card {
@@ -1851,14 +1843,16 @@
       }
 
       .tree-step-icon-wrap {
-        width: 26px;
-        height: 26px;
-        border-radius: 8px;
+        width: 28px;
+        height: 28px;
+        border-radius: 9px;
         display: flex;
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+        position: relative;
+        overflow: hidden;
       }
 
       .tree-step-content {
@@ -1873,6 +1867,7 @@
         font-size: 7.5px;
         font-weight: 900;
         line-height: 1;
+        letter-spacing: 0.03em;
       }
 
       .tree-step-title {
@@ -1883,6 +1878,7 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        letter-spacing: -0.01em;
       }
 
       [data-theme="dark"] .tree-step-title {
@@ -1908,19 +1904,19 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        height: 10px;
+        height: 11px;
       }
 
       .tree-micro-down-arrow {
-        font-size: 11px;
+        font-size: 12px;
         color: #0284C7;
         font-weight: 900;
         animation: appleMicroDown 1.8s ease-in-out infinite;
       }
 
       @keyframes appleMicroDown {
-        0%, 100% { transform: translateY(0); opacity: 0.5; }
-        50% { transform: translateY(2px); opacity: 1; }
+        0%, 100% { transform: translateY(0); opacity: 0.4; }
+        50% { transform: translateY(2.5px); opacity: 1; filter: drop-shadow(0 1px 3px rgba(2, 132, 199, 0.4)); }
       }
 
       /* Tree Convergence Divider with Branching Line */
@@ -1946,7 +1942,7 @@
         display: flex;
         align-items: center;
         gap: 5px;
-        box-shadow: 0 2px 8px rgba(2, 132, 199, 0.12);
+        box-shadow: 0 2px 8px rgba(2, 132, 199, 0.14);
         z-index: 2;
       }
 
@@ -1971,9 +1967,9 @@
         display: flex;
         flex-direction: column;
         gap: 4px;
-        background: rgba(240, 249, 255, 0.65);
-        border: 1px solid rgba(186, 230, 253, 0.8);
-        border-radius: 16px;
+        background: rgba(240, 249, 255, 0.7);
+        border: 1px solid rgba(186, 230, 253, 0.85);
+        border-radius: 18px;
         padding: 8px 10px;
       }
 
@@ -1985,8 +1981,8 @@
       .tree-trunk-row-card {
         background: #FFFFFF;
         border: 1px solid rgba(226, 232, 240, 0.95);
-        box-shadow: inset 0 1px 1px #FFFFFF, 0 2px 6px rgba(0, 0, 0, 0.02);
-        border-radius: 12px;
+        box-shadow: inset 0 1px 1px #FFFFFF, 0 3px 8px rgba(15, 23, 42, 0.03);
+        border-radius: 14px;
         padding: 6px 10px;
         display: flex;
         align-items: center;
@@ -2012,8 +2008,8 @@
         font-family: "Plus Jakarta Sans", sans-serif;
         font-size: 8px;
         font-weight: 900;
-        padding: 2px 7px;
-        border-radius: 6px;
+        padding: 2.5px 8px;
+        border-radius: 7px;
         letter-spacing: 0.03em;
         white-space: nowrap;
       }
@@ -2056,14 +2052,15 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        height: 12px;
+        height: 13px;
+        position: relative;
       }
 
       .tree-trunk-down-arrow {
-        font-size: 14px;
+        font-size: 15px;
         color: #0284C7;
         font-weight: 900;
-        animation: appleTrunkDown 2s ease-in-out infinite;
+        animation: appleTrunkDown 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
       }
 
       [data-theme="dark"] .tree-trunk-down-arrow {
@@ -2071,10 +2068,11 @@
       }
 
       @keyframes appleTrunkDown {
-        0%, 100% { transform: translateY(0); opacity: 0.6; }
-        50% { transform: translateY(3px); opacity: 1; filter: drop-shadow(0 2px 4px rgba(2, 132, 199, 0.5)); }
+        0%, 100% { transform: translateY(-2px); opacity: 0.35; }
+        50% { transform: translateY(3px); opacity: 1; filter: drop-shadow(0 2px 6px rgba(2, 132, 199, 0.7)); }
       }
 
+      /* ===== APPLE SF VISIONOS MICRO-INTERACTIVE ICONS & PALETTES ===== */
       .icon-online-1 {
         color: #059669;
         background: #ECFDF5;
@@ -2141,41 +2139,61 @@
         border-color: rgba(129, 140, 248, 0.35);
       }
 
-      /* Micro-Animations */
-      .anim-scan-pulse {
-        animation: appleScanPulse 3s ease-in-out infinite;
+      /* ===== HARDWARE-ACCELERATED 60FPS MICRO-ANIMATIONS ===== */
+      .anim-qr-laser {
+        animation: appleQRLaser 3s ease-in-out infinite;
       }
-      .anim-heartbeat {
-        animation: appleHeartbeat 2.2s ease-in-out infinite;
+      .anim-kiosk-touch {
+        animation: appleKioskTouch 2.8s ease-in-out infinite;
       }
-      .anim-float-subtle {
-        animation: appleFloatSubtle 3.5s ease-in-out infinite alternate;
+      .anim-voice-broadcast {
+        animation: appleVoiceBroadcast 2.6s ease-in-out infinite;
       }
-      .anim-touch-tap {
-        animation: appleTouchTap 3s ease-in-out infinite;
+      .anim-desk-verified {
+        animation: appleDeskVerified 3.2s ease-in-out infinite alternate;
       }
-
-      @keyframes appleScanPulse {
-        0%, 100% { transform: scale(1); filter: drop-shadow(0 0 0 transparent); }
-        50% { transform: scale(1.14); filter: drop-shadow(0 0 4px rgba(16, 185, 129, 0.6)); }
+      .anim-heart-pump {
+        animation: appleHeartPump 2s ease-in-out infinite;
       }
-
-      @keyframes appleHeartbeat {
-        0%, 100% { transform: scale(1); }
-        14% { transform: scale(1.18); }
-        28% { transform: scale(1); }
-        42% { transform: scale(1.12); }
-        70% { transform: scale(1); }
+      .anim-doc-float {
+        animation: appleDocFloat 3.8s ease-in-out infinite alternate;
       }
 
-      @keyframes appleFloatSubtle {
-        0% { transform: translateY(0); }
-        100% { transform: translateY(-2.5px); }
+      @keyframes appleQRLaser {
+        0%, 100% { transform: scale(1); filter: drop-shadow(0 2px 4px rgba(16, 185, 129, 0.25)); }
+        50% { transform: scale(1.1); filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.75)); }
       }
 
-      @keyframes appleTouchTap {
-        0%, 100% { transform: scale(1) translateY(0); }
-        50% { transform: scale(0.88) translateY(1.5px); }
+      @keyframes appleKioskTouch {
+        0%, 100% { transform: scale(1) translateY(0); filter: drop-shadow(0 2px 4px rgba(217, 119, 6, 0.2)); }
+        35% { transform: scale(0.88) translateY(2px); filter: drop-shadow(0 0 2px rgba(217, 119, 6, 0.5)); }
+        60% { transform: scale(1.04) translateY(-1px); }
+      }
+
+      @keyframes appleVoiceBroadcast {
+        0%, 100% { transform: scale(1) rotate(0deg); filter: drop-shadow(0 2px 4px rgba(2, 132, 199, 0.2)); }
+        25% { transform: scale(1.12) rotate(-5deg); filter: drop-shadow(0 0 8px rgba(2, 132, 199, 0.65)); }
+        50% { transform: scale(1.05) rotate(4deg); }
+        75% { transform: scale(1.08) rotate(-2deg); }
+      }
+
+      @keyframes appleDeskVerified {
+        0%, 100% { transform: translateY(0); filter: drop-shadow(0 2px 4px rgba(2, 132, 199, 0.25)); }
+        50% { transform: translateY(-2px); filter: drop-shadow(0 4px 8px rgba(2, 132, 199, 0.55)); }
+      }
+
+      @keyframes appleHeartPump {
+        0%, 100% { transform: scale(1); filter: drop-shadow(0 2px 4px rgba(225, 29, 72, 0.2)); }
+        12% { transform: scale(1.22); filter: drop-shadow(0 0 10px rgba(225, 29, 72, 0.75)); }
+        24% { transform: scale(1.02); }
+        36% { transform: scale(1.14); filter: drop-shadow(0 0 7px rgba(225, 29, 72, 0.5)); }
+        55% { transform: scale(1); }
+      }
+
+      @keyframes appleDocFloat {
+        0% { transform: translateY(0) rotate(0deg); filter: drop-shadow(0 2px 4px rgba(99, 102, 241, 0.2)); }
+        50% { transform: translateY(-2.5px) rotate(3deg); filter: drop-shadow(0 5px 10px rgba(99, 102, 241, 0.55)); }
+        100% { transform: translateY(0) rotate(0deg); filter: drop-shadow(0 2px 4px rgba(99, 102, 241, 0.2)); }
       }
 
       /* Force dark text in sidebar when in light mode, but adapt in dark mode */
@@ -6062,8 +6080,8 @@
                       <span class="tree-branch-badge badge-online-fast">CEPAT ⚡</span>
                     </div>
                     <div class="tree-step-card tree-step-card-tall">
-                      <div class="tree-step-icon-wrap icon-online-1 anim-scan-pulse">
-                        <span class="material-icons-round" style="font-size:15px;">qr_code_scanner</span>
+                      <div class="tree-step-icon-wrap icon-online-1 anim-qr-laser">
+                        <span class="material-icons-round" style="font-size:16px;">qr_code_scanner</span>
                       </div>
                       <div class="tree-step-content">
                         <span class="tree-step-num" style="color:#059669;">LANGKAH 01</span>
@@ -6082,8 +6100,8 @@
                       </span>
                     </div>
                     <div class="tree-step-card">
-                      <div class="tree-step-icon-wrap icon-reg-1 anim-touch-tap">
-                        <span class="material-icons-round" style="font-size:14px;">touch_app</span>
+                      <div class="tree-step-icon-wrap icon-reg-1 anim-kiosk-touch">
+                        <span class="material-icons-round" style="font-size:15px;">touch_app</span>
                       </div>
                       <div class="tree-step-content">
                         <span class="tree-step-num" style="color:#D97706;">01. ANTREAN</span>
@@ -6095,8 +6113,8 @@
                       <span class="material-icons-round tree-micro-down-arrow">arrow_downward</span>
                     </div>
                     <div class="tree-step-card">
-                      <div class="tree-step-icon-wrap icon-reg-2">
-                        <span class="material-icons-round" style="font-size:14px;">record_voice_over</span>
+                      <div class="tree-step-icon-wrap icon-reg-2 anim-voice-broadcast">
+                        <span class="material-icons-round" style="font-size:15px;">record_voice_over</span>
                       </div>
                       <div class="tree-step-content">
                         <span class="tree-step-num" style="color:#0284C7;">02. MENUNGGU</span>
@@ -6122,8 +6140,8 @@
                   <!-- Tahap 1: Registrasi Loket -->
                   <div class="tree-trunk-row-card">
                     <div class="tree-trunk-left">
-                      <div class="tree-step-icon-wrap icon-unified-1">
-                        <span class="material-icons-round" style="font-size:15px;">how_to_reg</span>
+                      <div class="tree-step-icon-wrap icon-unified-1 anim-desk-verified">
+                        <span class="material-icons-round" style="font-size:16px;">how_to_reg</span>
                       </div>
                       <div class="tree-step-content">
                         <span class="tree-step-num" style="color:#0284C7;">TAHAP 01</span>
@@ -6142,8 +6160,8 @@
                   <!-- Tahap 2: Nurse Station -->
                   <div class="tree-trunk-row-card">
                     <div class="tree-trunk-left">
-                      <div class="tree-step-icon-wrap icon-unified-2 anim-heartbeat">
-                        <span class="material-icons-round" style="font-size:15px;">monitor_heart</span>
+                      <div class="tree-step-icon-wrap icon-unified-2 anim-heart-pump">
+                        <span class="material-icons-round" style="font-size:16px;">monitor_heart</span>
                       </div>
                       <div class="tree-step-content">
                         <span class="tree-step-num" style="color:#E11D48;">TAHAP 02</span>
@@ -6162,8 +6180,8 @@
                   <!-- Tahap 3: Ruang Poli Dokter -->
                   <div class="tree-trunk-row-card">
                     <div class="tree-trunk-left">
-                      <div class="tree-step-icon-wrap icon-unified-3 anim-float-subtle">
-                        <span class="material-icons-round" style="font-size:15px;">stethoscope</span>
+                      <div class="tree-step-icon-wrap icon-unified-3 anim-doc-float">
+                        <span class="material-icons-round" style="font-size:16px;">stethoscope</span>
                       </div>
                       <div class="tree-step-content">
                         <span class="tree-step-num" style="color:#6366F1;">TAHAP 03</span>
