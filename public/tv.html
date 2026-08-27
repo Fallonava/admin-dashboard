@@ -1772,39 +1772,238 @@
         box-sizing: border-box;
       }
 
-      .sidebar-panel.sidebar-mode-weather .sidebar-complications {
+      .sidebar-panel .sidebar-complications {
         height: 100%;
         display: flex;
         flex-direction: column;
         justify-content: stretch;
+        gap: 8px;
         padding: 0;
         box-sizing: border-box;
         opacity: 1;
       }
 
+      /* ===== 🔄 APPLE SMART STACK (CAROUSEL WIDGET) ===== */
+      .complication-smart-stack {
+        display: grid;
+        width: 100%;
+        position: relative;
+        border-radius: 20px;
+        box-sizing: border-box;
+      }
+
+      .smart-stack-slide {
+        grid-area: 1 / 1 / 2 / 2;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        transform: scale(0.96) translateY(4px);
+        pointer-events: none;
+        transition: opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+                    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+        box-sizing: border-box;
+      }
+
+      .smart-stack-slide.active-slide {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+        pointer-events: auto;
+        z-index: 2;
+      }
+
+      .smart-stack-dots {
+        position: absolute;
+        bottom: 8px;
+        right: 14px;
+        display: flex;
+        align-items: center;
+        gap: 3.5px;
+        z-index: 10;
+      }
+
+      .smart-stack-dot {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: rgba(60, 60, 67, 0.25);
+        transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+
+      .smart-stack-dot.active {
+        width: 13px;
+        border-radius: 9999px;
+        background: #007AFF;
+      }
+
+      [data-theme="dark"] .smart-stack-dot {
+        background: rgba(255, 255, 255, 0.25);
+      }
+
+      [data-theme="dark"] .smart-stack-dot.active {
+        background: #38BDF8;
+      }
+
+      /* Status Khusus Smart Stack Widget */
+      .complication-status-khusus-master {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        background: #FFFFFF !important;
+        border-radius: 20px;
+        padding: 10px 14px;
+        box-sizing: border-box;
+        border: 1px solid rgba(60, 60, 67, 0.10);
+        box-shadow: 
+          0 1px 0 rgba(60, 60, 67, 0.08),
+          0 4px 14px -2px rgba(60, 60, 67, 0.04);
+      }
+
+      [data-theme="dark"] .complication-status-khusus-master {
+        background: #2C2C2E !important;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 
+          0 2px 0 rgba(255, 255, 255, 0.06),
+          0 1px 0 rgba(0, 0, 0, 0.3);
+      }
+
+      .tag-purple {
+        background: rgba(175, 82, 222, 0.12);
+        color: #AF52DE;
+        border: 1px solid rgba(175, 82, 222, 0.25);
+      }
+
+      [data-theme="dark"] .tag-purple {
+        background: rgba(191, 90, 242, 0.2);
+        color: #BF5AF2;
+        border-color: rgba(191, 90, 242, 0.35);
+      }
+
+      .sk-widget-body {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        flex: 1;
+        justify-content: center;
+        min-height: 0;
+        margin-top: 4px;
+      }
+
+      .sk-widget-row {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        background: #F8FAFC;
+        border-radius: 10px;
+        padding: 4px 7px;
+        border: 1px solid rgba(226, 232, 240, 0.95);
+        box-sizing: border-box;
+        min-width: 0;
+      }
+
+      [data-theme="dark"] .sk-widget-row {
+        background: rgba(255, 255, 255, 0.04);
+        border-color: rgba(255, 255, 255, 0.08);
+      }
+
+      .sk-widget-badge {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 7.5px;
+        font-weight: 900;
+        padding: 1.5px 5px;
+        border-radius: 4px;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        flex-shrink: 0;
+      }
+
+      .badge-op {
+        background: rgba(175, 82, 222, 0.14);
+        color: #AF52DE;
+        border: 1px solid rgba(175, 82, 222, 0.3);
+      }
+
+      .badge-cuti {
+        background: rgba(255, 59, 48, 0.14);
+        color: #FF3B30;
+        border: 1px solid rgba(255, 59, 48, 0.3);
+      }
+
+      .badge-penuh {
+        background: rgba(255, 149, 0, 0.14);
+        color: #FF9500;
+        border: 1px solid rgba(255, 149, 0, 0.3);
+      }
+
+      .sk-widget-info {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        line-height: 1.18;
+      }
+
+      .sk-widget-name {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 10.5px;
+        font-weight: 800;
+        color: #0F172A;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      [data-theme="dark"] .sk-widget-name {
+        color: #F8FAFC;
+      }
+
+      .sk-widget-meta {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 9px;
+        font-weight: 600;
+        color: #64748B;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      [data-theme="dark"] .sk-widget-meta {
+        color: #94A3B8;
+      }
+
+      .sk-widget-empty {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 6px;
+        color: #059669;
+        font-size: 10.5px;
+        font-weight: 700;
+      }
+
       .complication-weather-master {
-        height: auto;
+        height: 100%;
         background: #FFFFFF !important;
         border-radius: 20px;
         position: relative;
         box-sizing: border-box;
-        padding: 12px 16px;
+        padding: 10px 14px;
         display: flex;
         flex-direction: column;
-        gap: 8px;
-        border: 1px solid rgba(226, 234, 245, 0.95);
+        justify-content: space-between;
+        border: 1px solid rgba(60, 60, 67, 0.10);
         box-shadow: 
-          0 8px 24px -4px rgba(15, 23, 42, 0.05),
-          inset 0 1.5px 1.5px #FFFFFF;
+          0 1px 0 rgba(60, 60, 67, 0.08),
+          0 4px 14px -2px rgba(60, 60, 67, 0.04);
         transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
       }
 
       [data-theme="dark"] .complication-weather-master {
-        background: #121824 !important;
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: #2C2C2E !important;
+        border: 1px solid rgba(255, 255, 255, 0.08);
         box-shadow: 
-          0 10px 26px -4px rgba(0, 0, 0, 0.4),
-          inset 0 1px 1px rgba(255, 255, 255, 0.12);
+          0 2px 0 rgba(255, 255, 255, 0.06),
+          0 1px 0 rgba(0, 0, 0, 0.3);
       }
 
       .weather-master-hero-row {
@@ -6989,34 +7188,67 @@
 
           return `
             <div class="sidebar-complications">
-              <!-- ⛅ ULTRA-COMPACT APPLE tvOS WEATHER COMPLICATION -->
-              <div class="complication-card complication-weather-master weather-theme-${w.atmosphereTheme}">
-                <!-- 1. Header Bar -->
-                <div class="complication-header">
-                  <div class="complication-title">
-                    <span class="material-icons-round" style="font-size:14px; color:#0284C7;">wb_sunny</span>
-                    <span>CUACA PURBALINGGA</span>
+              <!-- 🔄 APPLE SMART STACK (CUACA + STATUS KHUSUS CAROUSEL) -->
+              <div class="complication-smart-stack" id="complicationSmartStack">
+                <!-- Slide 1: Cuaca Purbalingga -->
+                <div class="smart-stack-slide active-slide" id="smartStackSlideWeather">
+                  <div class="complication-weather-master weather-theme-${w.atmosphereTheme}">
+                    <!-- 1. Header Bar -->
+                    <div class="complication-header">
+                      <div class="complication-title">
+                        <span class="material-icons-round" style="font-size:14px; color:#0284C7;">wb_sunny</span>
+                        <span>CUACA PURBALINGGA</span>
+                      </div>
+                      <span class="complication-tag tag-sky">LIVE BMKG</span>
+                    </div>
+
+                    <!-- 2. Hero Temperature & Visual Status -->
+                    <div class="weather-master-hero-row">
+                      <div class="weather-master-hero-left">
+                        <div class="weather-temp-master-group">
+                          <span class="weather-temp-master-val" id="tvWeatherTemp">${w.temp}</span>
+                          <span class="weather-temp-master-unit">°C</span>
+                        </div>
+                        <div class="weather-condition-master-text" id="tvWeatherCondition">${w.condition}</div>
+                        <div class="weather-range-master-text" id="tvWeatherRange">Suhu Harian: H: ${w.tempMax}° • L: ${w.tempMin}°</div>
+                      </div>
+                      <div class="weather-master-hero-right">
+                        <div class="weather-master-icon-wrap" id="tvWeatherIcon">${heroIconMarkup}</div>
+                      </div>
+                    </div>
                   </div>
-                  <span class="complication-tag tag-sky">LIVE BMKG</span>
                 </div>
 
-                <!-- 2. Hero Temperature & Visual Status -->
-                <div class="weather-master-hero-row">
-                  <div class="weather-master-hero-left">
-                    <div class="weather-temp-master-group">
-                      <span class="weather-temp-master-val" id="tvWeatherTemp">${w.temp}</span>
-                      <span class="weather-temp-master-unit">°C</span>
+                <!-- Slide 2: Status Khusus (Operasi / Cuti / Penuh) -->
+                <div class="smart-stack-slide" id="smartStackSlideSpecialStatus">
+                  <div class="complication-status-khusus-master">
+                    <!-- 1. Header Bar -->
+                    <div class="complication-header">
+                      <div class="complication-title">
+                        <span class="material-icons-round" style="font-size:14px; color:#AF52DE;">medical_information</span>
+                        <span>STATUS KHUSUS</span>
+                      </div>
+                      <span class="complication-tag tag-purple" id="skTotalCountBadge">0 DOKTER</span>
                     </div>
-                    <div class="weather-condition-master-text" id="tvWeatherCondition">${w.condition}</div>
-                    <div class="weather-range-master-text" id="tvWeatherRange">Suhu Harian: H: ${w.tempMax}° • L: ${w.tempMin}°</div>
+
+                    <!-- 2. Dynamic Content List -->
+                    <div class="sk-widget-body" id="skWidgetBody">
+                      <div class="sk-widget-empty">
+                        <span class="material-icons-round" style="font-size: 18px; color: #34C759;">check_circle</span>
+                        <span>Semua Dokter Siap Melayani</span>
+                      </div>
+                    </div>
                   </div>
-                  <div class="weather-master-hero-right">
-                    <div class="weather-master-icon-wrap" id="tvWeatherIcon">${heroIconMarkup}</div>
-                  </div>
+                </div>
+
+                <!-- Smart Stack Pagination Dots -->
+                <div class="smart-stack-dots" id="smartStackDots" style="display: none;">
+                  <span class="smart-stack-dot active" id="dotSlide1"></span>
+                  <span class="smart-stack-dot" id="dotSlide2"></span>
                 </div>
               </div>
 
-              <!-- 🌳 APPLE tvOS PATIENT ADMISSION VERTICAL TREE FLOW COMPLICATION -->
+              <!-- 🌳 APPLE tvOS PATIENT ADMISSION VERTICAL TREE FLOW COMPLICATION (100% PERMANEN) -->
               <div class="complication-card complication-journey-card">
                 <!-- 1. Header Bar -->
                 <div class="complication-header">
@@ -8275,67 +8507,29 @@
             return el;
           };
 
-          const isComplicationMode = (operasiList.length === 0 && penuhList.length === 0 && cutiList.length === 0);
           const sidebarPanel = document.querySelector(".sidebar-panel");
           if (sidebarPanel) {
-            sidebarPanel.classList.toggle("sidebar-mode-weather", isComplicationMode);
+            sidebarPanel.classList.add("sidebar-mode-weather");
           }
 
-          // --- Build grouped layout or Apple Watch Complications if empty ---
-          if (isComplicationMode) {
-            if (s3) s3.stop();
-            let wrapper = container.querySelector('[data-id="sec-complications"]');
-            if (!wrapper) {
-              wrapper = document.createElement("div");
-              wrapper.dataset.id = "sec-complications";
-              wrapper.style.height = "100%";
-              wrapper.innerHTML = this.buildSidebarComplicationsHTML();
-              allElements.push(wrapper);
-              hasLayoutChange = true;
-            } else {
-              allElements.push(wrapper);
-              oldMap.delete("sec-complications");
-            }
+          if (s3) s3.stop();
+          let wrapper = container.querySelector('[data-id="sec-complications"]');
+          if (!wrapper) {
+            wrapper = document.createElement("div");
+            wrapper.dataset.id = "sec-complications";
+            wrapper.style.height = "100%";
+            wrapper.innerHTML = this.buildSidebarComplicationsHTML();
+            allElements.push(wrapper);
+            hasLayoutChange = true;
           } else {
-            if (s3) s3.active = true;
-            if (operasiList.length > 0) {
-              allElements.push(
-                makeSectionHeader(
-                  "Tindakan Operasi",
-                  "#BF5AF2",
-                  operasiList.length,
-                  "sec-operasi",
-                ),
-              );
-              operasiList.forEach((d) => allElements.push(makeCard(d)));
-            }
-
-            if (penuhList.length > 0) {
-              allElements.push(
-                makeSectionHeader(
-                  "Kuota Penuh",
-                  "#FF9F0A",
-                  penuhList.length,
-                  "sec-penuh",
-                ),
-              );
-              penuhList.forEach((d) => allElements.push(makeCard(d)));
-            }
-
-            if (cutiList.length > 0) {
-              allElements.push(
-                makeSectionHeader(
-                  "Sedang Cuti",
-                  "#FF453A",
-                  cutiList.length,
-                  "sec-cuti",
-                ),
-              );
-              cutiList.forEach((d) => allElements.push(makeCard(d)));
-            }
+            allElements.push(wrapper);
+            oldMap.delete("sec-complications");
           }
 
-          // Update visionOS Segment Bar counts
+          // Update Status Khusus in Smart Stack & Trigger Auto-Rotation
+          this.updateSpecialStatusWidget(operasiList, penuhList, cutiList);
+
+          // Update visionOS Segment Bar counts (if present)
           if ($("segCountOp")) $("segCountOp").textContent = operasiList.length;
           if ($("segCountPenuh")) $("segCountPenuh").textContent = penuhList.length;
           if ($("segCountCuti")) $("segCountCuti").textContent = cutiList.length;
@@ -8361,6 +8555,130 @@
             return true;
           }
           return false;
+        },
+
+        updateSpecialStatusWidget(operasiList, penuhList, cutiList) {
+          const totalCount = (operasiList ? operasiList.length : 0) + 
+                             (penuhList ? penuhList.length : 0) + 
+                             (cutiList ? cutiList.length : 0);
+          const badgeEl = $("skTotalCountBadge");
+          const bodyEl = $("skWidgetBody");
+          const dotsEl = $("smartStackDots");
+
+          if (badgeEl) {
+            badgeEl.textContent = `${totalCount} DOKTER`;
+          }
+
+          if (bodyEl) {
+            if (totalCount === 0) {
+              bodyEl.innerHTML = `
+                <div class="sk-widget-empty">
+                  <span class="material-icons-round" style="font-size: 18px; color: #34C759;">check_circle</span>
+                  <span>Semua Dokter Siap Melayani</span>
+                </div>
+              `;
+            } else {
+              const items = [];
+              if (operasiList) {
+                operasiList.forEach(d => {
+                  const timeStr = d.JamPraktek ? `Poli ${d.JamPraktek.split("-")[0] || ""}` : "Tindakan";
+                  items.push({
+                    type: "op",
+                    badge: "OPERASI",
+                    name: d.Dokter,
+                    meta: timeStr
+                  });
+                });
+              }
+              if (penuhList) {
+                penuhList.forEach(d => {
+                  items.push({
+                    type: "penuh",
+                    badge: "PENUH",
+                    name: d.Dokter,
+                    meta: "Kuota Hari Ini Penuh"
+                  });
+                });
+              }
+              if (cutiList) {
+                cutiList.forEach(d => {
+                  let returnStr = "Sedang Cuti";
+                  if (d.NextBuka) {
+                    returnStr = `Buka: ${d.NextBuka}`;
+                  } else if (d.CutiSampai) {
+                    returnStr = `Sampai ${d.CutiSampai}`;
+                  }
+                  items.push({
+                    type: "cuti",
+                    badge: "CUTI",
+                    name: d.Dokter,
+                    meta: returnStr
+                  });
+                });
+              }
+
+              bodyEl.innerHTML = items.slice(0, 2).map(item => `
+                <div class="sk-widget-row st-${item.type}">
+                  <div class="sk-widget-badge badge-${item.type}">${item.badge}</div>
+                  <div class="sk-widget-info">
+                    <span class="sk-widget-name">${esc(item.name)}</span>
+                    <span class="sk-widget-meta">${esc(item.meta)}</span>
+                  </div>
+                </div>
+              `).join("");
+            }
+          }
+
+          // Toggle Smart Stack Rotation
+          if (dotsEl) {
+            dotsEl.style.display = totalCount > 0 ? "flex" : "none";
+          }
+
+          if (totalCount > 0) {
+            this.startSmartStackRotation();
+          } else {
+            this.stopSmartStackRotation();
+          }
+        },
+
+        startSmartStackRotation() {
+          if (this._smartStackTimer) return;
+          this._smartStackCurrentSlide = 0;
+
+          this._smartStackTimer = setInterval(() => {
+            this._smartStackCurrentSlide = (this._smartStackCurrentSlide === 0) ? 1 : 0;
+            const slideWeather = $("smartStackSlideWeather");
+            const slideSpecial = $("smartStackSlideSpecialStatus");
+            const dot1 = $("dotSlide1");
+            const dot2 = $("dotSlide2");
+
+            if (this._smartStackCurrentSlide === 0) {
+              if (slideWeather) slideWeather.classList.add("active-slide");
+              if (slideSpecial) slideSpecial.classList.remove("active-slide");
+              if (dot1) dot1.classList.add("active");
+              if (dot2) dot2.classList.remove("active");
+            } else {
+              if (slideWeather) slideWeather.classList.remove("active-slide");
+              if (slideSpecial) slideSpecial.classList.add("active-slide");
+              if (dot1) dot1.classList.remove("active");
+              if (dot2) dot2.classList.add("active");
+            }
+          }, 8500);
+        },
+
+        stopSmartStackRotation() {
+          if (this._smartStackTimer) {
+            clearInterval(this._smartStackTimer);
+            this._smartStackTimer = null;
+          }
+          const slideWeather = $("smartStackSlideWeather");
+          const slideSpecial = $("smartStackSlideSpecialStatus");
+          const dot1 = $("dotSlide1");
+          const dot2 = $("dotSlide2");
+          if (slideWeather) slideWeather.classList.add("active-slide");
+          if (slideSpecial) slideSpecial.classList.remove("active-slide");
+          if (dot1) dot1.classList.add("active");
+          if (dot2) dot2.classList.remove("active");
         },
       };
 
