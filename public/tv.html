@@ -1971,33 +1971,42 @@
       /* Tree Grid: Top 2 Branches (Online vs Reguler) */
       .tree-branch-grid {
         display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 7px;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 6px;
         width: 100%;
+        box-sizing: border-box;
       }
 
       .tree-branch-column {
         display: flex;
         flex-direction: column;
         gap: 4px;
+        min-width: 0;
+        overflow: hidden;
       }
 
       .tree-branch-header {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 0 2px;
+        padding: 0 1px;
+        min-width: 0;
+        gap: 4px;
       }
 
       .tree-branch-title {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 11px;
+        font-size: 10.5px;
         font-weight: 900;
-        letter-spacing: 0.03em;
+        letter-spacing: 0.02em;
         text-transform: uppercase;
         display: flex;
         align-items: center;
-        gap: 4px;
+        gap: 3px;
+        white-space: nowrap;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
 
       .title-online { color: #059669; }
@@ -2008,12 +2017,14 @@
 
       .tree-branch-badge {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 9px;
+        font-size: 8px;
         font-weight: 800;
-        padding: 2px 6.5px;
+        padding: 1.5px 5px;
         border-radius: 9999px;
-        letter-spacing: 0.03em;
+        letter-spacing: 0.02em;
         text-transform: uppercase;
+        white-space: nowrap;
+        flex-shrink: 0;
       }
 
       .badge-online-fast {
@@ -2042,11 +2053,14 @@
       .tree-step-card {
         background: #F8FAFC;
         border: 1px solid rgba(226, 232, 240, 0.95);
-        border-radius: 13px;
-        padding: 7px 9px;
+        border-radius: 12px;
+        padding: 6px 8px;
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 7px;
+        box-sizing: border-box;
+        min-width: 0;
+        overflow: hidden;
         transition: transform 0.25s ease, background 0.25s ease;
       }
 
@@ -5574,9 +5588,9 @@
             <div class="di-tree-branch-card online">
               <div class="di-tree-card-header">
                 <span class="di-tree-card-title online">
-                  <span class="material-icons-round" style="font-size: 11px;">bolt</span> FAST TRACK
+                  <span class="material-icons-round" style="font-size: 12px;">bolt</span> ONLINE
                 </span>
-                <span class="di-tree-badge online">ONLINE</span>
+                <span class="di-tree-badge online">FAST TRACK</span>
               </div>
               <div class="di-tree-flow-steps">
                 <div class="di-tree-node">
@@ -5605,9 +5619,9 @@
             <div class="di-tree-branch-card offline">
               <div class="di-tree-card-header">
                 <span class="di-tree-card-title offline">
-                  <span class="material-icons-round" style="font-size: 11px;">storefront</span> ON-SITE
+                  <span class="material-icons-round" style="font-size: 12px;">storefront</span> REGULER
                 </span>
-                <span class="di-tree-badge offline">REGULER</span>
+                <span class="di-tree-badge offline">ON-SITE</span>
               </div>
               <div class="di-tree-flow-steps">
                 <div class="di-tree-node">
@@ -6987,10 +7001,10 @@
                   <div class="tree-branch-column">
                     <div class="tree-branch-header">
                       <span class="tree-branch-title title-online">
-                        <span class="material-icons-round" style="font-size:11px;">bolt</span>
-                        <span>FAST TRACK</span>
+                        <span class="material-icons-round" style="font-size:12px;">bolt</span>
+                        <span>ONLINE</span>
                       </span>
-                      <span class="tree-branch-badge badge-online-fast">ONLINE</span>
+                      <span class="tree-branch-badge badge-online-fast">FAST TRACK</span>
                     </div>
                     <div class="tree-step-card tree-step-card-tall">
                       <div class="tree-step-icon-wrap icon-online-1 anim-qr-laser">
@@ -7010,10 +7024,10 @@
                   <div class="tree-branch-column">
                     <div class="tree-branch-header">
                       <span class="tree-branch-title title-reguler">
-                        <span class="material-icons-round" style="font-size:11px;">storefront</span>
-                        <span>ON-SITE</span>
+                        <span class="material-icons-round" style="font-size:12px;">storefront</span>
+                        <span>REGULER</span>
                       </span>
-                      <span class="tree-branch-badge badge-reguler-onsite">REGULER</span>
+                      <span class="tree-branch-badge badge-reguler-onsite">ON-SITE</span>
                     </div>
                     <div class="tree-step-card">
                       <div class="tree-step-icon-wrap icon-reg-1 anim-kiosk-touch">
