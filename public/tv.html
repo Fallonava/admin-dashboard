@@ -1729,18 +1729,18 @@
         font-weight: 900;
       }
 
-      /* ===== 🚶 APPLE tvOS PATIENT ADMISSION CONVERGING PIPELINE COMPLICATION ===== */
+      /* ===== 🌳 APPLE tvOS PATIENT ADMISSION VERTICAL TREE FLOW COMPLICATION ===== */
       .complication-journey-card {
         flex: 1;
         background: #FFFFFF !important;
         border-radius: 22px;
         position: relative;
         box-sizing: border-box;
-        padding: 16px 18px;
+        padding: 14px 16px;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        gap: 10px;
+        gap: 8px;
         border: 1px solid rgba(226, 234, 245, 0.95);
         box-shadow: 
           0 10px 28px -4px rgba(15, 23, 42, 0.05),
@@ -1756,23 +1756,31 @@
           inset 0 1px 1px rgba(255, 255, 255, 0.12);
       }
 
-      .journey-track-section {
-        display: flex;
-        flex-direction: column;
-        gap: 5px;
+      /* Tree Grid: Top 2 Branches (Online vs Reguler) */
+      .tree-branch-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        width: 100%;
       }
 
-      .journey-track-header {
+      .tree-branch-column {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .tree-branch-header {
         display: flex;
         align-items: center;
         justify-content: space-between;
+        padding: 0 2px;
       }
 
-      .journey-track-title {
+      .tree-branch-title {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 10.5px;
+        font-size: 10px;
         font-weight: 900;
-        color: #0F172A;
         letter-spacing: 0.02em;
         text-transform: uppercase;
         display: flex;
@@ -1780,17 +1788,19 @@
         gap: 4px;
       }
 
-      [data-theme="dark"] .journey-track-title {
-        color: #F8FAFC;
-      }
+      .title-online { color: #059669; }
+      [data-theme="dark"] .title-online { color: #34D399; }
 
-      .journey-track-badge {
+      .title-reguler { color: #0284C7; }
+      [data-theme="dark"] .title-reguler { color: #38BDF8; }
+
+      .tree-branch-badge {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 8.5px;
+        font-size: 8px;
         font-weight: 900;
-        padding: 2px 6.5px;
+        padding: 1.5px 6px;
         border-radius: 9999px;
-        letter-spacing: 0.03em;
+        letter-spacing: 0.02em;
       }
 
       .badge-online-fast {
@@ -1798,7 +1808,6 @@
         color: #059669;
         border: 1px solid #A7F3D0;
       }
-
       [data-theme="dark"] .badge-online-fast {
         background: rgba(16, 185, 129, 0.2);
         color: #6EE7B7;
@@ -1810,149 +1819,260 @@
         color: #334155;
         border: 1px solid #E2E8F0;
       }
-
       [data-theme="dark"] .badge-reguler-lobby {
         background: rgba(255, 255, 255, 0.08);
         color: #E2E8F0;
         border-color: rgba(255, 255, 255, 0.12);
       }
 
-      .journey-flow-row {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        width: 100%;
-      }
-
-      .journey-step-capsule {
-        flex: 1;
-        min-width: 0;
-        background: rgba(248, 250, 252, 0.85);
+      /* Tree Step Card */
+      .tree-step-card {
+        background: rgba(248, 250, 252, 0.9);
         border: 1px solid rgba(226, 232, 240, 0.95);
         box-shadow: inset 0 1px 1px #FFFFFF, 0 2px 6px rgba(0, 0, 0, 0.02);
         backdrop-filter: blur(12px);
         -webkit-backdrop-filter: blur(12px);
         border-radius: 12px;
-        padding: 7px 3px;
+        padding: 6px 8px;
         display: flex;
-        flex-direction: column;
         align-items: center;
-        text-align: center;
-        gap: 2px;
-        position: relative;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        gap: 6px;
       }
 
-      [data-theme="dark"] .journey-step-capsule {
+      [data-theme="dark"] .tree-step-card {
         background: rgba(255, 255, 255, 0.05);
         border-color: rgba(255, 255, 255, 0.09);
         box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
       }
 
-      .journey-step-capsule-wide {
-        flex: 1;
-        background: rgba(248, 250, 252, 0.85);
-        border: 1px solid rgba(226, 232, 240, 0.95);
-        box-shadow: inset 0 1px 1px #FFFFFF, 0 2px 6px rgba(0, 0, 0, 0.02);
-        border-radius: 12px;
-        padding: 6px 10px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        text-align: left;
+      .tree-step-card.tree-step-card-tall {
+        height: 100%;
+        box-sizing: border-box;
       }
 
-      [data-theme="dark"] .journey-step-capsule-wide {
-        background: rgba(255, 255, 255, 0.05);
-        border-color: rgba(255, 255, 255, 0.09);
-        box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
-      }
-
-      /* Apple Convergence Divider Bar */
-      .journey-convergence-divider {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
-        margin: 1px 0;
-      }
-
-      .journey-divider-line {
-        flex: 1;
-        height: 1px;
-        background: linear-gradient(90deg, transparent, rgba(2, 132, 199, 0.35), transparent);
-      }
-
-      .journey-convergence-badge {
-        font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 8px;
-        font-weight: 900;
-        letter-spacing: 0.05em;
-        text-transform: uppercase;
-        color: #0284C7;
-        background: #E0F2FE;
-        border: 1px solid #BAE6FD;
-        padding: 2px 8px;
-        border-radius: 9999px;
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        box-shadow: 0 2px 6px rgba(2, 132, 199, 0.1);
-      }
-
-      [data-theme="dark"] .journey-convergence-badge {
-        color: #7DD3FC;
-        background: rgba(2, 132, 199, 0.2);
-        border-color: rgba(56, 189, 248, 0.35);
-      }
-
-      .journey-unified-section {
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-        background: rgba(240, 249, 255, 0.65);
-        border: 1px solid rgba(186, 230, 253, 0.8);
-        border-radius: 16px;
-        padding: 9px 8px;
-      }
-
-      [data-theme="dark"] .journey-unified-section {
-        background: rgba(2, 132, 199, 0.08);
-        border-color: rgba(56, 189, 248, 0.2);
-      }
-
-      .journey-unified-title {
-        font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 10px;
-        font-weight: 900;
-        color: #0369A1;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-        display: flex;
-        align-items: center;
-        gap: 4px;
-      }
-
-      [data-theme="dark"] .journey-unified-title {
-        color: #38BDF8;
-      }
-
-      /* Apple SF Micro-Icon Container with specularity */
-      .journey-step-icon-wrap {
+      .tree-step-icon-wrap {
         width: 26px;
         height: 26px;
         border-radius: 8px;
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-bottom: 1px;
-        position: relative;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04);
         flex-shrink: 0;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04);
       }
 
-      [data-theme="dark"] .journey-step-icon-wrap {
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+      .tree-step-content {
+        display: flex;
+        flex-direction: column;
+        line-height: 1.15;
+        min-width: 0;
+      }
+
+      .tree-step-num {
+        font-family: "Plus Jakarta Sans", monospace;
+        font-size: 7.5px;
+        font-weight: 900;
+        line-height: 1;
+      }
+
+      .tree-step-title {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 9.5px;
+        font-weight: 900;
+        color: #0F172A;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      [data-theme="dark"] .tree-step-title {
+        color: #FFFFFF;
+      }
+
+      .tree-step-sub {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 7.5px;
+        font-weight: 700;
+        color: #64748B;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      [data-theme="dark"] .tree-step-sub {
+        color: #94A3B8;
+      }
+
+      /* Micro Down Connectors */
+      .tree-micro-down-connector {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 10px;
+      }
+
+      .tree-micro-down-arrow {
+        font-size: 11px;
+        color: #0284C7;
+        font-weight: 900;
+        animation: appleMicroDown 1.8s ease-in-out infinite;
+      }
+
+      @keyframes appleMicroDown {
+        0%, 100% { transform: translateY(0); opacity: 0.5; }
+        50% { transform: translateY(2px); opacity: 1; }
+      }
+
+      /* Tree Convergence Divider with Branching Line */
+      .tree-convergence-ribbon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        margin: 2px 0;
+      }
+
+      .tree-convergence-badge {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 8.5px;
+        font-weight: 900;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: #0284C7;
+        background: #E0F2FE;
+        border: 1px solid #BAE6FD;
+        padding: 2.5px 10px;
+        border-radius: 9999px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        box-shadow: 0 2px 8px rgba(2, 132, 199, 0.12);
+        z-index: 2;
+      }
+
+      [data-theme="dark"] .tree-convergence-badge {
+        color: #7DD3FC;
+        background: rgba(2, 132, 199, 0.2);
+        border-color: rgba(56, 189, 248, 0.35);
+      }
+
+      .tree-convergence-line {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 50%;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(2, 132, 199, 0.35), transparent);
+        z-index: 1;
+      }
+
+      /* Vertical Tree Downward Trunk */
+      .tree-trunk-section {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        background: rgba(240, 249, 255, 0.65);
+        border: 1px solid rgba(186, 230, 253, 0.8);
+        border-radius: 16px;
+        padding: 8px 10px;
+      }
+
+      [data-theme="dark"] .tree-trunk-section {
+        background: rgba(2, 132, 199, 0.08);
+        border-color: rgba(56, 189, 248, 0.2);
+      }
+
+      .tree-trunk-row-card {
+        background: #FFFFFF;
+        border: 1px solid rgba(226, 232, 240, 0.95);
+        box-shadow: inset 0 1px 1px #FFFFFF, 0 2px 6px rgba(0, 0, 0, 0.02);
+        border-radius: 12px;
+        padding: 6px 10px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        transition: transform 0.2s ease;
+      }
+
+      [data-theme="dark"] .tree-trunk-row-card {
+        background: rgba(255, 255, 255, 0.06);
+        border-color: rgba(255, 255, 255, 0.1);
+        box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
+      }
+
+      .tree-trunk-left {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 0;
+      }
+
+      .tree-trunk-tag {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 8px;
+        font-weight: 900;
+        padding: 2px 7px;
+        border-radius: 6px;
+        letter-spacing: 0.03em;
+        white-space: nowrap;
+      }
+
+      .tag-loket {
+        background: #E0F2FE;
+        color: #0284C7;
+        border: 1px solid #BAE6FD;
+      }
+      [data-theme="dark"] .tag-loket {
+        background: rgba(2, 132, 199, 0.2);
+        color: #38BDF8;
+        border-color: rgba(56, 189, 248, 0.35);
+      }
+
+      .tag-tensi {
+        background: #FFE4E6;
+        color: #E11D48;
+        border: 1px solid #FDA4AF;
+      }
+      [data-theme="dark"] .tag-tensi {
+        background: rgba(225, 29, 72, 0.2);
+        color: #FB7185;
+        border-color: rgba(251, 113, 133, 0.35);
+      }
+
+      .tag-poli {
+        background: #EEF2FF;
+        color: #6366F1;
+        border: 1px solid #C7D2FE;
+      }
+      [data-theme="dark"] .tag-poli {
+        background: rgba(99, 102, 241, 0.2);
+        color: #818CF8;
+        border-color: rgba(129, 140, 248, 0.35);
+      }
+
+      /* Downward Trunk Animated Connectors */
+      .tree-trunk-down-connector {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 12px;
+      }
+
+      .tree-trunk-down-arrow {
+        font-size: 14px;
+        color: #0284C7;
+        font-weight: 900;
+        animation: appleTrunkDown 2s ease-in-out infinite;
+      }
+
+      [data-theme="dark"] .tree-trunk-down-arrow {
+        color: #38BDF8;
+      }
+
+      @keyframes appleTrunkDown {
+        0%, 100% { transform: translateY(0); opacity: 0.6; }
+        50% { transform: translateY(3px); opacity: 1; filter: drop-shadow(0 2px 4px rgba(2, 132, 199, 0.5)); }
       }
 
       .icon-online-1 {
@@ -2056,78 +2176,6 @@
       @keyframes appleTouchTap {
         0%, 100% { transform: scale(1) translateY(0); }
         50% { transform: scale(0.88) translateY(1.5px); }
-      }
-
-      .journey-step-num {
-        font-family: "Plus Jakarta Sans", monospace;
-        font-size: 7.5px;
-        font-weight: 900;
-        color: #0284C7;
-        line-height: 1;
-      }
-
-      [data-theme="dark"] .journey-step-num {
-        color: #38BDF8;
-      }
-
-      .journey-step-title {
-        font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 10px;
-        font-weight: 900;
-        color: #0F172A;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 100%;
-        line-height: 1.15;
-      }
-
-      [data-theme="dark"] .journey-step-title {
-        color: #FFFFFF;
-      }
-
-      .journey-step-sub {
-        font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 8px;
-        font-weight: 700;
-        color: #64748B;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 100%;
-        line-height: 1;
-      }
-
-      [data-theme="dark"] .journey-step-sub {
-        color: #94A3B8;
-      }
-
-      /* Apple Directional Flow Connector Line with Traveling Pulse */
-      .journey-connector {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 12px;
-        flex-shrink: 0;
-        position: relative;
-        overflow: visible;
-      }
-
-      .journey-connector-arrow {
-        font-size: 13px;
-        color: #94A3B8;
-        font-weight: 900;
-        line-height: 1;
-        animation: appleArrowTravel 2.5s ease-in-out infinite;
-      }
-
-      [data-theme="dark"] .journey-connector-arrow {
-        color: #64748B;
-      }
-
-      @keyframes appleArrowTravel {
-        0%, 100% { transform: translateX(0); opacity: 0.6; }
-        50% { transform: translateX(2px); opacity: 1; color: #0284C7; }
       }
 
       /* Force dark text in sidebar when in light mode, but adapt in dark mode */
@@ -5991,120 +6039,140 @@
                 </div>
               </div>
 
-              <!-- 🚶 APPLE tvOS PATIENT ADMISSION CONVERGING PIPELINE CARD -->
+              <!-- 🌳 APPLE tvOS PATIENT ADMISSION VERTICAL TREE FLOW COMPLICATION -->
               <div class="complication-card complication-journey-card">
                 <!-- 1. Header Bar -->
                 <div class="complication-header">
                   <div class="complication-title">
-                    <span class="material-icons-round" style="font-size:15px; color:#0284C7;">alt_route</span>
-                    <span>ALUR PELAYANAN PASIEN</span>
+                    <span class="material-icons-round" style="font-size:15px; color:#0284C7;">account_tree</span>
+                    <span>POHON ALUR PENDAFTARAN</span>
                   </div>
                   <span class="complication-tag tag-sky">PANDUAN LOBI ADMISI</span>
                 </div>
 
-                <!-- 2. Cabang 1: Jalur Online (MJKN / NUHA) -->
-                <div class="journey-track-section">
-                  <div class="journey-track-header">
-                    <span class="journey-track-title">
-                      <span class="material-icons-round" style="font-size:13px; color:#059669;">smartphone</span>
-                      <span>1. JALUR ONLINE (MJKN / NUHA)</span>
-                    </span>
-                    <span class="journey-track-badge badge-online-fast">LEBIH CEPAT ⚡</span>
-                  </div>
-                  <div class="journey-step-capsule-wide">
-                    <div class="journey-step-icon-wrap icon-online-1 anim-scan-pulse">
-                      <span class="material-icons-round" style="font-size:15px;">qr_code_scanner</span>
+                <!-- 2. Cabang Atas: 2 Jalur Masuk Pilihan (Grid 2 Kolom) -->
+                <div class="tree-branch-grid">
+                  <!-- Cabang Kiri: Online (MJKN / NUHA) -->
+                  <div class="tree-branch-column">
+                    <div class="tree-branch-header">
+                      <span class="tree-branch-title title-online">
+                        <span class="material-icons-round" style="font-size:12px;">smartphone</span>
+                        <span>JALUR ONLINE</span>
+                      </span>
+                      <span class="tree-branch-badge badge-online-fast">CEPAT ⚡</span>
                     </div>
-                    <div style="display:flex; flex-direction:column; line-height:1.2;">
-                      <span class="journey-step-title" style="color:#059669;">01. BUKTI QR / TIKET ONLINE</span>
-                      <span class="journey-step-sub">Buka kode booking di Aplikasi Mobile JKN / NUHA</span>
+                    <div class="tree-step-card tree-step-card-tall">
+                      <div class="tree-step-icon-wrap icon-online-1 anim-scan-pulse">
+                        <span class="material-icons-round" style="font-size:15px;">qr_code_scanner</span>
+                      </div>
+                      <div class="tree-step-content">
+                        <span class="tree-step-num" style="color:#059669;">LANGKAH 01</span>
+                        <span class="tree-step-title">BUKTI QR TIKET</span>
+                        <span class="tree-step-sub">Aplikasi MJKN / NUHA</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Cabang Kanan: Reguler (Kios Lobi) -->
+                  <div class="tree-branch-column">
+                    <div class="tree-branch-header">
+                      <span class="tree-branch-title title-reguler">
+                        <span class="material-icons-round" style="font-size:12px;">confirmation_number</span>
+                        <span>JALUR REGULER</span>
+                      </span>
+                      <span class="tree-branch-badge badge-reguler-lobby">KIOS LOBI</span>
+                    </div>
+                    <div class="tree-step-card">
+                      <div class="tree-step-icon-wrap icon-reg-1 anim-touch-tap">
+                        <span class="material-icons-round" style="font-size:14px;">touch_app</span>
+                      </div>
+                      <div class="tree-step-content">
+                        <span class="tree-step-num" style="color:#D97706;">01. ANTREAN</span>
+                        <span class="tree-step-title">AMBIL TIKET</span>
+                        <span class="tree-step-sub">Kios Mandiri</span>
+                      </div>
+                    </div>
+                    <div class="tree-micro-down-connector">
+                      <span class="material-icons-round tree-micro-down-arrow">arrow_downward</span>
+                    </div>
+                    <div class="tree-step-card">
+                      <div class="tree-step-icon-wrap icon-reg-2">
+                        <span class="material-icons-round" style="font-size:14px;">badge</span>
+                      </div>
+                      <div class="tree-step-content">
+                        <span class="tree-step-num" style="color:#0284C7;">02. BERKAS</span>
+                        <span class="tree-step-title">KTP & BPJS</span>
+                        <span class="tree-step-sub">Siapkan Dokumen</span>
+                      </div>
                     </div>
                   </div>
                 </div>
 
-                <!-- 3. Cabang 2: Jalur Reguler (Kios Lobi) -->
-                <div class="journey-track-section">
-                  <div class="journey-track-header">
-                    <span class="journey-track-title">
-                      <span class="material-icons-round" style="font-size:13px; color:#0284C7;">confirmation_number</span>
-                      <span>2. JALUR REGULER (LANGSUNG)</span>
-                    </span>
-                    <span class="journey-track-badge badge-reguler-lobby">KIOS LOBI</span>
-                  </div>
-                  <div class="journey-flow-row">
-                    <div class="journey-step-capsule">
-                      <div class="journey-step-icon-wrap icon-reg-1 anim-touch-tap">
-                        <span class="material-icons-round" style="font-size:15px;">touch_app</span>
-                      </div>
-                      <span class="journey-step-num">01</span>
-                      <span class="journey-step-title">AMBIL ANTREAN</span>
-                      <span class="journey-step-sub">Kios Mandiri</span>
-                    </div>
-                    <div class="journey-connector">
-                      <span class="material-icons-round journey-connector-arrow">chevron_right</span>
-                    </div>
-                    <div class="journey-step-capsule">
-                      <div class="journey-step-icon-wrap icon-reg-2">
-                        <span class="material-icons-round" style="font-size:15px;">badge</span>
-                      </div>
-                      <span class="journey-step-num">02</span>
-                      <span class="journey-step-title">SIAPKAN BERKAS</span>
-                      <span class="journey-step-sub">KTP & BPJS</span>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- 4. Convergence Divider Bar (Titik Temu) -->
-                <div class="journey-convergence-divider">
-                  <div class="journey-divider-line"></div>
-                  <div class="journey-convergence-badge">
-                    <span class="material-icons-round" style="font-size:12px;">merge_type</span>
+                <!-- 3. Convergence Ribbon (Titik Temu Kedua Jalur) -->
+                <div class="tree-convergence-ribbon">
+                  <div class="tree-convergence-line"></div>
+                  <div class="tree-convergence-badge">
+                    <span class="material-icons-round" style="font-size:12px;">call_merge</span>
                     <span>TITIK TEMU PELAYANAN</span>
                     <span class="material-icons-round" style="font-size:12px;">arrow_downward</span>
                   </div>
-                  <div class="journey-divider-line"></div>
                 </div>
 
-                <!-- 5. Unified Shared Pipeline (Proses Pelayanan Terpadu) -->
-                <div class="journey-unified-section">
-                  <div class="journey-unified-title">
-                    <span class="material-icons-round" style="font-size:12px; color:#0284C7;">verified</span>
-                    <span>PROSES PELAYANAN TERPADU</span>
-                  </div>
-                  <div class="journey-flow-row">
-                    <!-- Step 1: Registrasi -->
-                    <div class="journey-step-capsule" style="background:#FFFFFF;">
-                      <div class="journey-step-icon-wrap icon-unified-1">
+                <!-- 4. Batang Pohon Utama Menuju ke Bawah (3 Tahap Pelayanan Terpadu) -->
+                <div class="tree-trunk-section">
+                  <!-- Tahap 1: Registrasi Loket -->
+                  <div class="tree-trunk-row-card">
+                    <div class="tree-trunk-left">
+                      <div class="tree-step-icon-wrap icon-unified-1">
                         <span class="material-icons-round" style="font-size:15px;">how_to_reg</span>
                       </div>
-                      <span class="journey-step-num">TAHAP 1</span>
-                      <span class="journey-step-title">REGISTRASI</span>
-                      <span class="journey-step-sub">Loket Pendaftaran</span>
+                      <div class="tree-step-content">
+                        <span class="tree-step-num" style="color:#0284C7;">TAHAP 01</span>
+                        <span class="tree-step-title">REGISTRASI DI LOKET</span>
+                        <span class="tree-step-sub">Validasi berkas & cetak dokumen SEP</span>
+                      </div>
                     </div>
-                    <div class="journey-connector">
-                      <span class="material-icons-round journey-connector-arrow">chevron_right</span>
-                    </div>
-                    <!-- Step 2: Nurse Station -->
-                    <div class="journey-step-capsule" style="background:#FFFFFF;">
-                      <div class="journey-step-icon-wrap icon-unified-2 anim-heartbeat">
+                    <span class="tree-trunk-tag tag-loket">LOKET ADMISI</span>
+                  </div>
+
+                  <!-- Panah ke Bawah -->
+                  <div class="tree-trunk-down-connector">
+                    <span class="material-icons-round tree-trunk-down-arrow">south</span>
+                  </div>
+
+                  <!-- Tahap 2: Nurse Station -->
+                  <div class="tree-trunk-row-card">
+                    <div class="tree-trunk-left">
+                      <div class="tree-step-icon-wrap icon-unified-2 anim-heartbeat">
                         <span class="material-icons-round" style="font-size:15px;">monitor_heart</span>
                       </div>
-                      <span class="journey-step-num">TAHAP 2</span>
-                      <span class="journey-step-title">NURSE STATION</span>
-                      <span class="journey-step-sub">Pemeriksaan Tensi</span>
+                      <div class="tree-step-content">
+                        <span class="tree-step-num" style="color:#E11D48;">TAHAP 02</span>
+                        <span class="tree-step-title">NURSE STATION (TENSI)</span>
+                        <span class="tree-step-sub">Pemeriksaan tensi & tanda-tanda vital</span>
+                      </div>
                     </div>
-                    <div class="journey-connector">
-                      <span class="material-icons-round journey-connector-arrow">chevron_right</span>
-                    </div>
-                    <!-- Step 3: Ruang Poli -->
-                    <div class="journey-step-capsule" style="background:#FFFFFF;">
-                      <div class="journey-step-icon-wrap icon-unified-3 anim-float-subtle">
+                    <span class="tree-trunk-tag tag-tensi">CEK FISIK</span>
+                  </div>
+
+                  <!-- Panah ke Bawah -->
+                  <div class="tree-trunk-down-connector">
+                    <span class="material-icons-round tree-trunk-down-arrow">south</span>
+                  </div>
+
+                  <!-- Tahap 3: Ruang Poli Dokter -->
+                  <div class="tree-trunk-row-card">
+                    <div class="tree-trunk-left">
+                      <div class="tree-step-icon-wrap icon-unified-3 anim-float-subtle">
                         <span class="material-icons-round" style="font-size:15px;">stethoscope</span>
                       </div>
-                      <span class="journey-step-num">TAHAP 3</span>
-                      <span class="journey-step-title">RUANG POLI</span>
-                      <span class="journey-step-sub">Pemeriksaan Dokter</span>
+                      <div class="tree-step-content">
+                        <span class="tree-step-num" style="color:#6366F1;">TAHAP 03</span>
+                        <span class="tree-step-title">RUANG POLIKLINIK DOKTER</span>
+                        <span class="tree-step-sub">Pemeriksaan dokter spesialis & resep</span>
+                      </div>
                     </div>
+                    <span class="tree-trunk-tag tag-poli">DOKTER</span>
                   </div>
                 </div>
               </div>
