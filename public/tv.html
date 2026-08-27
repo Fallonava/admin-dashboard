@@ -972,31 +972,165 @@
         border-color: rgba(56, 189, 248, 0.4) !important;
       }
 
-      .weather-theme-day-cloudy {
-        background: linear-gradient(145deg, #F8FAFC 0%, #EDF2F7 50%, #E2E8F0 100%) !important;
-        border-color: #CBD5E1 !important;
+      /* ===== 🌅 DIURNAL DYNAMIC ATMOSPHERIC SOLAR THEMES (PAGI, SIANG, SORE, MALAM, RAINY) ===== */
+      .weather-theme-pagi {
+        background: linear-gradient(155deg, #FFF7ED 0%, #FFEDD5 45%, #F0F9FF 100%) !important;
+        border-color: #FED7AA !important;
+        box-shadow: 0 14px 34px -4px rgba(249, 115, 22, 0.12), inset 0 1.5px 1.5px #FFFFFF !important;
       }
-      [data-theme="dark"] .weather-theme-day-cloudy {
-        background: linear-gradient(145deg, #1E293B 0%, #0F172A 100%) !important;
-        border-color: rgba(255, 255, 255, 0.12) !important;
+      [data-theme="dark"] .weather-theme-pagi {
+        background: linear-gradient(155deg, #1C1017 0%, #2A1728 50%, #0F172A 100%) !important;
+        border-color: rgba(251, 146, 60, 0.25) !important;
+        box-shadow: 0 14px 36px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.1) !important;
       }
 
-      .weather-theme-night-clear, .weather-theme-night-cloudy {
-        background: linear-gradient(145deg, #F8FAFC 0%, #EEF2F6 100%) !important;
-        border-color: #E2E8F0 !important;
+      .weather-theme-siang {
+        background: linear-gradient(155deg, #F0F9FF 0%, #E0F2FE 50%, #BAE6FD 100%) !important;
+        border-color: #BAE6FD !important;
+        box-shadow: 0 14px 34px -4px rgba(2, 132, 199, 0.12), inset 0 1.5px 1.5px #FFFFFF !important;
       }
-      [data-theme="dark"] .weather-theme-night-clear, [data-theme="dark"] .weather-theme-night-cloudy {
-        background: linear-gradient(145deg, #090D16 0%, #111827 50%, #1E1B4B 100%) !important;
-        border-color: rgba(99, 102, 241, 0.35) !important;
+      [data-theme="dark"] .weather-theme-siang {
+        background: linear-gradient(155deg, #081B2E 0%, #0C2B47 50%, #0F172A 100%) !important;
+        border-color: rgba(56, 189, 248, 0.25) !important;
+        box-shadow: 0 14px 36px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.1) !important;
+      }
+
+      .weather-theme-sore {
+        background: linear-gradient(155deg, #FFF1F2 0%, #FFE4E6 40%, #FEF3C7 100%) !important;
+        border-color: #FECDD3 !important;
+        box-shadow: 0 14px 34px -4px rgba(244, 63, 94, 0.12), inset 0 1.5px 1.5px #FFFFFF !important;
+      }
+      [data-theme="dark"] .weather-theme-sore {
+        background: linear-gradient(155deg, #240C1A 0%, #361426 50%, #17112E 100%) !important;
+        border-color: rgba(244, 63, 94, 0.25) !important;
+        box-shadow: 0 14px 36px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.1) !important;
+      }
+
+      .weather-theme-malam {
+        background: linear-gradient(155deg, #F8FAFC 0%, #F1F5F9 50%, #E2E8F0 100%) !important;
+        border-color: #E2E8F0 !important;
+        box-shadow: 0 14px 34px -4px rgba(71, 85, 105, 0.08), inset 0 1.5px 1.5px #FFFFFF !important;
+      }
+      [data-theme="dark"] .weather-theme-malam {
+        background: linear-gradient(155deg, #090D16 0%, #0E1626 50%, #080C14 100%) !important;
+        border-color: rgba(99, 102, 241, 0.22) !important;
+        box-shadow: 0 14px 36px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.1) !important;
       }
 
       .weather-theme-rainy {
-        background: linear-gradient(145deg, #F0FDFA 0%, #CCFBF1 100%) !important;
+        background: linear-gradient(155deg, #F0FDFA 0%, #CCFBF1 50%, #E0F2FE 100%) !important;
         border-color: #99F6E4 !important;
       }
       [data-theme="dark"] .weather-theme-rainy {
-        background: linear-gradient(145deg, #042F2E 0%, #134E4A 50%, #0F172A 100%) !important;
-        border-color: rgba(45, 212, 191, 0.35) !important;
+        background: linear-gradient(155deg, #042F2E 0%, #134E4A 50%, #0F172A 100%) !important;
+        border-color: rgba(45, 212, 191, 0.3) !important;
+      }
+
+      /* Apple Solar Arc Tracker */
+      .weather-solar-tracker {
+        background: rgba(241, 245, 249, 0.75);
+        border: 1px solid rgba(226, 232, 240, 0.9);
+        border-radius: 14px;
+        padding: 7px 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+      }
+
+      [data-theme="dark"] .weather-solar-tracker {
+        background: rgba(0, 0, 0, 0.3);
+        border-color: rgba(255, 255, 255, 0.08);
+      }
+
+      .solar-tracker-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .solar-tracker-label {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 9.5px;
+        font-weight: 800;
+        color: #64748B;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      [data-theme="dark"] .solar-tracker-label {
+        color: #94A3B8;
+      }
+
+      .solar-tracker-status {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 10px;
+        font-weight: 800;
+        color: #0284C7;
+      }
+
+      [data-theme="dark"] .solar-tracker-status {
+        color: #38BDF8;
+      }
+
+      .solar-tracker-track {
+        width: 100%;
+        height: 5px;
+        background: rgba(203, 213, 225, 0.6);
+        border-radius: 9999px;
+        position: relative;
+        overflow: visible;
+        margin: 2px 0;
+      }
+
+      [data-theme="dark"] .solar-tracker-track {
+        background: rgba(255, 255, 255, 0.12);
+      }
+
+      .solar-tracker-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #F59E0B 0%, #F97316 50%, #0284C7 100%);
+        border-radius: 9999px;
+        transition: width 0.8s ease;
+      }
+
+      .solar-tracker-orb {
+        width: 11px;
+        height: 11px;
+        border-radius: 50%;
+        background: #F59E0B;
+        border: 2px solid #FFFFFF;
+        box-shadow: 0 0 8px rgba(245, 158, 11, 0.8);
+        position: absolute;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        transition: left 0.8s ease;
+        animation: appleSolarOrbGlow 2s ease-in-out infinite alternate;
+      }
+
+      [data-theme="dark"] .solar-tracker-orb {
+        border-color: #1E293B;
+      }
+
+      @keyframes appleSolarOrbGlow {
+        0% { transform: translate(-50%, -50%) scale(0.9); box-shadow: 0 0 5px rgba(245, 158, 11, 0.6); }
+        100% { transform: translate(-50%, -50%) scale(1.2); box-shadow: 0 0 12px rgba(249, 115, 22, 1); }
+      }
+
+      .solar-tracker-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 8.5px;
+        font-weight: 700;
+        color: #64748B;
+      }
+
+      [data-theme="dark"] .solar-tracker-footer {
+        color: #94A3B8;
       }
 
       /* ===== 🍎 ENTERPRISE APPLE WEATHER SF SVG ICONS ===== */
@@ -5134,34 +5268,52 @@
 
         getWeatherMeta(code, isDay, precip = 0) {
           let condition = "Cerah Berawan";
-          let theme = isDay ? "day-cloudy" : "night-cloudy";
           let iconType = isDay ? "partly-cloudy-day" : "partly-cloudy-night";
+
+          // Calculate current Jakarta hour to determine dynamic diurnal theme
+          let jkHour = 12;
+          try {
+            const parts = new Intl.DateTimeFormat("en-GB", {
+              timeZone: "Asia/Jakarta",
+              hour: "2-digit",
+              hour12: false
+            }).formatToParts(new Date());
+            jkHour = parseInt(parts.find(p => p.type === "hour")?.value, 10) || 12;
+          } catch(e) {
+            jkHour = new Date().getHours();
+          }
+
+          let theme = "siang";
+          if (code === 63 || code === 65 || code === 81 || code === 82 || code >= 95) {
+            theme = "rainy";
+          } else if (jkHour >= 5 && jkHour < 10) {
+            theme = "pagi";
+          } else if (jkHour >= 10 && jkHour < 15) {
+            theme = "siang";
+          } else if (jkHour >= 15 && jkHour < 18.5) {
+            theme = "sore";
+          } else {
+            theme = "malam";
+          }
 
           if (code === 0) {
             condition = isDay ? "Cerah Terang" : "Cerah Berbintang";
-            theme = isDay ? "day-sunny" : "night-clear";
             iconType = isDay ? "sun" : "moon";
           } else if (code === 1) {
             condition = "Cerah Berawan";
-            theme = isDay ? "day-sunny" : "night-clear";
             iconType = isDay ? "mostly-sunny" : "mostly-moon";
           } else if (code === 2) {
             condition = "Sebagian Berawan";
-            theme = isDay ? "day-cloudy" : "night-cloudy";
             iconType = isDay ? "partly-cloudy-day" : "partly-cloudy-night";
           } else if (code === 3) {
             condition = "Mendung";
-            theme = "day-cloudy";
             iconType = "cloudy";
           } else if (code === 45 || code === 48) {
             condition = "Udara Berkabut";
-            theme = "day-cloudy";
             iconType = "fog";
           } else if (code >= 51 && code <= 57) {
-            // Gerimis/Embun: Jika probabilitas hujan rendah (<25%), kondisi riil adalah Pagi Berembun / Berawan Tipis
             if (precip < 25) {
               condition = isDay ? "Cerah Berawan" : "Berawan Tipis";
-              theme = isDay ? "day-cloudy" : "night-cloudy";
               iconType = isDay ? "partly-cloudy-day" : "partly-cloudy-night";
             } else {
               condition = "Gerimis";
@@ -5187,6 +5339,49 @@
           return { condition, theme, iconType, heroIconSVG, miniIconSVG };
         },
 
+        getSolarInfo(sunriseStr = "05:45", sunsetStr = "17:42") {
+          let jkHour = 12;
+          let jkMin = 0;
+          try {
+            const parts = new Intl.DateTimeFormat("en-GB", {
+              timeZone: "Asia/Jakarta",
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: false
+            }).formatToParts(new Date());
+            jkHour = parseInt(parts.find(p => p.type === "hour")?.value, 10) || 12;
+            jkMin = parseInt(parts.find(p => p.type === "minute")?.value, 10) || 0;
+          } catch(e) {
+            const now = new Date();
+            jkHour = now.getHours();
+            jkMin = now.getMinutes();
+          }
+
+          const [srH, srM] = sunriseStr.replace(" WIB", "").split(":").map(Number);
+          const [ssH, ssM] = sunsetStr.replace(" WIB", "").split(":").map(Number);
+          const srTotal = (srH || 5) * 60 + (srM || 45);
+          const ssTotal = (ssH || 17) * 60 + (ssM || 42);
+          const curTotal = jkHour * 60 + jkMin;
+          
+          let percent = 0;
+          let isDay = false;
+          let statusText = "";
+          
+          if (curTotal >= srTotal && curTotal <= ssTotal) {
+            isDay = true;
+            percent = Math.min(100, Math.max(0, ((curTotal - srTotal) / (ssTotal - srTotal)) * 100));
+            const remainMin = ssTotal - curTotal;
+            const remH = Math.floor(remainMin / 60);
+            const remM = remainMin % 60;
+            statusText = `Terbenam dalam ${remH > 0 ? remH + "j " : ""}${remM}m`;
+          } else {
+            isDay = false;
+            percent = curTotal > ssTotal ? 100 : 0;
+            statusText = "Malam Hari • Terbit 05:45";
+          }
+          return { percent: percent.toFixed(1), isDay, statusText };
+        },
+
         // Apple tvOS Weather Complication (Purbalingga, Central Java)
         _weatherCache: {
           temp: 29,
@@ -5206,7 +5401,7 @@
           code: 2,
           condition: "Sebagian Berawan",
           iconHTML: "",
-          atmosphereTheme: "day-cloudy",
+          atmosphereTheme: "siang",
           hourly: [],
           lastFetched: 0
         },
@@ -5338,6 +5533,13 @@
           if ($("tvWeatherWind")) $("tvWeatherWind").textContent = `${w.windSpeed} km/j`;
           if ($("tvWeatherRange")) $("tvWeatherRange").textContent = `H:${w.tempMax}° • L:${w.tempMin}°`;
 
+          const sInfo = this.getSolarInfo(w.sunrise, w.sunset);
+          if ($("tvWeatherSolarStatus")) $("tvWeatherSolarStatus").textContent = sInfo.statusText;
+          if ($("tvWeatherSolarFill")) $("tvWeatherSolarFill").style.width = `${sInfo.percent}%`;
+          if ($("tvWeatherSolarOrb")) $("tvWeatherSolarOrb").style.left = `${sInfo.percent}%`;
+          if ($("tvWeatherSolarSunrise")) $("tvWeatherSolarSunrise").textContent = `🌅 Terbit: ${w.sunrise}`;
+          if ($("tvWeatherSolarSunset")) $("tvWeatherSolarSunset").textContent = `🌇 Terbenam: ${w.sunset}`;
+
           if ($("tvWeatherUVVal")) $("tvWeatherUVVal").textContent = `${w.uvIndex} ${w.uvLabel}`;
           if ($("tvWeatherUVSub")) $("tvWeatherUVSub").textContent = `Maks: ${w.uvMax} hari ini`;
           if ($("tvWeatherSunsetVal")) $("tvWeatherSunsetVal").textContent = w.sunset;
@@ -5391,6 +5593,7 @@
 
         buildSidebarComplicationsHTML() {
           const w = this._weatherCache;
+          const sInfo = this.getSolarInfo(w.sunrise, w.sunset);
 
           const hourlyList = (w.hourly && w.hourly.length > 0) ? w.hourly : this.getInitialHourly();
           const hourlyPillsHTML = hourlyList.map((h, idx) => {
@@ -5451,7 +5654,26 @@
                   </div>
                 </div>
 
-                <!-- 4. Atmospheric Environmental Matrix Grid (4 High-Contrast Glass Tiles) -->
+                <!-- 4. Apple Solar Arc Tracker -->
+                <div class="weather-solar-tracker">
+                  <div class="solar-tracker-header">
+                    <span class="solar-tracker-label">
+                      <span class="material-icons-round" style="font-size:13px; color:#F59E0B;">wb_twilight</span>
+                      <span>POSISI SURYA REALTIME</span>
+                    </span>
+                    <span class="solar-tracker-status" id="tvWeatherSolarStatus">${sInfo.statusText}</span>
+                  </div>
+                  <div class="solar-tracker-track">
+                    <div class="solar-tracker-fill" id="tvWeatherSolarFill" style="width: ${sInfo.percent}%;"></div>
+                    <div class="solar-tracker-orb" id="tvWeatherSolarOrb" style="left: ${sInfo.percent}%;"></div>
+                  </div>
+                  <div class="solar-tracker-footer">
+                    <span id="tvWeatherSolarSunrise">🌅 Terbit: ${w.sunrise}</span>
+                    <span id="tvWeatherSolarSunset">🌇 Terbenam: ${w.sunset}</span>
+                  </div>
+                </div>
+
+                <!-- 5. Atmospheric Environmental Matrix Grid (4 High-Contrast Glass Tiles) -->
                 <div class="weather-master-section">
                   <div class="weather-section-label">
                     <span class="material-icons-round" style="font-size:13px; color:#0284C7;">speed</span>
