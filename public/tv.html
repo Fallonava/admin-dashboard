@@ -3356,6 +3356,176 @@
         background: rgba(255, 255, 255, 0.08);
       }
 
+      /* ===== 📌 APPLE PINNED COMPACT SPECIAL STATUS SHELF ===== */
+      .island-pinned-shelf {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        padding: 4px 14px 8px 14px;
+        border-bottom: 1px solid rgba(60, 60, 67, 0.08);
+        margin-bottom: 2px;
+        flex-shrink: 0;
+        z-index: 5;
+      }
+
+      [data-theme="dark"] .island-pinned-shelf {
+        border-bottom-color: rgba(255, 255, 255, 0.08);
+      }
+
+      .pinned-compact-card {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid rgba(60, 60, 67, 0.12);
+        border-radius: 14px;
+        padding: 6px 12px;
+        box-sizing: border-box;
+        box-shadow: 0 2px 8px -2px rgba(0, 0, 0, 0.05);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        transition: all 0.3s ease;
+      }
+
+      [data-theme="dark"] .pinned-compact-card {
+        background: rgba(44, 44, 46, 0.9);
+        border-color: rgba(255, 255, 255, 0.1);
+        box-shadow: 0 2px 8px -2px rgba(0, 0, 0, 0.25);
+      }
+
+      .pinned-card-cuti {
+        border-left: 3.5px solid #EF4444 !important;
+        background: linear-gradient(90deg, rgba(239, 68, 68, 0.08) 0%, rgba(255, 255, 255, 0.92) 40%);
+      }
+      [data-theme="dark"] .pinned-card-cuti {
+        background: linear-gradient(90deg, rgba(239, 68, 68, 0.14) 0%, rgba(44, 44, 46, 0.92) 40%);
+      }
+
+      .pinned-card-operasi {
+        border-left: 3.5px solid #A855F7 !important;
+        background: linear-gradient(90deg, rgba(168, 85, 247, 0.08) 0%, rgba(255, 255, 255, 0.92) 40%);
+      }
+      [data-theme="dark"] .pinned-card-operasi {
+        background: linear-gradient(90deg, rgba(168, 85, 247, 0.14) 0%, rgba(44, 44, 46, 0.92) 40%);
+      }
+
+      .pinned-card-penuh {
+        border-left: 3.5px solid #F59E0B !important;
+        background: linear-gradient(90deg, rgba(245, 158, 11, 0.08) 0%, rgba(255, 255, 255, 0.92) 40%);
+      }
+      [data-theme="dark"] .pinned-card-penuh {
+        background: linear-gradient(90deg, rgba(245, 158, 11, 0.14) 0%, rgba(44, 44, 46, 0.92) 40%);
+      }
+
+      .pinned-left-group {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 0;
+        flex: 1;
+      }
+
+      .pinned-icon-pill {
+        width: 26px;
+        height: 26px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .pinned-icon-cuti {
+        background: rgba(239, 68, 68, 0.15);
+        color: #EF4444;
+      }
+      .pinned-icon-operasi {
+        background: rgba(168, 85, 247, 0.15);
+        color: #A855F7;
+      }
+      .pinned-icon-penuh {
+        background: rgba(245, 158, 11, 0.15);
+        color: #F59E0B;
+      }
+
+      .pinned-doc-info {
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+        min-width: 0;
+      }
+
+      .pinned-doc-name {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 11.5px;
+        font-weight: 800;
+        color: #0F172A;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      [data-theme="dark"] .pinned-doc-name {
+        color: #F8FAFC;
+      }
+
+      .pinned-poli-tag {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 8.5px;
+        font-weight: 700;
+        color: #64748B;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      [data-theme="dark"] .pinned-poli-tag {
+        color: #94A3B8;
+      }
+
+      .pinned-status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 8.5px;
+        font-weight: 800;
+        padding: 3px 8px;
+        border-radius: 9999px;
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+      .pinned-badge-cuti {
+        background: #FEF2F2;
+        color: #DC2626;
+        border: 1px solid #FECACA;
+      }
+      [data-theme="dark"] .pinned-badge-cuti {
+        background: rgba(239, 68, 68, 0.2);
+        color: #F87171;
+        border-color: rgba(239, 68, 68, 0.35);
+      }
+
+      .pinned-badge-operasi {
+        background: #FAF5FF;
+        color: #9333EA;
+        border: 1px solid #E9D5FF;
+      }
+      [data-theme="dark"] .pinned-badge-operasi {
+        background: rgba(168, 85, 247, 0.2);
+        color: #C084FC;
+        border-color: rgba(168, 85, 247, 0.35);
+      }
+
+      .pinned-badge-penuh {
+        background: #FFFBEB;
+        color: #D97706;
+        border: 1px solid #FDE68A;
+      }
+      [data-theme="dark"] .pinned-badge-penuh {
+        background: rgba(245, 158, 11, 0.2);
+        color: #FCD34D;
+        border-color: rgba(245, 158, 11, 0.35);
+      }
+
       /* visionOS Smooth Scroll Mask with Top/Bottom Gradient Fade */
       .scroll-mask {
         flex: 1 1 0%;
@@ -6286,6 +6456,8 @@
               <div class="island-progress-bar" id="progressBedah"></div>
             </div>
           </div>
+          <!-- 📌 APPLE PINNED SPECIAL STATUS SHELF (LOCKED) -->
+          <div class="island-pinned-shelf" id="pinnedShelfBedah" style="display: none;"></div>
           <div class="scroll-mask" id="maskBedah">
             <div class="scroller" id="scrollBedah"></div>
           </div>
@@ -6311,6 +6483,8 @@
               <div class="island-progress-bar" id="progressNonBedah"></div>
             </div>
           </div>
+          <!-- 📌 APPLE PINNED SPECIAL STATUS SHELF (LOCKED) -->
+          <div class="island-pinned-shelf" id="pinnedShelfNonBedah" style="display: none;"></div>
           <div class="scroll-mask" id="maskNonBedah">
             <div class="scroller" id="scrollNonBedah"></div>
           </div>
@@ -8559,10 +8733,69 @@
             return false; // No scroll reset needed
           };
 
+          // Helper: Render Apple Pinned Special Status Shelf (Locked from auto-scroll)
+          const renderPinnedShelf = (shelfId, list) => {
+            const shelf = $(shelfId);
+            if (!shelf) return;
+            if (!list || list.length === 0) {
+              shelf.style.display = "none";
+              shelf.innerHTML = "";
+              return;
+            }
+            shelf.style.display = "flex";
+            shelf.innerHTML = list.map((d) => {
+              const st = (d.Status || "").toUpperCase();
+              let type = "cuti",
+                badge = "SEDANG CUTI",
+                icon = "event_busy",
+                info = d.NextBuka
+                  ? `Kembali: ${d.NextBuka}`
+                  : (d.CutiSampai ? `Cuti s/d ${d.CutiSampai}` : "Sedang Cuti");
+              if (st.includes("OPERASI")) {
+                type = "operasi";
+                badge = "OPERASI";
+                icon = "emergency";
+                info = d.JamPraktek
+                  ? `Mulai: ${(d.JamPraktek.split("-")[0] || "").trim()} WIB`
+                  : "Tindakan Medis";
+              } else if (st.includes("PENUH")) {
+                type = "penuh";
+                badge = "KUOTA PENUH";
+                icon = "groups";
+                info = "Pendaftaran Penuh";
+              }
+              return `
+                <div class="pinned-compact-card pinned-card-${type}">
+                  <div class="pinned-left-group">
+                    <div class="pinned-icon-pill pinned-icon-${type}">
+                      <span class="material-icons-round" style="font-size: 14px;">${icon}</span>
+                    </div>
+                    <div class="pinned-doc-info">
+                      <span class="pinned-doc-name">${esc(d.Dokter)}</span>
+                      <span class="pinned-poli-tag">${esc(d.Poli || d.SubPoli || d.Spesialis || "Spesialis")}</span>
+                    </div>
+                  </div>
+                  <div class="pinned-status-badge pinned-badge-${type}">
+                    <span class="sk-pill-dot dot-${type}"></span>
+                    <span>${badge}</span>
+                    <span style="opacity: 0.5; font-size: 8px; margin: 0 1px;">•</span>
+                    <span>${info}</span>
+                  </div>
+                </div>
+              `;
+            }).join("");
+          };
+
+          const bedahSpecial = sidebarData.filter((d) => d.Jenis === "Bedah");
+          const nonBedahSpecial = sidebarData.filter((d) => d.Jenis !== "Bedah");
+
+          renderPinnedShelf("pinnedShelfBedah", bedahSpecial);
+          renderPinnedShelf("pinnedShelfNonBedah", nonBedahSpecial);
+
           const changed1 = updateList("scrollBedah", group.Bedah);
           const changed2 = updateList("scrollNonBedah", group.NonBedah);
 
-          // --- SIDEBAR: Grouped Render (OPERASI + PENUH + CUTI terpisah) ---
+          // --- SIDEBAR: Grouped Render & Smart Stack ---
           const changed3 = this._renderSidebar(
             group.SidebarOperasi,
             group.SidebarPenuh,
@@ -8570,10 +8803,8 @@
             updateList,
           );
 
-          if ($("countBedah")) $("countBedah").textContent = group.Bedah.length;
-          if ($("countNonBedah")) $("countNonBedah").textContent = group.NonBedah.length;
-          if ($("countSidebar")) $("countSidebar").textContent =
-            group.SidebarPenuh.length + group.SidebarCuti.length;
+          if ($("countBedah")) $("countBedah").textContent = group.Bedah.length + bedahSpecial.length;
+          if ($("countNonBedah")) $("countNonBedah").textContent = group.NonBedah.length + nonBedahSpecial.length;
 
           // Only reset scroller if list structure changed (avoid jumpiness on simple updates)
           if (!isMobile) {
