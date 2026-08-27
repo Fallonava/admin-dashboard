@@ -389,6 +389,29 @@
         margin-top: 3px;
       }
 
+      /* Dark Mode Header Overrides */
+      [data-theme="dark"] .logo-box {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.15);
+      }
+
+      [data-theme="dark"] .title-group h1 {
+        color: #FFFFFF;
+      }
+
+      [data-theme="dark"] .title-group span {
+        color: #94A3B8;
+      }
+
+      [data-theme="dark"] .clock {
+        color: #FFFFFF;
+      }
+
+      [data-theme="dark"] .date {
+        color: #94A3B8;
+      }
+
       /* ===== CONTENT GRID ===== */
       .content {
         flex: 1;
@@ -424,6 +447,13 @@
         z-index: 10;
         box-shadow: var(--clay-shadow-outer), var(--clay-shadow-inner);
         border: 1px solid var(--clay-border);
+      }
+
+      [data-theme="dark"] .island,
+      [data-theme="dark"] .sidebar-panel {
+        background: #0B101B;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 16px 40px -4px rgba(0, 0, 0, 0.75), inset 0 1px 1px rgba(255, 255, 255, 0.08);
       }
 
       /* ===== visionOS & tvOS 18 PRIMARY SIDEBAR HEADER — Status Khusus ===== */
@@ -703,6 +733,17 @@
         border-radius: 50%;
         background: #059669;
         animation: radarPulse 1.4s infinite;
+      }
+
+      [data-theme="dark"] .wallet-pass-badge {
+        background: rgba(16, 185, 129, 0.2);
+        color: #34D399;
+        border: 1px solid rgba(52, 211, 153, 0.4);
+      }
+
+      [data-theme="dark"] .wallet-pass-badge .radar-dot {
+        background: #34D399;
+        box-shadow: 0 0 8px rgba(52, 211, 153, 0.6);
       }
 
       .wallet-pass-hint {
@@ -1060,6 +1101,24 @@
         background: #FFFBEB;
         color: #D97706;
         border: 1px solid #FDE68A;
+      }
+
+      [data-theme="dark"] .tag-emerald {
+        background: rgba(16, 185, 129, 0.2);
+        color: #34D399;
+        border-color: rgba(52, 211, 153, 0.35);
+      }
+
+      [data-theme="dark"] .tag-sky {
+        background: rgba(2, 132, 199, 0.2);
+        color: #38BDF8;
+        border-color: rgba(56, 189, 248, 0.35);
+      }
+
+      [data-theme="dark"] .tag-amber {
+        background: rgba(245, 158, 11, 0.2);
+        color: #FBBF24;
+        border-color: rgba(251, 191, 36, 0.35);
       }
 
       /* ===== ⛅ APPLE tvOS NATIVE LIVING WEATHER COMPLICATION ===== */
@@ -2721,6 +2780,47 @@
         border-radius: 9999px;
       }
 
+      /* Dark Mode Column Headers & Badges */
+      [data-theme="dark"] .island-header {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 10px 30px -4px rgba(0, 0, 0, 0.5), inset 0 1.5px 1.5px rgba(255, 255, 255, 0.12);
+      }
+
+      [data-theme="dark"] .island-title {
+        color: #FFFFFF;
+      }
+
+      [data-theme="dark"] .island-subtitle {
+        color: #94A3B8;
+      }
+
+      [data-theme="dark"] .island-badge-bedah {
+        background: rgba(2, 132, 199, 0.2);
+        color: #38BDF8;
+        border: 1px solid rgba(56, 189, 248, 0.35);
+      }
+
+      [data-theme="dark"] .island-badge-bedah .badge-dot {
+        background: #38BDF8;
+        box-shadow: 0 0 8px rgba(56, 189, 248, 0.8);
+      }
+
+      [data-theme="dark"] .island-badge-nonbedah {
+        background: rgba(124, 58, 237, 0.2);
+        color: #A78BFA;
+        border: 1px solid rgba(167, 139, 250, 0.35);
+      }
+
+      [data-theme="dark"] .island-badge-nonbedah .badge-dot {
+        background: #A78BFA;
+        box-shadow: 0 0 8px rgba(167, 139, 250, 0.8);
+      }
+
+      [data-theme="dark"] .island-progress-track {
+        background: rgba(255, 255, 255, 0.08);
+      }
+
       /* visionOS Smooth Scroll Mask with Top/Bottom Gradient Fade */
       .scroll-mask {
         flex: 1 1 0%;
@@ -2989,6 +3089,26 @@
         line-height: 1;
       }
 
+      /* Dark Mode Jam Box & Status Overrides */
+      [data-theme="dark"] .jam-box {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
+      }
+
+      [data-theme="dark"] .jam-box .jam-icon {
+        color: #94A3B8;
+      }
+
+      [data-theme="dark"] .jam-val {
+        color: #F8FAFC;
+      }
+
+      [data-theme="dark"] .status-pill {
+        border-color: rgba(255, 255, 255, 0.2);
+        box-shadow: 0 2px 8px -1px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.18);
+      }
+
       /* Status Styles - Modern 3D Clinical Gradients & Tinted Avatar */
       .st-praktek { --status-color: #059669; --status-bg: rgba(5, 150, 105, 0.12); }
       .st-pendaftaran { --status-color: #B45309; --status-bg: rgba(180, 83, 9, 0.12); }
@@ -2999,6 +3119,14 @@
       .st-cuti { --status-color: #DC2626; --status-bg: rgba(220, 38, 38, 0.12); opacity: 0.75; }
       .st-libur { --status-color: #64748B; --status-bg: rgba(100, 116, 139, 0.10); display: none; }
 
+      [data-theme="dark"] .st-praktek { --status-color: #34D399; --status-bg: rgba(16, 185, 129, 0.22); }
+      [data-theme="dark"] .st-pendaftaran { --status-color: #FBBF24; --status-bg: rgba(245, 158, 11, 0.22); }
+      [data-theme="dark"] .st-terjadwal { --status-color: #38BDF8; --status-bg: rgba(2, 132, 199, 0.22); }
+      [data-theme="dark"] .st-selesai { --status-color: #94A3B8; --status-bg: rgba(148, 163, 184, 0.15); opacity: 0.65; }
+      [data-theme="dark"] .st-penuh { --status-color: #FBBF24; --status-bg: rgba(245, 158, 11, 0.22); }
+      [data-theme="dark"] .st-operasi { --status-color: #A78BFA; --status-bg: rgba(124, 58, 237, 0.22); }
+      [data-theme="dark"] .st-cuti { --status-color: #F87171; --status-bg: rgba(220, 38, 38, 0.22); opacity: 0.75; }
+
       .platter.st-praktek .initials { color: #059669; background: rgba(5, 150, 105, 0.08); border-color: rgba(5, 150, 105, 0.25); }
       .platter.st-pendaftaran .initials { color: #B45309; background: rgba(180, 83, 9, 0.08); border-color: rgba(180, 83, 9, 0.25); }
       .platter.st-terjadwal .initials { color: #0284C7; background: rgba(2, 132, 199, 0.08); border-color: rgba(2, 132, 199, 0.25); }
@@ -3006,6 +3134,14 @@
       .platter.st-penuh .initials { color: #B45309; background: rgba(180, 83, 9, 0.08); border-color: rgba(180, 83, 9, 0.25); }
       .platter.st-cuti .initials { color: #DC2626; background: rgba(220, 38, 38, 0.08); border-color: rgba(220, 38, 38, 0.25); }
       .platter.st-operasi .initials { color: #7C3AED; background: rgba(124, 58, 237, 0.08); border-color: rgba(124, 58, 237, 0.25); }
+
+      [data-theme="dark"] .platter.st-praktek .initials { color: #34D399; background: rgba(16, 185, 129, 0.15); border-color: rgba(52, 211, 153, 0.35); }
+      [data-theme="dark"] .platter.st-pendaftaran .initials { color: #FBBF24; background: rgba(245, 158, 11, 0.15); border-color: rgba(251, 191, 36, 0.35); }
+      [data-theme="dark"] .platter.st-terjadwal .initials { color: #38BDF8; background: rgba(2, 132, 199, 0.15); border-color: rgba(56, 189, 248, 0.35); }
+      [data-theme="dark"] .platter.st-selesai .initials { color: #94A3B8; background: rgba(148, 163, 184, 0.1); border-color: rgba(148, 163, 184, 0.2); }
+      [data-theme="dark"] .platter.st-penuh .initials { color: #FBBF24; background: rgba(245, 158, 11, 0.15); border-color: rgba(251, 191, 36, 0.35); }
+      [data-theme="dark"] .platter.st-cuti .initials { color: #F87171; background: rgba(220, 38, 38, 0.15); border-color: rgba(248, 113, 113, 0.35); }
+      [data-theme="dark"] .platter.st-operasi .initials { color: #A78BFA; background: rgba(124, 58, 237, 0.15); border-color: rgba(167, 139, 250, 0.35); }
 
       .platter.st-praktek, .platter.st-pendaftaran { z-index: 5; }
       .platter.st-praktek { 
