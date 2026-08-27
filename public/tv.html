@@ -1384,7 +1384,7 @@
         line-height: 1.15;
       }
 
-      /* ===== 🚀 MAXIMIZED FULL-FIT ZERO-SCROLL APPLE WEATHER COMPLICATION ===== */
+      /* ===== 🚀 MASTER UNIFIED FULL-FIT ZERO-SCROLL APPLE WEATHER COMPLICATION ===== */
       .sidebar-panel.sidebar-mode-weather .sidebar-status-khusus-header,
       .sidebar-panel.sidebar-mode-weather .sk-segment-bar {
         display: none !important;
@@ -1407,94 +1407,194 @@
         height: 100%;
         display: flex;
         flex-direction: column;
-        justify-content: space-between;
-        gap: 12px;
+        justify-content: stretch;
         padding: 0;
         box-sizing: border-box;
       }
 
-      .sidebar-panel.sidebar-mode-weather .complication-weather-card {
-        flex: 1.2;
+      .complication-weather-master {
+        height: 100%;
+        background: #FFFFFF;
+        border-radius: 26px;
+        border: 1px solid rgba(226, 234, 245, 0.95);
+        box-shadow: 
+          0 14px 34px -4px rgba(45, 65, 95, 0.08),
+          inset 0 1.5px 1.5px #FFFFFF;
         padding: 16px 18px;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+        gap: 12px;
+        position: relative;
+        overflow: hidden;
+        box-sizing: border-box;
       }
 
-      .sidebar-panel.sidebar-mode-weather .weather-hero-row {
-        margin: 6px 0 8px 0;
+      [data-theme="dark"] .complication-weather-master {
+        background: #101726;
+        border-color: rgba(255, 255, 255, 0.08);
+        box-shadow: 0 14px 36px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.1);
       }
 
-      .sidebar-panel.sidebar-mode-weather .weather-temp-val {
-        font-size: 52px;
+      .weather-master-hero-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 2px 0;
       }
 
-      .sidebar-panel.sidebar-mode-weather .weather-condition-text {
-        font-size: 15px;
+      .weather-master-hero-left {
+        display: flex;
+        flex-direction: column;
+        line-height: 1;
       }
 
-      .sidebar-panel.sidebar-mode-weather .weather-icon-animated {
-        width: 52px;
-        height: 52px;
+      .weather-temp-master-group {
+        display: flex;
+        align-items: flex-start;
       }
 
-      .sidebar-panel.sidebar-mode-weather .weather-hourly-strip {
-        padding: 8px 6px;
+      .weather-temp-master-val {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 68px;
+        font-weight: 900;
+        color: #0F172A;
+        line-height: 0.9;
+        letter-spacing: -0.04em;
+        font-variant-numeric: tabular-nums;
+      }
+
+      [data-theme="dark"] .weather-temp-master-val {
+        color: #FFFFFF;
+      }
+
+      .weather-temp-master-unit {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 30px;
+        font-weight: 900;
+        color: #0284C7;
+        margin-left: 2px;
+        line-height: 1;
+      }
+
+      [data-theme="dark"] .weather-temp-master-unit {
+        color: #38BDF8;
+      }
+
+      .weather-condition-master-text {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 18.5px;
+        font-weight: 900;
+        color: #0F172A;
+        letter-spacing: -0.01em;
+        margin-top: 6px;
+      }
+
+      [data-theme="dark"] .weather-condition-master-text {
+        color: #FFFFFF;
+      }
+
+      .weather-range-master-text {
+        font-family: "Plus Jakarta Sans", monospace;
+        font-size: 12.5px;
+        font-weight: 800;
+        color: #64748B;
+        margin-top: 4px;
+      }
+
+      [data-theme="dark"] .weather-range-master-text {
+        color: #94A3B8;
+      }
+
+      .weather-master-icon-wrap {
+        width: 64px;
+        height: 64px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.16));
+        animation: appleWeatherFloat 4s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate;
+      }
+
+      .weather-master-section {
+        display: flex;
+        flex-direction: column;
         gap: 6px;
       }
 
-      .sidebar-panel.sidebar-mode-weather .weather-hourly-item {
-        padding: 6px 4px;
+      .weather-section-label {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 10px;
+        font-weight: 800;
+        color: #64748B;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        display: flex;
+        align-items: center;
+        gap: 5px;
       }
 
-      .sidebar-panel.sidebar-mode-weather .weather-metrics-grid {
-        gap: 8px;
+      [data-theme="dark"] .weather-section-label {
+        color: #94A3B8;
       }
 
-      .sidebar-panel.sidebar-mode-weather .weather-metric-item {
-        padding: 8px 10px;
+      .weather-master-hourly-strip {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 6px;
+        background: rgba(241, 245, 249, 0.75);
+        border: 1px solid rgba(226, 232, 240, 0.9);
+        border-radius: 16px;
+        padding: 8px 5px;
+        margin: 0;
       }
 
-      .sidebar-panel.sidebar-mode-weather .weather-metric-label {
+      [data-theme="dark"] .weather-master-hourly-strip {
+        background: rgba(0, 0, 0, 0.3);
+        border-color: rgba(255, 255, 255, 0.08);
+      }
+
+      .weather-master-hourly-strip .weather-hourly-item {
+        padding: 6px 2px;
+        border-radius: 11px;
+      }
+
+      .weather-master-hourly-strip .weather-hourly-time {
         font-size: 10px;
       }
 
-      .sidebar-panel.sidebar-mode-weather .weather-metric-val {
-        font-size: 12px;
+      .weather-master-hourly-strip .weather-hourly-icon {
+        width: 22px;
+        height: 22px;
       }
 
-      .sidebar-panel.sidebar-mode-weather .complication-weather-matrix {
-        flex: 1;
-        padding: 16px 18px;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
+      .weather-master-hourly-strip .weather-hourly-temp {
+        font-size: 12.5px;
+        font-weight: 900;
       }
 
-      .sidebar-panel.sidebar-mode-weather .weather-env-grid {
-        flex: 1;
+      .weather-master-env-grid {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
         gap: 8px;
-        margin-top: 8px;
+        margin-top: 0;
       }
 
-      .sidebar-panel.sidebar-mode-weather .weather-env-tile {
-        padding: 12px 14px;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
+      .weather-master-env-grid .weather-env-tile {
+        padding: 10px 12px;
+        border-radius: 16px;
+        min-height: 64px;
       }
 
-      .sidebar-panel.sidebar-mode-weather .weather-env-label {
+      .weather-master-env-grid .weather-env-label {
         font-size: 10px;
       }
 
-      .sidebar-panel.sidebar-mode-weather .weather-env-val {
-        font-size: 16px;
+      .weather-master-env-grid .weather-env-val {
+        font-size: 15.5px;
       }
 
-      .sidebar-panel.sidebar-mode-weather .weather-env-sub {
+      .weather-master-env-grid .weather-env-sub {
         font-size: 10.5px;
       }
 
@@ -5082,8 +5182,8 @@
             iconType = "storm";
           }
 
-          const heroIconSVG = this.getWeatherIconSVG(iconType, 40);
-          const miniIconSVG = this.getWeatherIconSVG(iconType, 18);
+          const heroIconSVG = this.getWeatherIconSVG(iconType, 64);
+          const miniIconSVG = this.getWeatherIconSVG(iconType, 22);
           return { condition, theme, iconType, heroIconSVG, miniIconSVG };
         },
 
@@ -5296,7 +5396,7 @@
           const hourlyPillsHTML = hourlyList.map((h, idx) => {
             const isCurrent = idx === 0;
             const precipHTML = h.precip >= 15 ? `<span class="weather-hourly-precip">💧${h.precip}%</span>` : "";
-            const iconContent = h.iconSVG || this.getWeatherIconSVG("partly-cloudy-day", 18);
+            const iconContent = h.iconSVG || this.getWeatherIconSVG("partly-cloudy-day", 22);
             return `
               <div class="weather-hourly-item ${isCurrent ? "active-hour" : ""}">
                 <span class="weather-hourly-time">
@@ -5310,104 +5410,93 @@
             `;
           }).join("");
 
-          const heroIconMarkup = w.iconHTML || this.getWeatherIconSVG("partly-cloudy-day", 40);
+          const heroIconMarkup = w.iconHTML || this.getWeatherIconSVG("partly-cloudy-day", 64);
 
           return `
             <div class="sidebar-complications">
-              <!-- Complication 1: ⛅ Apple tvOS Living Weather & 6-Hour Forecast Strip -->
-              <div class="complication-card complication-weather-card weather-theme-${w.atmosphereTheme}">
+              <!-- ⛅ MASTER UNIFIED APPLE tvOS LIVING WEATHER EXPERIENCE CARD -->
+              <div class="complication-card complication-weather-master weather-theme-${w.atmosphereTheme}">
+                <!-- 1. Header Bar -->
                 <div class="complication-header">
                   <div class="complication-title">
-                    <span class="material-icons-round" style="font-size:15px; color:#0284C7;">wb_sunny</span>
+                    <span class="material-icons-round" style="font-size:17px; color:#0284C7;">wb_sunny</span>
                     <span>CUACA PURBALINGGA</span>
                   </div>
                   <span class="complication-tag tag-sky">LIVE BMKG</span>
                 </div>
 
-                <div class="weather-hero-row">
-                  <div class="weather-temp-group">
-                    <span class="weather-temp-val" id="tvWeatherTemp">${w.temp}</span>
-                    <span class="weather-temp-unit">°</span>
-                  </div>
-                  <div class="weather-condition-group">
-                    <div class="weather-condition-meta">
-                      <span class="weather-condition-text" id="tvWeatherCondition">${w.condition}</span>
-                      <span class="weather-range-text" id="tvWeatherRange">H:${w.tempMax}° • L:${w.tempMin}°</span>
+                <!-- 2. Extra-Large Hero Temperature & Visual Status (Visible from 10m away) -->
+                <div class="weather-master-hero-row">
+                  <div class="weather-master-hero-left">
+                    <div class="weather-temp-master-group">
+                      <span class="weather-temp-master-val" id="tvWeatherTemp">${w.temp}</span>
+                      <span class="weather-temp-master-unit">°C</span>
                     </div>
-                    <span class="weather-icon-animated" id="tvWeatherIcon">${heroIconMarkup}</span>
+                    <div class="weather-condition-master-text" id="tvWeatherCondition">${w.condition}</div>
+                    <div class="weather-range-master-text" id="tvWeatherRange">Suhu Harian: H: ${w.tempMax}° • L: ${w.tempMin}°</div>
+                  </div>
+                  <div class="weather-master-hero-right">
+                    <div class="weather-master-icon-wrap" id="tvWeatherIcon">${heroIconMarkup}</div>
                   </div>
                 </div>
 
-                <!-- Apple 6-Hour Forecast Timeline Strip -->
-                <div class="weather-hourly-strip" id="tvWeatherHourlyStrip">
-                  ${hourlyPillsHTML}
-                </div>
-
-                <div class="weather-metrics-grid">
-                  <div class="weather-metric-item">
-                    <span class="weather-metric-label">Lembab</span>
-                    <span class="weather-metric-val" id="tvWeatherHumidity">${w.humidity}%</span>
+                <!-- 3. Apple 6-Hour Forecast Timeline Strip -->
+                <div class="weather-master-section">
+                  <div class="weather-section-label">
+                    <span class="material-icons-round" style="font-size:13px; color:#0284C7;">schedule</span>
+                    <span>PREDIKSI 6 JAM KE DEPAN</span>
                   </div>
-                  <div class="weather-metric-item">
-                    <span class="weather-metric-label">Terasa</span>
-                    <span class="weather-metric-val" id="tvWeatherApparent">${w.apparent}°C</span>
-                  </div>
-                  <div class="weather-metric-item">
-                    <span class="weather-metric-label">Angin</span>
-                    <span class="weather-metric-val" id="tvWeatherWind">${w.windSpeed} km/j</span>
+                  <div class="weather-master-hourly-strip" id="tvWeatherHourlyStrip">
+                    ${hourlyPillsHTML}
                   </div>
                 </div>
-              </div>
 
-              <!-- Complication 2: 📊 Apple Weather Atmospheric Environmental Matrix -->
-              <div class="complication-card complication-weather-matrix">
-                <div class="complication-header">
-                  <div class="complication-title">
-                    <span class="material-icons-round" style="font-size:15px; color:#0284C7;">public</span>
-                    <span>METRIK ATMOSFER</span>
+                <!-- 4. Atmospheric Environmental Matrix Grid (4 High-Contrast Glass Tiles) -->
+                <div class="weather-master-section">
+                  <div class="weather-section-label">
+                    <span class="material-icons-round" style="font-size:13px; color:#0284C7;">speed</span>
+                    <span>METRIK & KUALITAS ATMOSFER</span>
                   </div>
-                  <span class="complication-tag tag-sky">OPEN-METEO</span>
-                </div>
-
-                <div class="weather-env-grid">
-                  <!-- Tile 1: UV Index -->
-                  <div class="weather-env-tile">
-                    <div class="weather-env-header">
-                      <span class="material-icons-round weather-env-icon" style="color:#F59E0B;">light_mode</span>
-                      <span class="weather-env-label">Indeks UV</span>
+                  <div class="weather-master-env-grid">
+                    <!-- Tile 1: UV Index -->
+                    <div class="weather-env-tile">
+                      <div class="weather-env-header">
+                        <span class="material-icons-round weather-env-icon" style="color:#F59E0B; font-size:16px;">light_mode</span>
+                        <span class="weather-env-label">Indeks UV</span>
+                      </div>
+                      <div class="weather-env-val" id="tvWeatherUVVal">${w.uvIndex || "5.0"} ${w.uvLabel || "SEDANG"}</div>
+                      <div class="weather-env-sub" id="tvWeatherUVSub">Maks: ${w.uvMax || "8.5"} hari ini</div>
                     </div>
-                    <div class="weather-env-val" id="tvWeatherUVVal">${w.uvIndex || "5.0"} ${w.uvLabel || "SEDANG"}</div>
-                    <div class="weather-env-sub" id="tvWeatherUVSub">Maks: ${w.uvMax || "8.5"} hari ini</div>
-                  </div>
 
-                  <!-- Tile 2: Sunset & Sunrise -->
-                  <div class="weather-env-tile">
-                    <div class="weather-env-header">
-                      <span class="material-icons-round weather-env-icon" style="color:#F97316;">wb_twilight</span>
-                      <span class="weather-env-label">Terbenam</span>
+                    <!-- Tile 2: Sunset & Sunrise -->
+                    <div class="weather-env-tile">
+                      <div class="weather-env-header">
+                        <span class="material-icons-round weather-env-icon" style="color:#F97316; font-size:16px;">wb_twilight</span>
+                        <span class="weather-env-label">Terbenam</span>
+                      </div>
+                      <div class="weather-env-val" id="tvWeatherSunsetVal">${w.sunset || "17:42 WIB"}</div>
+                      <div class="weather-env-sub" id="tvWeatherSunsetSub">Terbit: ${w.sunrise || "05:45 WIB"}</div>
                     </div>
-                    <div class="weather-env-val" id="tvWeatherSunsetVal">${w.sunset || "17:42 WIB"}</div>
-                    <div class="weather-env-sub" id="tvWeatherSunsetSub">Terbit: ${w.sunrise || "05:45 WIB"}</div>
-                  </div>
 
-                  <!-- Tile 3: Humidity & RealFeel -->
-                  <div class="weather-env-tile">
-                    <div class="weather-env-header">
-                      <span class="material-icons-round weather-env-icon" style="color:#0284C7;">water_drop</span>
-                      <span class="weather-env-label">Kelembaban</span>
+                    <!-- Tile 3: Humidity & RealFeel -->
+                    <div class="weather-env-tile">
+                      <div class="weather-env-header">
+                        <span class="material-icons-round weather-env-icon" style="color:#0284C7; font-size:16px;">water_drop</span>
+                        <span class="weather-env-label">Kelembaban</span>
+                      </div>
+                      <div class="weather-env-val" id="tvWeatherHumVal">${w.humidity}%</div>
+                      <div class="weather-env-sub" id="tvWeatherHumSub">Suhu Terasa: ${w.apparent}°C</div>
                     </div>
-                    <div class="weather-env-val" id="tvWeatherHumVal">${w.humidity}%</div>
-                    <div class="weather-env-sub" id="tvWeatherHumSub">Terasa: ${w.apparent}°C</div>
-                  </div>
 
-                  <!-- Tile 4: Wind & Visibility / Barometer -->
-                  <div class="weather-env-tile">
-                    <div class="weather-env-header">
-                      <span class="material-icons-round weather-env-icon" style="color:#10B981;">air</span>
-                      <span class="weather-env-label">Angin & Jarak</span>
+                    <!-- Tile 4: Wind & Visibility / Barometer -->
+                    <div class="weather-env-tile">
+                      <div class="weather-env-header">
+                        <span class="material-icons-round weather-env-icon" style="color:#10B981; font-size:16px;">air</span>
+                        <span class="weather-env-label">Angin & Jarak</span>
+                      </div>
+                      <div class="weather-env-val" id="tvWeatherWindVisVal">${w.windSpeed} km/j • ${w.visibility || "16 km"}</div>
+                      <div class="weather-env-sub" id="tvWeatherWindVisSub">Tekanan: ${w.pressure || "1008"} hPa</div>
                     </div>
-                    <div class="weather-env-val" id="tvWeatherWindVisVal">${w.windSpeed} km/j • ${w.visibility || "16 km"}</div>
-                    <div class="weather-env-sub" id="tvWeatherWindVisSub">Tekanan: ${w.pressure || "1008"} hPa</div>
                   </div>
                 </div>
               </div>
