@@ -1298,186 +1298,94 @@
         color: #FFFFFF;
       }
 
-      /* ===== 🕌 APPLE tvOS ULTRA-MODERN PRAYER SCHEDULE COMPLICATION ===== */
-      .complication-prayer-card {
+      /* ===== ⛅ APPLE tvOS WEATHER ENVIRONMENTAL MATRIX COMPLICATION ===== */
+      .complication-weather-matrix {
         background: #FFFFFF;
         border-radius: 20px;
         position: relative;
         overflow: hidden;
       }
 
-      [data-theme="dark"] .complication-prayer-card {
+      [data-theme="dark"] .complication-weather-matrix {
         background: #101726;
       }
 
-      .prayer-hero-spotlight {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        background: linear-gradient(135deg, rgba(2, 132, 199, 0.08) 0%, rgba(56, 189, 248, 0.03) 100%);
-        border: 1px solid rgba(2, 132, 199, 0.22);
-        border-radius: 14px;
-        padding: 10px 12px;
-        margin: 2px 0 6px 0;
-      }
-
-      [data-theme="dark"] .prayer-hero-spotlight {
-        background: linear-gradient(135deg, rgba(2, 132, 199, 0.14) 0%, rgba(56, 189, 248, 0.04) 100%);
-        border-color: rgba(2, 132, 199, 0.3);
-      }
-
-      .prayer-spotlight-left {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
-
-      .prayer-spotlight-icon-box {
-        width: 38px;
-        height: 38px;
-        border-radius: 12px;
-        background: linear-gradient(135deg, #38BDF8 0%, #0284C7 100%);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #FFFFFF;
-        box-shadow: 0 4px 12px rgba(2, 132, 199, 0.35);
-        flex-shrink: 0;
-      }
-
-      .prayer-spotlight-icon-box .material-icons-round {
-        font-size: 22px;
-      }
-
-      .prayer-spotlight-meta {
-        display: flex;
-        flex-direction: column;
-        line-height: 1.15;
-      }
-
-      .prayer-spotlight-tag {
-        font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 9.5px;
-        font-weight: 800;
-        color: #0284C7;
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
-      }
-
-      .prayer-spotlight-name {
-        font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 16.5px;
-        font-weight: 900;
-        color: #0F172A;
-        letter-spacing: -0.01em;
-      }
-
-      [data-theme="dark"] .prayer-spotlight-name {
-        color: #FFFFFF;
-      }
-
-      .prayer-spotlight-right {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-end;
-        line-height: 1.1;
-      }
-
-      .prayer-spotlight-time {
-        font-family: "Plus Jakarta Sans", monospace;
-        font-size: 22px;
-        font-weight: 900;
-        color: #0284C7;
-        letter-spacing: -0.02em;
-        font-variant-numeric: tabular-nums;
-      }
-
-      .prayer-spotlight-badge {
-        font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 9px;
-        font-weight: 800;
-        color: #059669;
-        background: #F0FDF4;
-        border: 1px solid #BBF7D0;
-        padding: 2px 7px;
-        border-radius: 9999px;
-        text-transform: uppercase;
-        margin-top: 2px;
-      }
-
-      [data-theme="dark"] .prayer-spotlight-badge {
-        background: rgba(16, 185, 129, 0.15);
-        border-color: rgba(16, 185, 129, 0.35);
-        color: #34D399;
-      }
-
-      .prayer-grid-modern {
+      .weather-env-grid {
         display: grid;
-        grid-template-columns: repeat(5, 1fr);
-        gap: 5px;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6px;
         margin-top: 2px;
       }
 
-      .prayer-pill-modern {
+      .weather-env-tile {
+        background: rgba(241, 245, 249, 0.85);
+        border: 1px solid rgba(226, 232, 240, 0.95);
+        border-radius: 14px;
+        padding: 9px 10px;
         display: flex;
         flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        background: rgba(241, 245, 249, 0.95);
-        border: 1px solid rgba(226, 232, 240, 0.95);
-        border-radius: 12px;
-        padding: 7px 3px;
-        gap: 2px;
+        justify-content: space-between;
         transition: all 0.25s ease;
       }
 
-      [data-theme="dark"] .prayer-pill-modern {
+      [data-theme="dark"] .weather-env-tile {
         background: rgba(255, 255, 255, 0.04);
         border-color: rgba(255, 255, 255, 0.08);
       }
 
-      .prayer-pill-modern.active {
-        background: linear-gradient(145deg, #0284C7 0%, #0369A1 100%);
-        border-color: rgba(56, 189, 248, 0.5);
-        box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.4);
+      .weather-env-header {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        margin-bottom: 4px;
       }
 
-      .prayer-pill-icon {
-        font-size: 15px;
-        color: #64748B;
+      .weather-env-icon {
+        font-size: 14px;
+        color: #0284C7;
       }
 
-      .prayer-pill-modern.active .prayer-pill-icon {
-        color: #BAE6FD;
+      [data-theme="dark"] .weather-env-icon {
+        color: #38BDF8;
       }
 
-      .prayer-pill-name {
+      .weather-env-label {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 9.5px;
+        font-size: 9px;
         font-weight: 800;
         color: #64748B;
         text-transform: uppercase;
-        letter-spacing: 0.02em;
+        letter-spacing: 0.04em;
       }
 
-      .prayer-pill-modern.active .prayer-pill-name {
-        color: #E0F2FE;
+      [data-theme="dark"] .weather-env-label {
+        color: #94A3B8;
       }
 
-      .prayer-pill-time {
-        font-family: "Plus Jakarta Sans", monospace;
-        font-size: 12.5px;
+      .weather-env-val {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 14.5px;
         font-weight: 900;
         color: #0F172A;
-        font-variant-numeric: tabular-nums;
+        line-height: 1.1;
+        letter-spacing: -0.01em;
       }
 
-      [data-theme="dark"] .prayer-pill-modern .prayer-pill-time {
+      [data-theme="dark"] .weather-env-val {
         color: #FFFFFF;
       }
 
-      .prayer-pill-modern.active .prayer-pill-time {
-        color: #FFFFFF;
+      .weather-env-sub {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 9px;
+        font-weight: 700;
+        color: #64748B;
+        margin-top: 3px;
+        line-height: 1.15;
+      }
+
+      [data-theme="dark"] .weather-env-sub {
+        color: #94A3B8;
       }
 
       /* Force dark text in sidebar when in light mode, but adapt in dark mode */
@@ -5071,13 +4979,20 @@
 
         // Apple tvOS Weather Complication (Purbalingga, Central Java)
         _weatherCache: {
-          temp: 25,
-          humidity: 75,
-          apparent: 28,
-          windSpeed: 5,
-          tempMax: 31,
-          tempMin: 23,
-          isDay: 0,
+          temp: 29,
+          humidity: 65,
+          apparent: 32,
+          windSpeed: 10,
+          pressure: 1008,
+          uvIndex: 5.0,
+          uvLabel: "SEDANG",
+          uvMax: 8.5,
+          visibility: "16 km",
+          sunrise: "05:45 WIB",
+          sunset: "17:42 WIB",
+          tempMax: 32,
+          tempMin: 22,
+          isDay: 1,
           code: 2,
           condition: "Sebagian Berawan",
           iconHTML: "",
@@ -5092,7 +5007,7 @@
             return this._weatherCache;
           }
           try {
-            const res = await fetch("https://api.open-meteo.com/v1/forecast?latitude=-7.3888&longitude=109.3639&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,is_day&hourly=temperature_2m,precipitation_probability,weather_code&daily=temperature_2m_max,temperature_2m_min&timezone=Asia%2FJakarta&forecast_days=2");
+            const res = await fetch("https://api.open-meteo.com/v1/forecast?latitude=-7.3888&longitude=109.3639&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,surface_pressure,is_day&hourly=temperature_2m,precipitation_probability,weather_code,uv_index,visibility&daily=temperature_2m_max,temperature_2m_min,sunrise,sunset,uv_index_max&timezone=Asia%2FJakarta&forecast_days=2");
             if (res.ok) {
               const data = await res.json();
               if (data && data.current) {
@@ -5119,7 +5034,7 @@
 
                 const hourlyList = [];
                 if (data.hourly && data.hourly.time && data.hourly.temperature_2m) {
-                  for (let i = 0; i < 5; i++) {
+                  for (let i = 0; i < 6; i++) {
                     const targetIdx = matchIdx + i;
                     const hTemp = Math.round(data.hourly.temperature_2m[targetIdx] !== undefined ? data.hourly.temperature_2m[targetIdx] : cur.temperature_2m);
                     const hCode = data.hourly.weather_code && data.hourly.weather_code[targetIdx] !== undefined ? data.hourly.weather_code[targetIdx] : code;
@@ -5148,11 +5063,41 @@
                 const tempMax = data.daily && data.daily.temperature_2m_max ? Math.round(data.daily.temperature_2m_max[0]) : Math.round(cur.temperature_2m) + 3;
                 const tempMin = data.daily && data.daily.temperature_2m_min ? Math.round(data.daily.temperature_2m_min[0]) : Math.round(cur.temperature_2m) - 4;
 
+                const curUV = (data.hourly && data.hourly.uv_index && data.hourly.uv_index[matchIdx] !== undefined) ? data.hourly.uv_index[matchIdx] : 5;
+                const curUVMax = (data.daily && data.daily.uv_index_max && data.daily.uv_index_max[0] !== undefined) ? data.daily.uv_index_max[0] : 8.5;
+                
+                let uvLabel = "SEDANG";
+                if (curUV < 3) uvLabel = "RENDAH";
+                else if (curUV < 6) uvLabel = "SEDANG";
+                else if (curUV < 8) uvLabel = "TINGGI";
+                else if (curUV < 11) uvLabel = "SGT TINGGI";
+                else uvLabel = "EKSTREM";
+
+                const visRaw = (data.hourly && data.hourly.visibility && data.hourly.visibility[matchIdx] !== undefined) ? data.hourly.visibility[matchIdx] : 16000;
+                const visibility = (visRaw / 1000).toFixed(1) + " km";
+                const pressure = cur.surface_pressure ? Math.round(cur.surface_pressure) : 1008;
+
+                let sunrise = "05:45 WIB";
+                let sunset = "17:42 WIB";
+                if (data.daily && data.daily.sunrise && data.daily.sunrise[0]) {
+                  sunrise = data.daily.sunrise[0].split("T")[1] + " WIB";
+                }
+                if (data.daily && data.daily.sunset && data.daily.sunset[0]) {
+                  sunset = data.daily.sunset[0].split("T")[1] + " WIB";
+                }
+
                 this._weatherCache = {
                   temp: Math.round(cur.temperature_2m),
                   humidity: Math.round(cur.relative_humidity_2m),
                   apparent: Math.round(cur.apparent_temperature),
                   windSpeed: Math.round(cur.wind_speed_10m),
+                  pressure,
+                  uvIndex: typeof curUV === "number" ? curUV.toFixed(1) : curUV,
+                  uvLabel,
+                  uvMax: typeof curUVMax === "number" ? curUVMax.toFixed(1) : curUVMax,
+                  visibility,
+                  sunrise,
+                  sunset,
                   tempMax,
                   tempMin,
                   isDay,
@@ -5183,6 +5128,15 @@
           if ($("tvWeatherWind")) $("tvWeatherWind").textContent = `${w.windSpeed} km/j`;
           if ($("tvWeatherRange")) $("tvWeatherRange").textContent = `H:${w.tempMax}° • L:${w.tempMin}°`;
 
+          if ($("tvWeatherUVVal")) $("tvWeatherUVVal").textContent = `${w.uvIndex} ${w.uvLabel}`;
+          if ($("tvWeatherUVSub")) $("tvWeatherUVSub").textContent = `Maks: ${w.uvMax} hari ini`;
+          if ($("tvWeatherSunsetVal")) $("tvWeatherSunsetVal").textContent = w.sunset;
+          if ($("tvWeatherSunsetSub")) $("tvWeatherSunsetSub").textContent = `Terbit: ${w.sunrise}`;
+          if ($("tvWeatherHumVal")) $("tvWeatherHumVal").textContent = `${w.humidity}%`;
+          if ($("tvWeatherHumSub")) $("tvWeatherHumSub").textContent = `Terasa: ${w.apparent}°C`;
+          if ($("tvWeatherWindVisVal")) $("tvWeatherWindVisVal").textContent = `${w.windSpeed} km/j • ${w.visibility}`;
+          if ($("tvWeatherWindVisSub")) $("tvWeatherWindVisSub").textContent = `Tekanan: ${w.pressure} hPa`;
+
           if ($("tvWeatherHourlyStrip") && w.hourly && w.hourly.length > 0) {
             $("tvWeatherHourlyStrip").innerHTML = w.hourly.map((h, idx) => {
               const isCurrent = idx === 0;
@@ -5211,7 +5165,7 @@
             jkHour = new Date().getHours();
           }
           const list = [];
-          for (let i = 0; i < 5; i++) {
+          for (let i = 0; i < 6; i++) {
             const h = (jkHour + i) % 24;
             const hIsDay = h >= 6 && h < 18;
             const meta = this.getWeatherMeta(2, hIsDay, 0);
@@ -5225,135 +5179,14 @@
           return list;
         },
 
-        // Apple Watch Complication: Astronomical Solar Prayer Schedule for Purbalingga (Jawa Tengah)
-        getPrayerInfo() {
-          const now = new Date();
-          const lat = -7.3888; // Purbalingga Latitude
-          const lng = 109.3639; // Purbalingga Longitude
-          const tz = 7; // WIB
-
-          // Day of year calculation
-          const start = new Date(now.getFullYear(), 0, 0);
-          const diff = now - start;
-          const oneDay = 1000 * 60 * 60 * 24;
-          const dayOfYear = Math.floor(diff / oneDay);
-
-          // Solar declination (degrees)
-          const declination = 23.45 * Math.sin(((284 + dayOfYear) / 365) * 2 * Math.PI);
-          const decRad = (declination * Math.PI) / 180;
-          const latRad = (lat * Math.PI) / 180;
-
-          // Equation of Time (EoT in minutes)
-          const b = ((360 / 365) * (dayOfYear - 81) * Math.PI) / 180;
-          const eot = 9.87 * Math.sin(2 * b) - 7.53 * Math.cos(b) - 1.5 * Math.sin(b);
-
-          // Solar Noon / Transit (in decimal hours WIB)
-          const transit = 12 + (tz * 15 - lng) / 15 - eot / 60;
-
-          // Hour angle calculation for given solar altitude angle (alpha in degrees)
-          const hourAngle = (alpha) => {
-            const alphaRad = (alpha * Math.PI) / 180;
-            const cosHA = (Math.sin(alphaRad) - Math.sin(latRad) * Math.sin(decRad)) / (Math.cos(latRad) * Math.cos(decRad));
-            if (cosHA > 1) return 0;
-            if (cosHA < -1) return Math.PI;
-            return (Math.acos(cosHA) * 180) / Math.PI / 15;
-          };
-
-          // Dzuhur (+2 min ihtiyat)
-          const dzuhurDec = transit + 2 / 60;
-
-          // Ashar (Shadow length = Object shadow + noon shadow)
-          const shadowNoon = Math.tan(Math.abs(latRad - decRad));
-          const asharAlpha = (Math.atan(1 / (1 + shadowNoon)) * 180) / Math.PI;
-          const haAshar = hourAngle(asharAlpha);
-          const asharDec = transit + haAshar + 2 / 60;
-
-          // Subuh (-20° Kemenag angle)
-          const haSubuh = hourAngle(-20);
-          const subuhDec = transit - haSubuh + 2 / 60;
-
-          // Maghrib (-0.833° sunset angle)
-          const haTerbit = hourAngle(-0.833);
-          const maghribDec = transit + haTerbit + 2 / 60;
-
-          // Isya (-18° Kemenag angle)
-          const haIsya = hourAngle(-18);
-          const isyaDec = transit + haIsya + 2 / 60;
-
-          const toTimeObj = (name, dec) => {
-            const totalMinutes = Math.round(dec * 60);
-            const h = Math.floor(totalMinutes / 60);
-            const m = totalMinutes % 60;
-            const timeStr = `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
-            return { name, h, m, timeStr };
-          };
-
-          const prayers = [
-            toTimeObj("Subuh", subuhDec),
-            toTimeObj("Dzuhur", dzuhurDec),
-            toTimeObj("Ashar", asharDec),
-            toTimeObj("Maghrib", maghribDec),
-            toTimeObj("Isya", isyaDec),
-          ];
-
-          const curMinutes = now.getHours() * 60 + now.getMinutes();
-          const curSeconds = now.getSeconds();
-
-          let nextPrayer = null;
-
-          for (const p of prayers) {
-            const pMinutes = p.h * 60 + p.m;
-            if (pMinutes * 60 > curMinutes * 60 + curSeconds) {
-              nextPrayer = p;
-              break;
-            }
-          }
-
-          if (!nextPrayer) {
-            nextPrayer = prayers[0];
-          }
-
-          return { prayers, nextPrayer };
-        },
-
         buildSidebarComplicationsHTML() {
-          const pInfo = this.getPrayerInfo();
-          const nextName = pInfo.nextPrayer.name;
-          const now = new Date();
-          const dayOfWeek = now.getDay(); // 0 = Minggu, 6 = Sabtu
-
-          let todayScheduleTag = "BUKA HARI INI";
-          if (dayOfWeek === 0) todayScheduleTag = "POLI TUTUP (MINGGU)";
-          else if (dayOfWeek === 6) todayScheduleTag = "HARI INI: 06:00 – 18:00";
-          else todayScheduleTag = "HARI INI: 06:00 – 20:00";
-
           const w = this._weatherCache;
-
-          const prayerIcons = {
-            Subuh: "wb_twilight",
-            Dzuhur: "wb_sunny",
-            Ashar: "filter_drama",
-            Maghrib: "bedtime",
-            Isya: "nights_stay"
-          };
-
-          const prayerPillsHTML = pInfo.prayers.map((p) => {
-            const isActive = p.name === nextName ? "active" : "";
-            const icon = prayerIcons[p.name] || "schedule";
-            return `
-              <div class="prayer-pill-modern ${isActive}">
-                <span class="material-icons-round prayer-pill-icon">${icon}</span>
-                <span class="prayer-pill-name">${p.name}</span>
-                <span class="prayer-pill-time">${p.timeStr}</span>
-              </div>
-            `;
-          }).join("");
 
           const hourlyList = (w.hourly && w.hourly.length > 0) ? w.hourly : this.getInitialHourly();
           const hourlyPillsHTML = hourlyList.map((h, idx) => {
             const isCurrent = idx === 0;
             const precipHTML = h.precip >= 15 ? `<span class="weather-hourly-precip">💧${h.precip}%</span>` : "";
-            const iconContent = h.iconSVG || this.getWeatherIconSVG(2, 1, 18);
+            const iconContent = h.iconSVG || this.getWeatherIconSVG("partly-cloudy-day", 18);
             return `
               <div class="weather-hourly-item ${isCurrent ? "active-hour" : ""}">
                 <span class="weather-hourly-time">
@@ -5367,11 +5200,11 @@
             `;
           }).join("");
 
-          const heroIconMarkup = w.iconHTML || this.getWeatherIconSVG(w.code || 2, w.isDay !== undefined ? w.isDay : 1, 40);
+          const heroIconMarkup = w.iconHTML || this.getWeatherIconSVG("partly-cloudy-day", 40);
 
           return `
             <div class="sidebar-complications">
-              <!-- Complication 1: ⛅ Apple tvOS Native Living Weather Widget (Purbalingga) -->
+              <!-- Complication 1: ⛅ Apple tvOS Living Weather & 6-Hour Forecast Strip -->
               <div class="complication-card complication-weather-card weather-theme-${w.atmosphereTheme}">
                 <div class="complication-header">
                   <div class="complication-title">
@@ -5395,7 +5228,7 @@
                   </div>
                 </div>
 
-                <!-- Apple 5-Hour Forecast Timeline Strip -->
+                <!-- Apple 6-Hour Forecast Timeline Strip -->
                 <div class="weather-hourly-strip" id="tvWeatherHourlyStrip">
                   ${hourlyPillsHTML}
                 </div>
@@ -5416,34 +5249,56 @@
                 </div>
               </div>
 
-              <!-- Complication 2: 🕌 Apple tvOS Ultra-Modern Prayer Schedule -->
-              <div class="complication-card complication-prayer-card">
+              <!-- Complication 2: 📊 Apple Weather Atmospheric Environmental Matrix -->
+              <div class="complication-card complication-weather-matrix">
                 <div class="complication-header">
                   <div class="complication-title">
-                    <span class="material-icons-round" style="font-size:15px; color:#0284C7;">schedule</span>
-                    <span>JADWAL SHOLAT PURBALINGGA</span>
+                    <span class="material-icons-round" style="font-size:15px; color:#0284C7;">public</span>
+                    <span>METRIK ATMOSFER</span>
                   </div>
-                  <span class="complication-tag tag-sky">KEMENAG RI</span>
+                  <span class="complication-tag tag-sky">OPEN-METEO</span>
                 </div>
 
-                <div class="prayer-hero-spotlight">
-                  <div class="prayer-spotlight-left">
-                    <div class="prayer-spotlight-icon-box">
-                      <span class="material-icons-round">${prayerIcons[nextName] || "schedule"}</span>
+                <div class="weather-env-grid">
+                  <!-- Tile 1: UV Index -->
+                  <div class="weather-env-tile">
+                    <div class="weather-env-header">
+                      <span class="material-icons-round weather-env-icon" style="color:#F59E0B;">light_mode</span>
+                      <span class="weather-env-label">Indeks UV</span>
                     </div>
-                    <div class="prayer-spotlight-meta">
-                      <span class="prayer-spotlight-tag">SHOLAT BERIKUTNYA</span>
-                      <span class="prayer-spotlight-name">${nextName}</span>
-                    </div>
+                    <div class="weather-env-val" id="tvWeatherUVVal">${w.uvIndex || "5.0"} ${w.uvLabel || "SEDANG"}</div>
+                    <div class="weather-env-sub" id="tvWeatherUVSub">Maks: ${w.uvMax || "8.5"} hari ini</div>
                   </div>
-                  <div class="prayer-spotlight-right">
-                    <span class="prayer-spotlight-time">${pInfo.nextPrayer.timeStr} <small style="font-size:11px;font-weight:800;">WIB</small></span>
-                    <span class="prayer-spotlight-badge">SELANJUTNYA</span>
-                  </div>
-                </div>
 
-                <div class="prayer-grid-modern">
-                  ${prayerPillsHTML}
+                  <!-- Tile 2: Sunset & Sunrise -->
+                  <div class="weather-env-tile">
+                    <div class="weather-env-header">
+                      <span class="material-icons-round weather-env-icon" style="color:#F97316;">wb_twilight</span>
+                      <span class="weather-env-label">Terbenam</span>
+                    </div>
+                    <div class="weather-env-val" id="tvWeatherSunsetVal">${w.sunset || "17:42 WIB"}</div>
+                    <div class="weather-env-sub" id="tvWeatherSunsetSub">Terbit: ${w.sunrise || "05:45 WIB"}</div>
+                  </div>
+
+                  <!-- Tile 3: Humidity & RealFeel -->
+                  <div class="weather-env-tile">
+                    <div class="weather-env-header">
+                      <span class="material-icons-round weather-env-icon" style="color:#0284C7;">water_drop</span>
+                      <span class="weather-env-label">Kelembaban</span>
+                    </div>
+                    <div class="weather-env-val" id="tvWeatherHumVal">${w.humidity}%</div>
+                    <div class="weather-env-sub" id="tvWeatherHumSub">Terasa: ${w.apparent}°C</div>
+                  </div>
+
+                  <!-- Tile 4: Wind & Visibility / Barometer -->
+                  <div class="weather-env-tile">
+                    <div class="weather-env-header">
+                      <span class="material-icons-round weather-env-icon" style="color:#10B981;">air</span>
+                      <span class="weather-env-label">Angin & Jarak</span>
+                    </div>
+                    <div class="weather-env-val" id="tvWeatherWindVisVal">${w.windSpeed} km/j • ${w.visibility || "16 km"}</div>
+                    <div class="weather-env-sub" id="tvWeatherWindVisSub">Tekanan: ${w.pressure || "1008"} hPa</div>
+                  </div>
                 </div>
               </div>
             </div>
