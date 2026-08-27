@@ -1384,8 +1384,118 @@
         line-height: 1.15;
       }
 
-      [data-theme="dark"] .weather-env-sub {
-        color: #94A3B8;
+      /* ===== 🚀 MAXIMIZED FULL-FIT ZERO-SCROLL APPLE WEATHER COMPLICATION ===== */
+      .sidebar-panel.sidebar-mode-weather .sidebar-status-khusus-header,
+      .sidebar-panel.sidebar-mode-weather .sk-segment-bar {
+        display: none !important;
+      }
+
+      .sidebar-panel.sidebar-mode-weather .scroll-mask {
+        flex: 1;
+        min-height: 0;
+        overflow: hidden;
+      }
+
+      .sidebar-panel.sidebar-mode-weather .scroller {
+        height: 100% !important;
+        transform: none !important;
+        padding: 4px 6px !important;
+        box-sizing: border-box;
+      }
+
+      .sidebar-panel.sidebar-mode-weather .sidebar-complications {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      .sidebar-panel.sidebar-mode-weather .complication-weather-card {
+        flex: 1.2;
+        padding: 16px 18px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      .sidebar-panel.sidebar-mode-weather .weather-hero-row {
+        margin: 6px 0 8px 0;
+      }
+
+      .sidebar-panel.sidebar-mode-weather .weather-temp-val {
+        font-size: 52px;
+      }
+
+      .sidebar-panel.sidebar-mode-weather .weather-condition-text {
+        font-size: 15px;
+      }
+
+      .sidebar-panel.sidebar-mode-weather .weather-icon-animated {
+        width: 52px;
+        height: 52px;
+      }
+
+      .sidebar-panel.sidebar-mode-weather .weather-hourly-strip {
+        padding: 8px 6px;
+        gap: 6px;
+      }
+
+      .sidebar-panel.sidebar-mode-weather .weather-hourly-item {
+        padding: 6px 4px;
+      }
+
+      .sidebar-panel.sidebar-mode-weather .weather-metrics-grid {
+        gap: 8px;
+      }
+
+      .sidebar-panel.sidebar-mode-weather .weather-metric-item {
+        padding: 8px 10px;
+      }
+
+      .sidebar-panel.sidebar-mode-weather .weather-metric-label {
+        font-size: 10px;
+      }
+
+      .sidebar-panel.sidebar-mode-weather .weather-metric-val {
+        font-size: 12px;
+      }
+
+      .sidebar-panel.sidebar-mode-weather .complication-weather-matrix {
+        flex: 1;
+        padding: 16px 18px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      .sidebar-panel.sidebar-mode-weather .weather-env-grid {
+        flex: 1;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+        margin-top: 8px;
+      }
+
+      .sidebar-panel.sidebar-mode-weather .weather-env-tile {
+        padding: 12px 14px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      .sidebar-panel.sidebar-mode-weather .weather-env-label {
+        font-size: 10px;
+      }
+
+      .sidebar-panel.sidebar-mode-weather .weather-env-val {
+        font-size: 16px;
+      }
+
+      .sidebar-panel.sidebar-mode-weather .weather-env-sub {
+        font-size: 10.5px;
       }
 
       /* Force dark text in sidebar when in light mode, but adapt in dark mode */
@@ -6420,12 +6530,19 @@
             return el;
           };
 
+          const isComplicationMode = (operasiList.length === 0 && penuhList.length === 0 && cutiList.length === 0);
+          const sidebarPanel = document.querySelector(".sidebar-panel");
+          if (sidebarPanel) {
+            sidebarPanel.classList.toggle("sidebar-mode-weather", isComplicationMode);
+          }
+
           // --- Build grouped layout or Apple Watch Complications if empty ---
-          if (operasiList.length === 0 && penuhList.length === 0 && cutiList.length === 0) {
+          if (isComplicationMode) {
             let wrapper = container.querySelector('[data-id="sec-complications"]');
             if (!wrapper) {
               wrapper = document.createElement("div");
               wrapper.dataset.id = "sec-complications";
+              wrapper.style.height = "100%";
               wrapper.innerHTML = this.buildSidebarComplicationsHTML();
               allElements.push(wrapper);
               hasLayoutChange = true;
