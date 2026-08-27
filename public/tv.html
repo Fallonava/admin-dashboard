@@ -972,14 +972,14 @@
         border-color: rgba(56, 189, 248, 0.4) !important;
       }
 
-      /* ===== 💎 APPLE SPECULAR PRISM RIM LIGHT SWEEP & GRADIENT FLOW THEMES ===== */
+      /* ===== 💎 APPLE 3D DYNAMIC AMBIENT BACKDROP & GRADIENT FLOW THEMES ===== */
       /* Dynamic Hero Temperature Typographic Gradient Flow */
       .weather-temp-master-val {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 78px;
+        font-size: 52px;
         font-weight: 900;
-        line-height: 0.88;
-        letter-spacing: -0.045em;
+        line-height: 0.9;
+        letter-spacing: -0.04em;
         font-variant-numeric: tabular-nums;
         background: linear-gradient(135deg, #0F172A 0%, var(--temp-gradient-end, #0284C7) 100%);
         background-size: 200% 200%;
@@ -1000,9 +1000,11 @@
         100% { background-position: 100% 50%; }
       }
 
-      /* --- 1. PAGI (Amber Sunrise Prism & Golden Typography) --- */
+      /* --- 1. PAGI (Amber Sunrise Backdrop & Golden Typography) --- */
       .weather-theme-pagi {
-        --prism-color: rgba(245, 158, 11, 0.75);
+        --ambient-backdrop-color: rgba(245, 158, 11, 0.32);
+        --ambient-glow-color: rgba(251, 191, 36, 0.45);
+        --ambient-backdrop-dark: rgba(245, 158, 11, 0.28);
         --temp-gradient-end: #D97706;
         --temp-gradient-dark: #FBBF24;
       }
@@ -1029,9 +1031,11 @@
         box-shadow: 0 3px 10px rgba(245, 158, 11, 0.15);
       }
 
-      /* --- 2. SIANG (Azure Sky Prism & Sky Gradient Typography) --- */
+      /* --- 2. SIANG (Azure Sky Backdrop & Sky Gradient Typography) --- */
       .weather-theme-siang {
-        --prism-color: rgba(2, 132, 199, 0.75);
+        --ambient-backdrop-color: rgba(2, 132, 199, 0.30);
+        --ambient-glow-color: rgba(56, 189, 248, 0.42);
+        --ambient-backdrop-dark: rgba(56, 189, 248, 0.28);
         --temp-gradient-end: #0284C7;
         --temp-gradient-dark: #38BDF8;
       }
@@ -1058,9 +1062,11 @@
         box-shadow: 0 3px 10px rgba(2, 132, 199, 0.15);
       }
 
-      /* --- 3. SORE (Sunset Coral Prism & Crimson Rose Typography) --- */
+      /* --- 3. SORE (Sunset Coral Backdrop & Crimson Rose Typography) --- */
       .weather-theme-sore {
-        --prism-color: rgba(244, 63, 94, 0.8);
+        --ambient-backdrop-color: rgba(225, 29, 72, 0.30);
+        --ambient-glow-color: rgba(251, 113, 133, 0.45);
+        --ambient-backdrop-dark: rgba(244, 63, 94, 0.28);
         --temp-gradient-end: #E11D48;
         --temp-gradient-dark: #FB7185;
       }
@@ -1087,9 +1093,11 @@
         box-shadow: 0 3px 10px rgba(225, 29, 72, 0.15);
       }
 
-      /* --- 4. MALAM (Starlight Sapphire Prism & Indigo Typography) --- */
+      /* --- 4. MALAM (Starlight Sapphire Backdrop & Indigo Typography) --- */
       .weather-theme-malam {
-        --prism-color: rgba(99, 102, 241, 0.75);
+        --ambient-backdrop-color: rgba(99, 102, 241, 0.32);
+        --ambient-glow-color: rgba(129, 140, 248, 0.45);
+        --ambient-backdrop-dark: rgba(99, 102, 241, 0.30);
         --temp-gradient-end: #6366F1;
         --temp-gradient-dark: #818CF8;
       }
@@ -1116,9 +1124,11 @@
         box-shadow: 0 3px 10px rgba(99, 102, 241, 0.15);
       }
 
-      /* --- 5. HUJAN (Aqua Teal Prism & Ocean Typography) --- */
+      /* --- 5. HUJAN (Aqua Teal Backdrop & Ocean Typography) --- */
       .weather-theme-rainy {
-        --prism-color: rgba(13, 148, 136, 0.75);
+        --ambient-backdrop-color: rgba(13, 148, 136, 0.30);
+        --ambient-glow-color: rgba(45, 212, 191, 0.42);
+        --ambient-backdrop-dark: rgba(13, 148, 136, 0.28);
         --temp-gradient-end: #0D9488;
         --temp-gradient-dark: #2DD4BF;
       }
@@ -1561,57 +1571,57 @@
       }
 
       .complication-weather-master {
-        height: 100%;
+        height: auto;
         background: #FFFFFF !important;
-        border-radius: 28px;
+        border-radius: 24px;
         position: relative;
-        overflow: hidden;
         box-sizing: border-box;
-        padding: 20px 18px;
+        padding: 16px 18px;
         display: flex;
         flex-direction: column;
-        justify-content: space-between;
-        gap: 14px;
-        border: 1px solid rgba(226, 234, 245, 0.95);
+        gap: 11px;
+        border: 1px solid rgba(255, 255, 255, 0.95);
         box-shadow: 
-          0 16px 36px -6px rgba(45, 65, 95, 0.08),
-          inset 0 1.5px 1.5px #FFFFFF;
+          0 18px 44px -6px var(--ambient-backdrop-color, rgba(2, 132, 199, 0.3)),
+          0 6px 16px -2px rgba(15, 23, 42, 0.06),
+          inset 0 1.5px 1.5px #FFFFFF,
+          inset 0 -1px 1px rgba(0, 0, 0, 0.02);
+        transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.5s ease;
       }
 
-      /* Apple Specular Prism Rim (1px Animated Light Sweep along Card Border) */
+      /* Dynamic 3D Spatial Ambient Backdrop Glow Layer */
       .complication-weather-master::before {
         content: "";
         position: absolute;
-        inset: 0;
+        inset: -6px -8px -14px -8px;
         border-radius: 28px;
-        padding: 1.5px;
-        background: linear-gradient(120deg, transparent 20%, var(--prism-color, rgba(2, 132, 199, 0.6)) 50%, transparent 80%);
-        background-size: 300% 300%;
-        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-        -webkit-mask-composite: xor;
-        mask-composite: exclude;
+        background: radial-gradient(ellipse at 50% 65%, var(--ambient-glow-color, rgba(2, 132, 199, 0.38)) 0%, transparent 72%);
+        filter: blur(20px);
+        opacity: 0.85;
         pointer-events: none;
-        animation: applePrismRimSweep 10s ease-in-out infinite alternate;
-        z-index: 2;
-      }
-
-      @keyframes applePrismRimSweep {
-        0% { background-position: 0% 0%; }
-        50% { background-position: 100% 100%; }
-        100% { background-position: 0% 0%; }
+        z-index: -1;
+        transition: background 0.6s ease, opacity 0.6s ease;
       }
 
       [data-theme="dark"] .complication-weather-master {
-        background: #101726 !important;
-        border-color: rgba(255, 255, 255, 0.08);
-        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+        background: #121824 !important;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 
+          0 20px 48px -6px var(--ambient-backdrop-dark, rgba(56, 189, 248, 0.26)),
+          0 8px 20px -2px rgba(0, 0, 0, 0.55),
+          inset 0 1px 1px rgba(255, 255, 255, 0.12);
+      }
+
+      [data-theme="dark"] .complication-weather-master::before {
+        opacity: 0.75;
+        filter: blur(22px);
       }
 
       .weather-master-hero-row {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 2px 0;
+        padding: 0;
         position: relative;
         z-index: 1;
       }
@@ -1629,7 +1639,7 @@
 
       .weather-temp-master-unit {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 32px;
+        font-size: 24px;
         font-weight: 900;
         color: #0284C7;
         margin-left: 2px;
@@ -1643,11 +1653,11 @@
 
       .weather-condition-master-text {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 19.5px;
+        font-size: 15.5px;
         font-weight: 900;
         color: #0F172A;
         letter-spacing: -0.01em;
-        margin-top: 6px;
+        margin-top: 3px;
       }
 
       [data-theme="dark"] .weather-condition-master-text {
@@ -1656,10 +1666,10 @@
 
       .weather-range-master-text {
         font-family: "Plus Jakarta Sans", monospace;
-        font-size: 13px;
+        font-size: 11.5px;
         font-weight: 800;
         color: #64748B;
-        margin-top: 4px;
+        margin-top: 3px;
       }
 
       [data-theme="dark"] .weather-range-master-text {
@@ -1667,12 +1677,12 @@
       }
 
       .weather-master-icon-wrap {
-        width: 72px;
-        height: 72px;
+        width: 52px;
+        height: 52px;
         display: flex;
         align-items: center;
         justify-content: center;
-        filter: drop-shadow(0 10px 22px rgba(0, 0, 0, 0.16));
+        filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.16));
         animation: appleWeatherFloat 4s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate;
         position: relative;
         z-index: 1;
@@ -1681,21 +1691,21 @@
       .weather-master-section {
         display: flex;
         flex-direction: column;
-        gap: 7px;
+        gap: 5px;
         position: relative;
         z-index: 1;
       }
 
       .weather-section-label {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 10.5px;
+        font-size: 9.5px;
         font-weight: 800;
         color: #64748B;
         letter-spacing: 0.05em;
         text-transform: uppercase;
         display: flex;
         align-items: center;
-        gap: 5px;
+        gap: 4px;
       }
 
       [data-theme="dark"] .weather-section-label {
@@ -1705,14 +1715,14 @@
       .weather-master-hourly-strip {
         display: grid;
         grid-template-columns: repeat(6, 1fr);
-        gap: 6px;
+        gap: 4px;
         background: rgba(255, 255, 255, 0.65);
         border: 1px solid rgba(255, 255, 255, 0.85);
         box-shadow: inset 0 1px 1px #FFFFFF, 0 3px 10px rgba(0, 0, 0, 0.02);
         backdrop-filter: blur(14px);
         -webkit-backdrop-filter: blur(14px);
-        border-radius: 18px;
-        padding: 9px 5px;
+        border-radius: 14px;
+        padding: 6px 3px;
         margin: 0;
       }
 
@@ -1723,21 +1733,21 @@
       }
 
       .weather-master-hourly-strip .weather-hourly-item {
-        padding: 7px 2px;
-        border-radius: 12px;
+        padding: 5px 2px;
+        border-radius: 10px;
       }
 
       .weather-master-hourly-strip .weather-hourly-time {
-        font-size: 10px;
+        font-size: 9px;
       }
 
       .weather-master-hourly-strip .weather-hourly-icon {
-        width: 24px;
-        height: 24px;
+        width: 18px;
+        height: 18px;
       }
 
       .weather-master-hourly-strip .weather-hourly-temp {
-        font-size: 13.5px;
+        font-size: 12px;
         font-weight: 900;
       }
 
@@ -5576,7 +5586,7 @@
           const hourlyPillsHTML = hourlyList.map((h, idx) => {
             const isCurrent = idx === 0;
             const precipHTML = h.precip >= 15 ? `<span class="weather-hourly-precip">💧${h.precip}%</span>` : "";
-            const iconContent = h.iconSVG || this.getWeatherIconSVG("partly-cloudy-day", 22);
+            const iconContent = h.iconSVG || this.getWeatherIconSVG("partly-cloudy-day", 18);
             return `
               <div class="weather-hourly-item ${isCurrent ? "active-hour" : ""}">
                 <span class="weather-hourly-time">
@@ -5590,22 +5600,22 @@
             `;
           }).join("");
 
-          const heroIconMarkup = w.iconHTML || this.getWeatherIconSVG("partly-cloudy-day", 64);
+          const heroIconMarkup = w.iconHTML || this.getWeatherIconSVG("partly-cloudy-day", 50);
 
           return `
             <div class="sidebar-complications">
-              <!-- ⛅ MASTER UNIFIED APPLE tvOS LIVING WEATHER EXPERIENCE CARD -->
+              <!-- ⛅ MASTER COMPACT APPLE tvOS WEATHER COMPLICATION -->
               <div class="complication-card complication-weather-master weather-theme-${w.atmosphereTheme}">
                 <!-- 1. Header Bar -->
                 <div class="complication-header">
                   <div class="complication-title">
-                    <span class="material-icons-round" style="font-size:17px; color:#0284C7;">wb_sunny</span>
+                    <span class="material-icons-round" style="font-size:15px; color:#0284C7;">wb_sunny</span>
                     <span>CUACA PURBALINGGA</span>
                   </div>
                   <span class="complication-tag tag-sky">LIVE BMKG</span>
                 </div>
 
-                <!-- 2. Extra-Large Hero Temperature & Visual Status (Visible from 10m away) -->
+                <!-- 2. Hero Temperature & Visual Status -->
                 <div class="weather-master-hero-row">
                   <div class="weather-master-hero-left">
                     <div class="weather-temp-master-group">
@@ -5623,7 +5633,7 @@
                 <!-- 3. Apple 6-Hour Forecast Timeline Strip -->
                 <div class="weather-master-section">
                   <div class="weather-section-label">
-                    <span class="material-icons-round" style="font-size:13px; color:#0284C7;">schedule</span>
+                    <span class="material-icons-round" style="font-size:11px; color:#0284C7;">schedule</span>
                     <span>PREDIKSI 6 JAM KE DEPAN</span>
                   </div>
                   <div class="weather-master-hourly-strip" id="tvWeatherHourlyStrip">
