@@ -1933,12 +1933,12 @@
         font-size: 12px;
         color: #0284C7;
         font-weight: 900;
-        animation: appleMicroDown 1.8s ease-in-out infinite;
+        animation: appleMicroDown 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
       }
 
       @keyframes appleMicroDown {
-        0%, 100% { transform: translateY(0); opacity: 0.4; }
-        50% { transform: translateY(2.5px); opacity: 1; filter: drop-shadow(0 1px 3px rgba(2, 132, 199, 0.4)); }
+        0%, 100% { transform: translate3d(0, -0.5px, 0); opacity: 0.45; }
+        50% { transform: translate3d(0, 2px, 0); opacity: 1; filter: drop-shadow(0 1px 3px rgba(2, 132, 199, 0.4)); }
       }
 
       /* Tree Convergence Divider with Branching Line */
@@ -1966,12 +1966,19 @@
         gap: 5px;
         box-shadow: 0 2px 8px rgba(2, 132, 199, 0.14);
         z-index: 2;
+        animation: appleConvergenceBreathe 4s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate;
+        will-change: transform;
       }
 
       [data-theme="dark"] .tree-convergence-badge {
         color: #7DD3FC;
         background: rgba(2, 132, 199, 0.2);
         border-color: rgba(56, 189, 248, 0.35);
+      }
+
+      @keyframes appleConvergenceBreathe {
+        0% { transform: scale3d(1, 1, 1); }
+        100% { transform: scale3d(1.025, 1.025, 1); }
       }
 
       .tree-convergence-line {
@@ -2010,13 +2017,24 @@
         align-items: center;
         justify-content: space-between;
         gap: 8px;
-        transition: transform 0.2s ease;
+        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        will-change: transform;
+        transform: translate3d(0, 0, 0);
       }
 
       [data-theme="dark"] .tree-trunk-row-card {
         background: rgba(255, 255, 255, 0.06);
         border-color: rgba(255, 255, 255, 0.1);
         box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
+      }
+
+      .row-stage-1 { animation: appleTrunkCardFloat 6s cubic-bezier(0.45, 0.05, 0.55, 0.95) 0s infinite alternate; }
+      .row-stage-2 { animation: appleTrunkCardFloat 6s cubic-bezier(0.45, 0.05, 0.55, 0.95) 1.8s infinite alternate; }
+      .row-stage-3 { animation: appleTrunkCardFloat 6s cubic-bezier(0.45, 0.05, 0.55, 0.95) 3.6s infinite alternate; }
+
+      @keyframes appleTrunkCardFloat {
+        0% { transform: translate3d(0, 0, 0); }
+        100% { transform: translate3d(0, -1px, 0); }
       }
 
       .tree-trunk-left {
@@ -2034,6 +2052,7 @@
         border-radius: 7px;
         letter-spacing: 0.03em;
         white-space: nowrap;
+        transition: all 0.25s ease;
       }
 
       .tag-loket {
@@ -2083,6 +2102,7 @@
         color: #0284C7;
         font-weight: 900;
         animation: appleTrunkDown 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        will-change: transform, opacity;
       }
 
       [data-theme="dark"] .tree-trunk-down-arrow {
@@ -2090,8 +2110,8 @@
       }
 
       @keyframes appleTrunkDown {
-        0%, 100% { transform: translateY(-2px); opacity: 0.35; }
-        50% { transform: translateY(3px); opacity: 1; filter: drop-shadow(0 2px 6px rgba(2, 132, 199, 0.7)); }
+        0%, 100% { transform: translate3d(0, -1.5px, 0); opacity: 0.35; }
+        50% { transform: translate3d(0, 2.5px, 0); opacity: 1; filter: drop-shadow(0 2px 5px rgba(2, 132, 199, 0.6)); }
       }
 
       /* ===== APPLE SF VISIONOS MICRO-INTERACTIVE ICONS & PALETTES ===== */
@@ -2177,58 +2197,58 @@
       }
 
       .anim-qr-laser {
-        animation: appleQRLaser 3.5s ease-in-out infinite;
+        animation: appleQRLaser 4s cubic-bezier(0.25, 1, 0.5, 1) infinite;
       }
       .anim-kiosk-touch {
-        animation: appleKioskTouch 3s ease-in-out infinite;
+        animation: appleKioskTouch 3.6s cubic-bezier(0.25, 1, 0.5, 1) infinite;
       }
       .anim-voice-broadcast {
-        animation: appleVoiceBroadcast 2.8s ease-in-out infinite;
+        animation: appleVoiceBroadcast 3.5s cubic-bezier(0.25, 1, 0.5, 1) infinite;
       }
       .anim-desk-verified {
-        animation: appleDeskVerified 3.5s ease-in-out infinite alternate;
+        animation: appleDeskVerified 4s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate;
       }
       .anim-heart-pump {
-        animation: appleHeartPump 2.2s ease-in-out infinite;
+        animation: appleHeartPump 2.6s cubic-bezier(0.25, 1, 0.5, 1) infinite;
       }
       .anim-doc-float {
-        animation: appleDocFloat 4s ease-in-out infinite alternate;
+        animation: appleDocFloat 4.5s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate;
       }
 
       @keyframes appleQRLaser {
         0%, 100% { transform: scale3d(1, 1, 1); }
-        50% { transform: scale3d(1.1, 1.1, 1); }
+        50% { transform: scale3d(1.08, 1.08, 1); }
       }
 
       @keyframes appleKioskTouch {
         0%, 100% { transform: translate3d(0, 0, 0) scale3d(1, 1, 1); }
-        35% { transform: translate3d(0, 2px, 0) scale3d(0.9, 0.9, 1); }
-        60% { transform: translate3d(0, -1px, 0) scale3d(1.04, 1.04, 1); }
+        35% { transform: translate3d(0, 1.5px, 0) scale3d(0.92, 0.92, 1); }
+        60% { transform: translate3d(0, -0.8px, 0) scale3d(1.03, 1.03, 1); }
       }
 
       @keyframes appleVoiceBroadcast {
         0%, 100% { transform: scale3d(1, 1, 1) rotate(0deg); }
-        25% { transform: scale3d(1.1, 1.1, 1) rotate(-5deg); }
-        50% { transform: scale3d(1.04, 1.04, 1) rotate(4deg); }
-        75% { transform: scale3d(1.07, 1.07, 1) rotate(-2deg); }
+        25% { transform: scale3d(1.08, 1.08, 1) rotate(-3deg); }
+        50% { transform: scale3d(1.03, 1.03, 1) rotate(3deg); }
+        75% { transform: scale3d(1.05, 1.05, 1) rotate(-1.5deg); }
       }
 
       @keyframes appleDeskVerified {
         0%, 100% { transform: translate3d(0, 0, 0); }
-        50% { transform: translate3d(0, -2px, 0); }
+        50% { transform: translate3d(0, -1.5px, 0); }
       }
 
       @keyframes appleHeartPump {
         0%, 100% { transform: scale3d(1, 1, 1); }
-        12% { transform: scale3d(1.2, 1.2, 1); }
-        24% { transform: scale3d(1.02, 1.02, 1); }
-        36% { transform: scale3d(1.12, 1.12, 1); }
-        55% { transform: scale3d(1, 1, 1); }
+        10% { transform: scale3d(1.16, 1.16, 1); }
+        20% { transform: scale3d(1.02, 1.02, 1); }
+        30% { transform: scale3d(1.1, 1.1, 1); }
+        45% { transform: scale3d(1, 1, 1); }
       }
 
       @keyframes appleDocFloat {
         0% { transform: translate3d(0, 0, 0) rotate(0deg); }
-        50% { transform: translate3d(0, -2.5px, 0) rotate(3deg); }
+        50% { transform: translate3d(0, -2px, 0) rotate(2.5deg); }
         100% { transform: translate3d(0, 0, 0) rotate(0deg); }
       }
 
@@ -6174,7 +6194,7 @@
                 <!-- 4. Batang Pohon Utama Menuju ke Bawah (3 Tahap Pelayanan Terpadu) -->
                 <div class="tree-trunk-section">
                   <!-- Tahap 1: Registrasi Loket -->
-                  <div class="tree-trunk-row-card">
+                  <div class="tree-trunk-row-card row-stage-1">
                     <div class="tree-trunk-left">
                       <div class="tree-step-icon-wrap icon-unified-1 anim-desk-verified">
                         <span class="material-icons-round" style="font-size:16px;">how_to_reg</span>
@@ -6194,7 +6214,7 @@
                   </div>
 
                   <!-- Tahap 2: Nurse Station -->
-                  <div class="tree-trunk-row-card">
+                  <div class="tree-trunk-row-card row-stage-2">
                     <div class="tree-trunk-left">
                       <div class="tree-step-icon-wrap icon-unified-2 anim-heart-pump">
                         <span class="material-icons-round" style="font-size:16px;">monitor_heart</span>
@@ -6214,7 +6234,7 @@
                   </div>
 
                   <!-- Tahap 3: Ruang Poli Dokter -->
-                  <div class="tree-trunk-row-card">
+                  <div class="tree-trunk-row-card row-stage-3">
                     <div class="tree-trunk-left">
                       <div class="tree-step-icon-wrap icon-unified-3 anim-doc-float">
                         <span class="material-icons-round" style="font-size:16px;">medical_services</span>
