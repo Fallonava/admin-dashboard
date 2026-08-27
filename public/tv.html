@@ -1783,44 +1783,59 @@
         opacity: 1;
       }
 
-      /* ===== 🔄 UNIFIED PRIMARY APPLE SMART STACK CAROUSEL ===== */
+      /* ===== 🥽 APPLE visionOS SPATIAL DEPTH MORPH ENGINE ===== */
       .complication-smart-stack {
+        display: grid;
         width: 100%;
         position: relative;
         border-radius: 20px;
-        overflow: hidden;
         box-sizing: border-box;
-      }
-
-      .smart-stack-viewport {
-        width: 100%;
         overflow: hidden;
-        position: relative;
-        border-radius: 20px;
-      }
-
-      .smart-stack-track {
-        display: flex;
-        width: 100%;
-        transition: transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
-        will-change: transform;
       }
 
       .smart-stack-slide {
-        flex: 0 0 100%;
+        grid-area: 1 / 1 / 2 / 2;
         width: 100%;
+        height: 100%;
+        opacity: 0;
+        transform: scale(0.95) translate3d(0, 3px, 0);
+        pointer-events: none;
+        transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+                    transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+        will-change: transform, opacity;
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
         box-sizing: border-box;
-        opacity: 0.35;
-        transform: scale(0.96);
-        transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1),
-                    transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+        position: relative;
       }
 
       .smart-stack-slide.active-slide {
         opacity: 1;
-        transform: scale(1);
+        transform: scale(1) translate3d(0, 0, 0);
+        pointer-events: auto;
+        z-index: 2;
       }
 
+      /* Apple Specular Glass Light Sheen Sweep (100% GPU accelerated) */
+      .smart-stack-slide.active-slide::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: 20px;
+        background: linear-gradient(115deg, transparent 20%, rgba(255, 255, 255, 0.14) 50%, transparent 80%);
+        transform: translateX(-100%);
+        animation: appleGlassSheen 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        pointer-events: none;
+        z-index: 10;
+      }
+
+      @keyframes appleGlassSheen {
+        0% { transform: translateX(-100%); opacity: 0; }
+        30% { opacity: 1; }
+        100% { transform: translateX(100%); opacity: 0; }
+      }
+
+      /* Apple Fluid Jelly Pagination Dots */
       .smart-stack-dots {
         position: absolute;
         bottom: 8px;
@@ -1828,7 +1843,7 @@
         display: flex;
         align-items: center;
         gap: 3.5px;
-        z-index: 10;
+        z-index: 15;
       }
 
       .smart-stack-dot {
@@ -1836,11 +1851,14 @@
         height: 5px;
         border-radius: 50%;
         background: rgba(60, 60, 67, 0.25);
-        transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        transition: width 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+                    border-radius 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+                    background 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+        will-change: width, background;
       }
 
       .smart-stack-dot.active {
-        width: 14px;
+        width: 15px;
         border-radius: 9999px;
         background: #007AFF;
       }
@@ -7412,36 +7430,32 @@
 
           return `
             <div class="sidebar-complications">
-              <!-- 🔄 UNIFIED PRIMARY APPLE SMART STACK CAROUSEL -->
+              <!-- 🥽 APPLE visionOS SPATIAL DEPTH MORPH SMART STACK -->
               <div class="complication-smart-stack" id="complicationSmartStack">
-                <div class="smart-stack-viewport">
-                  <div class="smart-stack-track" id="smartStackTrack">
-                    <!-- Slide 0: Cuaca Purbalingga Card -->
-                    <div class="smart-stack-slide active-slide" id="smartStackSlideWeather" data-slide="0">
-                      <div class="complication-card complication-weather-master weather-theme-${w.atmosphereTheme}">
-                        <!-- 1. Header Bar -->
-                        <div class="complication-header">
-                          <div class="complication-title">
-                            <span class="material-icons-round" style="font-size:14px; color:#0284C7;">wb_sunny</span>
-                            <span>CUACA PURBALINGGA</span>
-                          </div>
-                          <span class="complication-tag tag-sky">LIVE BMKG</span>
-                        </div>
+                <!-- Slide 0: Cuaca Purbalingga Card -->
+                <div class="smart-stack-slide active-slide" id="smartStackSlideWeather" data-slide="0">
+                  <div class="complication-card complication-weather-master weather-theme-${w.atmosphereTheme}">
+                    <!-- 1. Header Bar -->
+                    <div class="complication-header">
+                      <div class="complication-title">
+                        <span class="material-icons-round" style="font-size:14px; color:#0284C7;">wb_sunny</span>
+                        <span>CUACA PURBALINGGA</span>
+                      </div>
+                      <span class="complication-tag tag-sky">LIVE BMKG</span>
+                    </div>
 
-                        <!-- 2. Hero Temperature & Visual Status -->
-                        <div class="weather-master-hero-row">
-                          <div class="weather-master-hero-left">
-                            <div class="weather-temp-master-group">
-                              <span class="weather-temp-master-val" id="tvWeatherTemp">${w.temp}</span>
-                              <span class="weather-temp-master-unit">°C</span>
-                            </div>
-                            <div class="weather-condition-master-text" id="tvWeatherCondition">${w.condition}</div>
-                            <div class="weather-range-master-text" id="tvWeatherRange">Suhu Harian: H: ${w.tempMax}° • L: ${w.tempMin}°</div>
-                          </div>
-                          <div class="weather-master-hero-right">
-                            <div class="weather-master-icon-wrap" id="tvWeatherIcon">${heroIconMarkup}</div>
-                          </div>
+                    <!-- 2. Hero Temperature & Visual Status -->
+                    <div class="weather-master-hero-row">
+                      <div class="weather-master-hero-left">
+                        <div class="weather-temp-master-group">
+                          <span class="weather-temp-master-val" id="tvWeatherTemp">${w.temp}</span>
+                          <span class="weather-temp-master-unit">°C</span>
                         </div>
+                        <div class="weather-condition-master-text" id="tvWeatherCondition">${w.condition}</div>
+                        <div class="weather-range-master-text" id="tvWeatherRange">Suhu Harian: H: ${w.tempMax}° • L: ${w.tempMin}°</div>
+                      </div>
+                      <div class="weather-master-hero-right">
+                        <div class="weather-master-icon-wrap" id="tvWeatherIcon">${heroIconMarkup}</div>
                       </div>
                     </div>
                   </div>
@@ -8810,12 +8824,11 @@
           }
 
           this._skItems = items;
-          const trackEl = $("smartStackTrack");
-          const dotsEl = $("smartStackDots");
+          const container = $("complicationSmartStack");
           const w = this._weatherCache;
           const heroIconMarkup = w.iconHTML || this.getWeatherIconSVG("partly-cloudy-day", 48);
 
-          if (!trackEl) return;
+          if (!container) return;
 
           // Slide 0: Cuaca Purbalingga Card
           let html = `
@@ -8845,7 +8858,7 @@
             </div>
           `;
 
-          // Slides 1..N: Peer Doctor Hero Slides
+          // Slides 1..N: Peer Doctor Spatial Depth Hero Slides
           items.forEach((item, idx) => {
             html += `
               <div class="smart-stack-slide" data-slide="${idx + 1}">
@@ -8881,22 +8894,12 @@
             `;
           });
 
-          trackEl.innerHTML = html;
-
           const totalSlides = 1 + items.length;
+          html += `<div class="smart-stack-dots" id="smartStackDots" style="${totalSlides > 1 ? "display: flex;" : "display: none;"}">
+            ${Array.from({ length: totalSlides }, (_, i) => `<span class="smart-stack-dot ${i === 0 ? "active" : ""}" data-dot-idx="${i}"></span>`).join("")}
+          </div>`;
 
-          // Render Unified Pagination Dots
-          if (dotsEl) {
-            if (totalSlides > 1) {
-              dotsEl.style.display = "flex";
-              dotsEl.innerHTML = Array.from({ length: totalSlides }, (_, i) => 
-                `<span class="smart-stack-dot ${i === 0 ? "active" : ""}" data-dot-idx="${i}"></span>`
-              ).join("");
-            } else {
-              dotsEl.style.display = "none";
-              dotsEl.innerHTML = "";
-            }
-          }
+          container.innerHTML = html;
 
           if (totalSlides > 1) {
             this.startSmartStackRotation(totalSlides);
@@ -8925,19 +8928,14 @@
         },
 
         applySmartStackSlideUI(idx, totalSlides) {
-          const trackEl = $("smartStackTrack");
-          const dotsEl = $("smartStackDots");
+          const container = $("complicationSmartStack");
+          if (!container) return;
 
-          if (trackEl) {
-            trackEl.style.transform = `translate3d(-${idx * 100}%, 0, 0)`;
-            const slides = trackEl.querySelectorAll(".smart-stack-slide");
-            slides.forEach((s, i) => s.classList.toggle("active-slide", i === idx));
-          }
+          const slides = container.querySelectorAll(".smart-stack-slide");
+          slides.forEach((s, i) => s.classList.toggle("active-slide", i === idx));
 
-          if (dotsEl) {
-            const dots = dotsEl.querySelectorAll(".smart-stack-dot");
-            dots.forEach((d, i) => d.classList.toggle("active", i === idx));
-          }
+          const dots = container.querySelectorAll(".smart-stack-dot");
+          dots.forEach((d, i) => d.classList.toggle("active", i === idx));
         },
 
         stopSmartStackRotation() {
