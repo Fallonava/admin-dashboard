@@ -1843,7 +1843,7 @@
         background: #38BDF8;
       }
 
-      /* Status Khusus Smart Stack Widget */
+      /* Status Khusus Smart Stack Widget (Apple Hero Carousel) */
       .complication-status-khusus-master {
         height: 100%;
         display: flex;
@@ -1857,6 +1857,8 @@
         box-shadow: 
           0 1px 0 rgba(60, 60, 67, 0.08),
           0 4px 14px -2px rgba(60, 60, 67, 0.04);
+        position: relative;
+        overflow: hidden;
       }
 
       [data-theme="dark"] .complication-status-khusus-master {
@@ -1879,95 +1881,214 @@
         border-color: rgba(191, 90, 242, 0.35);
       }
 
-      .sk-widget-body {
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
+      .sk-carousel-container {
         flex: 1;
-        justify-content: center;
-        min-height: 0;
-        margin-top: 4px;
-      }
-
-      .sk-widget-row {
+        width: 100%;
+        overflow: hidden;
+        position: relative;
         display: flex;
         align-items: center;
-        gap: 7px;
-        background: #F8FAFC;
-        border-radius: 10px;
-        padding: 4px 7px;
-        border: 1px solid rgba(226, 232, 240, 0.95);
+        margin: 2px 0;
+      }
+
+      .sk-carousel-track {
+        display: flex;
+        width: 100%;
+        height: 100%;
+        transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+        will-change: transform;
+      }
+
+      .sk-hero-slide {
+        flex: 0 0 100%;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        gap: 10px;
         box-sizing: border-box;
+        padding: 2px 1px;
+      }
+
+      .sk-hero-icon-box {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+
+      .sk-hero-icon-box.box-cuti {
+        background: #FEF2F2;
+        color: #EF4444;
+        border: 1px solid #FECACA;
+      }
+      [data-theme="dark"] .sk-hero-icon-box.box-cuti {
+        background: rgba(239, 68, 68, 0.2);
+        color: #F87171;
+        border-color: rgba(239, 68, 68, 0.35);
+      }
+
+      .sk-hero-icon-box.box-op {
+        background: #FAF5FF;
+        color: #A855F7;
+        border: 1px solid #E9D5FF;
+      }
+      [data-theme="dark"] .sk-hero-icon-box.box-op {
+        background: rgba(168, 85, 247, 0.2);
+        color: #C084FC;
+        border-color: rgba(168, 85, 247, 0.35);
+      }
+
+      .sk-hero-icon-box.box-penuh {
+        background: #FFFBEB;
+        color: #F59E0B;
+        border: 1px solid #FDE68A;
+      }
+      [data-theme="dark"] .sk-hero-icon-box.box-penuh {
+        background: rgba(245, 158, 11, 0.2);
+        color: #FCD34D;
+        border-color: rgba(245, 158, 11, 0.35);
+      }
+
+      .sk-hero-content {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        min-width: 0;
+        flex: 1;
+        line-height: 1.15;
+      }
+
+      .sk-hero-top-row {
+        display: flex;
+        align-items: center;
+        gap: 5px;
         min-width: 0;
       }
 
-      [data-theme="dark"] .sk-widget-row {
-        background: rgba(255, 255, 255, 0.04);
-        border-color: rgba(255, 255, 255, 0.08);
-      }
-
-      .sk-widget-badge {
+      .sk-hero-status-pill {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 7.5px;
+        font-size: 8px;
         font-weight: 900;
-        padding: 1.5px 5px;
+        padding: 1.5px 5.5px;
         border-radius: 4px;
         letter-spacing: 0.03em;
         text-transform: uppercase;
         flex-shrink: 0;
       }
 
-      .badge-op {
-        background: rgba(175, 82, 222, 0.14);
-        color: #AF52DE;
-        border: 1px solid rgba(175, 82, 222, 0.3);
+      .pill-cuti {
+        background: rgba(239, 68, 68, 0.15);
+        color: #DC2626;
+        border: 1px solid rgba(239, 68, 68, 0.3);
+      }
+      [data-theme="dark"] .pill-cuti {
+        background: rgba(239, 68, 68, 0.25);
+        color: #F87171;
+        border-color: rgba(239, 68, 68, 0.4);
       }
 
-      .badge-cuti {
-        background: rgba(255, 59, 48, 0.14);
-        color: #FF3B30;
-        border: 1px solid rgba(255, 59, 48, 0.3);
+      .pill-op {
+        background: rgba(168, 85, 247, 0.15);
+        color: #9333EA;
+        border: 1px solid rgba(168, 85, 247, 0.3);
+      }
+      [data-theme="dark"] .pill-op {
+        background: rgba(168, 85, 247, 0.25);
+        color: #C084FC;
+        border-color: rgba(168, 85, 247, 0.4);
       }
 
-      .badge-penuh {
-        background: rgba(255, 149, 0, 0.14);
-        color: #FF9500;
-        border: 1px solid rgba(255, 149, 0, 0.3);
+      .pill-penuh {
+        background: rgba(245, 158, 11, 0.15);
+        color: #D97706;
+        border: 1px solid rgba(245, 158, 11, 0.3);
+      }
+      [data-theme="dark"] .pill-penuh {
+        background: rgba(245, 158, 11, 0.25);
+        color: #FCD34D;
+        border-color: rgba(245, 158, 11, 0.4);
       }
 
-      .sk-widget-info {
-        display: flex;
-        flex-direction: column;
-        min-width: 0;
-        line-height: 1.18;
-      }
-
-      .sk-widget-name {
+      .sk-hero-poli-tag {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 10.5px;
-        font-weight: 800;
-        color: #0F172A;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-
-      [data-theme="dark"] .sk-widget-name {
-        color: #F8FAFC;
-      }
-
-      .sk-widget-meta {
-        font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 9px;
-        font-weight: 600;
+        font-size: 8.5px;
+        font-weight: 700;
         color: #64748B;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
       }
-
-      [data-theme="dark"] .sk-widget-meta {
+      [data-theme="dark"] .sk-hero-poli-tag {
         color: #94A3B8;
+      }
+
+      .sk-hero-doctor-name {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 11.5px;
+        font-weight: 800;
+        color: #0F172A;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        letter-spacing: -0.01em;
+      }
+      [data-theme="dark"] .sk-hero-doctor-name {
+        color: #F8FAFC;
+      }
+
+      .sk-hero-meta-row {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 9.5px;
+        font-weight: 600;
+        color: #475569;
+        display: flex;
+        align-items: center;
+        gap: 3.5px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      [data-theme="dark"] .sk-hero-meta-row {
+        color: #CBD5E1;
+      }
+
+      .sk-hero-meta-row strong {
+        font-weight: 800;
+        color: #0284C7;
+      }
+      [data-theme="dark"] .sk-hero-meta-row strong {
+        color: #38BDF8;
+      }
+
+      .sk-pills-bar {
+        display: flex;
+        align-items: center;
+        gap: 3px;
+        margin-top: 1px;
+      }
+
+      .sk-pill-bar {
+        height: 2.5px;
+        flex: 1;
+        border-radius: 9999px;
+        background: rgba(60, 60, 67, 0.15);
+        transition: background 0.3s ease;
+      }
+
+      .sk-pill-bar.active {
+        background: #AF52DE;
+      }
+
+      [data-theme="dark"] .sk-pill-bar {
+        background: rgba(255, 255, 255, 0.15);
+      }
+
+      [data-theme="dark"] .sk-pill-bar.active {
+        background: #C084FC;
       }
 
       .sk-widget-empty {
@@ -7231,13 +7352,18 @@
                       <span class="complication-tag tag-purple" id="skTotalCountBadge">0 DOKTER</span>
                     </div>
 
-                    <!-- 2. Dynamic Content List -->
-                    <div class="sk-widget-body" id="skWidgetBody">
-                      <div class="sk-widget-empty">
-                        <span class="material-icons-round" style="font-size: 18px; color: #34C759;">check_circle</span>
-                        <span>Semua Dokter Siap Melayani</span>
+                    <!-- 2. Horizontal Side-Slide Carousel Track -->
+                    <div class="sk-carousel-container">
+                      <div class="sk-carousel-track" id="skCarouselTrack">
+                        <div class="sk-widget-empty" style="width: 100%;">
+                          <span class="material-icons-round" style="font-size: 18px; color: #34C759;">check_circle</span>
+                          <span>Semua Dokter Siap Melayani</span>
+                        </div>
                       </div>
                     </div>
+
+                    <!-- 3. Mini Progress / Page Indicator Bar -->
+                    <div class="sk-pills-bar" id="skPillsBar" style="display: none;"></div>
                   </div>
                 </div>
 
@@ -8558,74 +8684,106 @@
         },
 
         updateSpecialStatusWidget(operasiList, penuhList, cutiList) {
-          const totalCount = (operasiList ? operasiList.length : 0) + 
-                             (penuhList ? penuhList.length : 0) + 
-                             (cutiList ? cutiList.length : 0);
+          const items = [];
+          if (operasiList) {
+            operasiList.forEach(d => {
+              const timeStr = d.JamPraktek ? `Praktek Mulai: <strong>${(d.JamPraktek.split("-")[0] || "").trim()} WIB</strong>` : "Tindakan Medis";
+              items.push({
+                type: "op",
+                icon: "emergency",
+                badge: "TINDAKAN OPERASI",
+                poli: d.Poli || d.SubPoli || d.Spesialis || "Spesialis",
+                name: d.Dokter,
+                metaIcon: "schedule",
+                metaText: timeStr
+              });
+            });
+          }
+          if (penuhList) {
+            penuhList.forEach(d => {
+              items.push({
+                type: "penuh",
+                icon: "groups",
+                badge: "KUOTA PENUH",
+                poli: d.Poli || d.SubPoli || d.Spesialis || "Spesialis",
+                name: d.Dokter,
+                metaIcon: "do_not_disturb_on",
+                metaText: "Pendaftaran Hari Ini Penuh"
+              });
+            });
+          }
+          if (cutiList) {
+            cutiList.forEach(d => {
+              let returnStr = "Sedang Cuti";
+              if (d.NextBuka) {
+                returnStr = `Kembali: <strong>${d.NextBuka}</strong>`;
+              } else if (d.CutiSampai) {
+                returnStr = `Cuti s/d: <strong>${d.CutiSampai}</strong>`;
+              }
+              items.push({
+                type: "cuti",
+                icon: "event_busy",
+                badge: "SEDANG CUTI",
+                poli: d.Poli || d.SubPoli || d.Spesialis || "Spesialis",
+                name: d.Dokter,
+                metaIcon: "event_available",
+                metaText: returnStr
+              });
+            });
+          }
+
+          this._skItems = items;
+          const totalCount = items.length;
           const badgeEl = $("skTotalCountBadge");
-          const bodyEl = $("skWidgetBody");
+          const trackEl = $("skCarouselTrack");
+          const pillsBarEl = $("skPillsBar");
           const dotsEl = $("smartStackDots");
 
           if (badgeEl) {
-            badgeEl.textContent = `${totalCount} DOKTER`;
+            badgeEl.textContent = totalCount > 1 
+              ? `1 / ${totalCount} DOKTER` 
+              : `${totalCount} DOKTER`;
           }
 
-          if (bodyEl) {
+          if (trackEl) {
             if (totalCount === 0) {
-              bodyEl.innerHTML = `
-                <div class="sk-widget-empty">
+              trackEl.style.transform = "translateX(0%)";
+              trackEl.innerHTML = `
+                <div class="sk-widget-empty" style="width: 100%;">
                   <span class="material-icons-round" style="font-size: 18px; color: #34C759;">check_circle</span>
                   <span>Semua Dokter Siap Melayani</span>
                 </div>
               `;
             } else {
-              const items = [];
-              if (operasiList) {
-                operasiList.forEach(d => {
-                  const timeStr = d.JamPraktek ? `Poli ${d.JamPraktek.split("-")[0] || ""}` : "Tindakan";
-                  items.push({
-                    type: "op",
-                    badge: "OPERASI",
-                    name: d.Dokter,
-                    meta: timeStr
-                  });
-                });
-              }
-              if (penuhList) {
-                penuhList.forEach(d => {
-                  items.push({
-                    type: "penuh",
-                    badge: "PENUH",
-                    name: d.Dokter,
-                    meta: "Kuota Hari Ini Penuh"
-                  });
-                });
-              }
-              if (cutiList) {
-                cutiList.forEach(d => {
-                  let returnStr = "Sedang Cuti";
-                  if (d.NextBuka) {
-                    returnStr = `Buka: ${d.NextBuka}`;
-                  } else if (d.CutiSampai) {
-                    returnStr = `Sampai ${d.CutiSampai}`;
-                  }
-                  items.push({
-                    type: "cuti",
-                    badge: "CUTI",
-                    name: d.Dokter,
-                    meta: returnStr
-                  });
-                });
-              }
-
-              bodyEl.innerHTML = items.slice(0, 2).map(item => `
-                <div class="sk-widget-row st-${item.type}">
-                  <div class="sk-widget-badge badge-${item.type}">${item.badge}</div>
-                  <div class="sk-widget-info">
-                    <span class="sk-widget-name">${esc(item.name)}</span>
-                    <span class="sk-widget-meta">${esc(item.meta)}</span>
+              trackEl.innerHTML = items.map(item => `
+                <div class="sk-hero-slide">
+                  <div class="sk-hero-icon-box box-${item.type}">
+                    <span class="material-icons-round" style="font-size: 22px;">${item.icon}</span>
+                  </div>
+                  <div class="sk-hero-content">
+                    <div class="sk-hero-top-row">
+                      <span class="sk-hero-status-pill pill-${item.type}">${item.badge}</span>
+                      <span class="sk-hero-poli-tag">${esc(item.poli)}</span>
+                    </div>
+                    <div class="sk-hero-doctor-name">${esc(item.name)}</div>
+                    <div class="sk-hero-meta-row">
+                      <span class="material-icons-round" style="font-size: 11.5px;">${item.metaIcon}</span>
+                      <span>${item.metaText}</span>
+                    </div>
                   </div>
                 </div>
               `).join("");
+            }
+          }
+
+          // Render Mini Progress Pill Bars
+          if (pillsBarEl) {
+            if (totalCount > 1) {
+              pillsBarEl.style.display = "flex";
+              pillsBarEl.innerHTML = items.map((_, i) => `<span class="sk-pill-bar ${i === 0 ? "active" : ""}"></span>`).join("");
+            } else {
+              pillsBarEl.style.display = "none";
+              pillsBarEl.innerHTML = "";
             }
           }
 
@@ -8644,41 +8802,105 @@
         startSmartStackRotation() {
           if (this._smartStackTimer) return;
           this._smartStackCurrentSlide = 0;
+          this._skDoctorIndex = 0;
 
-          this._smartStackTimer = setInterval(() => {
-            this._smartStackCurrentSlide = (this._smartStackCurrentSlide === 0) ? 1 : 0;
-            const slideWeather = $("smartStackSlideWeather");
-            const slideSpecial = $("smartStackSlideSpecialStatus");
-            const dot1 = $("dotSlide1");
-            const dot2 = $("dotSlide2");
+          const stepCarousel = () => {
+            const items = this._skItems || [];
+            const totalDocs = items.length;
+
+            if (totalDocs === 0) {
+              this.stopSmartStackRotation();
+              return;
+            }
 
             if (this._smartStackCurrentSlide === 0) {
-              if (slideWeather) slideWeather.classList.add("active-slide");
-              if (slideSpecial) slideSpecial.classList.remove("active-slide");
-              if (dot1) dot1.classList.add("active");
-              if (dot2) dot2.classList.remove("active");
+              this._smartStackCurrentSlide = 1;
+              this._skDoctorIndex = 0;
+              this.updateSmartStackSlideUI(1, 0, totalDocs);
+              
+              if (totalDocs > 1) {
+                this.scheduleDoctorSubSlides(totalDocs);
+              } else {
+                this._smartStackTimer = setTimeout(stepCarousel, 8000);
+              }
             } else {
-              if (slideWeather) slideWeather.classList.remove("active-slide");
-              if (slideSpecial) slideSpecial.classList.add("active-slide");
-              if (dot1) dot1.classList.remove("active");
-              if (dot2) dot2.classList.add("active");
+              this._smartStackCurrentSlide = 0;
+              this.updateSmartStackSlideUI(0, 0, totalDocs);
+              this._smartStackTimer = setTimeout(stepCarousel, 8000);
             }
-          }, 8500);
+          };
+
+          this._smartStackTimer = setTimeout(stepCarousel, 8000);
         },
 
-        stopSmartStackRotation() {
-          if (this._smartStackTimer) {
-            clearInterval(this._smartStackTimer);
-            this._smartStackTimer = null;
+        scheduleDoctorSubSlides(totalDocs) {
+          let currentSub = 0;
+          const subStep = () => {
+            currentSub++;
+            if (currentSub < totalDocs && this._smartStackCurrentSlide === 1) {
+              this._skDoctorIndex = currentSub;
+              this.updateDoctorSlideUI(currentSub, totalDocs);
+              this._smartStackTimer = setTimeout(subStep, 4200);
+            } else {
+              this._smartStackCurrentSlide = 0;
+              this.updateSmartStackSlideUI(0, 0, totalDocs);
+              this._smartStackTimer = setTimeout(() => {
+                this._smartStackTimer = null;
+                this.startSmartStackRotation();
+              }, 8000);
+            }
+          };
+          this._smartStackTimer = setTimeout(subStep, 4200);
+        },
+
+        updateDoctorSlideUI(idx, totalDocs) {
+          const trackEl = $("skCarouselTrack");
+          const badgeEl = $("skTotalCountBadge");
+          const pillsBarEl = $("skPillsBar");
+
+          if (trackEl) {
+            trackEl.style.transform = `translateX(-${idx * 100}%)`;
           }
+          if (badgeEl) {
+            badgeEl.textContent = `${idx + 1} / ${totalDocs} DOKTER`;
+          }
+          if (pillsBarEl) {
+            const bars = pillsBarEl.querySelectorAll(".sk-pill-bar");
+            bars.forEach((b, i) => b.classList.toggle("active", i === idx));
+          }
+        },
+
+        updateSmartStackSlideUI(slideIdx, doctorIdx, totalDocs) {
           const slideWeather = $("smartStackSlideWeather");
           const slideSpecial = $("smartStackSlideSpecialStatus");
           const dot1 = $("dotSlide1");
           const dot2 = $("dotSlide2");
-          if (slideWeather) slideWeather.classList.add("active-slide");
-          if (slideSpecial) slideSpecial.classList.remove("active-slide");
-          if (dot1) dot1.classList.add("active");
-          if (dot2) dot2.classList.remove("active");
+
+          if (slideIdx === 0) {
+            if (slideWeather) slideWeather.classList.add("active-slide");
+            if (slideSpecial) slideSpecial.classList.remove("active-slide");
+            if (dot1) dot1.classList.add("active");
+            if (dot2) dot2.classList.remove("active");
+          } else {
+            if (slideWeather) slideWeather.classList.remove("active-slide");
+            if (slideSpecial) slideSpecial.classList.add("active-slide");
+            if (dot1) dot1.classList.remove("active");
+            if (dot2) dot2.classList.add("active");
+            this.updateDoctorSlideUI(doctorIdx, totalDocs);
+          }
+        },
+
+        stopSmartStackRotation() {
+          if (this._smartStackTimer) {
+            clearTimeout(this._smartStackTimer);
+            clearInterval(this._smartStackTimer);
+            this._smartStackTimer = null;
+          }
+          this._smartStackCurrentSlide = 0;
+          this._skDoctorIndex = 0;
+          this.updateSmartStackSlideUI(0, 0, 0);
+          const trackEl = $("skCarouselTrack");
+          if (trackEl) trackEl.style.transform = "translateX(0%)";
         },
       };
 
