@@ -2171,13 +2171,12 @@
 
       .tree-step-title {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 11.5px;
+        font-size: 11px;
         font-weight: 800;
         color: #0F172A;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+        line-height: 1.22;
         letter-spacing: -0.01em;
+        word-break: normal;
       }
 
       [data-theme="dark"] .tree-step-title {
@@ -2189,31 +2188,44 @@
         font-size: 9.5px;
         font-weight: 600;
         color: #64748B;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+        line-height: 1.2;
+        word-break: normal;
       }
 
       [data-theme="dark"] .tree-step-sub {
         color: #94A3B8;
       }
 
-      /* Micro Down Connectors */
+      /* Micro Down Connectors & Interactive Apple Micro-Animations */
       .tree-micro-down-connector {
         display: flex;
         align-items: center;
         justify-content: center;
-        height: 10px;
+        height: 11px;
       }
 
       .tree-micro-down-arrow {
         font-size: 12px;
         color: #D97706;
         font-weight: 900;
+        animation: appleMicroDownGlide 2.2s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+        will-change: transform, opacity;
       }
 
       [data-theme="dark"] .tree-micro-down-arrow {
         color: #FBBF24;
+      }
+
+      @keyframes appleMicroDownGlide {
+        0%, 100% {
+          transform: translate3d(0, -2px, 0) scale(0.95);
+          opacity: 0.45;
+        }
+        50% {
+          transform: translate3d(0, 2px, 0) scale(1.15);
+          opacity: 1;
+          filter: drop-shadow(0 2px 5px rgba(217, 119, 6, 0.5));
+        }
       }
 
       /* Tree Convergence Divider with Branching Line */
@@ -2240,6 +2252,12 @@
         align-items: center;
         gap: 5px;
         z-index: 2;
+        animation: appleConvergenceBreathe 4s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate;
+      }
+
+      @keyframes appleConvergenceBreathe {
+        0% { transform: scale(1); }
+        100% { transform: scale(1.025); }
       }
 
       [data-theme="dark"] .tree-convergence-badge {
@@ -2349,18 +2367,32 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        height: 9px;
+        height: 10px;
         position: relative;
       }
 
       .tree-trunk-down-arrow {
-        font-size: 12px;
-        color: #64748B;
+        font-size: 13px;
+        color: #0284C7;
         font-weight: 900;
+        animation: appleTrunkDownGlide 2.4s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+        will-change: transform, opacity;
       }
 
       [data-theme="dark"] .tree-trunk-down-arrow {
-        color: #94A3B8;
+        color: #38BDF8;
+      }
+
+      @keyframes appleTrunkDownGlide {
+        0%, 100% {
+          transform: translate3d(0, -2px, 0) scale(0.95);
+          opacity: 0.4;
+        }
+        50% {
+          transform: translate3d(0, 2.5px, 0) scale(1.18);
+          opacity: 1;
+          filter: drop-shadow(0 2px 6px rgba(2, 132, 199, 0.55));
+        }
       }
 
       /* ===== APPLE SF VISIONOS MICRO-INTERACTIVE ICONS & PALETTES ===== */
@@ -5598,7 +5630,7 @@
                     <span class="material-icons-round">smartphone</span>
                   </div>
                   <div class="di-tree-node-text">
-                    <span class="di-tree-node-label">Tunjukkan No. Online</span>
+                    <span class="di-tree-node-label">Tunjukkan Nomor Pendaftaran</span>
                     <span class="di-tree-node-sub">Mobile JKN / Web</span>
                   </div>
                 </div>
@@ -7011,7 +7043,7 @@
                         <span class="material-icons-round" style="font-size:16px;">smartphone</span>
                       </div>
                       <div class="tree-step-content">
-                        <span class="tree-step-title">Tunjukkan No. Online</span>
+                        <span class="tree-step-title">Tunjukkan Nomor Pendaftaran</span>
                         <span class="tree-step-sub">Mobile JKN / Web RS</span>
                       </div>
                     </div>
@@ -7036,7 +7068,7 @@
                       </div>
                     </div>
                     <div class="tree-micro-down-connector">
-                      <span class="material-icons-round tree-micro-down-arrow">arrow_downward</span>
+                      <span class="material-icons-round tree-micro-down-arrow">south</span>
                     </div>
                     <div class="tree-step-card">
                       <div class="tree-step-icon-wrap icon-reg-2 anim-voice-broadcast">
