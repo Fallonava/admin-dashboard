@@ -974,56 +974,76 @@
 
       /* ===== 🌅 DIURNAL DYNAMIC ATMOSPHERIC SOLAR THEMES (PAGI, SIANG, SORE, MALAM, RAINY) ===== */
       .weather-theme-pagi {
-        background: linear-gradient(155deg, #FFF7ED 0%, #FFEDD5 45%, #F0F9FF 100%) !important;
-        border-color: #FED7AA !important;
-        box-shadow: 0 14px 34px -4px rgba(249, 115, 22, 0.12), inset 0 1.5px 1.5px #FFFFFF !important;
+        background: linear-gradient(155deg, #FFFBEB 0%, #FEF3C7 45%, #FFEDD5 100%) !important;
+        border-color: #FDE68A !important;
+        box-shadow: 0 14px 34px -4px rgba(245, 158, 11, 0.18), inset 0 1.5px 1.5px #FFFFFF !important;
       }
       [data-theme="dark"] .weather-theme-pagi {
-        background: linear-gradient(155deg, #1C1017 0%, #2A1728 50%, #0F172A 100%) !important;
-        border-color: rgba(251, 146, 60, 0.25) !important;
+        background: linear-gradient(155deg, #241604 0%, #381E05 50%, #170C02 100%) !important;
+        border-color: rgba(245, 158, 11, 0.35) !important;
         box-shadow: 0 14px 36px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.1) !important;
       }
 
       .weather-theme-siang {
         background: linear-gradient(155deg, #F0F9FF 0%, #E0F2FE 50%, #BAE6FD 100%) !important;
-        border-color: #BAE6FD !important;
-        box-shadow: 0 14px 34px -4px rgba(2, 132, 199, 0.12), inset 0 1.5px 1.5px #FFFFFF !important;
+        border-color: #7DD3FC !important;
+        box-shadow: 0 14px 34px -4px rgba(2, 132, 199, 0.16), inset 0 1.5px 1.5px #FFFFFF !important;
       }
       [data-theme="dark"] .weather-theme-siang {
         background: linear-gradient(155deg, #081B2E 0%, #0C2B47 50%, #0F172A 100%) !important;
-        border-color: rgba(56, 189, 248, 0.25) !important;
+        border-color: rgba(56, 189, 248, 0.35) !important;
         box-shadow: 0 14px 36px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.1) !important;
       }
 
       .weather-theme-sore {
-        background: linear-gradient(155deg, #FFF1F2 0%, #FFE4E6 40%, #FEF3C7 100%) !important;
-        border-color: #FECDD3 !important;
-        box-shadow: 0 14px 34px -4px rgba(244, 63, 94, 0.12), inset 0 1.5px 1.5px #FFFFFF !important;
+        background: linear-gradient(155deg, #FFF1F2 0%, #FFE4E6 35%, #FFEDD5 70%, #FEF3C7 100%) !important;
+        border-color: #FDA4AF !important;
+        box-shadow: 0 14px 34px -4px rgba(244, 63, 94, 0.22), inset 0 1.5px 1.5px #FFFFFF !important;
       }
       [data-theme="dark"] .weather-theme-sore {
-        background: linear-gradient(155deg, #240C1A 0%, #361426 50%, #17112E 100%) !important;
-        border-color: rgba(244, 63, 94, 0.25) !important;
-        box-shadow: 0 14px 36px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.1) !important;
+        background: linear-gradient(155deg, #330A19 0%, #4C1126 50%, #290815 100%) !important;
+        border-color: rgba(251, 113, 133, 0.4) !important;
+        box-shadow: 0 14px 36px rgba(0, 0, 0, 0.55), inset 0 1px 1px rgba(255, 255, 255, 0.1) !important;
+      }
+
+      .weather-theme-sore .complication-title .material-icons-round,
+      .weather-theme-sore .weather-temp-master-unit {
+        color: #E11D48 !important;
+      }
+      [data-theme="dark"] .weather-theme-sore .complication-title .material-icons-round,
+      [data-theme="dark"] .weather-theme-sore .weather-temp-master-unit {
+        color: #FB7185 !important;
+      }
+      .weather-theme-sore .complication-tag {
+        background: #FFE4E6 !important;
+        color: #E11D48 !important;
+        border-color: #FDA4AF !important;
+      }
+      [data-theme="dark"] .weather-theme-sore .complication-tag {
+        background: rgba(244, 63, 94, 0.25) !important;
+        color: #FECDD3 !important;
+        border-color: rgba(251, 113, 133, 0.4) !important;
       }
 
       .weather-theme-malam {
-        background: linear-gradient(155deg, #F8FAFC 0%, #F1F5F9 50%, #E2E8F0 100%) !important;
-        border-color: #E2E8F0 !important;
-        box-shadow: 0 14px 34px -4px rgba(71, 85, 105, 0.08), inset 0 1.5px 1.5px #FFFFFF !important;
+        background: linear-gradient(155deg, #F1F5F9 0%, #E2E8F0 50%, #CBD5E1 100%) !important;
+        border-color: #94A3B8 !important;
+        box-shadow: 0 14px 34px -4px rgba(71, 85, 105, 0.12), inset 0 1.5px 1.5px #FFFFFF !important;
       }
       [data-theme="dark"] .weather-theme-malam {
         background: linear-gradient(155deg, #090D16 0%, #0E1626 50%, #080C14 100%) !important;
-        border-color: rgba(99, 102, 241, 0.22) !important;
+        border-color: rgba(99, 102, 241, 0.3) !important;
         box-shadow: 0 14px 36px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.1) !important;
       }
 
       .weather-theme-rainy {
-        background: linear-gradient(155deg, #F0FDFA 0%, #CCFBF1 50%, #E0F2FE 100%) !important;
-        border-color: #99F6E4 !important;
+        background: linear-gradient(155deg, #ECFEFF 0%, #CFFAFE 50%, #CCFBF1 100%) !important;
+        border-color: #67E8F9 !important;
+        box-shadow: 0 14px 34px -4px rgba(6, 182, 212, 0.18), inset 0 1.5px 1.5px #FFFFFF !important;
       }
       [data-theme="dark"] .weather-theme-rainy {
         background: linear-gradient(155deg, #042F2E 0%, #134E4A 50%, #0F172A 100%) !important;
-        border-color: rgba(45, 212, 191, 0.3) !important;
+        border-color: rgba(45, 212, 191, 0.35) !important;
       }
 
       /* Apple Solar Arc Tracker */
@@ -5415,7 +5435,7 @@
           code: 2,
           condition: "Sebagian Berawan",
           iconHTML: "",
-          atmosphereTheme: "siang",
+          atmosphereTheme: "sore",
           hourly: [],
           lastFetched: 0
         },
@@ -5539,6 +5559,14 @@
 
         updateWeatherUI() {
           const w = this._weatherCache;
+
+          // Dynamically apply current diurnal theme class to Master Weather Card
+          const masterCard = document.querySelector(".complication-weather-master");
+          if (masterCard) {
+            masterCard.classList.remove("weather-theme-pagi", "weather-theme-siang", "weather-theme-sore", "weather-theme-malam", "weather-theme-rainy", "weather-theme-day-sunny", "weather-theme-day-cloudy", "weather-theme-night-clear");
+            masterCard.classList.add(`weather-theme-${w.atmosphereTheme}`);
+          }
+
           if ($("tvWeatherTemp")) $("tvWeatherTemp").textContent = w.temp;
           if ($("tvWeatherCondition")) $("tvWeatherCondition").textContent = w.condition;
           if ($("tvWeatherIcon") && w.iconHTML) $("tvWeatherIcon").innerHTML = w.iconHTML;
@@ -5911,6 +5939,15 @@
           const h = jk.hour;
           const m = jk.minute;
           const s = jk.second;
+
+          // Realtime Diurnal Solar Cycle & Theme Synchronizer
+          if (this._weatherCache && s === 0) {
+            const currentMeta = this.getWeatherMeta(this._weatherCache.code, this._weatherCache.isDay, 0);
+            if (this._weatherCache.atmosphereTheme !== currentMeta.theme) {
+              this._weatherCache.atmosphereTheme = currentMeta.theme;
+              this.updateWeatherUI();
+            }
+          }
 
           // 24/7 Smart TV Anti-Freeze & Memory Purge: Silent Auto-Reload at 03:00:00 Subuh
           if (h === 3 && m === 0 && s === 0) {
