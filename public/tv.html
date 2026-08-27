@@ -1761,18 +1761,7 @@
         justify-content: stretch;
         padding: 0;
         box-sizing: border-box;
-        animation: appleSidebarMorphIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-      }
-
-      @keyframes appleSidebarMorphIn {
-        0% {
-          opacity: 0;
-          transform: translate3d(0, 14px, 0) scale3d(0.98, 0.98, 1);
-        }
-        100% {
-          opacity: 1;
-          transform: translate3d(0, 0, 0) scale3d(1, 1, 1);
-        }
+        opacity: 1;
       }
 
       .complication-weather-master {
@@ -5933,7 +5922,20 @@
           }
         }
 
+        stop() {
+          if (this.timer) clearTimeout(this.timer);
+          this.animating = false;
+          this.active = false;
+          if (this.el) {
+            this.el.style.transition = "none";
+            this.el.style.transform = "translate3d(0, 0, 0)";
+            this.el.style.opacity = "1";
+          }
+          this._resetProgress();
+        }
+
         start() {
+          this.active = true;
           this._updateProgress();
           this.timer = setTimeout(
             () => this._scheduleNext(),
@@ -5944,6 +5946,7 @@
         reset() {
           if (this.timer) clearTimeout(this.timer);
           this.animating = false;
+          this.active = true;
           this.y = 0;
           this.targetY = 0;
           this.currentItem = 0;
@@ -7521,12 +7524,16 @@
               let c = "st-nopoli",
                 i = "block",
                 l = d.Status;
-              if (st === "PRAKTEK" || st === "PENDAFTARAN") {
-                c = "st-buka";
+              if (st === "PRAKTEK") {
+                c = "st-praktek st-buka";
                 i = "check_circle";
-                l = "BUKA";
+                l = "PRAKTEK";
+              } else if (st === "PENDAFTARAN") {
+                c = "st-pendaftaran st-buka";
+                i = "assignment";
+                l = "PENDAFTARAN";
               } else if (st === "TERJADWAL") {
-                c = "st-buka st-terjadwal";
+                c = "st-terjadwal st-buka";
                 i = "schedule";
                 l = "TERJADWAL";
               } else if (st.includes("PENUH")) {
@@ -7562,60 +7569,17 @@
                 labelLive = "BELUM MULAI";
               }
 
-
               let el = oldMap.get(id);
 
               if (el) {
-                // RECYCLE: Only update if Hash changed
-                if (el.dataset.hash !== hash) {
+                // If the element has old DOM structure without doc-spec-badge or hash changed, rebuild it
+                if (!el.querySelector(".doc-spec-badge") || el.dataset.hash !== hash) {
                   el.className = `platter ${c}`;
-
-                  // IN-PLACE DOM Update (Menghindari innerHTML untuk performa)
-                  const dName = el.querySelector(".doc-name");
-                  if (dName) dName.textContent = d.Dokter;
-
-                  const dSpec = el.querySelector(".doc-spec");
-                  if (dSpec) dSpec.textContent = d.Spesialis.toUpperCase();
-
-                  const stPill = el.querySelector(".status-pill");
-                  if (stPill) {
-                    const stText = stPill.querySelector(".status-text");
-                    const stIcon = stPill.querySelector(".status-icon");
-                    if (stText && stIcon) {
-                      stText.textContent = l;
-                      stIcon.textContent = i;
-                    } else {
-                      stPill.innerHTML = `<span class="material-icons-round status-icon" style="font-size:13px">${i}</span><span class="status-text">${l}</span>`;
-                    }
-                  }
-
-                  const jValDaftar = el.querySelector(".jam-val-daftar");
-                  if (jValDaftar)
-                    jValDaftar.textContent =
-                      d.JamDaftar !== "-"
-                        ? d.JamDaftar
-                        : formatJam((d.JamPraktek || "").split("-")[0]);
-
-                  const jValPraktek = el.querySelector(".jam-val-praktek");
-                  if (jValPraktek && d.JamPraktek)
-                    jValPraktek.textContent = d.JamPraktek;
-
-                  const dtTime = el.querySelector(".detail-time");
-                  if (dtTime)
-                    dtTime.textContent =
-                      d.JamDaftar !== "-"
-                        ? d.JamDaftar
-                        : formatJam(d.JamPraktek.split("-")[0]);
-
-                  const dtLabel = el.querySelector(".detail-label");
-                  if (dtLabel) dtLabel.textContent = labelJam;
-
-                  const lText = el.querySelector(".live-text");
-                  if (lText) lText.textContent = labelLive;
-
+                  el.innerHTML = buildCardHTML(d, avatarText, i, l, labelJam, labelLive);
                   el.dataset.hash = hash;
+                } else {
+                  el.className = `platter ${c}`;
                 }
-                // Hapus class animasi lama
                 el.classList.remove("platter-new");
                 oldMap.delete(id); // Mark handled
               } else {
@@ -7627,7 +7591,6 @@
                 el.innerHTML = buildCardHTML(d, avatarText, i, l, labelJam, labelLive);
 
                 hasLayoutChange = true;
-                // Hapus class animasi setelah selesai
                 el.addEventListener(
                   "animationend",
                   () => el.classList.remove("platter-new"),
@@ -7829,6 +7792,7 @@
 
           // --- Build grouped layout or Apple Watch Complications if empty ---
           if (isComplicationMode) {
+            if (s3) s3.stop();
             let wrapper = container.querySelector('[data-id="sec-complications"]');
             if (!wrapper) {
               wrapper = document.createElement("div");
@@ -7842,6 +7806,7 @@
               oldMap.delete("sec-complications");
             }
           } else {
+            if (s3) s3.active = true;
             if (operasiList.length > 0) {
               allElements.push(
                 makeSectionHeader(
