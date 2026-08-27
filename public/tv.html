@@ -224,9 +224,31 @@
       body.tv-optimized .app-container,
       body.tv-optimized .island,
       body.tv-optimized .sidebar-panel,
-      body.tv-optimized .footer {
+      body.tv-optimized .footer,
+      body.tv-optimized .complication-journey-card,
+      body.tv-optimized .complication-weather-master,
+      body.tv-optimized .tree-step-card,
+      body.tv-optimized .tree-trunk-row-card,
+      body.tv-optimized .tree-trunk-section,
+      body.tv-optimized .tree-convergence-badge {
         backdrop-filter: none !important;
-        background: rgba(20, 20, 22, 1) !important;
+        -webkit-backdrop-filter: none !important;
+      }
+
+      body.tv-optimized .complication-journey-card {
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05) !important;
+      }
+
+      body.tv-optimized .anim-qr-laser,
+      body.tv-optimized .anim-kiosk-touch,
+      body.tv-optimized .anim-voice-broadcast,
+      body.tv-optimized .anim-desk-verified,
+      body.tv-optimized .anim-heart-pump,
+      body.tv-optimized .anim-doc-float,
+      body.tv-optimized .tree-micro-down-arrow,
+      body.tv-optimized .tree-trunk-down-arrow {
+        filter: none !important;
+        will-change: transform;
       }
 
       body.tv-optimized .logo-box {
@@ -2139,61 +2161,75 @@
         border-color: rgba(129, 140, 248, 0.35);
       }
 
-      /* ===== HARDWARE-ACCELERATED 60FPS MICRO-ANIMATIONS ===== */
+      /* ===== HARDWARE-ACCELERATED 60FPS MICRO-ANIMATIONS (GPU COMPOSITED) ===== */
+      .anim-qr-laser,
+      .anim-kiosk-touch,
+      .anim-voice-broadcast,
+      .anim-desk-verified,
+      .anim-heart-pump,
+      .anim-doc-float,
+      .tree-micro-down-arrow,
+      .tree-trunk-down-arrow {
+        will-change: transform;
+        transform: translate3d(0, 0, 0);
+        backface-visibility: hidden;
+        perspective: 1000px;
+      }
+
       .anim-qr-laser {
-        animation: appleQRLaser 3s ease-in-out infinite;
+        animation: appleQRLaser 3.5s ease-in-out infinite;
       }
       .anim-kiosk-touch {
-        animation: appleKioskTouch 2.8s ease-in-out infinite;
+        animation: appleKioskTouch 3s ease-in-out infinite;
       }
       .anim-voice-broadcast {
-        animation: appleVoiceBroadcast 2.6s ease-in-out infinite;
+        animation: appleVoiceBroadcast 2.8s ease-in-out infinite;
       }
       .anim-desk-verified {
-        animation: appleDeskVerified 3.2s ease-in-out infinite alternate;
+        animation: appleDeskVerified 3.5s ease-in-out infinite alternate;
       }
       .anim-heart-pump {
-        animation: appleHeartPump 2s ease-in-out infinite;
+        animation: appleHeartPump 2.2s ease-in-out infinite;
       }
       .anim-doc-float {
-        animation: appleDocFloat 3.8s ease-in-out infinite alternate;
+        animation: appleDocFloat 4s ease-in-out infinite alternate;
       }
 
       @keyframes appleQRLaser {
-        0%, 100% { transform: scale(1); filter: drop-shadow(0 2px 4px rgba(16, 185, 129, 0.25)); }
-        50% { transform: scale(1.1); filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.75)); }
+        0%, 100% { transform: scale3d(1, 1, 1); }
+        50% { transform: scale3d(1.1, 1.1, 1); }
       }
 
       @keyframes appleKioskTouch {
-        0%, 100% { transform: scale(1) translateY(0); filter: drop-shadow(0 2px 4px rgba(217, 119, 6, 0.2)); }
-        35% { transform: scale(0.88) translateY(2px); filter: drop-shadow(0 0 2px rgba(217, 119, 6, 0.5)); }
-        60% { transform: scale(1.04) translateY(-1px); }
+        0%, 100% { transform: translate3d(0, 0, 0) scale3d(1, 1, 1); }
+        35% { transform: translate3d(0, 2px, 0) scale3d(0.9, 0.9, 1); }
+        60% { transform: translate3d(0, -1px, 0) scale3d(1.04, 1.04, 1); }
       }
 
       @keyframes appleVoiceBroadcast {
-        0%, 100% { transform: scale(1) rotate(0deg); filter: drop-shadow(0 2px 4px rgba(2, 132, 199, 0.2)); }
-        25% { transform: scale(1.12) rotate(-5deg); filter: drop-shadow(0 0 8px rgba(2, 132, 199, 0.65)); }
-        50% { transform: scale(1.05) rotate(4deg); }
-        75% { transform: scale(1.08) rotate(-2deg); }
+        0%, 100% { transform: scale3d(1, 1, 1) rotate(0deg); }
+        25% { transform: scale3d(1.1, 1.1, 1) rotate(-5deg); }
+        50% { transform: scale3d(1.04, 1.04, 1) rotate(4deg); }
+        75% { transform: scale3d(1.07, 1.07, 1) rotate(-2deg); }
       }
 
       @keyframes appleDeskVerified {
-        0%, 100% { transform: translateY(0); filter: drop-shadow(0 2px 4px rgba(2, 132, 199, 0.25)); }
-        50% { transform: translateY(-2px); filter: drop-shadow(0 4px 8px rgba(2, 132, 199, 0.55)); }
+        0%, 100% { transform: translate3d(0, 0, 0); }
+        50% { transform: translate3d(0, -2px, 0); }
       }
 
       @keyframes appleHeartPump {
-        0%, 100% { transform: scale(1); filter: drop-shadow(0 2px 4px rgba(225, 29, 72, 0.2)); }
-        12% { transform: scale(1.22); filter: drop-shadow(0 0 10px rgba(225, 29, 72, 0.75)); }
-        24% { transform: scale(1.02); }
-        36% { transform: scale(1.14); filter: drop-shadow(0 0 7px rgba(225, 29, 72, 0.5)); }
-        55% { transform: scale(1); }
+        0%, 100% { transform: scale3d(1, 1, 1); }
+        12% { transform: scale3d(1.2, 1.2, 1); }
+        24% { transform: scale3d(1.02, 1.02, 1); }
+        36% { transform: scale3d(1.12, 1.12, 1); }
+        55% { transform: scale3d(1, 1, 1); }
       }
 
       @keyframes appleDocFloat {
-        0% { transform: translateY(0) rotate(0deg); filter: drop-shadow(0 2px 4px rgba(99, 102, 241, 0.2)); }
-        50% { transform: translateY(-2.5px) rotate(3deg); filter: drop-shadow(0 5px 10px rgba(99, 102, 241, 0.55)); }
-        100% { transform: translateY(0) rotate(0deg); filter: drop-shadow(0 2px 4px rgba(99, 102, 241, 0.2)); }
+        0% { transform: translate3d(0, 0, 0) rotate(0deg); }
+        50% { transform: translate3d(0, -2.5px, 0) rotate(3deg); }
+        100% { transform: translate3d(0, 0, 0) rotate(0deg); }
       }
 
       /* Force dark text in sidebar when in light mode, but adapt in dark mode */
@@ -6207,9 +6243,13 @@
             document.body.classList.remove("tv-booting");
           }, 1200);
 
-          // --- SMART TV & BROWSERHERE OPTIMIZATION DETECTOR ---
+          // --- SMART TV & LOW-END HARDWARE OPTIMIZATION DETECTOR ---
           const ua = navigator.userAgent.toLowerCase();
-          if (
+          const urlParams = new URLSearchParams(window.location.search);
+          const isLowEndHardware = 
+            (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) ||
+            (navigator.deviceMemory && navigator.deviceMemory <= 2);
+          const isTVUA = 
             ua.includes("browserhere") ||
             ua.includes("tcl") ||
             ua.includes("android tv") ||
@@ -6220,8 +6260,14 @@
             ua.includes("smarttv") ||
             ua.includes("netcast") ||
             ua.includes("crkey") ||
-            ua.includes("mibox")
-          ) {
+            ua.includes("mibox") ||
+            ua.includes("coocaa") ||
+            ua.includes("hisense") ||
+            ua.includes("changhong") ||
+            ua.includes("xiaomi") ||
+            ua.includes("tv");
+
+          if (isTVUA || isLowEndHardware || urlParams.get("tv") === "1" || urlParams.get("lowend") === "1") {
             document.body.classList.add("tv-optimized");
           }
 
