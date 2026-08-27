@@ -1868,18 +1868,20 @@
       .journey-step-capsule {
         flex: 1;
         min-width: 0;
-        background: rgba(255, 255, 255, 0.7);
+        background: rgba(255, 255, 255, 0.72);
         border: 1px solid rgba(226, 232, 240, 0.95);
         box-shadow: inset 0 1px 1px #FFFFFF, 0 2px 6px rgba(0, 0, 0, 0.02);
         backdrop-filter: blur(12px);
         -webkit-backdrop-filter: blur(12px);
         border-radius: 12px;
-        padding: 6px 4px;
+        padding: 6px 3px;
         display: flex;
         flex-direction: column;
         align-items: center;
         text-align: center;
-        gap: 1px;
+        gap: 2px;
+        position: relative;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
       }
 
       [data-theme="dark"] .journey-step-capsule {
@@ -1888,9 +1890,112 @@
         box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
       }
 
+      /* Apple SF Micro-Icon Container with specularity */
+      .journey-step-icon-wrap {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1px;
+        position: relative;
+        background: rgba(2, 132, 199, 0.08);
+        border: 1px solid rgba(2, 132, 199, 0.15);
+      }
+
+      [data-theme="dark"] .journey-step-icon-wrap {
+        background: rgba(56, 189, 248, 0.12);
+        border-color: rgba(56, 189, 248, 0.25);
+      }
+
+      .icon-online-1 {
+        color: #10B981;
+        background: rgba(16, 185, 129, 0.1);
+        border-color: rgba(16, 185, 129, 0.2);
+      }
+      .icon-online-2 {
+        color: #0284C7;
+        background: rgba(2, 132, 199, 0.1);
+        border-color: rgba(2, 132, 199, 0.2);
+      }
+      .icon-online-3 {
+        color: #E11D48;
+        background: rgba(225, 29, 72, 0.1);
+        border-color: rgba(225, 29, 72, 0.2);
+      }
+      .icon-online-4 {
+        color: #6366F1;
+        background: rgba(99, 102, 241, 0.1);
+        border-color: rgba(99, 102, 241, 0.2);
+      }
+
+      .icon-reg-1 {
+        color: #F59E0B;
+        background: rgba(245, 158, 11, 0.1);
+        border-color: rgba(245, 158, 11, 0.2);
+      }
+      .icon-reg-2 {
+        color: #0284C7;
+        background: rgba(2, 132, 199, 0.1);
+        border-color: rgba(2, 132, 199, 0.2);
+      }
+      .icon-reg-3 {
+        color: #10B981;
+        background: rgba(16, 185, 129, 0.1);
+        border-color: rgba(16, 185, 129, 0.2);
+      }
+      .icon-reg-4 {
+        color: #E11D48;
+        background: rgba(225, 29, 72, 0.1);
+        border-color: rgba(225, 29, 72, 0.2);
+      }
+      .icon-reg-5 {
+        color: #6366F1;
+        background: rgba(99, 102, 241, 0.1);
+        border-color: rgba(99, 102, 241, 0.2);
+      }
+
+      /* Micro-Animations */
+      .anim-scan-pulse {
+        animation: appleScanPulse 3s ease-in-out infinite;
+      }
+      .anim-heartbeat {
+        animation: appleHeartbeat 2.2s ease-in-out infinite;
+      }
+      .anim-float-subtle {
+        animation: appleFloatSubtle 3.5s ease-in-out infinite alternate;
+      }
+      .anim-touch-tap {
+        animation: appleTouchTap 3s ease-in-out infinite;
+      }
+
+      @keyframes appleScanPulse {
+        0%, 100% { transform: scale(1); filter: drop-shadow(0 0 0 transparent); }
+        50% { transform: scale(1.14); filter: drop-shadow(0 0 4px rgba(16, 185, 129, 0.6)); }
+      }
+
+      @keyframes appleHeartbeat {
+        0%, 100% { transform: scale(1); }
+        14% { transform: scale(1.18); }
+        28% { transform: scale(1); }
+        42% { transform: scale(1.12); }
+        70% { transform: scale(1); }
+      }
+
+      @keyframes appleFloatSubtle {
+        0% { transform: translateY(0); }
+        100% { transform: translateY(-2px); }
+      }
+
+      @keyframes appleTouchTap {
+        0%, 100% { transform: scale(1) translateY(0); }
+        50% { transform: scale(0.88) translateY(1px); }
+      }
+
       .journey-step-num {
         font-family: "Plus Jakarta Sans", monospace;
-        font-size: 8px;
+        font-size: 7.5px;
         font-weight: 900;
         color: #0284C7;
         line-height: 1;
@@ -1902,7 +2007,7 @@
 
       .journey-step-title {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 9.5px;
+        font-size: 9px;
         font-weight: 800;
         color: #0F172A;
         white-space: nowrap;
@@ -1918,7 +2023,7 @@
 
       .journey-step-sub {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 8px;
+        font-size: 7.5px;
         font-weight: 600;
         color: #64748B;
         white-space: nowrap;
@@ -1932,18 +2037,32 @@
         color: #94A3B8;
       }
 
-      .journey-arrow-icon {
-        font-family: inherit;
-        font-size: 10px;
-        font-weight: 900;
-        color: #94A3B8;
+      /* Apple Directional Flow Connector Line with Traveling Pulse */
+      .journey-connector {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 11px;
         flex-shrink: 0;
-        line-height: 1;
-        user-select: none;
+        position: relative;
+        overflow: visible;
       }
 
-      [data-theme="dark"] .journey-arrow-icon {
+      .journey-connector-arrow {
+        font-size: 11px;
+        color: #94A3B8;
+        font-weight: 900;
+        line-height: 1;
+        animation: appleArrowTravel 2.5s ease-in-out infinite;
+      }
+
+      [data-theme="dark"] .journey-connector-arrow {
         color: #64748B;
+      }
+
+      @keyframes appleArrowTravel {
+        0%, 100% { transform: translateX(0); opacity: 0.6; }
+        50% { transform: translateX(2px); opacity: 1; color: #0284C7; }
       }
 
       .journey-priority-footer {
@@ -5880,24 +5999,42 @@
                   </div>
                   <div class="journey-flow-row">
                     <div class="journey-step-capsule">
+                      <div class="journey-step-icon-wrap icon-online-1 anim-scan-pulse">
+                        <span class="material-icons-round" style="font-size:12px;">qr_code_scanner</span>
+                      </div>
                       <span class="journey-step-num">01</span>
                       <span class="journey-step-title">BUKTI QR</span>
                       <span class="journey-step-sub">Buka di HP</span>
                     </div>
-                    <span class="journey-arrow-icon">➔</span>
+                    <div class="journey-connector">
+                      <span class="material-icons-round journey-connector-arrow">chevron_right</span>
+                    </div>
                     <div class="journey-step-capsule">
+                      <div class="journey-step-icon-wrap icon-online-2">
+                        <span class="material-icons-round" style="font-size:12px;">how_to_reg</span>
+                      </div>
                       <span class="journey-step-num">02</span>
                       <span class="journey-step-title">KONFIRMASI</span>
                       <span class="journey-step-sub">Loket Admisi</span>
                     </div>
-                    <span class="journey-arrow-icon">➔</span>
+                    <div class="journey-connector">
+                      <span class="material-icons-round journey-connector-arrow">chevron_right</span>
+                    </div>
                     <div class="journey-step-capsule">
+                      <div class="journey-step-icon-wrap icon-online-3 anim-heartbeat">
+                        <span class="material-icons-round" style="font-size:12px;">monitor_heart</span>
+                      </div>
                       <span class="journey-step-num">03</span>
                       <span class="journey-step-title">CEK TENSI</span>
                       <span class="journey-step-sub">Nurse Station</span>
                     </div>
-                    <span class="journey-arrow-icon">➔</span>
+                    <div class="journey-connector">
+                      <span class="material-icons-round journey-connector-arrow">chevron_right</span>
+                    </div>
                     <div class="journey-step-capsule">
+                      <div class="journey-step-icon-wrap icon-online-4 anim-float-subtle">
+                        <span class="material-icons-round" style="font-size:12px;">stethoscope</span>
+                      </div>
                       <span class="journey-step-num">04</span>
                       <span class="journey-step-title">KE POLI</span>
                       <span class="journey-step-sub">Konsul Dokter</span>
@@ -5916,30 +6053,53 @@
                   </div>
                   <div class="journey-flow-row">
                     <div class="journey-step-capsule">
+                      <div class="journey-step-icon-wrap icon-reg-1 anim-touch-tap">
+                        <span class="material-icons-round" style="font-size:12px;">touch_app</span>
+                      </div>
                       <span class="journey-step-num">01</span>
                       <span class="journey-step-title">ANTREAN</span>
                       <span class="journey-step-sub">Kios Lobi</span>
                     </div>
-                    <span class="journey-arrow-icon">➔</span>
+                    <div class="journey-connector">
+                      <span class="material-icons-round journey-connector-arrow">chevron_right</span>
+                    </div>
                     <div class="journey-step-capsule">
+                      <div class="journey-step-icon-wrap icon-reg-2">
+                        <span class="material-icons-round" style="font-size:12px;">badge</span>
+                      </div>
                       <span class="journey-step-num">02</span>
                       <span class="journey-step-title">BERKAS</span>
                       <span class="journey-step-sub">KTP / BPJS</span>
                     </div>
-                    <span class="journey-arrow-icon">➔</span>
+                    <div class="journey-connector">
+                      <span class="material-icons-round journey-connector-arrow">chevron_right</span>
+                    </div>
                     <div class="journey-step-capsule">
+                      <div class="journey-step-icon-wrap icon-reg-3">
+                        <span class="material-icons-round" style="font-size:12px;">support_agent</span>
+                      </div>
                       <span class="journey-step-num">03</span>
                       <span class="journey-step-title">LOKET</span>
                       <span class="journey-step-sub">Registrasi</span>
                     </div>
-                    <span class="journey-arrow-icon">➔</span>
+                    <div class="journey-connector">
+                      <span class="material-icons-round journey-connector-arrow">chevron_right</span>
+                    </div>
                     <div class="journey-step-capsule">
+                      <div class="journey-step-icon-wrap icon-reg-4 anim-heartbeat">
+                        <span class="material-icons-round" style="font-size:12px;">vital_signs</span>
+                      </div>
                       <span class="journey-step-num">04</span>
                       <span class="journey-step-title">TENSI</span>
                       <span class="journey-step-sub">Nurse Stat</span>
                     </div>
-                    <span class="journey-arrow-icon">➔</span>
+                    <div class="journey-connector">
+                      <span class="material-icons-round journey-connector-arrow">chevron_right</span>
+                    </div>
                     <div class="journey-step-capsule">
+                      <div class="journey-step-icon-wrap icon-reg-5 anim-float-subtle">
+                        <span class="material-icons-round" style="font-size:12px;">meeting_room</span>
+                      </div>
                       <span class="journey-step-num">05</span>
                       <span class="journey-step-title">KE POLI</span>
                       <span class="journey-step-sub">Pemeriksaan</span>
