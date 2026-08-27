@@ -5902,25 +5902,6 @@
 
         buildSidebarComplicationsHTML() {
           const w = this._weatherCache;
-
-          const hourlyList = (w.hourly && w.hourly.length > 0) ? w.hourly : this.getInitialHourly();
-          const hourlyPillsHTML = hourlyList.map((h, idx) => {
-            const isCurrent = idx === 0;
-            const precipHTML = h.precip >= 15 ? `<span class="weather-hourly-precip">💧${h.precip}%</span>` : "";
-            const iconContent = h.iconSVG || this.getWeatherIconSVG("partly-cloudy-day", 16);
-            return `
-              <div class="weather-hourly-item ${isCurrent ? "active-hour" : ""}">
-                <span class="weather-hourly-time">
-                  ${h.timeStr}
-                  ${isCurrent ? '<span class="hour-live-dot"></span>' : ""}
-                </span>
-                <span class="weather-hourly-icon">${iconContent}</span>
-                ${precipHTML}
-                <span class="weather-hourly-temp">${h.temp}°</span>
-              </div>
-            `;
-          }).join("");
-
           const heroIconMarkup = w.iconHTML || this.getWeatherIconSVG("partly-cloudy-day", 44);
 
           return `
@@ -5944,21 +5925,10 @@
                       <span class="weather-temp-master-unit">°C</span>
                     </div>
                     <div class="weather-condition-master-text" id="tvWeatherCondition">${w.condition}</div>
-                    <div class="weather-range-master-text" id="tvWeatherRange">H: ${w.tempMax}° • L: ${w.tempMin}°</div>
+                    <div class="weather-range-master-text" id="tvWeatherRange">Suhu Harian: H: ${w.tempMax}° • L: ${w.tempMin}°</div>
                   </div>
                   <div class="weather-master-hero-right">
                     <div class="weather-master-icon-wrap" id="tvWeatherIcon">${heroIconMarkup}</div>
-                  </div>
-                </div>
-
-                <!-- 3. Apple 6-Hour Forecast Timeline Strip -->
-                <div class="weather-master-section">
-                  <div class="weather-section-label">
-                    <span class="material-icons-round" style="font-size:10px; color:#0284C7;">schedule</span>
-                    <span>PREDIKSI 6 JAM KE DEPAN</span>
-                  </div>
-                  <div class="weather-master-hourly-strip" id="tvWeatherHourlyStrip">
-                    ${hourlyPillsHTML}
                   </div>
                 </div>
               </div>
@@ -6000,8 +5970,8 @@
                         <span class="material-icons-round" style="font-size:15px;">how_to_reg</span>
                       </div>
                       <span class="journey-step-num">02</span>
-                      <span class="journey-step-title">KONFIRMASI</span>
-                      <span class="journey-step-sub">Loket Admisi</span>
+                      <span class="journey-step-title">REGISTRASI</span>
+                      <span class="journey-step-sub">Loket Pendaftaran</span>
                     </div>
                     <div class="journey-connector">
                       <span class="material-icons-round journey-connector-arrow">chevron_right</span>
@@ -6011,8 +5981,8 @@
                         <span class="material-icons-round" style="font-size:15px;">monitor_heart</span>
                       </div>
                       <span class="journey-step-num">03</span>
-                      <span class="journey-step-title">CEK TENSI</span>
-                      <span class="journey-step-sub">Nurse Station</span>
+                      <span class="journey-step-title">NURSE STATION</span>
+                      <span class="journey-step-sub">Pemeriksaan Tensi</span>
                     </div>
                     <div class="journey-connector">
                       <span class="material-icons-round journey-connector-arrow">chevron_right</span>
@@ -6022,8 +5992,8 @@
                         <span class="material-icons-round" style="font-size:15px;">stethoscope</span>
                       </div>
                       <span class="journey-step-num">04</span>
-                      <span class="journey-step-title">KE POLI</span>
-                      <span class="journey-step-sub">Pemeriksaan Dr</span>
+                      <span class="journey-step-title">RUANG POLI</span>
+                      <span class="journey-step-sub">Pemeriksaan Dokter</span>
                     </div>
                   </div>
                 </div>
@@ -6043,7 +6013,7 @@
                         <span class="material-icons-round" style="font-size:15px;">touch_app</span>
                       </div>
                       <span class="journey-step-num">01</span>
-                      <span class="journey-step-title">ANTREAN</span>
+                      <span class="journey-step-title">AMBIL ANTREAN</span>
                       <span class="journey-step-sub">Kios Mandiri</span>
                     </div>
                     <div class="journey-connector">
@@ -6054,8 +6024,8 @@
                         <span class="material-icons-round" style="font-size:15px;">badge</span>
                       </div>
                       <span class="journey-step-num">02</span>
-                      <span class="journey-step-title">BERKAS</span>
-                      <span class="journey-step-sub">KTP / BPJS</span>
+                      <span class="journey-step-title">SIAPKAN BERKAS</span>
+                      <span class="journey-step-sub">KTP & BPJS</span>
                     </div>
                     <div class="journey-connector">
                       <span class="material-icons-round journey-connector-arrow">chevron_right</span>
@@ -6065,8 +6035,8 @@
                         <span class="material-icons-round" style="font-size:15px;">support_agent</span>
                       </div>
                       <span class="journey-step-num">03</span>
-                      <span class="journey-step-title">LOKET</span>
-                      <span class="journey-step-sub">Registrasi</span>
+                      <span class="journey-step-title">REGISTRASI</span>
+                      <span class="journey-step-sub">Loket Pendaftaran</span>
                     </div>
                     <div class="journey-connector">
                       <span class="material-icons-round journey-connector-arrow">chevron_right</span>
@@ -6076,8 +6046,8 @@
                         <span class="material-icons-round" style="font-size:15px;">vital_signs</span>
                       </div>
                       <span class="journey-step-num">04</span>
-                      <span class="journey-step-title">TENSI</span>
-                      <span class="journey-step-sub">Nurse Station</span>
+                      <span class="journey-step-title">NURSE STATION</span>
+                      <span class="journey-step-sub">Pemeriksaan Tensi</span>
                     </div>
                     <div class="journey-connector">
                       <span class="material-icons-round journey-connector-arrow">chevron_right</span>
@@ -6087,8 +6057,8 @@
                         <span class="material-icons-round" style="font-size:15px;">meeting_room</span>
                       </div>
                       <span class="journey-step-num">05</span>
-                      <span class="journey-step-title">KE POLI</span>
-                      <span class="journey-step-sub">Pemeriksaan Dr</span>
+                      <span class="journey-step-title">RUANG POLI</span>
+                      <span class="journey-step-sub">Pemeriksaan Dokter</span>
                     </div>
                   </div>
                 </div>
