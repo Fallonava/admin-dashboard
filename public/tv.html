@@ -3514,7 +3514,7 @@
 
       .platter.active {
         z-index: 50;
-        transform: translate3d(0, -3px, 0) scale(1.01); 
+        transform: translate3d(0, -2px, 0);
         opacity: 1 !important;
       }
 
@@ -3533,13 +3533,13 @@
       /* 🟢 PRAKTEK ACTIVE — Pure White with Emerald Ambient Halo */
       .platter.st-praktek.active,
       .platter.st-buka.active {
-        border: 1.5px solid rgba(5, 150, 105, 0.5) !important;
+        border: 1.5px solid rgba(5, 150, 105, 0.45) !important;
         border-left: 6.5px solid #059669 !important;
         background: #FFFFFF !important;
         box-shadow: 
-          0 20px 48px -4px rgba(5, 150, 105, 0.22),
-          0 0 32px rgba(16, 185, 129, 0.16),
-          inset 0 1.5px 1.5px #FFFFFF !important;
+          0 6px 16px -4px rgba(5, 150, 105, 0.15),
+          0 18px 40px -8px rgba(5, 150, 105, 0.12),
+          inset 0 1.5px 0 #FFFFFF !important;
       }
 
       .platter.st-praktek.active .initials,
@@ -3547,7 +3547,7 @@
         background: rgba(5, 150, 105, 0.1) !important;
         color: #059669 !important;
         border-color: rgba(5, 150, 105, 0.35) !important;
-        box-shadow: 0 0 16px rgba(5, 150, 105, 0.18), inset 0 1.5px 2px #FFFFFF !important;
+        box-shadow: 0 0 12px rgba(5, 150, 105, 0.14), inset 0 1.5px 2px #FFFFFF !important;
       }
 
       .platter.st-praktek.active .doc-name,
@@ -3913,29 +3913,43 @@
 
 
       /* ===== EXPANDED DETAIL (Apple Live Activity Drawer) ===== */
+      /* ─── Smooth Expand: grid-rows trick (no max-height pop) ─── */
+      .platter-detail-wrap {
+        display: grid;
+        grid-template-rows: 0fr;
+        transition:
+          grid-template-rows 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+
+      .platter.active .platter-detail-wrap {
+        grid-template-rows: 1fr;
+      }
+
       .platter-detail {
-        max-height: 0;
-        opacity: 0;
         overflow: hidden;
-        transition: max-height 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease, margin-top 0.35s ease, padding-top 0.35s ease;
+        opacity: 0;
+        transform: translateY(-4px);
+        transition:
+          opacity 0.3s cubic-bezier(0.22, 1, 0.36, 1) 0.06s,
+          transform 0.38s cubic-bezier(0.22, 1, 0.36, 1) 0.04s;
         border-top: 1px dashed transparent;
         margin-top: 0;
         padding-top: 0;
-      }
-
-      .platter.active .platter-detail {
-        max-height: 120px;
-        opacity: 1;
-        margin-top: 10px;
-        padding-top: 10px;
-        border-top: 1px dashed rgba(5, 150, 105, 0.35);
         display: flex;
         justify-content: space-between;
         align-items: center;
       }
 
+      .platter.active .platter-detail {
+        opacity: 1;
+        transform: translateY(0);
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px dashed rgba(5, 150, 105, 0.3);
+      }
+
       [data-theme="dark"] .platter.active .platter-detail {
-        border-top: 1px dashed rgba(52, 211, 153, 0.35);
+        border-top: 1px dashed rgba(52, 211, 153, 0.28);
       }
 
       .detail-info {
@@ -6061,6 +6075,7 @@
               </div>` : ""}
             </div>
           </div>
+          <div class="platter-detail-wrap">
           <div class="platter-detail">
             <div class="detail-info">
               <div class="detail-label-wrap">
@@ -6077,6 +6092,7 @@
               </div>
               <span class="live-text">${labelLive}</span>
             </div>
+          </div>
           </div>`;
       };
 
