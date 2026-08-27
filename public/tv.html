@@ -1772,473 +1772,39 @@
         box-sizing: border-box;
       }
 
-      .sidebar-panel .sidebar-complications {
+      .sidebar-panel.sidebar-mode-weather .sidebar-complications {
         height: 100%;
         display: flex;
         flex-direction: column;
         justify-content: stretch;
-        gap: 8px;
         padding: 0;
         box-sizing: border-box;
         opacity: 1;
       }
 
-      /* ===== 🥽 APPLE visionOS SPATIAL DEPTH MORPH ENGINE ===== */
-      .complication-smart-stack {
-        display: grid;
-        width: 100%;
-        position: relative;
-        border-radius: 20px;
-        box-sizing: border-box;
-        overflow: hidden;
-      }
-
-      .smart-stack-slide {
-        grid-area: 1 / 1 / 2 / 2;
-        width: 100%;
-        height: 100%;
-        opacity: 0;
-        transform: scale(0.95) translate3d(0, 3px, 0);
-        pointer-events: none;
-        transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
-                    transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
-        will-change: transform, opacity;
-        backface-visibility: hidden;
-        -webkit-backface-visibility: hidden;
-        box-sizing: border-box;
-        position: relative;
-      }
-
-      .smart-stack-slide.active-slide {
-        opacity: 1;
-        transform: scale(1) translate3d(0, 0, 0);
-        pointer-events: auto;
-        z-index: 2;
-      }
-
-      /* Apple Specular Glass Light Sheen Sweep (100% GPU accelerated) */
-      .smart-stack-slide.active-slide::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        border-radius: 20px;
-        background: linear-gradient(115deg, transparent 20%, rgba(255, 255, 255, 0.14) 50%, transparent 80%);
-        transform: translateX(-100%);
-        animation: appleGlassSheen 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        pointer-events: none;
-        z-index: 10;
-      }
-
-      @keyframes appleGlassSheen {
-        0% { transform: translateX(-100%); opacity: 0; }
-        30% { opacity: 1; }
-        100% { transform: translateX(100%); opacity: 0; }
-      }
-
-      /* Apple Fluid Jelly Pagination Dots */
-      .smart-stack-dots {
-        position: absolute;
-        bottom: 8px;
-        right: 14px;
-        display: flex;
-        align-items: center;
-        gap: 3.5px;
-        z-index: 15;
-      }
-
-      .smart-stack-dot {
-        width: 5px;
-        height: 5px;
-        border-radius: 50%;
-        background: rgba(60, 60, 67, 0.25);
-        transition: width 0.45s cubic-bezier(0.16, 1, 0.3, 1),
-                    border-radius 0.45s cubic-bezier(0.16, 1, 0.3, 1),
-                    background 0.45s cubic-bezier(0.16, 1, 0.3, 1);
-        will-change: width, background;
-      }
-
-      .smart-stack-dot.active {
-        width: 15px;
-        border-radius: 9999px;
-        background: #007AFF;
-      }
-
-      [data-theme="dark"] .smart-stack-dot {
-        background: rgba(255, 255, 255, 0.25);
-      }
-
-      [data-theme="dark"] .smart-stack-dot.active {
-        background: #38BDF8;
-      }
-
-      /* Status Khusus Hero Card inside Slide */
-      .complication-status-khusus-hero {
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        background: #FFFFFF !important;
-        border-radius: 20px;
-        padding: 10px 14px;
-        box-sizing: border-box;
-        border: 1px solid rgba(60, 60, 67, 0.10);
-        box-shadow: 
-          0 1px 0 rgba(60, 60, 67, 0.08),
-          0 4px 14px -2px rgba(60, 60, 67, 0.04);
-        position: relative;
-        overflow: hidden;
-      }
-
-      [data-theme="dark"] .complication-status-khusus-hero {
-        background: #2C2C2E !important;
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        box-shadow: 
-          0 2px 0 rgba(255, 255, 255, 0.06),
-          0 1px 0 rgba(0, 0, 0, 0.3);
-      }
-
-      .sk-hero-body {
-        display: flex;
-        align-items: center;
-        gap: 11px;
-        box-sizing: border-box;
-        padding: 4px 1px;
-        flex: 1;
-      }
-
-      .tag-purple {
-        background: rgba(175, 82, 222, 0.12);
-        color: #AF52DE;
-        border: 1px solid rgba(175, 82, 222, 0.25);
-      }
-
-      [data-theme="dark"] .tag-purple {
-        background: rgba(191, 90, 242, 0.2);
-        color: #BF5AF2;
-        border-color: rgba(191, 90, 242, 0.35);
-      }
-
-      .sk-carousel-container {
-        flex: 1;
-        width: 100%;
-        overflow: hidden;
-        position: relative;
-        display: flex;
-        align-items: center;
-        margin: 2px 0;
-      }
-
-      .sk-carousel-track {
-        display: flex;
-        width: 100%;
-        height: 100%;
-        transition: transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
-        will-change: transform;
-      }
-
-      .sk-hero-slide {
-        flex: 0 0 100%;
-        width: 100%;
-        height: 100%;
-        display: flex;
-        align-items: center;
-        gap: 11px;
-        box-sizing: border-box;
-        padding: 2px 2px;
-        opacity: 0.35;
-        transform: scale(0.96);
-        transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1),
-                    transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
-      }
-
-      .sk-hero-slide.active-doctor-slide {
-        opacity: 1;
-        transform: scale(1);
-      }
-
-      .sk-hero-icon-box {
-        width: 42px;
-        height: 42px;
-        border-radius: 13px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-        position: relative;
-        transition: transform 0.4s ease;
-      }
-
-      .sk-hero-icon-box.box-cuti {
-        background: #FEF2F2;
-        color: #EF4444;
-        border: 1px solid #FECACA;
-        animation: appleCutiPulse 3.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-      }
-      [data-theme="dark"] .sk-hero-icon-box.box-cuti {
-        background: rgba(239, 68, 68, 0.18);
-        color: #F87171;
-        border-color: rgba(239, 68, 68, 0.35);
-      }
-
-      @keyframes appleCutiPulse {
-        0%, 100% {
-          transform: scale(1);
-          box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.25);
-        }
-        50% {
-          transform: scale(1.04);
-          box-shadow: 0 0 0 5px rgba(239, 68, 68, 0);
-        }
-      }
-
-      .sk-hero-icon-box.box-op {
-        background: #FAF5FF;
-        color: #A855F7;
-        border: 1px solid #E9D5FF;
-        animation: appleOpPulse 3.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-      }
-      [data-theme="dark"] .sk-hero-icon-box.box-op {
-        background: rgba(168, 85, 247, 0.18);
-        color: #C084FC;
-        border-color: rgba(168, 85, 247, 0.35);
-      }
-
-      @keyframes appleOpPulse {
-        0%, 100% {
-          transform: scale(1);
-          box-shadow: 0 0 0 0 rgba(168, 85, 247, 0.25);
-        }
-        50% {
-          transform: scale(1.04);
-          box-shadow: 0 0 0 5px rgba(168, 85, 247, 0);
-        }
-      }
-
-      .sk-hero-icon-box.box-penuh {
-        background: #FFFBEB;
-        color: #F59E0B;
-        border: 1px solid #FDE68A;
-        animation: applePenuhPulse 3.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-      }
-      [data-theme="dark"] .sk-hero-icon-box.box-penuh {
-        background: rgba(245, 158, 11, 0.18);
-        color: #FCD34D;
-        border-color: rgba(245, 158, 11, 0.35);
-      }
-
-      @keyframes applePenuhPulse {
-        0%, 100% {
-          transform: scale(1);
-          box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.25);
-        }
-        50% {
-          transform: scale(1.04);
-          box-shadow: 0 0 0 5px rgba(245, 158, 11, 0);
-        }
-      }
-
-      .sk-hero-content {
-        display: flex;
-        flex-direction: column;
-        gap: 2px;
-        min-width: 0;
-        flex: 1;
-        line-height: 1.15;
-      }
-
-      .sk-hero-top-row {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        min-width: 0;
-      }
-
-      .sk-hero-status-pill {
-        font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 8px;
-        font-weight: 900;
-        padding: 2px 6px;
-        border-radius: 9999px;
-        letter-spacing: 0.03em;
-        text-transform: uppercase;
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-        flex-shrink: 0;
-      }
-
-      .sk-pill-dot {
-        width: 5px;
-        height: 5px;
-        border-radius: 50%;
-        display: inline-block;
-      }
-
-      .dot-cuti {
-        background: #EF4444;
-        animation: appleRadarDot 1.8s ease-in-out infinite;
-      }
-      .dot-op {
-        background: #A855F7;
-        animation: appleRadarDot 1.8s ease-in-out infinite;
-      }
-      .dot-penuh {
-        background: #F59E0B;
-        animation: appleRadarDot 1.8s ease-in-out infinite;
-      }
-
-      @keyframes appleRadarDot {
-        0%, 100% { opacity: 0.45; transform: scale(0.85); }
-        50% { opacity: 1; transform: scale(1.2); }
-      }
-
-      .pill-cuti {
-        background: rgba(239, 68, 68, 0.14);
-        color: #DC2626;
-        border: 1px solid rgba(239, 68, 68, 0.28);
-      }
-      [data-theme="dark"] .pill-cuti {
-        background: rgba(239, 68, 68, 0.22);
-        color: #F87171;
-        border-color: rgba(239, 68, 68, 0.38);
-      }
-
-      .pill-op {
-        background: rgba(168, 85, 247, 0.14);
-        color: #9333EA;
-        border: 1px solid rgba(168, 85, 247, 0.28);
-      }
-      [data-theme="dark"] .pill-op {
-        background: rgba(168, 85, 247, 0.22);
-        color: #C084FC;
-        border-color: rgba(168, 85, 247, 0.38);
-      }
-
-      .pill-penuh {
-        background: rgba(245, 158, 11, 0.14);
-        color: #D97706;
-        border: 1px solid rgba(245, 158, 11, 0.28);
-      }
-      [data-theme="dark"] .pill-penuh {
-        background: rgba(245, 158, 11, 0.22);
-        color: #FCD34D;
-        border-color: rgba(245, 158, 11, 0.38);
-      }
-
-      .sk-hero-poli-tag {
-        font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 8.5px;
-        font-weight: 700;
-        color: #64748B;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-      [data-theme="dark"] .sk-hero-poli-tag {
-        color: #94A3B8;
-      }
-
-      .sk-hero-doctor-name {
-        font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 11.5px;
-        font-weight: 800;
-        color: #0F172A;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        letter-spacing: -0.01em;
-      }
-      [data-theme="dark"] .sk-hero-doctor-name {
-        color: #F8FAFC;
-      }
-
-      .sk-hero-meta-row {
-        font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 9.5px;
-        font-weight: 600;
-        color: #475569;
-        display: flex;
-        align-items: center;
-        gap: 3.5px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-      [data-theme="dark"] .sk-hero-meta-row {
-        color: #CBD5E1;
-      }
-
-      .sk-hero-meta-row strong {
-        font-weight: 800;
-        color: #0284C7;
-      }
-      [data-theme="dark"] .sk-hero-meta-row strong {
-        color: #38BDF8;
-      }
-
-      .sk-pills-bar {
-        display: flex;
-        align-items: center;
-        gap: 3.5px;
-        margin-top: 2px;
-      }
-
-      .sk-pill-bar {
-        height: 2.5px;
-        flex: 1;
-        border-radius: 9999px;
-        background: rgba(60, 60, 67, 0.12);
-        overflow: hidden;
-        position: relative;
-        transition: background 0.3s ease;
-      }
-
-      [data-theme="dark"] .sk-pill-bar {
-        background: rgba(255, 255, 255, 0.12);
-      }
-
-      .sk-pill-bar.active {
-        background: #AF52DE;
-      }
-
-      [data-theme="dark"] .sk-pill-bar.active {
-        background: #C084FC;
-      }
-
-      .sk-widget-empty {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
-        padding: 6px;
-        color: #059669;
-        font-size: 10.5px;
-        font-weight: 700;
-      }
-
       .complication-weather-master {
-        height: 100%;
+        height: auto;
         background: #FFFFFF !important;
         border-radius: 20px;
         position: relative;
         box-sizing: border-box;
-        padding: 10px 14px;
+        padding: 12px 16px;
         display: flex;
         flex-direction: column;
-        justify-content: space-between;
-        border: 1px solid rgba(60, 60, 67, 0.10);
+        gap: 8px;
+        border: 1px solid rgba(226, 234, 245, 0.95);
         box-shadow: 
-          0 1px 0 rgba(60, 60, 67, 0.08),
-          0 4px 14px -2px rgba(60, 60, 67, 0.04);
+          0 8px 24px -4px rgba(15, 23, 42, 0.05),
+          inset 0 1.5px 1.5px #FFFFFF;
         transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
       }
 
       [data-theme="dark"] .complication-weather-master {
-        background: #2C2C2E !important;
-        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: #121824 !important;
+        border: 1px solid rgba(255, 255, 255, 0.1);
         box-shadow: 
-          0 2px 0 rgba(255, 255, 255, 0.06),
-          0 1px 0 rgba(0, 0, 0, 0.3);
+          0 10px 26px -4px rgba(0, 0, 0, 0.4),
+          inset 0 1px 1px rgba(255, 255, 255, 0.12);
       }
 
       .weather-master-hero-row {
@@ -2301,8 +1867,8 @@
       }
 
       .weather-master-icon-wrap {
-        width: 48px;
-        height: 48px;
+        width: 44px;
+        height: 44px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -2310,13 +1876,6 @@
         animation: appleWeatherFloat 4s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate;
         position: relative;
         z-index: 1;
-        flex-shrink: 0;
-      }
-
-      .weather-master-icon-wrap svg {
-        display: block;
-        width: 48px;
-        height: 48px;
       }
 
       .weather-master-section {
@@ -2837,11 +2396,36 @@
       }
 
       /* ===== APPLE SF VISIONOS MICRO-INTERACTIVE ICONS & PALETTES ===== */
+      /* ===== APPLE SF SYMBOLS 6 MICRO-INTERACTIVE ICONS & LAYERED PALETTES ===== */
       .icon-online-1 {
         color: #059669;
         background: #ECFDF5;
         border: 1px solid #A7F3D0;
+        position: relative;
+        overflow: hidden;
       }
+
+      /* SF Symbols 6: Layer-by-Layer Laser Scanning Sweep Line */
+      .icon-online-1::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 3px;
+        right: 3px;
+        height: 1.5px;
+        background: linear-gradient(90deg, transparent, #10B981, #34D399, transparent);
+        box-shadow: 0 0 5px rgba(16, 185, 129, 0.8);
+        border-radius: 999px;
+        animation: appleLaserScan 2.2s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate;
+        pointer-events: none;
+      }
+
+      @keyframes appleLaserScan {
+        0% { transform: translateY(4px); opacity: 0.2; }
+        50% { opacity: 1; }
+        100% { transform: translateY(24px); opacity: 0.2; }
+      }
+
       [data-theme="dark"] .icon-online-1 {
         color: #6EE7B7;
         background: rgba(16, 185, 129, 0.2);
@@ -2931,28 +2515,30 @@
         animation: appleDeskVerified 4s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate;
       }
       .anim-heart-pump {
-        animation: appleHeartPump 2.6s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+        animation: appleHeartPump 2.4s cubic-bezier(0.22, 1, 0.36, 1) infinite;
       }
       .anim-doc-float {
-        animation: appleDocFloat 4.5s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate;
+        animation: appleDocFloat 4.8s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate;
       }
 
       @keyframes appleQRLaser {
         0%, 100% { transform: scale3d(1, 1, 1); }
-        50% { transform: scale3d(1.08, 1.08, 1); }
+        50% { transform: scale3d(1.06, 1.06, 1); }
       }
 
       @keyframes appleKioskTouch {
         0%, 100% { transform: translate3d(0, 0, 0) scale3d(1, 1, 1); }
-        35% { transform: translate3d(0, 1.5px, 0) scale3d(0.92, 0.92, 1); }
-        60% { transform: translate3d(0, -0.8px, 0) scale3d(1.03, 1.03, 1); }
+        25% { transform: translate3d(0, 1.5px, 0) scale3d(0.88, 0.88, 1); }
+        45% { transform: translate3d(0, -0.8px, 0) scale3d(1.05, 1.05, 1); }
+        65% { transform: translate3d(0, 0, 0) scale3d(1, 1, 1); }
       }
 
       @keyframes appleVoiceBroadcast {
         0%, 100% { transform: scale3d(1, 1, 1) rotate(0deg); }
-        25% { transform: scale3d(1.08, 1.08, 1) rotate(-3deg); }
-        50% { transform: scale3d(1.03, 1.03, 1) rotate(3deg); }
-        75% { transform: scale3d(1.05, 1.05, 1) rotate(-1.5deg); }
+        20% { transform: scale3d(1.08, 1.08, 1) rotate(-3deg); }
+        40% { transform: scale3d(1.04, 1.04, 1) rotate(3deg); }
+        60% { transform: scale3d(1.06, 1.06, 1) rotate(-1.5deg); }
+        80% { transform: scale3d(1, 1, 1) rotate(0deg); }
       }
 
       @keyframes appleDeskVerified {
@@ -2960,17 +2546,18 @@
         50% { transform: translate3d(0, -1.5px, 0); }
       }
 
+      /* Humanized Lub-Dub ECG Heartbeat Rhythm */
       @keyframes appleHeartPump {
         0%, 100% { transform: scale3d(1, 1, 1); }
-        10% { transform: scale3d(1.16, 1.16, 1); }
+        10% { transform: scale3d(1.18, 1.18, 1); }
         20% { transform: scale3d(1.02, 1.02, 1); }
-        30% { transform: scale3d(1.1, 1.1, 1); }
+        30% { transform: scale3d(1.12, 1.12, 1); }
         45% { transform: scale3d(1, 1, 1); }
       }
 
       @keyframes appleDocFloat {
         0% { transform: translate3d(0, 0, 0) rotate(0deg); }
-        50% { transform: translate3d(0, -2px, 0) rotate(2.5deg); }
+        50% { transform: translate3d(0, -2px, 0) rotate(2deg); }
         100% { transform: translate3d(0, 0, 0) rotate(0deg); }
       }
 
@@ -3354,176 +2941,6 @@
 
       [data-theme="dark"] .island-progress-track {
         background: rgba(255, 255, 255, 0.08);
-      }
-
-      /* ===== 📌 APPLE PINNED COMPACT SPECIAL STATUS SHELF ===== */
-      .island-pinned-shelf {
-        display: flex;
-        flex-direction: column;
-        gap: 5px;
-        padding: 4px 14px 8px 14px;
-        border-bottom: 1px solid rgba(60, 60, 67, 0.08);
-        margin-bottom: 2px;
-        flex-shrink: 0;
-        z-index: 5;
-      }
-
-      [data-theme="dark"] .island-pinned-shelf {
-        border-bottom-color: rgba(255, 255, 255, 0.08);
-      }
-
-      .pinned-compact-card {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 8px;
-        background: rgba(255, 255, 255, 0.9);
-        border: 1px solid rgba(60, 60, 67, 0.12);
-        border-radius: 14px;
-        padding: 6px 12px;
-        box-sizing: border-box;
-        box-shadow: 0 2px 8px -2px rgba(0, 0, 0, 0.05);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        transition: all 0.3s ease;
-      }
-
-      [data-theme="dark"] .pinned-compact-card {
-        background: rgba(44, 44, 46, 0.9);
-        border-color: rgba(255, 255, 255, 0.1);
-        box-shadow: 0 2px 8px -2px rgba(0, 0, 0, 0.25);
-      }
-
-      .pinned-card-cuti {
-        border-left: 3.5px solid #EF4444 !important;
-        background: linear-gradient(90deg, rgba(239, 68, 68, 0.08) 0%, rgba(255, 255, 255, 0.92) 40%);
-      }
-      [data-theme="dark"] .pinned-card-cuti {
-        background: linear-gradient(90deg, rgba(239, 68, 68, 0.14) 0%, rgba(44, 44, 46, 0.92) 40%);
-      }
-
-      .pinned-card-operasi {
-        border-left: 3.5px solid #A855F7 !important;
-        background: linear-gradient(90deg, rgba(168, 85, 247, 0.08) 0%, rgba(255, 255, 255, 0.92) 40%);
-      }
-      [data-theme="dark"] .pinned-card-operasi {
-        background: linear-gradient(90deg, rgba(168, 85, 247, 0.14) 0%, rgba(44, 44, 46, 0.92) 40%);
-      }
-
-      .pinned-card-penuh {
-        border-left: 3.5px solid #F59E0B !important;
-        background: linear-gradient(90deg, rgba(245, 158, 11, 0.08) 0%, rgba(255, 255, 255, 0.92) 40%);
-      }
-      [data-theme="dark"] .pinned-card-penuh {
-        background: linear-gradient(90deg, rgba(245, 158, 11, 0.14) 0%, rgba(44, 44, 46, 0.92) 40%);
-      }
-
-      .pinned-left-group {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        min-width: 0;
-        flex: 1;
-      }
-
-      .pinned-icon-pill {
-        width: 26px;
-        height: 26px;
-        border-radius: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-      }
-      .pinned-icon-cuti {
-        background: rgba(239, 68, 68, 0.15);
-        color: #EF4444;
-      }
-      .pinned-icon-operasi {
-        background: rgba(168, 85, 247, 0.15);
-        color: #A855F7;
-      }
-      .pinned-icon-penuh {
-        background: rgba(245, 158, 11, 0.15);
-        color: #F59E0B;
-      }
-
-      .pinned-doc-info {
-        display: flex;
-        flex-direction: column;
-        gap: 1px;
-        min-width: 0;
-      }
-
-      .pinned-doc-name {
-        font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 11.5px;
-        font-weight: 800;
-        color: #0F172A;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-      [data-theme="dark"] .pinned-doc-name {
-        color: #F8FAFC;
-      }
-
-      .pinned-poli-tag {
-        font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 8.5px;
-        font-weight: 700;
-        color: #64748B;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-      [data-theme="dark"] .pinned-poli-tag {
-        color: #94A3B8;
-      }
-
-      .pinned-status-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-        font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 8.5px;
-        font-weight: 800;
-        padding: 3px 8px;
-        border-radius: 9999px;
-        white-space: nowrap;
-        flex-shrink: 0;
-      }
-      .pinned-badge-cuti {
-        background: #FEF2F2;
-        color: #DC2626;
-        border: 1px solid #FECACA;
-      }
-      [data-theme="dark"] .pinned-badge-cuti {
-        background: rgba(239, 68, 68, 0.2);
-        color: #F87171;
-        border-color: rgba(239, 68, 68, 0.35);
-      }
-
-      .pinned-badge-operasi {
-        background: #FAF5FF;
-        color: #9333EA;
-        border: 1px solid #E9D5FF;
-      }
-      [data-theme="dark"] .pinned-badge-operasi {
-        background: rgba(168, 85, 247, 0.2);
-        color: #C084FC;
-        border-color: rgba(168, 85, 247, 0.35);
-      }
-
-      .pinned-badge-penuh {
-        background: #FFFBEB;
-        color: #D97706;
-        border: 1px solid #FDE68A;
-      }
-      [data-theme="dark"] .pinned-badge-penuh {
-        background: rgba(245, 158, 11, 0.2);
-        color: #FCD34D;
-        border-color: rgba(245, 158, 11, 0.35);
       }
 
       /* visionOS Smooth Scroll Mask with Top/Bottom Gradient Fade */
@@ -4147,16 +3564,48 @@
         display: none !important;
       }
 
+      /* ─── Apple Intelligence Edge Shimmer Keyframes ─── */
+      @keyframes appleActiveEmeraldShimmer {
+        0%, 100% {
+          border-color: rgba(5, 150, 105, 0.45);
+          box-shadow: 
+            0 4px 14px -3px rgba(5, 150, 105, 0.16),
+            0 12px 28px -6px rgba(5, 150, 105, 0.10),
+            inset 0 1.5px 0 #FFFFFF !important;
+        }
+        50% {
+          border-color: rgba(16, 185, 129, 0.85);
+          box-shadow: 
+            0 6px 20px -3px rgba(5, 150, 105, 0.28),
+            0 16px 36px -6px rgba(5, 150, 105, 0.18),
+            inset 0 1.5px 0 #FFFFFF !important;
+        }
+      }
+
+      @keyframes appleActiveAmberShimmer {
+        0%, 100% {
+          border-color: rgba(217, 119, 6, 0.45);
+          box-shadow: 
+            0 4px 14px -3px rgba(217, 119, 6, 0.16),
+            0 12px 28px -6px rgba(217, 119, 6, 0.10),
+            inset 0 1.5px 0 #FFFFFF !important;
+        }
+        50% {
+          border-color: rgba(245, 158, 11, 0.85);
+          box-shadow: 
+            0 6px 20px -3px rgba(217, 119, 6, 0.28),
+            0 16px 36px -6px rgba(217, 119, 6, 0.18),
+            inset 0 1.5px 0 #FFFFFF !important;
+        }
+      }
+
       /* 🟢 PRAKTEK ACTIVE — Pure White with Emerald Ambient Halo */
       .platter.st-praktek.active,
       .platter.st-buka.active {
         border: 1.5px solid rgba(5, 150, 105, 0.45) !important;
         border-left: 6.5px solid #059669 !important;
         background: #FFFFFF !important;
-        box-shadow: 
-          0 6px 16px -4px rgba(5, 150, 105, 0.15),
-          0 18px 40px -8px rgba(5, 150, 105, 0.12),
-          inset 0 1.5px 0 #FFFFFF !important;
+        animation: appleActiveEmeraldShimmer 3.2s ease-in-out infinite;
       }
 
       .platter.st-praktek.active .initials,
@@ -4211,20 +3660,17 @@
 
       /* 🟡 PENDAFTARAN ACTIVE — Pure White with Amber Gold Ambient Halo */
       .platter.st-pendaftaran.active {
-        border: 1.5px solid rgba(217, 119, 6, 0.5) !important;
+        border: 1.5px solid rgba(217, 119, 6, 0.45) !important;
         border-left: 6.5px solid #D97706 !important;
         background: #FFFFFF !important;
-        box-shadow: 
-          0 20px 48px -4px rgba(217, 119, 6, 0.22),
-          0 0 32px rgba(245, 158, 11, 0.16),
-          inset 0 1.5px 1.5px #FFFFFF !important;
+        animation: appleActiveAmberShimmer 3.2s ease-in-out infinite;
       }
 
       .platter.st-pendaftaran.active .initials {
         background: rgba(217, 119, 6, 0.1) !important;
         color: #D97706 !important;
         border-color: rgba(217, 119, 6, 0.35) !important;
-        box-shadow: 0 0 16px rgba(217, 119, 6, 0.18), inset 0 1.5px 2px #FFFFFF !important;
+        box-shadow: 0 0 12px rgba(217, 119, 6, 0.14), inset 0 1.5px 2px #FFFFFF !important;
       }
 
       .platter.st-pendaftaran.active .doc-name {
@@ -4664,9 +4110,12 @@
 
       .wave-bar {
         width: 3px;
+        height: 14px;
         border-radius: 2px;
         background: #059669;
-        animation: apple-wave 1.2s ease-in-out infinite alternate;
+        transform-origin: bottom;
+        animation: appleWaveformBar 1.2s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate;
+        will-change: transform;
       }
 
       [data-theme="dark"] .wave-bar {
@@ -4674,14 +4123,14 @@
         box-shadow: 0 0 6px rgba(52, 211, 153, 0.6);
       }
 
-      .wave-bar.bar-1 { height: 40%; animation-delay: 0s; }
-      .wave-bar.bar-2 { height: 100%; animation-delay: 0.25s; }
-      .wave-bar.bar-3 { height: 65%; animation-delay: 0.5s; }
+      .wave-bar.bar-1 { animation-delay: 0s; }
+      .wave-bar.bar-2 { animation-delay: 0.22s; }
+      .wave-bar.bar-3 { animation-delay: 0.44s; }
 
-      @keyframes apple-wave {
-        0% { height: 25%; }
-        50% { height: 95%; }
-        100% { height: 45%; }
+      @keyframes appleWaveformBar {
+        0% { transform: scaleY(0.25); }
+        50% { transform: scaleY(1.0); }
+        100% { transform: scaleY(0.45); }
       }
 
       .st-operasi.active .pulse-dot {
@@ -6456,8 +5905,6 @@
               <div class="island-progress-bar" id="progressBedah"></div>
             </div>
           </div>
-          <!-- 📌 APPLE PINNED SPECIAL STATUS SHELF (LOCKED) -->
-          <div class="island-pinned-shelf" id="pinnedShelfBedah" style="display: none;"></div>
           <div class="scroll-mask" id="maskBedah">
             <div class="scroller" id="scrollBedah"></div>
           </div>
@@ -6483,8 +5930,6 @@
               <div class="island-progress-bar" id="progressNonBedah"></div>
             </div>
           </div>
-          <!-- 📌 APPLE PINNED SPECIAL STATUS SHELF (LOCKED) -->
-          <div class="island-pinned-shelf" id="pinnedShelfNonBedah" style="display: none;"></div>
           <div class="scroll-mask" id="maskNonBedah">
             <div class="scroller" id="scrollNonBedah"></div>
           </div>
@@ -7600,46 +7045,38 @@
 
         buildSidebarComplicationsHTML() {
           const w = this._weatherCache;
-          const heroIconMarkup = w.iconHTML || this.getWeatherIconSVG("partly-cloudy-day", 48);
+          const heroIconMarkup = w.iconHTML || this.getWeatherIconSVG("partly-cloudy-day", 44);
 
           return `
             <div class="sidebar-complications">
-              <!-- 🥽 APPLE visionOS SPATIAL DEPTH MORPH SMART STACK -->
-              <div class="complication-smart-stack" id="complicationSmartStack">
-                <!-- Slide 0: Cuaca Purbalingga Card -->
-                <div class="smart-stack-slide active-slide" id="smartStackSlideWeather" data-slide="0">
-                  <div class="complication-card complication-weather-master weather-theme-${w.atmosphereTheme}">
-                    <!-- 1. Header Bar -->
-                    <div class="complication-header">
-                      <div class="complication-title">
-                        <span class="material-icons-round" style="font-size:14px; color:#0284C7;">wb_sunny</span>
-                        <span>CUACA PURBALINGGA</span>
-                      </div>
-                      <span class="complication-tag tag-sky">LIVE BMKG</span>
-                    </div>
-
-                    <!-- 2. Hero Temperature & Visual Status -->
-                    <div class="weather-master-hero-row">
-                      <div class="weather-master-hero-left">
-                        <div class="weather-temp-master-group">
-                          <span class="weather-temp-master-val" id="tvWeatherTemp">${w.temp}</span>
-                          <span class="weather-temp-master-unit">°C</span>
-                        </div>
-                        <div class="weather-condition-master-text" id="tvWeatherCondition">${w.condition}</div>
-                        <div class="weather-range-master-text" id="tvWeatherRange">Suhu Harian: H: ${w.tempMax}° • L: ${w.tempMin}°</div>
-                      </div>
-                      <div class="weather-master-hero-right">
-                        <div class="weather-master-icon-wrap" id="tvWeatherIcon">${heroIconMarkup}</div>
-                      </div>
-                    </div>
+              <!-- ⛅ ULTRA-COMPACT APPLE tvOS WEATHER COMPLICATION -->
+              <div class="complication-card complication-weather-master weather-theme-${w.atmosphereTheme}">
+                <!-- 1. Header Bar -->
+                <div class="complication-header">
+                  <div class="complication-title">
+                    <span class="material-icons-round" style="font-size:14px; color:#0284C7;">wb_sunny</span>
+                    <span>CUACA PURBALINGGA</span>
                   </div>
+                  <span class="complication-tag tag-sky">LIVE BMKG</span>
                 </div>
 
-                <!-- Unified Smart Stack Pagination Dots -->
-                <div class="smart-stack-dots" id="smartStackDots" style="display: none;"></div>
+                <!-- 2. Hero Temperature & Visual Status -->
+                <div class="weather-master-hero-row">
+                  <div class="weather-master-hero-left">
+                    <div class="weather-temp-master-group">
+                      <span class="weather-temp-master-val" id="tvWeatherTemp">${w.temp}</span>
+                      <span class="weather-temp-master-unit">°C</span>
+                    </div>
+                    <div class="weather-condition-master-text" id="tvWeatherCondition">${w.condition}</div>
+                    <div class="weather-range-master-text" id="tvWeatherRange">Suhu Harian: H: ${w.tempMax}° • L: ${w.tempMin}°</div>
+                  </div>
+                  <div class="weather-master-hero-right">
+                    <div class="weather-master-icon-wrap" id="tvWeatherIcon">${heroIconMarkup}</div>
+                  </div>
+                </div>
               </div>
 
-              <!-- 🌳 APPLE tvOS PATIENT ADMISSION VERTICAL TREE FLOW COMPLICATION (100% PERMANEN) -->
+              <!-- 🌳 APPLE tvOS PATIENT ADMISSION VERTICAL TREE FLOW COMPLICATION -->
               <div class="complication-card complication-journey-card">
                 <!-- 1. Header Bar -->
                 <div class="complication-header">
@@ -8733,69 +8170,10 @@
             return false; // No scroll reset needed
           };
 
-          // Helper: Render Apple Pinned Special Status Shelf (Locked from auto-scroll)
-          const renderPinnedShelf = (shelfId, list) => {
-            const shelf = $(shelfId);
-            if (!shelf) return;
-            if (!list || list.length === 0) {
-              shelf.style.display = "none";
-              shelf.innerHTML = "";
-              return;
-            }
-            shelf.style.display = "flex";
-            shelf.innerHTML = list.map((d) => {
-              const st = (d.Status || "").toUpperCase();
-              let type = "cuti",
-                badge = "SEDANG CUTI",
-                icon = "event_busy",
-                info = d.NextBuka
-                  ? `Kembali: ${d.NextBuka}`
-                  : (d.CutiSampai ? `Cuti s/d ${d.CutiSampai}` : "Sedang Cuti");
-              if (st.includes("OPERASI")) {
-                type = "operasi";
-                badge = "OPERASI";
-                icon = "emergency";
-                info = d.JamPraktek
-                  ? `Mulai: ${(d.JamPraktek.split("-")[0] || "").trim()} WIB`
-                  : "Tindakan Medis";
-              } else if (st.includes("PENUH")) {
-                type = "penuh";
-                badge = "KUOTA PENUH";
-                icon = "groups";
-                info = "Pendaftaran Penuh";
-              }
-              return `
-                <div class="pinned-compact-card pinned-card-${type}">
-                  <div class="pinned-left-group">
-                    <div class="pinned-icon-pill pinned-icon-${type}">
-                      <span class="material-icons-round" style="font-size: 14px;">${icon}</span>
-                    </div>
-                    <div class="pinned-doc-info">
-                      <span class="pinned-doc-name">${esc(d.Dokter)}</span>
-                      <span class="pinned-poli-tag">${esc(d.Poli || d.SubPoli || d.Spesialis || "Spesialis")}</span>
-                    </div>
-                  </div>
-                  <div class="pinned-status-badge pinned-badge-${type}">
-                    <span class="sk-pill-dot dot-${type}"></span>
-                    <span>${badge}</span>
-                    <span style="opacity: 0.5; font-size: 8px; margin: 0 1px;">•</span>
-                    <span>${info}</span>
-                  </div>
-                </div>
-              `;
-            }).join("");
-          };
-
-          const bedahSpecial = sidebarData.filter((d) => d.Jenis === "Bedah");
-          const nonBedahSpecial = sidebarData.filter((d) => d.Jenis !== "Bedah");
-
-          renderPinnedShelf("pinnedShelfBedah", bedahSpecial);
-          renderPinnedShelf("pinnedShelfNonBedah", nonBedahSpecial);
-
           const changed1 = updateList("scrollBedah", group.Bedah);
           const changed2 = updateList("scrollNonBedah", group.NonBedah);
 
-          // --- SIDEBAR: Grouped Render & Smart Stack ---
+          // --- SIDEBAR: Grouped Render (OPERASI + PENUH + CUTI terpisah) ---
           const changed3 = this._renderSidebar(
             group.SidebarOperasi,
             group.SidebarPenuh,
@@ -8803,8 +8181,10 @@
             updateList,
           );
 
-          if ($("countBedah")) $("countBedah").textContent = group.Bedah.length + bedahSpecial.length;
-          if ($("countNonBedah")) $("countNonBedah").textContent = group.NonBedah.length + nonBedahSpecial.length;
+          if ($("countBedah")) $("countBedah").textContent = group.Bedah.length;
+          if ($("countNonBedah")) $("countNonBedah").textContent = group.NonBedah.length;
+          if ($("countSidebar")) $("countSidebar").textContent =
+            group.SidebarPenuh.length + group.SidebarCuti.length;
 
           // Only reset scroller if list structure changed (avoid jumpiness on simple updates)
           if (!isMobile) {
@@ -8955,29 +8335,67 @@
             return el;
           };
 
+          const isComplicationMode = (operasiList.length === 0 && penuhList.length === 0 && cutiList.length === 0);
           const sidebarPanel = document.querySelector(".sidebar-panel");
           if (sidebarPanel) {
-            sidebarPanel.classList.add("sidebar-mode-weather");
+            sidebarPanel.classList.toggle("sidebar-mode-weather", isComplicationMode);
           }
 
-          if (s3) s3.stop();
-          let wrapper = container.querySelector('[data-id="sec-complications"]');
-          if (!wrapper) {
-            wrapper = document.createElement("div");
-            wrapper.dataset.id = "sec-complications";
-            wrapper.style.height = "100%";
-            wrapper.innerHTML = this.buildSidebarComplicationsHTML();
-            allElements.push(wrapper);
-            hasLayoutChange = true;
+          // --- Build grouped layout or Apple Watch Complications if empty ---
+          if (isComplicationMode) {
+            if (s3) s3.stop();
+            let wrapper = container.querySelector('[data-id="sec-complications"]');
+            if (!wrapper) {
+              wrapper = document.createElement("div");
+              wrapper.dataset.id = "sec-complications";
+              wrapper.style.height = "100%";
+              wrapper.innerHTML = this.buildSidebarComplicationsHTML();
+              allElements.push(wrapper);
+              hasLayoutChange = true;
+            } else {
+              allElements.push(wrapper);
+              oldMap.delete("sec-complications");
+            }
           } else {
-            allElements.push(wrapper);
-            oldMap.delete("sec-complications");
+            if (s3) s3.active = true;
+            if (operasiList.length > 0) {
+              allElements.push(
+                makeSectionHeader(
+                  "Tindakan Operasi",
+                  "#BF5AF2",
+                  operasiList.length,
+                  "sec-operasi",
+                ),
+              );
+              operasiList.forEach((d) => allElements.push(makeCard(d)));
+            }
+
+            if (penuhList.length > 0) {
+              allElements.push(
+                makeSectionHeader(
+                  "Kuota Penuh",
+                  "#FF9F0A",
+                  penuhList.length,
+                  "sec-penuh",
+                ),
+              );
+              penuhList.forEach((d) => allElements.push(makeCard(d)));
+            }
+
+            if (cutiList.length > 0) {
+              allElements.push(
+                makeSectionHeader(
+                  "Sedang Cuti",
+                  "#FF453A",
+                  cutiList.length,
+                  "sec-cuti",
+                ),
+              );
+              cutiList.forEach((d) => allElements.push(makeCard(d)));
+            }
           }
 
-          // Update Status Khusus in Smart Stack & Trigger Auto-Rotation
-          this.updateSpecialStatusWidget(operasiList, penuhList, cutiList);
-
-          // Update visionOS Segment Bar counts (if present)
+          // Update visionOS Segment Bar counts
           if ($("segCountOp")) $("segCountOp").textContent = operasiList.length;
           if ($("segCountPenuh")) $("segCountPenuh").textContent = penuhList.length;
           if ($("segCountCuti")) $("segCountCuti").textContent = cutiList.length;
@@ -9003,179 +8421,6 @@
             return true;
           }
           return false;
-        },
-
-        updateSpecialStatusWidget(operasiList, penuhList, cutiList) {
-          const items = [];
-          if (operasiList) {
-            operasiList.forEach(d => {
-              const timeStr = d.JamPraktek ? `Praktek Mulai: <strong>${(d.JamPraktek.split("-")[0] || "").trim()} WIB</strong>` : "Tindakan Medis";
-              items.push({
-                type: "op",
-                icon: "emergency",
-                badge: "TINDAKAN OPERASI",
-                poli: d.Poli || d.SubPoli || d.Spesialis || "Spesialis",
-                name: d.Dokter,
-                metaIcon: "schedule",
-                metaText: timeStr
-              });
-            });
-          }
-          if (penuhList) {
-            penuhList.forEach(d => {
-              items.push({
-                type: "penuh",
-                icon: "groups",
-                badge: "KUOTA PENUH",
-                poli: d.Poli || d.SubPoli || d.Spesialis || "Spesialis",
-                name: d.Dokter,
-                metaIcon: "do_not_disturb_on",
-                metaText: "Pendaftaran Hari Ini Penuh"
-              });
-            });
-          }
-          if (cutiList) {
-            cutiList.forEach(d => {
-              let returnStr = "Sedang Cuti";
-              if (d.NextBuka) {
-                returnStr = `Kembali: <strong>${d.NextBuka}</strong>`;
-              } else if (d.CutiSampai) {
-                returnStr = `Cuti s/d: <strong>${d.CutiSampai}</strong>`;
-              }
-              items.push({
-                type: "cuti",
-                icon: "event_busy",
-                badge: "SEDANG CUTI",
-                poli: d.Poli || d.SubPoli || d.Spesialis || "Spesialis",
-                name: d.Dokter,
-                metaIcon: "event_available",
-                metaText: returnStr
-              });
-            });
-          }
-
-          this._skItems = items;
-          const container = $("complicationSmartStack");
-          const w = this._weatherCache;
-          const heroIconMarkup = w.iconHTML || this.getWeatherIconSVG("partly-cloudy-day", 48);
-
-          if (!container) return;
-
-          // Slide 0: Cuaca Purbalingga Card
-          let html = `
-            <div class="smart-stack-slide active-slide" id="smartStackSlideWeather" data-slide="0">
-              <div class="complication-card complication-weather-master weather-theme-${w.atmosphereTheme}">
-                <div class="complication-header">
-                  <div class="complication-title">
-                    <span class="material-icons-round" style="font-size:14px; color:#0284C7;">wb_sunny</span>
-                    <span>CUACA PURBALINGGA</span>
-                  </div>
-                  <span class="complication-tag tag-sky">LIVE BMKG</span>
-                </div>
-                <div class="weather-master-hero-row">
-                  <div class="weather-master-hero-left">
-                    <div class="weather-temp-master-group">
-                      <span class="weather-temp-master-val" id="tvWeatherTemp">${w.temp}</span>
-                      <span class="weather-temp-master-unit">°C</span>
-                    </div>
-                    <div class="weather-condition-master-text" id="tvWeatherCondition">${w.condition}</div>
-                    <div class="weather-range-master-text" id="tvWeatherRange">Suhu Harian: H: ${w.tempMax}° • L: ${w.tempMin}°</div>
-                  </div>
-                  <div class="weather-master-hero-right">
-                    <div class="weather-master-icon-wrap" id="tvWeatherIcon">${heroIconMarkup}</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          `;
-
-          // Slides 1..N: Peer Doctor Spatial Depth Hero Slides
-          items.forEach((item, idx) => {
-            html += `
-              <div class="smart-stack-slide" data-slide="${idx + 1}">
-                <div class="complication-card complication-status-khusus-hero">
-                  <div class="complication-header">
-                    <div class="complication-title">
-                      <span class="material-icons-round" style="font-size:14px; color:#AF52DE;">medical_information</span>
-                      <span>STATUS KHUSUS</span>
-                    </div>
-                    <span class="complication-tag tag-purple">${idx + 1} / ${items.length} DOKTER</span>
-                  </div>
-                  <div class="sk-hero-body">
-                    <div class="sk-hero-icon-box box-${item.type}">
-                      <span class="material-icons-round" style="font-size: 22px;">${item.icon}</span>
-                    </div>
-                    <div class="sk-hero-content">
-                      <div class="sk-hero-top-row">
-                        <span class="sk-hero-status-pill pill-${item.type}">
-                          <span class="sk-pill-dot dot-${item.type}"></span>
-                          <span>${item.badge}</span>
-                        </span>
-                        <span class="sk-hero-poli-tag">${esc(item.poli)}</span>
-                      </div>
-                      <div class="sk-hero-doctor-name">${esc(item.name)}</div>
-                      <div class="sk-hero-meta-row">
-                        <span class="material-icons-round" style="font-size: 12px;">${item.metaIcon}</span>
-                        <span>${item.metaText}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            `;
-          });
-
-          const totalSlides = 1 + items.length;
-          html += `<div class="smart-stack-dots" id="smartStackDots" style="${totalSlides > 1 ? "display: flex;" : "display: none;"}">
-            ${Array.from({ length: totalSlides }, (_, i) => `<span class="smart-stack-dot ${i === 0 ? "active" : ""}" data-dot-idx="${i}"></span>`).join("")}
-          </div>`;
-
-          container.innerHTML = html;
-
-          if (totalSlides > 1) {
-            this.startSmartStackRotation(totalSlides);
-          } else {
-            this.stopSmartStackRotation();
-          }
-        },
-
-        startSmartStackRotation(totalSlides) {
-          if (this._smartStackTimer) return;
-          this._smartStackCurrentIndex = 0;
-
-          const scheduleNext = () => {
-            const currentIdx = this._smartStackCurrentIndex;
-            // Slide 0 (Weather): 9500ms, Slide 1..N (Doctors): 6500ms
-            const duration = (currentIdx === 0) ? 9500 : 6500;
-
-            this._smartStackTimer = setTimeout(() => {
-              this._smartStackCurrentIndex = (this._smartStackCurrentIndex + 1) % totalSlides;
-              this.applySmartStackSlideUI(this._smartStackCurrentIndex, totalSlides);
-              scheduleNext();
-            }, duration);
-          };
-
-          scheduleNext();
-        },
-
-        applySmartStackSlideUI(idx, totalSlides) {
-          const container = $("complicationSmartStack");
-          if (!container) return;
-
-          const slides = container.querySelectorAll(".smart-stack-slide");
-          slides.forEach((s, i) => s.classList.toggle("active-slide", i === idx));
-
-          const dots = container.querySelectorAll(".smart-stack-dot");
-          dots.forEach((d, i) => d.classList.toggle("active", i === idx));
-        },
-
-        stopSmartStackRotation() {
-          if (this._smartStackTimer) {
-            clearTimeout(this._smartStackTimer);
-            this._smartStackTimer = null;
-          }
-          this._smartStackCurrentIndex = 0;
-          this.applySmartStackSlideUI(0, 1);
         },
       };
 
