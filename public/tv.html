@@ -1783,32 +1783,42 @@
         opacity: 1;
       }
 
-      /* ===== 🔄 APPLE SMART STACK (CAROUSEL WIDGET) ===== */
+      /* ===== 🔄 UNIFIED PRIMARY APPLE SMART STACK CAROUSEL ===== */
       .complication-smart-stack {
-        display: grid;
         width: 100%;
         position: relative;
         border-radius: 20px;
+        overflow: hidden;
         box-sizing: border-box;
       }
 
-      .smart-stack-slide {
-        grid-area: 1 / 1 / 2 / 2;
+      .smart-stack-viewport {
         width: 100%;
-        height: 100%;
-        opacity: 0;
-        transform: scale(0.96) translateY(4px);
-        pointer-events: none;
-        transition: opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1),
-                    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+        overflow: hidden;
+        position: relative;
+        border-radius: 20px;
+      }
+
+      .smart-stack-track {
+        display: flex;
+        width: 100%;
+        transition: transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+        will-change: transform;
+      }
+
+      .smart-stack-slide {
+        flex: 0 0 100%;
+        width: 100%;
         box-sizing: border-box;
+        opacity: 0.35;
+        transform: scale(0.96);
+        transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1),
+                    transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
       }
 
       .smart-stack-slide.active-slide {
         opacity: 1;
-        transform: scale(1) translateY(0);
-        pointer-events: auto;
-        z-index: 2;
+        transform: scale(1);
       }
 
       .smart-stack-dots {
@@ -1826,11 +1836,11 @@
         height: 5px;
         border-radius: 50%;
         background: rgba(60, 60, 67, 0.25);
-        transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+        transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
       }
 
       .smart-stack-dot.active {
-        width: 13px;
+        width: 14px;
         border-radius: 9999px;
         background: #007AFF;
       }
@@ -1843,8 +1853,8 @@
         background: #38BDF8;
       }
 
-      /* Status Khusus Smart Stack Widget (Apple Hero Carousel) */
-      .complication-status-khusus-master {
+      /* Status Khusus Hero Card inside Slide */
+      .complication-status-khusus-hero {
         height: 100%;
         display: flex;
         flex-direction: column;
@@ -1861,12 +1871,21 @@
         overflow: hidden;
       }
 
-      [data-theme="dark"] .complication-status-khusus-master {
+      [data-theme="dark"] .complication-status-khusus-hero {
         background: #2C2C2E !important;
         border: 1px solid rgba(255, 255, 255, 0.08);
         box-shadow: 
           0 2px 0 rgba(255, 255, 255, 0.06),
           0 1px 0 rgba(0, 0, 0, 0.3);
+      }
+
+      .sk-hero-body {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        box-sizing: border-box;
+        padding: 4px 1px;
+        flex: 1;
       }
 
       .tag-purple {
@@ -2264,8 +2283,8 @@
       }
 
       .weather-master-icon-wrap {
-        width: 44px;
-        height: 44px;
+        width: 48px;
+        height: 48px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -2273,6 +2292,13 @@
         animation: appleWeatherFloat 4s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate;
         position: relative;
         z-index: 1;
+        flex-shrink: 0;
+      }
+
+      .weather-master-icon-wrap svg {
+        display: block;
+        width: 48px;
+        height: 48px;
       }
 
       .weather-master-section {
@@ -7382,73 +7408,47 @@
 
         buildSidebarComplicationsHTML() {
           const w = this._weatherCache;
-          const heroIconMarkup = w.iconHTML || this.getWeatherIconSVG("partly-cloudy-day", 44);
+          const heroIconMarkup = w.iconHTML || this.getWeatherIconSVG("partly-cloudy-day", 48);
 
           return `
             <div class="sidebar-complications">
-              <!-- 🔄 APPLE SMART STACK (CUACA + STATUS KHUSUS CAROUSEL) -->
+              <!-- 🔄 UNIFIED PRIMARY APPLE SMART STACK CAROUSEL -->
               <div class="complication-smart-stack" id="complicationSmartStack">
-                <!-- Slide 1: Cuaca Purbalingga -->
-                <div class="smart-stack-slide active-slide" id="smartStackSlideWeather">
-                  <div class="complication-weather-master weather-theme-${w.atmosphereTheme}">
-                    <!-- 1. Header Bar -->
-                    <div class="complication-header">
-                      <div class="complication-title">
-                        <span class="material-icons-round" style="font-size:14px; color:#0284C7;">wb_sunny</span>
-                        <span>CUACA PURBALINGGA</span>
-                      </div>
-                      <span class="complication-tag tag-sky">LIVE BMKG</span>
-                    </div>
-
-                    <!-- 2. Hero Temperature & Visual Status -->
-                    <div class="weather-master-hero-row">
-                      <div class="weather-master-hero-left">
-                        <div class="weather-temp-master-group">
-                          <span class="weather-temp-master-val" id="tvWeatherTemp">${w.temp}</span>
-                          <span class="weather-temp-master-unit">°C</span>
+                <div class="smart-stack-viewport">
+                  <div class="smart-stack-track" id="smartStackTrack">
+                    <!-- Slide 0: Cuaca Purbalingga Card -->
+                    <div class="smart-stack-slide active-slide" id="smartStackSlideWeather" data-slide="0">
+                      <div class="complication-card complication-weather-master weather-theme-${w.atmosphereTheme}">
+                        <!-- 1. Header Bar -->
+                        <div class="complication-header">
+                          <div class="complication-title">
+                            <span class="material-icons-round" style="font-size:14px; color:#0284C7;">wb_sunny</span>
+                            <span>CUACA PURBALINGGA</span>
+                          </div>
+                          <span class="complication-tag tag-sky">LIVE BMKG</span>
                         </div>
-                        <div class="weather-condition-master-text" id="tvWeatherCondition">${w.condition}</div>
-                        <div class="weather-range-master-text" id="tvWeatherRange">Suhu Harian: H: ${w.tempMax}° • L: ${w.tempMin}°</div>
-                      </div>
-                      <div class="weather-master-hero-right">
-                        <div class="weather-master-icon-wrap" id="tvWeatherIcon">${heroIconMarkup}</div>
+
+                        <!-- 2. Hero Temperature & Visual Status -->
+                        <div class="weather-master-hero-row">
+                          <div class="weather-master-hero-left">
+                            <div class="weather-temp-master-group">
+                              <span class="weather-temp-master-val" id="tvWeatherTemp">${w.temp}</span>
+                              <span class="weather-temp-master-unit">°C</span>
+                            </div>
+                            <div class="weather-condition-master-text" id="tvWeatherCondition">${w.condition}</div>
+                            <div class="weather-range-master-text" id="tvWeatherRange">Suhu Harian: H: ${w.tempMax}° • L: ${w.tempMin}°</div>
+                          </div>
+                          <div class="weather-master-hero-right">
+                            <div class="weather-master-icon-wrap" id="tvWeatherIcon">${heroIconMarkup}</div>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                <!-- Slide 2: Status Khusus (Operasi / Cuti / Penuh) -->
-                <div class="smart-stack-slide" id="smartStackSlideSpecialStatus">
-                  <div class="complication-status-khusus-master">
-                    <!-- 1. Header Bar -->
-                    <div class="complication-header">
-                      <div class="complication-title">
-                        <span class="material-icons-round" style="font-size:14px; color:#AF52DE;">medical_information</span>
-                        <span>STATUS KHUSUS</span>
-                      </div>
-                      <span class="complication-tag tag-purple" id="skTotalCountBadge">0 DOKTER</span>
-                    </div>
-
-                    <!-- 2. Horizontal Side-Slide Carousel Track -->
-                    <div class="sk-carousel-container">
-                      <div class="sk-carousel-track" id="skCarouselTrack">
-                        <div class="sk-widget-empty" style="width: 100%;">
-                          <span class="material-icons-round" style="font-size: 18px; color: #34C759;">check_circle</span>
-                          <span>Semua Dokter Siap Melayani</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <!-- 3. Mini Progress / Page Indicator Bar -->
-                    <div class="sk-pills-bar" id="skPillsBar" style="display: none;"></div>
-                  </div>
-                </div>
-
-                <!-- Smart Stack Pagination Dots -->
-                <div class="smart-stack-dots" id="smartStackDots" style="display: none;">
-                  <span class="smart-stack-dot active" id="dotSlide1"></span>
-                  <span class="smart-stack-dot" id="dotSlide2"></span>
-                </div>
+                <!-- Unified Smart Stack Pagination Dots -->
+                <div class="smart-stack-dots" id="smartStackDots" style="display: none;"></div>
               </div>
 
               <!-- 🌳 APPLE tvOS PATIENT ADMISSION VERTICAL TREE FLOW COMPLICATION (100% PERMANEN) -->
@@ -8810,179 +8810,143 @@
           }
 
           this._skItems = items;
-          const totalCount = items.length;
-          const badgeEl = $("skTotalCountBadge");
-          const trackEl = $("skCarouselTrack");
-          const pillsBarEl = $("skPillsBar");
+          const trackEl = $("smartStackTrack");
           const dotsEl = $("smartStackDots");
+          const w = this._weatherCache;
+          const heroIconMarkup = w.iconHTML || this.getWeatherIconSVG("partly-cloudy-day", 48);
 
-          if (badgeEl) {
-            badgeEl.textContent = totalCount > 1 
-              ? `1 / ${totalCount} DOKTER` 
-              : `${totalCount} DOKTER`;
-          }
+          if (!trackEl) return;
 
-          if (trackEl) {
-            if (totalCount === 0) {
-              trackEl.style.transform = "translateX(0%)";
-              trackEl.innerHTML = `
-                <div class="sk-widget-empty" style="width: 100%;">
-                  <span class="material-icons-round" style="font-size: 18px; color: #34C759;">check_circle</span>
-                  <span>Semua Dokter Siap Melayani</span>
-                </div>
-              `;
-            } else {
-              trackEl.innerHTML = items.map((item, idx) => `
-                <div class="sk-hero-slide ${idx === 0 ? "active-doctor-slide" : ""}" data-index="${idx}">
-                  <div class="sk-hero-icon-box box-${item.type}">
-                    <span class="material-icons-round" style="font-size: 22px;">${item.icon}</span>
+          // Slide 0: Cuaca Purbalingga Card
+          let html = `
+            <div class="smart-stack-slide active-slide" id="smartStackSlideWeather" data-slide="0">
+              <div class="complication-card complication-weather-master weather-theme-${w.atmosphereTheme}">
+                <div class="complication-header">
+                  <div class="complication-title">
+                    <span class="material-icons-round" style="font-size:14px; color:#0284C7;">wb_sunny</span>
+                    <span>CUACA PURBALINGGA</span>
                   </div>
-                  <div class="sk-hero-content">
-                    <div class="sk-hero-top-row">
-                      <span class="sk-hero-status-pill pill-${item.type}">
-                        <span class="sk-pill-dot dot-${item.type}"></span>
-                        <span>${item.badge}</span>
-                      </span>
-                      <span class="sk-hero-poli-tag">${esc(item.poli)}</span>
+                  <span class="complication-tag tag-sky">LIVE BMKG</span>
+                </div>
+                <div class="weather-master-hero-row">
+                  <div class="weather-master-hero-left">
+                    <div class="weather-temp-master-group">
+                      <span class="weather-temp-master-val" id="tvWeatherTemp">${w.temp}</span>
+                      <span class="weather-temp-master-unit">°C</span>
                     </div>
-                    <div class="sk-hero-doctor-name">${esc(item.name)}</div>
-                    <div class="sk-hero-meta-row">
-                      <span class="material-icons-round" style="font-size: 12px;">${item.metaIcon}</span>
-                      <span>${item.metaText}</span>
-                    </div>
+                    <div class="weather-condition-master-text" id="tvWeatherCondition">${w.condition}</div>
+                    <div class="weather-range-master-text" id="tvWeatherRange">Suhu Harian: H: ${w.tempMax}° • L: ${w.tempMin}°</div>
+                  </div>
+                  <div class="weather-master-hero-right">
+                    <div class="weather-master-icon-wrap" id="tvWeatherIcon">${heroIconMarkup}</div>
                   </div>
                 </div>
-              `).join("");
-            }
-          }
+              </div>
+            </div>
+          `;
 
-          // Render Mini Progress Pill Bars
-          if (pillsBarEl) {
-            if (totalCount > 1) {
-              pillsBarEl.style.display = "flex";
-              pillsBarEl.innerHTML = items.map((_, i) => `<span class="sk-pill-bar ${i === 0 ? "active" : ""}"></span>`).join("");
-            } else {
-              pillsBarEl.style.display = "none";
-              pillsBarEl.innerHTML = "";
-            }
-          }
+          // Slides 1..N: Peer Doctor Hero Slides
+          items.forEach((item, idx) => {
+            html += `
+              <div class="smart-stack-slide" data-slide="${idx + 1}">
+                <div class="complication-card complication-status-khusus-hero">
+                  <div class="complication-header">
+                    <div class="complication-title">
+                      <span class="material-icons-round" style="font-size:14px; color:#AF52DE;">medical_information</span>
+                      <span>STATUS KHUSUS</span>
+                    </div>
+                    <span class="complication-tag tag-purple">${idx + 1} / ${items.length} DOKTER</span>
+                  </div>
+                  <div class="sk-hero-body">
+                    <div class="sk-hero-icon-box box-${item.type}">
+                      <span class="material-icons-round" style="font-size: 22px;">${item.icon}</span>
+                    </div>
+                    <div class="sk-hero-content">
+                      <div class="sk-hero-top-row">
+                        <span class="sk-hero-status-pill pill-${item.type}">
+                          <span class="sk-pill-dot dot-${item.type}"></span>
+                          <span>${item.badge}</span>
+                        </span>
+                        <span class="sk-hero-poli-tag">${esc(item.poli)}</span>
+                      </div>
+                      <div class="sk-hero-doctor-name">${esc(item.name)}</div>
+                      <div class="sk-hero-meta-row">
+                        <span class="material-icons-round" style="font-size: 12px;">${item.metaIcon}</span>
+                        <span>${item.metaText}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            `;
+          });
 
-          // Toggle Smart Stack Rotation
+          trackEl.innerHTML = html;
+
+          const totalSlides = 1 + items.length;
+
+          // Render Unified Pagination Dots
           if (dotsEl) {
-            dotsEl.style.display = totalCount > 0 ? "flex" : "none";
+            if (totalSlides > 1) {
+              dotsEl.style.display = "flex";
+              dotsEl.innerHTML = Array.from({ length: totalSlides }, (_, i) => 
+                `<span class="smart-stack-dot ${i === 0 ? "active" : ""}" data-dot-idx="${i}"></span>`
+              ).join("");
+            } else {
+              dotsEl.style.display = "none";
+              dotsEl.innerHTML = "";
+            }
           }
 
-          if (totalCount > 0) {
-            this.startSmartStackRotation();
+          if (totalSlides > 1) {
+            this.startSmartStackRotation(totalSlides);
           } else {
             this.stopSmartStackRotation();
           }
         },
 
-        startSmartStackRotation() {
+        startSmartStackRotation(totalSlides) {
           if (this._smartStackTimer) return;
-          this._smartStackCurrentSlide = 0;
-          this._skDoctorIndex = 0;
+          this._smartStackCurrentIndex = 0;
 
-          const stepCarousel = () => {
-            const items = this._skItems || [];
-            const totalDocs = items.length;
+          const scheduleNext = () => {
+            const currentIdx = this._smartStackCurrentIndex;
+            // Slide 0 (Weather): 9500ms, Slide 1..N (Doctors): 6500ms
+            const duration = (currentIdx === 0) ? 9500 : 6500;
 
-            if (totalDocs === 0) {
-              this.stopSmartStackRotation();
-              return;
-            }
-
-            if (this._smartStackCurrentSlide === 0) {
-              this._smartStackCurrentSlide = 1;
-              this._skDoctorIndex = 0;
-              this.updateSmartStackSlideUI(1, 0, totalDocs);
-              
-              if (totalDocs > 1) {
-                this.scheduleDoctorSubSlides(totalDocs);
-              } else {
-                this._smartStackTimer = setTimeout(stepCarousel, 6500);
-              }
-            } else {
-              this._smartStackCurrentSlide = 0;
-              this.updateSmartStackSlideUI(0, 0, totalDocs);
-              this._smartStackTimer = setTimeout(stepCarousel, 10000);
-            }
+            this._smartStackTimer = setTimeout(() => {
+              this._smartStackCurrentIndex = (this._smartStackCurrentIndex + 1) % totalSlides;
+              this.applySmartStackSlideUI(this._smartStackCurrentIndex, totalSlides);
+              scheduleNext();
+            }, duration);
           };
 
-          this._smartStackTimer = setTimeout(stepCarousel, 10000);
+          scheduleNext();
         },
 
-        scheduleDoctorSubSlides(totalDocs) {
-          let currentSub = 0;
-          const subStep = () => {
-            currentSub++;
-            if (currentSub < totalDocs && this._smartStackCurrentSlide === 1) {
-              this._skDoctorIndex = currentSub;
-              this.updateDoctorSlideUI(currentSub, totalDocs);
-              this._smartStackTimer = setTimeout(subStep, 6500);
-            } else {
-              this._smartStackCurrentSlide = 0;
-              this.updateSmartStackSlideUI(0, 0, totalDocs);
-              this._smartStackTimer = setTimeout(() => {
-                this._smartStackTimer = null;
-                this.startSmartStackRotation();
-              }, 10000);
-            }
-          };
-          this._smartStackTimer = setTimeout(subStep, 6500);
-        },
-
-        updateDoctorSlideUI(idx, totalDocs) {
-          const trackEl = $("skCarouselTrack");
-          const badgeEl = $("skTotalCountBadge");
-          const pillsBarEl = $("skPillsBar");
+        applySmartStackSlideUI(idx, totalSlides) {
+          const trackEl = $("smartStackTrack");
+          const dotsEl = $("smartStackDots");
 
           if (trackEl) {
-            trackEl.style.transform = `translateX(-${idx * 100}%)`;
-            const slides = trackEl.querySelectorAll(".sk-hero-slide");
-            slides.forEach((s, i) => s.classList.toggle("active-doctor-slide", i === idx));
+            trackEl.style.transform = `translate3d(-${idx * 100}%, 0, 0)`;
+            const slides = trackEl.querySelectorAll(".smart-stack-slide");
+            slides.forEach((s, i) => s.classList.toggle("active-slide", i === idx));
           }
-          if (badgeEl) {
-            badgeEl.textContent = `${idx + 1} / ${totalDocs} DOKTER`;
-          }
-          if (pillsBarEl) {
-            const bars = pillsBarEl.querySelectorAll(".sk-pill-bar");
-            bars.forEach((b, i) => b.classList.toggle("active", i === idx));
-          }
-        },
 
-        updateSmartStackSlideUI(slideIdx, doctorIdx, totalDocs) {
-          const slideWeather = $("smartStackSlideWeather");
-          const slideSpecial = $("smartStackSlideSpecialStatus");
-          const dot1 = $("dotSlide1");
-          const dot2 = $("dotSlide2");
-
-          if (slideIdx === 0) {
-            if (slideWeather) slideWeather.classList.add("active-slide");
-            if (slideSpecial) slideSpecial.classList.remove("active-slide");
-            if (dot1) dot1.classList.add("active");
-            if (dot2) dot2.classList.remove("active");
-          } else {
-            if (slideWeather) slideWeather.classList.remove("active-slide");
-            if (slideSpecial) slideSpecial.classList.add("active-slide");
-            if (dot1) dot1.classList.remove("active");
-            if (dot2) dot2.classList.add("active");
-            this.updateDoctorSlideUI(doctorIdx, totalDocs);
+          if (dotsEl) {
+            const dots = dotsEl.querySelectorAll(".smart-stack-dot");
+            dots.forEach((d, i) => d.classList.toggle("active", i === idx));
           }
         },
 
         stopSmartStackRotation() {
           if (this._smartStackTimer) {
             clearTimeout(this._smartStackTimer);
-            clearInterval(this._smartStackTimer);
             this._smartStackTimer = null;
           }
-          this._smartStackCurrentSlide = 0;
-          this._skDoctorIndex = 0;
-          this.updateSmartStackSlideUI(0, 0, 0);
-          const trackEl = $("skCarouselTrack");
-          if (trackEl) trackEl.style.transform = "translateX(0%)";
+          this._smartStackCurrentIndex = 0;
+          this.applySmartStackSlideUI(0, 1);
         },
       };
 
