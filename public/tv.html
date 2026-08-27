@@ -7769,6 +7769,7 @@
             const newElements = list.map((d) => {
               // Unique ID: Name + Shift Time so duplicate doctors don't overwrite each other
               const shiftJam = d.Jam && d.Jam !== "-" ? d.Jam : "no-time";
+              const id = `${d.Dokter}_${shiftJam}`;
               const specTheme = getSpecialistTheme(d.Spesialis);
               const hash = `${d.Status}|${d.Jam}|${d._isActive}|${specTheme}|${d["Code Antrian"] || ""}|${d.JamDaftar}`;
 
