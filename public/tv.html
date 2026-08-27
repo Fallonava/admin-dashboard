@@ -972,47 +972,78 @@
         border-color: rgba(56, 189, 248, 0.4) !important;
       }
 
-      /* ===== 🌅 DIURNAL DYNAMIC ATMOSPHERIC SOLAR THEMES (PAGI, SIANG, SORE, MALAM, RAINY) ===== */
-      .weather-theme-pagi {
-        background: linear-gradient(155deg, #FFFBEB 0%, #FEF3C7 45%, #FFEDD5 100%) !important;
+      /* ===== 🌅 SUBTLE & LUXURIOUS APPLE DIURNAL THEMES (PURE WHITE CARD BACKGROUND) ===== */
+      /* Base Master Card is ALWAYS clean crystal white in light mode, dark obsidian in dark mode */
+      .complication-weather-master {
+        background: #FFFFFF !important;
+        border-color: rgba(226, 234, 245, 0.95) !important;
+        box-shadow: 
+          0 14px 34px -4px rgba(45, 65, 95, 0.08),
+          inset 0 1.5px 1.5px #FFFFFF !important;
+      }
+      [data-theme="dark"] .complication-weather-master {
+        background: #101726 !important;
+        border-color: rgba(255, 255, 255, 0.08) !important;
+        box-shadow: 0 14px 36px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.1) !important;
+      }
+
+      /* --- 1. PAGI (Dawn Gold & Amber Accent) --- */
+      .weather-theme-pagi .weather-master-corona {
+        background: radial-gradient(circle, rgba(253, 230, 138, 0.45) 0%, rgba(245, 158, 11, 0.2) 60%, transparent 100%);
+      }
+      .weather-theme-pagi .complication-tag {
+        background: #FEF3C7 !important;
+        color: #D97706 !important;
         border-color: #FDE68A !important;
-        box-shadow: 0 14px 34px -4px rgba(245, 158, 11, 0.18), inset 0 1.5px 1.5px #FFFFFF !important;
       }
-      [data-theme="dark"] .weather-theme-pagi {
-        background: linear-gradient(155deg, #241604 0%, #381E05 50%, #170C02 100%) !important;
+      [data-theme="dark"] .weather-theme-pagi .complication-tag {
+        background: rgba(245, 158, 11, 0.2) !important;
+        color: #FCD34D !important;
         border-color: rgba(245, 158, 11, 0.35) !important;
-        box-shadow: 0 14px 36px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.1) !important;
+      }
+      .weather-theme-pagi .weather-temp-master-unit,
+      .weather-theme-pagi .complication-title .material-icons-round {
+        color: #D97706 !important;
+      }
+      [data-theme="dark"] .weather-theme-pagi .weather-temp-master-unit,
+      [data-theme="dark"] .weather-theme-pagi .complication-title .material-icons-round {
+        color: #FBBF24 !important;
+      }
+      .weather-theme-pagi .active-hour {
+        border-color: rgba(245, 158, 11, 0.45) !important;
+        box-shadow: 0 3px 10px rgba(245, 158, 11, 0.15);
       }
 
-      .weather-theme-siang {
-        background: linear-gradient(155deg, #F0F9FF 0%, #E0F2FE 50%, #BAE6FD 100%) !important;
-        border-color: #7DD3FC !important;
-        box-shadow: 0 14px 34px -4px rgba(2, 132, 199, 0.16), inset 0 1.5px 1.5px #FFFFFF !important;
+      /* --- 2. SIANG (Azure Sky Accent) --- */
+      .weather-theme-siang .weather-master-corona {
+        background: radial-gradient(circle, rgba(186, 230, 253, 0.45) 0%, rgba(2, 132, 199, 0.18) 60%, transparent 100%);
       }
-      [data-theme="dark"] .weather-theme-siang {
-        background: linear-gradient(155deg, #081B2E 0%, #0C2B47 50%, #0F172A 100%) !important;
+      .weather-theme-siang .complication-tag {
+        background: #E0F2FE !important;
+        color: #0284C7 !important;
+        border-color: #BAE6FD !important;
+      }
+      [data-theme="dark"] .weather-theme-siang .complication-tag {
+        background: rgba(2, 132, 199, 0.2) !important;
+        color: #7DD3FC !important;
         border-color: rgba(56, 189, 248, 0.35) !important;
-        box-shadow: 0 14px 36px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.1) !important;
+      }
+      .weather-theme-siang .weather-temp-master-unit,
+      .weather-theme-siang .complication-title .material-icons-round {
+        color: #0284C7 !important;
+      }
+      [data-theme="dark"] .weather-theme-siang .weather-temp-master-unit,
+      [data-theme="dark"] .weather-theme-siang .complication-title .material-icons-round {
+        color: #38BDF8 !important;
+      }
+      .weather-theme-siang .active-hour {
+        border-color: rgba(2, 132, 199, 0.45) !important;
+        box-shadow: 0 3px 10px rgba(2, 132, 199, 0.15);
       }
 
-      .weather-theme-sore {
-        background: linear-gradient(155deg, #FFF1F2 0%, #FFE4E6 35%, #FFEDD5 70%, #FEF3C7 100%) !important;
-        border-color: #FDA4AF !important;
-        box-shadow: 0 14px 34px -4px rgba(244, 63, 94, 0.22), inset 0 1.5px 1.5px #FFFFFF !important;
-      }
-      [data-theme="dark"] .weather-theme-sore {
-        background: linear-gradient(155deg, #330A19 0%, #4C1126 50%, #290815 100%) !important;
-        border-color: rgba(251, 113, 133, 0.4) !important;
-        box-shadow: 0 14px 36px rgba(0, 0, 0, 0.55), inset 0 1px 1px rgba(255, 255, 255, 0.1) !important;
-      }
-
-      .weather-theme-sore .complication-title .material-icons-round,
-      .weather-theme-sore .weather-temp-master-unit {
-        color: #E11D48 !important;
-      }
-      [data-theme="dark"] .weather-theme-sore .complication-title .material-icons-round,
-      [data-theme="dark"] .weather-theme-sore .weather-temp-master-unit {
-        color: #FB7185 !important;
+      /* --- 3. SORE (Sunset Coral & Rose Tangerine Accent) --- */
+      .weather-theme-sore .weather-master-corona {
+        background: radial-gradient(circle, rgba(253, 164, 175, 0.45) 0%, rgba(244, 63, 94, 0.18) 60%, transparent 100%);
       }
       .weather-theme-sore .complication-tag {
         background: #FFE4E6 !important;
@@ -1020,30 +1051,75 @@
         border-color: #FDA4AF !important;
       }
       [data-theme="dark"] .weather-theme-sore .complication-tag {
-        background: rgba(244, 63, 94, 0.25) !important;
-        color: #FECDD3 !important;
-        border-color: rgba(251, 113, 133, 0.4) !important;
+        background: rgba(244, 63, 94, 0.2) !important;
+        color: #FB7185 !important;
+        border-color: rgba(251, 113, 133, 0.35) !important;
+      }
+      .weather-theme-sore .weather-temp-master-unit,
+      .weather-theme-sore .complication-title .material-icons-round {
+        color: #E11D48 !important;
+      }
+      [data-theme="dark"] .weather-theme-sore .weather-temp-master-unit,
+      [data-theme="dark"] .weather-theme-sore .complication-title .material-icons-round {
+        color: #FB7185 !important;
+      }
+      .weather-theme-sore .active-hour {
+        border-color: rgba(225, 29, 72, 0.45) !important;
+        box-shadow: 0 3px 10px rgba(225, 29, 72, 0.15);
       }
 
-      .weather-theme-malam {
-        background: linear-gradient(155deg, #F1F5F9 0%, #E2E8F0 50%, #CBD5E1 100%) !important;
-        border-color: #94A3B8 !important;
-        box-shadow: 0 14px 34px -4px rgba(71, 85, 105, 0.12), inset 0 1.5px 1.5px #FFFFFF !important;
+      /* --- 4. MALAM (Starlight Sapphire & Indigo Accent) --- */
+      .weather-theme-malam .weather-master-corona {
+        background: radial-gradient(circle, rgba(129, 140, 248, 0.4) 0%, rgba(99, 102, 241, 0.18) 60%, transparent 100%);
       }
-      [data-theme="dark"] .weather-theme-malam {
-        background: linear-gradient(155deg, #090D16 0%, #0E1626 50%, #080C14 100%) !important;
-        border-color: rgba(99, 102, 241, 0.3) !important;
-        box-shadow: 0 14px 36px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.1) !important;
+      .weather-theme-malam .complication-tag {
+        background: #EEF2FF !important;
+        color: #4F46E5 !important;
+        border-color: #C7D2FE !important;
+      }
+      [data-theme="dark"] .weather-theme-malam .complication-tag {
+        background: rgba(99, 102, 241, 0.2) !important;
+        color: #A5B4FC !important;
+        border-color: rgba(129, 140, 248, 0.35) !important;
+      }
+      .weather-theme-malam .weather-temp-master-unit,
+      .weather-theme-malam .complication-title .material-icons-round {
+        color: #6366F1 !important;
+      }
+      [data-theme="dark"] .weather-theme-malam .weather-temp-master-unit,
+      [data-theme="dark"] .weather-theme-malam .complication-title .material-icons-round {
+        color: #818CF8 !important;
+      }
+      .weather-theme-malam .active-hour {
+        border-color: rgba(99, 102, 241, 0.45) !important;
+        box-shadow: 0 3px 10px rgba(99, 102, 241, 0.15);
       }
 
-      .weather-theme-rainy {
-        background: linear-gradient(155deg, #ECFEFF 0%, #CFFAFE 50%, #CCFBF1 100%) !important;
-        border-color: #67E8F9 !important;
-        box-shadow: 0 14px 34px -4px rgba(6, 182, 212, 0.18), inset 0 1.5px 1.5px #FFFFFF !important;
+      /* --- 5. HUJAN (Rainy Aqua Teal Accent) --- */
+      .weather-theme-rainy .weather-master-corona {
+        background: radial-gradient(circle, rgba(103, 232, 249, 0.4) 0%, rgba(13, 148, 136, 0.18) 60%, transparent 100%);
       }
-      [data-theme="dark"] .weather-theme-rainy {
-        background: linear-gradient(155deg, #042F2E 0%, #134E4A 50%, #0F172A 100%) !important;
+      .weather-theme-rainy .complication-tag {
+        background: #CCFBF1 !important;
+        color: #0D9488 !important;
+        border-color: #99F6E4 !important;
+      }
+      [data-theme="dark"] .weather-theme-rainy .complication-tag {
+        background: rgba(13, 148, 136, 0.2) !important;
+        color: #5EEAD4 !important;
         border-color: rgba(45, 212, 191, 0.35) !important;
+      }
+      .weather-theme-rainy .weather-temp-master-unit,
+      .weather-theme-rainy .complication-title .material-icons-round {
+        color: #0D9488 !important;
+      }
+      [data-theme="dark"] .weather-theme-rainy .weather-temp-master-unit,
+      [data-theme="dark"] .weather-theme-rainy .complication-title .material-icons-round {
+        color: #2DD4BF !important;
+      }
+      .weather-theme-rainy .active-hour {
+        border-color: rgba(13, 148, 136, 0.45) !important;
+        box-shadow: 0 3px 10px rgba(13, 148, 136, 0.15);
       }
 
       /* Apple Solar Arc Tracker */
