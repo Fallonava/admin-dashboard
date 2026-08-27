@@ -38,14 +38,10 @@
       }
 
       :root {
-        /* ═══ APPLE visionOS / iOS 18 DARK AMBIENT ═══ */
-        --bg-body: #070A12;
-        --bg-ambient: 
-          radial-gradient(ellipse 50% 35% at 15% 10%, rgba(37, 99, 235, 0.13) 0%, transparent 100%),
-          radial-gradient(ellipse 40% 30% at 82% 12%, rgba(124, 58, 237, 0.10) 0%, transparent 100%),
-          radial-gradient(ellipse 35% 28% at 50% 92%, rgba(5, 150, 105, 0.08) 0%, transparent 100%),
-          linear-gradient(160deg, #080D18 0%, #0A0C1A 50%, #080E14 100%);
-        --clay-bg-surface: #101726;
+        /* ═══ APPLE tvOS / iOS — SOLID SYSTEM COLORS ═══ */
+        --bg-body: #1C1C1E;
+        --bg-ambient: #1C1C1E;
+        --clay-bg-surface: #2C2C2E;
         --clay-border: rgba(255, 255, 255, 0.08);
         --clay-shadow-outer: 0 14px 32px -4px rgba(0, 0, 0, 0.6), 0 4px 12px -2px rgba(0, 0, 0, 0.4);
         --clay-shadow-inner: inset 1px 1px 1px rgba(255, 255, 255, 0.14), inset -1px -1px 2px rgba(0, 0, 0, 0.5);
@@ -56,15 +52,15 @@
         --neo-inset-dark: inset 3px 3px 6px rgba(0, 0, 0, 0.55);
         --neo-inset-light: inset -2px -2px 5px rgba(255, 255, 255, 0.05);
         
-        --text-primary: #F8FAFC;
-        --text-secondary: #94A3B8;
-        --text-muted: #64748B;
-        --glass-panel: rgba(16, 23, 38, 0.85);
-        --card-bg: #101726;
+        --text-primary: #F5F5F7;
+        --text-secondary: #98989D;
+        --text-muted: #636366;
+        --glass-panel: #2C2C2E;
+        --card-bg: #2C2C2E;
         --header-bg: transparent;
         --border-light: rgba(255, 255, 255, 0.08);
         --platter-border: rgba(255, 255, 255, 0.08); 
-        --footer-bg: rgba(16, 23, 38, 0.85);
+        --footer-bg: #2C2C2E;
         --app-bg-overlay: transparent;
         --shadow: var(--clay-shadow-outer), var(--clay-shadow-inner);
         
@@ -93,46 +89,42 @@
         --accent-green: #10B981;
         --accent-orange: #F59E0B;
         --accent-red: #F43F5E;
-        --logo-text: #ffffff;
+        --logo-text: #F5F5F7;
       }
 
-      /* Light Mode Theme (Apple iOS 18 / visionOS Smooth Ambient) */
+      /* Light Mode — Apple iOS systemGroupedBackground */
       [data-theme="light"] {
-        --bg-body: #EEF2F8;
-        --bg-ambient: 
-          radial-gradient(ellipse 50% 38% at 12% 10%, rgba(196, 220, 254, 0.45) 0%, transparent 100%),
-          radial-gradient(ellipse 42% 32% at 88% 8%, rgba(220, 212, 255, 0.35) 0%, transparent 100%),
-          radial-gradient(ellipse 38% 30% at 50% 96%, rgba(167, 243, 208, 0.22) 0%, transparent 100%),
-          linear-gradient(160deg, #EAF0FB 0%, #F0EDF8 40%, #EBF5F0 75%, #F2EEF8 100%);
+        --bg-body: #F2F2F7;
+        --bg-ambient: #F2F2F7;
         --clay-bg-surface: #FFFFFF;
-        --clay-border: rgba(255, 255, 255, 0.95);
-        --clay-shadow-outer: 0 10px 30px -4px rgba(45, 65, 95, 0.06), 0 2px 8px -2px rgba(45, 65, 95, 0.03);
-        --clay-shadow-inner: inset 0 2px 3px rgba(255, 255, 255, 0.98), inset 0 -2px 3px rgba(180, 195, 215, 0.12);
-        --clay-inset: inset 2px 2px 5px rgba(148, 163, 184, 0.16), inset -2px -2px 5px rgba(255, 255, 255, 0.95);
+        --clay-border: rgba(60, 60, 67, 0.12);
+        --clay-shadow-outer: 0 1px 0 rgba(60, 60, 67, 0.10), 0 4px 16px -4px rgba(60, 60, 67, 0.08);
+        --clay-shadow-inner: inset 0 1px 0 rgba(255, 255, 255, 0.95);
+        --clay-inset: inset 2px 2px 5px rgba(148, 163, 184, 0.12), inset -2px -2px 5px rgba(255, 255, 255, 0.95);
 
-        --neo-shadow-dark: rgba(148, 163, 184, 0.25);
+        --neo-shadow-dark: rgba(148, 163, 184, 0.20);
         --neo-shadow-light: #ffffff;
-        --neo-inset-dark: inset 2px 2px 5px rgba(148, 163, 184, 0.16);
+        --neo-inset-dark: inset 2px 2px 5px rgba(148, 163, 184, 0.12);
         --neo-inset-light: inset -2px -2px 5px rgba(255, 255, 255, 0.95);
 
-        --text-primary: #0F172A;
-        --text-secondary: #475569;
-        --text-muted: #94A3B8;
-        --glass-panel: rgba(255, 255, 255, 0.82);
+        --text-primary: #1C1C1E;
+        --text-secondary: #3C3C43;
+        --text-muted: #8E8E93;
+        --glass-panel: #FFFFFF;
         --card-bg: #FFFFFF;
         --header-bg: transparent;
-        --border-light: rgba(210, 220, 235, 0.75);
-        --platter-border: rgba(210, 220, 235, 0.75);
-        --footer-bg: rgba(255, 255, 255, 0.82);
+        --border-light: rgba(60, 60, 67, 0.12);
+        --platter-border: rgba(60, 60, 67, 0.12);
+        --footer-bg: #F2F2F7;
         --app-bg-overlay: transparent;
         --shadow: var(--clay-shadow-outer), var(--clay-shadow-inner);
-        --logo-text: #0F172A;
+        --logo-text: #1C1C1E;
         
-        --accent-blue: #0284C7;
-        --accent-purple: #6D28D9;
-        --accent-green: #059669;
-        --accent-orange: #D97706;
-        --accent-red: #E11D48;
+        --accent-blue: #007AFF;
+        --accent-purple: #AF52DE;
+        --accent-green: #34C759;
+        --accent-orange: #FF9500;
+        --accent-red: #FF3B30;
       }
 
       /* ===== RESET & BASE ===== */
@@ -182,87 +174,13 @@
         -webkit-backface-visibility: hidden;
       }
 
-      /* ─── Apple iOS / visionOS Smooth Ambient Backdrop ─── */
-      @keyframes ambientBreath {
-        0%   { opacity: 1;   }
-        50%  { opacity: 0.75; }
-        100% { opacity: 1;   }
-      }
-      @keyframes orbDrift1 {
-        0%   { transform: translate(0px, 0px); }
-        50%  { transform: translate(12px, -14px); }
-        100% { transform: translate(0px, 0px); }
-      }
-      @keyframes orbDrift2 {
-        0%   { transform: translate(0px, 0px); }
-        50%  { transform: translate(-10px, 12px); }
-        100% { transform: translate(0px, 0px); }
-      }
-
+      /* ─── Apple tvOS Solid Background — No Glow, No Orbs ─── */
       .ambient-bg {
         position: absolute;
         inset: 0;
         z-index: 0;
         background: var(--bg-ambient);
         pointer-events: none;
-        animation: ambientBreath 20s ease-in-out infinite;
-        will-change: opacity;
-      }
-
-      /* Floating orb layers — contained, Apple Spotlight style */
-      .ambient-bg::before,
-      .ambient-bg::after {
-        content: '';
-        position: absolute;
-        border-radius: 50%;
-        pointer-events: none;
-      }
-
-      /* Orb 1 — top-left, contained blue */
-      .ambient-bg::before {
-        width: 420px;
-        height: 320px;
-        top: -60px;
-        left: -40px;
-        background: radial-gradient(ellipse at center,
-          rgba(96, 165, 250, 0.14) 0%,
-          rgba(96, 165, 250, 0.06) 45%,
-          transparent 70%
-        );
-        filter: blur(48px);
-        animation: orbDrift1 24s ease-in-out infinite;
-        will-change: transform;
-      }
-
-      /* Orb 2 — bottom-right, contained violet */
-      .ambient-bg::after {
-        width: 360px;
-        height: 280px;
-        bottom: -50px;
-        right: -30px;
-        background: radial-gradient(ellipse at center,
-          rgba(139, 92, 246, 0.12) 0%,
-          rgba(139, 92, 246, 0.05) 45%,
-          transparent 70%
-        );
-        filter: blur(44px);
-        animation: orbDrift2 28s ease-in-out infinite;
-        will-change: transform;
-      }
-
-      [data-theme="light"] .ambient-bg::before {
-        background: radial-gradient(ellipse at center,
-          rgba(147, 197, 253, 0.28) 0%,
-          rgba(147, 197, 253, 0.10) 45%,
-          transparent 70%
-        );
-      }
-      [data-theme="light"] .ambient-bg::after {
-        background: radial-gradient(ellipse at center,
-          rgba(196, 181, 253, 0.22) 0%,
-          rgba(196, 181, 253, 0.08) 45%,
-          transparent 70%
-        );
       }
 
       /* ===== HARDWARE SAFE MODE (TCL/Android TV Optimization) ===== */
@@ -507,18 +425,15 @@
         flex: 1;
         display: flex;
         flex-direction: column;
-        background: rgba(255, 255, 255, 0.82);
-        backdrop-filter: blur(24px) saturate(170%);
-        -webkit-backdrop-filter: blur(24px) saturate(170%);
+        background: #2C2C2E;
         border-radius: 28px; 
         box-shadow: 
-          0 16px 48px -8px rgba(45, 65, 95, 0.10),
-          0 4px 16px -2px rgba(45, 65, 95, 0.05),
-          inset 0 1.5px 0 rgba(255, 255, 255, 0.95);
-        border: 1px solid rgba(255, 255, 255, 0.65);
+          0 2px 0 rgba(255, 255, 255, 0.06),
+          0 1px 0 rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.07);
         overflow: hidden;
         padding: 14px 14px 16px 14px;
-        transition: background 0.6s ease, box-shadow 0.6s ease;
+        transition: background 0.3s ease;
       }
 
       .sidebar-panel {
@@ -527,32 +442,35 @@
         min-width: 360px;
         display: flex;
         flex-direction: column;
-        background: rgba(255, 255, 255, 0.88);
-        backdrop-filter: blur(28px) saturate(180%);
-        -webkit-backdrop-filter: blur(28px) saturate(180%);
+        background: #2C2C2E;
         border-right: none;
         border-radius: 28px;
         margin-right: 0;
         overflow: hidden;
         z-index: 10;
         box-shadow: 
-          0 16px 48px -8px rgba(45, 65, 95, 0.10),
-          0 4px 16px -2px rgba(45, 65, 95, 0.06),
-          inset 0 1.5px 0 rgba(255, 255, 255, 0.95);
-        border: 1px solid rgba(255, 255, 255, 0.70);
-        transition: background 0.6s ease, box-shadow 0.6s ease;
+          0 2px 0 rgba(255, 255, 255, 0.06),
+          0 1px 0 rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        transition: background 0.3s ease;
+      }
+
+      [data-theme="light"] .island,
+      [data-theme="light"] .sidebar-panel {
+        background: #FFFFFF;
+        border: 1px solid rgba(60, 60, 67, 0.10);
+        box-shadow: 
+          0 1px 0 rgba(60, 60, 67, 0.08),
+          0 4px 16px -4px rgba(60, 60, 67, 0.06);
       }
 
       [data-theme="dark"] .island,
       [data-theme="dark"] .sidebar-panel {
-        background: rgba(11, 16, 27, 0.82);
-        backdrop-filter: blur(28px) saturate(160%);
-        -webkit-backdrop-filter: blur(28px) saturate(160%);
-        border: 1px solid rgba(255, 255, 255, 0.09);
+        background: #2C2C2E;
+        border: 1px solid rgba(255, 255, 255, 0.07);
         box-shadow: 
-          0 24px 56px -8px rgba(0, 0, 0, 0.80),
-          0 4px 16px -2px rgba(0, 0, 0, 0.50),
-          inset 0 1px 0 rgba(255, 255, 255, 0.09);
+          0 2px 0 rgba(255, 255, 255, 0.06),
+          0 1px 0 rgba(0, 0, 0, 0.3);
       }
 
       /* ===== visionOS & tvOS 18 PRIMARY SIDEBAR HEADER — Status Khusus ===== */
