@@ -6828,8 +6828,10 @@
             this.clock();
             tick++;
 
-            if (tick % 8 === 0) this.updateInfoBox(); // Info box setiap 8 detik
-            if (tick % 60 === 0) this.updateTheme(); // Tema setiap 60 detik (1 menit)
+            if (tick % 60 === 0) {
+              this.updateTheme(); // Tema setiap 60 detik (1 menit)
+              if (this._data && this._data.doctors) this.processData(this._data); // Re-evaluasi transisi jam (Terjadwal -> Pendaftaran -> Praktek)
+            }
             // Diganti: this.fetch() dinonaktifkan karena sekarang pakai SSE realtime
             if (tick % 10 === 0) this.checkBroadcast(); // Emergency broadcast polling setiap 10 detik
 
@@ -7204,12 +7206,15 @@
                     // Shift ini sudah sepenuhnya lewat (berlaku untuk SEMUA dokter, termasuk Cuti/Penuh/Operasi)
                     status = "SELESAI";
                   } else if (!isPriorityStatus) {
-                    // Jika belum habis, dan BUKAN status prioritas, evaluasi Terjadwal/Praktek
+                    // Jika belum habis, dan BUKAN status prioritas, evaluasi Terjadwal/Pendaftaran/Praktek
                     if (curMins < regMins) {
                       // Shift ini belum mulai dan loket belum buka
                       status = "TERJADWAL";
+                    } else if (curMins < startMins) {
+                      // Loket pendaftaran sudah dibuka, dokter belum mulai praktek di poli
+                      status = "PENDAFTARAN";
                     } else {
-                      // Shift sedang berjalan
+                      // Dokter sudah mulai jam praktek di poliklinik
                       if (!["PRAKTEK", "PENDAFTARAN"].includes(status)) {
                          status = "PRAKTEK";
                       }
