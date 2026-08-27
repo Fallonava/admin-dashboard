@@ -8193,19 +8193,42 @@
             return 0;
           };
 
+          // Helper: Parse Jam Pemanggilan / Jam Mulai Praktek ke Menit (e.g. "08:00" -> 480)
+          const parseJamMinutes = (str) => {
+            if (!str || str === "-") return 9999;
+            const match = String(str).match(/(\d{1,2})[:.](\d{2})/);
+            if (!match) return 9999;
+            return parseInt(match[1], 10) * 60 + parseInt(match[2], 10);
+          };
+
+          const getJamSortVal = (d) => {
+            const st = (d.Status || "").toUpperCase();
+            if (st === "PENDAFTARAN" && d.JamDaftar && d.JamDaftar !== "-") {
+              return parseJamMinutes(d.JamDaftar);
+            }
+            return parseJamMinutes(d.JamPraktek || d.Jam || d.JamDaftar);
+          };
+
           const sortFn = (a, b) => {
-            // Priority 1: Active
+            // Priority 1: Active (Dokter Sedang Dipanggil / Praktek Aktif Teratas)
             if (a._isActive && !b._isActive) return -1;
             if (!a._isActive && b._isActive) return 1;
-            // Priority 2: Status Score
+
+            // Priority 2: Status Score (PRAKTEK > PENDAFTARAN > PENUH > TERJADWAL > OPERASI > CUTI)
             const diff = score(b.Status) - score(a.Status);
             if (diff !== 0) return diff;
-            // Priority 3: Specialty (Poliklinik)
+
+            // Priority 2.5: Jam Pemanggilan / Jam Praktek (Paling Awal di Atas)
+            const jamDiff = getJamSortVal(a) - getJamSortVal(b);
+            if (jamDiff !== 0) return jamDiff;
+
+            // Priority 3: Specialty (Poliklinik A-Z)
             const specA = a.Spesialis || "";
             const specB = b.Spesialis || "";
             if (specA < specB) return -1;
             if (specA > specB) return 1;
-            // Priority 4: Doctor Name
+
+            // Priority 4: Doctor Name (A-Z)
             const docA = a.Dokter || "";
             const docB = b.Dokter || "";
             if (docA < docB) return -1;
