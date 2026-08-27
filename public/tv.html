@@ -4618,6 +4618,47 @@
           .replace(/\s*s\/d\s*/gi, " — ");
       };
 
+      // Timezone-safe Asia/Jakarta (WIB, UTC+7) Central Clock & Date Resolver
+      const getJakartaParts = (d = new Date()) => {
+        try {
+          const parts = new Intl.DateTimeFormat("en-GB", {
+            timeZone: "Asia/Jakarta",
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: false
+          }).formatToParts(d);
+          const p = {};
+          parts.forEach(({ type, value }) => { p[type] = value; });
+          return {
+            year: parseInt(p.year, 10),
+            month: parseInt(p.month, 10),
+            day: parseInt(p.day, 10),
+            hour: parseInt(p.hour, 10),
+            minute: parseInt(p.minute, 10),
+            second: parseInt(p.second, 10),
+            timeStr: `${p.hour}:${p.minute}`,
+            timeSecStr: `${p.hour}:${p.minute}:${p.second}`
+          };
+        } catch(e) {
+          const now = new Date();
+          const pad = (n) => String(n).padStart(2, "0");
+          return {
+            year: now.getFullYear(),
+            month: now.getMonth() + 1,
+            day: now.getDate(),
+            hour: now.getHours(),
+            minute: now.getMinutes(),
+            second: now.getSeconds(),
+            timeStr: `${pad(now.getHours())}:${pad(now.getMinutes())}`,
+            timeSecStr: `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`
+          };
+        }
+      };
+
       // ===== CARD HTML BUILDER (Satu Fungsi untuk render() & _renderSidebar()) =====
       const buildCardHTML = (d, avatarText, statusIcon, statusLabel, labelJam, labelLive) => {
         const jamTampil = d.JamDaftar !== "-"
@@ -5042,9 +5083,8 @@
         },
 
         syncModalData() {
-          const now = new Date();
-          const curHour = now.getHours();
-          const timeStr = String(curHour).padStart(2, "0") + ":" + String(now.getMinutes()).padStart(2, "0") + " WIB";
+          const jk = getJakartaParts();
+          const timeStr = `${jk.timeStr} WIB`;
           if ($("diModalClockText")) $("diModalClockText").textContent = timeStr;
         },
 
@@ -5128,8 +5168,8 @@
           clearTimeout(this._hourlyTimer);
           this._isAnimating = true;
 
-          const now = new Date();
-          const clock = timeStr || (String(now.getHours()).padStart(2, "0") + ":00 WIB");
+          const jk = getJakartaParts();
+          const clock = timeStr || (`${jk.timeStr} WIB`);
 
           if ($("diHourlyTime")) $("diHourlyTime").textContent = clock;
           if ($("diHourlyTag")) $("diHourlyTag").textContent = tag;
@@ -5152,7 +5192,7 @@
         },
 
         // Trigger dynamic content computation for the current hour
-        triggerHourlyBriefing(now = new Date()) {
+        triggerHourlyBriefing() {
           this.syncModalData();
           this.openModal(18000);
         },
@@ -5160,19 +5200,15 @@
         _lastHourlyTrigger: null,
 
         startAutoCycle() {
-          // Clock update in compact view every second + Hourly Trigger Check
+          // Clock update in compact view every second + Hourly Trigger Check (Guaranteed Asia/Jakarta WIB)
           setInterval(() => {
-            const now = new Date();
-            const timeStr = String(now.getHours()).padStart(2, "0") + ":" + String(now.getMinutes()).padStart(2, "0");
-            if ($("diCompactClock")) $("diCompactClock").textContent = timeStr;
+            const jk = getJakartaParts();
+            if ($("diCompactClock")) $("diCompactClock").textContent = jk.timeStr;
 
             // Trigger Hourly Briefing tepat di menit :00:00 setiap 1 jam
-            const curHour = now.getHours();
-            const curMin = now.getMinutes();
-            const curSec = now.getSeconds();
-            if (curMin === 0 && curSec === 0 && this._lastHourlyTrigger !== curHour) {
-              this._lastHourlyTrigger = curHour;
-              this.triggerHourlyBriefing(now);
+            if (jk.minute === 0 && jk.second === 0 && this._lastHourlyTrigger !== jk.hour) {
+              this._lastHourlyTrigger = jk.hour;
+              this.triggerHourlyBriefing();
             }
           }, 1000);
 
@@ -5270,18 +5306,9 @@
           let condition = "Cerah Berawan";
           let iconType = isDay ? "partly-cloudy-day" : "partly-cloudy-night";
 
-          // Calculate current Jakarta hour to determine dynamic diurnal theme
-          let jkHour = 12;
-          try {
-            const parts = new Intl.DateTimeFormat("en-GB", {
-              timeZone: "Asia/Jakarta",
-              hour: "2-digit",
-              hour12: false
-            }).formatToParts(new Date());
-            jkHour = parseInt(parts.find(p => p.type === "hour")?.value, 10) || 12;
-          } catch(e) {
-            jkHour = new Date().getHours();
-          }
+          // Calculate current Jakarta hour to determine dynamic diurnal theme (Strict Asia/Jakarta WIB)
+          const jk = getJakartaParts();
+          const jkHour = jk.hour;
 
           let theme = "siang";
           if (code === 63 || code === 65 || code === 81 || code === 82 || code >= 95) {
@@ -5340,22 +5367,9 @@
         },
 
         getSolarInfo(sunriseStr = "05:45", sunsetStr = "17:42") {
-          let jkHour = 12;
-          let jkMin = 0;
-          try {
-            const parts = new Intl.DateTimeFormat("en-GB", {
-              timeZone: "Asia/Jakarta",
-              hour: "2-digit",
-              minute: "2-digit",
-              hour12: false
-            }).formatToParts(new Date());
-            jkHour = parseInt(parts.find(p => p.type === "hour")?.value, 10) || 12;
-            jkMin = parseInt(parts.find(p => p.type === "minute")?.value, 10) || 0;
-          } catch(e) {
-            const now = new Date();
-            jkHour = now.getHours();
-            jkMin = now.getMinutes();
-          }
+          const jk = getJakartaParts();
+          const jkHour = jk.hour;
+          const jkMin = jk.minute;
 
           const [srH, srM] = sunriseStr.replace(" WIB", "").split(":").map(Number);
           const [ssH, ssM] = sunsetStr.replace(" WIB", "").split(":").map(Number);
@@ -5373,11 +5387,11 @@
             const remainMin = ssTotal - curTotal;
             const remH = Math.floor(remainMin / 60);
             const remM = remainMin % 60;
-            statusText = `Terbenam dalam ${remH > 0 ? remH + "j " : ""}${remM}m`;
+            statusText = `Terbenam dlm ${remH > 0 ? remH + "j " : ""}${remM}m`;
           } else {
             isDay = false;
             percent = curTotal > ssTotal ? 100 : 0;
-            statusText = "Malam Hari • Terbit 05:45";
+            statusText = `Malam Hari • Terbit ${sunriseStr}`;
           }
           return { percent: percent.toFixed(1), isDay, statusText };
         },
@@ -5422,19 +5436,19 @@
 
                 const currentMeta = this.getWeatherMeta(code, isDay, 0);
 
-                // Timezone-safe Jakarta index resolution directly from satellite time
+                // Timezone-safe Jakarta index resolution directly from satellite time & Jakarta clock
+                const jk = getJakartaParts();
+                const jkIsoPrefix = `${jk.year}-${String(jk.month).padStart(2, "0")}-${String(jk.day).padStart(2, "0")}T${String(jk.hour).padStart(2, "0")}`;
                 let matchIdx = -1;
-                if (data.current && data.current.time && data.hourly && data.hourly.time) {
+                if (data.hourly && data.hourly.time) {
+                  matchIdx = data.hourly.time.findIndex((t) => t.startsWith(jkIsoPrefix));
+                }
+                if (matchIdx < 0 && data.current && data.current.time && data.hourly && data.hourly.time) {
                   const curHourPrefix = data.current.time.slice(0, 13);
                   matchIdx = data.hourly.time.findIndex((t) => t.startsWith(curHourPrefix));
                 }
                 if (matchIdx < 0) {
-                  try {
-                    const jkHourStr = new Intl.DateTimeFormat("en-GB", { timeZone: "Asia/Jakarta", hour: "2-digit", hour12: false }).format(new Date());
-                    matchIdx = parseInt(jkHourStr, 10) || 0;
-                  } catch(e) {
-                    matchIdx = new Date().getHours();
-                  }
+                  matchIdx = jk.hour;
                 }
 
                 const hourlyList = [];
@@ -5450,7 +5464,7 @@
                     if (isoTime && isoTime.includes("T")) {
                       hourNum = parseInt(isoTime.split("T")[1].split(":")[0], 10);
                     } else {
-                      hourNum = (matchIdx + i) % 24;
+                      hourNum = (jk.hour + i) % 24;
                     }
 
                     const hIsDay = hourNum >= 6 && hourNum < 18;
@@ -5569,13 +5583,8 @@
         },
 
         getInitialHourly() {
-          let jkHour = 6;
-          try {
-            const jkHourStr = new Intl.DateTimeFormat("en-GB", { timeZone: "Asia/Jakarta", hour: "2-digit", hour12: false }).format(new Date());
-            jkHour = parseInt(jkHourStr, 10) || 6;
-          } catch(e) {
-            jkHour = new Date().getHours();
-          }
+          const jk = getJakartaParts();
+          const jkHour = jk.hour;
           const list = [];
           for (let i = 0; i < 6; i++) {
             const h = (jkHour + i) % 24;
@@ -5583,7 +5592,7 @@
             const meta = this.getWeatherMeta(2, hIsDay, 0);
             list.push({
               timeStr: i === 0 ? "Kini" : `${String(h).padStart(2, "0")}:00`,
-              temp: 25,
+              temp: 29,
               precip: 0,
               iconSVG: meta.miniIconSVG
             });
@@ -5865,12 +5874,10 @@
 
         clock() {
           const d = new Date();
+          const jk = getJakartaParts(d);
 
-          // Cache DOM updates untuk mencegah reflow tiap detik di TV low end
-          const clockVal = d.toLocaleTimeString("id-ID", {
-            hour: "2-digit",
-            minute: "2-digit",
-          });
+          // Cache DOM updates untuk mencegah reflow tiap detik di TV low end (Guaranteed Asia/Jakarta WIB)
+          const clockVal = jk.timeStr;
           const clockEl = $("clock");
           if (clockEl && clockEl.textContent !== clockVal)
             clockEl.textContent = clockVal;
@@ -5881,6 +5888,7 @@
 
           const dateVal = d
             .toLocaleDateString("id-ID", {
+              timeZone: "Asia/Jakarta",
               weekday: "long",
               day: "numeric",
               month: "long",
@@ -5891,6 +5899,7 @@
             dateEl.textContent = dateVal;
 
           const sbDateVal = d.toLocaleDateString("id-ID", {
+            timeZone: "Asia/Jakarta",
             weekday: "short",
             day: "numeric",
             month: "short",
@@ -5899,9 +5908,9 @@
           if (sbDateEl && sbDateEl.textContent !== sbDateVal)
             sbDateEl.textContent = sbDateVal;
 
-          const h = d.getHours();
-          const m = d.getMinutes();
-          const s = d.getSeconds();
+          const h = jk.hour;
+          const m = jk.minute;
+          const s = jk.second;
 
           // 24/7 Smart TV Anti-Freeze & Memory Purge: Silent Auto-Reload at 03:00:00 Subuh
           if (h === 3 && m === 0 && s === 0) {
