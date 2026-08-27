@@ -3273,7 +3273,7 @@
       .st-buka.st-terjadwal { --status-color: #0284C7; --status-bg: rgba(2, 132, 199, 0.28); }
       .st-buka.st-terjadwal .initials { color: #0284C7; }
       
-      /* ===== ACTIVE CALL HIGHLIGHT (NEW) ===== */
+      /* ===== ACTIVE CALL HIGHLIGHT (Apple Live Activity Aura) ===== */
       .platter-main {
         display: flex;
         align-items: center;
@@ -3282,37 +3282,44 @@
       }
 
       .platter.active {
-        z-index: 100;
-        border: 1.5px solid rgba(5, 150, 105, 0.45) !important;
-        transform: translateZ(0) translateY(-2px) scale(1.01); 
+        z-index: 50;
+        transform: translate3d(0, -3px, 0) scale(1.01); 
+        border: 1.5px solid rgba(5, 150, 105, 0.6) !important;
+        border-left: 6.5px solid #059669 !important;
+        background: linear-gradient(180deg, #FFFFFF 0%, rgba(240, 253, 244, 0.85) 100%) !important;
+        box-shadow: 
+          0 18px 42px -4px rgba(5, 150, 105, 0.22),
+          0 0 24px rgba(16, 185, 129, 0.16),
+          inset 0 1.5px 1.5px #FFFFFF !important;
         opacity: 1 !important;
       }
 
       /* Light Mode Override */
       [data-theme="light"] .platter.active {
-        background: #FFFFFF !important;
-        border: 1.5px solid rgba(5, 150, 105, 0.45) !important;
+        background: linear-gradient(180deg, #FFFFFF 0%, rgba(240, 253, 244, 0.85) 100%) !important;
+        border: 1.5px solid rgba(5, 150, 105, 0.6) !important;
+        border-left: 6.5px solid #059669 !important;
         box-shadow: 
-          0 18px 40px -4px rgba(5, 150, 105, 0.22),
-          inset 0 2px 2px #FFFFFF !important;
+          0 18px 42px -4px rgba(5, 150, 105, 0.22),
+          0 0 24px rgba(16, 185, 129, 0.16),
+          inset 0 1.5px 1.5px #FFFFFF !important;
         color: #0F172A !important;
       }
 
       /* Dark Mode Override */
       [data-theme="dark"] .platter.active {
-        background: rgba(16, 185, 129, 0.14) !important;
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(16, 185, 129, 0.16) 100%) !important;
         border: 1.5px solid rgba(52, 211, 153, 0.6) !important;
+        border-left: 6.5px solid #10B981 !important;
         box-shadow: 
-          0 18px 40px -4px rgba(16, 185, 129, 0.35),
-          inset 0 2px 2px rgba(255, 255, 255, 0.18) !important;
+          0 18px 42px -4px rgba(0, 0, 0, 0.6),
+          0 0 24px rgba(16, 185, 129, 0.25),
+          inset 0 1.5px 1.5px rgba(255, 255, 255, 0.15) !important;
         color: #FFFFFF !important;
       }
 
       .platter.active::before {
-        width: 6px;
-        background: var(--status-color);
-        box-shadow: 0 0 16px var(--status-color);
-        display: block;
+        display: none !important;
       }
       
       .platter.active .jam-box {
@@ -3324,21 +3331,26 @@
       }
       
       .platter.active .initials {
-        background: var(--clay-bg-surface);
-        box-shadow: var(--clay-shadow-inner), 0 0 16px var(--status-bg);
-        color: var(--status-color);
+        background: rgba(5, 150, 105, 0.14) !important;
+        color: #059669 !important;
+        border-color: rgba(5, 150, 105, 0.4) !important;
+        box-shadow: 0 0 16px rgba(5, 150, 105, 0.25), inset 0 1.5px 2px #FFFFFF !important;
       }
 
-      .platter.active .doc-spec {
-        font-size: 20px;
-        color: var(--text-primary) !important;
-        font-weight: 900;
-        letter-spacing: -0.01em;
+      [data-theme="dark"] .platter.active .initials {
+        background: rgba(16, 185, 129, 0.2) !important;
+        color: #34D399 !important;
+        border-color: rgba(52, 211, 153, 0.5) !important;
+        box-shadow: 0 0 16px rgba(52, 211, 153, 0.35), inset 0 1.5px 1.5px rgba(255, 255, 255, 0.2) !important;
       }
-      
+
       .platter.active .doc-name {
-        color: var(--status-color) !important;
+        color: #059669 !important;
         font-weight: 800;
+      }
+
+      [data-theme="dark"] .platter.active .doc-name {
+        color: #34D399 !important;
       }
       
       /* ECG Radar Pulse Indicator */
@@ -3545,20 +3557,15 @@
 
 
 
-      /* ===== EXPANDED DETAIL (NEW) ===== */
+      /* ===== EXPANDED DETAIL (Apple Live Activity Drawer) ===== */
       .platter-detail {
         max-height: 0;
         opacity: 0;
         overflow: hidden;
-        transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
-        border-top: 1px solid rgba(255, 255, 255, 0);
+        transition: max-height 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease, margin-top 0.35s ease, padding-top 0.35s ease;
+        border-top: 1px dashed transparent;
         margin-top: 0;
         padding-top: 0;
-      }
-
-      /* #2: Border Expanded Detail Adaptif untuk Light Mode */
-      [data-theme="light"] .platter.active .platter-detail {
-        border-top: 1px solid rgba(226, 234, 245, 0.95);
       }
 
       .platter.active .platter-detail {
@@ -3566,10 +3573,14 @@
         opacity: 1;
         margin-top: 10px;
         padding-top: 10px;
-        border-top: 1px solid rgba(226, 234, 245, 0.95);
+        border-top: 1px dashed rgba(5, 150, 105, 0.35);
         display: flex;
         justify-content: space-between;
         align-items: center;
+      }
+
+      [data-theme="dark"] .platter.active .platter-detail {
+        border-top: 1px dashed rgba(52, 211, 153, 0.35);
       }
 
       .detail-info {
@@ -3578,60 +3589,113 @@
         gap: 2px;
       }
 
+      .detail-label-wrap {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+
+      .detail-clock-icon {
+        font-size: 13px !important;
+        color: #059669;
+      }
+
+      [data-theme="dark"] .detail-clock-icon {
+        color: #34D399;
+      }
+
       .detail-label {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 9px;
+        font-size: 11px;
         font-weight: 800;
         text-transform: uppercase;
         letter-spacing: 0.06em;
-        color: #64748B !important;
+        color: #059669 !important;
+      }
+
+      [data-theme="dark"] .detail-label {
+        color: #34D399 !important;
       }
 
       .detail-time {
-        font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 15px;
-        font-weight: 800;
-        color: #0F172A !important;
+        font-family: "Plus Jakarta Sans", -apple-system, sans-serif;
+        font-size: 18px;
+        font-weight: 900;
+        color: #090D16 !important;
+        font-feature-settings: "tnum" 1;
         font-variant-numeric: tabular-nums;
-        letter-spacing: -0.02em;
+        letter-spacing: -0.01em;
+        line-height: 1.15;
       }
 
-      /* Apple iOS Style Live Status Pill */
+      [data-theme="dark"] .detail-time {
+        color: #FFFFFF !important;
+      }
+
+      /* Apple Live Activity Equalizer Waveform */
       .live-status {
         display: flex;
         align-items: center;
-        gap: 6px;
-        background: #F0FDF4;
+        gap: 8px;
+        background: rgba(5, 150, 105, 0.12);
         color: #059669;
-        padding: 4px 10px;
+        padding: 6px 14px;
         border-radius: 9999px;
-        border: 1px solid #BBF7D0;
-        box-shadow: 0 1px 3px rgba(5, 150, 105, 0.1);
+        border: 1px solid rgba(5, 150, 105, 0.3);
+        box-shadow: 0 2px 8px rgba(5, 150, 105, 0.12), inset 0 1px 1px #FFFFFF;
       }
 
-      .pulse-dot {
-        width: 6px;
-        height: 6px;
-        background: #059669;
-        border-radius: 50%;
-        box-shadow: 0 0 8px rgba(5, 150, 105, 0.6);
-        animation: pulse-glow 1.8s infinite;
+      [data-theme="dark"] .live-status {
+        background: rgba(16, 185, 129, 0.18);
+        color: #34D399;
+        border-color: rgba(52, 211, 153, 0.4);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.15);
       }
 
       .live-text {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 9.5px;
-        font-weight: 800;
+        font-size: 12.5px;
+        font-weight: 900;
         color: #059669 !important;
-        letter-spacing: 0.04em;
+        letter-spacing: 0.05em;
         text-transform: uppercase;
+        line-height: 1;
       }
 
-      /* Pulse: Offload GPU animation to opacity only */
-      @keyframes pulse-glow {
-        0% { opacity: 0.6; }
-        50% { opacity: 1; transform: scale(1.1); }
-        100% { opacity: 0.6; }
+      [data-theme="dark"] .live-text {
+        color: #34D399 !important;
+      }
+
+      /* Apple Live Equalizer Waveform */
+      .live-wave {
+        display: flex;
+        align-items: flex-end;
+        gap: 2.5px;
+        height: 14px;
+        width: 14px;
+        flex-shrink: 0;
+      }
+
+      .wave-bar {
+        width: 3px;
+        border-radius: 2px;
+        background: #059669;
+        animation: apple-wave 1.2s ease-in-out infinite alternate;
+      }
+
+      [data-theme="dark"] .wave-bar {
+        background: #34D399;
+        box-shadow: 0 0 6px rgba(52, 211, 153, 0.6);
+      }
+
+      .wave-bar.bar-1 { height: 40%; animation-delay: 0s; }
+      .wave-bar.bar-2 { height: 100%; animation-delay: 0.25s; }
+      .wave-bar.bar-3 { height: 65%; animation-delay: 0.5s; }
+
+      @keyframes apple-wave {
+        0% { height: 25%; }
+        50% { height: 95%; }
+        100% { height: 45%; }
       }
 
       .st-operasi.active .pulse-dot {
@@ -5625,11 +5689,18 @@
           </div>
           <div class="platter-detail">
             <div class="detail-info">
-              <span class="detail-label">${labelJam}</span>
-              <span class="detail-time" style="font-size:16px">${jamTampil}</span>
+              <div class="detail-label-wrap">
+                <span class="material-icons-round detail-clock-icon">schedule</span>
+                <span class="detail-label">${labelJam}</span>
+              </div>
+              <span class="detail-time">${jamTampil} WIB</span>
             </div>
             <div class="live-status">
-              <div class="pulse-dot"></div>
+              <div class="live-wave">
+                <span class="wave-bar bar-1"></span>
+                <span class="wave-bar bar-2"></span>
+                <span class="wave-bar bar-3"></span>
+              </div>
               <span class="live-text">${labelLive}</span>
             </div>
           </div>`;
@@ -7572,8 +7643,8 @@
               let el = oldMap.get(id);
 
               if (el) {
-                // If the element has old DOM structure without doc-spec-badge or hash changed, rebuild it
-                if (!el.querySelector(".doc-spec-badge") || el.dataset.hash !== hash) {
+                // If the element has old DOM structure without live-wave or hash changed, rebuild it
+                if (!el.querySelector(".live-wave") || el.dataset.hash !== hash) {
                   el.className = `platter ${c}`;
                   el.innerHTML = buildCardHTML(d, avatarText, i, l, labelJam, labelLive);
                   el.dataset.hash = hash;
