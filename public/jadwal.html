@@ -2037,16 +2037,59 @@
       }
 
       /* Doctor Shift Card Status Pills */
+      /* ─── Apple visionOS 2026 Master Weekly Pass Card ─── */
+      .weekly-pass-card {
+        border-radius: var(--radius-card);
+        background: var(--surface-card-solid);
+        box-shadow: var(--shadow-card);
+        border: 1.5px solid var(--border-card);
+        padding: 15px 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        position: relative;
+        transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+      }
+      .weekly-pass-card:active {
+        transform: scale(0.985);
+      }
+
+      /* Card variant: Cuti */
+      .weekly-pass-card.is-cuti {
+        border-color: rgba(239, 68, 68, 0.4) !important;
+        background: linear-gradient(155deg, rgba(254, 242, 242, 0.75) 0%, var(--surface-card-solid) 100%) !important;
+        box-shadow: 0 4px 18px rgba(220, 38, 38, 0.1), var(--shadow-card) !important;
+      }
+      [data-theme="dark"] .weekly-pass-card.is-cuti {
+        background: linear-gradient(155deg, rgba(69, 10, 10, 0.35) 0%, var(--surface-card-solid) 100%) !important;
+      }
+
+      /* 1. Card Pass Header: Polyclinic Dot Badge + Live Status Pill */
+      .wk-pass-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        width: 100%;
+      }
+
       .weekly-status-pill {
         display: inline-flex;
         align-items: center;
-        gap: 4px;
-        padding: 3.5px 9px;
+        gap: 5px;
+        padding: 3.5px 10px;
         border-radius: 9999px;
-        font-size: 10.5px;
+        font-size: 11px;
         font-weight: 800;
         text-transform: uppercase;
-        letter-spacing: 0.02em;
+        letter-spacing: 0.03em;
+        flex-shrink: 0;
+        box-shadow: inset 0 1px 1px #FFFFFF, 0 2px 6px rgba(0, 0, 0, 0.05);
+      }
+      .weekly-status-pill .status-glyph {
+        width: 12px;
+        height: 12px;
+        display: block;
         flex-shrink: 0;
       }
       .weekly-status-pill.st-praktek {
@@ -2080,69 +2123,219 @@
         border-color: rgba(251, 191, 36, 0.45);
       }
 
-      /* Card styling modifier when doctor is on cuti */
-      .weekly-shift-card.is-cuti {
-        border-color: rgba(239, 68, 68, 0.35) !important;
-        background: linear-gradient(155deg, rgba(254, 242, 242, 0.6) 0%, rgba(255, 255, 255, 0.95) 100%) !important;
-      }
-      [data-theme="dark"] .weekly-shift-card.is-cuti {
-        background: linear-gradient(155deg, rgba(69, 10, 10, 0.3) 0%, var(--surface-card-solid) 100%) !important;
+      /* 2. Hero Body: Squircle Avatar + Doctor Info + Favorite Button */
+      .wk-hero-body {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        width: 100%;
       }
 
-      .weekly-shift-card {
-        border-radius: var(--radius-card);
-        background: var(--surface-card-solid);
-        box-shadow: var(--shadow-card);
-        border: 2px solid var(--border-card);
-        padding: 14px 16px;
+      .wk-avatar-squircle {
+        width: 48px;
+        height: 48px;
+        border-radius: 17px;
         display: flex;
-        flex-direction: column;
-        gap: 10px;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-      }
-      .weekly-shift-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-      .weekly-shift-info-group { display: flex; align-items: center; gap: 12px; min-width: 0; flex: 1; }
-      .weekly-shift-initials {
-        width: 44px; height: 44px;
-        border-radius: 16px;
-        background: var(--surface-avatar);
-        border: 1.5px solid rgba(226, 234, 245, 0.95);
-        box-shadow: 0 4px 12px rgba(45, 65, 95, 0.08), inset 0 1.5px 1.5px #FFFFFF;
-        color: var(--ios-blue);
-        display: flex; align-items: center; justify-content: center;
+        align-items: center;
+        justify-content: center;
         flex-shrink: 0;
         position: relative;
         overflow: hidden;
+        transition: transform 0.25s ease;
       }
-      .weekly-shift-initials svg {
-        width: 24px !important;
-        height: 24px !important;
+      .wk-avatar-squircle.st-praktek {
+        color: #059669;
+        background: linear-gradient(145deg, rgba(209, 250, 229, 0.98) 0%, rgba(236, 253, 245, 0.85) 50%, rgba(167, 243, 208, 0.55) 100%);
+        border: 1.5px solid rgba(16, 185, 129, 0.4);
+        box-shadow: inset 0 2px 2px #FFFFFF, inset 0 -1.5px 2px rgba(5, 150, 105, 0.15), 0 4px 14px -2px rgba(5, 150, 105, 0.22);
+      }
+      .wk-avatar-squircle.st-cuti {
+        color: #DC2626;
+        background: linear-gradient(145deg, rgba(254, 226, 226, 0.98) 0%, rgba(254, 242, 242, 0.85) 50%, rgba(254, 202, 202, 0.55) 100%);
+        border: 1.5px solid rgba(239, 68, 68, 0.4);
+        box-shadow: inset 0 2px 2px #FFFFFF, inset 0 -1.5px 2px rgba(220, 38, 38, 0.15), 0 4px 14px -2px rgba(220, 38, 38, 0.2);
+      }
+      [data-theme="dark"] .wk-avatar-squircle.st-praktek {
+        color: #34D399;
+        background: rgba(16, 185, 129, 0.18);
+        border-color: rgba(52, 211, 153, 0.45);
+        box-shadow: inset 0 1.5px 2px rgba(255, 255, 255, 0.2), 0 6px 18px -3px rgba(52, 211, 153, 0.35);
+      }
+      [data-theme="dark"] .wk-avatar-squircle.st-cuti {
+        color: #F87171;
+        background: rgba(220, 38, 38, 0.18);
+        border-color: rgba(248, 113, 113, 0.45);
+        box-shadow: inset 0 1.5px 2px rgba(255, 255, 255, 0.2), 0 6px 18px -3px rgba(248, 113, 113, 0.35);
+      }
+      .wk-avatar-squircle svg {
+        width: 28px !important;
+        height: 28px !important;
         display: block;
-        filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.08));
+        filter: drop-shadow(0 1.5px 3px rgba(0, 0, 0, 0.08));
       }
-      .weekly-shift-doc { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-      .weekly-shift-name { font-size: 13px; font-weight: 900; color: var(--text-main); line-height: 1.25; }
 
-      .weekly-shift-pills { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
-      .weekly-day-tag {
-        display: inline-flex; align-items: center; gap: 4px;
-        padding: 4px 9px; border-radius: 10px;
-        background: var(--surface-well); box-shadow: var(--shadow-inset);
-        font-size: 10px; font-weight: 800; color: var(--text-main);
+      .wk-info-col {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
       }
-      .weekly-time-pill {
-        display: inline-flex; align-items: center; gap: 4px;
-        padding: 4px 10px; border-radius: 10px;
-        background: rgba(37, 99, 235, 0.15); color: #2563EB;
-        border: 1.5px solid rgba(37, 99, 235, 0.35);
-        font-family: "JetBrains Mono", monospace; font-size: 11px; font-weight: 900;
+      .wk-doc-name {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 14.5px;
+        font-weight: 800;
+        color: var(--text-main);
+        line-height: 1.3;
+        margin: 0;
+        word-break: break-word;
       }
-      .weekly-reg-pill {
-        display: inline-flex; align-items: center; gap: 4px;
-        padding: 4px 10px; border-radius: 10px;
-        background: rgba(234, 88, 12, 0.15); color: #EA580C;
-        border: 1.5px solid rgba(234, 88, 12, 0.35);
-        font-size: 10.5px; font-weight: 800;
+      .wk-doc-day-subtitle {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--text-sub);
+      }
+
+      /* 3. Cuti Banner Strip */
+      .wk-cuti-banner {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        padding: 8px 12px;
+        border-radius: 13px;
+        background: rgba(239, 68, 68, 0.08);
+        border: 1px dashed rgba(239, 68, 68, 0.4);
+      }
+      .wk-cuti-text {
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+        min-width: 0;
+      }
+      .wk-cuti-title {
+        font-size: 11px;
+        font-weight: 800;
+        color: #DC2626;
+      }
+      .wk-cuti-sub {
+        font-size: 10.5px;
+        font-weight: 700;
+        color: var(--text-sub);
+      }
+
+      /* 4. Recessed Ticket Capsule (Jam Praktik & Jam Buka Reg) */
+      .wk-ticket-capsule {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 9px 12px;
+        border-radius: 14px;
+        background: var(--surface-well);
+        border: 1px solid rgba(203, 213, 225, 0.6);
+        box-shadow: inset 1px 1px 2px rgba(140, 165, 200, 0.2), inset -1px -1px 2px #FFFFFF;
+      }
+      [data-theme="dark"] .wk-ticket-capsule {
+        background: rgba(15, 23, 42, 0.5);
+        border-color: rgba(255, 255, 255, 0.1);
+        box-shadow: inset 0 1.5px 3px rgba(0, 0, 0, 0.4);
+      }
+
+      .wk-schedule-slot {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex: 1;
+        min-width: 0;
+      }
+      .wk-slot-icon {
+        width: 26px;
+        height: 26px;
+        border-radius: 8px;
+        background: rgba(37, 99, 235, 0.14);
+        color: #2563EB;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .wk-slot-icon.reg {
+        background: rgba(234, 88, 12, 0.14);
+        color: #EA580C;
+      }
+      .wk-slot-info {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+      }
+      .wk-slot-lbl {
+        font-size: 9.5px;
+        font-weight: 800;
+        text-transform: uppercase;
+        color: var(--text-mute);
+        letter-spacing: 0.03em;
+        line-height: 1.1;
+      }
+      .wk-slot-val {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 12px;
+        font-weight: 900;
+        color: var(--text-main);
+        white-space: nowrap;
+      }
+      .wk-schedule-divider {
+        width: 1px;
+        height: 24px;
+        background: rgba(148, 163, 184, 0.35);
+        flex-shrink: 0;
+      }
+
+      /* 5. Apple 1-Tap Action Buttons Row */
+      .wk-action-tray {
+        display: flex;
+        gap: 7px;
+        width: 100%;
+        margin-top: 2px;
+      }
+      .wk-btn-action {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        padding: 8px 10px;
+        border-radius: 12px;
+        border: none;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 11.5px;
+        font-weight: 800;
+        cursor: pointer;
+        transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, opacity 0.2s ease;
+        touch-action: manipulation;
+      }
+      .wk-btn-action:active {
+        transform: scale(0.94);
+      }
+      .wk-btn-action.wa {
+        background: linear-gradient(145deg, #10B981, #059669);
+        color: #FFFFFF;
+        box-shadow: 0 3px 10px rgba(5, 150, 105, 0.3), inset 0 1px 1.5px rgba(255, 255, 255, 0.4);
+      }
+      .wk-btn-action.share,
+      .wk-btn-action.cal {
+        background: var(--surface-well);
+        color: var(--text-main);
+        box-shadow: var(--shadow-btn);
+        border: 1px solid var(--border-input);
+      }
+      [data-theme="dark"] .wk-btn-action.share,
+      [data-theme="dark"] .wk-btn-action.cal {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.12);
+        color: var(--text-main);
       }
 
       /* ═══════════════════════════════════════════════════════════════
@@ -3749,6 +3942,9 @@
               Island.show("Favorit Diperbarui", `${docName} dihapus dari favorit`, "info", "star_border", 3000);
             }
           }
+          if (window.mainViewMode === "weekly") {
+            renderWeeklySchedule();
+          }
           if (App && App._lastDataHash) {
             App._lastDataHash = "";
             App.fetchInitialData();
@@ -4772,14 +4968,17 @@
           return;
         }
 
+        const favs = getFavDoctors();
+
         container.innerHTML = filteredShifts.map(s => {
           const doc = docMap.get(s.doctorId);
           const docName = doc ? doc.name : (s.doctorName || "Dokter Spesialis");
           const docSpec = doc ? (doc.specialty || "Spesialis") : (s.title || "Spesialis");
           const specTheme = getSpecialistTheme(docSpec);
           const avatarIcon = getSpecialistIcon(docSpec);
-          const avatarText = avatarIcon.startsWith("<svg") ? avatarIcon : `<span class="material-icons-round" style="font-size:22px;">${avatarIcon}</span>`;
+          const avatarText = avatarIcon.startsWith("<svg") ? avatarIcon : `<span class="material-icons-round" style="font-size:24px;">${avatarIcon}</span>`;
           const dayName = DAYS_NAME_FULL[s.dayIdx] || "Hari";
+          const isFav = favs.includes(docName);
 
           const leaveInfo = checkDoctorLeave(docName, dateKey);
           const isCuti = Boolean(leaveInfo);
@@ -4790,13 +4989,13 @@
             statusPillHtml = `
               <span class="weekly-status-pill st-cuti">
                 <svg class="status-glyph" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="4" ry="4"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
-                <span>CUTI</span>
+                <span>CUTI DOKTER</span>
               </span>`;
           } else if (isHoliday) {
             statusPillHtml = `
               <span class="weekly-status-pill st-libur">
                 <span class="material-icons-round" style="font-size:12px;">event_busy</span>
-                <span>${hol.isSunday ? 'MINGGU' : 'LIBUR'}</span>
+                <span>${hol.isSunday ? 'MINGGU' : 'LIBUR NASIONAL'}</span>
               </span>`;
           } else {
             statusPillHtml = `
@@ -4810,26 +5009,81 @@
           const leaveReason = leaveInfo ? (leaveInfo.reason || leaveInfo.notes || "Sedang Menjalani Cuti") : null;
 
           return `
-            <div class="weekly-shift-card ${isCuti ? 'is-cuti' : ''}">
-              <div class="weekly-shift-head">
-                <div class="weekly-shift-info-group">
-                  <div class="weekly-shift-initials ${specTheme}">${avatarText}</div>
-                  <div class="weekly-shift-doc">
-                    <div class="doc-spec-badge ${specTheme}"><span class="spec-dot"></span><span class="doc-spec">${esc(docSpec)}</span></div>
-                    <span class="weekly-shift-name">${esc(docName)}</span>
-                  </div>
+            <div class="weekly-pass-card ${isCuti ? 'is-cuti' : (isHoliday ? 'is-holiday' : '')}">
+              <!-- 1. Pass Header: Polyclinic Dot Badge + Live Status Pill -->
+              <div class="wk-pass-header">
+                <div class="doc-spec-badge ${specTheme}">
+                  <span class="spec-dot"></span>
+                  <span class="doc-spec">${esc(docSpec)}</span>
                 </div>
                 ${statusPillHtml}
               </div>
+
+              <!-- 2. Hero Body: Squircle Avatar + Doctor Info + Favorite Star -->
+              <div class="wk-hero-body">
+                <div class="wk-avatar-squircle ${isCuti ? 'st-cuti' : 'st-praktek'}">
+                  ${avatarText}
+                </div>
+                <div class="wk-info-col">
+                  <h3 class="wk-doc-name">${esc(docName)}</h3>
+                  <div class="wk-doc-day-subtitle">
+                    <span class="material-icons-round" style="font-size: 13px; color: var(--ios-blue);">event_available</span>
+                    <span>Setiap ${esc(dayName)}</span>
+                  </div>
+                </div>
+                <button class="btn-fav-doc ${isFav ? 'is-fav' : ''}" onclick="toggleFavDoctor('${esc(docName)}', event)" title="${isFav ? 'Hapus dari Dokter Favorit' : 'Jadikan Dokter Favorit'}">
+                  <span class="material-icons-round">${isFav ? 'star' : 'star_border'}</span>
+                </button>
+              </div>
+
+              <!-- 3. Cuti / Replacement Doctor Info (If Cuti) -->
               ${isCuti ? `
-              <div class="relief-doctor-pill" style="margin-top:0;">
-                <span class="material-icons-round" style="font-size:12px;">event_busy</span>
-                <span>${esc(leaveReason)}${repDoc ? ` — Pengganti: <strong>${esc(repDoc)}</strong>` : ''}</span>
+              <div class="wk-cuti-banner">
+                <span class="material-icons-round" style="font-size: 16px; color: #DC2626;">event_busy</span>
+                <div class="wk-cuti-text">
+                  <span class="wk-cuti-title">${esc(leaveReason)}</span>
+                  ${repDoc ? `<span class="wk-cuti-sub">Pengganti: <strong>${esc(repDoc)}</strong></span>` : ''}
+                </div>
               </div>` : ''}
-              <div class="weekly-shift-pills">
-                <span class="weekly-day-tag"><span class="material-icons-round" style="font-size: 12px; color: #007AFF;">calendar_today</span>${esc(dayName)}</span>
-                <span class="weekly-time-pill"><span class="material-icons-round" style="font-size: 13px;">schedule</span>${esc(s.formattedTime)}</span>
-                ${s.registrationTime ? `<span class="weekly-reg-pill"><span class="material-icons-round" style="font-size: 12px;">how_to_reg</span>Reg ${esc(s.registrationTime)}</span>` : ''}
+
+              <!-- 4. Ticket Pass Recessed Schedule Capsule -->
+              <div class="wk-ticket-capsule">
+                <div class="wk-schedule-slot">
+                  <div class="wk-slot-icon">
+                    <span class="material-icons-round" style="font-size: 14px;">schedule</span>
+                  </div>
+                  <div class="wk-slot-info">
+                    <span class="wk-slot-lbl">Jam Praktik</span>
+                    <span class="wk-slot-val">${esc(s.formattedTime)}</span>
+                  </div>
+                </div>
+                ${s.registrationTime ? `
+                <div class="wk-schedule-divider"></div>
+                <div class="wk-schedule-slot reg">
+                  <div class="wk-slot-icon reg">
+                    <span class="material-icons-round" style="font-size: 14px;">how_to_reg</span>
+                  </div>
+                  <div class="wk-slot-info">
+                    <span class="wk-slot-lbl">Registrasi</span>
+                    <span class="wk-slot-val">${esc(s.registrationTime)}</span>
+                  </div>
+                </div>` : ''}
+              </div>
+
+              <!-- 5. Apple 1-Tap Action Buttons -->
+              <div class="wk-action-tray">
+                <button class="wk-btn-action wa" onclick="openRegisterModal('${esc(docName)}', '${esc(docSpec)}', '${esc(s.formattedTime)}'); event.stopPropagation();" title="Daftar via WhatsApp">
+                  <span class="material-icons-round" style="font-size: 14px;">app_registration</span>
+                  <span>Daftar</span>
+                </button>
+                <button class="wk-btn-action share" onclick="shareDoctorSchedule('${esc(docName)}', '${esc(docSpec)}', '${esc(s.formattedTime)}', '${isCuti ? 'CUTI' : (isHoliday ? 'LIBUR' : 'BUKA')}'); event.stopPropagation();" title="Bagikan Jadwal">
+                  <span class="material-icons-round" style="font-size: 14px;">share</span>
+                  <span>Bagikan</span>
+                </button>
+                <button class="wk-btn-action cal" onclick="addDoctorToCalendar('${esc(docName)}', '${esc(docSpec)}', '${esc(s.formattedTime)}'); event.stopPropagation();" title="Ingatkan ke Kalender">
+                  <span class="material-icons-round" style="font-size: 14px;">event</span>
+                  <span>Ingatkan</span>
+                </button>
               </div>
             </div>`;
         }).join("");
