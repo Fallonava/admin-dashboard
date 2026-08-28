@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="Siaga Medika" />
     <meta name="theme-color" content="#F2F2F7" />
-    <title>Jadwal Dokter - RSU Siaga Medika (Apple iOS 2026 Native)</title>
+    <title>Jadwal Dokter - RSU Siaga Medika (Apple iOS 27 Native)</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -16,10 +16,10 @@
     
     <style>
       /* ═══════════════════════════════════════════════════════════════
-         💎 THEME SYSTEM (LIGHT PORCELAIN CLAY & DARK OBSIDIAN CLAY)
+          APPLE iOS 27 NATIVE DESIGN SYSTEM (LIGHT & DARK MODE)
          ═══════════════════════════════════════════════════════════════ */
       :root {
-        /* Backgrounds & Surfaces (Apple iOS Light) */
+        /* Backgrounds & Surfaces (Apple iOS 27 Light) */
         --bg-page: #F2F2F7;
         --surface-card: #FFFFFF;
         --surface-card-solid: #FFFFFF;
@@ -30,7 +30,7 @@
         --surface-dock: rgba(242, 242, 247, 0.92);
         --surface-header: rgba(242, 242, 247, 0.92);
 
-        /* Borders (Minimal & Clean) */
+        /* Borders (Apple Hairline Crisp) */
         --border-card: rgba(0, 0, 0, 0.06);
         --border-subtle: rgba(0, 0, 0, 0.08);
         --border-input: rgba(0, 0, 0, 0.06);
@@ -40,14 +40,16 @@
         --text-sub: #3C3C43;
         --text-mute: #6C6C70;
 
-        /* Apple System Accents */
+        /* Apple System Semantic Palette */
         --ios-blue: #007AFF;
         --ios-indigo: #5856D6;
-        --ios-emerald: #34C759;
-        --ios-emerald-light: #30D158;
-        --ios-amber: #FF9500;
-        --ios-rose: #FF2D55;
         --ios-purple: #AF52DE;
+        --ios-rose: #FF2D55;
+        --ios-amber: #FF9500;
+        --ios-emerald: #34C759;
+        --ios-mint: #00C7BE;
+        --ios-teal: #30B0C7;
+        --ios-cyan: #32ADE6;
 
         /* Apple iOS Native Shadows */
         --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.04), 0 2px 6px rgba(0, 0, 0, 0.03);
@@ -80,7 +82,7 @@
          🌙 APPLE iOS DARK MODE OVERRIDES
          ═══════════════════════════════════════════════════════════════ */
       [data-theme="dark"] {
-        /* Backgrounds & Surfaces (Apple iOS Dark) */
+        /* Backgrounds & Surfaces (Apple iOS 27 Dark) */
         --bg-page: #000000;
         --surface-card: #1C1C1E;
         --surface-card-solid: #1C1C1E;
@@ -101,6 +103,17 @@
         --text-sub: #EBEBF5;
         --text-mute: #8E8E93;
 
+        /* Apple System Semantic Palette (Dark Mode Enhanced) */
+        --ios-blue: #0A84FF;
+        --ios-indigo: #5E5CE6;
+        --ios-purple: #BF5AF2;
+        --ios-rose: #FF375F;
+        --ios-amber: #FF9F0A;
+        --ios-emerald: #30D158;
+        --ios-mint: #63E6E2;
+        --ios-teal: #40C8E0;
+        --ios-cyan: #64D2FF;
+
         /* Apple iOS Native Dark Shadows */
         --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.4);
         --shadow-btn: 0 1px 2px rgba(0, 0, 0, 0.3);
@@ -108,10 +121,10 @@
         --shadow-pill: 0 1px 2px rgba(0, 0, 0, 0.3);
         --shadow-island: 0 10px 30px rgba(0, 0, 0, 0.7);
 
-        --border-praktek: rgba(52, 199, 89, 0.5);
-        --border-pendaftaran: rgba(255, 149, 0, 0.5);
+        --border-praktek: rgba(48, 209, 88, 0.5);
+        --border-pendaftaran: rgba(255, 159, 10, 0.5);
         --border-terjadwal: rgba(10, 132, 255, 0.5);
-        --border-penuh: rgba(255, 149, 0, 0.5);
+        --border-penuh: rgba(255, 159, 10, 0.5);
         --border-operasi: rgba(191, 90, 242, 0.5);
         --border-cuti: rgba(255, 55, 95, 0.5);
       }
@@ -2817,11 +2830,11 @@
       .broadcast-zone { font-size: 11px; font-weight: 700; color: var(--text-mute); }
 
       /* ═══════════════════════════════════════════════════════════════
-         12. GPU LAYER ACCELERATION
+         12. GPU LAYER ACCELERATION (120FPS PROMOTION)
          ═══════════════════════════════════════════════════════════════ */
-      .platter, .ios-bento-card, .ios-bento-tile, .weekly-shift-card, .leave-card,
-      .ios-icon-btn, .ios-seg-btn, .ios-mode-btn, .weekly-day-btn, .spec-chip,
-      .clay-choice-tile, .hotline-clay-pill, .ios-floating-dock, .dynamic-island {
+      .platter, .ios-bento-card, .weekly-pass-card, .leave-card,
+      .ios-icon-btn, .ios-seg-btn, .ios-mode-btn, .spec-chip,
+      .ios-action-tile, .hotline-action-pill, .ios-floating-dock, .dynamic-island {
         -webkit-font-smoothing: antialiased;
       }
     </style>
@@ -2829,7 +2842,7 @@
   <body>
     <div class="ambient-bg"></div>
 
-    <!-- DYNAMIC ISLAND (APPLE iOS 2026 OBSIDIAN CAPSULE) -->
+    <!-- DYNAMIC ISLAND (APPLE iOS 27 DYNAMIC ISLAND) -->
     <div id="dynamicIsland" class="dynamic-island">
       <div class="di-surface">
         <div class="di-left">
