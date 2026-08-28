@@ -4733,7 +4733,7 @@
             window.selectedWeeklyDate = new Date();
             window.selectedWeeklyDay = (window.selectedWeeklyDate.getDay() + 6) % 7;
           }
-          renderWeeklyDateStrip();
+          renderWeeklyDateStrip(true);
           renderWeeklySchedule();
         } else if (mode === "leaves") {
           if (btnLeaves) btnLeaves.classList.add("active");
@@ -4746,8 +4746,8 @@
         }
       }
 
-      let _lastRenderedDateStripHash = "";
-      function renderWeeklyDateStrip(shouldAutoScroll = false) {
+      let _lastDateStripBuildKey = "";
+      function renderWeeklyDateStrip(forceScroll = false) {
         const container = document.getElementById("weeklyDateStrip");
         if (!container) return;
 
@@ -4757,63 +4757,62 @@
         const selDate = window.selectedWeeklyDate || today;
         const selKey = formatLocalDateKey(selDate);
         const todayKey = formatLocalDateKey(today);
-        const stripHash = `${todayKey}_${selKey}`;
 
-        // If cards are already mounted for today, only toggle active class to avoid snapping scroll position
-        const existingCards = container.querySelectorAll(".weekly-date-card");
-        if (existingCards.length > 0 && _lastRenderedDateStripHash.startsWith(todayKey)) {
-          existingCards.forEach(card => {
-            card.classList.toggle("active", card.dataset.date === selKey);
-          });
-          _lastRenderedDateStripHash = stripHash;
-          if (shouldAutoScroll) {
-            const activeCard = container.querySelector(".weekly-date-card.active");
-            if (activeCard) {
-              activeCard.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
-            }
+        // Only rebuild DOM if date range or today has changed
+        if (_lastDateStripBuildKey !== todayKey) {
+          _lastDateStripBuildKey = todayKey;
+
+          // Generate 30 Hari (Hari ini - 1 hari sampai 28 hari ke depan)
+          const dates = [];
+          for (let i = -1; i <= 28; i++) {
+            const d = new Date(today);
+            d.setDate(today.getDate() + i);
+            dates.push(d);
           }
-          return;
+
+          let html = '';
+          dates.forEach(d => {
+            const dateKey = formatLocalDateKey(d);
+            const isToday = dateKey === todayKey;
+            const isSelected = dateKey === selKey;
+            const dayIdx = (d.getDay() + 6) % 7;
+            const hol = getIndonesianHoliday(d);
+
+            let cls = "weekly-date-card";
+            if (isSelected) cls += " active";
+            if (hol.isTanggalMerah) cls += " is-holiday";
+
+            html += `
+              <div class="${cls}" data-date="${dateKey}" onclick="selectWeeklyDate('${dateKey}')" title="${esc(hol.name || DAYS_NAME_FULL[dayIdx])}">
+                ${hol.isTanggalMerah ? '<span class="holiday-dot"></span>' : ''}
+                <span class="date-day-name">${DAYS_SHORT_ID[dayIdx]}</span>
+                <span class="date-number">${d.getDate()}</span>
+                <span class="date-month-name">${MONTHS_SHORT_ID[d.getMonth()]}</span>
+                ${isToday ? '<span class="today-indicator">Hari Ini</span>' : ''}
+              </div>`;
+          });
+
+          container.innerHTML = html;
+        } else {
+          // Just update active state without destroying innerHTML or horizontal scroll
+          container.querySelectorAll(".weekly-date-card").forEach(c => {
+            c.classList.toggle("active", c.dataset.date === selKey);
+          });
         }
 
-        _lastRenderedDateStripHash = stripHash;
-
-        // Generate 30 Hari (Hari ini - 1 hari sampai 28 hari ke depan)
-        const dates = [];
-        for (let i = -1; i <= 28; i++) {
-          const d = new Date(today);
-          d.setDate(today.getDate() + i);
-          dates.push(d);
-        }
-
-        let html = '';
-        dates.forEach(d => {
-          const dateKey = formatLocalDateKey(d);
-          const isToday = dateKey === todayKey;
-          const isSelected = dateKey === selKey;
-          const dayIdx = (d.getDay() + 6) % 7;
-          const hol = getIndonesianHoliday(d);
-
-          let cls = "weekly-date-card";
-          if (isSelected) cls += " active";
-          if (hol.isTanggalMerah) cls += " is-holiday";
-
-          html += `
-            <div class="${cls}" data-date="${dateKey}" onclick="selectWeeklyDate('${dateKey}')" title="${esc(hol.name || DAYS_NAME_FULL[dayIdx])}">
-              ${hol.isTanggalMerah ? '<span class="holiday-dot"></span>' : ''}
-              <span class="date-day-name">${DAYS_SHORT_ID[dayIdx]}</span>
-              <span class="date-number">${d.getDate()}</span>
-              <span class="date-month-name">${MONTHS_SHORT_ID[d.getMonth()]}</span>
-              ${isToday ? '<span class="today-indicator">Hari Ini</span>' : ''}
-            </div>`;
-        });
-
-        container.innerHTML = html;
-
-        if (shouldAutoScroll) {
+        // Only scroll the horizontal strip container if forceScroll is requested (e.g. user tab change or date selection)
+        // NEVER use scrollIntoView() as it causes window to jump vertically to top!
+        if (forceScroll) {
           setTimeout(() => {
             const activeCard = container.querySelector(".weekly-date-card.active");
             if (activeCard) {
-              activeCard.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+              const cardLeft = activeCard.offsetLeft;
+              const cardWidth = activeCard.offsetWidth;
+              const containerWidth = container.offsetWidth;
+              container.scrollTo({
+                left: Math.max(0, cardLeft - (containerWidth / 2) + (cardWidth / 2)),
+                behavior: "smooth"
+              });
             }
           }, 80);
         }
@@ -4869,8 +4868,15 @@
 
       let _lastWeeklyChipsHash = "";
       function updateWeeklyData(doctors, shifts) {
-        if (Array.isArray(doctors)) window.masterDoctors = doctors;
-        if (Array.isArray(shifts)) window.masterShifts = shifts;
+        let changed = false;
+        if (Array.isArray(doctors) && doctors !== window.masterDoctors) {
+          window.masterDoctors = doctors;
+          changed = true;
+        }
+        if (Array.isArray(shifts) && shifts !== window.masterShifts) {
+          window.masterShifts = shifts;
+          changed = true;
+        }
 
         const specChipsContainer = document.getElementById("weeklySpecChips");
         if (specChipsContainer && window.masterDoctors.length > 0) {
@@ -4889,7 +4895,7 @@
           }
         }
 
-        renderWeeklyDateStrip();
+        renderWeeklyDateStrip(false);
         if (window.mainViewMode === "weekly") renderWeeklySchedule();
       }
 
@@ -4977,8 +4983,9 @@
         if (titleEl) titleEl.textContent = "Jadwal " + dateFormatted;
         if (countEl) countEl.textContent = filteredShifts.length + " Jadwal";
 
+        let newHTML = "";
         if (filteredShifts.length === 0) {
-          container.innerHTML = `
+          newHTML = `
             <div class="empty-state-clay">
               <div class="clay-empty-coin">
                 <div class="clay-pulse-ring"></div>
@@ -4987,132 +4994,131 @@
               <h4>Tidak Ada Jadwal Dokter</h4>
               <p>Tidak ada praktik dokter spesialis yang terdaftar pada hari ${DAYS_NAME_FULL[dayIdx]}.</p>
             </div>`;
-          return;
-        }
+        } else {
+          const favs = getFavDoctors();
+          newHTML = filteredShifts.map(s => {
+            const doc = docMap.get(s.doctorId);
+            const docName = doc ? doc.name : (s.doctorName || "Dokter Spesialis");
+            const docSpec = doc ? (doc.specialty || "Spesialis") : (s.title || "Spesialis");
+            const specTheme = getSpecialistTheme(docSpec);
+            const avatarIcon = getSpecialistIcon(docSpec);
+            const avatarText = avatarIcon.startsWith("<svg") ? avatarIcon : `<span class="material-icons-round" style="font-size:24px;">${avatarIcon}</span>`;
+            const dayName = DAYS_NAME_FULL[s.dayIdx] || "Hari";
+            const isFav = favs.includes(docName);
 
-        const favs = getFavDoctors();
+            const leaveInfo = checkDoctorLeave(docName, dateKey);
+            const isCuti = Boolean(leaveInfo);
+            const isHoliday = hol.isHoliday || hol.isCutiBersama || hol.isSunday;
 
-        const newWeeklyHTML = filteredShifts.map(s => {
-          const doc = docMap.get(s.doctorId);
-          const docName = doc ? doc.name : (s.doctorName || "Dokter Spesialis");
-          const docSpec = doc ? (doc.specialty || "Spesialis") : (s.title || "Spesialis");
-          const specTheme = getSpecialistTheme(docSpec);
-          const avatarIcon = getSpecialistIcon(docSpec);
-          const avatarText = avatarIcon.startsWith("<svg") ? avatarIcon : `<span class="material-icons-round" style="font-size:24px;">${avatarIcon}</span>`;
-          const dayName = DAYS_NAME_FULL[s.dayIdx] || "Hari";
-          const isFav = favs.includes(docName);
+            let statusPillHtml = '';
+            if (isCuti) {
+              statusPillHtml = `
+                <span class="weekly-status-pill st-cuti">
+                  <svg class="status-glyph" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="4" ry="4"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+                  <span>CUTI DOKTER</span>
+                </span>`;
+            } else if (isHoliday) {
+              statusPillHtml = `
+                <span class="weekly-status-pill st-libur">
+                  <span class="material-icons-round" style="font-size:12px;">event_busy</span>
+                  <span>${hol.isSunday ? 'MINGGU' : 'LIBUR NASIONAL'}</span>
+                </span>`;
+            } else {
+              statusPillHtml = `
+                <span class="weekly-status-pill st-praktek">
+                  <svg class="status-glyph" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                  <span>BUKA PRAKTIK</span>
+                </span>`;
+            }
 
-          const leaveInfo = checkDoctorLeave(docName, dateKey);
-          const isCuti = Boolean(leaveInfo);
-          const isHoliday = hol.isHoliday || hol.isCutiBersama || hol.isSunday;
+            const repDoc = leaveInfo ? (leaveInfo.replacementDoctor || null) : null;
+            const leaveReason = leaveInfo ? (leaveInfo.reason || leaveInfo.notes || "Sedang Menjalani Cuti") : null;
 
-          let statusPillHtml = '';
-          if (isCuti) {
-            statusPillHtml = `
-              <span class="weekly-status-pill st-cuti">
-                <svg class="status-glyph" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="4" ry="4"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
-                <span>CUTI DOKTER</span>
-              </span>`;
-          } else if (isHoliday) {
-            statusPillHtml = `
-              <span class="weekly-status-pill st-libur">
-                <span class="material-icons-round" style="font-size:12px;">event_busy</span>
-                <span>${hol.isSunday ? 'MINGGU' : 'LIBUR NASIONAL'}</span>
-              </span>`;
-          } else {
-            statusPillHtml = `
-              <span class="weekly-status-pill st-praktek">
-                <svg class="status-glyph" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
-                <span>BUKA PRAKTIK</span>
-              </span>`;
-          }
-
-          const repDoc = leaveInfo ? (leaveInfo.replacementDoctor || null) : null;
-          const leaveReason = leaveInfo ? (leaveInfo.reason || leaveInfo.notes || "Sedang Menjalani Cuti") : null;
-
-          return `
-            <div class="weekly-pass-card ${isCuti ? 'is-cuti' : (isHoliday ? 'is-holiday' : '')}">
-              <!-- 1. Pass Header: Polyclinic Dot Badge + Live Status Pill -->
-              <div class="wk-pass-header">
-                <div class="doc-spec-badge ${specTheme}">
-                  <span class="spec-dot"></span>
-                  <span class="doc-spec">${esc(docSpec)}</span>
-                </div>
-                ${statusPillHtml}
-              </div>
-
-              <!-- 2. Hero Body: Squircle Avatar + Doctor Info + Favorite Star -->
-              <div class="wk-hero-body">
-                <div class="wk-avatar-squircle ${isCuti ? 'st-cuti' : 'st-praktek'}">
-                  ${avatarText}
-                </div>
-                <div class="wk-info-col">
-                  <h3 class="wk-doc-name">${esc(docName)}</h3>
-                  <div class="wk-doc-day-subtitle">
-                    <span class="material-icons-round" style="font-size: 13px; color: var(--ios-blue);">event_available</span>
-                    <span>Setiap ${esc(dayName)}</span>
+            return `
+              <div class="weekly-pass-card ${isCuti ? 'is-cuti' : (isHoliday ? 'is-holiday' : '')}">
+                <!-- 1. Pass Header: Polyclinic Dot Badge + Live Status Pill -->
+                <div class="wk-pass-header">
+                  <div class="doc-spec-badge ${specTheme}">
+                    <span class="spec-dot"></span>
+                    <span class="doc-spec">${esc(docSpec)}</span>
                   </div>
+                  ${statusPillHtml}
                 </div>
-                <button class="btn-fav-doc ${isFav ? 'is-fav' : ''}" onclick="toggleFavDoctor('${esc(docName)}', event)" title="${isFav ? 'Hapus dari Dokter Favorit' : 'Jadikan Dokter Favorit'}">
-                  <span class="material-icons-round">${isFav ? 'star' : 'star_border'}</span>
-                </button>
-              </div>
 
-              <!-- 3. Cuti / Replacement Doctor Info (If Cuti) -->
-              ${isCuti ? `
-              <div class="wk-cuti-banner">
-                <span class="material-icons-round" style="font-size: 16px; color: #DC2626;">event_busy</span>
-                <div class="wk-cuti-text">
-                  <span class="wk-cuti-title">${esc(leaveReason)}</span>
-                  ${repDoc ? `<span class="wk-cuti-sub">Pengganti: <strong>${esc(repDoc)}</strong></span>` : ''}
+                <!-- 2. Hero Body: Squircle Avatar + Doctor Info + Favorite Star -->
+                <div class="wk-hero-body">
+                  <div class="wk-avatar-squircle ${isCuti ? 'st-cuti' : 'st-praktek'}">
+                    ${avatarText}
+                  </div>
+                  <div class="wk-info-col">
+                    <h3 class="wk-doc-name">${esc(docName)}</h3>
+                    <div class="wk-doc-day-subtitle">
+                      <span class="material-icons-round" style="font-size: 13px; color: var(--ios-blue);">event_available</span>
+                      <span>Setiap ${esc(dayName)}</span>
+                    </div>
+                  </div>
+                  <button class="btn-fav-doc ${isFav ? 'is-fav' : ''}" onclick="toggleFavDoctor('${esc(docName)}', event)" title="${isFav ? 'Hapus dari Dokter Favorit' : 'Jadikan Dokter Favorit'}">
+                    <span class="material-icons-round">${isFav ? 'star' : 'star_border'}</span>
+                  </button>
                 </div>
-              </div>` : ''}
 
-              <!-- 4. Ticket Pass Recessed Schedule Capsule -->
-              <div class="wk-ticket-capsule">
-                <div class="wk-schedule-slot">
-                  <div class="wk-slot-icon">
-                    <span class="material-icons-round" style="font-size: 14px;">schedule</span>
-                  </div>
-                  <div class="wk-slot-info">
-                    <span class="wk-slot-lbl">Jam Praktik</span>
-                    <span class="wk-slot-val">${esc(s.formattedTime)}</span>
-                  </div>
-                </div>
-                ${s.registrationTime ? `
-                <div class="wk-schedule-divider"></div>
-                <div class="wk-schedule-slot reg">
-                  <div class="wk-slot-icon reg">
-                    <span class="material-icons-round" style="font-size: 14px;">how_to_reg</span>
-                  </div>
-                  <div class="wk-slot-info">
-                    <span class="wk-slot-lbl">Registrasi</span>
-                    <span class="wk-slot-val">${esc(s.registrationTime)}</span>
+                <!-- 3. Cuti / Replacement Doctor Info (If Cuti) -->
+                ${isCuti ? `
+                <div class="wk-cuti-banner">
+                  <span class="material-icons-round" style="font-size: 16px; color: #DC2626;">event_busy</span>
+                  <div class="wk-cuti-text">
+                    <span class="wk-cuti-title">${esc(leaveReason)}</span>
+                    ${repDoc ? `<span class="wk-cuti-sub">Pengganti: <strong>${esc(repDoc)}</strong></span>` : ''}
                   </div>
                 </div>` : ''}
-              </div>
 
-              <!-- 5. Apple 1-Tap Action Buttons -->
-              <div class="wk-action-tray">
-                <button class="wk-btn-action wa" onclick="openRegisterModal('${esc(docName)}', '${esc(docSpec)}', '${esc(s.formattedTime)}'); event.stopPropagation();" title="Daftar via WhatsApp">
-                  <span class="material-icons-round" style="font-size: 14px;">app_registration</span>
-                  <span>Daftar</span>
-                </button>
-                <button class="wk-btn-action share" onclick="shareDoctorSchedule('${esc(docName)}', '${esc(docSpec)}', '${esc(s.formattedTime)}', '${isCuti ? 'CUTI' : (isHoliday ? 'LIBUR' : 'BUKA')}'); event.stopPropagation();" title="Bagikan Jadwal">
-                  <span class="material-icons-round" style="font-size: 14px;">share</span>
-                  <span>Bagikan</span>
-                </button>
-                <button class="wk-btn-action cal" onclick="addDoctorToCalendar('${esc(docName)}', '${esc(docSpec)}', '${esc(s.formattedTime)}'); event.stopPropagation();" title="Ingatkan ke Kalender">
-                  <span class="material-icons-round" style="font-size: 14px;">event</span>
-                  <span>Ingatkan</span>
-                </button>
-              </div>
-            </div>`;
-        }).join("");
+                <!-- 4. Ticket Pass Recessed Schedule Capsule -->
+                <div class="wk-ticket-capsule">
+                  <div class="wk-schedule-slot">
+                    <div class="wk-slot-icon">
+                      <span class="material-icons-round" style="font-size: 14px;">schedule</span>
+                    </div>
+                    <div class="wk-slot-info">
+                      <span class="wk-slot-lbl">Jam Praktik</span>
+                      <span class="wk-slot-val">${esc(s.formattedTime)}</span>
+                    </div>
+                  </div>
+                  ${s.registrationTime ? `
+                  <div class="wk-schedule-divider"></div>
+                  <div class="wk-schedule-slot reg">
+                    <div class="wk-slot-icon reg">
+                      <span class="material-icons-round" style="font-size: 14px;">how_to_reg</span>
+                    </div>
+                    <div class="wk-slot-info">
+                      <span class="wk-slot-lbl">Registrasi</span>
+                      <span class="wk-slot-val">${esc(s.registrationTime)}</span>
+                    </div>
+                  </div>` : ''}
+                </div>
 
-        if (container._lastRenderedWeeklyHTML !== newWeeklyHTML) {
-          container._lastRenderedWeeklyHTML = newWeeklyHTML;
-          container.innerHTML = newWeeklyHTML;
+                <!-- 5. Apple 1-Tap Action Buttons -->
+                <div class="wk-action-tray">
+                  <button class="wk-btn-action wa" onclick="openRegisterModal('${esc(docName)}', '${esc(docSpec)}', '${esc(s.formattedTime)}'); event.stopPropagation();" title="Daftar via WhatsApp">
+                    <span class="material-icons-round" style="font-size: 14px;">app_registration</span>
+                    <span>Daftar</span>
+                  </button>
+                  <button class="wk-btn-action share" onclick="shareDoctorSchedule('${esc(docName)}', '${esc(docSpec)}', '${esc(s.formattedTime)}', '${isCuti ? 'CUTI' : (isHoliday ? 'LIBUR' : 'BUKA')}'); event.stopPropagation();" title="Bagikan Jadwal">
+                    <span class="material-icons-round" style="font-size: 14px;">share</span>
+                    <span>Bagikan</span>
+                  </button>
+                  <button class="wk-btn-action cal" onclick="addDoctorToCalendar('${esc(docName)}', '${esc(docSpec)}', '${esc(s.formattedTime)}'); event.stopPropagation();" title="Ingatkan ke Kalender">
+                    <span class="material-icons-round" style="font-size: 14px;">event</span>
+                    <span>Ingatkan</span>
+                  </button>
+                </div>
+              </div>`;
+          }).join("");
+        }
+
+        // Memoized DOM update: only touch innerHTML if HTML actually changed!
+        if (container._lastRenderedHTML !== newHTML) {
+          container._lastRenderedHTML = newHTML;
+          container.innerHTML = newHTML;
         }
       }
 
