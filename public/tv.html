@@ -5906,9 +5906,11 @@
 
       // ===== PROFESSIONAL SCROLLER (Item-by-Item with Real-Time Scroll Journey Track) =====
       class SmoothScroller {
-        constructor(id, progressBarId = null) {
+        constructor(id, progressBarId = null, options = {}) {
           this.el = $(id);
           this.progressBar = progressBarId ? $(progressBarId) : null;
+          this.mode = options.mode || "cascade"; // "cascade" (main panels) or "yoyo" (sidebar)
+          this.direction = 1; // 1 = scroll down, -1 = scroll up
           this.y = 0;
           this.targetY = 0;
           this.currentItem = 0;
@@ -5966,6 +5968,7 @@
             this.y = 0;
             this.targetY = 0;
             this.currentItem = 0;
+            this.direction = 1;
             this.el.style.transform = "translate3d(0,0,0)";
             this.el.style.opacity = "1";
             this._resetProgress();
@@ -6015,6 +6018,7 @@
             this.y = 0;
             this.targetY = 0;
             this.currentItem = 0;
+            this.direction = 1;
             this._resetProgress();
 
             // 2. Prepare Top Floating Position (Micro-elevated -8px, scale 1.008)
@@ -6048,6 +6052,62 @@
           if (this.h <= this.vh) return; // Tidak perlu scroll
 
           const maxScroll = this.h - this.vh;
+
+          // ─── MODE YOYO / BOLAK-BALIK (Khusus Sidebar: Turun ➔ Tuntas Bawah ➔ Naik ➔ Tuntas Atas) ───
+          if (this.mode === "yoyo") {
+            if (this.direction === 1) {
+              // Menuju ke bawah
+              let nextItem = this.currentItem + 1;
+              if (nextItem < this.itemOffsets.length && this.y < maxScroll - 1) {
+                this.currentItem = nextItem;
+                this.targetY = Math.min(this.itemOffsets[nextItem], maxScroll);
+
+                this._animateTo(this.targetY, CFG.SCROLL_DURATION, () => {
+                  this.timer = setTimeout(
+                    () => this._scheduleNext(),
+                    CFG.SCROLL_ITEM_PAUSE,
+                  );
+                });
+              } else {
+                // Sampai di ujung paling bawah -> Jeda baca tuntas lalu balik arah ke atas
+                this.currentItem = this.itemOffsets.length - 1;
+                this.targetY = maxScroll;
+                this._animateTo(maxScroll, CFG.SCROLL_DURATION, () => {
+                  this.timer = setTimeout(() => {
+                    this.direction = -1; // Ubah arah ke atas
+                    this._scheduleNext();
+                  }, CFG.SCROLL_EDGE_PAUSE);
+                });
+              }
+            } else {
+              // Menuju ke atas
+              let prevItem = this.currentItem - 1;
+              if (prevItem >= 0 && this.y > 1) {
+                this.currentItem = prevItem;
+                this.targetY = Math.max(this.itemOffsets[prevItem], 0);
+
+                this._animateTo(this.targetY, CFG.SCROLL_DURATION, () => {
+                  this.timer = setTimeout(
+                    () => this._scheduleNext(),
+                    CFG.SCROLL_ITEM_PAUSE,
+                  );
+                });
+              } else {
+                // Sampai di ujung paling atas -> Jeda baca tuntas lalu balik arah ke bawah
+                this.currentItem = 0;
+                this.targetY = 0;
+                this._animateTo(0, CFG.SCROLL_DURATION, () => {
+                  this.timer = setTimeout(() => {
+                    this.direction = 1; // Ubah arah ke bawah
+                    this._scheduleNext();
+                  }, CFG.SCROLL_EDGE_PAUSE);
+                });
+              }
+            }
+            return;
+          }
+
+          // ─── MODE CASCADE RESET (Panel Utama Dokter Bedah & NonBedah) ───
           let nextItem = this.currentItem + 1;
 
           if (nextItem < this.itemOffsets.length) {
@@ -6124,6 +6184,7 @@
           this.y = 0;
           this.targetY = 0;
           this.currentItem = 0;
+          this.direction = 1;
           this._resetProgress();
           if (this.el) {
             this.el.style.transition = "none";
@@ -6143,9 +6204,9 @@
       let s1, s2, s3;
 
       if (!isMobile) {
-        s1 = new SmoothScroller("scrollBedah", "progressBedah");
-        s2 = new SmoothScroller("scrollNonBedah", "progressNonBedah");
-        s3 = new SmoothScroller("scrollSidebar");
+        s1 = new SmoothScroller("scrollBedah", "progressBedah", { mode: "cascade" });
+        s2 = new SmoothScroller("scrollNonBedah", "progressNonBedah", { mode: "cascade" });
+        s3 = new SmoothScroller("scrollSidebar", null, { mode: "yoyo" });
       }
 
       // ═══ APPLE iOS INTERACTIVE DYNAMIC ISLAND CONTROLLER ═══
