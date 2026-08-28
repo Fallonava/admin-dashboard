@@ -5885,51 +5885,6 @@
           }
         }
 
-        // Non-intrusive layout update (Fix auto rollback bug)
-        onContentUpdated() {
-          if (!this.el) return;
-          this.h = this.el.scrollHeight;
-          this.vh = this.el.parentElement.clientHeight;
-
-          this.itemOffsets = [];
-          const children = this.el.children;
-          for (let i = 0; i < children.length; i++) {
-            this.itemOffsets.push(children[i].offsetTop);
-          }
-
-          if (this.h <= this.vh) {
-            // Konten muat satu layar: reset lembut ke atas
-            if (this.timer) clearTimeout(this.timer);
-            this.y = 0;
-            this.targetY = 0;
-            this.currentItem = 0;
-            this.direction = 1;
-            this.el.style.transition = "transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)";
-            this.el.style.transform = "translate3d(0, 0, 0)";
-            this._resetProgress();
-          } else {
-            // Konten panjang: pertahankan posisi membaca saat ini tanpa rollback snap
-            const maxScroll = this.h - this.vh;
-            if (this.y > maxScroll) {
-              this.y = maxScroll;
-              this.targetY = maxScroll;
-              this.el.style.transition = "transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)";
-              this.el.style.transform = `translate3d(0, -${maxScroll}px, 0)`;
-            }
-
-            let closestItem = 0;
-            for (let i = 0; i < this.itemOffsets.length; i++) {
-              if (this.itemOffsets[i] <= this.y + 15) closestItem = i;
-            }
-            this.currentItem = closestItem;
-            this._updateProgress();
-
-            if (!this.timer && !this.animating && this.active) {
-              this.timer = setTimeout(() => this._scheduleNext(), CFG.SCROLL_ITEM_PAUSE);
-            }
-          }
-        }
-
         // Apple Native GPU Compositor Spring Scroll Engine (60 FPS / 120 FPS Pure Hardware Matrix)
         _animateTo(target, duration, callback) {
           if (this.animating) return;
@@ -7875,11 +7830,20 @@
           if ($("countSidebar")) $("countSidebar").textContent =
             group.SidebarPenuh.length + group.SidebarCuti.length;
 
-          // Non-intrusive scroller update: prevents jarring rollback snaps during real-time updates
+          // Only reset scroller if list structure changed (avoid jumpiness on simple updates)
           if (!isMobile) {
-            if (s1) requestAnimationFrame(() => s1.onContentUpdated());
-            if (s2) requestAnimationFrame(() => s2.onContentUpdated());
-            if (s3) requestAnimationFrame(() => s3.onContentUpdated());
+            if (changed1) {
+              s1.reset();
+              requestAnimationFrame(() => s1.updateMetrics());
+            }
+            if (changed2) {
+              s2.reset();
+              requestAnimationFrame(() => s2.updateMetrics());
+            }
+            if (changed3) {
+              s3.reset();
+              requestAnimationFrame(() => s3.updateMetrics());
+            }
           }
         },
 
