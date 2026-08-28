@@ -350,13 +350,13 @@
         justify-content: space-between;
         gap: 6px;
         margin: 0 4px 10px 4px;
-        padding: 5px 6px;
-        background: rgba(248, 250, 252, 0.95);
-        border: 1px solid rgba(226, 234, 245, 0.95);
-        border-radius: 16px;
+        padding: 6px 8px;
+        background: rgba(248, 250, 252, 0.96);
+        border: 1.5px solid rgba(226, 234, 245, 0.95);
+        border-radius: 18px;
         box-shadow: 
-          0 4px 12px -2px rgba(45, 65, 95, 0.05),
-          inset 0 1px 1px #FFFFFF;
+          0 6px 18px -2px rgba(45, 65, 95, 0.07),
+          inset 0 1.5px 1.5px #FFFFFF;
       }
 
       .sk-segment-item {
@@ -365,37 +365,37 @@
         align-items: center;
         justify-content: center;
         gap: 6px;
-        padding: 6px 4px;
-        border-radius: 11px;
+        padding: 7px 6px;
+        border-radius: 13px;
         background: #FFFFFF;
         border: 1px solid rgba(226, 232, 240, 0.85);
-        box-shadow: 0 2px 5px rgba(45, 65, 95, 0.04);
+        box-shadow: 0 2px 6px rgba(45, 65, 95, 0.05), inset 0 1px 1px #FFFFFF;
         transition: transform 0.2s ease, opacity 0.3s ease;
       }
 
       .sk-segment-item.seg-op {
-        background: rgba(245, 243, 255, 0.9);
-        border-color: rgba(221, 214, 254, 0.9);
+        background: rgba(245, 243, 255, 0.95);
+        border-color: rgba(221, 214, 254, 0.95);
       }
       .sk-segment-item.seg-penuh {
-        background: rgba(255, 251, 235, 0.9);
-        border-color: rgba(254, 243, 199, 0.9);
+        background: rgba(255, 251, 235, 0.95);
+        border-color: rgba(254, 243, 199, 0.95);
       }
       .sk-segment-item.seg-cuti {
-        background: rgba(254, 242, 242, 0.9);
-        border-color: rgba(254, 202, 202, 0.9);
+        background: rgba(254, 242, 242, 0.95);
+        border-color: rgba(254, 202, 202, 0.95);
       }
 
       .sk-seg-dot {
-        width: 7px;
-        height: 7px;
+        width: 7.5px;
+        height: 7.5px;
         border-radius: 50%;
         flex-shrink: 0;
       }
 
       .sk-seg-label {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 10.5px;
+        font-size: 11px;
         font-weight: 800;
         text-transform: uppercase;
         letter-spacing: 0.04em;
@@ -403,11 +403,12 @@
 
       .sk-seg-badge {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 11.5px;
+        font-size: 12px;
         font-weight: 900;
-        padding: 1px 6px;
+        padding: 1.5px 7px;
         border-radius: 9999px;
         line-height: 1.1;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
       }
 
       /* Dark Mode Status Khusus Overrides */
@@ -459,17 +460,29 @@
 
       .tv-qr-hero-card {
         width: 100%;
-        background: #FFFFFF;
+        background: linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%);
         border-radius: 24px;
-        padding: 12px 14px;
-        border: 1px solid rgba(226, 234, 245, 0.95);
-        box-shadow: 0 12px 30px -4px rgba(45, 65, 95, 0.08), inset 0 1.5px 1.5px #FFFFFF;
+        padding: 14px 16px;
+        border: 1.5px solid rgba(226, 234, 245, 0.95);
+        box-shadow: 
+          0 14px 34px -4px rgba(45, 65, 95, 0.10), 
+          0 2px 6px -1px rgba(45, 65, 95, 0.04),
+          inset 0 2px 2px #FFFFFF;
         display: flex;
         flex-direction: column;
         align-items: center;
         gap: 10px;
         position: relative;
         overflow: hidden;
+      }
+
+      .tv-qr-hero-card::before {
+        content: "";
+        position: absolute;
+        top: 0; left: 20px; right: 20px;
+        height: 1.5px;
+        background: linear-gradient(90deg, transparent, rgba(2, 132, 199, 0.6) 50%, transparent);
+        pointer-events: none;
       }
 
       .wallet-pass-header {
@@ -505,7 +518,7 @@
 
       .wallet-pass-tag {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 11px;
+        font-size: 11.5px;
         font-weight: 900;
         color: #0F172A;
         letter-spacing: 0.04em;
@@ -514,7 +527,7 @@
 
       .wallet-pass-sub {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 8.5px;
+        font-size: 9px;
         font-weight: 800;
         color: #64748B;
         text-transform: uppercase;
@@ -525,20 +538,20 @@
         display: inline-flex;
         align-items: center;
         gap: 5px;
-        padding: 3px 10px;
+        padding: 3.5px 11px;
         border-radius: 9999px;
         background: #ECFDF5;
         color: #059669;
         border: 1px solid #A7F3D0;
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 9.5px;
-        font-weight: 800;
+        font-size: 10px;
+        font-weight: 900;
         letter-spacing: 0.04em;
       }
 
       .wallet-pass-badge .radar-dot {
-        width: 6px;
-        height: 6px;
+        width: 6.5px;
+        height: 6.5px;
         border-radius: 50%;
         background: #059669;
         animation: appleRadarDotBreathe 2.4s cubic-bezier(0.16, 1, 0.3, 1) infinite;
@@ -556,68 +569,51 @@
       }
 
       .wallet-pass-hint {
-        font-family: "Inter", sans-serif;
-        font-size: 10px;
-        font-weight: 600;
+        font-family: "Plus Jakarta Sans", "Inter", sans-serif;
+        font-size: 10.5px;
+        font-weight: 700;
         color: #64748B;
-        margin-top: 4px;
+        margin-top: 2px;
         text-align: center;
-        line-height: 1.25;
-      }
-
-      .tv-qr-header-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 5px 14px;
-        border-radius: 9999px;
-        background: #EFF6FF;
-        color: #0284C7;
-        border: 1px solid #BAE6FD;
-      }
-
-      .tv-qr-header-badge .radar-dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background: #0284C7;
-        animation: appleRadarDotBreathe 2.4s cubic-bezier(0.16, 1, 0.3, 1) infinite;
-        box-shadow: 0 0 10px rgba(2, 132, 199, 0.6);
-      }
-
-      @keyframes appleRadarDotBreathe {
-        0%, 100% { transform: scale(1); opacity: 0.85; }
-        50% { transform: scale(1.35); opacity: 1; box-shadow: 0 0 14px rgba(2, 132, 199, 0.85); }
-      }
-
-      .tv-qr-header-badge span {
-        font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 13px;
-        font-weight: 800;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
+        line-height: 1.3;
       }
 
       .dynamic-qr-box {
-        width: 160px;
-        height: 160px;
-        border-radius: 20px;
+        position: relative;
+        width: 165px;
+        height: 165px;
+        border-radius: 22px;
         background: #FFFFFF;
-        padding: 8px;
-        box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.06), 0 3px 8px rgba(15, 23, 42, 0.04);
-        border: 1px solid rgba(226, 232, 240, 0.95);
+        padding: 10px;
+        box-shadow: 
+          inset 0 1px 2px rgba(15, 23, 42, 0.06), 
+          0 8px 22px -4px rgba(45, 65, 95, 0.08);
+        border: 1.5px solid rgba(226, 232, 240, 0.95);
         display: flex;
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
       }
 
+      /* Apple visionOS Scan Reticle Corner Brackets */
+      .qr-reticle {
+        position: absolute;
+        width: 14px;
+        height: 14px;
+        pointer-events: none;
+        z-index: 2;
+      }
+      .qr-reticle-tl { top: 6px; left: 6px; border-top: 2.5px solid #0284C7; border-left: 2.5px solid #0284C7; border-top-left-radius: 5px; }
+      .qr-reticle-tr { top: 6px; right: 6px; border-top: 2.5px solid #0284C7; border-right: 2.5px solid #0284C7; border-top-right-radius: 5px; }
+      .qr-reticle-bl { bottom: 6px; left: 6px; border-bottom: 2.5px solid #0284C7; border-left: 2.5px solid #0284C7; border-bottom-left-radius: 5px; }
+      .qr-reticle-br { bottom: 6px; right: 6px; border-bottom: 2.5px solid #0284C7; border-right: 2.5px solid #0284C7; border-bottom-right-radius: 5px; }
+
       .dynamic-qr-box svg {
         width: 100% !important;
         height: 100% !important;
         display: block;
         shape-rendering: crispEdges !important;
-        border-radius: 8px;
+        border-radius: 10px;
       }
 
       .tv-qr-url-pill {
@@ -626,12 +622,13 @@
         gap: 6px;
         padding: 5px 14px;
         border-radius: 12px;
-        background: #F8FAFC;
-        border: 1px solid rgba(226, 232, 240, 0.9);
+        background: #F1F5F9;
+        border: 1px solid rgba(226, 232, 240, 0.95);
         font-family: "Plus Jakarta Sans", monospace;
-        font-size: 13px;
+        font-size: 12.5px;
         font-weight: 800;
         color: #0F172A;
+        letter-spacing: -0.01em;
       }
 
       /* ===== 📺 Apple tvOS View-Only Info Banner Widget ===== */
@@ -3230,40 +3227,45 @@
       .jam-box {
         display: flex;
         align-items: center;
-        gap: 6px;
+        gap: 7px;
         justify-content: flex-end;
-        background: rgba(241, 245, 249, 0.95);
-        border: 1px solid rgba(203, 213, 225, 0.9);
-        padding: 5px 14px;
-        border-radius: 12px;
-        box-shadow: inset 0 1px 1px #FFFFFF, 0 2px 5px rgba(45, 65, 95, 0.04);
+        background: rgba(241, 245, 249, 0.98);
+        border: 1.5px solid rgba(203, 213, 225, 0.95);
+        padding: 6px 15px;
+        border-radius: 14px;
+        box-shadow: 
+          inset 0 1.5px 1.5px #FFFFFF, 
+          inset 0 -1px 1px rgba(15, 23, 42, 0.06), 
+          0 3px 8px -2px rgba(45, 65, 95, 0.06);
       }
 
       .jam-box .jam-icon {
-        font-size: 16px;
-        color: #64748B;
+        width: 16px;
+        height: 16px;
+        color: #0284C7;
+        flex-shrink: 0;
       }
 
       .jam-val {
         font-family: "Plus Jakarta Sans", "Inter", sans-serif;
-        font-size: 22.5px;
+        font-size: 23px;
         font-weight: 900;
         color: #090D16;
         font-feature-settings: "tnum" 1;
         font-variant-numeric: tabular-nums;
-        letter-spacing: 0.01em;
+        letter-spacing: -0.01em;
         line-height: 1;
       }
 
       /* Dark Mode Jam Box & Status Overrides */
       [data-theme="dark"] .jam-box {
         background: rgba(255, 255, 255, 0.08);
-        border: 1px solid rgba(255, 255, 255, 0.12);
-        box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
+        border: 1.5px solid rgba(255, 255, 255, 0.15);
+        box-shadow: inset 0 1.5px 1.5px rgba(255, 255, 255, 0.15), 0 4px 12px rgba(0, 0, 0, 0.3);
       }
 
       [data-theme="dark"] .jam-box .jam-icon {
-        color: #94A3B8;
+        color: #38BDF8;
       }
 
       [data-theme="dark"] .jam-val {
@@ -4170,39 +4172,55 @@
         color: #34D399 !important;
       }
 
+      /* ─── Apple Breathing Halo Ring for Active Doctor Calling ─── */
+      .platter.active .initials {
+        animation: appleActiveIconHalo 2.2s cubic-bezier(0.16, 1, 0.3, 1) infinite alternate !important;
+      }
+      @keyframes appleActiveIconHalo {
+        0% {
+          box-shadow: inset 0 2.5px 2.5px #FFFFFF, inset 0 -2px 3px rgba(5, 150, 105, 0.2), 0 0 0 0 rgba(16, 185, 129, 0.4), 0 8px 24px -4px rgba(5, 150, 105, 0.3) !important;
+          transform: scale(1);
+        }
+        100% {
+          box-shadow: inset 0 2.5px 2.5px #FFFFFF, inset 0 -2px 3px rgba(5, 150, 105, 0.2), 0 0 0 6px rgba(16, 185, 129, 0.35), 0 14px 36px 0 rgba(16, 185, 129, 0.45) !important;
+          transform: scale(1.03);
+        }
+      }
+
       /* Apple Live Equalizer Waveform */
       .live-wave {
         display: flex;
         align-items: flex-end;
         gap: 3px;
-        height: 15px;
-        width: 16px;
+        height: 16px;
+        width: 22px;
         flex-shrink: 0;
       }
 
       .wave-bar {
         width: 3.5px;
-        height: 15px;
+        height: 16px;
         border-radius: 2px;
-        background: #059669;
+        background: linear-gradient(180deg, #34D399 0%, #059669 100%);
         transform-origin: bottom;
         animation: appleWaveformBar 1.2s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate;
         will-change: transform;
       }
 
       [data-theme="dark"] .wave-bar {
-        background: #34D399;
+        background: linear-gradient(180deg, #6EE7B7 0%, #34D399 100%);
         box-shadow: 0 0 6px rgba(52, 211, 153, 0.6);
       }
 
       .wave-bar.bar-1 { animation-delay: 0s; }
-      .wave-bar.bar-2 { animation-delay: 0.22s; }
-      .wave-bar.bar-3 { animation-delay: 0.44s; }
+      .wave-bar.bar-2 { animation-delay: 0.16s; }
+      .wave-bar.bar-3 { animation-delay: 0.32s; }
+      .wave-bar.bar-4 { animation-delay: 0.48s; }
 
       @keyframes appleWaveformBar {
-        0% { transform: scaleY(0.25); }
+        0% { transform: scaleY(0.2); }
         50% { transform: scaleY(1.0); }
-        100% { transform: scaleY(0.45); }
+        100% { transform: scaleY(0.35); }
       }
 
       .st-operasi.active .pulse-dot {
@@ -5255,6 +5273,10 @@
                 </div>
               </div>
               <div class="dynamic-qr-box">
+                <span class="qr-reticle qr-reticle-tl"></span>
+                <span class="qr-reticle qr-reticle-tr"></span>
+                <span class="qr-reticle qr-reticle-bl"></span>
+                <span class="qr-reticle qr-reticle-br"></span>
                 <div id="tvQrCode" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;"></div>
               </div>
               <div class="tv-qr-url-pill">
@@ -5637,6 +5659,7 @@
                 <span class="wave-bar bar-1"></span>
                 <span class="wave-bar bar-2"></span>
                 <span class="wave-bar bar-3"></span>
+                <span class="wave-bar bar-4"></span>
               </div>
               <span class="live-text">${labelLive}</span>
             </div>
