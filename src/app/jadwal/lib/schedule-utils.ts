@@ -66,6 +66,23 @@ export function isSurgeonSpecialty(specialty: string): boolean {
   );
 }
 
+export function categorizeDoctor(specialty: string): 'Bedah' | 'NonBedah' {
+  return isSurgeonSpecialty(specialty) ? 'Bedah' : 'NonBedah';
+}
+
+export function calculateDoctorStatus(
+  doctor: any,
+  shift?: any,
+  leaves: any[] = [],
+  date: Date = new Date()
+): { status: string; replacementDoctor?: string | null } {
+  const result = evaluateDoctorRealtimeStatus(doctor, shift ? [shift] : [], leaves, date);
+  return {
+    status: result.status,
+    replacementDoctor: result.activeLeave?.replacementDoctor || null,
+  };
+}
+
 export function getSpecialtyBadgeClass(specialty: string): string {
   const s = (specialty || '').toLowerCase();
   if (s.includes('jantung') || s.includes('sp.jp')) return 'spec-jantung';
