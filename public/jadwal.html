@@ -4746,7 +4746,8 @@
         }
       }
 
-      function renderWeeklyDateStrip() {
+      let _lastRenderedDateStripHash = "";
+      function renderWeeklyDateStrip(shouldAutoScroll = false) {
         const container = document.getElementById("weeklyDateStrip");
         if (!container) return;
 
@@ -4755,6 +4756,26 @@
 
         const selDate = window.selectedWeeklyDate || today;
         const selKey = formatLocalDateKey(selDate);
+        const todayKey = formatLocalDateKey(today);
+        const stripHash = `${todayKey}_${selKey}`;
+
+        // If cards are already mounted for today, only toggle active class to avoid snapping scroll position
+        const existingCards = container.querySelectorAll(".weekly-date-card");
+        if (existingCards.length > 0 && _lastRenderedDateStripHash.startsWith(todayKey)) {
+          existingCards.forEach(card => {
+            card.classList.toggle("active", card.dataset.date === selKey);
+          });
+          _lastRenderedDateStripHash = stripHash;
+          if (shouldAutoScroll) {
+            const activeCard = container.querySelector(".weekly-date-card.active");
+            if (activeCard) {
+              activeCard.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+            }
+          }
+          return;
+        }
+
+        _lastRenderedDateStripHash = stripHash;
 
         // Generate 30 Hari (Hari ini - 1 hari sampai 28 hari ke depan)
         const dates = [];
@@ -4767,7 +4788,7 @@
         let html = '';
         dates.forEach(d => {
           const dateKey = formatLocalDateKey(d);
-          const isToday = dateKey === formatLocalDateKey(today);
+          const isToday = dateKey === todayKey;
           const isSelected = dateKey === selKey;
           const dayIdx = (d.getDay() + 6) % 7;
           const hol = getIndonesianHoliday(d);
@@ -4788,13 +4809,14 @@
 
         container.innerHTML = html;
 
-        // Smoothly scroll active date into view center
-        setTimeout(() => {
-          const activeCard = container.querySelector(".weekly-date-card.active");
-          if (activeCard) {
-            activeCard.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
-          }
-        }, 120);
+        if (shouldAutoScroll) {
+          setTimeout(() => {
+            const activeCard = container.querySelector(".weekly-date-card.active");
+            if (activeCard) {
+              activeCard.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+            }
+          }, 80);
+        }
       }
 
       function selectWeeklyDate(dateKey) {
@@ -4802,7 +4824,7 @@
         const parts = dateKey.split("-");
         window.selectedWeeklyDate = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
         window.selectedWeeklyDay = (window.selectedWeeklyDate.getDay() + 6) % 7;
-        renderWeeklyDateStrip();
+        renderWeeklyDateStrip(true);
         renderWeeklySchedule();
       }
 
@@ -4970,7 +4992,7 @@
 
         const favs = getFavDoctors();
 
-        container.innerHTML = filteredShifts.map(s => {
+        const newWeeklyHTML = filteredShifts.map(s => {
           const doc = docMap.get(s.doctorId);
           const docName = doc ? doc.name : (s.doctorName || "Dokter Spesialis");
           const docSpec = doc ? (doc.specialty || "Spesialis") : (s.title || "Spesialis");
@@ -5087,6 +5109,11 @@
               </div>
             </div>`;
         }).join("");
+
+        if (container._lastRenderedWeeklyHTML !== newWeeklyHTML) {
+          container._lastRenderedWeeklyHTML = newWeeklyHTML;
+          container.innerHTML = newWeeklyHTML;
+        }
       }
 
       window.calCurrentDate = new Date();
