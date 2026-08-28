@@ -6,13 +6,13 @@ import { BottomNav } from "@/components/layouts/BottomNav";
 import { MobileMenu } from "@/components/layouts/MobileMenu";
 import { AutomationRunner } from "@/components/AutomationRunner";
 
-const AUTH_ROUTES = ["/login"];
+const STANDALONE_ROUTES = ["/login", "/jadwal", "/tv", "/mobile", "/display"];
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const isAuthRoute = AUTH_ROUTES.some((route) => pathname.startsWith(route));
+  const isStandalone = STANDALONE_ROUTES.some((route) => pathname.startsWith(route));
 
-  if (isAuthRoute) {
+  if (isStandalone) {
     return <>{children}</>;
   }
 

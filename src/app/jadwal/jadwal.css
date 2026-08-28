@@ -1307,3 +1307,213 @@
 .copy-hint {
   color: var(--text-sub);
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   DEDICATED iOS 27 JADWAL NAVBAR
+   ═══════════════════════════════════════════════════════════════ */
+.jadwal-dedicated-navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  padding: max(12px, calc(var(--sat) + 8px)) 16px 12px 16px;
+  background: var(--surface-header);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border-bottom: 0.5px solid var(--separator);
+  transition: background-color 200ms ease, border-color 200ms ease;
+}
+
+.jadwal-nav-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.jadwal-brand-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.jadwal-brand-logo-squircle {
+  width: 40px;
+  height: 40px;
+  border-radius: 11px;
+  background: var(--surface-card);
+  border: 1px solid var(--border-card);
+  box-shadow: var(--shadow-level-1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.jadwal-brand-img {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+}
+
+.jadwal-brand-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.jadwal-brand-title-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.jadwal-brand-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-main);
+  letter-spacing: -0.3px;
+  line-height: 1.2;
+}
+
+.jadwal-verified-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 1.5px 6px;
+  border-radius: 9999px;
+  background: rgba(0, 122, 255, 0.12);
+  color: var(--ios-blue);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: -0.1px;
+}
+
+.verified-icon {
+  color: var(--ios-blue);
+}
+
+.jadwal-brand-status-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.brand-live-pulse-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ios-green);
+  box-shadow: 0 0 6px var(--ios-green);
+  animation: liveDotPulse 2s infinite;
+}
+
+@keyframes liveDotPulse {
+  0% { transform: scale(0.9); opacity: 0.8; }
+  50% { transform: scale(1.35); opacity: 1; }
+  100% { transform: scale(0.9); opacity: 0.8; }
+}
+
+.jadwal-brand-sub {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-sub);
+  letter-spacing: -0.1px;
+}
+
+/* Nav Actions */
+.jadwal-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.jadwal-nav-icon-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--surface-well);
+  border: 1px solid var(--border-card);
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform 120ms cubic-bezier(0.4, 0, 0.2, 1), opacity 120ms ease, background-color 150ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.jadwal-nav-icon-btn:active {
+  transform: scale(0.88);
+  opacity: 0.8;
+}
+
+.jadwal-nav-icon-btn.hotline-btn {
+  background: rgba(52, 199, 89, 0.14);
+  color: var(--ios-green);
+  border-color: rgba(52, 199, 89, 0.25);
+}
+
+.jadwal-nav-icon-btn.refresh-btn.is-spinning svg {
+  animation: spinClockwise 800ms linear infinite;
+}
+
+/* Segmented Control Track */
+.jadwal-segmented-track {
+  display: flex;
+  background: var(--surface-input);
+  padding: 3px;
+  border-radius: 12px;
+  gap: 3px;
+}
+
+.jadwal-seg-btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 7px 10px;
+  border-radius: 9px;
+  border: none;
+  background: transparent;
+  color: var(--text-sub);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.2px;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 180ms cubic-bezier(0.4, 0, 0.2, 1), color 180ms ease, box-shadow 180ms ease, transform 120ms ease;
+}
+
+.jadwal-seg-btn:active {
+  transform: scale(0.97);
+}
+
+.jadwal-seg-btn.active {
+  background: var(--surface-card);
+  color: var(--text-main);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08), 0 0 0 0.5px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="dark"] .jadwal-seg-btn.active {
+  background: #2C2C2E;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5), 0 0 0 0.5px rgba(255, 255, 255, 0.1);
+}
+
+.seg-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 5.5px;
+  border-radius: 9999px;
+  background: rgba(0, 122, 255, 0.14);
+  color: var(--ios-blue);
+}
+
+.seg-badge.red {
+  background: rgba(255, 59, 48, 0.14);
+  color: var(--ios-red);
+}

@@ -17,6 +17,7 @@ import LeavesCalendar from './components/LeavesCalendar';
 import RegistrationModal from './components/RegistrationModal';
 import FloatingDock from './components/FloatingDock';
 import Toast, { ToastMessage } from './components/Toast';
+import JadwalNavbar from './components/JadwalNavbar';
 
 const fetcher = async (url: string): Promise<DisplayApiResponse> => {
   const res = await fetch(url);
@@ -219,66 +220,31 @@ export default function JadwalPage() {
         totalDoctorCount={evaluatedDoctors.length}
       />
 
-      {/* iOS Nav Header */}
-      <header className="ios-nav-header material-regular">
-        <div className="ios-brand-group">
-          <div className="ios-logo-coin">
-            <img
-              src="/icon.svg"
-              alt="RSU Siaga Medika"
-              className="logo-img"
-              onError={(e) => {
-                e.currentTarget.style.display = 'none';
-              }}
-            />
-          </div>
-          <div className="ios-title-group">
-            <div className="brand-title-row">
-              <h1 className="brand-title">Jadwal Praktik</h1>
-              <span className="brand-city-tag">Pemalang</span>
-            </div>
-            <div className="brand-sub-row">
-              <span className="brand-live-dot"></span>
-              <span className="brand-subtitle">Real-time Sinkronisasi</span>
-            </div>
-          </div>
-
-          {/* Quick Refresh Button in Header */}
-          <button
-            type="button"
-            className={`header-refresh-btn ${isRefreshing ? 'is-spinning' : ''}`}
-            onClick={handleManualRefresh}
-            title="Perbarui Jadwal Sekarang"
-          >
-            <RotateCcw size={16} />
-          </button>
-        </div>
-
-        {/* Segmented Control */}
-        <div className="ios-mode-switcher ios-mode-switcher-margin">
-          <button
-            type="button"
-            className={`ios-mode-btn ${activeTab === 'today' ? 'active' : ''}`}
-            onClick={() => handleTabChange('today')}
-          >
-            Hari Ini
-          </button>
-          <button
-            type="button"
-            className={`ios-mode-btn ${activeTab === 'weekly' ? 'active' : ''}`}
-            onClick={() => handleTabChange('weekly')}
-          >
-            Keseluruhan
-          </button>
-          <button
-            type="button"
-            className={`ios-mode-btn ${activeTab === 'leaves' ? 'active' : ''}`}
-            onClick={() => handleTabChange('leaves')}
-          >
-            Jadwal Cuti
-          </button>
-        </div>
-      </header>
+      {/* Dedicated iOS 27 Jadwal Navbar */}
+      <JadwalNavbar
+        activeTab={activeTab}
+        onTabChange={handleTabChange}
+        isDarkMode={isDarkMode}
+        onToggleTheme={handleThemeToggle}
+        isRefreshing={isRefreshing}
+        onRefresh={handleManualRefresh}
+        onShare={() => {
+          if (navigator.share) {
+            navigator
+              .share({
+                title: 'Jadwal Praktik Dokter — RSU Siaga Medika Pemalang',
+                text: 'Cek jadwal dokter spesialis, jadwal cuti, dan pendaftaran online RSU Siaga Medika Pemalang.',
+                url: window.location.href,
+              })
+              .catch(() => {});
+          } else {
+            navigator.clipboard?.writeText(window.location.href);
+            showToast('Tautan Disalin', 'Tautan portal jadwal telah disalin ke clipboard', 'share');
+          }
+        }}
+        todayCount={evaluatedDoctors.filter((d) => d.status === 'PRAKTEK').length}
+        leavesCount={leaves.length}
+      />
 
       {/* Main Content View */}
       <main className="main-content main-content-padded">
