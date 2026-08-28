@@ -614,26 +614,26 @@
       .ios-header-actions {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 6px;
       }
       .ios-icon-btn {
-        width: 38px;
-        height: 38px;
-        border-radius: var(--radius-icon);
-        background: var(--surface-card-solid);
-        box-shadow: var(--shadow-btn);
-        border: 1.5px solid var(--border-card);
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: var(--surface-well);
+        border: 1px solid var(--border-card);
         display: flex;
         align-items: center;
         justify-content: center;
         color: var(--text-main);
         cursor: pointer;
-        transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.15s ease;
+        transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.15s ease;
         position: relative;
+        touch-action: manipulation;
       }
       .ios-icon-btn:active {
-        transform: scale(0.92) translateY(1.5px);
-        box-shadow: var(--shadow-inset);
+        transform: scale(0.92);
+        opacity: 0.7;
       }
       .ios-icon-btn.primary { color: var(--ios-blue); }
 
@@ -642,26 +642,25 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-top: 9px;
-        padding: 7px 14px;
-        border-radius: 16px;
-        background: var(--surface-card-solid);
-        box-shadow: var(--shadow-btn);
-        border: 1.5px solid var(--border-card);
+        margin-top: 8px;
+        padding: 5px 10px;
+        border-radius: 10px;
+        background: var(--surface-well);
+        border: 1px solid var(--border-card);
       }
       .ios-clock {
         font-family: "JetBrains Mono", monospace;
-        font-size: 17px;
+        font-size: 14.5px;
         font-weight: 900;
         color: var(--text-main);
         letter-spacing: -0.02em;
       }
       .ios-date {
-        font-size: 10.5px;
-        font-weight: 800;
+        font-size: 11px;
+        font-weight: 700;
         color: var(--text-sub);
         text-transform: uppercase;
-        letter-spacing: 0.05em;
+        letter-spacing: 0.03em;
       }
 
       /* ═══════════════════════════════════════════════════════════════
@@ -670,36 +669,35 @@
       .ios-main-content {
         display: flex;
         flex-direction: column;
-        gap: 12px;
-        padding: 12px 16px;
+        gap: 10px;
+        padding: 10px 14px;
       }
 
       .ios-mode-switcher {
         display: flex;
         background: var(--surface-well);
-        box-shadow: var(--shadow-inset);
-        border-radius: 20px;
-        padding: 5px;
-        border: 1px solid var(--border-input);
-        gap: 5px;
-        margin: 2px 0 6px;
+        border-radius: 10px;
+        padding: 3px;
+        border: 1px solid var(--border-card);
+        gap: 3px;
+        margin: 2px 0 4px;
       }
       .ios-mode-btn {
         flex: 1;
         border: none;
-        border-radius: 15px;
+        border-radius: 8px;
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 12px;
-        font-weight: 800;
+        font-size: 12.5px;
+        font-weight: 700;
         color: var(--text-sub);
-        padding: 9px 10px;
+        padding: 7px 8px;
         background: transparent;
         cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
         gap: 5px;
-        transition: transform 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s ease, background 0.2s ease, color 0.18s ease;
+        transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), background 0.18s ease, color 0.18s ease;
         position: relative;
         touch-action: manipulation;
         user-select: none;
@@ -707,21 +705,18 @@
       .ios-mode-btn.active {
         background: var(--surface-card-solid);
         color: var(--text-main);
-        font-weight: 900;
-        box-shadow: var(--shadow-btn);
-        border: 1.5px solid var(--border-card);
-        transform: translateY(-1px);
+        font-weight: 800;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
       }
       .ios-mode-btn:active {
-        transform: scale(0.92) translate3d(0, 1.5px, 0) !important;
-        box-shadow: var(--shadow-inset) !important;
+        transform: scale(0.96);
       }
 
       /* View Containers */
       .ios-live-container, .ios-weekly-container, .ios-leaves-container {
         display: flex;
         flex-direction: column;
-        gap: 12px;
+        gap: 10px;
       }
       .hidden { display: none !important; }
 
@@ -879,7 +874,7 @@
       }
 
       /* ═══════════════════════════════════════════════════════════════
-         5. SPOTLIGHT SEARCH & SEGMENTED TABS
+         5. SPOTLIGHT SEARCH & SPECIALTY FILTER CHIPS
          ═══════════════════════════════════════════════════════════════ */
       .ios-search-wrapper { margin: 2px 0 2px; }
       .ios-search-bar {
@@ -887,90 +882,85 @@
         align-items: center;
         gap: 8px;
         background: var(--surface-well);
-        box-shadow: var(--shadow-inset);
-        border-radius: 20px;
-        padding: 9px 16px;
-        border: 1.5px solid var(--border-input);
-        transition: all 0.25s ease;
+        border-radius: 10px;
+        padding: 7px 12px;
+        border: 1px solid var(--border-card);
+        transition: border-color 0.2s ease;
       }
       .ios-search-bar:focus-within {
-        border-color: rgba(37, 99, 235, 0.6);
-        box-shadow: var(--shadow-inset), 0 0 0 3.5px rgba(37, 99, 235, 0.2);
+        border-color: var(--ios-blue);
       }
-      .ios-search-icon { color: var(--ios-blue); font-size: 21px; flex-shrink: 0; }
+      .ios-search-icon { color: var(--text-mute); font-size: 19px; flex-shrink: 0; }
       .ios-search-input {
         flex: 1;
         border: none;
         outline: none;
         background: transparent;
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 13px;
-        font-weight: 700;
+        font-size: 13.5px;
+        font-weight: 600;
         color: var(--text-main);
       }
-      .ios-search-input::placeholder { color: var(--text-mute); font-weight: 600; }
+      .ios-search-input::placeholder { color: var(--text-mute); font-weight: 500; }
       .ios-search-clear {
-        width: 22px;
-        height: 22px;
+        width: 18px;
+        height: 18px;
         border-radius: 50%;
-        background: #CBD5E1;
+        background: var(--text-mute);
         color: #FFFFFF !important;
         border: none;
         display: flex;
         align-items: center;
         justify-content: center;
         cursor: pointer;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+        font-size: 12px;
+        opacity: 0.7;
+        transition: opacity 0.15s ease;
       }
+      .ios-search-clear:active { opacity: 1; }
 
-      /* Live Quick Specialty Chips (Unified Segmented Concept) */
+      /* Live Quick Specialty Chips (Native iOS Filter Pill Row) */
       .live-spec-chips-bar, .spec-chips-bar {
         display: flex;
-        background: var(--surface-well);
-        box-shadow: var(--shadow-inset);
-        border-radius: 19px;
-        padding: 4px;
-        border: 1px solid var(--border-input);
-        gap: 4px;
+        background: transparent;
+        padding: 2px 0;
+        gap: 6px;
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
-        margin: 4px 0;
+        margin: 2px 0;
       }
       .live-spec-chips-bar::-webkit-scrollbar, .spec-chips-bar::-webkit-scrollbar { display: none; }
 
       .spec-chip {
         flex: 0 0 auto;
         min-width: max-content;
-        padding: 8px 13px;
-        border: 1.5px solid transparent;
-        border-radius: var(--radius-tab);
-        background: transparent;
+        padding: 5px 12px;
+        border-radius: 9999px;
+        background: var(--surface-well);
+        border: 1px solid var(--border-card);
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 11px;
-        font-weight: 800;
+        font-size: 12px;
+        font-weight: 700;
         color: var(--text-sub);
         cursor: pointer;
-        transition: transform 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s ease, background 0.2s ease, color 0.18s ease;
+        transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 5px;
+        gap: 4px;
         position: relative;
         touch-action: manipulation;
         user-select: none;
         white-space: nowrap;
       }
       .spec-chip:active {
-        transform: scale(0.92) translate3d(0, 1.5px, 0) !important;
-        box-shadow: var(--shadow-inset) !important;
+        transform: scale(0.95);
       }
       .spec-chip.active {
-        background: var(--surface-card-solid) !important;
-        color: var(--text-main) !important;
-        font-weight: 900 !important;
-        box-shadow: var(--shadow-btn) !important;
-        border: 1.5px solid var(--border-card) !important;
-        transform: none !important;
+        background: var(--ios-blue) !important;
+        color: #FFFFFF !important;
+        border-color: var(--ios-blue) !important;
+        box-shadow: 0 2px 6px rgba(0, 122, 255, 0.25) !important;
       }
 
       .ios-segmented-bar {
@@ -2528,50 +2518,48 @@
       }
 
       /* ═══════════════════════════════════════════════════════════════
-         REGISTRATION & BOOKING CHOICE CLAY TILES
+         REGISTRATION & BOOKING CHOICE ACTION TILES (APPLE iOS)
          ═══════════════════════════════════════════════════════════════ */
       .booking-doc-context {
         display: flex;
         align-items: center;
-        gap: 12px;
-        padding: 10px 14px;
-        border-radius: 18px;
+        gap: 10px;
+        padding: 8px 12px;
+        border-radius: 12px;
         background: var(--surface-well);
-        box-shadow: var(--shadow-inset);
-        border: 1px solid var(--border-subtle);
+        border: 1px solid var(--border-card);
       }
       .booking-doc-avatar {
-        width: 40px;
-        height: 40px;
-        border-radius: 14px;
-        background: var(--surface-avatar);
-        box-shadow: var(--shadow-btn);
-        border: 1.5px solid var(--border-card);
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        background: var(--surface-card-solid);
+        border: 1px solid var(--border-card);
         color: var(--ios-blue);
         display: flex;
         align-items: center;
         justify-content: center;
         font-family: "Outfit", sans-serif;
-        font-size: 14px;
-        font-weight: 900;
+        font-size: 13px;
+        font-weight: 800;
         flex-shrink: 0;
       }
       .booking-doc-info {
         display: flex;
         flex-direction: column;
-        gap: 2px;
+        gap: 1px;
         min-width: 0;
         flex: 1;
       }
       .booking-doc-spec {
-        font-size: 9.5px;
+        font-size: 10.5px;
         font-weight: 800;
         text-transform: uppercase;
         color: var(--ios-blue);
       }
       .booking-doc-name {
-        font-size: 12.5px;
-        font-weight: 900;
+        font-size: 13px;
+        font-weight: 800;
         color: var(--text-main);
         white-space: nowrap;
         overflow: hidden;
@@ -2579,7 +2567,7 @@
       }
       .booking-doc-time {
         font-family: "JetBrains Mono", monospace;
-        font-size: 10px;
+        font-size: 10.5px;
         font-weight: 700;
         color: var(--text-sub);
       }
@@ -2587,63 +2575,59 @@
       .clay-choice-list {
         display: flex;
         flex-direction: column;
-        gap: 10px;
+        gap: 8px;
       }
 
       .clay-choice-tile {
         display: flex;
         align-items: center;
-        gap: 12px;
-        padding: 13px 15px;
-        border-radius: 20px;
-        background: var(--surface-card-solid);
-        box-shadow: var(--shadow-card);
-        border: 1.5px solid var(--border-card);
+        gap: 10px;
+        padding: 10px 12px;
+        border-radius: 12px;
+        background: var(--surface-well);
+        border: 1px solid var(--border-card);
         text-decoration: none;
         color: var(--text-main);
         position: relative;
         overflow: hidden;
-        transition: transform 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s ease, border-color 0.2s ease;
+        transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), background 0.18s ease;
         touch-action: manipulation;
         user-select: none;
       }
       .clay-choice-tile:active {
-        transform: scale(0.95) translateY(2px) !important;
-        box-shadow: var(--shadow-inset) !important;
+        transform: scale(0.97);
+        background: var(--surface-card-solid);
       }
 
       .clay-choice-icon-coin {
-        width: 44px;
-        height: 44px;
-        border-radius: 16px;
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
         display: flex;
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
-        color: #FFFFFF;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), inset 1.5px 1.5px 3px rgba(255, 255, 255, 0.4);
-        border: 1px solid rgba(255, 255, 255, 0.3);
       }
       .clay-choice-icon-coin.bpjs {
-        background: linear-gradient(135deg, #10B981 0%, #059669 100%);
-        box-shadow: 0 4px 14px rgba(5, 150, 105, 0.38), inset 1.5px 1.5px 3px rgba(255, 255, 255, 0.45);
+        background: rgba(52, 199, 89, 0.15);
+        color: #34C759;
       }
       .clay-choice-icon-coin.non-bpjs {
-        background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);
-        box-shadow: 0 4px 14px rgba(29, 78, 216, 0.38), inset 1.5px 1.5px 3px rgba(255, 255, 255, 0.45);
+        background: rgba(0, 122, 255, 0.15);
+        color: #007AFF;
       }
       .clay-choice-icon-coin.wa {
-        background: linear-gradient(135deg, #34D399 0%, #059669 100%);
-        box-shadow: 0 4px 14px rgba(5, 150, 105, 0.38), inset 1.5px 1.5px 3px rgba(255, 255, 255, 0.45);
+        background: rgba(52, 199, 89, 0.15);
+        color: #34C759;
       }
       .clay-choice-icon-coin .material-icons-round {
-        font-size: 22px;
+        font-size: 19px;
       }
 
       .clay-choice-content {
         display: flex;
         flex-direction: column;
-        gap: 3px;
+        gap: 2px;
         flex: 1;
         min-width: 0;
       }
@@ -2741,12 +2725,6 @@
           </div>
         </div>
         <div class="di-right">
-          <div class="di-soundwave">
-            <span class="bar bar-1"></span>
-            <span class="bar bar-2"></span>
-            <span class="bar bar-3"></span>
-            <span class="bar bar-4"></span>
-          </div>
           <div class="di-live-indicator">
             <span class="di-live-dot"></span>
             <span class="di-live-text">LIVE</span>
@@ -2770,7 +2748,6 @@
         <div class="ios-brand-group">
           <div class="ios-logo-coin">
             <img src="/logo-rs.png" alt="RSU Siaga Medika" />
-            <div class="logo-clay-shine"></div>
           </div>
           <div class="ios-title-group">
             <div class="brand-title-row">
@@ -2785,13 +2762,13 @@
         </div>
         <div class="ios-header-actions">
           <button id="btnThemeToggle" class="ios-icon-btn" onclick="toggleTheme()" title="Ubah Mode Gelap/Terang">
-            <span id="themeIcon" class="material-icons-round" style="font-size: 19px;">dark_mode</span>
+            <span id="themeIcon" class="material-icons-round" style="font-size: 18px;">dark_mode</span>
           </button>
           <button class="ios-icon-btn primary" onclick="shareSchedule()" title="Bagikan Jadwal">
-            <span class="material-icons-round" style="font-size: 18px;">ios_share</span>
+            <span class="material-icons-round" style="font-size: 17px;">ios_share</span>
           </button>
           <button class="ios-icon-btn" onclick="openQrModal()" title="Menu & Barcode">
-            <span class="material-icons-round" style="font-size: 20px;">qr_code_2</span>
+            <span class="material-icons-round" style="font-size: 18px;">qr_code_2</span>
           </button>
         </div>
       </div>
@@ -2809,15 +2786,15 @@
       <!-- TOP MODE SWITCHER -->
       <nav class="ios-mode-switcher" aria-label="Mode Tampilan Jadwal">
         <button id="btnViewLive" class="ios-mode-btn active" onclick="switchMainView('live')">
-          <span class="material-icons-round" style="font-size: 16px; color: var(--ios-emerald);">bolt</span>
+          <span class="material-icons-round" style="font-size: 15px; color: var(--ios-emerald);">bolt</span>
           <span>Hari Ini</span>
         </button>
         <button id="btnViewWeekly" class="ios-mode-btn" onclick="switchMainView('weekly')">
-          <span class="material-icons-round" style="font-size: 16px; color: var(--ios-blue);">calendar_month</span>
+          <span class="material-icons-round" style="font-size: 15px; color: var(--ios-blue);">calendar_month</span>
           <span>Keseluruhan</span>
         </button>
         <button id="btnViewLeaves" class="ios-mode-btn" onclick="switchMainView('leaves')">
-          <span class="material-icons-round" style="font-size: 16px; color: var(--ios-rose);">beach_access</span>
+          <span class="material-icons-round" style="font-size: 15px; color: var(--ios-rose);">beach_access</span>
           <span>Jadwal Cuti</span>
         </button>
       </nav>
@@ -2825,7 +2802,6 @@
       <!-- ─── 1. LIVE CONTAINER (JADWAL HARI INI) ─── -->
       <div id="viewLive" class="ios-live-container">
         <!-- BENTO STATS TILES -->
-        <!-- BENTO HEALTH STATS TILES (APPLE iOS 2026 CLAY REDESIGN) -->
         <section class="ios-bento-stats">
           <!-- PRAKTEK -->
           <div class="ios-bento-card bento-praktek" onclick="triggerHaptic('light'); switchTab('all');">
@@ -2834,7 +2810,6 @@
                 <span class="material-icons-round">medical_services</span>
               </div>
               <div class="bento-status-pill praktek">
-                <span class="bento-pulse-dot"></span>
                 <span>BUKA</span>
               </div>
             </div>
@@ -2848,7 +2823,6 @@
                 <span class="bento-sub">Siap Melayani</span>
               </div>
             </div>
-            <div class="bento-glass-bevel"></div>
           </div>
 
           <!-- PENUH -->
@@ -2871,7 +2845,6 @@
                 <span class="bento-sub">Kuota Terisi</span>
               </div>
             </div>
-            <div class="bento-glass-bevel"></div>
           </div>
 
           <!-- CUTI / IZIN -->
@@ -2894,7 +2867,6 @@
                 <span class="bento-sub">Tidak Dinas</span>
               </div>
             </div>
-            <div class="bento-glass-bevel"></div>
           </div>
         </section>
 
@@ -3249,9 +3221,7 @@
         <div class="ios-sheet-handle"></div>
         <div class="modal-head-row">
           <div class="modal-title-group">
-            <div class="sec-icon-coin bedah" style="width: 28px; height: 28px; border-radius: 10px;">
-              <span class="material-icons-round" style="font-size: 16px;">app_registration</span>
-            </div>
+            <span class="material-icons-round" style="color: var(--ios-emerald); font-size: 20px;">app_registration</span>
             <h3>Pendaftaran & Informasi</h3>
           </div>
           <button class="modal-close-btn" onclick="closeRegisterModal()" title="Tutup">
@@ -3332,10 +3302,10 @@
         }
       }
 
-      // ===== THEME TOGGLE (PORCELAIN VS OBSIDIAN CYBER CLAY) =====
+      // ===== THEME TOGGLE (APPLE iOS LIGHT & DARK) =====
       function updateMetaThemeColor(isDark) {
         const meta = document.querySelector('meta[name="theme-color"]');
-        if (meta) meta.setAttribute('content', isDark ? '#0B1120' : '#EDF2F7');
+        if (meta) meta.setAttribute('content', isDark ? '#000000' : '#F2F2F7');
       }
 
       function toggleTheme() {
@@ -3349,7 +3319,7 @@
         updateMetaThemeColor(isDark);
         triggerHaptic("medium");
         if (typeof Island !== "undefined") {
-          Island.show("Tema Tampilan", isDark ? "Mode Gelap Obsidian Aktif" : "Mode Terang Porcelain Aktif", "info", isDark ? "dark_mode" : "light_mode", 2500);
+          Island.show("Tema Tampilan", isDark ? "Mode Gelap Apple iOS Aktif" : "Mode Terang Apple iOS Aktif", "info", isDark ? "dark_mode" : "light_mode", 2500);
         }
       }
 
