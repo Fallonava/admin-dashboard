@@ -789,13 +789,13 @@
         height: 8px;
         border-radius: 50%;
         background: #0284C7;
-        animation: radarPulse 1.4s infinite;
+        animation: appleRadarDotBreathe 2.4s cubic-bezier(0.16, 1, 0.3, 1) infinite;
         box-shadow: 0 0 10px rgba(2, 132, 199, 0.6);
       }
 
-      @keyframes radarPulse {
-        0%, 100% { transform: scale(0.9); opacity: 0.7; }
-        50% { transform: scale(1.25); opacity: 1; }
+      @keyframes appleRadarDotBreathe {
+        0%, 100% { transform: scale(1); opacity: 0.85; }
+        50% { transform: scale(1.35); opacity: 1; box-shadow: 0 0 14px rgba(2, 132, 199, 0.85); }
       }
 
       .tv-qr-header-badge span {
@@ -998,25 +998,13 @@
       }
 
       @keyframes orb-float {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-10px); }
+        0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+        50% { transform: translate3d(0, -8px, 0) scale(1.02); }
       }
 
       @keyframes orb-pulse {
-        0%, 100% { 
-          box-shadow: 
-            12px 12px 24px var(--neo-shadow-dark), 
-            -12px -12px 24px var(--neo-shadow-light),
-            inset 2px 2px 5px var(--neo-shadow-light), 
-            inset -2px -2px 5px var(--neo-shadow-dark);
-        }
-        50% { 
-          box-shadow: 
-            6px 6px 12px var(--neo-shadow-dark), 
-            -6px -6px 12px var(--neo-shadow-light),
-            inset 6px 6px 12px var(--neo-shadow-dark), 
-            inset -6px -6px 12px var(--neo-shadow-light);
-        }
+        0%, 100% { opacity: 0.85; }
+        50% { opacity: 1; }
       }
 
       .stat-count {
@@ -3432,11 +3420,6 @@
           0 10px 28px -4px rgba(217, 119, 6, 0.14), 
           0 2px 6px -1px rgba(217, 119, 6, 0.05), 
           inset 0 1.5px 1.5px #FFFFFF;
-        animation: pendaftaran-pulse 3s infinite;
-      }
-      @keyframes pendaftaran-pulse { 
-        0%, 100% { box-shadow: 0 10px 28px -4px rgba(217, 119, 6, 0.14), inset 0 1.5px 1.5px #FFFFFF; } 
-        50% { box-shadow: 0 18px 40px -4px rgba(217, 119, 6, 0.25), inset 0 1.5px 1.5px #FFFFFF; } 
       }
       .platter.st-pendaftaran .jam-val { color: #D97706; }
 
@@ -4091,7 +4074,6 @@
         border-color: rgba(221, 214, 254, 0.95);
         border-left: 4.5px solid #7C3AED;
         box-shadow: 0 4px 14px rgba(124, 58, 237, 0.08), inset 0 1px 1px #FFFFFF;
-        animation: operasi-breathing 4s ease-in-out infinite;
       }
       [data-theme="dark"] .platter.platter-mini.st-operasi {
         background: linear-gradient(180deg, rgba(124, 58, 237, 0.12) 0%, rgba(124, 58, 237, 0.06) 100%);
@@ -4119,11 +4101,6 @@
       .platter.platter-mini.st-operasi .pass-hint-pill {
         color: #5B21B6;
         border-color: rgba(196, 181, 253, 0.8);
-      }
-
-      @keyframes operasi-breathing {
-        0%,100% { box-shadow: 0 4px 14px rgba(124,58,237,0.08), inset 0 1px 1px #FFFFFF; }
-        50%      { box-shadow: 0 6px 18px rgba(124,58,237,0.18), 0 0 0 1px rgba(167,139,250,0.4), inset 0 1px 1px #FFFFFF; }
       }
 
       /* PENUH — Amber Gold Pass */
@@ -4829,11 +4806,14 @@
         background: var(--clay-inset);
         padding: 0 14px;
         border-radius: 14px;
+        -webkit-mask-image: linear-gradient(to right, transparent 0%, black 4%, black 96%, transparent 100%);
+        mask-image: linear-gradient(to right, transparent 0%, black 4%, black 96%, transparent 100%);
       }
 
       .ticker-inner {
         white-space: nowrap;
-        animation: marquee 30s linear infinite;
+        will-change: transform;
+        animation: appleMarquee 32s linear infinite;
         font-family: "Inter", sans-serif;
         font-size: 13.5px;
         font-weight: 700;
@@ -4841,9 +4821,9 @@
         letter-spacing: 0.02em;
       }
 
-      @keyframes marquee {
-        0% { transform: translateX(0); }
-        100% { transform: translateX(-100%); }
+      @keyframes appleMarquee {
+        0% { transform: translate3d(0, 0, 0); }
+        100% { transform: translate3d(-100%, 0, 0); }
       }
 
       .status-pill-lg {
@@ -4871,34 +4851,24 @@
       .live-dot.warn {
         background: var(--accent-amber);
         box-shadow: 0 0 10px var(--accent-amber);
-        animation: blink 1s infinite;
+        animation: appleWarnBreathe 1.8s ease-in-out infinite;
       }
 
-      @keyframes blink {
-        50% {
-          opacity: 0.5;
-        }
+      @keyframes appleWarnBreathe {
+        0%, 100% { opacity: 0.6; transform: scale(0.95); }
+        50% { opacity: 1; transform: scale(1.15); }
       }
 
       /* ===== SKELETON ===== */
       .skel {
         background: rgba(125, 125, 125, 0.1);
         border-radius: 4px;
-        animation: pulse-bg 1.5s infinite;
+        animation: appleSkelShimmer 1.8s ease-in-out infinite;
       }
 
-      @keyframes pulse-bg {
-        0% {
-          opacity: 0.6;
-        }
-
-        50% {
-          opacity: 1;
-        }
-
-        100% {
-          opacity: 0.6;
-        }
+      @keyframes appleSkelShimmer {
+        0%, 100% { opacity: 0.45; }
+        50% { opacity: 0.85; }
       }
 
       /* ===== visionOS FROSTED PILL SECTION DIVIDERS ===== */
@@ -5239,69 +5209,53 @@
       }
 
       @keyframes broadcastFadeIn {
-        from {
-          opacity: 0;
-        }
-
-        to {
-          opacity: 1;
-        }
+        from { opacity: 0; }
+        to { opacity: 1; }
       }
 
       @keyframes broadcastSlideIn {
         from {
           opacity: 0;
-          transform: scale(0.85) translateY(30px);
+          transform: translate3d(0, 36px, 0) scale(0.92);
         }
-
         to {
           opacity: 1;
-          transform: scale(1) translateY(0);
+          transform: translate3d(0, 0, 0) scale(1);
         }
       }
 
       @keyframes broadcastPulse {
-        0%,
-        100% {
-          box-shadow: 0 0 0 0 rgba(255, 69, 58, 0);
+        0%, 100% {
+          box-shadow: 0 16px 40px rgba(220, 38, 38, 0.22), 0 0 0 1px rgba(239, 68, 68, 0.35);
         }
-
         50% {
-          box-shadow: 0 0 30px 4px rgba(255, 69, 58, 0.25);
+          box-shadow: 0 24px 60px rgba(220, 38, 38, 0.42), 0 0 0 2px rgba(239, 68, 68, 0.75);
         }
       }
 
       /* Closing Animations */
       .broadcast-overlay.closing .broadcast-backdrop {
-        animation: broadcastFadeOut 0.4s ease forwards;
+        animation: broadcastFadeOut 0.35s ease forwards;
       }
 
       .broadcast-overlay.closing .broadcast-panel {
-        animation: broadcastSlideOut 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)
-          forwards;
+        animation: broadcastSlideOut 0.35s cubic-bezier(0.32, 0, 0.67, 0) forwards;
         animation-iteration-count: 1;
-        /* Override infinite pulse */
       }
 
       @keyframes broadcastFadeOut {
-        from {
-          opacity: 1;
-        }
-
-        to {
-          opacity: 0;
-        }
+        from { opacity: 1; }
+        to { opacity: 0; }
       }
 
       @keyframes broadcastSlideOut {
         from {
           opacity: 1;
-          transform: scale(1) translateY(0);
+          transform: translate3d(0, 0, 0) scale(1);
         }
-
         to {
           opacity: 0;
-          transform: scale(0.85) translateY(30px);
+          transform: translate3d(0, 24px, 0) scale(0.94);
         }
       }
 
