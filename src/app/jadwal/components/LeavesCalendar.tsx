@@ -14,14 +14,11 @@ import { triggerHaptic } from '../lib/haptics';
 import {
   ChevronLeft,
   ChevronRight,
-  CalendarCheck,
   CalendarRange,
   ArrowLeftRight,
   AlertCircle,
   Calendar,
-  Search,
   MessageCircle,
-  Sparkles,
   CheckCircle2,
 } from 'lucide-react';
 
@@ -35,8 +32,6 @@ export default function LeavesCalendar({ leaves, doctors }: LeavesCalendarProps)
   const [currentYear, setCurrentYear] = useState<number>(wibNow.getFullYear());
   const [currentMonth, setCurrentMonth] = useState<number>(wibNow.getMonth());
   const [selectedDate, setSelectedDate] = useState<Date>(wibNow);
-  const [viewMode, setViewMode] = useState<'selected' | 'all' | 'active' | 'upcoming'>('selected');
-  const [searchQuery, setSearchQuery] = useState('');
 
   const monthNames = [
     'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
@@ -69,7 +64,6 @@ export default function LeavesCalendar({ leaves, doctors }: LeavesCalendarProps)
     setCurrentYear(now.getFullYear());
     setCurrentMonth(now.getMonth());
     setSelectedDate(now);
-    setViewMode('selected');
   };
 
   // Build calendar cells using WIB date calculations
@@ -87,54 +81,9 @@ export default function LeavesCalendar({ leaves, doctors }: LeavesCalendarProps)
     return leaves.filter((leave) => isDateInLeave(selectedDateStr, leave));
   }, [leaves, selectedDateStr]);
 
-  // Leaves matching the current view mode & search filter
-  const displayedLeaves = useMemo(() => {
-    const todayWibStr = toWibDateStr(new Date());
-
-    let list: LeaveRequest[] = [];
-
-    if (viewMode === 'selected') {
-      list = leavesForSelectedDate;
-    } else if (viewMode === 'active') {
-      list = leaves.filter((l) => isDateInLeave(todayWibStr, l));
-    } else if (viewMode === 'upcoming') {
-      list = leaves.filter((l) => {
-        const startStr = toWibDateStr(l.startDate);
-        return startStr > todayWibStr;
-      });
-    } else {
-      // 'all'
-      list = leaves;
-    }
-
-    if (searchQuery) {
-      const q = searchQuery.toLowerCase();
-      return list.filter((leave) => {
-        const docName = typeof leave.doctor === 'object' && leave.doctor !== null
-          ? leave.doctor.name
-          : String(leave.doctor || '');
-        const doctorObj = doctors.find((d) => d.id === leave.doctorId);
-        const nameToSearch = (docName || doctorObj?.name || '').toLowerCase();
-        const specToSearch = (doctorObj?.specialty || '').toLowerCase();
-        const reasonToSearch = (leave.reason || '').toLowerCase();
-        const repToSearch = (leave.replacementDoctor || '').toLowerCase();
-
-        return (
-          nameToSearch.includes(q) ||
-          specToSearch.includes(q) ||
-          reasonToSearch.includes(q) ||
-          repToSearch.includes(q)
-        );
-      });
-    }
-
-    return list;
-  }, [leaves, viewMode, leavesForSelectedDate, searchQuery, doctors]);
-
   const handleSelectDate = (d: Date) => {
     triggerHaptic('selection');
     setSelectedDate(d);
-    setViewMode('selected');
   };
 
   return (
@@ -234,99 +183,20 @@ export default function LeavesCalendar({ leaves, doctors }: LeavesCalendarProps)
         </span>
       </div>
 
-      {/* Filter Tabs for Leaves List */}
-      <div className="category-chips-row mb-16">
-        <button
-          type="button"
-          className={`category-chip ${viewMode === 'selected' ? 'active' : ''}`}
-          onClick={() => {
-            triggerHaptic('selection');
-            setViewMode('selected');
-          }}
-        >
-          <span>Tanggal Terpilih ({leavesForSelectedDate.length})</span>
-        </button>
-        <button
-          type="button"
-          className={`category-chip ${viewMode === 'active' ? 'active' : ''}`}
-          onClick={() => {
-            triggerHaptic('selection');
-            setViewMode('active');
-          }}
-        >
-          <span>Sedang Cuti Hari Ini</span>
-        </button>
-        <button
-          type="button"
-          className={`category-chip ${viewMode === 'upcoming' ? 'active' : ''}`}
-          onClick={() => {
-            triggerHaptic('selection');
-            setViewMode('upcoming');
-          }}
-        >
-          <span>Mendatang</span>
-        </button>
-        <button
-          type="button"
-          className={`category-chip ${viewMode === 'all' ? 'active' : ''}`}
-          onClick={() => {
-            triggerHaptic('selection');
-            setViewMode('all');
-          }}
-        >
-          <span>Semua Data ({leaves.length})</span>
-        </button>
-      </div>
-
-      {/* Search Input for Leaves */}
-      <div className="ios-search-bar mb-24">
-        <Search className="search-icon" size={18} />
-        <input
-          type="text"
-          className="ios-search-input"
-          placeholder="Cari dokter cuti atau dokter pengganti..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
-        {searchQuery && (
-          <button type="button" className="search-clear-btn" onClick={() => setSearchQuery('')}>
-            ×
-          </button>
-        )}
-      </div>
-
-      {/* List of Leave Platter Cards */}
-      {displayedLeaves.length === 0 ? (
+      {/* List of Leave Platter Cards for Selected Date */}
+      {leavesForSelectedDate.length === 0 ? (
         <div className="ios-empty-state">
           <div className="ios-empty-coin">
             <CheckCircle2 size={32} className="text-green" />
           </div>
-          <div className="ios-empty-title">
-            {viewMode === 'selected'
-              ? 'Tidak Ada Dokter Cuti'
-              : 'Tidak Ada Data Cuti'}
-          </div>
+          <div className="ios-empty-title">Tidak Ada Dokter Cuti</div>
           <div className="ios-empty-sub">
-            {viewMode === 'selected'
-              ? `Seluruh dokter spesialis bertugas normal pada ${formatDateIndonesian(selectedDate)}.`
-              : 'Tidak ada dokter yang tercatat cuti pada kategori filter ini.'}
+            Seluruh dokter spesialis bertugas sesuai jadwal pada {formatDateIndonesian(selectedDate)}.
           </div>
-          {viewMode !== 'selected' && (
-            <button
-              type="button"
-              className="empty-reset-btn"
-              onClick={() => {
-                setViewMode('selected');
-                setSearchQuery('');
-              }}
-            >
-              Kembali ke Tanggal Terpilih
-            </button>
-          )}
         </div>
       ) : (
         <div className="platter-grid">
-          {displayedLeaves.map((leave) => {
+          {leavesForSelectedDate.map((leave) => {
             const docName =
               typeof leave.doctor === 'object' && leave.doctor !== null
                 ? leave.doctor.name

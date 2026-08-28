@@ -11,16 +11,13 @@ import {
 } from '../lib/schedule-utils';
 import { triggerHaptic } from '../lib/haptics';
 import {
-  Search,
   CalendarX,
   Clock,
-  ChevronRight,
   MessageCircle,
   CalendarCheck,
   RotateCcw,
   Sparkles,
   Ticket,
-  CheckCircle2,
 } from 'lucide-react';
 
 interface WeeklyViewProps {
@@ -37,8 +34,6 @@ export default function WeeklyView({
   onSelectDoctor,
 }: WeeklyViewProps) {
   const [selectedDayIdx, setSelectedDayIdx] = useState<number>(0);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedSpecialty, setSelectedSpecialty] = useState<string>('all');
 
   const dateStrip = useMemo<DayDateItem[]>(() => getWeeklyDateStrip(new Date()), []);
   const activeDateItem = dateStrip[selectedDayIdx] || dateStrip[0];
@@ -47,15 +42,6 @@ export default function WeeklyView({
   const targetWibTime = new Date(targetDate.getTime() + 7 * 60 * 60 * 1000);
   const targetDayIdx = (targetWibTime.getUTCDay() + 6) % 7; // 0=Senin ... 6=Minggu
   const targetDateStr = activeDateItem?.dateStr || targetWibTime.toISOString().slice(0, 10);
-
-  // Extract list of all unique specialties for filter chips
-  const uniqueSpecialties = useMemo(() => {
-    const set = new Set<string>();
-    doctors.forEach((d) => {
-      if (d.specialty) set.add(d.specialty);
-    });
-    return Array.from(set).sort();
-  }, [doctors]);
 
   // Compute doctor count for each day in the strip
   const doctorCountPerDay = useMemo(() => {
@@ -82,20 +68,7 @@ export default function WeeklyView({
   // Filtered doctors list for active day
   const filteredDoctors = useMemo(() => {
     return doctors.filter((doc) => {
-      // Specialty Filter
-      if (selectedSpecialty !== 'all' && doc.specialty !== selectedSpecialty) {
-        return false;
-      }
-
-      // Search Filter
-      const matchesSearch =
-        !searchQuery ||
-        doc.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        doc.specialty.toLowerCase().includes(searchQuery.toLowerCase());
-
-      if (!matchesSearch) return false;
-
-      // Shift matching
+      // Shift matching for target day
       const hasShift = shifts.some(
         (s) =>
           s.doctorId === doc.id &&
@@ -106,7 +79,7 @@ export default function WeeklyView({
 
       return hasShift;
     });
-  }, [doctors, shifts, targetDayIdx, targetDateStr, targetWibTime, searchQuery, selectedSpecialty]);
+  }, [doctors, shifts, targetDayIdx, targetDateStr, targetWibTime]);
 
   const handleSelectDay = (index: number) => {
     triggerHaptic('selection');
@@ -116,8 +89,6 @@ export default function WeeklyView({
   const handleResetToToday = () => {
     triggerHaptic('medium');
     setSelectedDayIdx(0);
-    setSearchQuery('');
-    setSelectedSpecialty('all');
   };
 
   return (
@@ -147,50 +118,6 @@ export default function WeeklyView({
         </div>
       </div>
 
-      {/* Search Bar Capsule */}
-      <div className="ios-search-bar mb-16">
-        <Search className="search-icon" size={18} />
-        <input
-          type="text"
-          className="ios-search-input"
-          placeholder="Cari dokter pada hari ini..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
-        {searchQuery && (
-          <button type="button" className="search-clear-btn" onClick={() => setSearchQuery('')}>
-            ×
-          </button>
-        )}
-      </div>
-
-      {/* Specialty Filter Horizontal Strip */}
-      <div className="category-chips-row mb-24">
-        <button
-          type="button"
-          className={`category-chip ${selectedSpecialty === 'all' ? 'active' : ''}`}
-          onClick={() => {
-            triggerHaptic('selection');
-            setSelectedSpecialty('all');
-          }}
-        >
-          Semua Poli
-        </button>
-        {uniqueSpecialties.map((spec) => (
-          <button
-            key={spec}
-            type="button"
-            className={`category-chip ${selectedSpecialty === spec ? 'active' : ''}`}
-            onClick={() => {
-              triggerHaptic('selection');
-              setSelectedSpecialty(spec);
-            }}
-          >
-            {spec}
-          </button>
-        ))}
-      </div>
-
       {/* Selected Day Header Pill */}
       <div className="weekly-day-header-pill mb-24">
         <div className="weekly-day-title-wrap">
@@ -218,12 +145,11 @@ export default function WeeklyView({
           </div>
           <div className="ios-empty-title">Tidak Ada Praktik</div>
           <div className="ios-empty-sub">
-            Tidak ditemukan dokter yang bertugas pada hari {activeDateItem?.dayName}
-            {selectedSpecialty !== 'all' ? ` untuk poli ${selectedSpecialty}` : ''}.
+            Tidak ditemukan jadwal praktik dokter pada hari {activeDateItem?.dayName}, {activeDateItem?.dayNum} {activeDateItem?.monthName}.
           </div>
-          {(selectedSpecialty !== 'all' || searchQuery || selectedDayIdx !== 0) && (
+          {selectedDayIdx !== 0 && (
             <button type="button" className="empty-reset-btn" onClick={handleResetToToday}>
-              Reset Filter / Hari Ini
+              Kembali ke Hari Ini
             </button>
           )}
         </div>
@@ -329,7 +255,7 @@ export default function WeeklyView({
                       }}
                     >
                       <Sparkles size={15} />
-                      <span>Daftar / Booking Antrean</span>
+                      <span>Daftar Online</span>
                     </button>
                   )}
 
