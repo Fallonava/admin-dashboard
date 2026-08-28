@@ -59,7 +59,7 @@
         --sar: env(safe-area-inset-right, 0px);
       }
 
-      [data-theme="dark"] {
+      [data-theme="dark"], html.dark, body.dark {
         --bg-page: #000000;
         --surface-card: #1C1C1E;
         --surface-card-solid: #1C1C1E;
@@ -535,10 +535,10 @@
   -webkit-backdrop-filter: blur(20px) saturate(200%);
 }
 
-[data-theme="dark"] .material-ultra-thin {
+[data-theme="dark"] .material-ultra-thin, html.dark .material-ultra-thin, body.dark .material-ultra-thin {
   background: rgba(0, 0, 0, 0.3);
 }
-[data-theme="dark"] .material-regular {
+[data-theme="dark"] .material-regular, html.dark .material-regular, body.dark .material-regular {
   background: rgba(0, 0, 0, 0.6);
 }
 
@@ -763,7 +763,7 @@
   --text-tertiary: rgba(60, 60, 67, 0.3);
 }
 
-[data-theme="dark"] {
+[data-theme="dark"], html.dark, body.dark {
   --border-subtle: rgba(255, 255, 255, 0.12);
   --text-secondary: rgba(235, 235, 245, 0.6);
   --text-tertiary: rgba(235, 235, 245, 0.3);
@@ -1499,7 +1499,7 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08), 0 0 0 0.5px rgba(0, 0, 0, 0.04);
 }
 
-[data-theme="dark"] .jadwal-seg-btn.active {
+[data-theme="dark"] .jadwal-seg-btn.active, html.dark .jadwal-seg-btn.active, body.dark .jadwal-seg-btn.active {
   background: #2C2C2E;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5), 0 0 0 0.5px rgba(255, 255, 255, 0.1);
 }

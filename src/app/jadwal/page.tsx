@@ -1,7 +1,7 @@
 "use client";
 
 import './jadwal.css';
-import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import useSWR from 'swr';
 import { Search, RotateCcw, AlertTriangle, SearchX, Star, Sparkles, Share2 } from 'lucide-react';
 
@@ -36,6 +36,7 @@ export default function JadwalPage() {
   const [favoriteDoctorIds, setFavoriteDoctorIds] = useState<string[]>([]);
   const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   // Initialize theme and favorites from localStorage
   useEffect(() => {
@@ -44,14 +45,16 @@ export default function JadwalPage() {
       if (savedFavs) {
         setFavoriteDoctorIds(JSON.parse(savedFavs));
       }
-      const savedTheme = localStorage.getItem('simed_theme');
+      const savedTheme = localStorage.getItem('simed_theme') || localStorage.getItem('theme');
       const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
       const shouldUseDark = savedTheme === 'dark' || (!savedTheme && prefersDark);
       setIsDarkMode(shouldUseDark);
       if (shouldUseDark) {
         document.documentElement.setAttribute('data-theme', 'dark');
+        document.documentElement.classList.add('dark');
       } else {
         document.documentElement.removeAttribute('data-theme');
+        document.documentElement.classList.remove('dark');
       }
     } catch {
       // Ignore localStorage errors
@@ -63,14 +66,28 @@ export default function JadwalPage() {
       const next = !prev;
       if (next) {
         document.documentElement.setAttribute('data-theme', 'dark');
+        document.documentElement.classList.add('dark');
         localStorage.setItem('simed_theme', 'dark');
+        localStorage.setItem('theme', 'dark');
       } else {
         document.documentElement.removeAttribute('data-theme');
+        document.documentElement.classList.remove('dark');
         localStorage.setItem('simed_theme', 'light');
+        localStorage.setItem('theme', 'light');
       }
       return next;
     });
   }, []);
+
+  const handleSearchFocus = () => {
+    if (activeTab !== 'today') {
+      setActiveTab('today');
+    }
+    setTimeout(() => {
+      searchInputRef.current?.focus();
+      searchInputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 100);
+  };
 
   const showToast = (title: string, description?: string, type: ToastMessage['type'] = 'info') => {
     setToast({
@@ -228,6 +245,7 @@ export default function JadwalPage() {
         onToggleTheme={handleThemeToggle}
         isRefreshing={isRefreshing}
         onRefresh={handleManualRefresh}
+        onSearchFocus={handleSearchFocus}
         onShare={() => {
           if (navigator.share) {
             navigator
@@ -286,6 +304,7 @@ export default function JadwalPage() {
               <div className="ios-search-bar mb-24">
                 <Search className="search-icon" size={18} />
                 <input
+                  ref={searchInputRef}
                   type="text"
                   className="ios-search-input"
                   placeholder="Cari nama dokter atau spesialis..."

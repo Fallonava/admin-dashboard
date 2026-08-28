@@ -1,6 +1,6 @@
 import React from 'react';
 import { triggerHaptic } from '../lib/haptics';
-import { RotateCcw, Sun, Moon, PhoneCall, Share2, Sparkles, CheckCircle2, ShieldCheck } from 'lucide-react';
+import { RotateCcw, Sun, Moon, PhoneCall, Share2, Search, ShieldCheck } from 'lucide-react';
 
 interface JadwalNavbarProps {
   activeTab: 'today' | 'weekly' | 'leaves';
@@ -10,6 +10,7 @@ interface JadwalNavbarProps {
   isRefreshing: boolean;
   onRefresh: () => void;
   onShare?: () => void;
+  onSearchFocus?: () => void;
   todayCount?: number;
   leavesCount?: number;
 }
@@ -22,6 +23,7 @@ export default function JadwalNavbar({
   isRefreshing,
   onRefresh,
   onShare,
+  onSearchFocus,
   todayCount = 0,
   leavesCount = 0,
 }: JadwalNavbarProps) {
@@ -67,6 +69,21 @@ export default function JadwalNavbar({
           >
             <PhoneCall size={16} />
           </a>
+
+          {/* Search Shortcut Button */}
+          {onSearchFocus && (
+            <button
+              type="button"
+              className="jadwal-nav-icon-btn"
+              onClick={() => {
+                triggerHaptic('selection');
+                onSearchFocus();
+              }}
+              title="Cari Dokter Spesialis"
+            >
+              <Search size={16} />
+            </button>
+          )}
 
           {/* Share Portal Button */}
           {onShare && (
