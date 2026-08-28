@@ -177,55 +177,24 @@
       /* ─── Apple tvOS Solid Background — No Glow, No Orbs ─── */
       .ambient-bg {
         position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
         inset: 0;
         z-index: 0;
         background: var(--bg-ambient);
         pointer-events: none;
       }
 
-      /* ===== HARDWARE SAFE MODE (TCL/Android TV Optimization) ===== */
-      @media (prefers-reduced-motion: reduce) {
-        .ambient-bg {
-          background: var(--bg-body) !important;
-        }
-
-        .app-container,
-        .footer {
-          backdrop-filter: none !important;
-          background: rgba(20, 20, 22, 0.95) !important;
-        }
-
-        .platter {
-          box-shadow: none !important;
-          border: 1px solid rgba(255, 255, 255, 0.1) !important;
-        }
-
-        * {
-          animation-duration: 0.001s !important;
-          transition-duration: 0.001s !important;
-        }
-      }
-
+      /* ===== HARDWARE SAFE MODE (TCL/Android TV/Low-End Chipset Optimization) ===== */
       body.tv-optimized .ambient-bg {
         background: var(--bg-body) !important;
-      }
-
-      body.tv-optimized .bg-orb,
-      body.tv-optimized .bg-grid {
-        animation: none !important;
-        display: none !important;
-        /* Hilangkan sepenuhnya pembakar GPU ini */
-      }
-
-      body.tv-optimized .ticker-inner {
-        will-change: transform;
-        transform: translate3d(0, 0, 0);
       }
 
       body.tv-optimized .app-container,
       body.tv-optimized .island,
       body.tv-optimized .sidebar-panel,
-      body.tv-optimized .footer,
       body.tv-optimized .complication-journey-card,
       body.tv-optimized .complication-weather-master,
       body.tv-optimized .tree-step-card,
@@ -236,37 +205,23 @@
         -webkit-backdrop-filter: none !important;
       }
 
-      body.tv-optimized .complication-journey-card {
-        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05) !important;
-      }
-
-      body.tv-optimized .anim-qr-laser,
-      body.tv-optimized .anim-kiosk-touch,
-      body.tv-optimized .anim-voice-broadcast,
-      body.tv-optimized .anim-desk-verified,
-      body.tv-optimized .anim-heart-pump,
-      body.tv-optimized .anim-doc-float,
-      body.tv-optimized .tree-micro-down-arrow,
-      body.tv-optimized .tree-trunk-down-arrow {
-        filter: none !important;
-        will-change: transform;
-      }
-
-      body.tv-optimized .logo-box {
-        /* box-shadow left alone to allow glow */
+      body.tv-optimized .island {
+        background: #FFFFFF !important;
+        border: 1px solid rgba(215, 228, 242, 0.95) !important;
       }
 
       body.tv-optimized .platter {
-        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        background: #FFFFFF !important;
+        border: 1px solid rgba(215, 228, 242, 0.85) !important;
       }
 
       body.tv-optimized .platter.active {
-        box-shadow: none !important;
-        transform: translateZ(0) scale(1) !important;
+        box-shadow: 0 4px 18px rgba(16, 185, 129, 0.25) !important;
+        transform: translate3d(0, 0, 0) scale(1) !important;
       }
 
       body.tv-optimized .dynamic-island {
-        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5) !important;
+        box-shadow: 0 14px 35px rgba(0, 0, 0, 0.85) !important;
       }
 
       *, *::before, *::after {
@@ -4429,6 +4384,10 @@
       .di-expanded-view,
       .di-hourly-view {
         position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
         inset: 0;
         padding: 0 20px;
         width: 100%;
@@ -5010,6 +4969,10 @@
       /* ===== EMERGENCY BROADCAST OVERLAY ===== */
       .broadcast-overlay {
         position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
         inset: 0;
         z-index: 9999;
         display: none;
@@ -5024,6 +4987,10 @@
 
       .broadcast-backdrop {
         position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
         inset: 0;
         background: rgba(0, 0, 0, 0.7);
         animation: broadcastFadeIn 0.4s ease;
@@ -5494,12 +5461,29 @@
           this.scale();
           window.addEventListener("resize", () => this.scale());
           window.addEventListener("orientationchange", () => this.scale());
+          window.addEventListener("load", () => {
+            this.scale();
+            if (typeof s1 !== "undefined" && s1) s1.updateMetrics();
+            if (typeof s2 !== "undefined" && s2) s2.updateMetrics();
+            if (typeof s3 !== "undefined" && s3) s3.updateMetrics();
+          });
           if (window.visualViewport) {
             window.visualViewport.addEventListener("resize", () => this.scale());
           }
           if (document.readyState === "loading") {
             document.addEventListener("DOMContentLoaded", () => this.scale());
           }
+          if (document.fonts && document.fonts.ready) {
+            document.fonts.ready.then(() => {
+              this.scale();
+              if (typeof s1 !== "undefined" && s1) s1.updateMetrics();
+              if (typeof s2 !== "undefined" && s2) s2.updateMetrics();
+              if (typeof s3 !== "undefined" && s3) s3.updateMetrics();
+            });
+          }
+          // Safety delayed rescale for slow low-end Smart TV WebViews
+          setTimeout(() => this.scale(), 600);
+          setTimeout(() => this.scale(), 2000);
         },
         scale() {
           const stage = document.getElementById("tvStage");
@@ -5517,8 +5501,8 @@
 
           const TARGET_W = 1920;
           const TARGET_H = 1080;
-          const curW = window.innerWidth || document.documentElement.clientWidth || 1920;
-          const curH = window.innerHeight || document.documentElement.clientHeight || 1080;
+          const curW = window.innerWidth || (document.documentElement && document.documentElement.clientWidth) || (document.body && document.body.clientWidth) || 1920;
+          const curH = window.innerHeight || (document.documentElement && document.documentElement.clientHeight) || (document.body && document.body.clientHeight) || 1080;
 
           if (curW <= 0 || curH <= 0) return;
 
