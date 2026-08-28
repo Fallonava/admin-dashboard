@@ -190,3 +190,116 @@ export function filterLeaves(leaves: LeaveRequest[], filterType: 'all' | 'active
     return true;
   });
 }
+
+export interface CalendarDayItem {
+  dayNum: number;
+  date: Date;
+  dateStr: string;
+  isCurrentMonth: boolean;
+  isToday: boolean;
+  isHoliday: boolean;
+  holidayName?: string;
+  leavesCount: number;
+  leaves: LeaveRequest[];
+}
+
+export function getCalendarGrid(year: number, month: number, leaves: LeaveRequest[] = []): CalendarDayItem[] {
+  const result: CalendarDayItem[] = [];
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month + 1, 0);
+  const todayStr = new Date().toISOString().split('T')[0];
+
+  const startDayOfWeek = firstDay.getDay(); // 0 = Sunday
+
+  // Padding days from previous month
+  const prevMonthLastDay = new Date(year, month, 0).getDate();
+  for (let i = startDayOfWeek - 1; i >= 0; i--) {
+    const d = new Date(year, month - 1, prevMonthLastDay - i);
+    const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    const holiday = getIndonesianHoliday(d);
+    const dayLeaves = leaves.filter((l) => isDateInLeave(d, l));
+    result.push({
+      dayNum: d.getDate(),
+      date: d,
+      dateStr,
+      isCurrentMonth: false,
+      isToday: dateStr === todayStr,
+      isHoliday: holiday.isTanggalMerah,
+      holidayName: holiday.name,
+      leavesCount: dayLeaves.length,
+      leaves: dayLeaves,
+    });
+  }
+
+  // Days of current month
+  for (let day = 1; day <= lastDay.getDate(); day++) {
+    const d = new Date(year, month, day);
+    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    const holiday = getIndonesianHoliday(d);
+    const dayLeaves = leaves.filter((l) => isDateInLeave(d, l));
+    result.push({
+      dayNum: day,
+      date: d,
+      dateStr,
+      isCurrentMonth: true,
+      isToday: dateStr === todayStr,
+      isHoliday: holiday.isTanggalMerah,
+      holidayName: holiday.name,
+      leavesCount: dayLeaves.length,
+      leaves: dayLeaves,
+    });
+  }
+
+  // Padding days for next month to complete 35 or 42 grid
+  const remaining = (7 - (result.length % 7)) % 7;
+  for (let i = 1; i <= remaining; i++) {
+    const d = new Date(year, month + 1, i);
+    const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    const holiday = getIndonesianHoliday(d);
+    const dayLeaves = leaves.filter((l) => isDateInLeave(d, l));
+    result.push({
+      dayNum: i,
+      date: d,
+      dateStr,
+      isCurrentMonth: false,
+      isToday: dateStr === todayStr,
+      isHoliday: holiday.isTanggalMerah,
+      holidayName: holiday.name,
+      leavesCount: dayLeaves.length,
+      leaves: dayLeaves,
+    });
+  }
+
+  return result;
+}
+
+export function isShiftActiveForDate(extra?: string | null, date: Date = new Date()): boolean {
+  if (!extra) return true;
+  if (extra === 'odd_weeks' || extra === 'even_weeks') {
+    const target = new Date(date.valueOf());
+    const dayNr = (date.getDay() + 6) % 7;
+    target.setDate(target.getDate() - dayNr + 3);
+    const firstThursday = target.valueOf();
+    target.setMonth(0, 1);
+    if (target.getDay() !== 4) {
+      target.setMonth(0, 1 + (((4 - target.getDay()) + 7) % 7));
+    }
+    const weekNum = 1 + Math.ceil((firstThursday - target.valueOf()) / 604800000);
+    const isEven = weekNum % 2 === 0;
+    return extra === 'even_weeks' ? isEven : !isEven;
+  }
+  return true;
+}
+
+export function calculateDoctorStatus(
+  doctor: Doctor,
+  shift?: Shift | null,
+  leaves: LeaveRequest[] = [],
+  date: Date = new Date()
+): { status: string; replacementDoctor?: string | null } {
+  const result = evaluateDoctorRealtimeStatus(doctor, shift ? [shift] : [], leaves, date);
+  return {
+    status: result.status,
+    replacementDoctor: result.activeLeave?.replacementDoctor || null,
+  };
+}

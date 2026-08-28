@@ -68,7 +68,7 @@ export default function LeavesCalendar({ leaves, doctors }: LeavesCalendarProps)
       // Check how many doctor leaves fall on this day
       const dayLeaves = leaves.filter((l) => {
         const start = new Date(l.startDate);
-        const end = new Date(l.endDate);
+        const end = new Date(l.endDate || l.startDate);
         start.setHours(0, 0, 0, 0);
         end.setHours(23, 59, 59, 999);
         return dateObj.getTime() >= start.getTime() && dateObj.getTime() <= end.getTime();
@@ -95,7 +95,7 @@ export default function LeavesCalendar({ leaves, doctors }: LeavesCalendarProps)
 
     return leaves.filter((l) => {
       const start = new Date(l.startDate);
-      const end = new Date(l.endDate);
+      const end = new Date(l.endDate || l.startDate);
       start.setHours(0, 0, 0, 0);
       end.setHours(23, 59, 59, 999);
 
@@ -109,7 +109,8 @@ export default function LeavesCalendar({ leaves, doctors }: LeavesCalendarProps)
       // Search query
       if (searchQuery) {
         const doc = doctors.find((d) => d.id === l.doctorId);
-        const docName = (doc?.name || l.doctor?.name || '').toLowerCase();
+        const rawDocName = doc?.name || l.doctorName || (typeof l.doctor === 'object' && l.doctor !== null ? l.doctor.name : typeof l.doctor === 'string' ? l.doctor : '');
+        const docName = rawDocName.toLowerCase();
         const spec = (doc?.specialty || l.specialty || '').toLowerCase();
         const reason = (l.reason || '').toLowerCase();
         const q = searchQuery.toLowerCase();
@@ -270,12 +271,12 @@ export default function LeavesCalendar({ leaves, doctors }: LeavesCalendarProps)
         <div className="leaves-list-grid">
           {filteredLeaves.map((leave) => {
             const doc = doctors.find((d) => d.id === leave.doctorId);
-            const docName = doc?.name || leave.doctor?.name || 'Dokter Spesialis';
+            const docName = doc?.name || leave.doctorName || (typeof leave.doctor === 'object' && leave.doctor !== null ? leave.doctor.name : typeof leave.doctor === 'string' ? leave.doctor : 'Dokter Spesialis');
             const spec = doc?.specialty || leave.specialty || 'Umum';
             const badgeClass = getSpecialtyBadgeClass(spec);
 
             const start = new Date(leave.startDate);
-            const end = new Date(leave.endDate);
+            const end = new Date(leave.endDate || leave.startDate);
             const now = new Date();
             now.setHours(0, 0, 0, 0);
 
