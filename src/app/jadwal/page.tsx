@@ -3,7 +3,7 @@
 import './jadwal.css';
 import React, { useState, useMemo } from 'react';
 import useSWR from 'swr';
-import { Search, RotateCcw, AlertTriangle, ShieldCheck, Activity } from 'lucide-react';
+import { Search, RotateCcw, AlertTriangle, ShieldCheck, Activity, SearchX } from 'lucide-react';
 
 import type { Doctor, Shift, LeaveRequest, DisplayApiResponse } from './types';
 import { evaluateDoctorRealtimeStatus, isSurgeonSpecialty } from './lib/schedule-utils';
@@ -240,7 +240,7 @@ export default function JadwalPage() {
             {filteredTodayDoctors.length === 0 ? (
               <div className="ios-empty-state">
                 <div className="ios-empty-coin">
-                  <span className="material-icons-round">search_off</span>
+                  <SearchX size={32} />
                 </div>
                 <div className="ios-empty-title">Dokter Tidak Ditemukan</div>
                 <div className="ios-empty-sub">

@@ -4,7 +4,7 @@ import SpecialistIcon from './SpecialistIcon';
 import { getInitials, getSpecialtyBadgeClass, INDO_MONTHS, INDO_DAYS } from '../lib/schedule-utils';
 import { getIndonesianHoliday } from '@/lib/holidays';
 import { triggerHaptic } from '../lib/haptics';
-import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Search } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Search, CalendarCheck, CalendarRange, ArrowLeftRight } from 'lucide-react';
 
 interface LeavesCalendarProps {
   leaves: LeaveRequest[];
@@ -261,7 +261,7 @@ export default function LeavesCalendar({ leaves, doctors }: LeavesCalendarProps)
       {filteredLeaves.length === 0 ? (
         <div className="ios-empty-state">
           <div className="ios-empty-coin">
-            <span className="material-icons-round">event_available</span>
+            <CalendarCheck size={32} />
           </div>
           <div className="ios-empty-title">Tidak Ada Cuti</div>
           <div className="ios-empty-sub">Tidak ditemukan jadwal cuti dokter pada filter ini.</div>
@@ -307,7 +307,7 @@ export default function LeavesCalendar({ leaves, doctors }: LeavesCalendarProps)
                     <span>{statusLabel}</span>
                   </span>
                   <span className="leave-date-pill">
-                    <span className="material-icons-round">date_range</span>
+                    <CalendarRange size={13} />
                     <span>
                       {startStr} - {endStr}
                     </span>
@@ -323,7 +323,7 @@ export default function LeavesCalendar({ leaves, doctors }: LeavesCalendarProps)
 
                 {leave.replacementDoctor && (
                   <div className="leave-replacement">
-                    <span className="material-icons-round">swap_horiz</span>
+                    <ArrowLeftRight size={13} />
                     <span>Dokter Pengganti: {leave.replacementDoctor}</span>
                   </div>
                 )}

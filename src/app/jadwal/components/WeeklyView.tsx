@@ -3,7 +3,7 @@ import type { Doctor, Shift, LeaveRequest, DayDateItem } from '../types';
 import SpecialistIcon from './SpecialistIcon';
 import { getInitials, getSpecialtyBadgeClass, getWeeklyDateStrip, isDoctorOnLeave, formatTimeSlot } from '../lib/schedule-utils';
 import { triggerHaptic } from '../lib/haptics';
-import { Search } from 'lucide-react';
+import { Search, CalendarX, Clock, ChevronRight } from 'lucide-react';
 
 interface WeeklyViewProps {
   doctors: Doctor[];
@@ -13,16 +13,14 @@ interface WeeklyViewProps {
 }
 
 export default function WeeklyView({ doctors, shifts, leaves, onSelectDoctor }: WeeklyViewProps) {
-  const [selectedDayIdx, setSelectedDayIdx] = useState<number>(0); // 0 = first day in strip
+  const [selectedDayIdx, setSelectedDayIdx] = useState<number>(0);
   const [searchQuery, setSearchQuery] = useState('');
 
   const dateStrip = useMemo<DayDateItem[]>(() => getWeeklyDateStrip(new Date()), []);
   const activeDateItem = dateStrip[selectedDayIdx] || dateStrip[0];
 
-  // Target day index (0=Sunday..6=Saturday)
   const targetDayOfWeek = activeDateItem?.date?.getDay() ?? 0;
 
-  // Filter doctors having shift on active day
   const filteredDoctors = useMemo(() => {
     return doctors.filter((doc) => {
       const matchesSearch =
@@ -32,7 +30,6 @@ export default function WeeklyView({ doctors, shifts, leaves, onSelectDoctor }: 
 
       if (!matchesSearch) return false;
 
-      // Check if doctor has shift on this day
       const hasShift = shifts.some(
         (s) =>
           s.doctorId === doc.id &&
@@ -97,7 +94,7 @@ export default function WeeklyView({ doctors, shifts, leaves, onSelectDoctor }: 
       {filteredDoctors.length === 0 ? (
         <div className="ios-empty-state">
           <div className="ios-empty-coin">
-            <span className="material-icons-round">event_busy</span>
+            <CalendarX size={32} />
           </div>
           <div className="ios-empty-title">Tidak Ada Praktik</div>
           <div className="ios-empty-sub">
@@ -148,7 +145,7 @@ export default function WeeklyView({ doctors, shifts, leaves, onSelectDoctor }: 
 
                 {isCuti ? (
                   <div className="wk-cuti-banner">
-                    <span className="material-icons-round wk-cuti-icon">event_busy</span>
+                    <CalendarX size={20} className="wk-cuti-icon" />
                     <div className="wk-cuti-text">
                       <span className="wk-cuti-title">Dokter Sedang Cuti</span>
                       <span className="wk-cuti-sub">{leave?.reason || 'Izin Tidak Praktik'}</span>
@@ -157,7 +154,7 @@ export default function WeeklyView({ doctors, shifts, leaves, onSelectDoctor }: 
                 ) : (
                   <div className="wk-ticket-capsule">
                     <div className="wk-schedule-slot">
-                      <span className="time-capsule-icon">schedule</span>
+                      <Clock size={15} className="time-capsule-icon" />
                       <div className="wk-slot-info">
                         <span className="wk-slot-lbl">Jam Praktik</span>
                         <span className="wk-slot-val">
@@ -178,7 +175,7 @@ export default function WeeklyView({ doctors, shifts, leaves, onSelectDoctor }: 
                       }}
                     >
                       <span>Booking Antrean</span>
-                      <span className="material-icons-round">chevron_right</span>
+                      <ChevronRight size={16} />
                     </button>
                   </div>
                 )}

@@ -3,7 +3,7 @@ import type { Doctor } from '../types';
 import SpecialistIcon from './SpecialistIcon';
 import { getInitials, getSpecialtyBadgeClass, formatTimeSlot } from '../lib/schedule-utils';
 import { triggerHaptic } from '../lib/haptics';
-import { ChevronDown, Sparkles } from 'lucide-react';
+import { Clock, Ticket, UserPlus, Sparkles } from 'lucide-react';
 
 interface DoctorCardProps {
   doctor: Doctor;
@@ -73,7 +73,7 @@ export default function DoctorCard({ doctor, onSelectDoctor }: DoctorCardProps) 
       <div className="platter-body-row">
         <div className="platter-time-capsule">
           <div className="time-capsule-slot">
-            <span className="time-capsule-icon">schedule</span>
+            <Clock size={15} className="time-capsule-icon" />
             <div className="time-capsule-info">
               <span className="time-capsule-lbl">Jam Praktik</span>
               <span className="time-capsule-val">
@@ -85,7 +85,7 @@ export default function DoctorCard({ doctor, onSelectDoctor }: DoctorCardProps) 
           <div className="time-capsule-divider"></div>
 
           <div className="time-capsule-slot">
-            <span className="time-capsule-icon">confirmation_number</span>
+            <Ticket size={15} className="time-capsule-icon" />
             <div className="time-capsule-info">
               <span className="time-capsule-lbl">Kode Antrean</span>
               <span className="time-capsule-val">{doctor.queueCode || 'POLI'}</span>
@@ -122,7 +122,7 @@ export default function DoctorCard({ doctor, onSelectDoctor }: DoctorCardProps) 
       {isPraktek && (
         <div className="platter-action-tray">
           <button className="platter-action-btn" onClick={handleBooking}>
-            <span className="action-btn-icon">how_to_reg</span>
+            <UserPlus size={16} className="action-btn-icon" />
             <span>Daftar Online</span>
           </button>
         </div>

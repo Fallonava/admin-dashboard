@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { triggerHaptic } from '../lib/haptics';
+import { CheckCircle2, AlertCircle, Info, Activity } from 'lucide-react';
 
 export interface DynamicIslandAlert {
   title: string;
@@ -39,9 +40,13 @@ export default function DynamicIsland({ alert, activeDoctorCount = 0 }: DynamicI
         {isExpanded && alert ? (
           <>
             <div className="island-leading">
-              <span className="island-icon material-icons-round">
-                {alert.type === 'success' ? 'check_circle' : alert.type === 'error' ? 'error' : 'info'}
-              </span>
+              {alert.type === 'success' ? (
+                <CheckCircle2 size={18} className="text-green" />
+              ) : alert.type === 'error' ? (
+                <AlertCircle size={18} className="text-red" />
+              ) : (
+                <Info size={18} className="text-blue" />
+              )}
             </div>
             <div className="island-content">
               <div className="island-title">{alert.title}</div>
@@ -64,7 +69,7 @@ export default function DynamicIsland({ alert, activeDoctorCount = 0 }: DynamicI
             <span className="island-compact-txt">
               {alert ? alert.title : `${activeDoctorCount} Dokter Aktif`}
             </span>
-            <div className="island-trailing-icon material-icons-round">medical_services</div>
+            <Activity size={14} className="island-trailing-icon" />
           </div>
         )}
       </div>

@@ -753,3 +753,64 @@
   gap: 6px;
   margin-bottom: 2px;
 }
+
+/* --- Apple HIG & iOS 27 Safe Area & Semantic Tokens --- */
+:root {
+  --sat: env(safe-area-inset-top, 0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+  --border-subtle: rgba(0, 0, 0, 0.08);
+  --text-secondary: rgba(60, 60, 67, 0.6);
+  --text-tertiary: rgba(60, 60, 67, 0.3);
+}
+
+[data-theme="dark"] {
+  --border-subtle: rgba(255, 255, 255, 0.12);
+  --text-secondary: rgba(235, 235, 245, 0.6);
+  --text-tertiary: rgba(235, 235, 245, 0.3);
+}
+
+/* Active Press Scale on Interactive iOS 27 Elements */
+.platter,
+.weekly-day-btn,
+.weekly-pass-card,
+.category-chip,
+.ios-mode-btn,
+.dock-wa-btn,
+.dock-reg-btn,
+.cal-day-cell,
+.ios-action-tile {
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  transition: transform 120ms cubic-bezier(0.4, 0, 0.2, 1), opacity 120ms ease, background-color 150ms ease;
+}
+
+.platter:active,
+.weekly-day-btn:active,
+.weekly-pass-card:active,
+.category-chip:active,
+.ios-mode-btn:active,
+.dock-wa-btn:active,
+.dock-reg-btn:active,
+.ios-action-tile:active {
+  transform: scale(0.97);
+  opacity: 0.85;
+}
+
+/* Safe Area Inset Handling */
+.ios-nav-header {
+  padding-top: max(14px, calc(var(--sat) + 8px));
+}
+
+.ios-floating-dock-container {
+  bottom: max(16px, calc(var(--sab) + 12px));
+}
+
+.main-content-padded {
+  padding-bottom: calc(var(--sab) + 95px);
+}
+
+.dock-clock,
+.time-capsule-val,
+.bento-num {
+  font-variant-numeric: tabular-nums;
+}

@@ -1,65 +1,100 @@
-export interface DoctorSchedule {
+export type DoctorStatusType = 'PRAKTEK' | 'CUTI' | 'LIBUR' | 'PENUH' | 'SELESAI';
+
+export interface Doctor {
   id: string;
   name: string;
   specialty: string;
-  category?: 'Bedah' | 'NonBedah';
+  status: DoctorStatusType | string;
+  image?: string | null;
+  category?: 'Bedah' | 'NonBedah' | string;
+  startTime?: string;
+  endTime?: string;
   queueCode?: string;
-  registrationTime?: string;
-  status?: string;
+  order?: number;
+  lastCall?: string | null;
+  registrationTime?: string | null;
+  lastManualOverride?: bigint | number | null;
+  activeLeave?: LeaveRequest | null;
+  todayShift?: Shift | null;
   _isActive?: boolean;
 }
 
-export interface ShiftSlot {
+export type DoctorSchedule = Doctor;
+
+export interface Shift {
   id: string;
+  dayIdx: number;
+  timeIdx?: number;
+  title?: string;
+  color?: string;
+  formattedTime?: string | null;
+  registrationTime?: string | null;
+  extra?: string | null;
+  disabledDates?: string[];
+  statusOverride?: DoctorStatusType | null;
   doctorId: string;
   doctorName?: string;
-  title?: string;
-  dayIdx: number;
-  formattedTime: string;
-  registrationTime?: string;
-  extra?: 'odd_weeks' | 'even_weeks';
-  disabledDates?: string[];
 }
 
-export interface LeaveItem {
+export type ShiftSlot = Shift;
+
+export interface LeaveRequest {
   id: string;
-  doctorId: string;
+  specialty?: string | null;
+  type?: string;
+  startDate: string | Date;
+  endDate?: string | Date;
+  reason?: string | null;
+  notes?: string | null;
+  status: string;
+  avatar?: string | null;
+  replacementDoctor?: string | null;
+  doctorId?: string;
   doctorName?: string;
-  doctor?: string;
-  startDate: string;
-  endDate?: string;
-  reason?: string;
-  notes?: string;
-  replacementDoctor?: string;
+  doctor?: Doctor | string;
+}
+
+export type LeaveItem = LeaveRequest;
+
+export interface BroadcastRule {
+  id: string;
+  message: string;
+  alertLevel: 'INFO' | 'WARNING' | 'CRITICAL';
+  targetZone: string;
+  duration: number;
+  active: boolean;
+}
+
+export interface DisplayApiResponse {
+  doctors?: Doctor[];
+  shifts?: Shift[];
+  leaves?: LeaveRequest[];
+  broadcasts?: BroadcastRule[];
+  serverTime?: string;
 }
 
 export interface BentoStatsData {
-  buka: number;
-  penuh: number;
-  cuti: number;
-}
-
-export interface ScheduleDisplayData {
-  Dokter: string;
-  Spesialis: string;
-  Status: string;
-  Jam: string;
-  JamPraktek: string;
-  JamDaftar: string;
-  Jenis: string;
-  'Code Antrian'?: string;
-  _shiftId?: string | number;
-  DokterPengganti?: string | null;
-  _isActive?: boolean;
+  presentCount?: number;
+  totalDoctors?: number;
+  specialtiesCount?: number;
+  onLeaveCount?: number;
+  attendanceRate?: number;
+  buka?: number;
+  penuh?: number;
+  cuti?: number;
 }
 
 export interface DayDateItem {
   date: Date;
-  dateKey: string;
+  dateStr?: string;
+  dateKey?: string;
   dayName: string;
-  dateFormatted: string;
+  dayNum?: number;
+  dateFormatted?: string;
+  monthName?: string;
+  isToday?: boolean;
   isHoliday: boolean;
-  isSunday: boolean;
+  isSunday?: boolean;
   holidayName?: string;
 }
 

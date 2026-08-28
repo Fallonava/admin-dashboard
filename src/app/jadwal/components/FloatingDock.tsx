@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { triggerHaptic } from '../lib/haptics';
-import { MessageCircle, HowToReg, PhoneCall } from 'lucide-react';
+import { MessageCircle, PhoneCall, UserPlus } from 'lucide-react';
 
 interface FloatingDockProps {
   onOpenGeneralRegistration?: () => void;

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Doctor } from '../types';
+import { CheckCircle2, CalendarX } from 'lucide-react';
 
 interface BentoStatsProps {
     doctors: Doctor[];
@@ -16,7 +17,7 @@ export default function BentoStats({ doctors }: BentoStatsProps) {
             <div className="bento-card-main">
                 <div className="bento-card-top">
                     <div className="bento-icon-coin praktek">
-                        <span className="material-icons-round">check_circle</span>
+                        <CheckCircle2 size={18} />
                     </div>
                     <div className="bento-status-pill praktek">Hadir</div>
                 </div>
@@ -33,7 +34,7 @@ export default function BentoStats({ doctors }: BentoStatsProps) {
             <div className="bento-card-main">
                 <div className="bento-card-top">
                     <div className="bento-icon-coin cuti">
-                        <span className="material-icons-round">event_busy</span>
+                        <CalendarX size={18} />
                     </div>
                     <div className="bento-status-pill cuti">Libur</div>
                 </div>
