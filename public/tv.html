@@ -749,7 +749,7 @@
         height: 6px;
         border-radius: 50%;
         background: #059669;
-        animation: radarPulse 1.4s infinite;
+        animation: appleRadarDotBreathe 2.4s cubic-bezier(0.16, 1, 0.3, 1) infinite;
       }
 
       [data-theme="dark"] .wallet-pass-badge {
@@ -963,48 +963,83 @@
         color: #F0FDF4;
       }
 
-      /* ===== 3D EMPTY STATE (NEO ORB) ===== */
-      .neo-empty-state {
+      /* ═══ Apple tvOS 18 Frosted Glass Empty State Platter ═══ */
+      .apple-empty-state {
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        height: 100%;
-        width: 100%;
-        opacity: 1; /* Diperkuat (menghapus opacity 0.8) */
-      }
-
-      .neo-orb {
-        width: 80px;
-        height: 80px;
-        border-radius: 50%;
-        background: var(--bg-body);
+        gap: 14px;
+        padding: 44px 28px;
+        margin: 40px auto;
+        width: min(90%, 420px);
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        border: 1px solid rgba(226, 234, 245, 0.95);
+        border-radius: 28px;
         box-shadow: 
-          12px 12px 24px var(--neo-shadow-dark), 
-          -12px -12px 24px var(--neo-shadow-light),
-          inset 0 0 0 rgba(0,0,0,0);
-        margin-bottom: 30px; /* Space for text */
-        margin-top: 50px;
-        animation: orb-float 4s ease-in-out infinite, orb-pulse 4s ease-in-out infinite;
-      }
-
-      .neo-empty-text {
-        font-size: 16px;
-        font-weight: 800;
-        letter-spacing: 0.2em;
-        color: var(--text-secondary);
-        text-transform: uppercase;
+          0 16px 36px -8px rgba(15, 23, 42, 0.08),
+          0 4px 12px -2px rgba(15, 23, 42, 0.04),
+          inset 0 1px 1.5px #FFFFFF;
+        position: relative;
+        overflow: hidden;
         text-align: center;
       }
 
-      @keyframes orb-float {
-        0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
-        50% { transform: translate3d(0, -8px, 0) scale(1.02); }
+      .apple-empty-state::before {
+        content: "";
+        position: absolute;
+        top: 0; left: 24px; right: 24px;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 1) 50%, transparent);
+        pointer-events: none;
       }
 
-      @keyframes orb-pulse {
-        0%, 100% { opacity: 0.85; }
-        50% { opacity: 1; }
+      .apple-empty-icon-wrap {
+        width: 64px;
+        height: 64px;
+        border-radius: 20px;
+        background: linear-gradient(135deg, rgba(2, 132, 199, 0.12), rgba(56, 189, 248, 0.04));
+        border: 1px solid rgba(2, 132, 199, 0.25);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #0284C7;
+        box-shadow: 0 4px 16px -2px rgba(2, 132, 199, 0.2);
+        animation: appleEmptyFloat 3.5s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+      }
+
+      .apple-empty-icon-wrap .material-icons-round {
+        font-size: 32px;
+      }
+
+      @keyframes appleEmptyFloat {
+        0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+        50% { transform: translate3d(0, -6px, 0) scale(1.04); }
+      }
+
+      .apple-empty-text-group {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .apple-empty-title {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 15px;
+        font-weight: 800;
+        color: #0F172A;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+      }
+
+      .apple-empty-sub {
+        font-family: "Inter", sans-serif;
+        font-size: 11.5px;
+        font-weight: 500;
+        color: #64748B;
+        line-height: 1.35;
       }
 
       .stat-count {
@@ -4747,118 +4782,6 @@
       .di-waveform-eq .eq-4 { height: 24px; animation-duration: 1.3s; animation-delay: 0.42s; }
       .di-waveform-eq .eq-5 { height: 13px; animation-duration: 1.05s; animation-delay: 0.22s; }
 
-      /* ===== FOOTER (Modern 3D Clay Floating Ticker) ===== */
-      .footer {
-        height: 52px;
-        background: var(--clay-bg-surface);
-        border-radius: 26px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0 20px;
-        border: 1px solid var(--clay-border);
-        box-shadow: var(--clay-shadow-outer), var(--clay-shadow-inner);
-        overflow: hidden;
-        flex-shrink: 0;
-        transition: background 0.5s ease;
-      }
-
-      [data-theme="light"] .footer {
-        background: #FFFFFF;
-        border: 1px solid rgba(226, 232, 240, 0.9);
-        box-shadow: 0 10px 24px -4px rgba(15, 23, 42, 0.08), inset 1px 1px 1px #ffffff;
-      }
-
-      .legend {
-        display: flex;
-        gap: 16px;
-        padding-right: 20px;
-        border-right: 1px solid var(--border-light);
-      }
-
-      .lg-item {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 11px;
-        font-weight: 800;
-        color: var(--text-secondary);
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-      }
-
-      .dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        box-shadow: 0 0 8px currentColor;
-      }
-
-      .ticker {
-        flex: 1;
-        margin: 0 20px;
-        position: relative;
-        overflow: hidden;
-        height: 36px;
-        display: flex;
-        align-items: center;
-        background: var(--clay-inset);
-        padding: 0 14px;
-        border-radius: 14px;
-        -webkit-mask-image: linear-gradient(to right, transparent 0%, black 4%, black 96%, transparent 100%);
-        mask-image: linear-gradient(to right, transparent 0%, black 4%, black 96%, transparent 100%);
-      }
-
-      .ticker-inner {
-        white-space: nowrap;
-        will-change: transform;
-        animation: appleMarquee 32s linear infinite;
-        font-family: "Inter", sans-serif;
-        font-size: 13.5px;
-        font-weight: 700;
-        color: var(--text-primary);
-        letter-spacing: 0.02em;
-      }
-
-      @keyframes appleMarquee {
-        0% { transform: translate3d(0, 0, 0); }
-        100% { transform: translate3d(-100%, 0, 0); }
-      }
-
-      .status-pill-lg {
-        background: var(--clay-inset);
-        padding: 5px 14px;
-        border-radius: 9999px;
-        font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 11px;
-        font-weight: 800;
-        letter-spacing: 0.06em;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        color: var(--text-primary);
-      }
-
-      .live-dot {
-        width: 7px;
-        height: 7px;
-        border-radius: 50%;
-        background: var(--accent-emerald);
-        box-shadow: 0 0 10px var(--accent-emerald);
-      }
-
-      .live-dot.warn {
-        background: var(--accent-amber);
-        box-shadow: 0 0 10px var(--accent-amber);
-        animation: appleWarnBreathe 1.8s ease-in-out infinite;
-      }
-
-      @keyframes appleWarnBreathe {
-        0%, 100% { opacity: 0.6; transform: scale(0.95); }
-        50% { opacity: 1; transform: scale(1.15); }
-      }
-
       /* ===== SKELETON ===== */
       .skel {
         background: rgba(125, 125, 125, 0.1);
@@ -7748,12 +7671,17 @@
           const updateList = (containerId, list) => {
             const container = $(containerId);
             
-            // Handle Empty State 3D Animation
+            // Handle Apple Frosted Glass Empty State
             if (list.length === 0) {
               const emptyStateHTML = `
-                <div class="neo-empty-state">
-                  <div class="neo-orb"></div>
-                  <div class="neo-empty-text">TIDAK ADA JADWAL</div>
+                <div class="apple-empty-state">
+                  <div class="apple-empty-icon-wrap">
+                    <span class="material-icons-round">event_busy</span>
+                  </div>
+                  <div class="apple-empty-text-group">
+                    <div class="apple-empty-title">Tidak Ada Jadwal Dokter</div>
+                    <div class="apple-empty-sub">Silakan periksa kembali nanti atau hubungi petugas.</div>
+                  </div>
                 </div>
               `;
               if (container.innerHTML !== emptyStateHTML) {
