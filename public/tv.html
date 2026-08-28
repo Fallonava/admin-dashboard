@@ -3110,8 +3110,12 @@
         border: 1px solid rgba(255, 255, 255, 0.5);
       }
 
+      .status-pill .status-glyph,
       .status-pill .status-icon {
-        font-size: 16px !important;
+        width: 16px;
+        height: 16px;
+        flex-shrink: 0;
+        display: block;
       }
       
       /* Pulse Dot next to active pills */
@@ -3692,6 +3696,12 @@
         flex-shrink: 0;
       }
 
+      .pass-status-badge .status-glyph {
+        width: 12px;
+        height: 12px;
+        flex-shrink: 0;
+      }
+
       .pass-hint-pill {
         font-family: "Plus Jakarta Sans", sans-serif;
         font-size: 9.5px;
@@ -3710,6 +3720,12 @@
         overflow: hidden;
         text-overflow: ellipsis;
         max-width: 58%;
+      }
+
+      .pass-hint-pill .pass-hint-icon {
+        width: 11px;
+        height: 11px;
+        flex-shrink: 0;
       }
 
       [data-theme="dark"] .pass-hint-pill {
@@ -5469,8 +5485,35 @@
         }
       };
 
+      // 🏷️ Helper: Apple SF Symbols 6 Status Vector Glyphs (16x16)
+      const getStatusGlyph = (st) => {
+        const s = (st || "").toUpperCase();
+        if (s === "PRAKTEK") {
+          return `<svg class="status-glyph" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>`;
+        }
+        if (s === "PENDAFTARAN") {
+          return `<svg class="status-glyph" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm6 12H6v-1.4c0-2 4-3.1 6-3.1s6 1.1 6 3.1V18z"/></svg>`;
+        }
+        if (s === "TERJADWAL") {
+          return `<svg class="status-glyph" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`;
+        }
+        if (s.includes("OPERASI")) {
+          return `<svg class="status-glyph" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19 10.5V6a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v4.5C3.34 11.18 2 13.06 2 15.5 2 18.54 4.46 21 7.5 21c2.16 0 4.02-1.25 4.88-3.08.86 1.83 2.72 3.08 4.88 3.08 3.04 0 5.5-2.46 5.5-5.5 0-2.44-1.34-4.32-3-5zm-8.5-3h3v2h-3v-2zm-3 8a3 3 0 1 1 6 0 3 3 0 0 1-6 0zm9.5 3a3.5 3.5 0 0 1-3.5-3.5 3.5 3.5 0 0 1 3.5-3.5 3.5 3.5 0 0 1 3.5 3.5 3.5 3.5 0 0 1-3.5 3.5z"/></svg>`;
+        }
+        if (s.includes("CUTI")) {
+          return `<svg class="status-glyph" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="4" ry="4"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="15" x2="15" y2="15"/></svg>`;
+        }
+        if (s.includes("PENUH")) {
+          return `<svg class="status-glyph" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>`;
+        }
+        if (s === "SELESAI") {
+          return `<svg class="status-glyph" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+        }
+        return `<svg class="status-glyph" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>`;
+      };
+
       // ===== CARD HTML BUILDER (Satu Fungsi untuk render() & _renderSidebar()) =====
-      const buildCardHTML = (d, avatarText, statusIcon, statusLabel, labelJam, labelLive) => {
+      const buildCardHTML = (d, avatarText, statusGlyph, statusLabel, labelJam, labelLive) => {
         const jamTampil = d.JamDaftar !== "-"
           ? esc(d.JamDaftar)
           : formatJam((d.JamPraktek || "").split("-")[0]);
@@ -5490,12 +5533,12 @@
             </div>
             <div class="meta-col">
               <div class="status-pill">
-                <span class="material-icons-round status-icon" style="font-size:13px">${statusIcon}</span>
+                ${statusGlyph}
                 <span class="status-text">${statusLabel}</span>
               </div>
               ${!isCPO && d.JamPraktek && d.JamPraktek !== "-" ? `
               <div class="jam-box">
-                <span class="material-icons-round jam-icon">schedule</span>
+                <svg class="jam-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                 <span class="jam-val jam-val-daftar">${jamTampil}</span>
               </div>` : ""}
             </div>
@@ -5504,7 +5547,7 @@
           <div class="platter-detail">
             <div class="detail-info">
               <div class="detail-label-wrap">
-                <span class="material-icons-round detail-clock-icon">schedule</span>
+                <svg class="detail-clock-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                 <span class="detail-label">${labelJam}</span>
               </div>
               <span class="detail-time">${jamTampil} WIB</span>
@@ -5521,15 +5564,13 @@
           </div>`;
       };
 
-      const buildSidebarCardHTML = (d, avatarText, statusIcon, statusLabel) => {
+      const buildSidebarCardHTML = (d, avatarText, statusGlyph, statusLabel) => {
         const st = (d.Status || "").toUpperCase();
         const specTheme = getSpecialistTheme(d.Spesialis);
-        let icon = statusIcon;
         let label = statusLabel;
         let passHint = "";
         
         if (st.includes("CUTI")) {
-          icon = "event_busy";
           label = "CUTI";
           if (d.NextBuka) {
             passHint = `BUKA ${esc(d.NextBuka)}`;
@@ -5555,11 +5596,9 @@
             passHint = "KONFIRMASI LOKET";
           }
         } else if (st.includes("OPERASI")) {
-          icon = "local_hospital";
           label = "SEDANG OPERASI";
           passHint = d.JamPraktek && d.JamPraktek !== "-" ? `JADWAL ${formatJam(d.JamPraktek)}` : "TINDAKAN MEDIS";
         } else if (st.includes("PENUH")) {
-          icon = "lock";
           label = "KUOTA PENUH";
           passHint = "DAFTAR BESOK / ONLINE";
         }
@@ -5571,12 +5610,12 @@
           <!-- 1. Header Bar: Status Pill (Kiri) + Tanggal/Jadwal Hint (Kanan) -->
           <div class="pass-header-strip">
             <div class="pass-status-badge">
-              <span class="material-icons-round" style="font-size:13px">${icon}</span>
+              ${getStatusGlyph(d.Status)}
               <span>${label}</span>
             </div>
             ${passHint ? `
               <div class="pass-hint-pill">
-                <span class="material-icons-round" style="font-size:11px">schedule</span>
+                <svg class="pass-hint-icon" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                 <span>${passHint}</span>
               </div>
             ` : ""}
@@ -5594,7 +5633,7 @@
           <!-- 3. Dedicated Note Footer (Jika ada catatan khusus) -->
           ${showNoteFooter ? `
             <div class="pass-note-row">
-              <span class="material-icons-round pass-note-icon">info</span>
+              <svg class="pass-note-icon" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
               <span class="pass-note-text">${esc(extraNote)}</span>
             </div>
           ` : ""}`;
@@ -7555,7 +7594,7 @@
                 // If the element has old DOM structure without dynamic specTheme or hash changed, rebuild it
                 if (!el.querySelector("." + specTheme) || el.dataset.hash !== hash) {
                   el.className = `platter ${c}`;
-                  el.innerHTML = buildCardHTML(d, avatarText, i, l, labelJam, labelLive);
+                  el.innerHTML = buildCardHTML(d, avatarText, getStatusGlyph(d.Status), l, labelJam, labelLive);
                   el.dataset.hash = hash;
                 } else {
                   el.className = `platter ${c}`;
@@ -7568,7 +7607,7 @@
                 el.className = `platter ${c} platter-new`;
                 el.dataset.id = id;
                 el.dataset.hash = hash;
-                el.innerHTML = buildCardHTML(d, avatarText, i, l, labelJam, labelLive);
+                el.innerHTML = buildCardHTML(d, avatarText, getStatusGlyph(d.Status), l, labelJam, labelLive);
 
                 hasLayoutChange = true;
                 el.addEventListener(
@@ -7708,45 +7747,7 @@
             if (el) {
               if (el.dataset.hash !== hash) {
                 el.className = `platter platter-mini ${c}`;
-
-                // IN-PLACE DOM Update Sidebar
-                const dName = el.querySelector(".doc-name");
-                if (dName) dName.textContent = d.Dokter || "";
-
-                const dSpec = el.querySelector(".doc-spec");
-                if (dSpec) dSpec.textContent = (d.Spesialis || "").toUpperCase();
-
-                const stPill = el.querySelector(".status-pill");
-                if (stPill) {
-                  stPill.style.background = `var(--status-bg)`;
-                  stPill.style.color = `var(--status-color)`;
-                  stPill.innerHTML = `<span class="material-icons-round" style="font-size:13px">${i}</span><span>${l}</span>`;
-                }
-
-                const jValDaftar = el.querySelector(".jam-val-daftar");
-                if (jValDaftar)
-                  jValDaftar.textContent =
-                    d.JamDaftar && d.JamDaftar !== "-"
-                      ? d.JamDaftar
-                      : formatJam((d.JamPraktek || "").split("-")[0]);
-
-                const jValPraktek = el.querySelector(".jam-val-praktek");
-                if (jValPraktek && d.JamPraktek)
-                  jValPraktek.textContent = d.JamPraktek;
-
-                const dtTime = el.querySelector(".detail-time");
-                if (dtTime)
-                  dtTime.textContent =
-                    d.JamDaftar && d.JamDaftar !== "-"
-                      ? d.JamDaftar
-                      : formatJam((d.JamPraktek || "").split("-")[0]);
-
-                const dtLabel = el.querySelector(".detail-label");
-                if (dtLabel) dtLabel.textContent = labelJam;
-
-                const lText = el.querySelector(".live-text");
-                if (lText) lText.textContent = labelLive;
-
+                el.innerHTML = buildSidebarCardHTML(d, avatarText, getStatusGlyph(d.Status), l);
                 el.dataset.hash = hash;
               }
               el.classList.remove("platter-new");
@@ -7756,7 +7757,7 @@
               el.className = `platter platter-mini ${c} platter-new`;
               el.dataset.id = id;
               el.dataset.hash = hash;
-              el.innerHTML = buildSidebarCardHTML(d, avatarText, i, l);
+              el.innerHTML = buildSidebarCardHTML(d, avatarText, getStatusGlyph(d.Status), l);
               hasLayoutChange = true;
               el.addEventListener(
                 "animationend",
