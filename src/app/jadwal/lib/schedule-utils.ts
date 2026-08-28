@@ -65,7 +65,8 @@ export function isDoctorOnLeave(
   const targetTime = targetDate.getTime();
 
   for (const leave of leaves) {
-    if (leave.doctorId !== doctorId && leave.doctor?.id !== doctorId && leave.doctorName !== doctorId) continue;
+    const docIdObj = typeof leave.doctor === 'object' && leave.doctor !== null ? leave.doctor.id : undefined;
+    if (leave.doctorId !== doctorId && docIdObj !== doctorId && leave.doctorName !== doctorId) continue;
     const start = new Date(leave.startDate);
     const end = new Date(leave.endDate || leave.startDate);
     start.setHours(0, 0, 0, 0);
@@ -127,7 +128,7 @@ export function evaluateDoctorRealtimeStatus(
     return { status: 'PRAKTEK' };
   }
 
-  return { status: doctor.status || 'LIBUR' };
+  return { status: (doctor.status as DoctorStatusType) || 'LIBUR' };
 }
 
 export function getWeeklyDateStrip(referenceDate: Date = new Date()): DayDateItem[] {

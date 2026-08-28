@@ -34,11 +34,14 @@ export function useLeavesData(leaves: LeaveItem[] = []) {
       let result = filterLeaves(leaves, 'all');
       if (searchQuery) {
         const q = searchQuery.toLowerCase();
-        result = result.filter(l => 
-          (l.doctorName || l.doctor || '').toLowerCase().includes(q) ||
-          (l.reason || '').toLowerCase().includes(q) ||
-          (l.replacementDoctor || '').toLowerCase().includes(q)
-        );
+        result = result.filter(l => {
+          const docName = l.doctorName || (typeof l.doctor === 'object' && l.doctor !== null ? l.doctor.name : typeof l.doctor === 'string' ? l.doctor : '');
+          return (
+            docName.toLowerCase().includes(q) ||
+            (l.reason || '').toLowerCase().includes(q) ||
+            (l.replacementDoctor || '').toLowerCase().includes(q)
+          );
+        });
       }
       return result;
     }

@@ -79,9 +79,23 @@ export interface BentoStatsData {
   specialtiesCount?: number;
   onLeaveCount?: number;
   attendanceRate?: number;
-  buka?: number;
-  penuh?: number;
-  cuti?: number;
+  buka: number;
+  penuh: number;
+  cuti: number;
+}
+
+export interface ScheduleDisplayData {
+  Dokter: string;
+  Spesialis: string;
+  Status: string;
+  Jam: string;
+  JamPraktek: string;
+  JamDaftar: string;
+  Jenis: string;
+  'Code Antrian'?: string;
+  _shiftId?: string | number;
+  DokterPengganti?: string | null;
+  _isActive?: boolean;
 }
 
 export interface DayDateItem {
