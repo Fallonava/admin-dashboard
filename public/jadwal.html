@@ -120,16 +120,16 @@
          SMOOTH GLOBAL THEME TRANSITION
          ═══════════════════════════════════════════════════════════════ */
       html, body, .platter, .ios-bento-tile, .ios-section-header, .ios-time-banner,
-      .ios-mode-btn, .ios-seg-btn, .spec-chip, .weekly-day-btn, .weekly-shift-card,
-      .leave-card, .leaves-cal-card, .dynamic-island, .ios-floating-dock, .initials, .jam-box,
+      .ios-mode-btn, .ios-seg-btn, .spec-chip, .weekly-pass-card,
+      .leave-card, .dynamic-island, .ios-floating-dock, .jam-box,
       .ios-search-bar, .ios-mode-switcher, .ios-segmented-bar, .ios-nav-header, .ios-icon-btn,
-      .dock-wa-btn, .patient-service-clay, .dynamic-info-clay, .qr-container-clay {
+      .dock-wa-btn, .patient-service-widget, .dynamic-info-bar, .qr-container-widget, .ios-action-tile {
         transition: 
-          background 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-          background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-          border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-          color 0.25s ease,
-          box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+          background 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+          background-color 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+          border-color 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+          color 0.2s ease,
+          box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
       }
 
       * {
@@ -189,115 +189,89 @@
         color: #FEF08A !important;
       }
 
-      /* Silky Clay Shimmer Skeleton */
-      .clay-skeleton {
-        background: linear-gradient(90deg, rgba(226, 232, 240, 0.8) 25%, rgba(248, 250, 252, 0.95) 50%, rgba(226, 232, 240, 0.8) 75%);
+      /* Silky Apple iOS Shimmer Skeleton */
+      .ios-skeleton, .clay-skeleton {
+        background: linear-gradient(90deg, rgba(120, 120, 128, 0.1) 25%, rgba(120, 120, 128, 0.22) 50%, rgba(120, 120, 128, 0.1) 75%);
         background-size: 200% 100%;
-        animation: clayShimmer 1.5s infinite;
-        border-radius: 14px;
+        animation: iosShimmer 1.5s infinite;
+        border-radius: 12px;
       }
-      [data-theme="dark"] .clay-skeleton {
-        background: linear-gradient(90deg, rgba(30, 41, 59, 0.8) 25%, rgba(51, 65, 85, 0.95) 50%, rgba(30, 41, 59, 0.8) 75%);
-        background-size: 200% 100%;
-      }
-      @keyframes clayShimmer {
+      @keyframes iosShimmer {
         0% { background-position: 200% 0; }
         100% { background-position: -200% 0; }
       }
 
-      /* Universal Empty State Card (Animated Claymorphism) */
-      .empty-state-clay, .no-doc-clay {
+      /* Universal Empty State Card (Apple SwiftUI ContentUnavailableView) */
+      .empty-state-clay, .no-doc-clay, .ios-empty-state {
         text-align: center;
-        padding: 28px 18px;
+        padding: 24px 16px;
         background: var(--surface-card-solid);
-        border-radius: 24px;
-        border: 2px solid var(--border-card);
+        border-radius: var(--radius-card);
+        border: 1px solid var(--border-card);
         box-shadow: var(--shadow-card);
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: 8px;
+        gap: 6px;
         position: relative;
         overflow: hidden;
       }
 
-      .clay-empty-coin {
-        width: 54px;
-        height: 54px;
-        border-radius: 20px;
+      .clay-empty-coin, .ios-empty-coin {
+        width: 44px;
+        height: 44px;
+        border-radius: 14px;
         background: var(--surface-well);
-        box-shadow: var(--shadow-btn);
-        border: 1.5px solid var(--border-card);
+        border: 1px solid var(--border-card);
         display: flex;
         align-items: center;
         justify-content: center;
-        position: relative;
-        margin-bottom: 4px;
-        animation: floatClayCoin 3.5s ease-in-out infinite;
-      }
-      @keyframes floatClayCoin {
-        0%, 100% { transform: translateY(0) rotate(0deg); }
-        50% { transform: translateY(-5px) rotate(2deg); }
+        margin-bottom: 2px;
       }
 
-      .clay-empty-coin .material-icons-round {
-        font-size: 28px;
+      .clay-empty-coin .material-icons-round, .ios-empty-coin .material-icons-round {
+        font-size: 24px;
         color: var(--ios-blue);
-        filter: drop-shadow(0 2px 5px rgba(37, 99, 235, 0.25));
-        transition: transform 0.3s ease;
       }
-      .clay-empty-coin.green .material-icons-round {
-        color: var(--ios-emerald);
-        filter: drop-shadow(0 2px 5px rgba(5, 150, 105, 0.25));
-      }
-      .clay-empty-coin.amber .material-icons-round {
-        color: var(--ios-amber);
-        filter: drop-shadow(0 2px 5px rgba(217, 119, 6, 0.25));
-      }
+      .clay-empty-coin.green .material-icons-round { color: var(--ios-emerald); }
+      .clay-empty-coin.amber .material-icons-round { color: var(--ios-amber); }
 
-      .clay-pulse-ring {
-        position: absolute;
-        inset: -4px;
-        border-radius: 24px;
-        border: 2px solid rgba(37, 99, 235, 0.3);
-        opacity: 0;
-        animation: clayPulseRing 2.8s cubic-bezier(0.25, 1, 0.5, 1) infinite;
-        pointer-events: none;
-      }
-      .clay-empty-coin.green .clay-pulse-ring {
-        border-color: rgba(5, 150, 105, 0.3);
-      }
-      .clay-empty-coin.amber .clay-pulse-ring {
-        border-color: rgba(217, 119, 6, 0.3);
-      }
-      @keyframes clayPulseRing {
-        0% { transform: scale(0.85); opacity: 0.8; }
-        70% { transform: scale(1.25); opacity: 0; }
-        100% { transform: scale(1.35); opacity: 0; }
-      }
+      .clay-pulse-ring { display: none; }
 
-      .empty-state-clay h4, .no-doc-clay .no-doc-title {
-        font-family: "Outfit", sans-serif;
-        font-size: 13.5px;
+      .empty-state-clay h4, .no-doc-clay .no-doc-title, .ios-empty-title {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 14px;
         font-weight: 800;
         color: var(--text-main);
-        letter-spacing: -0.01em;
         margin: 0;
       }
-      .empty-state-clay p, .no-doc-clay .no-doc-sub {
-        font-size: 11px;
+      .empty-state-clay p, .no-doc-clay .no-doc-sub, .ios-empty-sub {
+        font-size: 12px;
         font-weight: 600;
-        color: var(--text-sub);
+        color: var(--text-mute);
         margin: 0;
-        max-width: 270px;
-        line-height: 1.38;
+        max-width: 280px;
+        line-height: 1.35;
       }
 
       .empty-reset-btn {
-        margin-top: 8px;
+        margin-top: 6px;
         display: inline-flex;
         align-items: center;
+        gap: 5px;
+        padding: 5px 12px;
+        border-radius: 9999px;
+        background: var(--surface-well);
+        border: 1px solid var(--border-card);
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 11.5px;
+        font-weight: 700;
+        color: var(--ios-blue);
+        cursor: pointer;
+        transition: transform 0.15s ease;
+      }
+      .empty-reset-btn:active { transform: scale(0.95); }
         gap: 6px;
         padding: 8px 16px;
         border-radius: 14px;
@@ -533,14 +507,7 @@
         width: 82%;
         height: 82%;
         object-fit: contain;
-        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.08));
-      }
-      .logo-clay-shine {
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.45) 0%, transparent 60%);
-        pointer-events: none;
-        border-radius: 14px;
+        filter: drop-shadow(0 1.5px 3px rgba(0, 0, 0, 0.08));
       }
 
       .ios-title-group {
@@ -1783,9 +1750,9 @@
 
       /* Today Indicator Pill */
       .weekly-date-card .today-indicator {
-        font-size: 10px;
-        font-weight: 900;
-        padding: 1.5px 6px;
+        font-size: 11px;
+        font-weight: 800;
+        padding: 2px 6px;
         border-radius: 6px;
         background: rgba(37, 99, 235, 0.12);
         color: #2563EB;
@@ -1860,11 +1827,11 @@
         gap: 1px;
       }
       .weekly-holiday-label {
-        font-size: 10px;
-        font-weight: 900;
+        font-size: 11px;
+        font-weight: 800;
         text-transform: uppercase;
         color: #DC2626;
-        letter-spacing: 0.04em;
+        letter-spacing: 0.03em;
       }
       .weekly-holiday-banner.is-cuti-bersama .weekly-holiday-label {
         color: #D97706;
@@ -2298,223 +2265,400 @@
       }
 
       .leaves-subtab-bar {
-        display: flex; background: var(--surface-well); box-shadow: var(--shadow-inset);
-        border-radius: 19px; padding: 4px; border: 1px solid var(--border-input); gap: 4px;
+        display: flex;
+        background: var(--surface-well);
+        border-radius: 9px;
+        padding: 2px;
+        border: 1px solid var(--border-card);
+        gap: 2px;
       }
       .leaves-subtab-btn {
-        flex: 1; padding: 8px 12px; border: none; border-radius: 15px;
-        background: transparent; font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 11.5px; font-weight: 800; color: var(--text-sub);
-        display: flex; align-items: center; justify-content: center; gap: 5px; cursor: pointer;
-        transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        flex: 1;
+        padding: 6px 10px;
+        border: none;
+        border-radius: 7px;
+        background: transparent;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--text-sub);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        cursor: pointer;
+        transition: background 0.18s ease, color 0.18s ease;
       }
       .leaves-subtab-btn.active {
-        background: var(--surface-card-solid); color: var(--text-main);
-        box-shadow: var(--shadow-btn); border: 1.5px solid var(--border-card);
+        background: var(--surface-card-solid);
+        color: var(--text-main);
+        font-weight: 800;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
       }
 
       .leave-card {
-        border-radius: var(--radius-card); background: var(--surface-card-solid);
-        box-shadow: var(--shadow-card); border: 2px solid var(--border-card);
-        padding: 14px 16px; display: flex; flex-direction: column; gap: 10px;
-        position: relative; overflow: hidden;
+        border-radius: var(--radius-card);
+        background: var(--surface-card-solid);
+        box-shadow: var(--shadow-card);
+        border: 1px solid var(--border-card);
+        padding: 12px 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        position: relative;
+        overflow: hidden;
       }
-      .leave-card::before {
-        content: ""; position: absolute; left: 0; top: 12px; bottom: 12px; width: 4.5px;
-        border-radius: 0 6px 6px 0; background: var(--leave-accent, #E11D48);
-      }
-      .leave-head { display: flex; align-items: center; gap: 12px; }
+      .leave-head { display: flex; align-items: center; gap: 10px; }
       .leave-avatar {
-        width: 44px; height: 44px; border-radius: 16px; background: var(--surface-avatar);
-        box-shadow: var(--shadow-btn); font-family: "Outfit", sans-serif;
-        font-size: 14px; font-weight: 900; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-        color: var(--text-main); border: 1.5px solid var(--border-card);
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        background: var(--surface-avatar);
+        border: 1px solid var(--border-card);
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 13px;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        color: var(--text-main);
       }
-      .leave-doc-info { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-      .leave-doc-name { font-size: 13px; font-weight: 900; color: var(--text-main); }
-      .leave-doc-spec { font-size: 10.5px; font-weight: 800; text-transform: uppercase; color: var(--ios-blue); }
+      .leave-doc-info { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+      .leave-doc-name { font-size: 13.5px; font-weight: 800; color: var(--text-main); }
+      .leave-doc-spec { font-size: 11px; font-weight: 800; text-transform: uppercase; color: var(--ios-blue); }
 
       .leave-badge-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
       .leave-status-pill {
-        display: inline-flex; align-items: center; gap: 4px; padding: 4px 9px;
-        border-radius: var(--radius-pill); font-size: 9.5px; font-weight: 900; text-transform: uppercase;
-        box-shadow: var(--shadow-pill);
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 2.5px 8px;
+        border-radius: 9999px;
+        font-size: 10.5px;
+        font-weight: 800;
+        text-transform: uppercase;
       }
-      .leave-status-pill.active { background: rgba(225, 29, 72, 0.15); color: #E11D48; border: 1px solid rgba(225, 29, 72, 0.4); }
-      .leave-status-pill.upcoming { background: rgba(37, 99, 235, 0.15); color: #2563EB; border: 1px solid rgba(37, 99, 235, 0.4); }
-      .leave-status-pill.past { background: var(--surface-well); color: var(--text-mute); border: 1px solid var(--border-subtle); }
+      .leave-status-pill.active { background: rgba(255, 45, 85, 0.14); color: #FF2D55; border: 1px solid rgba(255, 45, 85, 0.3); }
+      .leave-status-pill.upcoming { background: rgba(0, 122, 255, 0.14); color: #007AFF; border: 1px solid rgba(0, 122, 255, 0.3); }
+      .leave-status-pill.past { background: var(--surface-well); color: var(--text-mute); border: 1px solid var(--border-card); }
 
       .leave-date-pill {
-        display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: var(--radius-pill);
-        background: var(--surface-well); box-shadow: var(--shadow-inset); border: 1px solid var(--border-subtle);
-        font-family: "JetBrains Mono", monospace; font-size: 11px; font-weight: 800; color: var(--text-main);
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 3px 8px;
+        border-radius: 8px;
+        background: var(--surface-well);
+        border: 1px solid var(--border-card);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        font-weight: 800;
+        color: var(--text-main);
       }
       .leave-reason-box {
-        display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 14px;
-        background: var(--surface-well); box-shadow: var(--shadow-inset); border: 1px solid var(--border-subtle);
-        font-size: 11px; font-weight: 600; color: var(--text-sub);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
+        border-radius: 10px;
+        background: var(--surface-well);
+        border: 1px solid var(--border-card);
+        font-size: 11.5px;
+        font-weight: 600;
+        color: var(--text-sub);
       }
       .leave-replacement {
-        display: inline-flex; align-items: center; gap: 6px; font-size: 10.5px; font-weight: 700; color: #16A34A;
-        padding: 4px 8px; border-radius: 12px; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4);
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--ios-emerald);
+        padding: 3px 8px;
+        border-radius: 8px;
+        background: rgba(52, 199, 89, 0.14);
+        border: 1px solid rgba(52, 199, 89, 0.3);
       }
 
       /* ═══════════════════════════════════════════════════════════════
-         10. PATIENT SERVICE WIDGET & HOTLINE CTA
+         10. PATIENT SERVICE WIDGET & HOTLINE CTA (APPLE NATIVE)
          ═══════════════════════════════════════════════════════════════ */
-      .patient-service-clay {
-        border-radius: 26px;
+      .patient-service-clay, .patient-service-widget {
+        border-radius: 14px;
         background: var(--surface-card-solid);
         box-shadow: var(--shadow-card);
-        border: 2px solid var(--border-card);
-        padding: 16px;
+        border: 1px solid var(--border-card);
+        padding: 12px 14px;
         display: flex;
         flex-direction: column;
-        gap: 12px;
+        gap: 10px;
       }
-      .patient-qr-row { display: flex; align-items: center; gap: 12px; }
-      .qr-container-clay {
-        width: 72px; height: 72px; border-radius: 18px;
+      .patient-qr-row { display: flex; align-items: center; gap: 10px; }
+      .qr-container-clay, .qr-container-widget {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
         background: #FFFFFF;
-        box-shadow: var(--shadow-btn); border: 2px solid var(--border-card);
-        padding: 4px; display: flex; align-items: center; justify-content: center;
-        flex-shrink: 0; position: relative; cursor: pointer;
+        border: 1px solid var(--border-card);
+        padding: 3px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        position: relative;
+        cursor: pointer;
       }
-      .qr-container-clay svg { width: 100% !important; height: 100% !important; border-radius: 8px; }
+      .qr-container-clay svg, .qr-container-widget svg { width: 100% !important; height: 100% !important; border-radius: 8px; }
       .qr-tap-badge {
-        position: absolute; bottom: -4px; right: -4px; width: 22px; height: 22px; border-radius: 50%;
-        background: linear-gradient(145deg, #60A5FA, #2563EB); color: #FFFFFF;
-        display: flex; align-items: center; justify-content: center;
-        box-shadow: 0 3px 10px rgba(37, 99, 235, 0.45); border: 2px solid #FFFFFF; pointer-events: none;
+        position: absolute;
+        bottom: -3px;
+        right: -3px;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: var(--ios-blue);
+        color: #FFFFFF;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1.5px solid #FFFFFF;
+        pointer-events: none;
       }
-      .qr-tap-badge .material-icons-round { font-size: 13px; }
+      .qr-tap-badge .material-icons-round { font-size: 11px; }
 
-      .qr-label-group { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+      .qr-label-group { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
       .qr-badge-pill {
-        display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 10px;
-        background: rgba(37, 99, 235, 0.15); color: #2563EB; font-size: 9px; font-weight: 900; text-transform: uppercase;
-        box-shadow: var(--shadow-pill); border: 1px solid rgba(37, 99, 235, 0.35); width: fit-content;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 2px 7px;
+        border-radius: 6px;
+        background: rgba(0, 122, 255, 0.14);
+        color: var(--ios-blue);
+        font-size: 10.5px;
+        font-weight: 800;
+        text-transform: uppercase;
+        width: fit-content;
       }
-      .qr-desc { font-size: 10px; font-weight: 700; line-height: 1.35; color: var(--text-sub); }
+      .qr-desc { font-size: 11px; font-weight: 600; line-height: 1.35; color: var(--text-sub); }
 
-      .hotline-clay-pill {
-        display: flex; align-items: center; gap: 10px; padding: 11px 16px; border-radius: 20px;
-        background: linear-gradient(135deg, #10B981 0%, #059669 100%);
-        box-shadow: 6px 8px 20px rgba(5, 150, 105, 0.42), inset 1.5px 1.5px 3px rgba(255, 255, 255, 0.4);
-        border: 1.5px solid rgba(255, 255, 255, 0.3); text-decoration: none; position: relative; overflow: hidden;
-        transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      .hotline-clay-pill, .hotline-action-pill {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 14px;
+        border-radius: 12px;
+        background: var(--ios-emerald);
+        text-decoration: none;
+        color: #FFFFFF !important;
+        position: relative;
+        overflow: hidden;
+        transition: opacity 0.18s ease;
+        box-shadow: 0 2px 6px rgba(52, 199, 89, 0.3);
       }
-      .hotline-clay-pill:active { transform: scale(0.96) translateY(2px); }
+      .hotline-clay-pill:active, .hotline-action-pill:active { opacity: 0.85; }
       .hotline-icon-box {
-        width: 34px; height: 34px; border-radius: 14px; background: rgba(255, 255, 255, 0.25);
-        display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-        box-shadow: inset 1px 1px 2px rgba(255, 255, 255, 0.4);
+        width: 32px;
+        height: 32px;
+        border-radius: 9px;
+        background: rgba(255, 255, 255, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
       }
-      .hotline-icon-box .material-icons-round { font-size: 18px; color: #FFFFFF; }
+      .hotline-icon-box .material-icons-round { font-size: 17px; color: #FFFFFF; }
       .hotline-text-col { display: flex; flex-direction: column; gap: 1px; flex: 1; }
-      .hotline-label { font-size: 7.5px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.05em; color: #D1FAE5; }
-      .hotline-number { font-family: "JetBrains Mono", monospace; font-size: 15px; font-weight: 900; color: #FFFFFF; }
-      .hotline-chevron { color: rgba(255, 255, 255, 0.7); font-size: 20px; }
+      .hotline-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; color: rgba(255, 255, 255, 0.85); }
+      .hotline-number { font-family: "JetBrains Mono", monospace; font-size: 14px; font-weight: 900; color: #FFFFFF; }
+      .hotline-chevron { color: rgba(255, 255, 255, 0.8); font-size: 18px; }
 
-      .dynamic-info-clay {
-        display: flex; align-items: center; gap: 8px; padding: 7px 12px; border-radius: 16px;
-        background: var(--surface-well); box-shadow: var(--shadow-inset); border: 1px solid var(--border-subtle);
+      .dynamic-info-clay, .dynamic-info-bar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 10px;
+        border-radius: 10px;
+        background: var(--surface-well);
+        border: 1px solid var(--border-card);
       }
       .info-icon-coin {
-        width: 22px; height: 22px; border-radius: 11px; background: rgba(37, 99, 235, 0.15);
-        box-shadow: var(--shadow-btn); display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: rgba(0, 122, 255, 0.14);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
       }
-      .info-icon-coin .material-icons-round { font-size: 13px; color: var(--ios-blue); }
-      .dynamic-info-clay p {
-        font-size: 10px; font-weight: 700; color: var(--text-sub); margin: 0; line-height: 1.3;
-        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      .info-icon-coin .material-icons-round { font-size: 12px; color: var(--ios-blue); }
+      .dynamic-info-clay p, .dynamic-info-bar p {
+        font-size: 11.5px;
+        font-weight: 600;
+        color: var(--text-sub);
+        margin: 0;
+        line-height: 1.3;
       }
 
       /* ═══════════════════════════════════════════════════════════════
-         11. FLOATING BOTTOM DOCK & MODAL SHEET
+         11. FLOATING BOTTOM DOCK & MODAL SHEET (APPLE NATIVE)
          ═══════════════════════════════════════════════════════════════ */
       .ios-floating-dock {
         position: fixed;
-        bottom: calc(var(--sab) + 10px);
-        left: 16px; right: 16px;
-        height: 54px;
-        border-radius: 22px;
+        bottom: calc(var(--sab) + 8px);
+        left: 14px;
+        right: 14px;
+        height: 48px;
+        border-radius: 14px;
         background: var(--surface-dock);
-        backdrop-filter: blur(24px) saturate(190%);
-        -webkit-backdrop-filter: blur(24px) saturate(190%);
-        border: 1.5px solid var(--border-card);
-        box-shadow: 0 10px 32px rgba(0, 0, 0, 0.18), var(--shadow-card);
+        backdrop-filter: blur(20px) saturate(180%);
+        -webkit-backdrop-filter: blur(20px) saturate(180%);
+        border: 1px solid var(--border-card);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 0 14px;
+        padding: 0 8px 0 12px;
         z-index: 900;
       }
-      .dock-ticker { flex: 1; margin-right: 10px; overflow: hidden; }
+      .dock-ticker { flex: 1; margin-right: 8px; overflow: hidden; }
       .dock-ticker-inner {
-        white-space: nowrap; animation: marquee 25s linear infinite; font-size: 11px; font-weight: 700; color: var(--text-main);
+        white-space: nowrap;
+        animation: marquee 25s linear infinite;
+        font-size: 11.5px;
+        font-weight: 600;
+        color: var(--text-main);
       }
       @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
 
       .dock-wa-btn {
-        display: flex; align-items: center; gap: 5px; padding: 7px 14px; border-radius: 14px;
-        background: linear-gradient(135deg, #34D399, #059669); color: #FFFFFF; text-decoration: none;
-        font-size: 11px; font-weight: 800; box-shadow: 0 4px 14px rgba(5, 150, 105, 0.42), inset 1.2px 1.2px 2px rgba(255,255,255,0.4);
-        border: 1px solid rgba(255, 255, 255, 0.25); flex-shrink: 0; transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        padding: 6px 12px;
+        border-radius: 9999px;
+        background: var(--ios-emerald);
+        color: #FFFFFF;
+        text-decoration: none;
+        font-size: 11.5px;
+        font-weight: 800;
+        border: none;
+        box-shadow: 0 2px 6px rgba(52, 199, 89, 0.25);
+        flex-shrink: 0;
+        transition: opacity 0.15s ease;
       }
-      .dock-wa-btn:active { transform: scale(0.93) translateY(1px); }
+      .dock-wa-btn:active { opacity: 0.85; }
 
       /* Modal Bottom Sheet */
       .ios-modal-overlay {
-        position: fixed; inset: 0; z-index: 10000;
-        background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px); display: flex; align-items: center; justify-content: center;
-        padding: 16px; opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+        position: fixed;
+        inset: 0;
+        z-index: 10000;
+        background: rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s ease;
       }
       .ios-modal-overlay.active { opacity: 1; pointer-events: auto; }
       .ios-modal-card {
-        width: 100%; max-width: 390px; border-radius: 30px;
-        background: var(--surface-modal);
-        box-shadow: 0 28px 70px rgba(0, 0, 0, 0.35), var(--shadow-card);
-        border: 1.5px solid var(--border-card); padding: 20px 22px;
-        display: flex; flex-direction: column; gap: 14px; transform: scale(0.9) translateY(24px);
-        transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-        max-height: 90vh; overflow-y: auto;
+        width: 100%;
+        max-width: 390px;
+        border-radius: 18px;
+        background: var(--surface-card-solid);
+        box-shadow: 0 12px 36px rgba(0, 0, 0, 0.2);
+        border: 1px solid var(--border-card);
+        padding: 18px 18px 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        transform: scale(0.95) translateY(16px);
+        transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        max-height: 90vh;
+        overflow-y: auto;
       }
       .ios-modal-overlay.active .ios-modal-card { transform: scale(1) translateY(0); }
-      .ios-sheet-handle { width: 36px; height: 5px; border-radius: 3px; background: var(--border-subtle); margin: -6px auto 4px; }
+      .ios-sheet-handle {
+        width: 36px;
+        height: 4px;
+        border-radius: 9999px;
+        background: rgba(120, 120, 128, 0.3);
+        margin: -4px auto 4px;
+      }
       .modal-head-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
       .modal-title-group { display: flex; align-items: center; gap: 8px; }
-      .modal-title-group h3 { font-size: 15px; font-weight: 900; color: var(--text-main); }
+      .modal-title-group h3 { font-size: 15px; font-weight: 800; color: var(--text-main); margin: 0; }
       .modal-close-btn {
-        width: 32px; height: 32px; border-radius: 50%; background: var(--surface-well);
-        box-shadow: var(--shadow-btn); border: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: center;
-        color: var(--text-sub); cursor: pointer;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: var(--surface-well);
+        border: 1px solid var(--border-card);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-sub);
+        cursor: pointer;
       }
       .modal-qr-section {
-        display: flex; flex-direction: column; align-items: center; text-align: center; gap: 10px;
-        padding: 14px 10px; border-radius: 22px; background: var(--surface-well);
-        box-shadow: var(--shadow-inset); border: 1px solid var(--border-subtle);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 8px;
+        padding: 12px 10px;
+        border-radius: 14px;
+        background: var(--surface-well);
+        border: 1px solid var(--border-card);
       }
       .modal-big-qr {
-        width: 170px; height: 170px; border-radius: 16px; background: #FFFFFF; padding: 8px;
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15); display: flex; align-items: center; justify-content: center;
+        width: 160px;
+        height: 160px;
+        border-radius: 12px;
+        background: #FFFFFF;
+        padding: 6px;
+        border: 1px solid var(--border-card);
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
       .modal-big-qr svg { width: 100% !important; height: 100% !important; border-radius: 8px; }
-      .modal-qr-caption { font-size: 11.5px; font-weight: 700; color: var(--text-sub); line-height: 1.35; max-width: 280px; }
+      .modal-qr-caption { font-size: 11.5px; font-weight: 600; color: var(--text-sub); line-height: 1.35; max-width: 280px; margin: 0; }
       .modal-action-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
       .modal-action-btn {
-        padding: 9px 12px; border-radius: 16px; border: none; font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 11px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;
-        transition: transform 0.15s ease;
+        padding: 8px 12px;
+        border-radius: 10px;
+        border: none;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 12px;
+        font-weight: 800;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        transition: opacity 0.15s ease;
       }
-      .modal-action-btn:active { transform: scale(0.95); }
-      .modal-action-btn.copy { background: var(--surface-card-solid); box-shadow: var(--shadow-btn); border: 1.5px solid var(--border-card); color: var(--text-main); }
-      .modal-action-btn.share { background: linear-gradient(145deg, #60A5FA, #2563EB); color: #FFFFFF; box-shadow: 4px 6px 16px rgba(37, 99, 235, 0.42); }
+      .modal-action-btn:active { opacity: 0.8; }
+      .modal-action-btn.copy { background: var(--surface-well); border: 1px solid var(--border-card); color: var(--text-main); }
+      .modal-action-btn.share { background: var(--ios-blue); color: #FFFFFF; box-shadow: 0 2px 6px rgba(0, 122, 255, 0.3); }
       .modal-hotline-card {
-        display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 20px;
-        background: linear-gradient(135deg, #10B981, #059669); text-decoration: none; color: #FFFFFF !important;
-        box-shadow: 5px 7px 18px rgba(5, 150, 105, 0.42);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 14px;
+        border-radius: 12px;
+        background: var(--ios-emerald);
+        text-decoration: none;
+        color: #FFFFFF !important;
+        box-shadow: 0 2px 6px rgba(52, 199, 89, 0.3);
       }
 
       /* ═══════════════════════════════════════════════════════════════
@@ -2572,13 +2716,13 @@
         color: var(--text-sub);
       }
 
-      .clay-choice-list {
+      .ios-action-list, .clay-choice-list {
         display: flex;
         flex-direction: column;
         gap: 8px;
       }
 
-      .clay-choice-tile {
+      .ios-action-tile, .clay-choice-tile {
         display: flex;
         align-items: center;
         gap: 10px;
@@ -2594,12 +2738,12 @@
         touch-action: manipulation;
         user-select: none;
       }
-      .clay-choice-tile:active {
+      .ios-action-tile:active, .clay-choice-tile:active {
         transform: scale(0.97);
         background: var(--surface-card-solid);
       }
 
-      .clay-choice-icon-coin {
+      .ios-action-icon, .clay-choice-icon-coin {
         width: 36px;
         height: 36px;
         border-radius: 10px;
@@ -2608,81 +2752,76 @@
         justify-content: center;
         flex-shrink: 0;
       }
-      .clay-choice-icon-coin.bpjs {
+      .ios-action-icon.bpjs, .clay-choice-icon-coin.bpjs {
         background: rgba(52, 199, 89, 0.15);
         color: #34C759;
       }
-      .clay-choice-icon-coin.non-bpjs {
+      .ios-action-icon.non-bpjs, .clay-choice-icon-coin.non-bpjs {
         background: rgba(0, 122, 255, 0.15);
         color: #007AFF;
       }
-      .clay-choice-icon-coin.wa {
+      .ios-action-icon.wa, .clay-choice-icon-coin.wa {
         background: rgba(52, 199, 89, 0.15);
         color: #34C759;
       }
-      .clay-choice-icon-coin .material-icons-round {
+      .ios-action-icon .material-icons-round, .clay-choice-icon-coin .material-icons-round {
         font-size: 19px;
       }
 
-      .clay-choice-content {
+      .ios-action-content, .clay-choice-content {
         display: flex;
         flex-direction: column;
         gap: 2px;
         flex: 1;
         min-width: 0;
       }
-      .clay-choice-title-row {
+      .ios-action-title-row, .clay-choice-title-row {
         display: flex;
         align-items: center;
         gap: 6px;
         flex-wrap: wrap;
       }
-      .clay-choice-title {
-        font-family: "Outfit", sans-serif;
+      .ios-action-title, .clay-choice-title {
+        font-family: "Plus Jakarta Sans", sans-serif;
         font-size: 13px;
-        font-weight: 900;
+        font-weight: 800;
         color: var(--text-main);
       }
-      .clay-choice-tag {
+      .ios-action-tag, .clay-choice-tag {
         font-size: 11px;
-        font-weight: 900;
-        padding: 2.5px 7px;
+        font-weight: 800;
+        padding: 2px 7px;
         border-radius: 6px;
         text-transform: uppercase;
-        letter-spacing: 0.03em;
+        letter-spacing: 0.02em;
       }
-      .clay-choice-tag.bpjs {
-        background: rgba(16, 185, 129, 0.15);
-        color: #059669;
-        border: 1px solid rgba(16, 185, 129, 0.3);
+      .ios-action-tag.bpjs, .clay-choice-tag.bpjs {
+        background: rgba(52, 199, 89, 0.14);
+        color: #34C759;
+        border: 1px solid rgba(52, 199, 89, 0.3);
       }
-      .clay-choice-tag.non-bpjs {
-        background: rgba(37, 99, 235, 0.15);
-        color: #2563EB;
-        border: 1px solid rgba(37, 99, 235, 0.3);
+      .ios-action-tag.non-bpjs, .clay-choice-tag.non-bpjs {
+        background: rgba(0, 122, 255, 0.14);
+        color: #007AFF;
+        border: 1px solid rgba(0, 122, 255, 0.3);
       }
-      .clay-choice-tag.wa {
-        background: rgba(16, 185, 129, 0.15);
-        color: #059669;
-        border: 1px solid rgba(16, 185, 129, 0.3);
+      .ios-action-tag.wa, .clay-choice-tag.wa {
+        background: rgba(52, 199, 89, 0.14);
+        color: #34C759;
+        border: 1px solid rgba(52, 199, 89, 0.3);
       }
 
-      .clay-choice-desc {
-        font-size: 12px;
+      .ios-action-desc, .clay-choice-desc {
+        font-size: 11.5px;
         font-weight: 600;
         color: var(--text-sub);
         line-height: 1.35;
       }
 
-      .clay-choice-chevron {
+      .ios-action-chevron, .clay-choice-chevron {
         color: var(--text-mute);
         font-size: 20px;
         flex-shrink: 0;
-        transition: transform 0.2s ease, color 0.2s ease;
-      }
-      .clay-choice-tile:hover .clay-choice-chevron {
-        transform: translateX(2px);
-        color: var(--text-main);
       }
 
       /* Emergency Overlay */
@@ -2915,9 +3054,6 @@
         <section class="ios-section" id="bedahSection">
           <div class="ios-section-header">
             <div class="ios-sec-title">
-              <div class="sec-icon-coin bedah">
-                <span class="material-icons-round">medical_services</span>
-              </div>
               <span>Poli Bedah</span>
             </div>
             <span class="ios-sec-badge" id="countBedah">0</span>
@@ -2929,9 +3065,6 @@
         <section class="ios-section" id="nonBedahSection">
           <div class="ios-section-header">
             <div class="ios-sec-title">
-              <div class="sec-icon-coin nonbedah">
-                <span class="material-icons-round">monitor_heart</span>
-              </div>
               <span>Poli Non-Bedah</span>
             </div>
             <span class="ios-sec-badge" id="countNonBedah">0</span>
@@ -2943,9 +3076,6 @@
         <section class="ios-section" id="sidebarSection">
           <div class="ios-section-header">
             <div class="ios-sec-title">
-              <div class="sec-icon-coin khusus">
-                <span class="material-icons-round">stars</span>
-              </div>
               <span>Status Khusus (Cuti / Penuh)</span>
             </div>
             <span class="ios-sec-badge" id="countSidebar">0</span>
@@ -2953,24 +3083,23 @@
           <div class="scroller" id="scrollSidebar"></div>
         </section>
 
-        <!-- LIVE SEARCH EMPTY STATE WITH 1-TAP RESET -->
-        <div id="liveSearchEmptyState" class="empty-state-clay" style="display: none; margin: 10px 0 16px;">
-          <div class="clay-empty-coin amber" id="searchEmptyCoin">
-            <div class="clay-pulse-ring"></div>
+        <!-- LIVE SEARCH EMPTY STATE (SWIFTUI STYLE) -->
+        <div id="liveSearchEmptyState" class="ios-empty-state" style="display: none; margin: 10px 0 16px;">
+          <div class="ios-empty-coin" id="searchEmptyCoin">
             <span class="material-icons-round" id="searchEmptyIcon">person_search</span>
           </div>
-          <h4 id="searchEmptyTitle">Dokter Tidak Ditemukan</h4>
-          <p id="searchEmptySub">Tidak ditemukan jadwal dokter dengan kata kunci atau filter poli tersebut.</p>
+          <h4 id="searchEmptyTitle" class="ios-empty-title">Dokter Tidak Ditemukan</h4>
+          <p id="searchEmptySub" class="ios-empty-sub">Tidak ditemukan jadwal dokter dengan kata kunci atau filter poli tersebut.</p>
           <button class="empty-reset-btn" id="searchEmptyBtn" onclick="clearSearch(); switchLiveSpec('all'); switchTab('all');">
-            <span class="material-icons-round" style="font-size: 16px;">restart_alt</span>
+            <span class="material-icons-round" style="font-size: 15px;">restart_alt</span>
             <span id="searchEmptyBtnText">Bersihkan Pencarian</span>
           </button>
         </div>
 
-        <!-- PATIENT SERVICE WIDGET (HOTLINE & QR) -->
-        <section class="patient-service-clay">
+        <!-- PATIENT SERVICE WIDGET (APPLE NATIVE) -->
+        <section class="patient-service-widget">
           <div class="patient-qr-row">
-            <div class="qr-container-clay" onclick="openQrModal()" title="Klik untuk memperbesar Barcode">
+            <div class="qr-container-widget" onclick="openQrModal()" title="Klik untuk memperbesar Barcode">
               <div class="qr-tap-badge"><span class="material-icons-round">zoom_in</span></div>
               <div id="patientQrCode"></div>
             </div>
@@ -2983,7 +3112,7 @@
             </div>
           </div>
           
-          <a href="https://wa.me/6282323446076" target="_blank" class="hotline-clay-pill">
+          <a href="https://wa.me/6282323446076" target="_blank" class="hotline-action-pill">
             <div class="hotline-icon-box">
               <span class="material-icons-round">support_agent</span>
             </div>
@@ -2994,7 +3123,7 @@
             <span class="material-icons-round hotline-chevron">chevron_right</span>
           </a>
 
-          <div class="dynamic-info-clay">
+          <div class="dynamic-info-bar">
             <div class="info-icon-coin">
               <span class="material-icons-round">campaign</span>
             </div>
@@ -3238,50 +3367,50 @@
           </div>
         </div>
 
-        <div class="clay-choice-list">
+        <div class="ios-action-list">
           <!-- 1. DAFTAR ONLINE BPJS (MOBILE JKN) -->
-          <a href="https://play.google.com/store/apps/details?id=app.bpjs.mobile" target="_blank" class="clay-choice-tile" onclick="triggerHaptic('medium'); trackRegChoice('bpjs');">
-            <div class="clay-choice-icon-coin bpjs">
+          <a href="https://play.google.com/store/apps/details?id=app.bpjs.mobile" target="_blank" class="ios-action-tile" onclick="triggerHaptic('medium'); trackRegChoice('bpjs');">
+            <div class="ios-action-icon bpjs">
               <span class="material-icons-round">health_and_safety</span>
             </div>
-            <div class="clay-choice-content">
-              <div class="clay-choice-title-row">
-                <span class="clay-choice-title">Daftar Online BPJS</span>
-                <span class="clay-choice-tag bpjs">Mobile JKN</span>
+            <div class="ios-action-content">
+              <div class="ios-action-title-row">
+                <span class="ios-action-title">Daftar Online BPJS</span>
+                <span class="ios-action-tag bpjs">Mobile JKN</span>
               </div>
-              <span class="clay-choice-desc">Ambil antrean faskes rujukan BPJS Kesehatan via aplikasi resmi Mobile JKN</span>
+              <span class="ios-action-desc">Ambil antrean faskes rujukan BPJS Kesehatan via aplikasi resmi Mobile JKN</span>
             </div>
-            <span class="material-icons-round clay-choice-chevron">chevron_right</span>
+            <span class="material-icons-round ios-action-chevron">chevron_right</span>
           </a>
 
           <!-- 2. DAFTAR ONLINE NON BPJS (NUHA APP) -->
-          <a href="https://play.google.com/store/apps/details?id=com.nuha.nuha" target="_blank" class="clay-choice-tile" onclick="triggerHaptic('medium'); trackRegChoice('non_bpjs');">
-            <div class="clay-choice-icon-coin non-bpjs">
+          <a href="https://play.google.com/store/apps/details?id=com.nuha.nuha" target="_blank" class="ios-action-tile" onclick="triggerHaptic('medium'); trackRegChoice('non_bpjs');">
+            <div class="ios-action-icon non-bpjs">
               <span class="material-icons-round">app_registration</span>
             </div>
-            <div class="clay-choice-content">
-              <div class="clay-choice-title-row">
-                <span class="clay-choice-title">Daftar Online Non-BPJS</span>
-                <span class="clay-choice-tag non-bpjs">Nuha App</span>
+            <div class="ios-action-content">
+              <div class="ios-action-title-row">
+                <span class="ios-action-title">Daftar Online Non-BPJS</span>
+                <span class="ios-action-tag non-bpjs">Nuha App</span>
               </div>
-              <span class="clay-choice-desc">Booking antrean pasien umum, asuransi rekanan & perusahaan via aplikasi Nuha</span>
+              <span class="ios-action-desc">Booking antrean pasien umum, asuransi rekanan & perusahaan via aplikasi Nuha</span>
             </div>
-            <span class="material-icons-round clay-choice-chevron">chevron_right</span>
+            <span class="material-icons-round ios-action-chevron">chevron_right</span>
           </a>
 
           <!-- 3. BUTUH BANTUAN WA INFORMASI -->
-          <a id="regWaBtn" href="https://wa.me/6282323446076" target="_blank" class="clay-choice-tile" onclick="triggerHaptic('medium'); trackRegChoice('wa');">
-            <div class="clay-choice-icon-coin wa">
+          <a id="regWaBtn" href="https://wa.me/6282323446076" target="_blank" class="ios-action-tile" onclick="triggerHaptic('medium'); trackRegChoice('wa');">
+            <div class="ios-action-icon wa">
               <span class="material-icons-round">support_agent</span>
             </div>
-            <div class="clay-choice-content">
-              <div class="clay-choice-title-row">
-                <span class="clay-choice-title">Butuh Bantuan WA Informasi</span>
-                <span class="clay-choice-tag wa">WhatsApp CS</span>
+            <div class="ios-action-content">
+              <div class="ios-action-title-row">
+                <span class="ios-action-title">Butuh Bantuan WA Informasi</span>
+                <span class="ios-action-tag wa">WhatsApp CS</span>
               </div>
-              <span class="clay-choice-desc">Konsultasi langsung dengan customer service & petugas pendaftaran RS</span>
+              <span class="ios-action-desc">Konsultasi langsung dengan customer service & petugas pendaftaran RS</span>
             </div>
-            <span class="material-icons-round clay-choice-chevron">chevron_right</span>
+            <span class="material-icons-round ios-action-chevron">chevron_right</span>
           </a>
         </div>
       </div>
@@ -4018,14 +4147,17 @@
             Array(3)
               .fill(0)
               .map(() => `
-                <div class="platter clay-skeleton" style="padding: 14px 16px; display: flex; flex-direction: column; gap: 8px;">
-                  <div style="display: flex; align-items: center; gap: 12px; width: 100%;">
-                    <div style="width: 44px; height: 44px; border-radius: 16px; background: rgba(148, 163, 184, 0.25); flex-shrink: 0;"></div>
-                    <div style="flex: 1; display: flex; flex-direction: column; gap: 6px;">
-                      <div style="width: 40%; height: 12px; border-radius: 6px; background: rgba(148, 163, 184, 0.25);"></div>
-                      <div style="width: 75%; height: 15px; border-radius: 6px; background: rgba(148, 163, 184, 0.35);"></div>
+                <div class="platter ios-skeleton" style="padding: 12px 14px; display: flex; flex-direction: column; gap: 8px;">
+                  <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                    <div style="width: 35%; height: 12px; border-radius: 6px; background: rgba(148, 163, 184, 0.25);"></div>
+                    <div style="width: 50px; height: 18px; border-radius: 9999px; background: rgba(148, 163, 184, 0.25);"></div>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 10px; width: 100%;">
+                    <div style="width: 40px; height: 40px; border-radius: 12px; background: rgba(148, 163, 184, 0.25); flex-shrink: 0;"></div>
+                    <div style="flex: 1; display: flex; flex-direction: column; gap: 5px;">
+                      <div style="width: 70%; height: 14px; border-radius: 6px; background: rgba(148, 163, 184, 0.35);"></div>
+                      <div style="width: 45%; height: 11px; border-radius: 6px; background: rgba(148, 163, 184, 0.2);"></div>
                     </div>
-                    <div style="width: 65px; height: 24px; border-radius: 10px; background: rgba(148, 163, 184, 0.25);"></div>
                   </div>
                 </div>`)
               .join("");
@@ -4794,13 +4926,12 @@
         let newHTML = "";
         if (filteredShifts.length === 0) {
           newHTML = `
-            <div class="empty-state-clay">
-              <div class="clay-empty-coin">
-                <div class="clay-pulse-ring"></div>
+            <div class="ios-empty-state">
+              <div class="ios-empty-coin">
                 <span class="material-icons-round">event_busy</span>
               </div>
-              <h4>Tidak Ada Jadwal Dokter</h4>
-              <p>Tidak ada praktik dokter spesialis yang terdaftar pada hari ${DAYS_NAME_FULL[dayIdx]}.</p>
+              <h4 class="ios-empty-title">Tidak Ada Jadwal Dokter</h4>
+              <p class="ios-empty-sub">Tidak ada praktik dokter spesialis yang terdaftar pada hari ${DAYS_NAME_FULL[dayIdx]}.</p>
             </div>`;
         } else {
           const favs = getFavDoctors();
@@ -5157,13 +5288,12 @@
           }
           
           container.innerHTML = `
-            <div class="empty-state-clay">
-              <div class="clay-empty-coin ${holiday.isTanggalMerah ? 'amber' : 'green'}">
-                <div class="clay-pulse-ring"></div>
+            <div class="ios-empty-state">
+              <div class="ios-empty-coin ${holiday.isTanggalMerah ? 'amber' : 'green'}">
                 <span class="material-icons-round">${holiday.isTanggalMerah ? 'event_busy' : 'verified'}</span>
               </div>
-              <h4>${esc(emptyTitle)}</h4>
-              <p>${esc(emptyMsg)}</p>
+              <h4 class="ios-empty-title">${esc(emptyTitle)}</h4>
+              <p class="ios-empty-sub">${esc(emptyMsg)}</p>
             </div>`;
           return;
         }
