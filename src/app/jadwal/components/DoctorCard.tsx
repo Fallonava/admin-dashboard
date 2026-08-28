@@ -3,7 +3,7 @@ import type { Doctor } from '../types';
 import SpecialistIcon from './SpecialistIcon';
 import { getInitials, getSpecialtyBadgeClass, formatTimeSlot } from '../lib/schedule-utils';
 import { triggerHaptic } from '../lib/haptics';
-import { Clock, Ticket, UserPlus, Star, Share2, Copy, MessageCircle, ChevronDown, Check } from 'lucide-react';
+import { Clock, Ticket, UserPlus, Star, Share2, Copy, MessageCircle, ChevronDown, Check, Calendar } from 'lucide-react';
 
 interface DoctorCardProps {
   doctor: Doctor;
@@ -90,6 +90,49 @@ export default function DoctorCard({
     }
     setCopiedCode(true);
     setTimeout(() => setCopiedCode(false), 2000);
+  };
+
+  const handleAddToCalendar = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    triggerHaptic('success');
+    const title = `Praktik ${doctor.name} (${doctor.specialty})`;
+    const location = 'RSU Siaga Medika Pemalang';
+    const description = `Jadwal Dokter ${doctor.name} - ${doctor.specialty}. Jam: ${doctor.todayShift?.formattedTime || 'Sesuai Jadwal'}. Kode Antrean: ${doctor.queueCode || 'POLI'}.`;
+    
+    const now = new Date();
+    const startStr = now.toISOString().replace(/-|:|\.\d+/g, '').slice(0, 15) + 'Z';
+    const endStr = new Date(now.getTime() + 2 * 3600000).toISOString().replace(/-|:|\.\d+/g, '').slice(0, 15) + 'Z';
+
+    const icsContent = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//RSU Siaga Medika//Jadwal Dokter//ID',
+      'CALSCALE:GREGORIAN',
+      'BEGIN:VEVENT',
+      `SUMMARY:${title}`,
+      `LOCATION:${location}`,
+      `DESCRIPTION:${description}`,
+      `DTSTART:${startStr}`,
+      `DTEND:${endStr}`,
+      'STATUS:CONFIRMED',
+      'BEGIN:VALARM',
+      'TRIGGER:-PT1H',
+      'ACTION:DISPLAY',
+      `DESCRIPTION:Pengingat Praktik Dokter: ${title}`,
+      'END:VALARM',
+      'END:VEVENT',
+      'END:VCALENDAR'
+    ].join('\r\n');
+
+    const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `Jadwal_${doctor.name.replace(/[^a-zA-Z0-9]/g, '_')}.ics`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   const toggleExpand = () => {
@@ -225,6 +268,16 @@ export default function DoctorCard({
               <MessageCircle size={15} />
               <span>Tanya CS Dokter</span>
             </a>
+
+            <button
+              type="button"
+              className="drawer-cal-btn"
+              onClick={handleAddToCalendar}
+              title="Simpan ke Apple/Google Calendar"
+            >
+              <Calendar size={15} />
+              <span>Ke Kalender</span>
+            </button>
 
             <button
               type="button"

@@ -1606,3 +1606,60 @@
 .btn-register-primary:hover::after {
   left: 100%;
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   APPLE iOS 27 LIQUID CALENDAR & INTERACTION ADDITIONS
+   ═══════════════════════════════════════════════════════════════ */
+.drawer-cal-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: var(--radius-pill);
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid rgba(0, 122, 255, 0.25);
+  background: rgba(0, 122, 255, 0.08);
+  color: var(--ios-blue);
+  cursor: pointer;
+  transition: transform 140ms ease, background 140ms ease, box-shadow 140ms ease;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.drawer-cal-btn:active {
+  transform: scale(0.96);
+  background: rgba(0, 122, 255, 0.18);
+  box-shadow: 0 0 10px rgba(0, 122, 255, 0.25);
+}
+
+[data-theme="dark"] .drawer-cal-btn, html.dark .drawer-cal-btn, body.dark .drawer-cal-btn {
+  background: rgba(10, 132, 255, 0.15);
+  border-color: rgba(10, 132, 255, 0.35);
+  color: #0A84FF;
+}
+
+/* Weekly Day Buttons Liquid Glass */
+.weekly-day-btn {
+  background: var(--liquid-glass-bg) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: var(--liquid-glass-border) !important;
+  box-shadow: var(--shadow-level-1) !important;
+  transition: transform 200ms var(--spring), background 200ms ease, box-shadow 200ms ease !important;
+}
+
+.weekly-day-btn:active {
+  transform: scale(0.94) !important;
+}
+
+.weekly-day-btn.active {
+  background: var(--ios-blue) !important;
+  color: #FFFFFF !important;
+  border-color: rgba(255, 255, 255, 0.4) !important;
+  box-shadow: 0 8px 24px rgba(0, 122, 255, 0.38), inset 0 1px 1px rgba(255, 255, 255, 0.5) !important;
+}
+
+.weekly-day-btn.active span {
+  color: #FFFFFF !important;
+}
