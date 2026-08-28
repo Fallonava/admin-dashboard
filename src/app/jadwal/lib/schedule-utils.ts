@@ -237,6 +237,22 @@ export function formatTimeSlot(startTime?: string, endTime?: string, formattedTi
   return 'Sesuai Perjanjian';
 }
 
+export function filterLeaves(leaves: any[], filterType: 'all' | 'active' | 'upcoming' | 'past' = 'all'): any[] {
+  const todayWibStr = toWibDateStr(new Date());
+
+  return leaves.filter((l) => {
+    if (!l.startDate) return false;
+    const startStr = toWibDateStr(l.startDate);
+    const endStr = toWibDateStr(l.endDate || l.startDate);
+
+    if (filterType === 'all') return true;
+    if (filterType === 'active') return todayWibStr >= startStr && todayWibStr <= endStr;
+    if (filterType === 'upcoming') return todayWibStr < startStr;
+    if (filterType === 'past') return todayWibStr > endStr;
+    return true;
+  });
+}
+
 export interface CalendarDayItem {
   dayNum: number;
   date: Date;
