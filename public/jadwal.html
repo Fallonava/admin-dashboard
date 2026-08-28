@@ -1257,6 +1257,7 @@
         display: flex;
         flex-direction: column;
         gap: 12px;
+        contain: layout style;
       }
 
       .platter {
@@ -1270,6 +1271,10 @@
         position: relative;
         transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.22s ease;
         cursor: pointer;
+        content-visibility: auto;
+        contain-intrinsic-size: auto 130px;
+        transform: translateZ(0);
+        backface-visibility: hidden;
       }
       .platter:active {
         transform: scale(0.985);
@@ -1882,6 +1887,10 @@
         padding: 4px 4px 10px;
         -webkit-overflow-scrolling: touch;
         scroll-behavior: smooth;
+        scroll-snap-type: x proximity;
+        contain: layout style paint;
+        transform: translateZ(0);
+        backface-visibility: hidden;
       }
       .weekly-date-strip::-webkit-scrollbar { display: none; }
 
@@ -1902,6 +1911,9 @@
         touch-action: manipulation;
         user-select: none;
         flex-shrink: 0;
+        scroll-snap-align: center;
+        transform: translateZ(0);
+        backface-visibility: hidden;
       }
       .weekly-date-card:active {
         transform: scale(0.92) translate3d(0, 2px, 0) !important;
@@ -2049,6 +2061,10 @@
         gap: 12px;
         position: relative;
         transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+        content-visibility: auto;
+        contain-intrinsic-size: auto 160px;
+        transform: translateZ(0);
+        backface-visibility: hidden;
       }
       .weekly-pass-card:active {
         transform: scale(0.985);
@@ -4836,11 +4852,15 @@
         renderWeeklySchedule();
       }
 
+      let _weeklySearchDebounceTimer = null;
       function onWeeklySearchInput(val) {
         const clearBtn = document.getElementById("weeklySearchClearBtn");
         if (clearBtn) clearBtn.style.display = val && val.trim() ? "flex" : "none";
-        window.weeklySearchQuery = (val || "").trim().toLowerCase();
-        renderWeeklySchedule();
+        clearTimeout(_weeklySearchDebounceTimer);
+        _weeklySearchDebounceTimer = setTimeout(() => {
+          window.weeklySearchQuery = (val || "").trim().toLowerCase();
+          requestAnimationFrame(() => renderWeeklySchedule());
+        }, 90);
       }
 
       function clearWeeklySearch() {
@@ -5232,11 +5252,15 @@
         gridEl.innerHTML = html;
       }
 
+      let _leavesSearchDebounceTimer = null;
       function onLeavesSearchInput(val) {
         const clearBtn = document.getElementById("leavesSearchClearBtn");
         if (clearBtn) clearBtn.style.display = val && val.trim() ? "flex" : "none";
-        window.leavesSearchQuery = (val || "").trim().toLowerCase();
-        renderLeavesList();
+        clearTimeout(_leavesSearchDebounceTimer);
+        _leavesSearchDebounceTimer = setTimeout(() => {
+          window.leavesSearchQuery = (val || "").trim().toLowerCase();
+          requestAnimationFrame(() => renderLeavesList());
+        }, 90);
       }
 
       function clearLeavesSearch() {
@@ -5388,6 +5412,11 @@
             (l.replacementDoctor ? '<div class="leave-replacement"><span class="material-icons-round" style="font-size: 13px;">person</span><span>Pengganti: ' + esc(l.replacementDoctor) + '</span></div>' : '') +
           '</div>';
         }).join("");
+
+        if (container._lastRenderedHTML !== newHTML) {
+          container._lastRenderedHTML = newHTML;
+          container.innerHTML = newHTML;
+        }
       }
 
       App.init();
