@@ -41,16 +41,6 @@
         /* ═══ APPLE tvOS / iOS — SOLID SYSTEM COLORS ═══ */
         --bg-body: #1C1C1E;
         --bg-ambient: #1C1C1E;
-        --clay-bg-surface: #2C2C2E;
-        --clay-border: rgba(255, 255, 255, 0.08);
-        --clay-shadow-outer: 0 14px 32px -4px rgba(0, 0, 0, 0.6), 0 4px 12px -2px rgba(0, 0, 0, 0.4);
-        --clay-shadow-inner: inset 1px 1px 1px rgba(255, 255, 255, 0.14), inset -1px -1px 2px rgba(0, 0, 0, 0.5);
-        --clay-inset: inset 3px 3px 6px rgba(0, 0, 0, 0.55), inset -2px -2px 5px rgba(255, 255, 255, 0.05);
-
-        --neo-shadow-dark: rgba(0, 0, 0, 0.6);
-        --neo-shadow-light: rgba(255, 255, 255, 0.06);
-        --neo-inset-dark: inset 3px 3px 6px rgba(0, 0, 0, 0.55);
-        --neo-inset-light: inset -2px -2px 5px rgba(255, 255, 255, 0.05);
         
         --text-primary: #F5F5F7;
         --text-secondary: #98989D;
@@ -60,11 +50,8 @@
         --header-bg: transparent;
         --border-light: rgba(255, 255, 255, 0.08);
         --platter-border: rgba(255, 255, 255, 0.08); 
-        --footer-bg: #2C2C2E;
-        --app-bg-overlay: transparent;
-        --shadow: var(--clay-shadow-outer), var(--clay-shadow-inner);
         
-        /* Vibrant 3D Clinical Statuses */
+        /* Vibrant Clinical Statuses */
         --accent-emerald: #10B981;
         --accent-emerald-gradient: linear-gradient(135deg, #10B981 0%, #059669 100%);
         --accent-emerald-glow: rgba(16, 185, 129, 0.4);
@@ -96,16 +83,6 @@
       [data-theme="light"] {
         --bg-body: #F2F2F7;
         --bg-ambient: #F2F2F7;
-        --clay-bg-surface: #FFFFFF;
-        --clay-border: rgba(60, 60, 67, 0.12);
-        --clay-shadow-outer: 0 1px 0 rgba(60, 60, 67, 0.10), 0 4px 16px -4px rgba(60, 60, 67, 0.08);
-        --clay-shadow-inner: inset 0 1px 0 rgba(255, 255, 255, 0.95);
-        --clay-inset: inset 2px 2px 5px rgba(148, 163, 184, 0.12), inset -2px -2px 5px rgba(255, 255, 255, 0.95);
-
-        --neo-shadow-dark: rgba(148, 163, 184, 0.20);
-        --neo-shadow-light: #ffffff;
-        --neo-inset-dark: inset 2px 2px 5px rgba(148, 163, 184, 0.12);
-        --neo-inset-light: inset -2px -2px 5px rgba(255, 255, 255, 0.95);
 
         --text-primary: #1C1C1E;
         --text-secondary: #3C3C43;
@@ -115,9 +92,6 @@
         --header-bg: transparent;
         --border-light: rgba(60, 60, 67, 0.12);
         --platter-border: rgba(60, 60, 67, 0.12);
-        --footer-bg: #F2F2F7;
-        --app-bg-overlay: transparent;
-        --shadow: var(--clay-shadow-outer), var(--clay-shadow-inner);
         --logo-text: #1C1C1E;
         
         --accent-blue: #007AFF;
@@ -229,106 +203,6 @@
         text-align: left;
         padding-top: 16px;
         border-top: 1px solid var(--border-light);
-      }
-
-      .brand {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-      }
-
-      .logo-box {
-        width: 58px;
-        height: 58px;
-        border-radius: 18px;
-        background: #FFFFFF;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 6px 16px -2px rgba(45, 65, 95, 0.08), inset 0 1.5px 1.5px #FFFFFF;
-        overflow: hidden;
-        border: 1px solid rgba(226, 234, 245, 0.9);
-        animation: slow-breathe 4s ease-in-out infinite;
-      }
-
-      @keyframes slow-breathe {
-        0%, 100% {
-          box-shadow: 0 6px 16px -2px rgba(45, 65, 95, 0.08), inset 0 1.5px 1.5px #FFFFFF;
-        }
-        50% {
-          box-shadow: 0 8px 20px -2px rgba(5, 150, 105, 0.2), inset 0 1.5px 1.5px #FFFFFF;
-        }
-      }
-
-      .logo-box img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
-
-      .title-group h1 {
-        font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 20px;
-        font-weight: 900;
-        letter-spacing: -0.01em;
-        line-height: 1.15;
-        color: #0F172A;
-      }
-
-      .title-group span {
-        font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 13px;
-        font-weight: 800;
-        letter-spacing: 0.06em;
-        text-transform: uppercase;
-        color: #64748B;
-      }
-
-      .time-group {
-        text-align: right;
-      }
-
-      .clock {
-        font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 46px;
-        font-weight: 900;
-        letter-spacing: -0.02em;
-        font-variant-numeric: tabular-nums;
-        line-height: 1;
-        color: #0F172A;
-      }
-
-      .date {
-        font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 14.5px;
-        font-weight: 800;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-        color: #64748B;
-        margin-top: 3px;
-      }
-
-      /* Dark Mode Header Overrides */
-      [data-theme="dark"] .logo-box {
-        background: rgba(255, 255, 255, 0.08);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.15);
-      }
-
-      [data-theme="dark"] .title-group h1 {
-        color: #FFFFFF;
-      }
-
-      [data-theme="dark"] .title-group span {
-        color: #94A3B8;
-      }
-
-      [data-theme="dark"] .clock {
-        color: #FFFFFF;
-      }
-
-      [data-theme="dark"] .date {
-        color: #94A3B8;
       }
 
       /* ===== CONTENT GRID ===== */
@@ -2584,36 +2458,6 @@
         background: rgba(125, 125, 125, 0.05);
       }
 
-      .sidebar-panel .platter.active {
-        background: var(--bg-body) !important;
-        color: var(--status-color) !important;
-        /* Neomorph Inset (Pressed) */
-        box-shadow: var(--neo-inset-dark), var(--neo-inset-light), 0 0 10px var(--status-bg) !important;
-      }
-
-      /* Active Accent Indicator for Sidebar */
-      .sidebar-panel .platter.active::before {
-        background: var(--status-color);
-        width: 4px;
-        border-radius: 4px;
-        left: 6px;
-        top: 10px;
-        bottom: 10px;
-        box-shadow: 0 0 8px var(--status-color);
-        display: block;
-      }
-
-      /* Remove Active Animations in Sidebar for Performance */
-      .sidebar-panel .platter.active .live-status {
-        animation: none !important;
-      }
-
-      .sidebar-panel .platter.active .pulse-dot {
-        animation: none !important;
-        opacity: 1 !important;
-        transform: scale(1) !important;
-      }
-
       .sidebar-panel .doc-name {
         font-size: 13px;
         font-weight: 600;
@@ -4256,17 +4100,6 @@
         /* Orange alert */
       }
 
-      @keyframes pulse-warn {
-        /* Dimatikan transform-scale nya untuk hindari freeze / reflow berat */
-        0% {
-          opacity: 0.6;
-        }
-
-        100% {
-          opacity: 1;
-        }
-      }
-
       /* ===== APPLE iOS/tvOS INTERACTIVE DYNAMIC ISLAND (SPATIAL SPRING & HARDWARE ACCELERATED) ===== */
       .dynamic-island {
         position: absolute;
@@ -4529,21 +4362,6 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
-      }
-
-      .di-pulse-orb {
-        width: 12px;
-        height: 12px;
-        border-radius: 50%;
-        background: var(--accent-emerald);
-        box-shadow: 0 0 12px var(--accent-emerald);
-        animation: di-pulse-ring 2s infinite;
-      }
-
-      @keyframes di-pulse-ring {
-        0% { transform: scale(0.9); opacity: 0.8; }
-        50% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 16px var(--accent-emerald); }
-        100% { transform: scale(0.9); opacity: 0.8; }
       }
 
       .di-compact-label {
@@ -6039,9 +5857,8 @@
         _icon: null,
         _queue: [],
         _isAnimating: false,
-        _state: "compact", // 'compact' | 'expanded' | 'modal'
+        _state: "compact", // 'compact' | 'expanded' | 'hourly'
         _autoCycleTimer: null,
-        _modalDismissTimer: null,
 
         init() {
           this._el = $("dynamicIsland");
