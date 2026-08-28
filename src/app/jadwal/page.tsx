@@ -6,7 +6,7 @@ import useSWR from 'swr';
 import { Search, RotateCcw, AlertTriangle, SearchX, Star, Sparkles, Share2 } from 'lucide-react';
 
 import type { Doctor, Shift, LeaveRequest, DisplayApiResponse } from './types';
-import { evaluateDoctorRealtimeStatus, isSurgeonSpecialty } from './lib/schedule-utils';
+import { evaluateDoctorRealtimeStatus, isSurgeonSpecialty, isShiftActiveForDate } from './lib/schedule-utils';
 import { triggerHaptic } from './lib/haptics';
 
 import DynamicIsland, { DynamicIslandAlert } from './components/DynamicIsland';
@@ -18,6 +18,7 @@ import RegistrationModal from './components/RegistrationModal';
 import FloatingDock from './components/FloatingDock';
 import Toast, { ToastMessage } from './components/Toast';
 import JadwalNavbar from './components/JadwalNavbar';
+import IosTabBar from './components/IosTabBar';
 
 const fetcher = async (url: string): Promise<DisplayApiResponse> => {
   const res = await fetch(url);
@@ -166,19 +167,27 @@ export default function JadwalPage() {
   const leaves: LeaveRequest[] = data?.leaves || [];
   const broadcasts = data?.broadcasts || [];
 
-  // Evaluate real-time doctor statuses
+  // Evaluate real-time doctor statuses using Admin Backend Algorithm
   const evaluatedDoctors = useMemo(() => {
     const now = new Date();
+    const wibTime = new Date(now.getTime() + 7 * 60 * 60 * 1000);
+    const currentDayIdx = (wibTime.getUTCDay() + 6) % 7; // 0=Senin ... 6=Minggu
+    const todayStr = `${wibTime.getUTCFullYear()}-${String(wibTime.getUTCMonth() + 1).padStart(2, '0')}-${String(wibTime.getUTCDate()).padStart(2, '0')}`;
+
     return doctors.map((doc) => {
       const evaluation = evaluateDoctorRealtimeStatus(doc, shifts, leaves, now);
       const todayShift = shifts.find(
-        (s) => s.doctorId === doc.id && (s.dayIdx === now.getDay() || (now.getDay() === 0 && s.dayIdx === 7))
+        (s) =>
+          s.doctorId === doc.id &&
+          s.dayIdx === currentDayIdx &&
+          !(s.disabledDates || []).includes(todayStr) &&
+          isShiftActiveForDate(s.extra, wibTime)
       );
       return {
         ...doc,
         status: evaluation.status,
         activeLeave: evaluation.activeLeave,
-        todayShift,
+        todayShift: todayShift || doc.todayShift,
       };
     });
   }, [doctors, shifts, leaves]);
@@ -527,11 +536,14 @@ export default function JadwalPage() {
         onShowToast={(title, desc) => showToast(title, desc, 'copy')}
       />
 
-      {/* Floating Bottom Dock */}
-      <FloatingDock
-        onOpenGeneralRegistration={handleOpenGeneralRegistration}
-        onThemeToggle={handleThemeToggle}
-        isDarkMode={isDarkMode}
+      {/* Apple iOS 27 Native Bottom Navigation Bar */}
+      <IosTabBar
+        activeTab={activeTab}
+        onTabChange={handleTabChange}
+        onSearchFocus={handleSearchFocus}
+        onOpenRegistration={handleOpenGeneralRegistration}
+        todayCount={evaluatedDoctors.filter((d) => d.status === 'PRAKTEK').length}
+        leavesCount={leaves.length}
       />
     </div>
   );

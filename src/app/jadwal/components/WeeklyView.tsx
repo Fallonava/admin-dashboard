@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import type { Doctor, Shift, LeaveRequest, DayDateItem } from '../types';
 import SpecialistIcon from './SpecialistIcon';
-import { getInitials, getSpecialtyBadgeClass, getWeeklyDateStrip, isDoctorOnLeave, formatTimeSlot } from '../lib/schedule-utils';
+import { getInitials, getSpecialtyBadgeClass, getWeeklyDateStrip, isDoctorOnLeave, formatTimeSlot, isShiftActiveForDate } from '../lib/schedule-utils';
 import { triggerHaptic } from '../lib/haptics';
 import { Search, CalendarX, Clock, ChevronRight, MessageCircle, Filter, CalendarCheck } from 'lucide-react';
 
@@ -20,7 +20,10 @@ export default function WeeklyView({ doctors, shifts, leaves, onSelectDoctor }: 
   const dateStrip = useMemo<DayDateItem[]>(() => getWeeklyDateStrip(new Date()), []);
   const activeDateItem = dateStrip[selectedDayIdx] || dateStrip[0];
 
-  const targetDayOfWeek = activeDateItem?.date?.getDay() ?? 0;
+  const targetDate = activeDateItem?.date || new Date();
+  const targetWibTime = new Date(targetDate.getTime() + 7 * 60 * 60 * 1000);
+  const targetDayIdx = (targetWibTime.getUTCDay() + 6) % 7; // 0=Senin ... 6=Minggu
+  const targetDateStr = activeDateItem?.dateStr || targetWibTime.toISOString().slice(0, 10);
 
   // Extract list of all unique specialties for filter chips
   const uniqueSpecialties = useMemo(() => {
@@ -46,16 +49,18 @@ export default function WeeklyView({ doctors, shifts, leaves, onSelectDoctor }: 
 
       if (!matchesSearch) return false;
 
-      // Check shift matching
+      // Check shift matching with admin parity and disabled dates
       const hasShift = shifts.some(
         (s) =>
           s.doctorId === doc.id &&
-          (s.dayIdx === targetDayOfWeek || (targetDayOfWeek === 0 && s.dayIdx === 7))
+          s.dayIdx === targetDayIdx &&
+          !(s.disabledDates || []).includes(targetDateStr) &&
+          isShiftActiveForDate(s.extra, targetWibTime)
       );
 
       return hasShift;
     });
-  }, [doctors, shifts, targetDayOfWeek, searchQuery, selectedSpecialty]);
+  }, [doctors, shifts, targetDayIdx, targetDateStr, targetWibTime, searchQuery, selectedSpecialty]);
 
   const handleSelectDay = (index: number) => {
     triggerHaptic('selection');
@@ -173,7 +178,9 @@ export default function WeeklyView({ doctors, shifts, leaves, onSelectDoctor }: 
             const shift = shifts.find(
               (s) =>
                 s.doctorId === doc.id &&
-                (s.dayIdx === targetDayOfWeek || (targetDayOfWeek === 0 && s.dayIdx === 7))
+                s.dayIdx === targetDayIdx &&
+                !(s.disabledDates || []).includes(targetDateStr) &&
+                isShiftActiveForDate(s.extra, targetWibTime)
             );
 
             const leave = isDoctorOnLeave(doc.id, activeDateItem.date, leaves);

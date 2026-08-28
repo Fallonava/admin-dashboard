@@ -1,4 +1,5 @@
 import { getIndonesianHoliday } from '@/lib/holidays';
+import { isShiftActiveForDate } from '@/lib/schedule-utils';
 import type { Doctor, Shift, LeaveRequest, DayDateItem, DoctorStatusType } from '../types';
 
 export const INDO_DAYS = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
@@ -96,42 +97,45 @@ export function evaluateDoctorRealtimeStatus(
   leaves: LeaveRequest[] = [],
   currentDate: Date = new Date()
 ): { status: DoctorStatusType; reason?: string; activeLeave?: LeaveRequest | null } {
+  // Convert to WIB (UTC+7)
+  const wibTime = new Date(currentDate.getTime() + (7 * 60 * 60 * 1000));
+  const currentDayIdx = (wibTime.getUTCDay() + 6) % 7; // 0=Senin ... 6=Minggu
+  const todayStr = `${wibTime.getUTCFullYear()}-${String(wibTime.getUTCMonth() + 1).padStart(2, '0')}-${String(wibTime.getUTCDate()).padStart(2, '0')}`;
+  const currentTimeMinutes = wibTime.getUTCHours() * 60 + wibTime.getUTCMinutes();
+
   // 1. Check active leave
   const leave = isDoctorOnLeave(doctor.id, currentDate, leaves);
   if (leave) {
     return { status: 'CUTI', reason: leave.reason || 'Cuti Dokter', activeLeave: leave };
   }
 
-  // 2. Check national holiday / sunday
-  const holiday = getIndonesianHoliday(currentDate);
-  const dayIdx = currentDate.getDay(); // 0=Sunday..6=Saturday
-
-  // Find shift for today with parity
-  const todayShift = shifts.find(
+  // 2. Check shifts for today (filtered by dayIdx, disabledDates, and week parity extra)
+  const todayShifts = shifts.filter(
     (s) =>
       s.doctorId === doctor.id &&
-      (s.dayIdx === dayIdx || (dayIdx === 0 && s.dayIdx === 7)) &&
-      isShiftActiveForDate(s.extra, currentDate)
+      s.dayIdx === currentDayIdx &&
+      !(s.disabledDates || []).includes(todayStr) &&
+      isShiftActiveForDate(s.extra, wibTime)
   );
 
-  if (todayShift?.statusOverride) {
-    return { status: todayShift.statusOverride as DoctorStatusType };
+  // Check manual/status override on shift
+  const activeShiftWithOverride = todayShifts.find((s) => s.statusOverride);
+  if (activeShiftWithOverride?.statusOverride) {
+    return { status: activeShiftWithOverride.statusOverride as DoctorStatusType };
   }
 
-  const dateStr = currentDate.toISOString().split('T')[0];
-  if (todayShift?.disabledDates?.includes(dateStr)) {
-    return { status: 'LIBUR', reason: 'Jadwal Dinonaktifkan' };
-  }
+  const holiday = getIndonesianHoliday(currentDate);
 
-  if (holiday.isTanggalMerah && !todayShift) {
+  if (holiday.isTanggalMerah && todayShifts.length === 0) {
     return { status: 'LIBUR', reason: holiday.name || 'Hari Libur Nasional' };
   }
 
-  if (!todayShift) {
+  if (todayShifts.length === 0) {
     return { status: (doctor.status as DoctorStatusType) || 'LIBUR' };
   }
 
   // 3. Precise time-of-day calculation (TERJADWAL, PRAKTEK, SELESAI)
+  const todayShift = todayShifts[0];
   const jamStr = todayShift.formattedTime || todayShift.title || '-';
   if (jamStr !== '-') {
     const parts = jamStr.replace(/\s/g, '').replace(/\./g, ':').toLowerCase().match(/(\d{1,2}:\d{2})/g);
@@ -157,11 +161,11 @@ export function evaluateDoctorRealtimeStatus(
         if (rParts.length >= 2) regMins = Number(rParts[0]) * 60 + Number(rParts[1]);
       }
 
-      const curMins = currentDate.getHours() * 60 + currentDate.getMinutes();
-
-      if (endMins !== null && curMins >= endMins) {
+      if (endMins !== null && currentTimeMinutes >= endMins) {
         return { status: 'SELESAI', reason: 'Praktik Telah Selesai' };
-      } else if (curMins < regMins) {
+      } else if (currentTimeMinutes >= regMins && currentTimeMinutes < startMins) {
+        return { status: 'PENDAFTARAN', reason: `Pendaftaran dibuka (${parts[0]} WIB)` };
+      } else if (currentTimeMinutes < regMins) {
         return { status: 'TERJADWAL', reason: `Praktik dimulai ${parts[0]} WIB` };
       } else {
         return { status: 'PRAKTEK' };
@@ -315,23 +319,7 @@ export function getCalendarGrid(year: number, month: number, leaves: LeaveReques
   return result;
 }
 
-export function isShiftActiveForDate(extra?: string | null, date: Date = new Date()): boolean {
-  if (!extra) return true;
-  if (extra === 'odd_weeks' || extra === 'even_weeks') {
-    const target = new Date(date.valueOf());
-    const dayNr = (date.getDay() + 6) % 7;
-    target.setDate(target.getDate() - dayNr + 3);
-    const firstThursday = target.valueOf();
-    target.setMonth(0, 1);
-    if (target.getDay() !== 4) {
-      target.setMonth(0, 1 + (((4 - target.getDay()) + 7) % 7));
-    }
-    const weekNum = 1 + Math.ceil((firstThursday - target.valueOf()) / 604800000);
-    const isEven = weekNum % 2 === 0;
-    return extra === 'even_weeks' ? isEven : !isEven;
-  }
-  return true;
-}
+export { isShiftActiveForDate, getWeekOfMonth, getRoutineLabel } from '@/lib/schedule-utils';
 
 export function calculateDoctorStatus(
   doctor: Doctor,
