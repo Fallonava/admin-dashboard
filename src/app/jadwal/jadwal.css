@@ -645,3 +645,111 @@
   margin-left: 8px;
   white-space: nowrap;
 }
+
+/* --- iOS 27 Live Indicator & Drawer Polish --- */
+.avatar-squircle-wrap {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+}
+
+.avatar-live-pulse {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 13px;
+  height: 13px;
+  background: var(--ios-green);
+  border: 2px solid var(--surface-card);
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgba(48, 209, 88, 0.6);
+  animation: live-pulse-anim 2s infinite ease-in-out;
+}
+
+@keyframes live-pulse-anim {
+  0% { transform: scale(0.95); opacity: 0.9; }
+  50% { transform: scale(1.15); opacity: 1; box-shadow: 0 0 12px rgba(48, 209, 88, 0.9); }
+  100% { transform: scale(0.95); opacity: 0.9; }
+}
+
+.platter-expanded-drawer {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border-subtle);
+  animation: drawer-slide-down 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+@keyframes drawer-slide-down {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.drawer-info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.drawer-info-item.full {
+  grid-column: span 2;
+}
+
+.drawer-lbl {
+  font-size: 11px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.drawer-val {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.drawer-val.text-red {
+  color: var(--ios-red);
+}
+
+/* Dynamic Island Compact & Expanded Enhancements */
+.island-compact-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 4px;
+}
+
+.island-leading-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ios-green);
+  box-shadow: 0 0 8px rgba(48, 209, 88, 0.8);
+}
+
+.island-compact-txt {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: -0.2px;
+  color: #ffffff;
+}
+
+.island-trailing-icon {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.island-content-expanded {
+  padding: 4px 6px;
+  color: #ffffff;
+}
+
+.island-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 2px;
+}

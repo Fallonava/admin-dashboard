@@ -108,7 +108,7 @@ export default function JadwalPage() {
   return (
     <div className="jadwal-container">
       {/* Top Dynamic Island Area */}
-      <DynamicIsland alert={islandAlert} />
+      <DynamicIsland alert={islandAlert} activeDoctorCount={evaluatedDoctors.filter((d) => d.status === 'PRAKTEK').length} />
 
       {/* iOS Nav Header */}
       <header className="ios-nav-header material-regular">
