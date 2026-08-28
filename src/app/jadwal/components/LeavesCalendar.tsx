@@ -1,7 +1,15 @@
 import React, { useState, useMemo } from 'react';
 import type { LeaveRequest, Doctor } from '../types';
 import SpecialistIcon from './SpecialistIcon';
-import { getCalendarGrid, formatDateIndonesian, getInitials, getSpecialtyBadgeClass } from '../lib/schedule-utils';
+import {
+  getCalendarGrid,
+  formatDateIndonesian,
+  getInitials,
+  getSpecialtyBadgeClass,
+  toWibDateStr,
+  isDateInLeave,
+  getWibNow,
+} from '../lib/schedule-utils';
 import { triggerHaptic } from '../lib/haptics';
 import {
   ChevronLeft,
@@ -13,9 +21,8 @@ import {
   Calendar,
   Search,
   MessageCircle,
-  UserX,
-  Clock,
   Sparkles,
+  CheckCircle2,
 } from 'lucide-react';
 
 interface LeavesCalendarProps {
@@ -24,10 +31,11 @@ interface LeavesCalendarProps {
 }
 
 export default function LeavesCalendar({ leaves, doctors }: LeavesCalendarProps) {
-  const [currentYear, setCurrentYear] = useState<number>(new Date().getFullYear());
-  const [currentMonth, setCurrentMonth] = useState<number>(new Date().getMonth());
-  const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
-  const [activeLeaveTab, setActiveLeaveTab] = useState<'all' | 'active' | 'upcoming' | 'past'>('all');
+  const wibNow = useMemo(() => getWibNow(), []);
+  const [currentYear, setCurrentYear] = useState<number>(wibNow.getFullYear());
+  const [currentMonth, setCurrentMonth] = useState<number>(wibNow.getMonth());
+  const [selectedDate, setSelectedDate] = useState<Date>(wibNow);
+  const [viewMode, setViewMode] = useState<'selected' | 'all' | 'active' | 'upcoming'>('selected');
   const [searchQuery, setSearchQuery] = useState('');
 
   const monthNames = [
@@ -57,64 +65,77 @@ export default function LeavesCalendar({ leaves, doctors }: LeavesCalendarProps)
 
   const handleTodayMonth = () => {
     triggerHaptic('selection');
-    const now = new Date();
+    const now = getWibNow();
     setCurrentYear(now.getFullYear());
     setCurrentMonth(now.getMonth());
     setSelectedDate(now);
+    setViewMode('selected');
   };
 
-  // Build 35-42 calendar cell grid
+  // Build calendar cells using WIB date calculations
   const calendarCells = useMemo(() => {
     return getCalendarGrid(currentYear, currentMonth, leaves);
   }, [currentYear, currentMonth, leaves]);
 
-  // Leaves filtered by Active / Upcoming / Past tab and search query
-  const filteredLeaves = useMemo(() => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+  const selectedDateStr = useMemo(() => {
+    return toWibDateStr(selectedDate);
+  }, [selectedDate]);
 
-    return leaves.filter((leave) => {
-      const start = new Date(leave.startDate);
-      start.setHours(0, 0, 0, 0);
-      const end = new Date(leave.endDate || leave.startDate);
-      end.setHours(23, 59, 59, 999);
+  // Leaves strictly matching the selected date on the calendar
+  const leavesForSelectedDate = useMemo(() => {
+    if (!selectedDateStr) return [];
+    return leaves.filter((leave) => isDateInLeave(selectedDateStr, leave));
+  }, [leaves, selectedDateStr]);
 
-      // Tab filter
-      if (activeLeaveTab === 'active' && (today < start || today > end)) return false;
-      if (activeLeaveTab === 'upcoming' && today >= start) return false;
-      if (activeLeaveTab === 'past' && today <= end) return false;
+  // Leaves matching the current view mode & search filter
+  const displayedLeaves = useMemo(() => {
+    const todayWibStr = toWibDateStr(new Date());
 
-      // Search filter
-      if (searchQuery) {
-        const q = searchQuery.toLowerCase();
+    let list: LeaveRequest[] = [];
+
+    if (viewMode === 'selected') {
+      list = leavesForSelectedDate;
+    } else if (viewMode === 'active') {
+      list = leaves.filter((l) => isDateInLeave(todayWibStr, l));
+    } else if (viewMode === 'upcoming') {
+      list = leaves.filter((l) => {
+        const startStr = toWibDateStr(l.startDate);
+        return startStr > todayWibStr;
+      });
+    } else {
+      // 'all'
+      list = leaves;
+    }
+
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      return list.filter((leave) => {
         const docName = typeof leave.doctor === 'object' && leave.doctor !== null
           ? leave.doctor.name
           : String(leave.doctor || '');
         const doctorObj = doctors.find((d) => d.id === leave.doctorId);
         const nameToSearch = (docName || doctorObj?.name || '').toLowerCase();
+        const specToSearch = (doctorObj?.specialty || '').toLowerCase();
         const reasonToSearch = (leave.reason || '').toLowerCase();
         const repToSearch = (leave.replacementDoctor || '').toLowerCase();
-        if (!nameToSearch.includes(q) && !reasonToSearch.includes(q) && !repToSearch.includes(q)) return false;
-      }
 
-      return true;
-    });
-  }, [leaves, doctors, activeLeaveTab, searchQuery]);
+        return (
+          nameToSearch.includes(q) ||
+          specToSearch.includes(q) ||
+          reasonToSearch.includes(q) ||
+          repToSearch.includes(q)
+        );
+      });
+    }
 
-  // Leaves for the currently clicked date
-  const leavesForSelectedDate = useMemo(() => {
-    if (!selectedDate) return [];
-    const dateToCheck = new Date(selectedDate);
-    dateToCheck.setHours(0, 0, 0, 0);
+    return list;
+  }, [leaves, viewMode, leavesForSelectedDate, searchQuery, doctors]);
 
-    return leaves.filter((leave) => {
-      const start = new Date(leave.startDate);
-      start.setHours(0, 0, 0, 0);
-      const end = new Date(leave.endDate || leave.startDate);
-      end.setHours(23, 59, 59, 999);
-      return dateToCheck >= start && dateToCheck <= end;
-    });
-  }, [leaves, selectedDate]);
+  const handleSelectDate = (d: Date) => {
+    triggerHaptic('selection');
+    setSelectedDate(d);
+    setViewMode('selected');
+  };
 
   return (
     <div className="leaves-view-container">
@@ -123,7 +144,7 @@ export default function LeavesCalendar({ leaves, doctors }: LeavesCalendarProps)
         <div className="cal-nav-bar">
           <div className="cal-month-title-group">
             <h3 className="cal-month-name">{monthNames[currentMonth]}</h3>
-            <span className="cal-year-tag">{currentYear}</span>
+            <span className="cal-year-tag">{currentYear} (WIB)</span>
           </div>
 
           <div className="cal-nav-btn-group">
@@ -131,7 +152,7 @@ export default function LeavesCalendar({ leaves, doctors }: LeavesCalendarProps)
               type="button"
               className="cal-today-pill-btn"
               onClick={handleTodayMonth}
-              title="Kembali ke Bulan & Hari Ini"
+              title="Kembali ke Hari Ini"
             >
               Hari Ini
             </button>
@@ -168,10 +189,7 @@ export default function LeavesCalendar({ leaves, doctors }: LeavesCalendarProps)
         {/* Calendar Day Grid */}
         <div className="cal-grid">
           {calendarCells.map((cell, idx) => {
-            const isSelected =
-              selectedDate &&
-              cell.date &&
-              cell.date.toDateString() === selectedDate.toDateString();
+            const isSelected = cell.dateStr === selectedDateStr;
 
             return (
               <button
@@ -182,12 +200,11 @@ export default function LeavesCalendar({ leaves, doctors }: LeavesCalendarProps)
                 } ${isSelected ? 'is-selected' : ''} ${cell.isHoliday ? 'is-holiday' : ''}`}
                 onClick={() => {
                   if (cell.date) {
-                    triggerHaptic('selection');
-                    setSelectedDate(cell.date);
+                    handleSelectDate(cell.date);
                   }
                 }}
                 disabled={!cell.date}
-                aria-label={cell.date ? cell.date.toDateString() : ''}
+                aria-label={`${cell.dayNum} ${monthNames[currentMonth]}, ${cell.leavesCount} dokter cuti`}
               >
                 <span className="cal-cell-num">{cell.dayNum}</span>
                 <div className="cal-cell-indicators">
@@ -204,62 +221,60 @@ export default function LeavesCalendar({ leaves, doctors }: LeavesCalendarProps)
         </div>
       </div>
 
-      {/* Selected Date Context Summary Banner */}
-      {selectedDate && (
-        <div className="cal-selected-day-pill mb-24">
-          <div className="selected-day-info">
-            <Calendar size={18} className="text-blue" />
-            <span className="selected-day-title">
-              {formatDateIndonesian(selectedDate)}
-            </span>
-          </div>
-          <span className={`selected-day-count ${leavesForSelectedDate.length > 0 ? 'has-leaves' : ''}`}>
-            {leavesForSelectedDate.length} Dokter Cuti
+      {/* Selected Date Context Summary Banner (Synchronized with Calendar) */}
+      <div className="cal-selected-day-pill mb-24">
+        <div className="selected-day-info">
+          <Calendar size={18} className="text-blue" />
+          <span className="selected-day-title">
+            {formatDateIndonesian(selectedDate)}
           </span>
         </div>
-      )}
+        <span className={`selected-day-count ${leavesForSelectedDate.length > 0 ? 'has-leaves' : ''}`}>
+          {leavesForSelectedDate.length} Dokter Cuti
+        </span>
+      </div>
 
       {/* Filter Tabs for Leaves List */}
       <div className="category-chips-row mb-16">
         <button
           type="button"
-          className={`category-chip ${activeLeaveTab === 'all' ? 'active' : ''}`}
+          className={`category-chip ${viewMode === 'selected' ? 'active' : ''}`}
           onClick={() => {
             triggerHaptic('selection');
-            setActiveLeaveTab('all');
+            setViewMode('selected');
           }}
         >
-          Semua Data ({leaves.length})
+          <span>Tanggal Terpilih ({leavesForSelectedDate.length})</span>
         </button>
         <button
           type="button"
-          className={`category-chip ${activeLeaveTab === 'active' ? 'active' : ''}`}
+          className={`category-chip ${viewMode === 'active' ? 'active' : ''}`}
           onClick={() => {
             triggerHaptic('selection');
-            setActiveLeaveTab('active');
+            setViewMode('active');
           }}
         >
-          Sedang Berlangsung
+          <span>Sedang Cuti Hari Ini</span>
         </button>
         <button
           type="button"
-          className={`category-chip ${activeLeaveTab === 'upcoming' ? 'active' : ''}`}
+          className={`category-chip ${viewMode === 'upcoming' ? 'active' : ''}`}
           onClick={() => {
             triggerHaptic('selection');
-            setActiveLeaveTab('upcoming');
+            setViewMode('upcoming');
           }}
         >
-          Mendatang
+          <span>Mendatang</span>
         </button>
         <button
           type="button"
-          className={`category-chip ${activeLeaveTab === 'past' ? 'active' : ''}`}
+          className={`category-chip ${viewMode === 'all' ? 'active' : ''}`}
           onClick={() => {
             triggerHaptic('selection');
-            setActiveLeaveTab('past');
+            setViewMode('all');
           }}
         >
-          Riwayat Selesai
+          <span>Semua Data ({leaves.length})</span>
         </button>
       </div>
 
@@ -269,7 +284,7 @@ export default function LeavesCalendar({ leaves, doctors }: LeavesCalendarProps)
         <input
           type="text"
           className="ios-search-input"
-          placeholder="Cari nama dokter, spesialis, atau alasan cuti..."
+          placeholder="Cari dokter cuti atau dokter pengganti..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
@@ -281,31 +296,37 @@ export default function LeavesCalendar({ leaves, doctors }: LeavesCalendarProps)
       </div>
 
       {/* List of Leave Platter Cards */}
-      {filteredLeaves.length === 0 ? (
+      {displayedLeaves.length === 0 ? (
         <div className="ios-empty-state">
           <div className="ios-empty-coin">
-            <CalendarCheck size={32} />
+            <CheckCircle2 size={32} className="text-green" />
           </div>
-          <div className="ios-empty-title">Tidak Ada Data Cuti</div>
+          <div className="ios-empty-title">
+            {viewMode === 'selected'
+              ? 'Tidak Ada Dokter Cuti'
+              : 'Tidak Ada Data Cuti'}
+          </div>
           <div className="ios-empty-sub">
-            Tidak ada dokter yang sedang tercatat cuti pada kategori filter ini.
+            {viewMode === 'selected'
+              ? `Seluruh dokter spesialis bertugas normal pada ${formatDateIndonesian(selectedDate)}.`
+              : 'Tidak ada dokter yang tercatat cuti pada kategori filter ini.'}
           </div>
-          {(searchQuery || activeLeaveTab !== 'all') && (
+          {viewMode !== 'selected' && (
             <button
               type="button"
               className="empty-reset-btn"
               onClick={() => {
+                setViewMode('selected');
                 setSearchQuery('');
-                setActiveLeaveTab('all');
               }}
             >
-              Reset Filter
+              Kembali ke Tanggal Terpilih
             </button>
           )}
         </div>
       ) : (
         <div className="platter-grid">
-          {filteredLeaves.map((leave) => {
+          {displayedLeaves.map((leave) => {
             const docName =
               typeof leave.doctor === 'object' && leave.doctor !== null
                 ? leave.doctor.name
@@ -363,7 +384,7 @@ export default function LeavesCalendar({ leaves, doctors }: LeavesCalendarProps)
 
                     <div className="leave-reason-pill">
                       <AlertCircle size={15} className="text-red" />
-                      <span>{leave.reason || 'Izin Dinas / Cuti Tahunan Dokter'}</span>
+                      <span>{leave.reason || 'Izin Dinas / Cuti Dokter'}</span>
                     </div>
 
                     {leave.replacementDoctor && (

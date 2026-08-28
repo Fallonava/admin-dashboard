@@ -12,6 +12,33 @@ export const INDO_MONTHS_SHORT = [
   'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'
 ];
 
+/**
+ * Gold-standard WIB (Asia/Jakarta) date string converter 'YYYY-MM-DD'
+ */
+export function toWibDateStr(dateInput: Date | string): string {
+  try {
+    const d = typeof dateInput === 'string' ? new Date(dateInput) : dateInput;
+    if (isNaN(d.getTime())) return '';
+    const formatter = new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'Asia/Jakarta',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    });
+    return formatter.format(d); // returns 'YYYY-MM-DD'
+  } catch {
+    return '';
+  }
+}
+
+/**
+ * Returns current Date in WIB timezone
+ */
+export function getWibNow(): Date {
+  const now = new Date();
+  return new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Jakarta' }));
+}
+
 export function getInitials(name: string): string {
   if (!name) return 'DR';
   const clean = name.replace(/^(dr\.|drg\.|prof\.|dr\s+|drg\s+|prof\s+)/i, '').trim();
@@ -39,10 +66,6 @@ export function isSurgeonSpecialty(specialty: string): boolean {
   );
 }
 
-export function categorizeDoctor(specialty: string): 'Bedah' | 'NonBedah' {
-  return isSurgeonSpecialty(specialty) ? 'Bedah' : 'NonBedah';
-}
-
 export function getSpecialtyBadgeClass(specialty: string): string {
   const s = (specialty || '').toLowerCase();
   if (s.includes('jantung') || s.includes('sp.jp')) return 'spec-jantung';
@@ -60,35 +83,35 @@ export function getSpecialtyBadgeClass(specialty: string): string {
 
 export function isDoctorOnLeave(
   doctorId: string,
-  targetDate: Date,
+  targetDate: Date | string,
   leaves: LeaveRequest[] = []
 ): LeaveRequest | null {
-  const targetTime = targetDate.getTime();
+  const targetDateStr = typeof targetDate === 'string' ? targetDate : toWibDateStr(targetDate);
+  if (!targetDateStr) return null;
 
   for (const leave of leaves) {
     const docIdObj = typeof leave.doctor === 'object' && leave.doctor !== null ? leave.doctor.id : undefined;
     if (leave.doctorId !== doctorId && docIdObj !== doctorId && leave.doctorName !== doctorId) continue;
-    const start = new Date(leave.startDate);
-    const end = new Date(leave.endDate || leave.startDate);
-    start.setHours(0, 0, 0, 0);
-    end.setHours(23, 59, 59, 999);
+    
+    const startStr = toWibDateStr(leave.startDate);
+    const endStr = toWibDateStr(leave.endDate || leave.startDate);
+    if (!startStr) continue;
 
-    if (targetTime >= start.getTime() && targetTime <= end.getTime()) {
+    if (targetDateStr >= startStr && targetDateStr <= (endStr || startStr)) {
       return leave;
     }
   }
   return null;
 }
 
-export function isDateInLeave(checkDate: Date, leave: LeaveRequest): boolean {
+export function isDateInLeave(checkDate: Date | string, leave: LeaveRequest): boolean {
   if (!leave.startDate) return false;
-  const target = new Date(checkDate);
-  target.setHours(0, 0, 0, 0);
-  const start = new Date(leave.startDate);
-  start.setHours(0, 0, 0, 0);
-  const end = leave.endDate ? new Date(leave.endDate) : new Date(leave.startDate);
-  end.setHours(23, 59, 59, 999);
-  return target >= start && target <= end;
+  const checkStr = typeof checkDate === 'string' ? checkDate : toWibDateStr(checkDate);
+  const startStr = toWibDateStr(leave.startDate);
+  const endStr = toWibDateStr(leave.endDate || leave.startDate);
+  if (!checkStr || !startStr) return false;
+
+  return checkStr >= startStr && checkStr <= (endStr || startStr);
 }
 
 export function evaluateDoctorRealtimeStatus(
@@ -100,16 +123,16 @@ export function evaluateDoctorRealtimeStatus(
   // Convert to WIB (UTC+7)
   const wibTime = new Date(currentDate.getTime() + (7 * 60 * 60 * 1000));
   const currentDayIdx = (wibTime.getUTCDay() + 6) % 7; // 0=Senin ... 6=Minggu
-  const todayStr = `${wibTime.getUTCFullYear()}-${String(wibTime.getUTCMonth() + 1).padStart(2, '0')}-${String(wibTime.getUTCDate()).padStart(2, '0')}`;
+  const todayStr = toWibDateStr(currentDate);
   const currentTimeMinutes = wibTime.getUTCHours() * 60 + wibTime.getUTCMinutes();
 
-  // 1. Check active leave
-  const leave = isDoctorOnLeave(doctor.id, currentDate, leaves);
+  // 1. Check active leave for today in WIB
+  const leave = isDoctorOnLeave(doctor.id, todayStr, leaves);
   if (leave) {
     return { status: 'CUTI', reason: leave.reason || 'Cuti Dokter', activeLeave: leave };
   }
 
-  // 2. Check shifts for today (filtered by dayIdx, disabledDates, and week parity extra)
+  // 2. Check shifts for today (filtered by dayIdx, disabledDates, and week parity)
   const todayShifts = shifts.filter(
     (s) =>
       s.doctorId === doctor.id &&
@@ -185,11 +208,7 @@ export function getWeeklyDateStrip(referenceDate: Date = new Date()): DayDateIte
     const d = new Date(start);
     d.setDate(start.getDate() + i);
 
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    const dateStr = `${year}-${month}-${day}`;
-
+    const dateStr = toWibDateStr(d);
     const holiday = getIndonesianHoliday(d);
     const dayIdx = d.getDay();
 
@@ -204,7 +223,7 @@ export function getWeeklyDateStrip(referenceDate: Date = new Date()): DayDateIte
       isToday: i === 0,
       isHoliday: holiday.isTanggalMerah,
       isSunday: holiday.isSunday,
-      holidayName: holiday.name
+      holidayName: holiday.name,
     });
   }
 
@@ -216,25 +235,6 @@ export function formatTimeSlot(startTime?: string, endTime?: string, formattedTi
   if (startTime && endTime) return `${startTime} - ${endTime} WIB`;
   if (startTime) return `Mulai ${startTime} WIB`;
   return 'Sesuai Perjanjian';
-}
-
-export function filterLeaves(leaves: LeaveRequest[], filterType: 'all' | 'active' | 'upcoming' | 'past'): LeaveRequest[] {
-  const now = new Date();
-  now.setHours(0, 0, 0, 0);
-
-  return leaves.filter((l) => {
-    if (!l.startDate) return false;
-    const start = new Date(l.startDate);
-    start.setHours(0, 0, 0, 0);
-    const end = l.endDate ? new Date(l.endDate) : start;
-    end.setHours(23, 59, 59, 999);
-
-    if (filterType === 'all') return true;
-    if (filterType === 'active') return now >= start && now <= end;
-    if (filterType === 'upcoming') return now < start;
-    if (filterType === 'past') return now > end;
-    return true;
-  });
 }
 
 export interface CalendarDayItem {
@@ -253,7 +253,7 @@ export function getCalendarGrid(year: number, month: number, leaves: LeaveReques
   const result: CalendarDayItem[] = [];
   const firstDay = new Date(year, month, 1);
   const lastDay = new Date(year, month + 1, 0);
-  const todayStr = new Date().toISOString().split('T')[0];
+  const todayWibStr = toWibDateStr(new Date());
 
   const startDayOfWeek = firstDay.getDay(); // 0 = Sunday
 
@@ -261,15 +261,15 @@ export function getCalendarGrid(year: number, month: number, leaves: LeaveReques
   const prevMonthLastDay = new Date(year, month, 0).getDate();
   for (let i = startDayOfWeek - 1; i >= 0; i--) {
     const d = new Date(year, month - 1, prevMonthLastDay - i);
-    const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    const dateStr = toWibDateStr(d);
     const holiday = getIndonesianHoliday(d);
-    const dayLeaves = leaves.filter((l) => isDateInLeave(d, l));
+    const dayLeaves = leaves.filter((l) => isDateInLeave(dateStr, l));
     result.push({
       dayNum: d.getDate(),
       date: d,
       dateStr,
       isCurrentMonth: false,
-      isToday: dateStr === todayStr,
+      isToday: dateStr === todayWibStr,
       isHoliday: holiday.isTanggalMerah,
       holidayName: holiday.name,
       leavesCount: dayLeaves.length,
@@ -280,15 +280,15 @@ export function getCalendarGrid(year: number, month: number, leaves: LeaveReques
   // Days of current month
   for (let day = 1; day <= lastDay.getDate(); day++) {
     const d = new Date(year, month, day);
-    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    const dateStr = toWibDateStr(d);
     const holiday = getIndonesianHoliday(d);
-    const dayLeaves = leaves.filter((l) => isDateInLeave(d, l));
+    const dayLeaves = leaves.filter((l) => isDateInLeave(dateStr, l));
     result.push({
       dayNum: day,
       date: d,
       dateStr,
       isCurrentMonth: true,
-      isToday: dateStr === todayStr,
+      isToday: dateStr === todayWibStr,
       isHoliday: holiday.isTanggalMerah,
       holidayName: holiday.name,
       leavesCount: dayLeaves.length,
@@ -300,15 +300,15 @@ export function getCalendarGrid(year: number, month: number, leaves: LeaveReques
   const remaining = (7 - (result.length % 7)) % 7;
   for (let i = 1; i <= remaining; i++) {
     const d = new Date(year, month + 1, i);
-    const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    const dateStr = toWibDateStr(d);
     const holiday = getIndonesianHoliday(d);
-    const dayLeaves = leaves.filter((l) => isDateInLeave(d, l));
+    const dayLeaves = leaves.filter((l) => isDateInLeave(dateStr, l));
     result.push({
       dayNum: i,
       date: d,
       dateStr,
       isCurrentMonth: false,
-      isToday: dateStr === todayStr,
+      isToday: dateStr === todayWibStr,
       isHoliday: holiday.isTanggalMerah,
       holidayName: holiday.name,
       leavesCount: dayLeaves.length,
@@ -321,24 +321,16 @@ export function getCalendarGrid(year: number, month: number, leaves: LeaveReques
 
 export { isShiftActiveForDate, getWeekOfMonth, getRoutineLabel } from '@/lib/schedule-utils';
 
-export function calculateDoctorStatus(
-  doctor: Doctor,
-  shift?: Shift | null,
-  leaves: LeaveRequest[] = [],
-  date: Date = new Date()
-): { status: string; replacementDoctor?: string | null } {
-  const result = evaluateDoctorRealtimeStatus(doctor, shift ? [shift] : [], leaves, date);
-  return {
-    status: result.status,
-    replacementDoctor: result.activeLeave?.replacementDoctor || null,
-  };
-}
-
-export function formatDateIndonesian(date: Date): string {
-  const dayNames = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-  const monthNames = [
-    'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-    'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
-  ];
-  return `${dayNames[date.getDay()]}, ${date.getDate()} ${monthNames[date.getMonth()]} ${date.getFullYear()}`;
+export function formatDateIndonesian(dateInput: Date | string): string {
+  try {
+    const d = typeof dateInput === 'string' ? new Date(dateInput) : dateInput;
+    const dayNames = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+    const monthNames = [
+      'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+      'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+    ];
+    return `${dayNames[d.getDay()]}, ${d.getDate()} ${monthNames[d.getMonth()]} ${d.getFullYear()}`;
+  } catch {
+    return String(dateInput);
+  }
 }
