@@ -6,8 +6,8 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="Siaga Medika" />
-    <meta name="theme-color" content="#EDF2F7" />
-    <title>Jadwal Dokter - RSU Siaga Medika (NextGen Claymorphism 2026)</title>
+    <meta name="theme-color" content="#F2F2F7" />
+    <title>Jadwal Dokter - RSU Siaga Medika (Apple iOS 2026 Native)</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -316,17 +316,13 @@
         border-color: rgba(37, 99, 235, 0.3);
       }
 
-      /* Ambient Atmospheric Mesh Gradient */
+      /* Ambient Apple Page Background */
       .ambient-bg {
         position: fixed;
         inset: 0;
         z-index: -1;
         pointer-events: none;
-        background:
-          radial-gradient(circle at 15% 15%, rgba(37, 99, 235, 0.08), transparent 45%),
-          radial-gradient(circle at 85% 75%, rgba(16, 185, 129, 0.08), transparent 45%),
-          radial-gradient(circle at 50% 45%, rgba(124, 58, 237, 0.06), transparent 50%),
-          var(--bg-page);
+        background: var(--bg-page);
       }
 
       /* ═══════════════════════════════════════════════════════════════
@@ -342,7 +338,7 @@
         min-width: 140px;
         max-width: 92vw;
         background: var(--surface-card-solid);
-        border: 2px solid var(--border-card);
+        border: 1px solid var(--border-card);
         border-radius: 24px;
         z-index: 9999;
         display: flex;
@@ -367,9 +363,9 @@
         pointer-events: auto;
         min-width: min(calc(100vw - 24px), 430px);
         height: 48px;
-        border-radius: 28px;
-        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.25), var(--shadow-island);
-        padding: 0 16px;
+        border-radius: 24px;
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18), var(--shadow-island);
+        padding: 0 14px;
         transition: 
           transform 0.54s cubic-bezier(0.175, 0.885, 0.32, 1.25),
           min-width 0.54s cubic-bezier(0.175, 0.885, 0.32, 1.2),
@@ -400,10 +396,10 @@
       .di-icon-box {
         width: 32px;
         height: 32px;
-        border-radius: 12px;
-        background: #16A34A;
-        box-shadow: 0 3px 8px rgba(22, 163, 74, 0.35);
-        border: 1px solid #15803D;
+        border-radius: 10px;
+        background: var(--ios-emerald);
+        box-shadow: 0 2px 6px rgba(52, 199, 89, 0.25);
+        border: 1px solid rgba(52, 199, 89, 0.3);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -415,15 +411,15 @@
       .di-title {
         font-family: "Plus Jakarta Sans", sans-serif;
         font-size: 11px;
-        font-weight: 900;
+        font-weight: 800;
         text-transform: uppercase;
-        letter-spacing: 0.05em;
-        color: #16A34A;
+        letter-spacing: 0.04em;
+        color: var(--ios-emerald);
       }
       .di-msg {
         font-family: "Plus Jakarta Sans", sans-serif;
         font-size: 12px;
-        font-weight: 800;
+        font-weight: 700;
         color: var(--text-main);
         white-space: nowrap;
         overflow: hidden;
@@ -446,15 +442,15 @@
         width: 6px;
         height: 6px;
         border-radius: 50%;
-        background: #34C759;
+        background: var(--ios-emerald);
         animation: livePulseDot 2s infinite ease-in-out;
       }
       .di-live-text {
         font-family: "JetBrains Mono", monospace;
-        font-size: 10px;
+        font-size: 11px;
         font-weight: 800;
-        color: #34C759;
-        letter-spacing: 0.04em;
+        color: var(--ios-emerald);
+        letter-spacing: 0.03em;
       }
 
       /* ═══════════════════════════════════════════════════════════════
@@ -1175,107 +1171,53 @@
         animation: livePulseDot 2s infinite ease-in-out;
       }
 
-      /* 🩺 PROFESSIONAL DYNAMIC CLINICAL DEPARTMENT PALETTES */
-      .doc-spec-badge.spec-jantung { color: #BE123C !important; background: rgba(225, 29, 72, 0.12) !important; border-color: rgba(225, 29, 72, 0.35) !important; }
-      .doc-spec-badge.spec-anak { color: #047857 !important; background: rgba(5, 150, 105, 0.12) !important; border-color: rgba(5, 150, 105, 0.35) !important; }
-      .doc-spec-badge.spec-kandungan { color: #A21CAF !important; background: rgba(192, 38, 211, 0.12) !important; border-color: rgba(192, 38, 211, 0.35) !important; }
-      .doc-spec-badge.spec-dalam { color: #1D4ED8 !important; background: rgba(37, 99, 235, 0.12) !important; border-color: rgba(37, 99, 235, 0.35) !important; }
-      .doc-spec-badge.spec-mata { color: #0F766E !important; background: rgba(13, 148, 136, 0.12) !important; border-color: rgba(13, 148, 136, 0.35) !important; }
-      .doc-spec-badge.spec-saraf { color: #6D28D9 !important; background: rgba(124, 58, 237, 0.12) !important; border-color: rgba(124, 58, 237, 0.35) !important; }
-      .doc-spec-badge.spec-gigi { color: #B45309 !important; background: rgba(217, 119, 6, 0.12) !important; border-color: rgba(217, 119, 6, 0.35) !important; }
-      .doc-spec-badge.spec-kulit { color: #C2410C !important; background: rgba(234, 88, 12, 0.12) !important; border-color: rgba(234, 88, 12, 0.35) !important; }
-      .doc-spec-badge.spec-tht { color: #0369A1 !important; background: rgba(2, 132, 199, 0.12) !important; border-color: rgba(2, 132, 199, 0.35) !important; }
-      .doc-spec-badge.spec-urologi { color: #0891B2 !important; background: rgba(6, 182, 212, 0.12) !important; border-color: rgba(6, 182, 212, 0.35) !important; }
-      .doc-spec-badge.spec-ortopedi { color: #4F46E5 !important; background: rgba(99, 102, 241, 0.12) !important; border-color: rgba(99, 102, 241, 0.35) !important; }
-      .doc-spec-badge.spec-bedah { color: #0284C7 !important; background: rgba(2, 132, 199, 0.12) !important; border-color: rgba(2, 132, 199, 0.35) !important; }
-      .doc-spec-badge.spec-default { color: #0369A1 !important; background: rgba(2, 132, 199, 0.12) !important; border-color: rgba(2, 132, 199, 0.35) !important; }
+      /* 🩺 APPLE iOS 2026 CLINICAL DEPARTMENT PALETTES */
+      .doc-spec-badge.spec-jantung { color: var(--ios-rose) !important; background: rgba(255, 45, 85, 0.12) !important; border-color: rgba(255, 45, 85, 0.25) !important; }
+      .doc-spec-badge.spec-anak { color: var(--ios-emerald) !important; background: rgba(52, 199, 89, 0.12) !important; border-color: rgba(52, 199, 89, 0.25) !important; }
+      .doc-spec-badge.spec-kandungan { color: var(--ios-purple) !important; background: rgba(175, 82, 222, 0.12) !important; border-color: rgba(175, 82, 222, 0.25) !important; }
+      .doc-spec-badge.spec-dalam { color: var(--ios-blue) !important; background: rgba(0, 122, 255, 0.12) !important; border-color: rgba(0, 122, 255, 0.25) !important; }
+      .doc-spec-badge.spec-mata { color: #00C7BE !important; background: rgba(0, 199, 190, 0.12) !important; border-color: rgba(0, 199, 190, 0.25) !important; }
+      .doc-spec-badge.spec-saraf { color: var(--ios-indigo) !important; background: rgba(88, 86, 214, 0.12) !important; border-color: rgba(88, 86, 214, 0.25) !important; }
+      .doc-spec-badge.spec-gigi { color: var(--ios-amber) !important; background: rgba(255, 149, 0, 0.12) !important; border-color: rgba(255, 149, 0, 0.25) !important; }
+      .doc-spec-badge.spec-kulit { color: var(--ios-amber) !important; background: rgba(255, 149, 0, 0.12) !important; border-color: rgba(255, 149, 0, 0.25) !important; }
+      .doc-spec-badge.spec-tht { color: #32ADE6 !important; background: rgba(50, 173, 230, 0.12) !important; border-color: rgba(50, 173, 230, 0.25) !important; }
+      .doc-spec-badge.spec-urologi { color: #30B0C7 !important; background: rgba(48, 176, 199, 0.12) !important; border-color: rgba(48, 176, 199, 0.25) !important; }
+      .doc-spec-badge.spec-ortopedi { color: var(--ios-indigo) !important; background: rgba(88, 86, 214, 0.12) !important; border-color: rgba(88, 86, 214, 0.25) !important; }
+      .doc-spec-badge.spec-bedah { color: var(--ios-blue) !important; background: rgba(0, 122, 255, 0.12) !important; border-color: rgba(0, 122, 255, 0.25) !important; }
+      .doc-spec-badge.spec-default { color: var(--ios-blue) !important; background: rgba(0, 122, 255, 0.12) !important; border-color: rgba(0, 122, 255, 0.25) !important; }
 
-      /* Dark Mode Dept Badges */
-      [data-theme="dark"] .doc-spec-badge.spec-jantung { color: #FB7185 !important; background: rgba(225, 29, 72, 0.22) !important; border-color: rgba(251, 113, 133, 0.45) !important; }
-      [data-theme="dark"] .doc-spec-badge.spec-anak { color: #34D399 !important; background: rgba(5, 150, 105, 0.22) !important; border-color: rgba(52, 211, 153, 0.45) !important; }
-      [data-theme="dark"] .doc-spec-badge.spec-kandungan { color: #E879F9 !important; background: rgba(192, 38, 211, 0.22) !important; border-color: rgba(232, 121, 249, 0.45) !important; }
-      [data-theme="dark"] .doc-spec-badge.spec-dalam { color: #60A5FA !important; background: rgba(37, 99, 235, 0.22) !important; border-color: rgba(96, 165, 250, 0.45) !important; }
-      [data-theme="dark"] .doc-spec-badge.spec-mata { color: #2DD4BF !important; background: rgba(13, 148, 136, 0.22) !important; border-color: rgba(45, 212, 191, 0.45) !important; }
-      [data-theme="dark"] .doc-spec-badge.spec-saraf { color: #A78BFA !important; background: rgba(124, 58, 237, 0.22) !important; border-color: rgba(167, 139, 250, 0.45) !important; }
-      [data-theme="dark"] .doc-spec-badge.spec-gigi { color: #FBBF24 !important; background: rgba(217, 119, 6, 0.22) !important; border-color: rgba(251, 191, 36, 0.45) !important; }
-      [data-theme="dark"] .doc-spec-badge.spec-kulit { color: #FB923C !important; background: rgba(234, 88, 12, 0.22) !important; border-color: rgba(251, 146, 60, 0.45) !important; }
-      [data-theme="dark"] .doc-spec-badge.spec-tht { color: #38BDF8 !important; background: rgba(2, 132, 199, 0.22) !important; border-color: rgba(56, 189, 248, 0.45) !important; }
-      [data-theme="dark"] .doc-spec-badge.spec-urologi { color: #22D3EE !important; background: rgba(6, 182, 212, 0.22) !important; border-color: rgba(34, 211, 238, 0.45) !important; }
-      [data-theme="dark"] .doc-spec-badge.spec-ortopedi { color: #818CF8 !important; background: rgba(99, 102, 241, 0.22) !important; border-color: rgba(129, 140, 248, 0.45) !important; }
-      [data-theme="dark"] .doc-spec-badge.spec-bedah { color: #0284C7 !important; background: rgba(2, 132, 199, 0.22) !important; border-color: rgba(2, 132, 199, 0.45) !important; }
-      [data-theme="dark"] .doc-spec-badge.spec-default { color: #0284C7 !important; background: rgba(2, 132, 199, 0.22) !important; border-color: rgba(2, 132, 199, 0.45) !important; }
-
-      /* ─── Apple visionOS Status-Driven Ceramic Platters (.initials) ─── */
+      /* ─── Apple iOS Native Status Squircle Avatars (.initials) ─── */
       .platter.st-praktek .initials {
-        color: #059669 !important;
-        background: linear-gradient(145deg, rgba(209, 250, 229, 0.98) 0%, rgba(236, 253, 245, 0.85) 50%, rgba(167, 243, 208, 0.55) 100%) !important;
-        border-color: rgba(16, 185, 129, 0.4) !important;
-        box-shadow: inset 0 2px 2px #FFFFFF, inset 0 -1.5px 2px rgba(5, 150, 105, 0.15), 0 4px 14px -2px rgba(5, 150, 105, 0.25) !important;
+        color: var(--ios-emerald) !important;
+        background: rgba(52, 199, 89, 0.12) !important;
+        border: 1px solid rgba(52, 199, 89, 0.25) !important;
       }
       .platter.st-pendaftaran .initials,
       .platter.st-penuh .initials {
-        color: #D97706 !important;
-        background: linear-gradient(145deg, rgba(254, 243, 199, 0.98) 0%, rgba(255, 251, 235, 0.85) 50%, rgba(253, 230, 138, 0.55) 100%) !important;
-        border-color: rgba(245, 158, 11, 0.4) !important;
-        box-shadow: inset 0 2px 2px #FFFFFF, inset 0 -1.5px 2px rgba(217, 119, 6, 0.15), 0 4px 14px -2px rgba(217, 119, 6, 0.25) !important;
+        color: var(--ios-amber) !important;
+        background: rgba(255, 149, 0, 0.12) !important;
+        border: 1px solid rgba(255, 149, 0, 0.25) !important;
       }
       .platter.st-terjadwal .initials {
-        color: #0284C7 !important;
-        background: linear-gradient(145deg, rgba(224, 242, 254, 0.98) 0%, rgba(240, 249, 255, 0.85) 50%, rgba(186, 230, 253, 0.55) 100%) !important;
-        border-color: rgba(14, 165, 233, 0.4) !important;
-        box-shadow: inset 0 2px 2px #FFFFFF, inset 0 -1.5px 2px rgba(2, 132, 199, 0.15), 0 4px 14px -2px rgba(2, 132, 199, 0.25) !important;
+        color: var(--ios-blue) !important;
+        background: rgba(0, 122, 255, 0.12) !important;
+        border: 1px solid rgba(0, 122, 255, 0.25) !important;
       }
       .platter.st-operasi .initials {
-        color: #7C3AED !important;
-        background: linear-gradient(145deg, rgba(237, 233, 254, 0.98) 0%, rgba(245, 243, 255, 0.85) 50%, rgba(221, 214, 254, 0.55) 100%) !important;
-        border-color: rgba(139, 92, 246, 0.4) !important;
-        box-shadow: inset 0 2px 2px #FFFFFF, inset 0 -1.5px 2px rgba(124, 58, 237, 0.15), 0 4px 14px -2px rgba(124, 58, 237, 0.25) !important;
+        color: var(--ios-purple) !important;
+        background: rgba(175, 82, 222, 0.12) !important;
+        border: 1px solid rgba(175, 82, 222, 0.25) !important;
       }
       .platter.st-cuti .initials {
-        color: #DC2626 !important;
-        background: linear-gradient(145deg, rgba(254, 226, 226, 0.98) 0%, rgba(254, 242, 242, 0.85) 50%, rgba(254, 202, 202, 0.55) 100%) !important;
-        border-color: rgba(239, 68, 68, 0.4) !important;
-        box-shadow: inset 0 2px 2px #FFFFFF, inset 0 -1.5px 2px rgba(220, 38, 38, 0.15), 0 4px 14px -2px rgba(220, 38, 38, 0.22) !important;
+        color: var(--ios-rose) !important;
+        background: rgba(255, 45, 85, 0.12) !important;
+        border: 1px solid rgba(255, 45, 85, 0.25) !important;
       }
       .platter.st-selesai .initials,
       .platter.st-libur .initials {
-        color: #64748B !important;
-        background: linear-gradient(145deg, rgba(241, 245, 249, 0.98) 0%, rgba(248, 250, 252, 0.85) 50%, rgba(226, 232, 240, 0.55) 100%) !important;
-        border-color: rgba(148, 163, 184, 0.35) !important;
-        box-shadow: inset 0 2px 2px #FFFFFF, inset 0 -1.5px 2px rgba(100, 116, 139, 0.1), 0 3px 10px -2px rgba(100, 116, 139, 0.12) !important;
-      }
-
-      /* Dark Theme Status-Driven .initials */
-      [data-theme="dark"] .platter.st-praktek .initials {
-        color: #34D399 !important;
-        background: rgba(16, 185, 129, 0.18) !important;
-        border-color: rgba(52, 211, 153, 0.45) !important;
-        box-shadow: inset 0 1.5px 2px rgba(255, 255, 255, 0.2), 0 6px 18px -3px rgba(52, 211, 153, 0.35) !important;
-      }
-      [data-theme="dark"] .platter.st-pendaftaran .initials,
-      [data-theme="dark"] .platter.st-penuh .initials {
-        color: #FBBF24 !important;
-        background: rgba(245, 158, 11, 0.18) !important;
-        border-color: rgba(251, 191, 36, 0.45) !important;
-        box-shadow: inset 0 1.5px 2px rgba(255, 255, 255, 0.2), 0 6px 18px -3px rgba(251, 191, 36, 0.35) !important;
-      }
-      [data-theme="dark"] .platter.st-terjadwal .initials {
-        color: #38BDF8 !important;
-        background: rgba(2, 132, 199, 0.18) !important;
-        border-color: rgba(56, 189, 248, 0.45) !important;
-        box-shadow: inset 0 1.5px 2px rgba(255, 255, 255, 0.2), 0 6px 18px -3px rgba(56, 189, 248, 0.35) !important;
-      }
-      [data-theme="dark"] .platter.st-operasi .initials {
-        color: #A78BFA !important;
-        background: rgba(124, 58, 237, 0.18) !important;
-        border-color: rgba(167, 139, 250, 0.45) !important;
-        box-shadow: inset 0 1.5px 2px rgba(255, 255, 255, 0.2), 0 6px 18px -3px rgba(167, 139, 250, 0.35) !important;
-      }
-      [data-theme="dark"] .platter.st-cuti .initials {
-        color: #F87171 !important;
-        background: rgba(220, 38, 38, 0.18) !important;
-        border-color: rgba(248, 113, 113, 0.45) !important;
-        box-shadow: inset 0 1.5px 2px rgba(255, 255, 255, 0.2), 0 6px 18px -3px rgba(248, 113, 113, 0.35) !important;
+        color: var(--text-mute) !important;
+        background: var(--surface-well) !important;
+        border: 1px solid var(--border-card) !important;
       }
       [data-theme="dark"] .platter.st-selesai .initials,
       [data-theme="dark"] .platter.st-libur .initials {
@@ -2507,49 +2449,85 @@
          ═══════════════════════════════════════════════════════════════ */
       .ios-floating-dock {
         position: fixed;
-        bottom: calc(var(--sab) + 8px);
+        bottom: calc(var(--sab) + 10px);
         left: 14px;
         right: 14px;
-        height: 48px;
-        border-radius: 14px;
+        height: 50px;
+        border-radius: 16px;
         background: var(--surface-dock);
         backdrop-filter: blur(20px) saturate(180%);
         -webkit-backdrop-filter: blur(20px) saturate(180%);
         border: 1px solid var(--border-card);
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 0 8px 0 12px;
+        padding: 0 8px 0 14px;
         z-index: 900;
       }
-      .dock-ticker { flex: 1; margin-right: 8px; overflow: hidden; }
-      .dock-ticker-inner {
-        white-space: nowrap;
-        animation: marquee 25s linear infinite;
-        font-size: 11.5px;
-        font-weight: 600;
-        color: var(--text-main);
+      .dock-status-group {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        min-width: 0;
       }
-      @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
-
+      .dock-live-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--ios-emerald);
+        box-shadow: 0 0 8px var(--ios-emerald);
+        flex-shrink: 0;
+      }
+      .dock-status-label {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 11.5px;
+        font-weight: 700;
+        color: var(--text-main);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .dock-action-group {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-shrink: 0;
+      }
+      .dock-reg-btn {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        padding: 7px 12px;
+        border-radius: 9999px;
+        background: var(--surface-card-solid);
+        border: 1px solid var(--border-card);
+        color: var(--text-main);
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 11.5px;
+        font-weight: 800;
+        cursor: pointer;
+        transition: transform 0.15s ease;
+      }
+      .dock-reg-btn:active { transform: scale(0.95); }
       .dock-wa-btn {
         display: flex;
         align-items: center;
         gap: 4px;
-        padding: 6px 12px;
+        padding: 7px 12px;
         border-radius: 9999px;
         background: var(--ios-emerald);
         color: #FFFFFF;
         text-decoration: none;
+        font-family: "Plus Jakarta Sans", sans-serif;
         font-size: 11.5px;
         font-weight: 800;
         border: none;
         box-shadow: 0 2px 6px rgba(52, 199, 89, 0.25);
         flex-shrink: 0;
-        transition: opacity 0.15s ease;
+        transition: opacity 0.15s ease, transform 0.15s ease;
       }
-      .dock-wa-btn:active { opacity: 0.85; }
+      .dock-wa-btn:active { opacity: 0.85; transform: scale(0.95); }
 
       /* Modal Bottom Sheet */
       .ios-modal-overlay {
@@ -3284,17 +3262,22 @@
 
     </main>
 
-    <!-- FLOATING BOTTOM ACTION BAR -->
+    <!-- APPLE iOS 2026 FLOATING DOCK -->
     <footer class="ios-floating-dock">
-      <div class="dock-ticker">
-        <div class="dock-ticker-inner">
-          ✨ Selamat datang di RSU Siaga Medika Purbalingga • Layanan Pendaftaran & Informasi WhatsApp: 0823-2344-6076 • Tetap jaga protokol kesehatan di area rumah sakit.
-        </div>
+      <div class="dock-status-group">
+        <span class="dock-live-dot"></span>
+        <span class="dock-status-label">RSU Siaga Medika Purbalingga</span>
       </div>
-      <a href="https://wa.me/6282323446076" target="_blank" class="dock-wa-btn">
-        <span class="material-icons-round" style="font-size: 15px;">chat</span>
-        <span>WA CS</span>
-      </a>
+      <div class="dock-action-group">
+        <button class="dock-reg-btn" onclick="openRegisterChoice(null); triggerHaptic('medium');">
+          <span class="material-icons-round" style="font-size: 15px; color: var(--ios-emerald);">app_registration</span>
+          <span>Daftar</span>
+        </button>
+        <a href="https://wa.me/6282323446076" target="_blank" class="dock-wa-btn" onclick="triggerHaptic('light')">
+          <span class="material-icons-round" style="font-size: 15px;">chat</span>
+          <span>Bantuan CS</span>
+        </a>
+      </div>
     </footer>
 
     <!-- APPLE iOS 2026 QR CODE & HOSPITAL SERVICES MODAL -->
