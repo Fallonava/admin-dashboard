@@ -5971,9 +5971,9 @@
           }
         }
 
-        // Easing: Cubic ease-in-out — pelan di awal & akhir, cepat di tengah
+        // Apple Fluid Quartic Ease-Out Curve: Halus meluncur & mendarat empuk
         _ease(t) {
-          return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+          return 1 - Math.pow(1 - t, 4);
         }
 
         // Animasi scroll dari posisi saat ini ke target (progress bar berjalan sinkron real-time)
@@ -6023,13 +6023,17 @@
           requestAnimationFrame(step);
         }
 
-        // Fade out → reset ke atas → fade in (loop seamless)
+        // Apple tvOS Spatial Scale Dissolve Loop Reset (100% GPU Composite - Zero Lag)
         _fadeResetToTop(callback) {
-          this.el.style.transition = "opacity 0.5s ease";
+          const currentY = this.y;
+
+          // 1. Apple Spatial Exit: Lembut mengecil mikro scale(0.985) & fade out
+          this.el.style.transition = "opacity 0.42s cubic-bezier(0.16, 1, 0.3, 1), transform 0.42s cubic-bezier(0.16, 1, 0.3, 1)";
           this.el.style.opacity = "0";
+          this.el.style.transform = `translate3d(0, -${currentY}px, 0) scale(0.985)`;
 
           if (this.progressBar) {
-            this.progressBar.style.transition = "opacity 0.4s ease, width 0.4s ease";
+            this.progressBar.style.transition = "opacity 0.35s ease, width 0.35s ease";
             this.progressBar.style.opacity = "0";
           }
 
@@ -6037,14 +6041,19 @@
             this.y = 0;
             this.targetY = 0;
             this.currentItem = 0;
-            this.el.style.transition = "none";
-            this.el.style.transform = "translate3d(0, 0, 0)";
             this._resetProgress();
 
-            void this.el.offsetHeight; // Force reflow
+            // 2. Prepare Enter State di posisi atas: elevasi mikro scale(1.012)
+            this.el.style.transition = "none";
+            this.el.style.transform = "translate3d(0, 0, 0) scale(1.012)";
+            this.el.style.opacity = "0";
 
-            this.el.style.transition = "opacity 0.5s ease";
+            void this.el.offsetHeight; // Force GPU layout sync
+
+            // 3. Apple Spatial Enter: Mendarat empuk scale(1) & fade in
+            this.el.style.transition = "opacity 0.48s cubic-bezier(0.16, 1, 0.3, 1), transform 0.48s cubic-bezier(0.16, 1, 0.3, 1)";
             this.el.style.opacity = "1";
+            this.el.style.transform = "translate3d(0, 0, 0) scale(1)";
 
             if (this.progressBar) {
               this.progressBar.style.opacity = "1";
@@ -6053,9 +6062,10 @@
 
             setTimeout(() => {
               this.el.style.transition = "";
+              this.el.style.transform = "translate3d(0, 0, 0)";
               if (callback) callback();
-            }, 500);
-          }, 500);
+            }, 480);
+          }, 420);
         }
 
         // Loop utama: jeda baca di kartu, lalu scroll bergerak dengan progress bar real-time
