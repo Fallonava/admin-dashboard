@@ -187,45 +187,8 @@
         pointer-events: none;
       }
 
-      /* ===== HARDWARE SAFE MODE (TCL/Android TV/Low-End Chipset Optimization) ===== */
-      body.tv-optimized .ambient-bg {
-        background: var(--bg-body) !important;
-      }
-
-      body.tv-optimized .app-container,
-      body.tv-optimized .island,
-      body.tv-optimized .sidebar-panel,
-      body.tv-optimized .complication-journey-card,
-      body.tv-optimized .complication-weather-master,
-      body.tv-optimized .tree-step-card,
-      body.tv-optimized .tree-trunk-row-card,
-      body.tv-optimized .tree-trunk-section,
-      body.tv-optimized .tree-convergence-badge {
-        backdrop-filter: none !important;
-        -webkit-backdrop-filter: none !important;
-      }
-
-      body.tv-optimized .island {
-        background: #FFFFFF !important;
-        border: 1px solid rgba(215, 228, 242, 0.95) !important;
-      }
-
-      body.tv-optimized .platter {
-        background: #FFFFFF !important;
-        border: 1px solid rgba(215, 228, 242, 0.85) !important;
-      }
-
-      body.tv-optimized .platter.active {
-        box-shadow: 0 4px 18px rgba(16, 185, 129, 0.25) !important;
-        transform: translate3d(0, 0, 0) scale(1) !important;
-      }
-
-      body.tv-optimized .dynamic-island {
-        box-shadow: 0 14px 35px rgba(0, 0, 0, 0.85) !important;
-      }
-
       *, *::before, *::after {
-        /* Mencegah Teks Blur & Subpixel Rendering pada Neomorfisme */
+        /* Anti-aliasing GPU rendering */
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
       }
@@ -6781,34 +6744,6 @@
           setTimeout(() => {
             document.body.classList.remove("tv-booting");
           }, 1200);
-
-          // --- SMART TV & LOW-END HARDWARE OPTIMIZATION DETECTOR ---
-          const ua = navigator.userAgent.toLowerCase();
-          const urlParams = new URLSearchParams(window.location.search);
-          const isLowEndHardware = 
-            (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) ||
-            (navigator.deviceMemory && navigator.deviceMemory <= 2);
-          const isTVUA = 
-            ua.includes("browserhere") ||
-            ua.includes("tcl") ||
-            ua.includes("android tv") ||
-            ua.includes("googletv") ||
-            ua.includes("aft") ||
-            ua.includes("webos") ||
-            ua.includes("tizen") ||
-            ua.includes("smarttv") ||
-            ua.includes("netcast") ||
-            ua.includes("crkey") ||
-            ua.includes("mibox") ||
-            ua.includes("coocaa") ||
-            ua.includes("hisense") ||
-            ua.includes("changhong") ||
-            ua.includes("xiaomi") ||
-            ua.includes("tv");
-
-          if (isTVUA || isLowEndHardware || urlParams.get("tv") === "1" || urlParams.get("lowend") === "1") {
-            document.body.classList.add("tv-optimized");
-          }
 
           // Greeting based on time
           const h = new Date().getHours();
