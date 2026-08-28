@@ -104,6 +104,63 @@ export default function JadwalPage() {
     revalidateOnFocus: true,
   });
 
+  // 1. Real-time Server-Sent Events (SSE) stream sync
+  useEffect(() => {
+    let es: EventSource | null = null;
+    try {
+      es = new EventSource('/api/stream/live');
+      es.onmessage = (e) => {
+        try {
+          const res = JSON.parse(e.data);
+          if (res && (res.doctors || res.shifts || res.leaves)) {
+            mutate();
+          }
+        } catch {}
+      };
+      ['doctors', 'shifts', 'leaves', 'settings', 'broadcast'].forEach((evt) => {
+        es?.addEventListener(evt, () => {
+          mutate();
+        });
+      });
+      es.onerror = () => {
+        // Fail silently, SWR interval will keep sync alive
+      };
+    } catch {}
+
+    return () => {
+      if (es) es.close();
+    };
+  }, [mutate]);
+
+  // 2. Traffic Beacon Analytics Tracker
+  useEffect(() => {
+    try {
+      const payload = JSON.stringify({
+        path: window.location.pathname || '/jadwal',
+        referrer: document.referrer || 'direct',
+      });
+      if (typeof navigator !== 'undefined' && navigator.sendBeacon) {
+        navigator.sendBeacon('/api/traffic/track', payload);
+      } else {
+        fetch('/api/traffic/track', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: payload,
+          keepalive: true,
+        }).catch(() => {});
+      }
+    } catch {}
+  }, []);
+
+  // 3. Offline Cache Persistence
+  useEffect(() => {
+    if (data && data.doctors && data.doctors.length > 0) {
+      try {
+        localStorage.setItem('simed_display_cache', JSON.stringify(data));
+      } catch {}
+    }
+  }, [data]);
+
   const doctors: Doctor[] = data?.doctors || [];
   const shifts: Shift[] = data?.shifts || [];
   const leaves: LeaveRequest[] = data?.leaves || [];

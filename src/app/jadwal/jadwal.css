@@ -406,9 +406,13 @@
 
       .status-pill {
       }
-      .st-praktek { background: rgba(52, 199, 89, 0.1); color: var(--ios-green); }
-      .st-cuti { background: rgba(255, 59, 48, 0.1); color: var(--ios-red); }
-      .st-libur { background: rgba(255, 149, 0, 0.1); color: var(--ios-orange); }
+      .st-praktek { background: rgba(52, 199, 89, 0.12); color: var(--ios-green); border: 1px solid rgba(52, 199, 89, 0.25); }
+      .st-terjadwal { background: rgba(0, 122, 255, 0.12); color: var(--ios-blue); border: 1px solid rgba(0, 122, 255, 0.25); }
+      .st-cuti { background: rgba(255, 59, 48, 0.12); color: var(--ios-red); border: 1px solid rgba(255, 59, 48, 0.25); }
+      .st-libur { background: rgba(255, 149, 0, 0.12); color: var(--ios-orange); border: 1px solid rgba(255, 149, 0, 0.25); }
+      .st-selesai { background: rgba(142, 142, 147, 0.14); color: var(--ios-gray); border: 1px solid rgba(142, 142, 147, 0.25); }
+      .st-operasi { background: rgba(175, 82, 222, 0.14); color: var(--ios-purple); border: 1px solid rgba(175, 82, 222, 0.25); }
+      .st-penuh { background: rgba(255, 45, 85, 0.14); color: var(--ios-pink); border: 1px solid rgba(255, 45, 85, 0.25); }
       
       .platter-body-row { padding: 12px 16px 12px 72px; display: flex; gap: 8px; flex-wrap: wrap; }
       .platter-time-capsule {
@@ -1516,4 +1520,89 @@
 .seg-badge.red {
   background: rgba(255, 59, 48, 0.14);
   color: var(--ios-red);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   APPLE iOS 27 LIQUID GLASS (KACA CAIR) UI SUITE
+   ═══════════════════════════════════════════════════════════════ */
+:root {
+  --liquid-glass-bg: rgba(255, 255, 255, 0.76);
+  --liquid-glass-border: 1px solid rgba(255, 255, 255, 0.75);
+  --liquid-glass-shine: linear-gradient(135deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.05) 50%, rgba(255, 255, 255, 0) 100%);
+  --liquid-glass-shadow: 0 10px 30px rgba(0, 0, 0, 0.06), inset 0 1px 1.5px rgba(255, 255, 255, 0.85);
+  --liquid-glass-blur: blur(30px) saturate(195%) contrast(104%);
+}
+
+[data-theme="dark"], html.dark, body.dark {
+  --liquid-glass-bg: rgba(28, 28, 30, 0.76);
+  --liquid-glass-border: 1px solid rgba(255, 255, 255, 0.12);
+  --liquid-glass-shine: linear-gradient(135deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.02) 50%, rgba(255, 255, 255, 0) 100%);
+  --liquid-glass-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), inset 0 1px 1.5px rgba(255, 255, 255, 0.18);
+  --liquid-glass-blur: blur(32px) saturate(210%) contrast(108%);
+}
+
+/* Platter Liquid Glass Upgrade */
+.platter, .bento-card-main, .bento-card-sub, .ios-card, .weekly-day-column {
+  background: var(--liquid-glass-bg) !important;
+  backdrop-filter: var(--liquid-glass-blur) !important;
+  -webkit-backdrop-filter: var(--liquid-glass-blur) !important;
+  border: var(--liquid-glass-border) !important;
+  box-shadow: var(--liquid-glass-shadow) !important;
+  position: relative;
+  overflow: hidden;
+  transition: transform 260ms cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 260ms ease, filter 180ms ease !important;
+}
+
+.platter::before, .bento-card-main::before, .bento-card-sub::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--liquid-glass-shine);
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+.platter:active, .bento-card-main:active {
+  transform: scale(0.98) translateY(1px);
+  filter: brightness(0.97);
+}
+
+/* Liquid Dynamic Island 2.0 */
+.dynamic-island {
+  background: rgba(0, 0, 0, 0.88) !important;
+  backdrop-filter: blur(36px) saturate(220%) !important;
+  -webkit-backdrop-filter: blur(36px) saturate(220%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.28) !important;
+}
+
+/* Floating Dock Liquid Glass */
+.ios-floating-dock {
+  background: var(--liquid-glass-bg) !important;
+  backdrop-filter: var(--liquid-glass-blur) !important;
+  -webkit-backdrop-filter: var(--liquid-glass-blur) !important;
+  border: var(--liquid-glass-border) !important;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.18), inset 0 1px 1.5px rgba(255, 255, 255, 0.5) !important;
+}
+
+/* Liquid Action Buttons */
+.btn-register-primary, .action-btn.call-btn {
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 6px 18px rgba(0, 122, 255, 0.32), inset 0 1px 1px rgba(255, 255, 255, 0.45);
+}
+
+.btn-register-primary::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+  transition: left 600ms ease;
+}
+
+.btn-register-primary:hover::after {
+  left: 100%;
 }

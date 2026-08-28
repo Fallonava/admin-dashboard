@@ -26,12 +26,40 @@ export default function DoctorCard({
   const [copiedCode, setCopiedCode] = useState(false);
 
   const badgeClass = getSpecialtyBadgeClass(doctor.specialty);
-  const isPraktek = doctor.status === 'PRAKTEK';
-  const isCuti = doctor.status === 'CUTI';
-  const isLibur = doctor.status === 'LIBUR';
+  const statusUpper = (doctor.status || 'LIBUR').toUpperCase();
+  const isPraktek = statusUpper === 'PRAKTEK';
+  const isTerjadwal = statusUpper === 'TERJADWAL';
+  const isCuti = statusUpper === 'CUTI';
+  const isLibur = statusUpper === 'LIBUR';
+  const isSelesai = statusUpper === 'SELESAI';
+  const isOperasi = statusUpper === 'OPERASI';
+  const isPenuh = statusUpper === 'PENUH';
 
-  const statusLabel = isPraktek ? 'Praktek' : isCuti ? 'Cuti' : 'Libur';
-  const statusClass = isPraktek ? 'st-praktek' : isCuti ? 'st-cuti' : 'st-libur';
+  let statusLabel = 'Praktek';
+  let statusClass = 'st-praktek';
+
+  if (isPraktek) {
+    statusLabel = 'Praktek';
+    statusClass = 'st-praktek';
+  } else if (isTerjadwal) {
+    statusLabel = 'Terjadwal';
+    statusClass = 'st-terjadwal';
+  } else if (isCuti) {
+    statusLabel = 'Cuti';
+    statusClass = 'st-cuti';
+  } else if (isSelesai) {
+    statusLabel = 'Selesai';
+    statusClass = 'st-selesai';
+  } else if (isOperasi) {
+    statusLabel = 'Operasi';
+    statusClass = 'st-operasi';
+  } else if (isPenuh) {
+    statusLabel = 'Penuh';
+    statusClass = 'st-penuh';
+  } else {
+    statusLabel = 'Libur';
+    statusClass = 'st-libur';
+  }
 
   const handleBooking = (e: React.MouseEvent) => {
     e.stopPropagation();

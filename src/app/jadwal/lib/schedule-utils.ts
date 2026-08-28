@@ -106,13 +106,16 @@ export function evaluateDoctorRealtimeStatus(
   const holiday = getIndonesianHoliday(currentDate);
   const dayIdx = currentDate.getDay(); // 0=Sunday..6=Saturday
 
-  // Find shift for today
+  // Find shift for today with parity
   const todayShift = shifts.find(
-    (s) => s.doctorId === doctor.id && (s.dayIdx === dayIdx || (dayIdx === 0 && s.dayIdx === 7))
+    (s) =>
+      s.doctorId === doctor.id &&
+      (s.dayIdx === dayIdx || (dayIdx === 0 && s.dayIdx === 7)) &&
+      isShiftActiveForDate(s.extra, currentDate)
   );
 
   if (todayShift?.statusOverride) {
-    return { status: todayShift.statusOverride };
+    return { status: todayShift.statusOverride as DoctorStatusType };
   }
 
   const dateStr = currentDate.toISOString().split('T')[0];
@@ -124,11 +127,49 @@ export function evaluateDoctorRealtimeStatus(
     return { status: 'LIBUR', reason: holiday.name || 'Hari Libur Nasional' };
   }
 
-  if (todayShift) {
-    return { status: 'PRAKTEK' };
+  if (!todayShift) {
+    return { status: (doctor.status as DoctorStatusType) || 'LIBUR' };
   }
 
-  return { status: (doctor.status as DoctorStatusType) || 'LIBUR' };
+  // 3. Precise time-of-day calculation (TERJADWAL, PRAKTEK, SELESAI)
+  const jamStr = todayShift.formattedTime || todayShift.title || '-';
+  if (jamStr !== '-') {
+    const parts = jamStr.replace(/\s/g, '').replace(/\./g, ':').toLowerCase().match(/(\d{1,2}:\d{2})/g);
+    if (parts && parts.length > 0) {
+      const parseMins = (t: string) => {
+        const [h, m] = t.split(':').map(Number);
+        return h * 60 + m;
+      };
+      const startMins = parseMins(parts[0]);
+      let endMins: number | null = null;
+
+      if (parts.length >= 2) {
+        endMins = parseMins(parts[1]);
+        if (endMins < startMins) endMins += 24 * 60;
+      } else if (jamStr.toLowerCase().includes('selesai')) {
+        endMins = startMins + 240;
+      }
+
+      let regMins = startMins - 30;
+      const rTime = todayShift.registrationTime || doctor.registrationTime;
+      if (rTime && rTime !== '-') {
+        const rParts = rTime.replace(/\./g, ':').split(':');
+        if (rParts.length >= 2) regMins = Number(rParts[0]) * 60 + Number(rParts[1]);
+      }
+
+      const curMins = currentDate.getHours() * 60 + currentDate.getMinutes();
+
+      if (endMins !== null && curMins >= endMins) {
+        return { status: 'SELESAI', reason: 'Praktik Telah Selesai' };
+      } else if (curMins < regMins) {
+        return { status: 'TERJADWAL', reason: `Praktik dimulai ${parts[0]} WIB` };
+      } else {
+        return { status: 'PRAKTEK' };
+      }
+    }
+  }
+
+  return { status: 'PRAKTEK' };
 }
 
 export function getWeeklyDateStrip(referenceDate: Date = new Date()): DayDateItem[] {

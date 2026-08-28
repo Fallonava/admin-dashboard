@@ -1,4 +1,4 @@
-export type DoctorStatusType = 'PRAKTEK' | 'CUTI' | 'LIBUR' | 'PENUH' | 'SELESAI';
+export type DoctorStatusType = 'PRAKTEK' | 'CUTI' | 'LIBUR' | 'PENUH' | 'SELESAI' | 'TERJADWAL' | 'PENDAFTARAN' | 'OPERASI';
 
 export interface Doctor {
   id: string;
