@@ -35,10 +35,10 @@
         --border-subtle: #CBD5E1;
         --border-input: rgba(255, 255, 255, 0.85);
 
-        /* Typography */
+        /* Typography (WCAG 2.1 AA High Contrast) */
         --text-main: #0F172A;
-        --text-sub: #475569;
-        --text-mute: #94A3B8;
+        --text-sub: #334155;
+        --text-mute: #64748B;
 
         /* Accents */
         --ios-blue: #2563EB;
@@ -123,10 +123,10 @@
         --border-subtle: #334155;
         --border-input: #334155;
 
-        /* Typography */
+        /* Typography (WCAG 2.1 AA High Contrast) */
         --text-main: #F8FAFC;
-        --text-sub: #94A3B8;
-        --text-mute: #64748B;
+        --text-sub: #CBD5E1;
+        --text-mute: #94A3B8;
 
         /* Master 3D Clay Shadows (Dark Obsidian) */
         --shadow-card: 
@@ -494,10 +494,10 @@
       .di-text { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
       .di-title {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 9px;
+        font-size: 11px;
         font-weight: 900;
         text-transform: uppercase;
-        letter-spacing: 0.06em;
+        letter-spacing: 0.05em;
         color: #16A34A;
       }
       .di-msg {
@@ -631,10 +631,10 @@
       }
       .brand-city-tag {
         font-family: "JetBrains Mono", monospace;
-        font-size: 8px;
+        font-size: 11px;
         font-weight: 900;
-        padding: 1.5px 5px;
-        border-radius: 6px;
+        padding: 2px 6px;
+        border-radius: 7px;
         background: rgba(37, 99, 235, 0.12);
         color: var(--ios-blue);
         border: 1px solid rgba(37, 99, 235, 0.25);
@@ -650,11 +650,11 @@
       .brand-sub-row {
         display: flex;
         align-items: center;
-        gap: 5px;
+        gap: 6px;
       }
       .brand-live-dot {
-        width: 6px;
-        height: 6px;
+        width: 6.5px;
+        height: 6.5px;
         border-radius: 50%;
         background: #10B981;
         box-shadow: 0 0 8px #10B981;
@@ -667,13 +667,10 @@
       }
       .brand-subtitle {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 10px;
+        font-size: 11.5px;
         font-weight: 800;
-        letter-spacing: 0.02em;
+        letter-spacing: 0.01em;
         color: var(--ios-blue);
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
       }
       [data-theme="dark"] .brand-subtitle {
         color: #60A5FA;
@@ -1007,7 +1004,7 @@
 
       .bento-unit {
         font-family: "Outfit", sans-serif;
-        font-size: 9.5px;
+        font-size: 11px;
         font-weight: 800;
         color: var(--text-mute);
         text-transform: uppercase;
@@ -1020,19 +1017,17 @@
       }
       .bento-title {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 11px;
+        font-size: 12px;
         font-weight: 900;
         color: var(--text-main);
         letter-spacing: -0.01em;
         line-height: 1.2;
       }
       .bento-sub {
-        font-size: 8.5px;
+        font-size: 11px;
         font-weight: 700;
         color: var(--text-sub);
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+        line-height: 1.2;
       }
 
       /* ═══════════════════════════════════════════════════════════════
@@ -1263,16 +1258,16 @@
       .platter {
         display: flex;
         flex-direction: column;
-        padding: 14px 16px;
-        border-radius: 22px;
-        background: var(--surface-card);
+        padding: 15px 16px;
+        border-radius: var(--radius-card);
+        background: var(--surface-card-solid);
         box-shadow: var(--shadow-card);
-        border: 2px solid var(--border-card);
+        border: 1.5px solid var(--border-card);
         position: relative;
-        transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.22s ease;
-        cursor: pointer;
+        gap: 12px;
+        transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, border-color 0.25s ease;
         content-visibility: auto;
-        contain-intrinsic-size: auto 130px;
+        contain-intrinsic-size: auto 160px;
         transform: translateZ(0);
         backface-visibility: hidden;
       }
@@ -1280,22 +1275,24 @@
         transform: scale(0.985);
       }
       .platter::before {
-        content: '';
-        position: absolute;
-        left: 0; top: 14px; bottom: 14px; width: 5px;
-        border-radius: 0 8px 8px 0;
-        background: var(--status-color, var(--ios-blue));
-        box-shadow: 0 0 8px var(--status-color, var(--ios-blue));
-        z-index: 3;
+        display: none;
       }
 
-      .platter-main {
+      /* 1. Header Row: Department Dot Badge + Live Status Pill */
+      .platter-head-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        width: 100%;
+      }
+
+      /* 2. Body Row: Squircle Avatar + Doctor Info + Favorite Star */
+      .platter-body-row {
         display: flex;
         align-items: center;
         gap: 12px;
         width: 100%;
-        position: relative;
-        z-index: 3;
       }
 
       /* Extruded 3D Clay Coin Avatar -> Apple visionOS 2026 Squircle Platter (48px) */
@@ -1335,7 +1332,7 @@
         min-width: 0;
         display: flex;
         flex-direction: column;
-        gap: 3px;
+        gap: 2px;
       }
 
       /* 🩺 Apple visionOS Department Color Dot Badge */
@@ -1369,21 +1366,40 @@
         color: inherit;
         letter-spacing: 0.02em;
         text-transform: uppercase;
-        line-height: 1.15;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+        line-height: 1.2;
       }
 
       .doc-name {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 13.5px;
+        font-size: 14.5px;
         font-weight: 800;
         color: var(--text-main);
-        line-height: 1.3;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+        line-height: 1.35;
+        margin: 0;
+        word-break: break-word;
+        max-width: 100%;
+      }
+
+      .doc-live-sub {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 11.5px;
+        font-weight: 700;
+        color: var(--text-sub);
+        margin-top: 1px;
+      }
+      .doc-live-dot {
+        width: 6.5px;
+        height: 6.5px;
+        border-radius: 50%;
+        background: var(--text-mute);
+        flex-shrink: 0;
+      }
+      .doc-live-dot.live {
+        background: #10B981;
+        box-shadow: 0 0 8px #10B981;
+        animation: livePulseDot 2s infinite ease-in-out;
       }
 
       /* 🩺 PROFESSIONAL DYNAMIC CLINICAL DEPARTMENT PALETTES */
@@ -1566,47 +1582,115 @@
       .relief-doctor-pill {
         display: flex;
         align-items: center;
-        gap: 5px;
-        padding: 6px 10px;
-        border-radius: 12px;
-        background: rgba(16, 185, 129, 0.1);
-        border: 1px dashed rgba(16, 185, 129, 0.4);
-        color: #047857;
-        font-size: 10.5px;
+        gap: 6px;
+        padding: 8px 12px;
+        border-radius: 13px;
+        background: rgba(239, 68, 68, 0.08);
+        border: 1px dashed rgba(239, 68, 68, 0.4);
+        color: #DC2626;
+        font-size: 11.5px;
         font-weight: 800;
-        margin-top: 4px;
+        margin-top: 2px;
         animation: holidaySlideIn 0.2s ease-out;
       }
       [data-theme="dark"] .relief-doctor-pill {
-        background: rgba(16, 185, 129, 0.18);
-        border-color: rgba(16, 185, 129, 0.45);
-        color: #34D399;
+        background: rgba(239, 68, 68, 0.18);
+        border-color: rgba(239, 68, 68, 0.45);
+        color: #F87171;
       }
       .relief-doctor-pill strong {
         font-weight: 900;
         color: var(--text-main);
       }
 
-      /* Smooth Tactile Pill */
+      /* Apple Live Frosted Status Pill */
       .status-pill {
         display: inline-flex;
         align-items: center;
-        gap: 4px;
+        gap: 5px;
         padding: 4px 10px;
-        border-radius: 11px;
+        border-radius: 9999px;
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 9.5px;
+        font-size: 11px;
         font-weight: 900;
-        letter-spacing: 0.04em;
+        letter-spacing: 0.03em;
         text-transform: uppercase;
         background: var(--surface-card-solid);
         color: var(--text-main);
         box-shadow: var(--shadow-pill);
         border: 1px solid var(--border-card);
         transition: all 0.2s ease;
+        flex-shrink: 0;
       }
 
-      /* Sunken Clay Well Jam Box */
+      /* Recessed Ticket Capsule (Jam Praktik & Jam Buka Reg) */
+      .platter-time-capsule {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 9px 12px;
+        border-radius: 14px;
+        background: var(--surface-well);
+        border: 1px solid rgba(203, 213, 225, 0.6);
+        box-shadow: inset 1px 1px 2px rgba(140, 165, 200, 0.2), inset -1px -1px 2px #FFFFFF;
+      }
+      [data-theme="dark"] .platter-time-capsule {
+        background: rgba(15, 23, 42, 0.5);
+        border-color: rgba(255, 255, 255, 0.1);
+        box-shadow: inset 0 1.5px 3px rgba(0, 0, 0, 0.4);
+      }
+
+      .time-capsule-slot {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex: 1;
+        min-width: 0;
+      }
+      .time-capsule-icon {
+        width: 26px;
+        height: 26px;
+        border-radius: 8px;
+        background: rgba(37, 99, 235, 0.14);
+        color: #2563EB;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .time-capsule-icon.reg {
+        background: rgba(234, 88, 12, 0.14);
+        color: #EA580C;
+      }
+      .time-capsule-info {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+      }
+      .time-capsule-lbl {
+        font-size: 11px;
+        font-weight: 800;
+        text-transform: uppercase;
+        color: var(--text-mute);
+        letter-spacing: 0.03em;
+        line-height: 1.1;
+      }
+      .time-capsule-val {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 12px;
+        font-weight: 900;
+        color: var(--text-main);
+        white-space: nowrap;
+      }
+      .time-capsule-divider {
+        width: 1px;
+        height: 24px;
+        background: rgba(148, 163, 184, 0.35);
+        flex-shrink: 0;
+      }
+
+      /* Sunken Clay Well Jam Box (Legacy fallback) */
       .jam-box {
         display: inline-flex;
         align-items: center;
@@ -1821,15 +1905,13 @@
         gap: 6px;
       }
 
-      /* Card Drawer Actions (WhatsApp & Calendar) */
-      .platter-actions-row {
+      /* 1-Tap Action Tray (Daftar, Bagikan, Ingatkan) */
+      .platter-action-tray, .platter-actions-row {
         display: flex;
         align-items: center;
-        gap: 6px;
-        margin-top: 8px;
-        padding-top: 7px;
-        border-top: 1px dashed var(--border-subtle);
+        gap: 7px;
         width: 100%;
+        margin-top: 2px;
       }
       .platter-action-btn {
         flex: 1;
@@ -1837,40 +1919,45 @@
         align-items: center;
         justify-content: center;
         gap: 5px;
-        padding: 7px 10px;
+        padding: 8px 10px;
         border-radius: 12px;
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 10px;
+        font-size: 12px;
         font-weight: 800;
         text-decoration: none;
         border: none;
         cursor: pointer;
-        transition: transform 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s ease;
+        transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
         touch-action: manipulation;
         user-select: none;
       }
-      .platter-action-btn:active { transform: scale(0.92) translate3d(0, 1.5px, 0); }
+      .platter-action-btn:active { transform: scale(0.94); }
       .platter-action-btn.wa {
-        background: linear-gradient(135deg, #10B981, #059669);
+        background: linear-gradient(145deg, #10B981, #059669);
         color: #FFFFFF;
-        box-shadow: 0 3px 10px rgba(5, 150, 105, 0.35);
+        box-shadow: 0 3px 10px rgba(5, 150, 105, 0.3), inset 0 1px 1.5px rgba(255, 255, 255, 0.4);
+      }
+      .platter-action-btn.share {
+        background: rgba(37, 99, 235, 0.12);
+        color: #2563EB;
+        border: 1px solid rgba(37, 99, 235, 0.25);
+        box-shadow: var(--shadow-btn);
+      }
+      [data-theme="dark"] .platter-action-btn.share {
+        background: rgba(59, 130, 246, 0.2);
+        color: #93C5FD;
+        border-color: rgba(96, 165, 250, 0.35);
       }
       .platter-action-btn.cal {
         background: var(--surface-well);
         color: var(--text-main);
-        border: 1.5px solid var(--border-card);
+        border: 1px solid var(--border-input);
         box-shadow: var(--shadow-btn);
       }
-      .platter-action-btn.share {
-        background: rgba(59, 130, 246, 0.12);
-        color: #2563EB;
-        border: 1.5px solid rgba(59, 130, 246, 0.3);
-        box-shadow: 0 2px 6px rgba(37, 99, 235, 0.12);
-      }
-      [data-theme="dark"] .platter-action-btn.share {
-        background: rgba(59, 130, 246, 0.18);
-        color: #60A5FA;
-        border-color: rgba(96, 165, 250, 0.35);
+      [data-theme="dark"] .platter-action-btn.cal {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.12);
+        color: var(--text-main);
       }
 
       /* ═══════════════════════════════════════════════════════════════
@@ -1926,11 +2013,11 @@
         transform: translateY(-2px);
       }
       .weekly-date-card .date-day-name {
-        font-size: 10.5px;
+        font-size: 11.5px;
         font-weight: 800;
         color: var(--text-sub);
         text-transform: uppercase;
-        letter-spacing: 0.04em;
+        letter-spacing: 0.03em;
       }
       .weekly-date-card.active .date-day-name {
         color: rgba(255, 255, 255, 0.9) !important;
@@ -1946,7 +2033,7 @@
         color: #FFFFFF !important;
       }
       .weekly-date-card .date-month-name {
-        font-size: 9.5px;
+        font-size: 11px;
         font-weight: 800;
         color: var(--text-mute);
       }
@@ -1956,9 +2043,9 @@
 
       /* Today Indicator Pill */
       .weekly-date-card .today-indicator {
-        font-size: 8px;
+        font-size: 10px;
         font-weight: 900;
-        padding: 1px 5px;
+        padding: 1.5px 6px;
         border-radius: 6px;
         background: rgba(37, 99, 235, 0.12);
         color: #2563EB;
@@ -2288,7 +2375,7 @@
         min-width: 0;
       }
       .wk-slot-lbl {
-        font-size: 9.5px;
+        font-size: 11px;
         font-weight: 800;
         text-transform: uppercase;
         color: var(--text-mute);
@@ -2394,7 +2481,7 @@
 
       .cal-weekdays {
         display: grid; grid-template-columns: repeat(7, 1fr); text-align: center;
-        font-size: 10px; font-weight: 800; color: var(--text-mute); text-transform: uppercase;
+        font-size: 11px; font-weight: 800; color: var(--text-mute); text-transform: uppercase;
       }
       .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
       .cal-day-cell {
@@ -2426,7 +2513,7 @@
       .cal-dot-leave { width: 4px; height: 4px; border-radius: 50%; background: #D97706; }
       .cal-dot-holiday { width: 4px; height: 4px; border-radius: 50%; background: #E11D48; }
 
-      .cal-legend { display: flex; align-items: center; justify-content: center; gap: 12px; font-size: 9px; font-weight: 800; color: var(--text-sub); flex-wrap: wrap; }
+      .cal-legend { display: flex; align-items: center; justify-content: center; gap: 12px; font-size: 11px; font-weight: 800; color: var(--text-sub); flex-wrap: wrap; }
       .cal-legend-item { display: flex; align-items: center; gap: 4px; }
       .cal-legend-dot { width: 6px; height: 6px; border-radius: 50%; }
 
@@ -2859,12 +2946,12 @@
         color: var(--text-main);
       }
       .clay-choice-tag {
-        font-size: 8.5px;
+        font-size: 11px;
         font-weight: 900;
-        padding: 2px 6px;
+        padding: 2.5px 7px;
         border-radius: 6px;
         text-transform: uppercase;
-        letter-spacing: 0.04em;
+        letter-spacing: 0.03em;
       }
       .clay-choice-tag.bpjs {
         background: rgba(16, 185, 129, 0.15);
@@ -2883,7 +2970,7 @@
       }
 
       .clay-choice-desc {
-        font-size: 10px;
+        font-size: 12px;
         font-weight: 600;
         color: var(--text-sub);
         line-height: 1.35;
@@ -3976,69 +4063,86 @@
           : formatJam((d.JamPraktek || "").split("-")[0]);
           
         const isCPO = ["CUTI", "PENUH", "OPERASI"].some(st => (d.Status || "").toUpperCase().includes(st));
+        const isPraktek = (d.Status || "").toUpperCase() === "PRAKTEK";
         const favs = getFavDoctors();
         const isFav = favs.includes(d.Dokter);
         const repDoc = d.DokterPengganti || d.replacementDoctor || null;
         const specTheme = getSpecialistTheme(d.Spesialis);
 
         return `
-          <div class="platter-main">
+          <!-- 1. Header: Department Badge + Live Status Glass Pill -->
+          <div class="platter-head-row">
+            <div class="doc-spec-badge ${specTheme}">
+              <span class="spec-dot"></span>
+              <span class="doc-spec">${esc(d.Spesialis)}</span>
+            </div>
+            <div class="status-pill">
+              ${statusGlyph}
+              <span>${statusLabel}</span>
+            </div>
+          </div>
+
+          <!-- 2. Hero Body: Squircle Ceramic Avatar + Doctor Name + 1-Tap Favorite Star -->
+          <div class="platter-body-row">
             <div class="initials">${avatarText}</div>
             <div class="info-col">
-              <div class="doc-spec-badge ${specTheme}">
-                <span class="spec-dot"></span>
-                <span class="doc-spec">${esc(d.Spesialis)}</span>
+              <h3 class="doc-name">${esc(d.Dokter)}</h3>
+              <div class="doc-live-sub">
+                <span class="doc-live-dot ${isPraktek ? 'live' : ''}"></span>
+                <span class="doc-live-label">${labelLive}</span>
               </div>
-              <div class="doc-name">${esc(d.Dokter)}</div>
-              ${repDoc ? `
-              <div class="relief-doctor-pill" title="Dokter Pengganti Selama Cuti">
-                <span class="material-icons-round" style="font-size:12px;">swap_horiz</span>
-                <span>Digantikan: <strong>${esc(repDoc)}</strong></span>
-              </div>` : ""}
-            </div>
-            <div class="meta-col">
-              <div class="status-pill">
-                ${statusGlyph}
-                <span>${statusLabel}</span>
-              </div>
-              ${!isCPO && d.JamPraktek && d.JamPraktek !== "-" ? `
-              <div class="jam-box">
-                <span class="material-icons-round" style="font-size:11px;">schedule</span>
-                <span class="jam-val jam-val-daftar">${jamTampil}</span>
-              </div>` : ""}
             </div>
             <button class="btn-fav-doc ${isFav ? 'is-fav' : ''}" onclick="toggleFavDoctor('${esc(d.Dokter)}', event)" title="${isFav ? 'Hapus dari Dokter Favorit' : 'Jadikan Dokter Favorit'}">
               <span class="material-icons-round">${isFav ? 'star' : 'star_border'}</span>
             </button>
-            <div class="card-expand-indicator" title="Buka Menu Pendaftaran">
-              <span class="material-icons-round">expand_more</span>
-            </div>
           </div>
-          <div class="platter-detail">
-            <div class="platter-detail-row">
-              <div class="detail-info" style="display:flex; flex-direction:column; gap:1px;">
-                <span class="detail-label">${labelJam}</span>
-                <span class="detail-time">${jamTampil}</span>
+
+          <!-- 3. Relief / Replacement Doctor Banner (if present) -->
+          ${repDoc ? `
+          <div class="relief-doctor-pill" title="Dokter Pengganti Selama Cuti">
+            <span class="material-icons-round" style="font-size:14px;">swap_horiz</span>
+            <span>Digantikan oleh: <strong>${esc(repDoc)}</strong></span>
+          </div>` : ""}
+
+          <!-- 4. Ticket Pass Recessed Time Strip -->
+          ${d.JamPraktek && d.JamPraktek !== "-" ? `
+          <div class="platter-time-capsule">
+            <div class="time-capsule-slot">
+              <div class="time-capsule-icon">
+                <span class="material-icons-round" style="font-size:13px;">schedule</span>
               </div>
-              <div class="live-status">
-                <div class="pulse-dot"></div>
-                <span class="live-text">${labelLive}</span>
+              <div class="time-capsule-info">
+                <span class="time-capsule-lbl">Jam Praktik</span>
+                <span class="time-capsule-val">${esc(d.JamPraktek)}</span>
               </div>
             </div>
-            <div class="platter-actions-row">
-              <button class="platter-action-btn wa" onclick="openRegisterModal('${esc(d.Dokter)}', '${esc(d.Spesialis)}', '${jamTampil}'); event.stopPropagation();" title="Daftar Antrean via WhatsApp">
-                <span class="material-icons-round" style="font-size:14px;">app_registration</span>
-                <span>Tanya / Daftar</span>
-              </button>
-              <button class="platter-action-btn share" onclick="shareDoctorSchedule('${esc(d.Dokter)}', '${esc(d.Spesialis)}', '${jamTampil}', '${esc(d.Status || '')}'); event.stopPropagation();" title="Bagikan Jadwal ke WhatsApp">
-                <span class="material-icons-round" style="font-size:14px;">share</span>
-                <span>Bagikan</span>
-              </button>
-              <button class="platter-action-btn cal" onclick="addDoctorToCalendar('${esc(d.Dokter)}', '${esc(d.Spesialis)}', '${jamTampil}'); event.stopPropagation();" title="Simpan ke Google Calendar">
-                <span class="material-icons-round" style="font-size:14px;">event</span>
-                <span>Ingatkan</span>
-              </button>
-            </div>
+            ${d.JamDaftar && d.JamDaftar !== "-" ? `
+            <div class="time-capsule-divider"></div>
+            <div class="time-capsule-slot reg">
+              <div class="time-capsule-icon reg">
+                <span class="material-icons-round" style="font-size:13px;">how_to_reg</span>
+              </div>
+              <div class="time-capsule-info">
+                <span class="time-capsule-lbl">${labelJam}</span>
+                <span class="time-capsule-val">${esc(d.JamDaftar)}</span>
+              </div>
+            </div>` : ''}
+          </div>` : ''}
+
+          <!-- 5. 1-Tap Action Tray (Daftar, Bagikan, Ingatkan) -->
+          <div class="platter-action-tray">
+            <button class="platter-action-btn wa" onclick="openRegisterModal('${esc(d.Dokter)}', '${esc(d.Spesialis)}', '${jamTampil}'); event.stopPropagation();" title="Daftar Antrean via WhatsApp">
+              <span class="material-icons-round" style="font-size:14px;">app_registration</span>
+              <span>Daftar</span>
+            </button>
+            <button class="platter-action-btn share" onclick="shareDoctorSchedule('${esc(d.Dokter)}', '${esc(d.Spesialis)}', '${jamTampil}', '${esc(d.Status || '')}'); event.stopPropagation();" title="Bagikan Jadwal ke WhatsApp">
+              <span class="material-icons-round" style="font-size:14px;">share</span>
+              <span>Bagikan</span>
+            </button>
+            <button class="platter-action-btn cal" onclick="addDoctorToCalendar('${esc(d.Dokter)}', '${esc(d.Spesialis)}', '${jamTampil}'); event.stopPropagation();" title="Simpan ke Google Calendar">
+              <span class="material-icons-round" style="font-size:14px;">event</span>
+              <span>Ingatkan</span>
+            </button>
           </div>`;
       };
 
@@ -4589,7 +4693,7 @@
                 else if (st.includes("CUTI")) { labelJam = "JADWAL CUTI"; labelLive = "TIDAK MELAYANI"; }
                 else if (st === "TERJADWAL") { labelJam = "MENUNGGU SHIFT"; labelLive = "BELUM MULAI"; }
 
-                return `<div class="platter ${c}" data-doc-name="${esc(d.Dokter)}" data-doc-spec="${esc(d.Spesialis)}" onclick="toggleCardActive(this)">${buildCardHTML(d, avatarText, getStatusGlyph(d.Status), l, labelJam, labelLive)}</div>`;
+                return `<div class="platter ${c}" data-doc-name="${esc(d.Dokter)}" data-doc-spec="${esc(d.Spesialis)}">${buildCardHTML(d, avatarText, getStatusGlyph(d.Status), l, labelJam, labelLive)}</div>`;
               }).join("");
             }
 
