@@ -3,10 +3,22 @@
 import './jadwal.css';
 import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import useSWR from 'swr';
-import { Search, RotateCcw, AlertTriangle, SearchX, Star, Sparkles, Share2 } from 'lucide-react';
+import {
+  Search,
+  RotateCcw,
+  AlertTriangle,
+  SearchX,
+  Star,
+  Activity,
+  Clock,
+  CalendarX,
+  CheckCircle2,
+  Stethoscope,
+  Sparkles,
+} from 'lucide-react';
 
 import type { Doctor, Shift, LeaveRequest, DisplayApiResponse } from './types';
-import { evaluateDoctorRealtimeStatus, isSurgeonSpecialty, isShiftActiveForDate } from './lib/schedule-utils';
+import { evaluateDoctorRealtimeStatus, isShiftActiveForDate } from './lib/schedule-utils';
 import { triggerHaptic } from './lib/haptics';
 
 import DynamicIsland, { DynamicIslandAlert } from './components/DynamicIsland';
@@ -15,7 +27,6 @@ import DoctorCard from './components/DoctorCard';
 import WeeklyView from './components/WeeklyView';
 import LeavesCalendar from './components/LeavesCalendar';
 import RegistrationModal from './components/RegistrationModal';
-import FloatingDock from './components/FloatingDock';
 import Toast, { ToastMessage } from './components/Toast';
 import JadwalNavbar from './components/JadwalNavbar';
 import IosTabBar from './components/IosTabBar';
@@ -29,7 +40,8 @@ const fetcher = async (url: string): Promise<DisplayApiResponse> => {
 export default function JadwalPage() {
   const [activeTab, setActiveTab] = useState<'today' | 'weekly' | 'leaves'>('today');
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<'all' | 'bedah' | 'non-bedah' | 'favorite'>('all');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'praktek' | 'terjadwal' | 'cuti' | 'favorite'>('all');
+  const [specialtyFilter, setSpecialtyFilter] = useState<string>('all');
   const [selectedDoctorForModal, setSelectedDoctorForModal] = useState<Doctor | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [islandAlert, setIslandAlert] = useState<DynamicIslandAlert | null>(null);
@@ -124,7 +136,7 @@ export default function JadwalPage() {
         });
       });
       es.onerror = () => {
-        // Fail silently, SWR interval will keep sync alive
+        // Fail silently
       };
     } catch {}
 
@@ -192,6 +204,15 @@ export default function JadwalPage() {
     });
   }, [doctors, shifts, leaves]);
 
+  // Extract list of all unique specialties for filter chips
+  const uniqueSpecialties = useMemo(() => {
+    const set = new Set<string>();
+    doctors.forEach((d) => {
+      if (d.specialty) set.add(d.specialty);
+    });
+    return Array.from(set).sort();
+  }, [doctors]);
+
   const handleToggleFavorite = (doctor: Doctor) => {
     setFavoriteDoctorIds((prev) => {
       let updated: string[];
@@ -214,15 +235,15 @@ export default function JadwalPage() {
 
   const handleShareDoctor = (doctor: Doctor) => {
     const shareData = {
-      title: `Jadwal ${doctor.name} — RSU Siaga Medika`,
-      text: `Jadwal Praktik ${doctor.name} (${doctor.specialty}) di RSU Siaga Medika Pemalang.`,
+      title: `Jadwal ${doctor.name} — RSU Siaga Medika Purbalingga`,
+      text: `Jadwal Praktik ${doctor.name} (${doctor.specialty}) di RSU Siaga Medika Purbalingga.`,
       url: window.location.href,
     };
     if (navigator.share) {
       navigator.share(shareData).catch(() => {});
     } else {
       navigator.clipboard?.writeText(
-        `Jadwal Praktik ${doctor.name} (${doctor.specialty}) — RSU Siaga Medika Pemalang: ${window.location.href}`
+        `Jadwal Praktik ${doctor.name} (${doctor.specialty}) — RSU Siaga Medika Purbalingga: ${window.location.href}`
       );
       showToast('Tautan Disalin', 'Tautan jadwal dokter telah disalin ke clipboard', 'share');
     }
@@ -230,7 +251,7 @@ export default function JadwalPage() {
 
   const handleCopyQueueCode = (code: string) => {
     navigator.clipboard?.writeText(code);
-    showToast('Kode Antrean Disalin', `Kode ${code} siap digunakan`, 'copy');
+    showToast('Kode Antrean Disalin', `Kode ${code} siap digunakan di pendaftaran`, 'copy');
   };
 
   const handleManualRefresh = async () => {
@@ -241,17 +262,28 @@ export default function JadwalPage() {
     showToast('Data Diperbarui', 'Jadwal terkini berhasil disinkronkan', 'success');
   };
 
-  // Today View Filtered Doctors
+  // Filtered doctors based on search, status filter, and specialty filter
   const filteredTodayDoctors = useMemo(() => {
     return evaluatedDoctors.filter((doc) => {
       // Favorite filter
-      if (selectedCategory === 'favorite') {
-        if (!favoriteDoctorIds.includes(doc.id)) return false;
-      } else {
-        // Category filter
-        const isSurgeon = isSurgeonSpecialty(doc.specialty);
-        if (selectedCategory === 'bedah' && !isSurgeon) return false;
-        if (selectedCategory === 'non-bedah' && isSurgeon) return false;
+      if (statusFilter === 'favorite' && !favoriteDoctorIds.includes(doc.id)) {
+        return false;
+      }
+
+      // Status filter
+      if (statusFilter === 'praktek' && (doc.status || '').toUpperCase() !== 'PRAKTEK') {
+        return false;
+      }
+      if (statusFilter === 'terjadwal' && (doc.status || '').toUpperCase() !== 'TERJADWAL') {
+        return false;
+      }
+      if (statusFilter === 'cuti' && !(doc.status || '').toUpperCase().includes('CUTI')) {
+        return false;
+      }
+
+      // Specialty filter
+      if (specialtyFilter !== 'all' && doc.specialty !== specialtyFilter) {
+        return false;
       }
 
       // Search query filter
@@ -264,15 +296,28 @@ export default function JadwalPage() {
 
       return true;
     });
-  }, [evaluatedDoctors, selectedCategory, searchQuery, favoriteDoctorIds]);
+  }, [evaluatedDoctors, statusFilter, specialtyFilter, searchQuery, favoriteDoctorIds]);
 
-  // Split into Bedah & Non-Bedah groups
-  const bedahDoctors = useMemo(
-    () => filteredTodayDoctors.filter((d) => isSurgeonSpecialty(d.specialty)),
+  // Group filtered doctors by their operational status for intuitive display
+  const livePraktekDoctors = useMemo(
+    () => filteredTodayDoctors.filter((d) => (d.status || '').toUpperCase() === 'PRAKTEK'),
     [filteredTodayDoctors]
   );
-  const nonBedahDoctors = useMemo(
-    () => filteredTodayDoctors.filter((d) => !isSurgeonSpecialty(d.specialty)),
+  const upcomingTerjadwalDoctors = useMemo(
+    () => filteredTodayDoctors.filter((d) => (d.status || '').toUpperCase() === 'TERJADWAL'),
+    [filteredTodayDoctors]
+  );
+  const cutiDoctors = useMemo(
+    () => filteredTodayDoctors.filter((d) => (d.status || '').toUpperCase().includes('CUTI')),
+    [filteredTodayDoctors]
+  );
+  const otherDoctors = useMemo(
+    () =>
+      filteredTodayDoctors.filter(
+        (d) =>
+          !['PRAKTEK', 'TERJADWAL'].includes((d.status || '').toUpperCase()) &&
+          !(d.status || '').toUpperCase().includes('CUTI')
+      ),
     [filteredTodayDoctors]
   );
 
@@ -303,7 +348,7 @@ export default function JadwalPage() {
         totalDoctorCount={evaluatedDoctors.length}
       />
 
-      {/* Dedicated iOS 27 Jadwal Navbar */}
+      {/* Apple iOS 27 Liquid Navigation Bar (Siaga Medika PBG) */}
       <JadwalNavbar
         activeTab={activeTab}
         onTabChange={handleTabChange}
@@ -311,22 +356,20 @@ export default function JadwalPage() {
         onToggleTheme={handleThemeToggle}
         isRefreshing={isRefreshing}
         onRefresh={handleManualRefresh}
-        onSearchFocus={handleSearchFocus}
         onShare={() => {
           if (navigator.share) {
-            navigator
-              .share({
-                title: 'Jadwal Praktik Dokter — RSU Siaga Medika Pemalang',
-                text: 'Cek jadwal dokter spesialis, jadwal cuti, dan pendaftaran online RSU Siaga Medika Pemalang.',
-                url: window.location.href,
-              })
-              .catch(() => {});
+            navigator.share({
+              title: 'Jadwal Dokter RSU Siaga Medika Purbalingga',
+              text: 'Cek jadwal dokter spesialis real-time & pendaftaran online RSU Siaga Medika Purbalingga.',
+              url: window.location.href,
+            }).catch(() => {});
           } else {
             navigator.clipboard?.writeText(window.location.href);
-            showToast('Tautan Disalin', 'Tautan portal jadwal telah disalin ke clipboard', 'share');
+            showToast('Tautan Disalin', 'Tautan portal jadwal telah disalin', 'share');
           }
         }}
-        todayCount={evaluatedDoctors.filter((d) => d.status === 'PRAKTEK').length}
+        onSearchFocus={handleSearchFocus}
+        todayCount={evaluatedDoctors.filter((d) => d.status === 'PRAKTEK' || d.status === 'TERJADWAL').length}
         leavesCount={leaves.length}
       />
 
@@ -359,7 +402,7 @@ export default function JadwalPage() {
           </div>
         )}
 
-        {/* 1. TODAY'S VIEW */}
+        {/* 1. TODAY'S VIEW (KONSEP JADWAL HARI INI TEPAT) */}
         {!isLoading && !error && activeTab === 'today' && (
           <div className="today-view-wrapper">
             {/* Bento Stats */}
@@ -367,13 +410,14 @@ export default function JadwalPage() {
 
             {/* Search & Category Filter Chips */}
             <div className="search-and-filter-wrapper mb-24">
-              <div className="ios-search-bar mb-24">
+              {/* Search Bar Capsule */}
+              <div className="ios-search-bar mb-16">
                 <Search className="search-icon" size={18} />
                 <input
                   ref={searchInputRef}
                   type="text"
                   className="ios-search-input"
-                  placeholder="Cari nama dokter atau spesialis..."
+                  placeholder="Cari nama dokter atau poliklinik..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
@@ -384,57 +428,99 @@ export default function JadwalPage() {
                 )}
               </div>
 
-              {/* Category Chips */}
-              <div className="category-chips-row">
+              {/* Status Filter Chips Row */}
+              <div className="category-chips-row mb-12">
                 <button
                   type="button"
-                  className={`category-chip ${selectedCategory === 'all' ? 'active' : ''}`}
+                  className={`category-chip ${statusFilter === 'all' ? 'active' : ''}`}
                   onClick={() => {
                     triggerHaptic('selection');
-                    setSelectedCategory('all');
+                    setStatusFilter('all');
                   }}
                 >
-                  Semua Poli ({evaluatedDoctors.length})
+                  Semua ({evaluatedDoctors.length})
+                </button>
+
+                <button
+                  type="button"
+                  className={`category-chip ${statusFilter === 'praktek' ? 'active' : ''}`}
+                  onClick={() => {
+                    triggerHaptic('selection');
+                    setStatusFilter('praktek');
+                  }}
+                >
+                  <span className="status-dot st-dot-green" />
+                  <span>Sedang Praktik ({evaluatedDoctors.filter((d) => d.status === 'PRAKTEK').length})</span>
+                </button>
+
+                <button
+                  type="button"
+                  className={`category-chip ${statusFilter === 'terjadwal' ? 'active' : ''}`}
+                  onClick={() => {
+                    triggerHaptic('selection');
+                    setStatusFilter('terjadwal');
+                  }}
+                >
+                  <Clock size={13} />
+                  <span>Terjadwal ({evaluatedDoctors.filter((d) => d.status === 'TERJADWAL').length})</span>
+                </button>
+
+                <button
+                  type="button"
+                  className={`category-chip ${statusFilter === 'cuti' ? 'active' : ''}`}
+                  onClick={() => {
+                    triggerHaptic('selection');
+                    setStatusFilter('cuti');
+                  }}
+                >
+                  <CalendarX size={13} />
+                  <span>Cuti ({evaluatedDoctors.filter((d) => (d.status || '').includes('CUTI')).length})</span>
                 </button>
 
                 {favoriteDoctorIds.length > 0 && (
                   <button
                     type="button"
-                    className={`category-chip fav-chip ${selectedCategory === 'favorite' ? 'active' : ''}`}
+                    className={`category-chip fav-chip ${statusFilter === 'favorite' ? 'active' : ''}`}
                     onClick={() => {
                       triggerHaptic('selection');
-                      setSelectedCategory('favorite');
+                      setStatusFilter('favorite');
                     }}
                   >
                     <Star size={13} className="fill-star" />
                     <span>Favorit ({favoriteDoctorIds.length})</span>
                   </button>
                 )}
+              </div>
 
+              {/* Specialty Filter Horizontal Strip */}
+              <div className="category-chips-row">
                 <button
                   type="button"
-                  className={`category-chip ${selectedCategory === 'non-bedah' ? 'active' : ''}`}
+                  className={`category-chip spec-chip ${specialtyFilter === 'all' ? 'active' : ''}`}
                   onClick={() => {
                     triggerHaptic('selection');
-                    setSelectedCategory('non-bedah');
+                    setSpecialtyFilter('all');
                   }}
                 >
-                  Rawat Jalan / Non-Bedah ({evaluatedDoctors.filter((d) => !isSurgeonSpecialty(d.specialty)).length})
+                  Semua Poliklinik
                 </button>
-                <button
-                  type="button"
-                  className={`category-chip ${selectedCategory === 'bedah' ? 'active' : ''}`}
-                  onClick={() => {
-                    triggerHaptic('selection');
-                    setSelectedCategory('bedah');
-                  }}
-                >
-                  Poli Bedah ({evaluatedDoctors.filter((d) => isSurgeonSpecialty(d.specialty)).length})
-                </button>
+                {uniqueSpecialties.map((spec) => (
+                  <button
+                    key={spec}
+                    type="button"
+                    className={`category-chip spec-chip ${specialtyFilter === spec ? 'active' : ''}`}
+                    onClick={() => {
+                      triggerHaptic('selection');
+                      setSpecialtyFilter(spec);
+                    }}
+                  >
+                    {spec}
+                  </button>
+                ))}
               </div>
             </div>
 
-            {/* Doctors List */}
+            {/* Doctors List Grouped by Operational State */}
             {filteredTodayDoctors.length === 0 ? (
               <div className="ios-empty-state">
                 <div className="ios-empty-coin">
@@ -442,16 +528,17 @@ export default function JadwalPage() {
                 </div>
                 <div className="ios-empty-title">Dokter Tidak Ditemukan</div>
                 <div className="ios-empty-sub">
-                  {selectedCategory === 'favorite'
+                  {statusFilter === 'favorite'
                     ? 'Belum ada dokter yang ditambahkan ke favorit. Tekan ikon bintang pada kartu dokter untuk menyimpannya.'
-                    : `Tidak ada dokter yang cocok dengan kata kunci pencarian "${searchQuery}".`}
+                    : `Tidak ada dokter yang cocok dengan filter atau kata kunci "${searchQuery}".`}
                 </div>
                 <button
                   type="button"
                   className="empty-reset-btn"
                   onClick={() => {
                     setSearchQuery('');
-                    setSelectedCategory('all');
+                    setStatusFilter('all');
+                    setSpecialtyFilter('all');
                   }}
                 >
                   Reset Filter
@@ -459,15 +546,18 @@ export default function JadwalPage() {
               </div>
             ) : (
               <div className="platter-list-container">
-                {/* Non-Bedah Section */}
-                {nonBedahDoctors.length > 0 && selectedCategory !== 'bedah' && (
+                {/* 1. SEDANG PRAKTEK SEKARANG (LIVE NOW) */}
+                {livePraktekDoctors.length > 0 && (
                   <section className="doctor-section mb-24">
-                    <div className="section-header-pill">
-                      <h2 className="section-title">Poliklinik Rawat Jalan</h2>
-                      <span className="section-count">{nonBedahDoctors.length} Dokter</span>
+                    <div className="section-header-pill live-section-pill">
+                      <div className="section-title-wrap">
+                        <span className="brand-live-pulse-dot" />
+                        <h2 className="section-title">Sedang Praktik Sekarang</h2>
+                      </div>
+                      <span className="section-count live-count">{livePraktekDoctors.length} Dokter</span>
                     </div>
                     <div className="platter-grid">
-                      {nonBedahDoctors.map((doc) => (
+                      {livePraktekDoctors.map((doc) => (
                         <DoctorCard
                           key={doc.id}
                           doctor={doc}
@@ -482,15 +572,70 @@ export default function JadwalPage() {
                   </section>
                 )}
 
-                {/* Bedah Section */}
-                {bedahDoctors.length > 0 && selectedCategory !== 'non-bedah' && (
+                {/* 2. TERJADWAL NANTI HARI INI (UPCOMING TODAY) */}
+                {upcomingTerjadwalDoctors.length > 0 && (
                   <section className="doctor-section mb-24">
                     <div className="section-header-pill">
-                      <h2 className="section-title">Poliklinik Bedah</h2>
-                      <span className="section-count">{bedahDoctors.length} Dokter</span>
+                      <div className="section-title-wrap">
+                        <Clock size={16} className="text-blue" />
+                        <h2 className="section-title">Terjadwal Nanti Hari Ini</h2>
+                      </div>
+                      <span className="section-count">{upcomingTerjadwalDoctors.length} Dokter</span>
                     </div>
                     <div className="platter-grid">
-                      {bedahDoctors.map((doc) => (
+                      {upcomingTerjadwalDoctors.map((doc) => (
+                        <DoctorCard
+                          key={doc.id}
+                          doctor={doc}
+                          isFavorite={favoriteDoctorIds.includes(doc.id)}
+                          onToggleFavorite={handleToggleFavorite}
+                          onSelectDoctor={handleDoctorSelect}
+                          onShare={handleShareDoctor}
+                          onCopyQueue={handleCopyQueueCode}
+                        />
+                      ))}
+                    </div>
+                  </section>
+                )}
+
+                {/* 3. DOKTER CUTI HARI INI (ON LEAVE) */}
+                {cutiDoctors.length > 0 && (
+                  <section className="doctor-section mb-24">
+                    <div className="section-header-pill">
+                      <div className="section-title-wrap">
+                        <CalendarX size={16} className="text-red" />
+                        <h2 className="section-title">Sedang Cuti / Izin Hari Ini</h2>
+                      </div>
+                      <span className="section-count cuti-count">{cutiDoctors.length} Dokter</span>
+                    </div>
+                    <div className="platter-grid">
+                      {cutiDoctors.map((doc) => (
+                        <DoctorCard
+                          key={doc.id}
+                          doctor={doc}
+                          isFavorite={favoriteDoctorIds.includes(doc.id)}
+                          onToggleFavorite={handleToggleFavorite}
+                          onSelectDoctor={handleDoctorSelect}
+                          onShare={handleShareDoctor}
+                          onCopyQueue={handleCopyQueueCode}
+                        />
+                      ))}
+                    </div>
+                  </section>
+                )}
+
+                {/* 4. DOKTER POLIKLINIK LAINNYA / LIBUR HARI INI */}
+                {otherDoctors.length > 0 && (statusFilter === 'all' || specialtyFilter !== 'all' || searchQuery) && (
+                  <section className="doctor-section mb-24">
+                    <div className="section-header-pill">
+                      <div className="section-title-wrap">
+                        <Stethoscope size={16} className="text-mute" />
+                        <h2 className="section-title">Dokter Poliklinik Terkait</h2>
+                      </div>
+                      <span className="section-count">{otherDoctors.length} Dokter</span>
+                    </div>
+                    <div className="platter-grid">
+                      {otherDoctors.map((doc) => (
                         <DoctorCard
                           key={doc.id}
                           doctor={doc}

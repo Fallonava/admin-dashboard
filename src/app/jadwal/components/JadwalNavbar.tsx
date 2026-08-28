@@ -27,18 +27,17 @@ export default function JadwalNavbar({
   todayCount = 0,
   leavesCount = 0,
 }: JadwalNavbarProps) {
-  // ponytail: pure semantic native iOS 27 header with liquid glass and continuous squircle geometry
   return (
-    <header className="jadwal-dedicated-navbar ios27-header material-regular">
+    <header className="jadwal-dedicated-navbar ios27-header">
       <div className="jadwal-nav-inner">
-        {/* Top Brand & Utility Toolbar */}
+        {/* Top Brand & Utility Toolbar (Ultra-Compact iOS 27 Platter) */}
         <div className="jadwal-nav-top-row">
-          {/* Hospital Branding */}
+          {/* Hospital Branding (Siaga Medika PBG) */}
           <div className="jadwal-brand-group">
             <div className="jadwal-brand-logo-squircle" aria-hidden="true">
               <img
                 src="/icon.svg"
-                alt="RSU Siaga Medika"
+                alt="RSU Siaga Medika Purbalingga"
                 className="jadwal-brand-img"
                 onError={(e) => {
                   e.currentTarget.style.display = 'none';
@@ -48,32 +47,32 @@ export default function JadwalNavbar({
             <div className="jadwal-brand-meta">
               <div className="jadwal-brand-title-row">
                 <span className="jadwal-brand-title">RSU Siaga Medika</span>
-                <span className="jadwal-verified-pill" title="Terverifikasi Resmi">
-                  <ShieldCheck size={11} className="verified-icon" />
-                  <span>Pemalang</span>
+                <span className="jadwal-verified-pill pbg-pill" title="Terverifikasi Resmi PBG">
+                  <ShieldCheck size={10.5} className="verified-icon" />
+                  <span>PBG</span>
                 </span>
               </div>
               <div className="jadwal-brand-status-row">
                 <span className="brand-live-pulse-dot" />
-                <span className="jadwal-brand-sub">Jadwal Praktik Real-time</span>
+                <span className="jadwal-brand-sub">Purbalingga · Live Jadwal</span>
               </div>
             </div>
           </div>
 
           {/* Right Toolbar Actions */}
           <div className="jadwal-nav-actions">
-            {/* Emergency Hotline Button */}
+            {/* Emergency Hotline Button PBG */}
             <a
-              href="tel:0284321888"
+              href="tel:0281891888"
               className="jadwal-nav-icon-btn hotline-btn"
-              title="Call Center IGD / Informasi (0284) 321888"
+              title="IGD & Informasi Siaga Medika PBG (0281) 891888"
               onClick={() => triggerHaptic('light')}
-              aria-label="Call Center IGD (0284) 321888"
+              aria-label="Call Center IGD (0281) 891888"
             >
-              <PhoneCall size={16} />
+              <PhoneCall size={15} />
             </a>
 
-            {/* Search Shortcut Button */}
+            {/* Search Shortcut */}
             {onSearchFocus && (
               <button
                 type="button"
@@ -82,14 +81,14 @@ export default function JadwalNavbar({
                   triggerHaptic('selection');
                   onSearchFocus();
                 }}
-                title="Cari Dokter Spesialis"
+                title="Cari Dokter / Spesialis"
                 aria-label="Cari Dokter Spesialis"
               >
-                <Search size={16} />
+                <Search size={15} />
               </button>
             )}
 
-            {/* Share Portal Button */}
+            {/* Share Portal */}
             {onShare && (
               <button
                 type="button"
@@ -101,11 +100,11 @@ export default function JadwalNavbar({
                 title="Bagikan Portal Jadwal"
                 aria-label="Bagikan Jadwal Dokter"
               >
-                <Share2 size={16} />
+                <Share2 size={15} />
               </button>
             )}
 
-            {/* Theme Switcher Button */}
+            {/* Dark Mode Toggle */}
             <button
               type="button"
               className="jadwal-nav-icon-btn theme-btn"
@@ -113,13 +112,13 @@ export default function JadwalNavbar({
                 triggerHaptic('selection');
                 onToggleTheme();
               }}
-              title={isDarkMode ? 'Beralih ke Mode Terang' : 'Beralih ke Mode Gelap'}
+              title={isDarkMode ? 'Mode Terang' : 'Mode OLED Gelap'}
               aria-label="Ubah Tema Tampilan"
             >
-              {isDarkMode ? <Sun size={16} /> : <Moon size={16} />}
+              {isDarkMode ? <Sun size={15} /> : <Moon size={15} />}
             </button>
 
-            {/* Refresh Button */}
+            {/* Refresh Sync */}
             <button
               type="button"
               className={`jadwal-nav-icon-btn refresh-btn ${isRefreshing ? 'is-spinning' : ''}`}
@@ -130,12 +129,12 @@ export default function JadwalNavbar({
               title="Sinkronkan Jadwal Terbaru"
               aria-label="Sinkronkan Jadwal Terbaru"
             >
-              <RotateCcw size={16} />
+              <RotateCcw size={15} />
             </button>
           </div>
         </div>
 
-        {/* Segmented Control Bar */}
+        {/* Apple iOS 27 Liquid Segmented Control Bar */}
         <div className="jadwal-segmented-track" role="tablist" aria-label="Pilihan Jadwal">
           <button
             type="button"

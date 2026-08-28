@@ -809,6 +809,27 @@ body.dark .jadwal-dedicated-navbar {
 /* ═══════════════════════════════════════════════════════════════
    5. LIQUID DOCTOR PLATTER CARDS (DoctorCard.tsx)
    ═══════════════════════════════════════════════════════════════ */
+.st-dot-green {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--ios-green);
+  box-shadow: 0 0 6px var(--ios-green);
+  display: inline-block;
+}
+
+.category-chip.spec-chip {
+  font-size: 12px;
+  padding: 6px 12px;
+  opacity: 0.9;
+}
+
+.jadwal-verified-pill.pbg-pill {
+  background: rgba(52, 199, 89, 0.14);
+  color: var(--ios-green);
+  border-color: rgba(52, 199, 89, 0.28);
+}
+
 .doctor-section {
   display: flex;
   flex-direction: column;
@@ -819,21 +840,48 @@ body.dark .jadwal-dedicated-navbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 4px;
+  padding: 6px 12px;
+  background: var(--surface-well);
+  border-radius: 14px;
   margin-bottom: 4px;
+  user-select: none;
+}
+
+.section-header-pill.live-section-pill {
+  background: rgba(52, 199, 89, 0.08);
+  border: 1px solid rgba(52, 199, 89, 0.22);
+}
+
+.section-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .section-title {
-  font-size: 17px;
+  font-size: 15px;
   font-weight: 800;
-  letter-spacing: -0.4px;
+  letter-spacing: -0.3px;
   color: var(--text-main);
 }
 
 .section-count {
-  font-size: 12px;
-  font-weight: 600;
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 9999px;
+  background: var(--surface-card);
   color: var(--text-sub);
+}
+
+.section-count.live-count {
+  background: rgba(52, 199, 89, 0.18);
+  color: var(--ios-green);
+}
+
+.section-count.cuti-count {
+  background: rgba(255, 59, 48, 0.16);
+  color: var(--ios-red);
 }
 
 .platter-list-container {
