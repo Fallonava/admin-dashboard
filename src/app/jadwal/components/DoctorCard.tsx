@@ -3,15 +3,27 @@ import type { Doctor } from '../types';
 import SpecialistIcon from './SpecialistIcon';
 import { getInitials, getSpecialtyBadgeClass, formatTimeSlot } from '../lib/schedule-utils';
 import { triggerHaptic } from '../lib/haptics';
-import { Clock, Ticket, UserPlus, Sparkles } from 'lucide-react';
+import { Clock, Ticket, UserPlus, Star, Share2, Copy, MessageCircle, ChevronDown, Check } from 'lucide-react';
 
 interface DoctorCardProps {
   doctor: Doctor;
+  isFavorite?: boolean;
+  onToggleFavorite?: (doctor: Doctor) => void;
   onSelectDoctor?: (doctor: Doctor) => void;
+  onShare?: (doctor: Doctor) => void;
+  onCopyQueue?: (code: string) => void;
 }
 
-export default function DoctorCard({ doctor, onSelectDoctor }: DoctorCardProps) {
+export default function DoctorCard({
+  doctor,
+  isFavorite = false,
+  onToggleFavorite,
+  onSelectDoctor,
+  onShare,
+  onCopyQueue,
+}: DoctorCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [copiedCode, setCopiedCode] = useState(false);
 
   const badgeClass = getSpecialtyBadgeClass(doctor.specialty);
   const isPraktek = doctor.status === 'PRAKTEK';
@@ -27,8 +39,33 @@ export default function DoctorCard({ doctor, onSelectDoctor }: DoctorCardProps) 
     if (onSelectDoctor) onSelectDoctor(doctor);
   };
 
-  const toggleExpand = () => {
+  const handleFavorite = (e: React.MouseEvent) => {
+    e.stopPropagation();
     triggerHaptic('selection');
+    if (onToggleFavorite) onToggleFavorite(doctor);
+  };
+
+  const handleShare = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    triggerHaptic('light');
+    if (onShare) onShare(doctor);
+  };
+
+  const handleCopy = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    triggerHaptic('selection');
+    const code = doctor.queueCode || 'POLI';
+    if (onCopyQueue) {
+      onCopyQueue(code);
+    } else {
+      navigator.clipboard?.writeText(code);
+    }
+    setCopiedCode(true);
+    setTimeout(() => setCopiedCode(false), 2000);
+  };
+
+  const toggleExpand = () => {
+    triggerHaptic('light');
     setIsExpanded(!isExpanded);
   };
 
@@ -36,14 +73,13 @@ export default function DoctorCard({ doctor, onSelectDoctor }: DoctorCardProps) 
     <div
       className={`platter ${isCuti ? 'is-cuti' : ''} ${isExpanded ? 'is-expanded' : ''}`}
       onClick={toggleExpand}
-      style={{ cursor: 'pointer' }}
     >
       {/* Platter Header */}
       <div className="platter-head-row">
         <div className="avatar-squircle-wrap">
           <div className="avatar-squircle">
             {doctor.image ? (
-              <img src={doctor.image} alt={doctor.name} className="avatar-img" />
+              <img src={doctor.image} alt={doctor.name} className="avatar-img" loading="lazy" />
             ) : (
               <span className="initials">{getInitials(doctor.name)}</span>
             )}
@@ -63,9 +99,22 @@ export default function DoctorCard({ doctor, onSelectDoctor }: DoctorCardProps) 
           </div>
         </div>
 
-        <div className={`status-pill ${statusClass}`}>
-          <span className="status-dot"></span>
-          <span>{statusLabel}</span>
+        <div className="platter-top-actions">
+          {/* Favorite Toggle Button */}
+          <button
+            type="button"
+            className={`favorite-toggle-btn ${isFavorite ? 'active' : ''}`}
+            onClick={handleFavorite}
+            title={isFavorite ? 'Hapus dari Favorit' : 'Simpan Dokter Favorit'}
+          >
+            <Star size={17} className={isFavorite ? 'fill-star' : ''} />
+          </button>
+
+          {/* Status Pill */}
+          <div className={`status-pill ${statusClass}`}>
+            <span className="status-dot"></span>
+            <span>{statusLabel}</span>
+          </div>
         </div>
       </div>
 
@@ -84,11 +133,14 @@ export default function DoctorCard({ doctor, onSelectDoctor }: DoctorCardProps) 
 
           <div className="time-capsule-divider"></div>
 
-          <div className="time-capsule-slot">
+          <div className="time-capsule-slot queue-slot" onClick={handleCopy} title="Salin Kode Antrean">
             <Ticket size={15} className="time-capsule-icon" />
             <div className="time-capsule-info">
               <span className="time-capsule-lbl">Kode Antrean</span>
-              <span className="time-capsule-val">{doctor.queueCode || 'POLI'}</span>
+              <span className="time-capsule-val flex-row-center">
+                {doctor.queueCode || 'POLI'}
+                {copiedCode ? <Check size={12} className="copy-check" /> : <Copy size={12} className="copy-hint" />}
+              </span>
             </div>
           </div>
         </div>
@@ -108,12 +160,52 @@ export default function DoctorCard({ doctor, onSelectDoctor }: DoctorCardProps) 
                 <span className="drawer-val">{doctor.registrationTime}</span>
               </div>
             )}
+            {doctor.todayShift?.title && (
+              <div className="drawer-info-item">
+                <span className="drawer-lbl">Sesi Poliklinik</span>
+                <span className="drawer-val">{doctor.todayShift.title}</span>
+              </div>
+            )}
             {doctor.activeLeave?.reason && (
               <div className="drawer-info-item full">
                 <span className="drawer-lbl">Keterangan Cuti</span>
                 <span className="drawer-val text-red">{doctor.activeLeave.reason}</span>
               </div>
             )}
+            {doctor.activeLeave?.replacementDoctor && (
+              <div className="drawer-info-item full">
+                <span className="drawer-lbl">Dokter Pengganti</span>
+                <span className="drawer-val text-blue">{doctor.activeLeave.replacementDoctor}</span>
+              </div>
+            )}
+          </div>
+
+          {/* Quick Doctor Action Bar inside Drawer */}
+          <div className="drawer-quick-actions">
+            <a
+              href={`https://wa.me/6282323446076?text=Halo%20RSU%20Siaga%20Medika,%20saya%20ingin%20konsultasi%20jadwal%20${encodeURIComponent(
+                doctor.name
+              )}%20(${encodeURIComponent(doctor.specialty)})`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="drawer-wa-btn"
+              onClick={(e) => {
+                e.stopPropagation();
+                triggerHaptic('light');
+              }}
+            >
+              <MessageCircle size={15} />
+              <span>Tanya CS Dokter</span>
+            </a>
+
+            <button
+              type="button"
+              className="drawer-share-btn"
+              onClick={handleShare}
+            >
+              <Share2 size={15} />
+              <span>Bagikan</span>
+            </button>
           </div>
         </div>
       )}

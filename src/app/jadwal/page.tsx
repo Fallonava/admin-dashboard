@@ -1,9 +1,9 @@
 "use client";
 
 import './jadwal.css';
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import useSWR from 'swr';
-import { Search, RotateCcw, AlertTriangle, ShieldCheck, Activity, SearchX } from 'lucide-react';
+import { Search, RotateCcw, AlertTriangle, SearchX, Star, Sparkles, Share2 } from 'lucide-react';
 
 import type { Doctor, Shift, LeaveRequest, DisplayApiResponse } from './types';
 import { evaluateDoctorRealtimeStatus, isSurgeonSpecialty } from './lib/schedule-utils';
@@ -16,6 +16,7 @@ import WeeklyView from './components/WeeklyView';
 import LeavesCalendar from './components/LeavesCalendar';
 import RegistrationModal from './components/RegistrationModal';
 import FloatingDock from './components/FloatingDock';
+import Toast, { ToastMessage } from './components/Toast';
 
 const fetcher = async (url: string): Promise<DisplayApiResponse> => {
   const res = await fetch(url);
@@ -26,10 +27,58 @@ const fetcher = async (url: string): Promise<DisplayApiResponse> => {
 export default function JadwalPage() {
   const [activeTab, setActiveTab] = useState<'today' | 'weekly' | 'leaves'>('today');
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<'all' | 'bedah' | 'non-bedah'>('all');
+  const [selectedCategory, setSelectedCategory] = useState<'all' | 'bedah' | 'non-bedah' | 'favorite'>('all');
   const [selectedDoctorForModal, setSelectedDoctorForModal] = useState<Doctor | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [islandAlert, setIslandAlert] = useState<DynamicIslandAlert | null>(null);
+  const [toast, setToast] = useState<ToastMessage | null>(null);
+  const [favoriteDoctorIds, setFavoriteDoctorIds] = useState<string[]>([]);
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
+  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
+
+  // Initialize theme and favorites from localStorage
+  useEffect(() => {
+    try {
+      const savedFavs = localStorage.getItem('simed_fav_doctors');
+      if (savedFavs) {
+        setFavoriteDoctorIds(JSON.parse(savedFavs));
+      }
+      const savedTheme = localStorage.getItem('simed_theme');
+      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const shouldUseDark = savedTheme === 'dark' || (!savedTheme && prefersDark);
+      setIsDarkMode(shouldUseDark);
+      if (shouldUseDark) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      } else {
+        document.documentElement.removeAttribute('data-theme');
+      }
+    } catch {
+      // Ignore localStorage errors
+    }
+  }, []);
+
+  const handleThemeToggle = useCallback(() => {
+    setIsDarkMode((prev) => {
+      const next = !prev;
+      if (next) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        localStorage.setItem('simed_theme', 'dark');
+      } else {
+        document.documentElement.removeAttribute('data-theme');
+        localStorage.setItem('simed_theme', 'light');
+      }
+      return next;
+    });
+  }, []);
+
+  const showToast = (title: string, description?: string, type: ToastMessage['type'] = 'info') => {
+    setToast({
+      id: String(Date.now()),
+      title,
+      description,
+      type,
+    });
+  };
 
   // Real-time schedule data fetching with 30s auto-refresh
   const { data, error, isLoading, mutate } = useSWR<DisplayApiResponse>('/api/display', fetcher, {
@@ -40,6 +89,7 @@ export default function JadwalPage() {
   const doctors: Doctor[] = data?.doctors || [];
   const shifts: Shift[] = data?.shifts || [];
   const leaves: LeaveRequest[] = data?.leaves || [];
+  const broadcasts = data?.broadcasts || [];
 
   // Evaluate real-time doctor statuses
   const evaluatedDoctors = useMemo(() => {
@@ -58,13 +108,67 @@ export default function JadwalPage() {
     });
   }, [doctors, shifts, leaves]);
 
+  const handleToggleFavorite = (doctor: Doctor) => {
+    setFavoriteDoctorIds((prev) => {
+      let updated: string[];
+      const isFav = prev.includes(doctor.id);
+      if (isFav) {
+        updated = prev.filter((id) => id !== doctor.id);
+        showToast('Dihapus dari Favorit', doctor.name, 'favorite');
+      } else {
+        updated = [...prev, doctor.id];
+        showToast('Ditambahkan ke Favorit', doctor.name, 'favorite');
+      }
+      try {
+        localStorage.setItem('simed_fav_doctors', JSON.stringify(updated));
+      } catch {
+        // Ignore
+      }
+      return updated;
+    });
+  };
+
+  const handleShareDoctor = (doctor: Doctor) => {
+    const shareData = {
+      title: `Jadwal ${doctor.name} — RSU Siaga Medika`,
+      text: `Jadwal Praktik ${doctor.name} (${doctor.specialty}) di RSU Siaga Medika Pemalang.`,
+      url: window.location.href,
+    };
+    if (navigator.share) {
+      navigator.share(shareData).catch(() => {});
+    } else {
+      navigator.clipboard?.writeText(
+        `Jadwal Praktik ${doctor.name} (${doctor.specialty}) — RSU Siaga Medika Pemalang: ${window.location.href}`
+      );
+      showToast('Tautan Disalin', 'Tautan jadwal dokter telah disalin ke clipboard', 'share');
+    }
+  };
+
+  const handleCopyQueueCode = (code: string) => {
+    navigator.clipboard?.writeText(code);
+    showToast('Kode Antrean Disalin', `Kode ${code} siap digunakan`, 'copy');
+  };
+
+  const handleManualRefresh = async () => {
+    triggerHaptic('medium');
+    setIsRefreshing(true);
+    await mutate();
+    setIsRefreshing(false);
+    showToast('Data Diperbarui', 'Jadwal terkini berhasil disinkronkan', 'success');
+  };
+
   // Today View Filtered Doctors
   const filteredTodayDoctors = useMemo(() => {
     return evaluatedDoctors.filter((doc) => {
-      // Category filter
-      const isSurgeon = isSurgeonSpecialty(doc.specialty);
-      if (selectedCategory === 'bedah' && !isSurgeon) return false;
-      if (selectedCategory === 'non-bedah' && isSurgeon) return false;
+      // Favorite filter
+      if (selectedCategory === 'favorite') {
+        if (!favoriteDoctorIds.includes(doc.id)) return false;
+      } else {
+        // Category filter
+        const isSurgeon = isSurgeonSpecialty(doc.specialty);
+        if (selectedCategory === 'bedah' && !isSurgeon) return false;
+        if (selectedCategory === 'non-bedah' && isSurgeon) return false;
+      }
 
       // Search query filter
       if (searchQuery) {
@@ -76,7 +180,7 @@ export default function JadwalPage() {
 
       return true;
     });
-  }, [evaluatedDoctors, selectedCategory, searchQuery]);
+  }, [evaluatedDoctors, selectedCategory, searchQuery, favoriteDoctorIds]);
 
   // Split into Bedah & Non-Bedah groups
   const bedahDoctors = useMemo(
@@ -108,13 +212,25 @@ export default function JadwalPage() {
   return (
     <div className="jadwal-container">
       {/* Top Dynamic Island Area */}
-      <DynamicIsland alert={islandAlert} activeDoctorCount={evaluatedDoctors.filter((d) => d.status === 'PRAKTEK').length} />
+      <DynamicIsland
+        alert={islandAlert}
+        broadcasts={broadcasts}
+        activeDoctorCount={evaluatedDoctors.filter((d) => d.status === 'PRAKTEK').length}
+        totalDoctorCount={evaluatedDoctors.length}
+      />
 
       {/* iOS Nav Header */}
       <header className="ios-nav-header material-regular">
         <div className="ios-brand-group">
           <div className="ios-logo-coin">
-            <img src="/icon.svg" alt="RSU Siaga Medika" className="logo-img" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+            <img
+              src="/icon.svg"
+              alt="RSU Siaga Medika"
+              className="logo-img"
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+              }}
+            />
           </div>
           <div className="ios-title-group">
             <div className="brand-title-row">
@@ -126,23 +242,36 @@ export default function JadwalPage() {
               <span className="brand-subtitle">Real-time Sinkronisasi</span>
             </div>
           </div>
+
+          {/* Quick Refresh Button in Header */}
+          <button
+            type="button"
+            className={`header-refresh-btn ${isRefreshing ? 'is-spinning' : ''}`}
+            onClick={handleManualRefresh}
+            title="Perbarui Jadwal Sekarang"
+          >
+            <RotateCcw size={16} />
+          </button>
         </div>
 
         {/* Segmented Control */}
         <div className="ios-mode-switcher ios-mode-switcher-margin">
           <button
+            type="button"
             className={`ios-mode-btn ${activeTab === 'today' ? 'active' : ''}`}
             onClick={() => handleTabChange('today')}
           >
             Hari Ini
           </button>
           <button
+            type="button"
             className={`ios-mode-btn ${activeTab === 'weekly' ? 'active' : ''}`}
             onClick={() => handleTabChange('weekly')}
           >
             Keseluruhan
           </button>
           <button
+            type="button"
             className={`ios-mode-btn ${activeTab === 'leaves' ? 'active' : ''}`}
             onClick={() => handleTabChange('leaves')}
           >
@@ -173,7 +302,7 @@ export default function JadwalPage() {
             </div>
             <div className="ios-empty-title">Gagal Memuat Jadwal</div>
             <div className="ios-empty-sub">Terjadi kendala saat menyinkronkan data dari server.</div>
-            <button className="empty-reset-btn" onClick={() => mutate()}>
+            <button type="button" className="empty-reset-btn" onClick={() => mutate()}>
               <RotateCcw size={16} />
               <span>Coba Lagi</span>
             </button>
@@ -198,7 +327,7 @@ export default function JadwalPage() {
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
                 {searchQuery && (
-                  <button className="search-clear-btn" onClick={() => setSearchQuery('')}>
+                  <button type="button" className="search-clear-btn" onClick={() => setSearchQuery('')}>
                     ×
                   </button>
                 )}
@@ -207,6 +336,7 @@ export default function JadwalPage() {
               {/* Category Chips */}
               <div className="category-chips-row">
                 <button
+                  type="button"
                   className={`category-chip ${selectedCategory === 'all' ? 'active' : ''}`}
                   onClick={() => {
                     triggerHaptic('selection');
@@ -215,7 +345,23 @@ export default function JadwalPage() {
                 >
                   Semua Poli ({evaluatedDoctors.length})
                 </button>
+
+                {favoriteDoctorIds.length > 0 && (
+                  <button
+                    type="button"
+                    className={`category-chip fav-chip ${selectedCategory === 'favorite' ? 'active' : ''}`}
+                    onClick={() => {
+                      triggerHaptic('selection');
+                      setSelectedCategory('favorite');
+                    }}
+                  >
+                    <Star size={13} className="fill-star" />
+                    <span>Favorit ({favoriteDoctorIds.length})</span>
+                  </button>
+                )}
+
                 <button
+                  type="button"
                   className={`category-chip ${selectedCategory === 'non-bedah' ? 'active' : ''}`}
                   onClick={() => {
                     triggerHaptic('selection');
@@ -225,6 +371,7 @@ export default function JadwalPage() {
                   Rawat Jalan / Non-Bedah ({evaluatedDoctors.filter((d) => !isSurgeonSpecialty(d.specialty)).length})
                 </button>
                 <button
+                  type="button"
                   className={`category-chip ${selectedCategory === 'bedah' ? 'active' : ''}`}
                   onClick={() => {
                     triggerHaptic('selection');
@@ -244,9 +391,12 @@ export default function JadwalPage() {
                 </div>
                 <div className="ios-empty-title">Dokter Tidak Ditemukan</div>
                 <div className="ios-empty-sub">
-                  Tidak ada dokter yang cocok dengan kata kunci pencarian "{searchQuery}".
+                  {selectedCategory === 'favorite'
+                    ? 'Belum ada dokter yang ditambahkan ke favorit. Tekan ikon bintang pada kartu dokter untuk menyimpannya.'
+                    : `Tidak ada dokter yang cocok dengan kata kunci pencarian "${searchQuery}".`}
                 </div>
                 <button
+                  type="button"
                   className="empty-reset-btn"
                   onClick={() => {
                     setSearchQuery('');
@@ -267,7 +417,15 @@ export default function JadwalPage() {
                     </div>
                     <div className="platter-grid">
                       {nonBedahDoctors.map((doc) => (
-                        <DoctorCard key={doc.id} doctor={doc} onSelectDoctor={handleDoctorSelect} />
+                        <DoctorCard
+                          key={doc.id}
+                          doctor={doc}
+                          isFavorite={favoriteDoctorIds.includes(doc.id)}
+                          onToggleFavorite={handleToggleFavorite}
+                          onSelectDoctor={handleDoctorSelect}
+                          onShare={handleShareDoctor}
+                          onCopyQueue={handleCopyQueueCode}
+                        />
                       ))}
                     </div>
                   </section>
@@ -282,7 +440,15 @@ export default function JadwalPage() {
                     </div>
                     <div className="platter-grid">
                       {bedahDoctors.map((doc) => (
-                        <DoctorCard key={doc.id} doctor={doc} onSelectDoctor={handleDoctorSelect} />
+                        <DoctorCard
+                          key={doc.id}
+                          doctor={doc}
+                          isFavorite={favoriteDoctorIds.includes(doc.id)}
+                          onToggleFavorite={handleToggleFavorite}
+                          onSelectDoctor={handleDoctorSelect}
+                          onShare={handleShareDoctor}
+                          onCopyQueue={handleCopyQueueCode}
+                        />
                       ))}
                     </div>
                   </section>
@@ -308,15 +474,23 @@ export default function JadwalPage() {
         )}
       </main>
 
+      {/* Floating Dynamic Toast Notification */}
+      <Toast toast={toast} onDismiss={() => setToast(null)} />
+
       {/* Registration Bottom Sheet Modal */}
       <RegistrationModal
         doctor={selectedDoctorForModal}
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
+        onShowToast={(title, desc) => showToast(title, desc, 'copy')}
       />
 
       {/* Floating Bottom Dock */}
-      <FloatingDock onOpenGeneralRegistration={handleOpenGeneralRegistration} />
+      <FloatingDock
+        onOpenGeneralRegistration={handleOpenGeneralRegistration}
+        onThemeToggle={handleThemeToggle}
+        isDarkMode={isDarkMode}
+      />
     </div>
   );
 }

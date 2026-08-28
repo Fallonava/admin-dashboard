@@ -1,10 +1,18 @@
 import React, { useState, useMemo } from 'react';
 import type { LeaveRequest, Doctor } from '../types';
-import SpecialistIcon from './SpecialistIcon';
-import { getInitials, getSpecialtyBadgeClass, INDO_MONTHS, INDO_DAYS } from '../lib/schedule-utils';
-import { getIndonesianHoliday } from '@/lib/holidays';
+import { getCalendarGrid, formatDateIndonesian } from '../lib/schedule-utils';
 import { triggerHaptic } from '../lib/haptics';
-import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Search, CalendarCheck, CalendarRange, ArrowLeftRight } from 'lucide-react';
+import {
+  ChevronLeft,
+  ChevronRight,
+  CalendarCheck,
+  CalendarRange,
+  ArrowLeftRight,
+  AlertCircle,
+  Calendar,
+  Search,
+  MessageCircle,
+} from 'lucide-react';
 
 interface LeavesCalendarProps {
   leaves: LeaveRequest[];
@@ -12,322 +20,331 @@ interface LeavesCalendarProps {
 }
 
 export default function LeavesCalendar({ leaves, doctors }: LeavesCalendarProps) {
-  const [currentDate, setCurrentDate] = useState(new Date());
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [filterTab, setFilterTab] = useState<'all' | 'active' | 'upcoming'>('all');
+  const [currentYear, setCurrentYear] = useState<number>(new Date().getFullYear());
+  const [currentMonth, setCurrentMonth] = useState<number>(new Date().getMonth());
+  const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
+  const [activeLeaveTab, setActiveLeaveTab] = useState<'all' | 'active' | 'upcoming' | 'past'>('all');
   const [searchQuery, setSearchQuery] = useState('');
 
-  const year = currentDate.getFullYear();
-  const month = currentDate.getMonth();
+  const monthNames = [
+    'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+    'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+  ];
 
-  // Calendar month navigation
-  const prevMonth = () => {
-    triggerHaptic('selection');
-    setCurrentDate(new Date(year, month - 1, 1));
+  const handlePrevMonth = () => {
+    triggerHaptic('light');
+    if (currentMonth === 0) {
+      setCurrentMonth(11);
+      setCurrentYear((y) => y - 1);
+    } else {
+      setCurrentMonth((m) => m - 1);
+    }
   };
 
-  const nextMonth = () => {
-    triggerHaptic('selection');
-    setCurrentDate(new Date(year, month + 1, 1));
+  const handleNextMonth = () => {
+    triggerHaptic('light');
+    if (currentMonth === 11) {
+      setCurrentMonth(0);
+      setCurrentYear((y) => y + 1);
+    } else {
+      setCurrentMonth((m) => m + 1);
+    }
   };
 
-  const gotoToday = () => {
+  const handleTodayMonth = () => {
     triggerHaptic('selection');
     const now = new Date();
-    setCurrentDate(now);
+    setCurrentYear(now.getFullYear());
+    setCurrentMonth(now.getMonth());
     setSelectedDate(now);
   };
 
-  // Generate calendar cells (Monday to Sunday)
-  const calendarDays = useMemo(() => {
-    const firstDayOfMonth = new Date(year, month, 1);
-    const lastDayOfMonth = new Date(year, month + 1, 0);
+  // Build 35-42 calendar cell grid
+  const calendarCells = useMemo(() => {
+    return getCalendarGrid(currentYear, currentMonth, leaves);
+  }, [currentYear, currentMonth, leaves]);
 
-    // Day of week index 0=Sun..6=Sat -> convert to Mon=0..Sun=6
-    let startingDay = firstDayOfMonth.getDay() - 1;
-    if (startingDay === -1) startingDay = 6;
-
-    const totalDays = lastDayOfMonth.getDate();
-    const days = [];
-
-    // Empty previous month padding
-    for (let i = 0; i < startingDay; i++) {
-      days.push({ day: null, date: null });
-    }
-
-    // Days in current month
+  // Leaves filtered by Active / Upcoming / Past tab and search query
+  const filteredLeaves = useMemo(() => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    for (let d = 1; d <= totalDays; d++) {
-      const dateObj = new Date(year, month, d);
-      const isToday = dateObj.getTime() === today.getTime();
-      const isSelected = selectedDate ? dateObj.toDateString() === selectedDate.toDateString() : false;
-      const holiday = getIndonesianHoliday(dateObj);
-
-      // Check how many doctor leaves fall on this day
-      const dayLeaves = leaves.filter((l) => {
-        const start = new Date(l.startDate);
-        const end = new Date(l.endDate || l.startDate);
-        start.setHours(0, 0, 0, 0);
-        end.setHours(23, 59, 59, 999);
-        return dateObj.getTime() >= start.getTime() && dateObj.getTime() <= end.getTime();
-      });
-
-      days.push({
-        day: d,
-        date: dateObj,
-        isToday,
-        isSelected,
-        isTanggalMerah: holiday.isTanggalMerah,
-        holidayName: holiday.name,
-        leaveCount: dayLeaves.length,
-      });
-    }
-
-    return days;
-  }, [year, month, selectedDate, leaves]);
-
-  // Filter leaves list
-  const filteredLeaves = useMemo(() => {
-    const now = new Date();
-    now.setHours(0, 0, 0, 0);
-
-    return leaves.filter((l) => {
-      const start = new Date(l.startDate);
-      const end = new Date(l.endDate || l.startDate);
+    return leaves.filter((leave) => {
+      const start = new Date(leave.startDate);
       start.setHours(0, 0, 0, 0);
+      const end = new Date(leave.endDate || leave.startDate);
       end.setHours(23, 59, 59, 999);
 
-      // Status categorization
-      const isActive = now.getTime() >= start.getTime() && now.getTime() <= end.getTime();
-      const isUpcoming = start.getTime() > now.getTime();
+      // Tab filter
+      if (activeLeaveTab === 'active' && (today < start || today > end)) return false;
+      if (activeLeaveTab === 'upcoming' && today >= start) return false;
+      if (activeLeaveTab === 'past' && today <= end) return false;
 
-      if (filterTab === 'active' && !isActive) return false;
-      if (filterTab === 'upcoming' && !isUpcoming) return false;
-
-      // Search query
+      // Search filter
       if (searchQuery) {
-        const doc = doctors.find((d) => d.id === l.doctorId);
-        const rawDocName = doc?.name || l.doctorName || (typeof l.doctor === 'object' && l.doctor !== null ? l.doctor.name : typeof l.doctor === 'string' ? l.doctor : '');
-        const docName = rawDocName.toLowerCase();
-        const spec = (doc?.specialty || l.specialty || '').toLowerCase();
-        const reason = (l.reason || '').toLowerCase();
         const q = searchQuery.toLowerCase();
-
-        if (!docName.includes(q) && !spec.includes(q) && !reason.includes(q)) {
-          return false;
-        }
-      }
-
-      // Filter by selected calendar date if active
-      if (selectedDate) {
-        const selTime = selectedDate.getTime();
-        if (selTime < start.getTime() || selTime > end.getTime()) {
-          return false;
-        }
+        const docName = typeof leave.doctor === 'object' && leave.doctor !== null
+          ? leave.doctor.name
+          : String(leave.doctor || '');
+        const doctorObj = doctors.find((d) => d.id === leave.doctorId);
+        const nameToSearch = (docName || doctorObj?.name || '').toLowerCase();
+        const reasonToSearch = (leave.reason || '').toLowerCase();
+        if (!nameToSearch.includes(q) && !reasonToSearch.includes(q)) return false;
       }
 
       return true;
     });
-  }, [leaves, doctors, filterTab, searchQuery, selectedDate]);
+  }, [leaves, doctors, activeLeaveTab, searchQuery]);
+
+  // Leaves for the currently clicked date
+  const leavesForSelectedDate = useMemo(() => {
+    if (!selectedDate) return [];
+    const dateToCheck = new Date(selectedDate);
+    dateToCheck.setHours(0, 0, 0, 0);
+
+    return leaves.filter((leave) => {
+      const start = new Date(leave.startDate);
+      start.setHours(0, 0, 0, 0);
+      const end = new Date(leave.endDate || leave.startDate);
+      end.setHours(23, 59, 59, 999);
+      return dateToCheck >= start && dateToCheck <= end;
+    });
+  }, [leaves, selectedDate]);
 
   return (
-    <div className="leaves-container">
-      {/* Calendar Card */}
-      <div className="leaves-cal-card mb-24">
-        {/* Calendar Nav */}
-        <div className="cal-nav-row">
-          <div className="cal-month-title">
-            <CalendarIcon size={18} className="cal-title-icon" />
-            <span>
-              {INDO_MONTHS[month]} {year}
-            </span>
+    <div className="leaves-view-container">
+      {/* Calendar Header & Month Navigation */}
+      <div className="ios-calendar-card mb-24">
+        <div className="cal-nav-bar">
+          <div className="cal-month-title-group">
+            <h3 className="cal-month-name">{monthNames[currentMonth]}</h3>
+            <span className="cal-year-tag">{currentYear}</span>
           </div>
 
           <div className="cal-nav-btn-group">
-            <button className="cal-today-btn" onClick={gotoToday}>
+            <button
+              type="button"
+              className="cal-today-pill-btn"
+              onClick={handleTodayMonth}
+              title="Kembali ke Hari Ini"
+            >
               Hari Ini
             </button>
-            <button className="cal-nav-btn" onClick={prevMonth}>
-              <ChevronLeft size={16} />
+            <button
+              type="button"
+              className="cal-nav-arrow-btn"
+              onClick={handlePrevMonth}
+              title="Bulan Sebelumnya"
+            >
+              <ChevronLeft size={18} />
             </button>
-            <button className="cal-nav-btn" onClick={nextMonth}>
-              <ChevronRight size={16} />
+            <button
+              type="button"
+              className="cal-nav-arrow-btn"
+              onClick={handleNextMonth}
+              title="Bulan Berikutnya"
+            >
+              <ChevronRight size={18} />
             </button>
           </div>
         </div>
 
-        {/* Weekday headers */}
-        <div className="cal-weekdays">
-          <span>Sen</span>
-          <span>Sel</span>
-          <span>Rab</span>
-          <span>Kam</span>
-          <span>Jum</span>
-          <span>Sab</span>
-          <span>Min</span>
+        {/* Day-of-week headers */}
+        <div className="cal-weekday-row">
+          {['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'].map((d, i) => (
+            <span key={d} className={`cal-weekday-label ${i === 0 ? 'is-sunday' : ''}`}>
+              {d}
+            </span>
+          ))}
         </div>
 
-        {/* Calendar Grid */}
+        {/* Calendar Day Grid */}
         <div className="cal-grid">
-          {calendarDays.map((cell, idx) => {
-            if (!cell.day || !cell.date) {
-              return <div key={`empty-${idx}`} className="cal-day-cell empty"></div>;
-            }
+          {calendarCells.map((cell, idx) => {
+            const isSelected =
+              selectedDate &&
+              cell.date &&
+              cell.date.toDateString() === selectedDate.toDateString();
 
             return (
               <button
-                key={`day-${cell.day}`}
-                className={`cal-day-cell ${cell.isToday ? 'today' : ''} ${cell.isSelected ? 'selected' : ''} ${
-                  cell.isTanggalMerah ? 'tanggal-merah' : ''
-                }`}
+                key={idx}
+                type="button"
+                className={`cal-cell ${!cell.isCurrentMonth ? 'other-month' : ''} ${
+                  cell.isToday ? 'is-today' : ''
+                } ${isSelected ? 'is-selected' : ''} ${cell.isHoliday ? 'is-holiday' : ''}`}
                 onClick={() => {
-                  triggerHaptic('selection');
-                  setSelectedDate(cell.date);
+                  if (cell.date) {
+                    triggerHaptic('selection');
+                    setSelectedDate(cell.date);
+                  }
                 }}
+                disabled={!cell.date}
               >
-                <span className="day-number">{cell.day}</span>
-                <div className="cal-dot-container">
-                  {cell.isTanggalMerah && <span className="cal-dot-holiday"></span>}
-                  {cell.leaveCount > 0 && <span className="cal-dot-leave"></span>}
+                <span className="cal-cell-num">{cell.dayNum}</span>
+                <div className="cal-cell-indicators">
+                  {cell.isHoliday && <span className="cal-dot holiday-dot" title="Libur"></span>}
+                  {cell.leavesCount > 0 && <span className="cal-dot leave-dot" title="Ada Cuti"></span>}
                 </div>
               </button>
             );
           })}
         </div>
-
-        {/* Calendar Legend */}
-        <div className="cal-legend">
-          <div className="cal-legend-item">
-            <span className="cal-legend-dot holiday"></span>
-            <span>Libur Nasional</span>
-          </div>
-          <div className="cal-legend-item">
-            <span className="cal-legend-dot leave"></span>
-            <span>Dokter Cuti</span>
-          </div>
-        </div>
       </div>
 
-      {/* Filter Tabs */}
-      <div className="ios-mode-switcher ios-mode-switcher-margin mb-24">
+      {/* Selected Date Context Summary */}
+      {selectedDate && (
+        <div className="cal-selected-day-pill mb-24">
+          <div className="selected-day-info">
+            <Calendar size={16} className="text-blue" />
+            <span className="selected-day-title">
+              {formatDateIndonesian(selectedDate)}
+            </span>
+          </div>
+          <span className="selected-day-count">
+            {leavesForSelectedDate.length} Dokter Cuti
+          </span>
+        </div>
+      )}
+
+      {/* Filter Tabs for Leaves List */}
+      <div className="category-chips-row mb-16">
         <button
-          className={`ios-mode-btn ${filterTab === 'all' ? 'active' : ''}`}
+          type="button"
+          className={`category-chip ${activeLeaveTab === 'all' ? 'active' : ''}`}
           onClick={() => {
             triggerHaptic('selection');
-            setFilterTab('all');
+            setActiveLeaveTab('all');
           }}
         >
-          Semua Cuti
+          Semua ({leaves.length})
         </button>
         <button
-          className={`ios-mode-btn ${filterTab === 'active' ? 'active' : ''}`}
+          type="button"
+          className={`category-chip ${activeLeaveTab === 'active' ? 'active' : ''}`}
           onClick={() => {
             triggerHaptic('selection');
-            setFilterTab('active');
+            setActiveLeaveTab('active');
           }}
         >
           Sedang Cuti
         </button>
         <button
-          className={`ios-mode-btn ${filterTab === 'upcoming' ? 'active' : ''}`}
+          type="button"
+          className={`category-chip ${activeLeaveTab === 'upcoming' ? 'active' : ''}`}
           onClick={() => {
             triggerHaptic('selection');
-            setFilterTab('upcoming');
+            setActiveLeaveTab('upcoming');
           }}
         >
-          Akan Datang
+          Mendatang
+        </button>
+        <button
+          type="button"
+          className={`category-chip ${activeLeaveTab === 'past' ? 'active' : ''}`}
+          onClick={() => {
+            triggerHaptic('selection');
+            setActiveLeaveTab('past');
+          }}
+        >
+          Riwayat
         </button>
       </div>
 
-      {/* Search Input */}
+      {/* Search Input for Leaves */}
       <div className="ios-search-bar mb-24">
         <Search className="search-icon" size={18} />
         <input
           type="text"
           className="ios-search-input"
-          placeholder="Cari dokter atau alasan cuti..."
+          placeholder="Cari dokter cuti atau alasan izin..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
-        {selectedDate && (
-          <button className="clear-date-filter-btn" onClick={() => setSelectedDate(null)}>
-            Reset Tanggal
+        {searchQuery && (
+          <button type="button" className="search-clear-btn" onClick={() => setSearchQuery('')}>
+            ×
           </button>
         )}
       </div>
 
-      {/* Leaves Cards List */}
+      {/* List of Leave Cards */}
       {filteredLeaves.length === 0 ? (
         <div className="ios-empty-state">
           <div className="ios-empty-coin">
             <CalendarCheck size={32} />
           </div>
-          <div className="ios-empty-title">Tidak Ada Cuti</div>
-          <div className="ios-empty-sub">Tidak ditemukan jadwal cuti dokter pada filter ini.</div>
+          <div className="ios-empty-title">Tidak Ada Data Cuti</div>
+          <div className="ios-empty-sub">
+            Tidak ada dokter yang sedang tercatat cuti pada kategori filter ini.
+          </div>
         </div>
       ) : (
         <div className="leaves-list-grid">
           {filteredLeaves.map((leave) => {
-            const doc = doctors.find((d) => d.id === leave.doctorId);
-            const docName = doc?.name || leave.doctorName || (typeof leave.doctor === 'object' && leave.doctor !== null ? leave.doctor.name : typeof leave.doctor === 'string' ? leave.doctor : 'Dokter Spesialis');
-            const spec = doc?.specialty || leave.specialty || 'Umum';
-            const badgeClass = getSpecialtyBadgeClass(spec);
-
-            const start = new Date(leave.startDate);
-            const end = new Date(leave.endDate || leave.startDate);
-            const now = new Date();
-            now.setHours(0, 0, 0, 0);
-
-            const isActive = now.getTime() >= start.getTime() && now.getTime() <= end.getTime();
-            const statusLabel = isActive ? 'Sedang Berlangsung' : 'Akan Datang';
-            const statusClass = isActive ? 'active' : 'upcoming';
-
-            const startStr = `${start.getDate()} ${INDO_MONTHS[start.getMonth()]}`;
-            const endStr = `${end.getDate()} ${INDO_MONTHS[end.getMonth()]} ${end.getFullYear()}`;
+            const docName =
+              typeof leave.doctor === 'object' && leave.doctor !== null
+                ? leave.doctor.name
+                : String(leave.doctor || '');
+            const doctorObj = doctors.find((d) => d.id === leave.doctorId);
+            const displayName = docName || doctorObj?.name || 'Dokter Spesialis';
+            const specialty = doctorObj?.specialty || 'Spesialis';
 
             return (
-              <div key={leave.id} className="leave-card">
+              <div key={leave.id} className="leave-card platter">
                 <div className="leave-head">
-                  <div className="avatar-squircle">
-                    <span className="initials">{getInitials(docName)}</span>
-                  </div>
                   <div className="leave-doc-info">
-                    <h4 className="leave-doc-name">{docName}</h4>
-                    <span className={`doc-spec-badge ${badgeClass}`}>
-                      <SpecialistIcon department={spec} size={13} className="spec-icon-inline" />
-                      <span>{spec}</span>
-                    </span>
+                    <h4 className="leave-doc-name">{displayName}</h4>
+                    <span className="leave-doc-spec">{specialty}</span>
                   </div>
-                </div>
-
-                <div className="leave-badge-row">
-                  <span className={`leave-status-pill ${statusClass}`}>
+                  <span className="status-pill st-cuti">
                     <span className="status-dot"></span>
-                    <span>{statusLabel}</span>
-                  </span>
-                  <span className="leave-date-pill">
-                    <CalendarRange size={13} />
-                    <span>
-                      {startStr} - {endStr}
-                    </span>
+                    <span>Cuti</span>
                   </span>
                 </div>
 
-                {leave.reason && (
-                  <div className="leave-reason-box">
-                    <span className="leave-reason-lbl">Keterangan:</span>
-                    <span className="leave-reason-text">{leave.reason}</span>
+                <div className="leave-date-strip">
+                  <CalendarRange size={15} className="leave-icon" />
+                  <div className="leave-date-text">
+                    <span className="leave-date-lbl">Periode Cuti</span>
+                    <span className="leave-date-val">
+                      {formatDateIndonesian(new Date(leave.startDate))} s.d.{' '}
+                      {formatDateIndonesian(new Date(leave.endDate || leave.startDate))}
+                    </span>
                   </div>
-                )}
+                </div>
+
+                <div className="leave-reason-box">
+                  <AlertCircle size={15} className="leave-reason-icon" />
+                  <span className="leave-reason-text">
+                    {leave.reason || 'Izin dinas / Cuti tahunan'}
+                  </span>
+                </div>
 
                 {leave.replacementDoctor && (
-                  <div className="leave-replacement">
-                    <ArrowLeftRight size={13} />
-                    <span>Dokter Pengganti: {leave.replacementDoctor}</span>
+                  <div className="leave-replacement-box">
+                    <ArrowLeftRight size={15} className="leave-rep-icon" />
+                    <div className="leave-rep-col">
+                      <span className="leave-rep-lbl">Dokter Pengganti</span>
+                      <span className="leave-rep-val">{leave.replacementDoctor}</span>
+                    </div>
                   </div>
                 )}
+
+                <div className="leave-action-row">
+                  <a
+                    href={`https://wa.me/6282323446076?text=Halo%20RSU%20Siaga%20Medika,%20saya%20ingin%20konsultasi%20mengenai%20jadwal%20pengganti%20${encodeURIComponent(
+                      displayName
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="leave-wa-btn"
+                    onClick={() => triggerHaptic('light')}
+                  >
+                    <MessageCircle size={15} />
+                    <span>Konfirmasi Pengganti via WA</span>
+                  </a>
+                </div>
               </div>
             );
           })}
