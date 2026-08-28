@@ -1871,61 +1871,223 @@
       /* ═══════════════════════════════════════════════════════════════
          8. WEEKLY MASTER SCHEDULE STYLES
          ═══════════════════════════════════════════════════════════════ */
-      .weekly-day-bar {
+      .weekly-date-strip-container {
+        position: relative;
+        margin-bottom: 8px;
+      }
+      .weekly-date-strip {
         display: flex;
         gap: 8px;
         overflow-x: auto;
-        padding: 4px 0;
+        padding: 4px 4px 10px;
         -webkit-overflow-scrolling: touch;
+        scroll-behavior: smooth;
       }
-      .weekly-day-bar::-webkit-scrollbar { display: none; }
+      .weekly-date-strip::-webkit-scrollbar { display: none; }
 
-      .weekly-day-btn {
+      .weekly-date-card {
         border-radius: 18px;
         background: var(--surface-card-solid);
         box-shadow: var(--shadow-btn);
         border: 1.5px solid var(--border-card);
-        min-width: 62px;
-        padding: 9px 12px;
+        min-width: 66px;
+        padding: 8px 8px 10px;
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 4px;
+        gap: 3px;
         cursor: pointer;
-        transition: transform 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s ease;
+        transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s ease, border-color 0.2s ease;
         position: relative;
         touch-action: manipulation;
         user-select: none;
+        flex-shrink: 0;
       }
-      .weekly-day-btn:active {
+      .weekly-date-card:active {
         transform: scale(0.92) translate3d(0, 2px, 0) !important;
-        box-shadow: var(--shadow-inset) !important;
       }
-      .weekly-day-btn.active {
-        background: linear-gradient(145deg, #3B82F6 0%, #1D4ED8 100%);
-        border-color: rgba(96, 165, 250, 0.6);
-        box-shadow: 0 4px 14px rgba(29, 78, 216, 0.4), inset 1.5px 1.5px 3px rgba(255, 255, 255, 0.45);
-        color: #FFFFFF;
-        transform: translateY(-1.5px);
+      .weekly-date-card.active {
+        background: linear-gradient(145deg, #2563EB 0%, #1D4ED8 100%);
+        border-color: rgba(96, 165, 250, 0.7);
+        box-shadow: 0 6px 18px rgba(29, 78, 216, 0.4), inset 1.5px 1.5px 3px rgba(255, 255, 255, 0.45);
+        color: #FFFFFF !important;
+        transform: translateY(-2px);
       }
-      .weekly-day-btn .day-title { font-size: 11px; font-weight: 800; color: var(--text-main); }
-      .weekly-day-btn.active .day-title { color: #FFFFFF !important; }
-      .weekly-day-btn .day-badge {
-        font-family: "JetBrains Mono", monospace;
-        font-size: 9.5px;
-        padding: 1px 6px;
-        border-radius: 9px;
-        background: var(--surface-well);
-        box-shadow: var(--shadow-inset);
-        color: var(--text-main);
+      .weekly-date-card .date-day-name {
+        font-size: 10.5px;
+        font-weight: 800;
+        color: var(--text-sub);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .weekly-date-card.active .date-day-name {
+        color: rgba(255, 255, 255, 0.9) !important;
+      }
+      .weekly-date-card .date-number {
+        font-family: "Plus Jakarta Sans", "Outfit", sans-serif;
+        font-size: 18px;
         font-weight: 900;
+        color: var(--text-main);
+        line-height: 1.1;
       }
-      .weekly-day-btn.active .day-badge {
+      .weekly-date-card.active .date-number {
+        color: #FFFFFF !important;
+      }
+      .weekly-date-card .date-month-name {
+        font-size: 9.5px;
+        font-weight: 800;
+        color: var(--text-mute);
+      }
+      .weekly-date-card.active .date-month-name {
+        color: rgba(255, 255, 255, 0.85) !important;
+      }
+
+      /* Today Indicator Pill */
+      .weekly-date-card .today-indicator {
+        font-size: 8px;
+        font-weight: 900;
+        padding: 1px 5px;
+        border-radius: 6px;
+        background: rgba(37, 99, 235, 0.12);
+        color: #2563EB;
+        text-transform: uppercase;
+        margin-top: 2px;
+      }
+      .weekly-date-card.active .today-indicator {
         background: rgba(255, 255, 255, 0.25);
-        box-shadow: inset 1px 1px 2px rgba(255,255,255,0.3);
         color: #FFFFFF;
       }
 
+      /* Holiday / Tanggal Merah Pill & Dot */
+      .weekly-date-card.is-holiday {
+        border-color: rgba(239, 68, 68, 0.35);
+      }
+      .weekly-date-card.is-holiday .date-day-name,
+      .weekly-date-card.is-holiday .date-number {
+        color: #DC2626;
+      }
+      .weekly-date-card.is-holiday .holiday-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #DC2626;
+        box-shadow: 0 0 6px #DC2626;
+        position: absolute;
+        top: 5px;
+        right: 6px;
+      }
+      .weekly-date-card.active.is-holiday .holiday-dot {
+        background: #FCA5A5;
+        box-shadow: 0 0 6px #FFFFFF;
+      }
+
+      /* Holiday Banner for Selected Date */
+      .weekly-holiday-banner {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 14px;
+        border-radius: 16px;
+        background: rgba(239, 68, 68, 0.1);
+        border: 1.5px solid rgba(239, 68, 68, 0.35);
+        box-shadow: 0 3px 12px rgba(220, 38, 38, 0.1);
+        margin-bottom: 12px;
+        animation: holidaySlideIn 0.25s ease-out;
+      }
+      .weekly-holiday-banner.is-cuti-bersama {
+        background: rgba(245, 158, 11, 0.1);
+        border-color: rgba(245, 158, 11, 0.35);
+        box-shadow: 0 3px 12px rgba(245, 158, 11, 0.1);
+      }
+      .weekly-holiday-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 10px;
+        background: #DC2626;
+        color: #FFFFFF;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .weekly-holiday-banner.is-cuti-bersama .weekly-holiday-icon {
+        background: #D97706;
+      }
+      .weekly-holiday-text {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+      }
+      .weekly-holiday-label {
+        font-size: 10px;
+        font-weight: 900;
+        text-transform: uppercase;
+        color: #DC2626;
+        letter-spacing: 0.04em;
+      }
+      .weekly-holiday-banner.is-cuti-bersama .weekly-holiday-label {
+        color: #D97706;
+      }
+      .weekly-holiday-name {
+        font-size: 12px;
+        font-weight: 800;
+        color: var(--text-main);
+      }
+
+      /* Doctor Shift Card Status Pills */
+      .weekly-status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 3.5px 9px;
+        border-radius: 9999px;
+        font-size: 10.5px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+        flex-shrink: 0;
+      }
+      .weekly-status-pill.st-praktek {
+        background: rgba(16, 185, 129, 0.12);
+        color: #047857;
+        border: 1px solid rgba(16, 185, 129, 0.35);
+      }
+      .weekly-status-pill.st-cuti {
+        background: rgba(239, 68, 68, 0.12);
+        color: #DC2626;
+        border: 1px solid rgba(239, 68, 68, 0.35);
+      }
+      .weekly-status-pill.st-libur {
+        background: rgba(245, 158, 11, 0.12);
+        color: #B45309;
+        border: 1px solid rgba(245, 158, 11, 0.35);
+      }
+      [data-theme="dark"] .weekly-status-pill.st-praktek {
+        background: rgba(16, 185, 129, 0.2);
+        color: #34D399;
+        border-color: rgba(52, 211, 153, 0.45);
+      }
+      [data-theme="dark"] .weekly-status-pill.st-cuti {
+        background: rgba(239, 68, 68, 0.2);
+        color: #F87171;
+        border-color: rgba(248, 113, 113, 0.45);
+      }
+      [data-theme="dark"] .weekly-status-pill.st-libur {
+        background: rgba(245, 158, 11, 0.2);
+        color: #FBBF24;
+        border-color: rgba(251, 191, 36, 0.45);
+      }
+
+      /* Card styling modifier when doctor is on cuti */
+      .weekly-shift-card.is-cuti {
+        border-color: rgba(239, 68, 68, 0.35) !important;
+        background: linear-gradient(155deg, rgba(254, 242, 242, 0.6) 0%, rgba(255, 255, 255, 0.95) 100%) !important;
+      }
+      [data-theme="dark"] .weekly-shift-card.is-cuti {
+        background: linear-gradient(155deg, rgba(69, 10, 10, 0.3) 0%, var(--surface-card-solid) 100%) !important;
+      }
 
       .weekly-shift-card {
         border-radius: var(--radius-card);
@@ -1936,8 +2098,10 @@
         display: flex;
         flex-direction: column;
         gap: 10px;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
       }
-      .weekly-shift-head { display: flex; align-items: center; gap: 12px; }
+      .weekly-shift-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+      .weekly-shift-info-group { display: flex; align-items: center; gap: 12px; min-width: 0; flex: 1; }
       .weekly-shift-initials {
         width: 44px; height: 44px;
         border-radius: 16px;
@@ -2876,39 +3040,22 @@
           </div>
         </div>
 
-        <div class="weekly-day-bar" id="weeklyDayBar">
-          <button class="weekly-day-btn active" data-day="all" onclick="switchWeeklyDay('all')">
-            <span class="day-title">Semua</span>
-            <span class="day-badge" id="badgeAllDays">0</span>
-          </button>
-          <button class="weekly-day-btn" data-day="0" onclick="switchWeeklyDay(0)">
-            <span class="day-title">Senin</span>
-            <span class="day-badge" id="badgeDay0">0</span>
-          </button>
-          <button class="weekly-day-btn" data-day="1" onclick="switchWeeklyDay(1)">
-            <span class="day-title">Selasa</span>
-            <span class="day-badge" id="badgeDay1">0</span>
-          </button>
-          <button class="weekly-day-btn" data-day="2" onclick="switchWeeklyDay(2)">
-            <span class="day-title">Rabu</span>
-            <span class="day-badge" id="badgeDay2">0</span>
-          </button>
-          <button class="weekly-day-btn" data-day="3" onclick="switchWeeklyDay(3)">
-            <span class="day-title">Kamis</span>
-            <span class="day-badge" id="badgeDay3">0</span>
-          </button>
-          <button class="weekly-day-btn" data-day="4" onclick="switchWeeklyDay(4)">
-            <span class="day-title">Jumat</span>
-            <span class="day-badge" id="badgeDay4">0</span>
-          </button>
-          <button class="weekly-day-btn" data-day="5" onclick="switchWeeklyDay(5)">
-            <span class="day-title">Sabtu</span>
-            <span class="day-badge" id="badgeDay5">0</span>
-          </button>
-          <button class="weekly-day-btn" data-day="6" onclick="switchWeeklyDay(6)">
-            <span class="day-title">Minggu</span>
-            <span class="day-badge" id="badgeDay6">0</span>
-          </button>
+        <!-- 📅 Dynamic Horizontal Continuous Calendar Strip (30 Hari ke Depan + Libur Nasional) -->
+        <div class="weekly-date-strip-container">
+          <div class="weekly-date-strip" id="weeklyDateStrip">
+            <div style="padding: 12px; color: var(--text-mute); font-size: 12px; font-weight: 700;">Memuat kalender jadwal...</div>
+          </div>
+        </div>
+
+        <!-- 🏖️ Info Banner Hari Libur Nasional / Cuti Bersama di Tanggal Terpilih -->
+        <div id="weeklyHolidayBanner" class="weekly-holiday-banner" style="display: none;">
+          <div class="weekly-holiday-icon">
+            <span class="material-icons-round" id="weeklyHolidayIcon" style="font-size: 18px;">event_busy</span>
+          </div>
+          <div class="weekly-holiday-text">
+            <span class="weekly-holiday-label" id="weeklyHolidayLabel">HARI LIBUR NASIONAL</span>
+            <span class="weekly-holiday-name" id="weeklyHolidayName">-</span>
+          </div>
         </div>
 
         <div class="spec-chips-bar" id="weeklySpecChips">
@@ -4254,210 +4401,29 @@
       };
 
       // ═════════════════════════════════════════════════════════════════════════
-      // JADWAL KESELURUHAN (MASTER WEEKLY SCHEDULE)
+      // JADWAL KESELURUHAN (DYNAMIC HORIZONTAL CALENDAR + MASTER SCHEDULE)
       // ═════════════════════════════════════════════════════════════════════════
       window.mainViewMode = "live";
-      window.selectedWeeklyDay = "all";
+      window.selectedWeeklyDate = new Date();
+      window.selectedWeeklyDay = (window.selectedWeeklyDate.getDay() + 6) % 7;
       window.selectedWeeklySpec = "all";
       window.weeklySearchQuery = "";
       window.masterDoctors = [];
       window.masterShifts = [];
+      window.masterLeaves = [];
 
       const DAYS_NAME_FULL = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"];
+      const DAYS_SHORT_ID = ["Sen", "Sel", "Rab", "Kam", "Jum", "Sab", "Min"];
+      const MONTHS_SHORT_ID = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Ags", "Sep", "Okt", "Nov", "Des"];
 
-      function switchMainView(mode) {
-        triggerHaptic("light");
-        window.mainViewMode = mode;
-        const btnLive = document.getElementById("btnViewLive");
-        const btnWeekly = document.getElementById("btnViewWeekly");
-        const btnLeaves = document.getElementById("btnViewLeaves");
-        
-        const viewLive = document.getElementById("viewLive");
-        const viewWeekly = document.getElementById("viewWeekly");
-        const viewLeaves = document.getElementById("viewLeaves");
+      const formatLocalDateKey = (d) => {
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, "0");
+        const day = String(d.getDate()).padStart(2, "0");
+        return `${y}-${m}-${day}`;
+      };
 
-        [btnLive, btnWeekly, btnLeaves].forEach(b => { if (b) b.classList.remove("active"); });
-        [viewLive, viewWeekly, viewLeaves].forEach(v => { if (v) { v.classList.remove("active"); v.classList.add("hidden"); } });
-
-        if (mode === "weekly") {
-          if (btnWeekly) btnWeekly.classList.add("active");
-          if (viewWeekly) { viewWeekly.classList.remove("hidden"); viewWeekly.classList.add("active"); }
-          if (window.selectedWeeklyDay === "all") {
-            const todayIdx = (new Date().getDay() + 6) % 7;
-            switchWeeklyDay(todayIdx);
-          } else {
-            renderWeeklySchedule();
-          }
-        } else if (mode === "leaves") {
-          if (btnLeaves) btnLeaves.classList.add("active");
-          if (viewLeaves) { viewLeaves.classList.remove("hidden"); viewLeaves.classList.add("active"); }
-          renderCalendarGrid();
-          renderLeavesList();
-        } else {
-          if (btnLive) btnLive.classList.add("active");
-          if (viewLive) { viewLive.classList.remove("hidden"); viewLive.classList.add("active"); }
-        }
-      }
-
-      function switchWeeklyDay(dayIdx) {
-        triggerHaptic("light");
-        window.selectedWeeklyDay = dayIdx;
-        document.querySelectorAll(".weekly-day-btn").forEach(btn => {
-          btn.classList.toggle("active", String(btn.dataset.day) === String(dayIdx));
-        });
-        renderWeeklySchedule();
-      }
-
-      function switchWeeklySpec(spec) {
-        triggerHaptic("light");
-        window.selectedWeeklySpec = spec;
-        document.querySelectorAll(".spec-chip").forEach(chip => {
-          chip.classList.toggle("active", chip.dataset.spec === spec);
-        });
-        renderWeeklySchedule();
-      }
-
-      function onWeeklySearchInput(val) {
-        const clearBtn = document.getElementById("weeklySearchClearBtn");
-        if (clearBtn) clearBtn.style.display = val && val.trim() ? "flex" : "none";
-        window.weeklySearchQuery = (val || "").trim().toLowerCase();
-        renderWeeklySchedule();
-      }
-
-      function clearWeeklySearch() {
-        const input = document.getElementById("weeklySearchInput");
-        if (input) {
-          input.value = "";
-          onWeeklySearchInput("");
-          input.focus();
-        }
-      }
-
-      let _lastWeeklyChipsHash = "";
-      function updateWeeklyData(doctors, shifts) {
-        if (Array.isArray(doctors)) window.masterDoctors = doctors;
-        if (Array.isArray(shifts)) window.masterShifts = shifts;
-
-        const specChipsContainer = document.getElementById("weeklySpecChips");
-        if (specChipsContainer && window.masterDoctors.length > 0) {
-          const specSet = new Set();
-          window.masterDoctors.forEach(d => { if (d.specialty) specSet.add(d.specialty); });
-          const specList = Array.from(specSet).sort();
-          const chipsHash = JSON.stringify(specList) + "_" + (window.selectedWeeklySpec || "all");
-
-          if (_lastWeeklyChipsHash !== chipsHash) {
-            _lastWeeklyChipsHash = chipsHash;
-            let chipsHtml = '<button class="spec-chip ' + (window.selectedWeeklySpec === "all" ? "active" : "") + '" data-spec="all" onclick="switchWeeklySpec(\'all\')">Semua Poli</button>';
-            specList.forEach(s => {
-              chipsHtml += '<button class="spec-chip ' + (window.selectedWeeklySpec === s ? "active" : "") + '" data-spec="' + esc(s) + '" onclick="switchWeeklySpec(\'' + esc(s) + '\')">' + esc(s) + '</button>';
-            });
-            specChipsContainer.innerHTML = chipsHtml;
-          }
-        }
-
-        if (window.masterShifts.length > 0) {
-          const validShifts = window.masterShifts.filter(s => s.formattedTime && s.formattedTime !== "-" && s.formattedTime.includes(":"));
-          const badgeAll = document.getElementById("badgeAllDays");
-          if (badgeAll) badgeAll.textContent = validShifts.length;
-
-          for (let d = 0; d < 7; d++) {
-            const b = document.getElementById("badgeDay" + d);
-            if (b) {
-              const count = validShifts.filter(s => s.dayIdx === d).length;
-              b.textContent = count;
-            }
-          }
-        }
-
-        if (window.mainViewMode === "weekly") renderWeeklySchedule();
-      }
-
-      function renderWeeklySchedule() {
-        const container = document.getElementById("weeklyListContainer");
-        if (!container) return;
-
-        const doctors = window.masterDoctors || [];
-        const shifts = window.masterShifts || [];
-        const selectedDay = window.selectedWeeklyDay;
-        const selectedSpec = window.selectedWeeklySpec;
-        const query = (window.weeklySearchQuery || "").toLowerCase();
-
-        const docMap = new Map();
-        doctors.forEach(d => docMap.set(d.id, d));
-
-        let filteredShifts = shifts.filter(s => {
-          if (!s.formattedTime || s.formattedTime === "-" || !s.formattedTime.includes(":")) return false;
-          if (selectedDay !== "all" && s.dayIdx !== Number(selectedDay)) return false;
-
-          const doc = docMap.get(s.doctorId);
-          const docName = doc ? (doc.name || "") : (s.doctorName || "");
-          const docSpec = doc ? (doc.specialty || "") : (s.title || "");
-
-          if (selectedSpec !== "all" && docSpec !== selectedSpec) return false;
-          if (query) {
-            const combined = (docName + " " + docSpec + " " + s.formattedTime + " " + (s.registrationTime || "")).toLowerCase();
-            if (!combined.includes(query)) return false;
-          }
-          return true;
-        });
-
-        filteredShifts.sort((a, b) => {
-          if (a.dayIdx !== b.dayIdx) return a.dayIdx - b.dayIdx;
-          const docA = docMap.get(a.doctorId);
-          const docB = docMap.get(b.doctorId);
-          const specA = docA ? docA.specialty : "";
-          const specB = docB ? docB.specialty : "";
-          if (specA !== specB) return specA.localeCompare(specB);
-          return (docA ? docA.name : "").localeCompare(docB ? docB.name : "");
-        });
-
-        const titleEl = document.getElementById("weeklyResultTitle");
-        const countEl = document.getElementById("weeklyResultCount");
-        if (titleEl) titleEl.textContent = selectedDay === "all" ? "Jadwal Semua Hari" : "Jadwal Hari " + DAYS_NAME_FULL[selectedDay];
-        if (countEl) countEl.textContent = filteredShifts.length + " Jadwal";
-
-        if (filteredShifts.length === 0) {
-          container.innerHTML = `
-            <div class="empty-state-clay">
-              <div class="clay-empty-coin">
-                <div class="clay-pulse-ring"></div>
-                <span class="material-icons-round">event_busy</span>
-              </div>
-              <h4>Tidak Ada Jadwal Dokter</h4>
-              <p>Silakan pilih hari lain atau gunakan kata kunci pencarian yang berbeda.</p>
-            </div>`;
-          return;
-        }
-
-        container.innerHTML = filteredShifts.map(s => {
-          const doc = docMap.get(s.doctorId);
-          const docName = doc ? doc.name : (s.doctorName || "Dokter Spesialis");
-          const docSpec = doc ? (doc.specialty || "Spesialis") : (s.title || "Spesialis");
-          const specTheme = getSpecialistTheme(docSpec);
-          const avatarIcon = getSpecialistIcon(docSpec);
-          const avatarText = avatarIcon.startsWith("<svg") ? avatarIcon : `<span class="material-icons-round" style="font-size:22px;">${avatarIcon}</span>`;
-          const dayName = DAYS_NAME_FULL[s.dayIdx] || "Hari";
-
-          return '<div class="weekly-shift-card">' +
-            '<div class="weekly-shift-head">' +
-              '<div class="weekly-shift-initials ' + specTheme + '">' + avatarText + '</div>' +
-              '<div class="weekly-shift-doc">' +
-                '<div class="doc-spec-badge ' + specTheme + '"><span class="spec-dot"></span><span class="doc-spec">' + esc(docSpec) + '</span></div>' +
-                '<span class="weekly-shift-name">' + esc(docName) + '</span>' +
-              '</div>' +
-            '</div>' +
-            '<div class="weekly-shift-pills">' +
-              '<span class="weekly-day-tag"><span class="material-icons-round" style="font-size: 12px; color: #007AFF;">calendar_today</span>' + esc(dayName) + '</span>' +
-              '<span class="weekly-time-pill"><span class="material-icons-round" style="font-size: 13px;">schedule</span>' + esc(s.formattedTime) + '</span>' +
-              (s.registrationTime ? '<span class="weekly-reg-pill"><span class="material-icons-round" style="font-size: 12px;">how_to_reg</span>Reg ' + esc(s.registrationTime) + '</span>' : '') +
-            '</div>' +
-          '</div>';
-        }).join("");
-      }
-
-      // ═════════════════════════════════════════════════════════════════════════
-      // JADWAL CUTI DOKTER & KALENDER NASIONAL INDONESIA (SKB 3 MENTERI)
-      // ═════════════════════════════════════════════════════════════════════════
+      // ─── KALENDER NASIONAL INDONESIA (SKB 3 MENTERI) ───
       const HOLIDAYS_DATA = {
         // ── 2025 ──
         "2025-01-01": { name: "Tahun Baru 2025 Masehi" },
@@ -4550,7 +4516,325 @@
         };
       }
 
-      window.masterLeaves = [];
+      function switchMainView(mode) {
+        triggerHaptic("light");
+        window.mainViewMode = mode;
+        const btnLive = document.getElementById("btnViewLive");
+        const btnWeekly = document.getElementById("btnViewWeekly");
+        const btnLeaves = document.getElementById("btnViewLeaves");
+        
+        const viewLive = document.getElementById("viewLive");
+        const viewWeekly = document.getElementById("viewWeekly");
+        const viewLeaves = document.getElementById("viewLeaves");
+
+        [btnLive, btnWeekly, btnLeaves].forEach(b => { if (b) b.classList.remove("active"); });
+        [viewLive, viewWeekly, viewLeaves].forEach(v => { if (v) { v.classList.remove("active"); v.classList.add("hidden"); } });
+
+        if (mode === "weekly") {
+          if (btnWeekly) btnWeekly.classList.add("active");
+          if (viewWeekly) { viewWeekly.classList.remove("hidden"); viewWeekly.classList.add("active"); }
+          if (!window.selectedWeeklyDate) {
+            window.selectedWeeklyDate = new Date();
+            window.selectedWeeklyDay = (window.selectedWeeklyDate.getDay() + 6) % 7;
+          }
+          renderWeeklyDateStrip();
+          renderWeeklySchedule();
+        } else if (mode === "leaves") {
+          if (btnLeaves) btnLeaves.classList.add("active");
+          if (viewLeaves) { viewLeaves.classList.remove("hidden"); viewLeaves.classList.add("active"); }
+          renderCalendarGrid();
+          renderLeavesList();
+        } else {
+          if (btnLive) btnLive.classList.add("active");
+          if (viewLive) { viewLive.classList.remove("hidden"); viewLive.classList.add("active"); }
+        }
+      }
+
+      function renderWeeklyDateStrip() {
+        const container = document.getElementById("weeklyDateStrip");
+        if (!container) return;
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const selDate = window.selectedWeeklyDate || today;
+        const selKey = formatLocalDateKey(selDate);
+
+        // Generate 30 Hari (Hari ini - 1 hari sampai 28 hari ke depan)
+        const dates = [];
+        for (let i = -1; i <= 28; i++) {
+          const d = new Date(today);
+          d.setDate(today.getDate() + i);
+          dates.push(d);
+        }
+
+        let html = '';
+        dates.forEach(d => {
+          const dateKey = formatLocalDateKey(d);
+          const isToday = dateKey === formatLocalDateKey(today);
+          const isSelected = dateKey === selKey;
+          const dayIdx = (d.getDay() + 6) % 7;
+          const hol = getIndonesianHoliday(d);
+
+          let cls = "weekly-date-card";
+          if (isSelected) cls += " active";
+          if (hol.isTanggalMerah) cls += " is-holiday";
+
+          html += `
+            <div class="${cls}" data-date="${dateKey}" onclick="selectWeeklyDate('${dateKey}')" title="${esc(hol.name || DAYS_NAME_FULL[dayIdx])}">
+              ${hol.isTanggalMerah ? '<span class="holiday-dot"></span>' : ''}
+              <span class="date-day-name">${DAYS_SHORT_ID[dayIdx]}</span>
+              <span class="date-number">${d.getDate()}</span>
+              <span class="date-month-name">${MONTHS_SHORT_ID[d.getMonth()]}</span>
+              ${isToday ? '<span class="today-indicator">Hari Ini</span>' : ''}
+            </div>`;
+        });
+
+        container.innerHTML = html;
+
+        // Smoothly scroll active date into view center
+        setTimeout(() => {
+          const activeCard = container.querySelector(".weekly-date-card.active");
+          if (activeCard) {
+            activeCard.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+          }
+        }, 120);
+      }
+
+      function selectWeeklyDate(dateKey) {
+        triggerHaptic("light");
+        const parts = dateKey.split("-");
+        window.selectedWeeklyDate = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+        window.selectedWeeklyDay = (window.selectedWeeklyDate.getDay() + 6) % 7;
+        renderWeeklyDateStrip();
+        renderWeeklySchedule();
+      }
+
+      function switchWeeklySpec(spec) {
+        triggerHaptic("light");
+        window.selectedWeeklySpec = spec;
+        document.querySelectorAll(".spec-chip").forEach(chip => {
+          chip.classList.toggle("active", chip.dataset.spec === spec);
+        });
+        renderWeeklySchedule();
+      }
+
+      function onWeeklySearchInput(val) {
+        const clearBtn = document.getElementById("weeklySearchClearBtn");
+        if (clearBtn) clearBtn.style.display = val && val.trim() ? "flex" : "none";
+        window.weeklySearchQuery = (val || "").trim().toLowerCase();
+        renderWeeklySchedule();
+      }
+
+      function clearWeeklySearch() {
+        const input = document.getElementById("weeklySearchInput");
+        if (input) {
+          input.value = "";
+          onWeeklySearchInput("");
+          input.focus();
+        }
+      }
+
+      function checkDoctorLeave(docName, dateKey) {
+        const leaves = window.masterLeaves || [];
+        const rawName = (docName || "").toLowerCase().replace(/^(dr\.|drg\.|prof\.|dr\. sp\.|drg\. sp\.)\s*/i, "").trim();
+        
+        return leaves.find(l => {
+          const lDoc = (l.doctorName || "").toLowerCase().replace(/^(dr\.|drg\.|prof\.|dr\. sp\.|drg\. sp\.)\s*/i, "").trim();
+          const match = lDoc && (lDoc.includes(rawName) || rawName.includes(lDoc));
+          if (!match) return false;
+          const start = (l.startDate || "").slice(0, 10);
+          const end = (l.endDate || l.startDate || "").slice(0, 10);
+          return start <= dateKey && dateKey <= end;
+        });
+      }
+
+      let _lastWeeklyChipsHash = "";
+      function updateWeeklyData(doctors, shifts) {
+        if (Array.isArray(doctors)) window.masterDoctors = doctors;
+        if (Array.isArray(shifts)) window.masterShifts = shifts;
+
+        const specChipsContainer = document.getElementById("weeklySpecChips");
+        if (specChipsContainer && window.masterDoctors.length > 0) {
+          const specSet = new Set();
+          window.masterDoctors.forEach(d => { if (d.specialty) specSet.add(d.specialty); });
+          const specList = Array.from(specSet).sort();
+          const chipsHash = JSON.stringify(specList) + "_" + (window.selectedWeeklySpec || "all");
+
+          if (_lastWeeklyChipsHash !== chipsHash) {
+            _lastWeeklyChipsHash = chipsHash;
+            let chipsHtml = '<button class="spec-chip ' + (window.selectedWeeklySpec === "all" ? "active" : "") + '" data-spec="all" onclick="switchWeeklySpec(\'all\')">Semua Poli</button>';
+            specList.forEach(s => {
+              chipsHtml += '<button class="spec-chip ' + (window.selectedWeeklySpec === s ? "active" : "") + '" data-spec="' + esc(s) + '" onclick="switchWeeklySpec(\'' + esc(s) + '\')">' + esc(s) + '</button>';
+            });
+            specChipsContainer.innerHTML = chipsHtml;
+          }
+        }
+
+        renderWeeklyDateStrip();
+        if (window.mainViewMode === "weekly") renderWeeklySchedule();
+      }
+
+      function renderWeeklySchedule() {
+        const container = document.getElementById("weeklyListContainer");
+        if (!container) return;
+
+        const doctors = window.masterDoctors || [];
+        const shifts = window.masterShifts || [];
+        const selDate = window.selectedWeeklyDate || new Date();
+        const dateKey = formatLocalDateKey(selDate);
+        const dayIdx = (selDate.getDay() + 6) % 7;
+        const selectedSpec = window.selectedWeeklySpec;
+        const query = (window.weeklySearchQuery || "").toLowerCase();
+
+        // 1. Holiday Banner Check
+        const hol = getIndonesianHoliday(selDate);
+        const bannerEl = document.getElementById("weeklyHolidayBanner");
+        const badgeEl = document.getElementById("weeklyHolidayLabel");
+        const nameEl = document.getElementById("weeklyHolidayName");
+        const iconEl = document.getElementById("weeklyHolidayIcon");
+
+        if (hol.isHoliday || hol.isCutiBersama) {
+          if (bannerEl) {
+            bannerEl.style.display = "flex";
+            bannerEl.className = "weekly-holiday-banner" + (hol.isCutiBersama ? " is-cuti-bersama" : "");
+          }
+          if (badgeEl) badgeEl.textContent = hol.isCutiBersama ? "CUTI BERSAMA RESMI" : "HARI LIBUR NASIONAL";
+          if (nameEl) nameEl.textContent = hol.name || "Pelayanan Poliklinik Rawat Jalan Libur";
+          if (iconEl) iconEl.textContent = hol.isCutiBersama ? "beach_access" : "event_busy";
+        } else if (hol.isSunday) {
+          if (bannerEl) {
+            bannerEl.style.display = "flex";
+            bannerEl.className = "weekly-holiday-banner is-cuti-bersama";
+          }
+          if (badgeEl) badgeEl.textContent = "HARI MINGGU";
+          if (nameEl) nameEl.textContent = "Poliklinik Rawat Jalan Tutup Mingguan";
+          if (iconEl) iconEl.textContent = "wb_sunny";
+        } else {
+          if (bannerEl) bannerEl.style.display = "none";
+        }
+
+        const docMap = new Map();
+        doctors.forEach(d => docMap.set(d.id, d));
+
+        let filteredShifts = shifts.filter(s => {
+          if (!s.formattedTime || s.formattedTime === "-" || !s.formattedTime.includes(":")) return false;
+          if (s.dayIdx !== dayIdx) return false;
+
+          const doc = docMap.get(s.doctorId);
+          const docName = doc ? (doc.name || "") : (s.doctorName || "");
+          const docSpec = doc ? (doc.specialty || "") : (s.title || "");
+
+          if (selectedSpec !== "all" && docSpec !== selectedSpec) return false;
+          if (query) {
+            const combined = (docName + " " + docSpec + " " + s.formattedTime + " " + (s.registrationTime || "")).toLowerCase();
+            if (!combined.includes(query)) return false;
+          }
+          return true;
+        });
+
+        // Sort shifts: Active Buka first, then by registration / practice time, then specialty & doctor name
+        filteredShifts.sort((a, b) => {
+          const docA = docMap.get(a.doctorId);
+          const docB = docMap.get(b.doctorId);
+          const nameA = docA ? docA.name : (a.doctorName || "");
+          const nameB = docB ? docB.name : (b.doctorName || "");
+          const leaveA = Boolean(checkDoctorLeave(nameA, dateKey));
+          const leaveB = Boolean(checkDoctorLeave(nameB, dateKey));
+          if (leaveA !== leaveB) return leaveA ? 1 : -1;
+
+          const timeA = (a.formattedTime || "").replace(/\./g, ":");
+          const timeB = (b.formattedTime || "").replace(/\./g, ":");
+          if (timeA !== timeB) return timeA.localeCompare(timeB);
+
+          const specA = docA ? docA.specialty : "";
+          const specB = docB ? docB.specialty : "";
+          if (specA !== specB) return specA.localeCompare(specB);
+          return nameA.localeCompare(nameB);
+        });
+
+        const titleEl = document.getElementById("weeklyResultTitle");
+        const countEl = document.getElementById("weeklyResultCount");
+        const dateFormatted = selDate.toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+        if (titleEl) titleEl.textContent = "Jadwal " + dateFormatted;
+        if (countEl) countEl.textContent = filteredShifts.length + " Jadwal";
+
+        if (filteredShifts.length === 0) {
+          container.innerHTML = `
+            <div class="empty-state-clay">
+              <div class="clay-empty-coin">
+                <div class="clay-pulse-ring"></div>
+                <span class="material-icons-round">event_busy</span>
+              </div>
+              <h4>Tidak Ada Jadwal Dokter</h4>
+              <p>Tidak ada praktik dokter spesialis yang terdaftar pada hari ${DAYS_NAME_FULL[dayIdx]}.</p>
+            </div>`;
+          return;
+        }
+
+        container.innerHTML = filteredShifts.map(s => {
+          const doc = docMap.get(s.doctorId);
+          const docName = doc ? doc.name : (s.doctorName || "Dokter Spesialis");
+          const docSpec = doc ? (doc.specialty || "Spesialis") : (s.title || "Spesialis");
+          const specTheme = getSpecialistTheme(docSpec);
+          const avatarIcon = getSpecialistIcon(docSpec);
+          const avatarText = avatarIcon.startsWith("<svg") ? avatarIcon : `<span class="material-icons-round" style="font-size:22px;">${avatarIcon}</span>`;
+          const dayName = DAYS_NAME_FULL[s.dayIdx] || "Hari";
+
+          const leaveInfo = checkDoctorLeave(docName, dateKey);
+          const isCuti = Boolean(leaveInfo);
+          const isHoliday = hol.isHoliday || hol.isCutiBersama || hol.isSunday;
+
+          let statusPillHtml = '';
+          if (isCuti) {
+            statusPillHtml = `
+              <span class="weekly-status-pill st-cuti">
+                <svg class="status-glyph" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="4" ry="4"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+                <span>CUTI</span>
+              </span>`;
+          } else if (isHoliday) {
+            statusPillHtml = `
+              <span class="weekly-status-pill st-libur">
+                <span class="material-icons-round" style="font-size:12px;">event_busy</span>
+                <span>${hol.isSunday ? 'MINGGU' : 'LIBUR'}</span>
+              </span>`;
+          } else {
+            statusPillHtml = `
+              <span class="weekly-status-pill st-praktek">
+                <svg class="status-glyph" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                <span>BUKA PRAKTIK</span>
+              </span>`;
+          }
+
+          const repDoc = leaveInfo ? (leaveInfo.replacementDoctor || null) : null;
+          const leaveReason = leaveInfo ? (leaveInfo.reason || leaveInfo.notes || "Sedang Menjalani Cuti") : null;
+
+          return `
+            <div class="weekly-shift-card ${isCuti ? 'is-cuti' : ''}">
+              <div class="weekly-shift-head">
+                <div class="weekly-shift-info-group">
+                  <div class="weekly-shift-initials ${specTheme}">${avatarText}</div>
+                  <div class="weekly-shift-doc">
+                    <div class="doc-spec-badge ${specTheme}"><span class="spec-dot"></span><span class="doc-spec">${esc(docSpec)}</span></div>
+                    <span class="weekly-shift-name">${esc(docName)}</span>
+                  </div>
+                </div>
+                ${statusPillHtml}
+              </div>
+              ${isCuti ? `
+              <div class="relief-doctor-pill" style="margin-top:0;">
+                <span class="material-icons-round" style="font-size:12px;">event_busy</span>
+                <span>${esc(leaveReason)}${repDoc ? ` — Pengganti: <strong>${esc(repDoc)}</strong>` : ''}</span>
+              </div>` : ''}
+              <div class="weekly-shift-pills">
+                <span class="weekly-day-tag"><span class="material-icons-round" style="font-size: 12px; color: #007AFF;">calendar_today</span>${esc(dayName)}</span>
+                <span class="weekly-time-pill"><span class="material-icons-round" style="font-size: 13px;">schedule</span>${esc(s.formattedTime)}</span>
+                ${s.registrationTime ? `<span class="weekly-reg-pill"><span class="material-icons-round" style="font-size: 12px;">how_to_reg</span>Reg ${esc(s.registrationTime)}</span>` : ''}
+              </div>
+            </div>`;
+        }).join("");
+      }
+
       window.calCurrentDate = new Date();
       window.calSelectedDate = new Date();
       window.leavesSubTab = "selected_day";
@@ -4680,6 +4964,9 @@
       function updateLeavesData(leaves) {
         if (Array.isArray(leaves)) {
           window.masterLeaves = leaves;
+          if (window.mainViewMode === "weekly") {
+            renderWeeklySchedule();
+          }
           if (window.mainViewMode === "leaves") {
             renderCalendarGrid();
             renderLeavesList();
