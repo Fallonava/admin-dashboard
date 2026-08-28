@@ -2971,8 +2971,11 @@
         display: flex;
         flex-direction: column;
         gap: 10px;
-        will-change: transform;
-        /* Hint to browser compositor */
+        will-change: transform, opacity;
+        transform: translate3d(0, 0, 0);
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+        perspective: 1000px;
       }
 
       /* ===== PLATTER CARD (Apple tvOS 18 Glass Specular & Ambient Glow) ===== */
@@ -5971,66 +5974,37 @@
           }
         }
 
-        // Apple Fluid Quartic Ease-Out Curve: Halus meluncur & mendarat empuk
-        _ease(t) {
-          return 1 - Math.pow(1 - t, 4);
-        }
-
-        // Animasi scroll dari posisi saat ini ke target (progress bar berjalan sinkron real-time)
+        // Apple Native GPU Compositor Spring Scroll Engine (60 FPS / 120 FPS Pure Hardware Matrix)
         _animateTo(target, duration, callback) {
           if (this.animating) return;
           this.animating = true;
-          const startY = this.y;
-          const delta = target - startY;
+          this.targetY = target;
+          this.y = target;
 
-          if (Math.abs(delta) < 1) {
-            this.animating = false;
+          const durSec = (Math.max(600, duration) / 1000).toFixed(2);
+          // Native Apple Spring Curve: smooth takeoff, natural cruise, cushioned settling
+          this.el.style.transition = `transform ${durSec}s cubic-bezier(0.22, 1, 0.36, 1)`;
+          this.el.style.transform = `translate3d(0, -${target}px, 0)`;
+
+          if (this.progressBar) {
+            this.progressBar.style.transition = `width ${durSec}s cubic-bezier(0.22, 1, 0.36, 1)`;
             this._updateProgress();
-            if (callback) callback();
-            return;
           }
 
-          let startTime = null;
-          const step = (timestamp) => {
-            if (!this.active) {
-              this.animating = false;
-              return;
-            }
-            if (!startTime) startTime = timestamp;
-
-            const elapsed = timestamp - startTime;
-            const progress = Math.min(elapsed / duration, 1);
-            const easedProgress = this._ease(progress);
-
-            this.y = startY + delta * easedProgress;
-            this.el.style.transform = `translate3d(0, -${this.y}px, 0)`;
-            this._updateProgress();
-
-            if (progress < 1) {
-              if (document.body.classList.contains("tv-optimized")) {
-                setTimeout(() => step(performance.now()), 33);
-              } else {
-                requestAnimationFrame(step);
-              }
-            } else {
-              this.y = target;
-              this.el.style.transform = `translate3d(0, -${this.y}px, 0)`;
-              this.animating = false;
-              this._updateProgress();
-              if (callback) callback();
-            }
-          };
-          requestAnimationFrame(step);
+          setTimeout(() => {
+            this.animating = false;
+            if (callback) callback();
+          }, duration);
         }
 
-        // Apple tvOS Spatial Scale Dissolve Loop Reset (100% GPU Composite - Zero Lag)
+        // Apple tvOS Spatial Cascade Dissolve Loop Reset (100% GPU Composite - Zero Lag)
         _fadeResetToTop(callback) {
           const currentY = this.y;
 
-          // 1. Apple Spatial Exit: Lembut mengecil mikro scale(0.985) & fade out
+          // 1. Apple Spatial Exit: Lembut mengecil mikro scale(0.988) & fade out
           this.el.style.transition = "opacity 0.42s cubic-bezier(0.16, 1, 0.3, 1), transform 0.42s cubic-bezier(0.16, 1, 0.3, 1)";
           this.el.style.opacity = "0";
-          this.el.style.transform = `translate3d(0, -${currentY}px, 0) scale(0.985)`;
+          this.el.style.transform = `translate3d(0, -${currentY}px, 0) scale(0.988)`;
 
           if (this.progressBar) {
             this.progressBar.style.transition = "opacity 0.35s ease, width 0.35s ease";
@@ -6043,28 +6017,28 @@
             this.currentItem = 0;
             this._resetProgress();
 
-            // 2. Prepare Enter State di posisi atas: elevasi mikro scale(1.012)
+            // 2. Prepare Top Floating Position (Micro-elevated -8px, scale 1.008)
             this.el.style.transition = "none";
-            this.el.style.transform = "translate3d(0, 0, 0) scale(1.012)";
+            this.el.style.transform = "translate3d(0, -8px, 0) scale(1.008)";
             this.el.style.opacity = "0";
 
-            void this.el.offsetHeight; // Force GPU layout sync
+            void this.el.offsetHeight; // Force GPU raster sync
 
-            // 3. Apple Spatial Enter: Mendarat empuk scale(1) & fade in
-            this.el.style.transition = "opacity 0.48s cubic-bezier(0.16, 1, 0.3, 1), transform 0.48s cubic-bezier(0.16, 1, 0.3, 1)";
+            // 3. Apple Spatial Cascade Descent (Silky landing from top)
+            this.el.style.transition = "opacity 0.58s cubic-bezier(0.16, 1, 0.3, 1), transform 0.58s cubic-bezier(0.16, 1, 0.3, 1)";
             this.el.style.opacity = "1";
             this.el.style.transform = "translate3d(0, 0, 0) scale(1)";
 
             if (this.progressBar) {
               this.progressBar.style.opacity = "1";
-              this.progressBar.style.transition = "width 0.08s ease-out, opacity 0.4s ease";
+              this.progressBar.style.transition = "width 0.1s ease-out, opacity 0.4s ease";
             }
 
             setTimeout(() => {
               this.el.style.transition = "";
               this.el.style.transform = "translate3d(0, 0, 0)";
               if (callback) callback();
-            }, 480);
+            }, 580);
           }, 420);
         }
 
