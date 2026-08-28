@@ -7879,6 +7879,7 @@
           const makeCard = (d) => {
             // Unique ID: Name + Shift Time
             const shiftJam = d.Jam && d.Jam !== "-" ? d.Jam : "no-time";
+            const id = `${d.Dokter}_${shiftJam}`;
             const hash = `${d.Status}|${d.Jam}|${d._isActive}|${d["Code Antrian"] || ""}|${d.JamDaftar}|${d.NextBuka || ""}|${d.CutiSampai || ""}|${d.CutiCatatan || ""}|${d.DocNote || ""}`;
             const st = (d.Status || "").toUpperCase();
             let c = "st-nopoli", i = "block", l = d.Status || "-";
