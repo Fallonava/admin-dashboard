@@ -47,7 +47,7 @@ const nextConfig: NextConfig = {
   },
   async rewrites() {
     return [
-      { source: '/jadwal', destination: '/jadwal.html' },
+      { source: '/jadwal-legacy', destination: '/jadwal.html' },
       { source: '/mobile', destination: '/jadwal.html' },
       { source: '/tv', destination: '/tv.html' },
       { source: '/tvmod', destination: '/jadwal.html' },

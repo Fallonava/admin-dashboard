@@ -26,7 +26,7 @@ const hostname = process.env.HOSTNAME || '0.0.0.0';
 const port = parseInt(process.env.PORT || '3000', 10);
 
 // In development, give Next.js internal compiler a separate internal port to prevent collision with custom httpServer
-const app = next(dev ? { dev, hostname: '127.0.0.1', port: port + 1 } : { dev, hostname, port });
+const app = next(dev ? { dev, hostname: '127.0.0.1', port: port + 20 } : { dev, hostname, port });
 const handle = app.getRequestHandler();
 
 // ── Snapshot In-Memory Cache (Debounce Reconnect Storms) ──
@@ -50,8 +50,8 @@ app.prepare().then(() => {
     const parsedUrl = parse(req.url!, true);
     const pathname = parsedUrl.pathname;
 
-    // Fast-path Direct Static Serving for clean professional URLs
-    if (pathname === '/jadwal' || pathname === '/mobile') {
+    // Fast-path Direct Static Serving for clean professional URLs (Legacy static fallback)
+    if (pathname === '/jadwal-legacy' || pathname === '/mobile') {
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
       fs.createReadStream(path.join(process.cwd(), 'public', 'jadwal.html')).pipe(res);
       return;
