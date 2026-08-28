@@ -48,7 +48,7 @@
         --ease: cubic-bezier(0.4, 0, 0.2, 1);
         --duration: 340ms;
 
-        --radius-card: 16px;
+        --radius-card: 22px;
         --radius-icon: 10px;
         --radius-pill: 9999px;
         --radius-tab: 9px;
@@ -220,7 +220,7 @@
 
       .ios-header-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
       .ios-icon-btn {
-        width: 34px; height: 34px; border-radius: 50%; border: none;
+        width: 44px; height: 44px; border-radius: 50%; border: none;
         background: var(--surface-well); color: var(--text-sub);
         display: flex; align-items: center; justify-content: center;
         transition: transform 120ms var(--ease), background 120ms;
@@ -433,7 +433,7 @@
       .dock-status-label { font-size: 13px; font-weight: 600; color: var(--text-main); }
       .dock-action-group { display: flex; gap: 8px; }
       .dock-wa-btn, .dock-reg-btn {
-        height: 40px; padding: 0 16px; border-radius: 12px; font-size: 15px; font-weight: 600;
+        height: 44px; padding: 0 16px; border-radius: 12px; font-size: 15px; font-weight: 600;
         border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
       }
       .dock-wa-btn { background: var(--surface-well); color: var(--ios-green); }
@@ -522,3 +522,27 @@
       .cal-nav-btn { width: 32px; height: 32px; border-radius: 50%; border: none; background: var(--surface-well); color: var(--ios-blue); display: flex; align-items: center; justify-content: center; cursor: pointer; }
 
     
+/* --- Material iOS 27 System --- */
+.material-ultra-thin {
+  background: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px) saturate(110%);
+  -webkit-backdrop-filter: blur(10px) saturate(110%);
+}
+
+.material-regular {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(20px) saturate(200%);
+  -webkit-backdrop-filter: blur(20px) saturate(200%);
+}
+
+[data-theme="dark"] .material-ultra-thin {
+  background: rgba(0, 0, 0, 0.3);
+}
+[data-theme="dark"] .material-regular {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+/* --- Utility Classes for TSX --- */
+.ios-mode-switcher-margin { margin: 16px 24px; }
+.main-content-padded { padding: 0 24px; padding-bottom: 100px; }
+.mb-24 { margin-bottom: 24px; }

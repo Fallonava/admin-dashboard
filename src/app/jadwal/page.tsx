@@ -41,7 +41,7 @@ export default function JadwalPage() {
                 </div>
                 
                 {/* Segmented Control */}
-                <div className="ios-mode-switcher" style={{ margin: '16px 24px' }}>
+                <div className="ios-mode-switcher ios-mode-switcher-margin">
                     <button 
                         className={`ios-mode-btn ${activeMode === 'today' ? 'active' : ''}`}
                         onClick={() => setActiveMode('today')}
@@ -58,7 +58,7 @@ export default function JadwalPage() {
             </header>
 
             {/* Main Content Area */}
-            <main className="main-content" style={{ padding: '0 24px', paddingBottom: '100px' }}>
+            <main className="main-content main-content-padded">
                 {isLoading && (
                     <div className="ios-skeleton">
                         <div className="bento-grid">
@@ -70,7 +70,7 @@ export default function JadwalPage() {
 
                 {!isLoading && data && activeMode === 'today' && (
                     <div className="today-view">
-                        <div className="bento-grid" style={{ marginBottom: '24px' }}>
+                        <div className="bento-grid mb-24">
                             <div className="bento-card-main">
                                 <div className="bento-title">Hadir Hari Ini</div>
                                 <div className="bento-num">{data.doctors?.filter((d: any) => d.status === 'PRAKTEK').length || 0}</div>
@@ -82,7 +82,7 @@ export default function JadwalPage() {
                         </div>
 
                         {/* Search Bar */}
-                        <div className="ios-search-bar" style={{ marginBottom: '24px' }}>
+                        <div className="ios-search-bar mb-24">
                             <Search className="search-icon" size={20} />
                             <input 
                                 type="text" 
