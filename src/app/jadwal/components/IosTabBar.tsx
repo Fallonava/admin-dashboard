@@ -25,11 +25,10 @@ export default function IosTabBar({
   todayCount = 0,
   leavesCount = 0,
 }: IosTabBarProps) {
-  // ponytail: standard native tabbar pattern with pure css liquid glass and haptic touch
   return (
     <nav className="ios27-tabbar-container" aria-label="Navigasi Utama">
       <div className="ios27-tabbar material-regular">
-        {/* Tab 1: Hari Ini */}
+        {/* 1. Hari Ini */}
         <button
           type="button"
           className={`ios27-tab-item ${activeTab === 'today' ? 'active' : ''}`}
@@ -50,7 +49,7 @@ export default function IosTabBar({
           <span className="ios27-tab-label">Hari Ini</span>
         </button>
 
-        {/* Tab 2: Keseluruhan */}
+        {/* 2. Keseluruhan */}
         <button
           type="button"
           className={`ios27-tab-item ${activeTab === 'weekly' ? 'active' : ''}`}
@@ -66,25 +65,25 @@ export default function IosTabBar({
           <span className="ios27-tab-label">Keseluruhan</span>
         </button>
 
-        {/* Tab 3: Quick Action Center (Daftar / Registrasi Cepat) */}
-        {onOpenRegistration && (
+        {/* 3. TENGAH: CARI DOKTER (Primary Center Action Pill) */}
+        {onSearchFocus && (
           <button
             type="button"
             className="ios27-tab-item ios27-tab-primary-action"
             onClick={() => {
               triggerHaptic('medium');
-              onOpenRegistration();
+              onSearchFocus();
             }}
-            aria-label="Daftar Online Poliklinik"
+            aria-label="Cari Dokter Spesialis"
           >
-            <div className="ios27-primary-action-pill">
-              <UserPlus size={18} strokeWidth={2.4} />
-              <span className="ios27-primary-action-txt">Daftar</span>
+            <div className="ios27-primary-action-pill search-center-pill">
+              <Search size={18} strokeWidth={2.4} />
+              <span className="ios27-primary-action-txt">Cari</span>
             </div>
           </button>
         )}
 
-        {/* Tab 4: Cuti Dokter */}
+        {/* 4. Jadwal Cuti */}
         <button
           type="button"
           className={`ios27-tab-item ${activeTab === 'leaves' ? 'active' : ''}`}
@@ -105,21 +104,21 @@ export default function IosTabBar({
           <span className="ios27-tab-label">Cuti</span>
         </button>
 
-        {/* Tab 5: Cari Dokter */}
-        {onSearchFocus && (
+        {/* 5. Daftar Online */}
+        {onOpenRegistration && (
           <button
             type="button"
             className="ios27-tab-item"
             onClick={() => {
               triggerHaptic('selection');
-              onSearchFocus();
+              onOpenRegistration();
             }}
-            aria-label="Cari Dokter Spesialis"
+            aria-label="Daftar Online"
           >
             <div className="ios27-tab-icon-wrap">
-              <Search size={22} strokeWidth={1.8} />
+              <UserPlus size={22} strokeWidth={1.8} />
             </div>
-            <span className="ios27-tab-label">Cari</span>
+            <span className="ios27-tab-label">Daftar</span>
           </button>
         )}
       </div>
