@@ -10,8 +10,8 @@ LOCAL_USER="admin"
 LOCAL_DB="medcoredb"
 LOCAL_PASS="rahasia"
 
-# Check if RS server is reachable
-if ! ping -c 1 -W 2 "$RS_HOST" > /dev/null 2>&1; then
+# Check if RS PostgreSQL server is reachable
+if ! docker exec panel-db pg_isready -h "$RS_HOST" -p 5432 -q > /dev/null 2>&1; then
     exit 0
 fi
 
