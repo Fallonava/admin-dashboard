@@ -7550,14 +7550,16 @@
             d._isActive = isActive(s);
           });
 
-          // Sorting: AKTIF (Top) -> PRAKTEK/PNDF (4) -> PENUH (3) -> TERJADWAL (2.5) -> OPERASI (2) -> CUTI (1)
+          // Sorting: AKTIF (Top) -> PRAKTEK (5) -> PENDAFTARAN (4) -> TERJADWAL (3) -> PENUH (2.5) -> OPERASI (2) -> CUTI (1.5)
           const score = (s) => {
             const u = (s || "").toUpperCase();
-            if (["PRAKTEK", "PENDAFTARAN"].includes(u)) return 4;
-            if (u.includes("PENUH")) return 3;
-            if (u === "TERJADWAL") return 2.5;
+            if (u === "PRAKTEK") return 5;
+            if (u === "PENDAFTARAN") return 4;
+            if (u === "TERJADWAL") return 3;
+            if (u.includes("PENUH")) return 2.5;
             if (u.includes("OPERASI")) return 2;
-            if (u.includes("CUTI")) return 1;
+            if (u.includes("CUTI")) return 1.5;
+            if (u.includes("SELESAI")) return 1;
             return 0;
           };
 
@@ -7616,30 +7618,29 @@
             if (a._isActive && !b._isActive) return -1;
             if (!a._isActive && b._isActive) return 1;
 
-            // Priority 2: Jam Daftar / Registrasi (Paling awal di atas)
+            // Priority 2: Status Group Score (PRAKTEK (5) -> PENDAFTARAN (4) -> TERJADWAL (3))
+            const diff = score(b.Status) - score(a.Status);
+            if (diff !== 0) return diff;
+
+            // Priority 3: Jam Daftar / Registrasi (Paling awal di atas)
             const daftarA = getJamDaftarVal(a);
             const daftarB = getJamDaftarVal(b);
             if (daftarA !== daftarB) return daftarA - daftarB;
 
-            // Priority 3: Jam Mulai Praktek (Paling awal di atas)
+            // Priority 4: Jam Mulai Praktek (Paling awal di atas)
             const mulaiA = getJamMulaiVal(a);
             const mulaiB = getJamMulaiVal(b);
             if (mulaiA !== mulaiB) return mulaiA - mulaiB;
 
-            // Priority 4: Jam Selesai Praktek (Paling awal di atas)
+            // Priority 5: Jam Selesai Praktek (Paling awal di atas)
             const selesaiA = getJamSelesaiVal(a);
             const selesaiB = getJamSelesaiVal(b);
             if (selesaiA !== selesaiB) return selesaiA - selesaiB;
 
-            // Priority 5: Status Score (PRAKTEK/PENDAFTARAN (4) > PENUH (3) > TERJADWAL (2.5) > OPERASI (2) > CUTI (1))
-            const diff = score(b.Status) - score(a.Status);
-            if (diff !== 0) return diff;
-
             // Priority 6: Specialty (Poliklinik A-Z)
             const specA = (a.Spesialis || "").toUpperCase();
             const specB = (b.Spesialis || "").toUpperCase();
-            if (specA < specB) return -1;
-            if (specA > specB) return 1;
+            if (specA !== specB) return specA.localeCompare(specB);
 
             // Priority 7: Doctor Name (A-Z)
             const docA = (a.Dokter || "").toUpperCase();
