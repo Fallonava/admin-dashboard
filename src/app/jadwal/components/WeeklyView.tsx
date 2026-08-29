@@ -76,15 +76,16 @@ export default function WeeklyView({
     });
   }, [dateStrip, shifts]);
 
-  // Filtered and deduplicated doctors list for active day (grouped by doctor ID)
+  // Filtered doctors list for active day: 1 card per practice shift session!
   const allDayDoctors = useMemo<GroupedWeeklyDoctor[]>(() => {
-    const doctorMap = new Map<string, GroupedWeeklyDoctor>();
+    const result: GroupedWeeklyDoctor[] = [];
 
     doctors.forEach((doc) => {
+      const rawDocId = doc.originalDoctorId || doc.id;
       // Find all active shifts for this doctor on target day
       const docDayShifts = shifts.filter(
         (s) =>
-          s.doctorId === doc.id &&
+          s.doctorId === rawDocId &&
           s.dayIdx === targetDayIdx &&
           !(s.disabledDates || []).includes(targetDateStr) &&
           isShiftActiveForDate(s.extra, targetWibTime)
@@ -92,26 +93,27 @@ export default function WeeklyView({
 
       if (docDayShifts.length === 0) return;
 
-      const leave = isDoctorOnLeave(doc.id, activeDateItem.date, leaves);
+      const leave = isDoctorOnLeave(rawDocId, activeDateItem.date, leaves);
       const isCuti = Boolean(leave);
 
-      // Primary shift is first shift
-      const primaryShift = docDayShifts[0];
-      const regTime = primaryShift?.registrationTime || doc.registrationTime || null;
-
-      doctorMap.set(doc.id, {
-        ...doc,
-        registrationTime: regTime,
-        todayShift: primaryShift ? { ...primaryShift, registrationTime: regTime } : doc.todayShift,
-        dayShifts: docDayShifts,
-        activeLeave: leave,
-        isCuti,
-        status: isCuti ? 'CUTI' : 'TERJADWAL',
+      // Create a separate card for each shift session on this day
+      docDayShifts.forEach((shift, sIdx) => {
+        const regTime = shift.registrationTime || doc.registrationTime || null;
+        result.push({
+          ...doc,
+          id: `${rawDocId}-shift-${shift.id || sIdx}`,
+          originalDoctorId: rawDocId,
+          registrationTime: regTime,
+          todayShift: { ...shift, registrationTime: regTime },
+          dayShifts: [shift],
+          activeLeave: leave,
+          isCuti,
+          status: isCuti ? 'CUTI' : 'TERJADWAL',
+        });
       });
     });
 
-    const list = Array.from(doctorMap.values());
-    return sortDoctorsBySchedule(list) as GroupedWeeklyDoctor[];
+    return sortDoctorsBySchedule(result) as GroupedWeeklyDoctor[];
   }, [doctors, shifts, leaves, targetDayIdx, targetDateStr, targetWibTime, activeDateItem.date]);
 
   // Extract unique specialties for the active day
@@ -343,27 +345,17 @@ export default function WeeklyView({
                             {leave?.reason || 'Izin Tidak Praktik'}
                           </span>
                         </>
-                      ) : doc.dayShifts.length > 1 ? (
-                        <div className="card-multi-shifts-wrap">
-                          {doc.dayShifts.map((s, sIdx) => (
-                            <span key={s.id || sIdx} className="shift-slot-pill">
-                              <Clock size={10.5} className="text-blue" />
-                              <span>{s.formattedTime || '-'}</span>
-                              {s.title && <span className="shift-title-tag">{s.title}</span>}
-                            </span>
-                          ))}
-                          {regTime && (
-                            <span className="card-reg-pill" title="Waktu Registrasi">
-                              Reg: {regTime}
-                            </span>
-                          )}
-                        </div>
                       ) : (
                         <>
                           <Clock size={12} className="time-icon text-blue flex-shrink-0" />
                           <span className="card-time-val">
                             {formatTimeSlot(doc.startTime, doc.endTime, doc.todayShift?.formattedTime)}
                           </span>
+                          {doc.todayShift?.title && (
+                            <span className="shift-slot-pill">
+                              {doc.todayShift.title}
+                            </span>
+                          )}
                           {regTime && (
                             <span className="card-reg-pill" title="Waktu Registrasi">
                               Reg: {regTime}

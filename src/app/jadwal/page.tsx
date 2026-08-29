@@ -186,24 +186,48 @@ export default function JadwalPage() {
     const currentDayIdx = (wibTime.getUTCDay() + 6) % 7; // 0=Senin ... 6=Minggu
     const todayStr = toWibDateStr(now);
 
-    return doctors.map((doc) => {
+    const result: Doctor[] = [];
+
+    doctors.forEach((doc) => {
       const evaluation = evaluateDoctorRealtimeStatus(doc, shifts, leaves, now);
-      const todayShift = shifts.find(
+      const todayShifts = shifts.filter(
         (s) =>
           s.doctorId === doc.id &&
           s.dayIdx === currentDayIdx &&
           !(s.disabledDates || []).includes(todayStr) &&
           isShiftActiveForDate(s.extra, wibTime)
       );
-      const regTime = todayShift?.registrationTime || doc.registrationTime || null;
-      return {
-        ...doc,
-        registrationTime: regTime,
-        status: evaluation.status,
-        activeLeave: evaluation.activeLeave,
-        todayShift: todayShift ? { ...todayShift, registrationTime: regTime } : doc.todayShift,
-      };
+
+      if (todayShifts.length > 1) {
+        // Multi-shift on the same day: create separate card per shift!
+        todayShifts.forEach((s, sIdx) => {
+          const shiftEvaluation = evaluateDoctorRealtimeStatus(doc, [s], leaves, now);
+          const regTime = s.registrationTime || doc.registrationTime || null;
+          result.push({
+            ...doc,
+            id: `${doc.id}-shift-${s.id || sIdx}`,
+            originalDoctorId: doc.id,
+            registrationTime: regTime,
+            status: shiftEvaluation.status,
+            activeLeave: shiftEvaluation.activeLeave || evaluation.activeLeave,
+            todayShift: { ...s, registrationTime: regTime },
+          });
+        });
+      } else {
+        const todayShift = todayShifts[0];
+        const regTime = todayShift?.registrationTime || doc.registrationTime || null;
+        result.push({
+          ...doc,
+          originalDoctorId: doc.id,
+          registrationTime: regTime,
+          status: evaluation.status,
+          activeLeave: evaluation.activeLeave,
+          todayShift: todayShift ? { ...todayShift, registrationTime: regTime } : doc.todayShift,
+        });
+      }
     });
+
+    return result;
   }, [doctors, shifts, leaves]);
 
   // STRICT FILTER: Only doctors who practice or have scheduled shifts or leave TODAY
@@ -229,14 +253,15 @@ export default function JadwalPage() {
   }, [todayOnlyDoctors]);
 
   const handleToggleFavorite = (doctor: Doctor) => {
+    const targetId = doctor.originalDoctorId || doctor.id;
     setFavoriteDoctorIds((prev) => {
       let updated: string[];
-      const isFav = prev.includes(doctor.id);
+      const isFav = prev.includes(targetId);
       if (isFav) {
-        updated = prev.filter((id) => id !== doctor.id);
+        updated = prev.filter((id) => id !== targetId);
         showToast('Dihapus dari Favorit', doctor.name, 'favorite');
       } else {
-        updated = [...prev, doctor.id];
+        updated = [...prev, targetId];
         showToast('Ditambahkan ke Favorit', doctor.name, 'favorite');
       }
       try {
@@ -522,7 +547,7 @@ export default function JadwalPage() {
                         <DoctorCard
                           key={doc.id}
                           doctor={doc}
-                          isFavorite={favoriteDoctorIds.includes(doc.id)}
+                          isFavorite={favoriteDoctorIds.includes(doc.originalDoctorId || doc.id)}
                           onToggleFavorite={handleToggleFavorite}
                           onSelectDoctor={handleDoctorSelect}
                           onShare={handleShareDoctor}
@@ -548,7 +573,7 @@ export default function JadwalPage() {
                         <DoctorCard
                           key={doc.id}
                           doctor={doc}
-                          isFavorite={favoriteDoctorIds.includes(doc.id)}
+                          isFavorite={favoriteDoctorIds.includes(doc.originalDoctorId || doc.id)}
                           onToggleFavorite={handleToggleFavorite}
                           onSelectDoctor={handleDoctorSelect}
                           onShare={handleShareDoctor}
@@ -574,7 +599,7 @@ export default function JadwalPage() {
                         <DoctorCard
                           key={doc.id}
                           doctor={doc}
-                          isFavorite={favoriteDoctorIds.includes(doc.id)}
+                          isFavorite={favoriteDoctorIds.includes(doc.originalDoctorId || doc.id)}
                           onToggleFavorite={handleToggleFavorite}
                           onSelectDoctor={handleDoctorSelect}
                           onShare={handleShareDoctor}

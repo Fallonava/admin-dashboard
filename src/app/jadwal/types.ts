@@ -2,6 +2,7 @@ export type DoctorStatusType = 'PRAKTEK' | 'CUTI' | 'LIBUR' | 'PENUH' | 'SELESAI
 
 export interface Doctor {
   id: string;
+  originalDoctorId?: string;
   name: string;
   specialty: string;
   status: DoctorStatusType | string;

@@ -198,6 +198,11 @@ export default function DoctorCard({
                 <span className="card-time-val">
                   {formatTimeSlot(doctor.startTime, doctor.endTime, doctor.todayShift?.formattedTime)}
                 </span>
+                {doctor.todayShift?.title && (
+                  <span className="shift-slot-pill">
+                    {doctor.todayShift.title}
+                  </span>
+                )}
                 {doctor.registrationTime && (
                   <span className="card-reg-pill" title="Waktu Pemanggilan Registrasi">
                     Reg: {doctor.registrationTime}
