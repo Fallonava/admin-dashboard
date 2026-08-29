@@ -195,11 +195,13 @@ export default function JadwalPage() {
           !(s.disabledDates || []).includes(todayStr) &&
           isShiftActiveForDate(s.extra, wibTime)
       );
+      const regTime = todayShift?.registrationTime || doc.registrationTime || null;
       return {
         ...doc,
+        registrationTime: regTime,
         status: evaluation.status,
         activeLeave: evaluation.activeLeave,
-        todayShift: todayShift || doc.todayShift,
+        todayShift: todayShift ? { ...todayShift, registrationTime: regTime } : doc.todayShift,
       };
     });
   }, [doctors, shifts, leaves]);

@@ -89,9 +89,11 @@ export default function WeeklyView({
             !(s.disabledDates || []).includes(targetDateStr) &&
             isShiftActiveForDate(s.extra, targetWibTime)
         );
+        const regTime = activeShift?.registrationTime || doc.registrationTime || null;
         return {
           ...doc,
-          todayShift: activeShift || doc.todayShift,
+          registrationTime: regTime,
+          todayShift: activeShift ? { ...activeShift, registrationTime: regTime } : doc.todayShift,
         };
       });
     return sortDoctorsBySchedule(list);

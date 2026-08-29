@@ -152,13 +152,13 @@ export default function DoctorCard({
 
       {/* Card Main Horizontal Row (Ultra-Compact) */}
       <div className="card-main-content">
-        {/* 1. Squircle Avatar */}
+        {/* 1. Squircle Avatar (Adopted from tv.html 3D Ceramic Squircle) */}
         <div className="card-avatar-col">
           <div className="avatar-squircle">
             {doctor.image ? (
               <img src={doctor.image} alt={doctor.name} className="avatar-img" loading="lazy" />
             ) : (
-              <span className="initials">{getInitials(doctor.name)}</span>
+              <SpecialistIcon department={doctor.specialty} size={24} className="avatar-spec-icon" />
             )}
           </div>
           {isPraktek && <span className="avatar-live-pulse" title="Sedang Bertugas Sekarang" />}
@@ -168,11 +168,6 @@ export default function DoctorCard({
         <div className="card-info-col">
           <div className="card-name-row">
             <h3 className="doc-name">{doctor.name}</h3>
-            {/* Status Pill Inline */}
-            <span className={`status-pill compact-status ${statusClass}`}>
-              <span className="status-dot" />
-              <span>{statusLabel}</span>
-            </span>
           </div>
 
           <div className="card-sub-row">
@@ -180,24 +175,24 @@ export default function DoctorCard({
               <SpecialistIcon department={doctor.specialty} size={12} className="spec-icon-inline" />
               <span>{doctor.specialty}</span>
             </span>
-            {doctor.queueCode && (
-              <span
-                className="card-queue-badge"
-                onClick={handleCopy}
-                title="Klik untuk salin kode antrean"
-              >
-                <Ticket size={11} />
-                <span>{doctor.queueCode}</span>
-                {copiedCode && <Check size={10} className="copy-check text-green" />}
-              </span>
-            )}
+
+            {/* Status Pill moved here for clean aesthetics */}
+            <span className={`status-pill compact-status ${statusClass}`}>
+              <span className="status-dot" />
+              <span>{statusLabel}</span>
+            </span>
           </div>
 
           <div className="card-time-row">
-            <Clock size={13} className="time-icon text-blue" />
+            <Clock size={12} className="time-icon text-blue" />
             <span className="card-time-val">
               {formatTimeSlot(doctor.startTime, doctor.endTime, doctor.todayShift?.formattedTime)}
             </span>
+            {doctor.registrationTime && (
+              <span className="card-reg-pill" title="Waktu Pemanggilan Registrasi">
+                Reg: {doctor.registrationTime}
+              </span>
+            )}
           </div>
         </div>
 
@@ -234,14 +229,20 @@ export default function DoctorCard({
       {isExpanded && (
         <div className="platter-expanded-drawer">
           <div className="drawer-metric-list">
+            {doctor.queueCode && (
+              <div className="drawer-metric-row">
+                <span className="drawer-metric-lbl">Kode Antrean Tiket</span>
+                <span className="drawer-metric-val font-mono font-bold text-blue">{doctor.queueCode}</span>
+              </div>
+            )}
             <div className="drawer-metric-row">
               <span className="drawer-metric-lbl">Kategori Poliklinik</span>
               <span className="drawer-metric-val">{doctor.category || 'Poliklinik Spesialis Terpadu'}</span>
             </div>
             {doctor.registrationTime && (
               <div className="drawer-metric-row">
-                <span className="drawer-metric-lbl">Waktu Registrasi</span>
-                <span className="drawer-metric-val">{doctor.registrationTime}</span>
+                <span className="drawer-metric-lbl">Waktu Registrasi (Pemanggilan)</span>
+                <span className="drawer-metric-val font-semibold text-blue">{doctor.registrationTime} WIB</span>
               </div>
             )}
             {doctor.todayShift?.title && (

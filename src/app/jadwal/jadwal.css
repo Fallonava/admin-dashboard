@@ -4,21 +4,21 @@
    ═══════════════════════════════════════════════════════════════ */
 
 :root {
-  /* Dynamic Background & Base Surfaces */
+  /* Base Surfaces (Solid Crisp Apple HIG) */
   --bg-page: #F2F2F7;
   --surface-card: #FFFFFF;
   --surface-card-solid: #FFFFFF;
   --surface-well: #E5E5EA;
   --surface-avatar: #F2F2F7;
-  --surface-input: rgba(118, 118, 128, 0.10);
+  --surface-input: #EBEBF0;
   --surface-modal: #FFFFFF;
-  --surface-dock: rgba(255, 255, 255, 0.78);
-  --surface-header: rgba(255, 255, 255, 0.75);
+  --surface-dock: #FFFFFF;
+  --surface-header: #FFFFFF;
 
-  /* Typography Semantic Scale (Apple HIG 100% Solid & Crisp Contrast) */
+  /* Typography Semantic Scale (100% Solid & Crisp Contrast) */
   --text-main: #000000;
-  --text-sub: #3C3C43;               /* Solid Secondary Label - No hazy fog */
-  --text-mute: #7C7C82;              /* Solid Tertiary Label - Crisp glyphs */
+  --text-sub: #3C3C43;
+  --text-mute: #7C7C82;
 
   /* Apple System Colors */
   --ios-blue: #007AFF;
@@ -41,20 +41,20 @@
   /* Separators & Outlines */
   --separator: rgba(60, 60, 67, 0.08);
   --opaque-separator: #E5E5EA;
-  --border-card: rgba(0, 0, 0, 0.04);
+  --border-card: rgba(0, 0, 0, 0.06);
 
-  /* Liquid Glass Specular & Volumetric Lighting (Light Mode) */
-  --liquid-glass-bg: rgba(255, 255, 255, 0.75);
-  --liquid-glass-border: 0.5px solid rgba(255, 255, 255, 0.75);
-  --liquid-glass-shine: linear-gradient(135deg, rgba(255, 255, 255, 0.60) 0%, rgba(255, 255, 255, 0.08) 45%, rgba(255, 255, 255, 0) 100%);
-  --liquid-glass-shadow: 0 8px 28px rgba(0, 0, 0, 0.04), inset 0 1px 0.5px rgba(255, 255, 255, 0.85);
-  --liquid-glass-blur: blur(24px) saturate(140%);
+  /* Clean Solid Surfaces - No Milky Fog */
+  --liquid-glass-bg: #FFFFFF;
+  --liquid-glass-border: 0.5px solid rgba(0, 0, 0, 0.06);
+  --liquid-glass-shine: none;
+  --liquid-glass-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+  --liquid-glass-blur: none;
 
-  --shadow-level-1: 0 2px 8px rgba(0, 0, 0, 0.03), 0 0 0 0.5px rgba(0, 0, 0, 0.03);
-  --shadow-level-2: 0 10px 30px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.02);
+  --shadow-level-1: 0 1px 4px rgba(0, 0, 0, 0.04), 0 0 0 0.5px rgba(0, 0, 0, 0.04);
+  --shadow-level-2: 0 6px 20px rgba(0, 0, 0, 0.06), 0 0 0 0.5px rgba(0, 0, 0, 0.04);
   --shadow-island: 0 12px 36px rgba(0, 0, 0, 0.12);
 
-  /* ProMotion 120fps Curves */
+  /* ProMotion Curves */
   --spring: cubic-bezier(0.16, 1, 0.3, 1);
   --ease: cubic-bezier(0.32, 0.72, 0, 1);
   --duration: 300ms;
@@ -81,13 +81,13 @@
   --surface-card-solid: #1C1C1E;
   --surface-well: #2C2C2E;
   --surface-avatar: #2C2C2E;
-  --surface-input: rgba(118, 118, 128, 0.20);
+  --surface-input: #2C2C2E;
   --surface-modal: #1C1C1E;
-  --surface-dock: rgba(28, 28, 30, 0.78);
-  --surface-header: rgba(20, 20, 24, 0.75);
+  --surface-dock: #1C1C1E;
+  --surface-header: #1C1C1E;
 
   --text-main: #FFFFFF;
-  --text-sub: rgba(235, 235, 245, 0.88); /* High contrast crisp white-tint */
+  --text-sub: rgba(235, 235, 245, 0.88);
   --text-mute: rgba(235, 235, 245, 0.60);
 
   --ios-blue: #0A84FF;
@@ -107,17 +107,16 @@
 
   --separator: rgba(84, 84, 88, 0.45);
   --opaque-separator: #38383A;
-  --border-card: rgba(255, 255, 255, 0.06);
+  --border-card: rgba(255, 255, 255, 0.08);
 
-  /* Liquid Glass Specular & Volumetric Lighting (Dark Mode) */
-  --liquid-glass-bg: rgba(28, 28, 30, 0.75);
-  --liquid-glass-border: 0.5px solid rgba(255, 255, 255, 0.12);
-  --liquid-glass-shine: linear-gradient(135deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.02) 45%, rgba(255, 255, 255, 0) 100%);
-  --liquid-glass-shadow: 0 12px 36px rgba(0, 0, 0, 0.45), inset 0 1px 0.5px rgba(255, 255, 255, 0.14);
-  --liquid-glass-blur: blur(26px) saturate(145%);
+  --liquid-glass-bg: #1C1C1E;
+  --liquid-glass-border: 0.5px solid rgba(255, 255, 255, 0.08);
+  --liquid-glass-shine: none;
+  --liquid-glass-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  --liquid-glass-blur: none;
 
-  --shadow-level-1: 0 0 0 0.5px var(--separator);
-  --shadow-level-2: 0 10px 30px rgba(0, 0, 0, 0.45), 0 0 0 0.5px var(--separator);
+  --shadow-level-1: 0 2px 12px rgba(0, 0, 0, 0.4), 0 0 0 0.5px rgba(255, 255, 255, 0.08);
+  --shadow-level-2: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 0 0.5px rgba(255, 255, 255, 0.08);
   --shadow-island: 0 14px 40px rgba(0, 0, 0, 0.70);
 }
 
@@ -196,44 +195,51 @@ a {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   1. NATIVE IPHONE iOS GLASS NAVBAR
+   1. NATIVE IPHONE iOS 27 LIQUID FLOATING CAPSULE HEADER
    ═══════════════════════════════════════════════════════════════ */
 .jadwal-dedicated-navbar, .ios27-header, .spatial-glass-header {
   position: sticky;
-  top: 0;
-  z-index: 100;
-  width: 100%;
+  top: calc(var(--sat) + 8px);
+  z-index: 95;
+  width: calc(100% - 16px);
+  max-width: 1040px;
+  margin: 0 auto 16px;
   background: var(--surface-header);
   backdrop-filter: var(--liquid-glass-blur);
   -webkit-backdrop-filter: var(--liquid-glass-blur);
-  border: none;
-  border-bottom: 0.5px solid var(--separator);
-  padding: calc(var(--sat) + 8px) 16px 10px;
-  margin-bottom: 16px;
-  box-shadow: none;
-  transition: background-color 240ms ease, border-color 240ms ease, box-shadow 240ms ease;
+  border: none !important;
+  border-bottom: none !important;
+  outline: none !important;
+  border-radius: 26px;
+  padding: 8px 14px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
+  transition: all 260ms var(--ease);
 }
 
 .jadwal-dedicated-navbar.is-scrolled {
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+  top: calc(var(--sat) + 6px);
+  padding: 7px 14px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.05);
+  border: none !important;
+  border-bottom: none !important;
 }
 
 [data-theme="dark"] .jadwal-dedicated-navbar,
 html.dark .jadwal-dedicated-navbar,
 body.dark .jadwal-dedicated-navbar {
-  border-bottom-color: rgba(255, 255, 255, 0.08);
-  box-shadow: none;
+  background: rgba(22, 22, 26, 0.82);
+  border: none !important;
+  border-bottom: none !important;
+  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.55);
 }
 
 [data-theme="dark"] .jadwal-dedicated-navbar.is-scrolled,
 html.dark .jadwal-dedicated-navbar.is-scrolled,
 body.dark .jadwal-dedicated-navbar.is-scrolled {
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 12px 38px rgba(0, 0, 0, 0.65);
 }
 
 .jadwal-nav-inner {
-  max-width: 1080px;
-  margin: 0 auto;
   width: 100%;
   display: flex;
   align-items: center;
@@ -737,11 +743,9 @@ body.dark .jadwal-segmented-track {
   gap: 6px;
   padding: 6.5px 12px;
   border-radius: var(--radius-pill);
-  background: var(--liquid-glass-bg);
-  backdrop-filter: var(--liquid-glass-blur);
-  -webkit-backdrop-filter: var(--liquid-glass-blur);
-  border: var(--liquid-glass-border);
-  box-shadow: var(--shadow-level-1), inset 0 0.5px 0 rgba(255, 255, 255, 0.5);
+  background: var(--surface-card);
+  border: 0.5px solid var(--border-card);
+  box-shadow: var(--shadow-level-1);
   cursor: pointer;
   user-select: none;
   white-space: nowrap;
@@ -755,7 +759,7 @@ body.dark .jadwal-segmented-track {
 .glance-metric-chip.selected {
   border-color: var(--ios-blue);
   background: rgba(0, 122, 255, 0.10);
-  box-shadow: 0 0 0 1px var(--ios-blue), 0 3px 12px rgba(0, 122, 255, 0.18);
+  box-shadow: 0 0 0 1px var(--ios-blue), 0 2px 8px rgba(0, 122, 255, 0.14);
 }
 
 .glance-pulse-dot {
@@ -768,15 +772,16 @@ body.dark .jadwal-segmented-track {
 }
 
 .glance-chip-num {
-  font-size: 13px;
+  font-size: 13.5px;
   font-weight: 800;
+  letter-spacing: -0.3px;
   color: var(--text-main);
-  letter-spacing: -0.2px;
 }
 
 .glance-chip-label {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
+  letter-spacing: -0.1px;
   color: var(--text-sub);
 }
 
@@ -791,10 +796,9 @@ body.dark .jadwal-segmented-track {
   display: flex;
   align-items: center;
   gap: 9px;
-  background: var(--surface-input);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: var(--surface-card);
   border: 0.5px solid var(--border-card);
+  box-shadow: var(--shadow-level-1);
   border-radius: 14px;
   padding: 8.5px 12px;
   position: relative;
@@ -810,7 +814,7 @@ body.dark .jadwal-segmented-track {
 [data-theme="dark"] .ios-search-bar:focus-within,
 html.dark .ios-search-bar:focus-within,
 body.dark .ios-search-bar:focus-within {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--surface-card);
 }
 
 .search-icon {
@@ -864,10 +868,9 @@ body.dark .ios-search-bar:focus-within {
   gap: 5px;
   padding: 6.5px 12px;
   border-radius: var(--radius-pill);
-  border: var(--liquid-glass-border);
-  background: var(--liquid-glass-bg);
-  backdrop-filter: var(--liquid-glass-blur);
-  -webkit-backdrop-filter: var(--liquid-glass-blur);
+  border: 0.5px solid var(--border-card);
+  background: var(--surface-card);
+  box-shadow: var(--shadow-level-1);
   color: var(--text-sub);
   font-size: 12.5px;
   font-weight: 600;
@@ -884,8 +887,8 @@ body.dark .ios-search-bar:focus-within {
 .category-chip.active, .filter-chip.active {
   background: var(--ios-blue);
   color: #FFFFFF;
-  border-color: rgba(255, 255, 255, 0.30);
-  box-shadow: 0 4px 14px rgba(0, 122, 255, 0.28), inset 0 0.5px 0.5px rgba(255, 255, 255, 0.4);
+  border-color: var(--ios-blue);
+  box-shadow: 0 3px 10px rgba(0, 122, 255, 0.25);
   animation: chipSelectPop 240ms var(--spring);
 }
 
@@ -1088,10 +1091,30 @@ body.dark .ios-search-bar:focus-within {
 .card-time-row {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
   font-size: 11.5px;
   font-weight: 600;
   color: var(--text-sub);
+  flex-wrap: wrap;
+}
+
+.card-reg-pill {
+  display: inline-flex;
+  align-items: center;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 6px;
+  background: rgba(0, 122, 255, 0.08);
+  color: var(--ios-blue);
+  letter-spacing: -0.1px;
+}
+
+[data-theme="dark"] .card-reg-pill,
+html.dark .card-reg-pill,
+body.dark .card-reg-pill {
+  background: rgba(10, 132, 255, 0.18);
+  color: #64D2FF;
 }
 
 .card-action-col {
@@ -1154,35 +1177,35 @@ body.dark .ios-search-bar:focus-within {
 }
 
 .platter {
-  background: var(--liquid-glass-bg);
-  backdrop-filter: var(--liquid-glass-blur);
-  -webkit-backdrop-filter: var(--liquid-glass-blur);
-  border: var(--liquid-glass-border);
-  box-shadow: var(--liquid-glass-shadow);
+  background: var(--surface-card);
+  border: 0.5px solid var(--border-card);
+  box-shadow: var(--shadow-level-1);
   border-radius: var(--radius-card);
   position: relative;
   overflow: hidden;
   cursor: pointer;
   user-select: none;
-  transition: transform 260ms var(--spring), box-shadow 260ms ease, filter 180ms ease;
+  transition: transform 200ms var(--spring), box-shadow 200ms ease;
 }
 
-.platter::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: var(--liquid-glass-shine);
-  pointer-events: none;
-  border-radius: inherit;
+[data-theme="dark"] .platter,
+html.dark .platter,
+body.dark .platter {
+  background: var(--surface-card);
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
 }
 
 .platter:active {
   transform: scale(0.985) translateY(1px);
-  filter: brightness(0.98);
 }
 
 .platter.is-cuti {
   opacity: 0.88;
+}
+
+.card-top-specular {
+  display: none;
 }
 
 .platter-head-row {
@@ -1192,25 +1215,50 @@ body.dark .ios-search-bar:focus-within {
   padding: 16px 16px 10px;
 }
 
-.avatar-squircle-wrap {
-  position: relative;
-  flex-shrink: 0;
-}
-
+/* ═══ 3D APPLE CERAMIC GLASS AVATAR SQUIRCLE (Adopted from tv.html) ═══ */
+.card-avatar-col .avatar-squircle,
 .avatar-squircle {
   width: 48px;
   height: 48px;
-  border-radius: 14px;
-  background: var(--surface-avatar);
-  border: 1px solid var(--border-card);
+  border-radius: 16px;
+  background: rgba(248, 250, 252, 0.98);
+  box-shadow: 
+    inset 0 2px 2px rgba(255, 255, 255, 1),
+    inset 0 -1.5px 2px rgba(15, 23, 42, 0.07),
+    0 4px 14px -2px rgba(45, 65, 95, 0.10),
+    0 1px 4px -1px rgba(45, 65, 95, 0.05);
+  border: 1.5px solid rgba(255, 255, 255, 0.95);
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
-  font-weight: 700;
+  font-family: inherit;
   font-size: 16px;
-  color: var(--ios-blue);
-  box-shadow: var(--shadow-level-1);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #0F172A;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.avatar-squircle svg {
+  width: 26px !important;
+  height: 26px !important;
+  flex-shrink: 0;
+  display: block;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.08));
+}
+
+[data-theme="dark"] .avatar-squircle,
+html.dark .avatar-squircle,
+body.dark .avatar-squircle {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1.5px solid rgba(255, 255, 255, 0.15);
+  color: #FFFFFF;
+  box-shadow: 
+    inset 0 1.5px 2px rgba(255, 255, 255, 0.2),
+    inset 0 -2px 3px rgba(0, 0, 0, 0.3),
+    0 6px 18px -3px rgba(0, 0, 0, 0.5);
 }
 
 .avatar-img {
@@ -1560,10 +1608,12 @@ body.dark .ios-search-bar:focus-within {
 }
 
 .weekly-date-strip-container {
-  width: 100%;
+  width: calc(100% + 12px);
+  margin-left: -6px;
+  margin-right: -6px;
   overflow-x: auto;
   scrollbar-width: none;
-  padding-bottom: 4px;
+  padding: 6px 6px 12px;
 }
 
 .weekly-date-strip-container::-webkit-scrollbar {
@@ -1575,6 +1625,7 @@ body.dark .ios-search-bar:focus-within {
   align-items: center;
   gap: 8px;
   min-width: 100%;
+  padding: 2px;
 }
 
 .weekly-day-btn {
@@ -1582,10 +1633,8 @@ body.dark .ios-search-bar:focus-within {
   min-width: 64px;
   padding: 8px 6px;
   border-radius: 18px;
-  border: var(--liquid-glass-border);
-  background: var(--liquid-glass-bg);
-  backdrop-filter: var(--liquid-glass-blur);
-  -webkit-backdrop-filter: var(--liquid-glass-blur);
+  border: 0.5px solid var(--border-card);
+  background: var(--surface-card);
   box-shadow: var(--shadow-level-1);
   display: flex;
   flex-direction: column;
@@ -1599,6 +1648,13 @@ body.dark .ios-search-bar:focus-within {
 
 .weekly-day-btn:active {
   transform: scale(0.92);
+}
+
+[data-theme="dark"] .weekly-day-btn,
+html.dark .weekly-day-btn,
+body.dark .weekly-day-btn {
+  background: var(--surface-card);
+  border-color: rgba(255, 255, 255, 0.08);
 }
 
 .date-day-name {
@@ -1826,24 +1882,20 @@ body.dark .ios-search-bar:focus-within {
 }
 
 .ios-calendar-card {
-  background: var(--liquid-glass-bg);
-  backdrop-filter: var(--liquid-glass-blur);
-  -webkit-backdrop-filter: var(--liquid-glass-blur);
-  border: var(--liquid-glass-border);
-  box-shadow: var(--liquid-glass-shadow);
+  background: var(--surface-card);
+  border: 0.5px solid var(--border-card);
+  box-shadow: var(--shadow-level-1);
   border-radius: var(--radius-card);
   padding: 18px;
   position: relative;
   overflow: hidden;
 }
 
-.ios-calendar-card::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: var(--liquid-glass-shine);
-  pointer-events: none;
-  border-radius: inherit;
+[data-theme="dark"] .ios-calendar-card,
+html.dark .ios-calendar-card,
+body.dark .ios-calendar-card {
+  background: var(--surface-card);
+  border-color: rgba(255, 255, 255, 0.08);
 }
 
 .cal-nav-bar {
@@ -2425,12 +2477,10 @@ body.dark .cal-selected-day-pill {
   align-items: center;
   justify-content: space-between;
   padding: 5px 8px;
-  background: var(--surface-dock);
-  backdrop-filter: var(--liquid-glass-blur);
-  -webkit-backdrop-filter: var(--liquid-glass-blur);
-  border: 0.5px solid var(--separator);
+  background: var(--surface-card);
+  border: 0.5px solid var(--border-card);
   border-radius: 9999px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06), inset 0 1px 0.5px rgba(255, 255, 255, 0.7);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08);
   user-select: none;
   transition: background-color 240ms ease, border-color 240ms ease, box-shadow 240ms ease;
 }
@@ -2439,21 +2489,13 @@ body.dark .cal-selected-day-pill {
 [data-theme="dark"] .ios27-tabbar,
 html.dark .ios27-spatial-dock,
 body.dark .ios27-spatial-dock {
-  background: rgba(20, 20, 24, 0.82);
-  border-color: rgba(255, 255, 255, 0.14);
-  box-shadow: 0 14px 44px rgba(0, 0, 0, 0.60), inset 0 1px 0.5px rgba(255, 255, 255, 0.14);
+  background: var(--surface-card);
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 14px 44px rgba(0, 0, 0, 0.65);
 }
 
 .dock-specular-highlight {
-  position: absolute;
-  top: 0;
-  left: 20px;
-  right: 20px;
-  height: 50%;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0) 100%);
-  pointer-events: none;
-  border-top-left-radius: 9999px;
-  border-top-right-radius: 9999px;
+  display: none;
 }
 
 .ios27-tab-item {
