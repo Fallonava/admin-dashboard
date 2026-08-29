@@ -11,7 +11,7 @@ import {
   sortDoctorsBySchedule,
 } from '../lib/schedule-utils';
 import { triggerHaptic } from '../lib/haptics';
-import {
+import { X, 
   CalendarX,
   Clock,
   MessageCircle,
@@ -20,7 +20,7 @@ import {
   RotateCcw,
   Sparkles,
   Search,
-} from 'lucide-react';
+ } from 'lucide-react';
 
 interface GroupedWeeklyDoctor extends Doctor {
   dayShifts: Shift[];
@@ -406,7 +406,12 @@ export default function WeeklyView({
                   <div className="ios-sheet-backdrop" onClick={(e) => { e.stopPropagation(); toggleExpand(doc.id); }}>
                     <div className="ios-bottom-sheet" onClick={(e) => e.stopPropagation()}>
                       <div className="ios-sheet-drag-handle" />
-                      <h3 className="doc-name mb-12 text-center" style={{ fontSize: '16px' }}>{doc.name}</h3>
+                      <div className="ios-sheet-header">
+                      <h3 className="ios-sheet-title">{doc.name}</h3>
+                      <button className="ios-close-btn" onClick={(e) => { e.stopPropagation(); toggleExpand(doc.id); }}>
+                        <X size={18} />
+                      </button>
+                    </div>
                       <div className="drawer-metric-list">
                       <div className="drawer-metric-row">
                         <span className="drawer-metric-lbl">Hari Praktik</span>
@@ -466,18 +471,17 @@ export default function WeeklyView({
                         )}%20pada%20hari%20${activeDateItem?.dayName}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="drawer-wa-btn"
+                        className="ios-large-action-btn btn-whatsapp-ios"
                         onClick={(e) => {
                           e.stopPropagation();
                           triggerHaptic('light');
                         }}
                       >
-                        <MessageCircle size={14} />
+                        <MessageCircle size={18} />
                         <span>Tanya CS WhatsApp</span>
                       </a>
                     </div>
-                  </div>
-                </div>, document.body) : null}
+                  </div>, document.body) : null}
               </div>
             );
           })}

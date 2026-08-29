@@ -3208,3 +3208,129 @@ body.dark .ios27-glance-capsule-bar.is-scrolled {
   background: rgba(255, 255, 255, 0.9);
   color: black;
 }
+/* ═══════════════════════════════════════════════════════════════
+   iOS 27 INSET GROUPED LIST (BOTTOM SHEET CONTENTS)
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Update the bottom sheet background to grouped background */
+.ios-bottom-sheet {
+  background: var(--surface-well); /* Lighter gray/grouped background */
+  padding: 16px 16px calc(var(--sab) + 24px);
+}
+[data-theme="dark"] .ios-bottom-sheet,
+html.dark .ios-bottom-sheet,
+body.dark .ios-bottom-sheet {
+  background: #000000; /* Pure black for iOS dark mode sheet */
+}
+
+/* Inset Grouped Table Container */
+.drawer-metric-list {
+  background: var(--surface-card); /* White or #1C1C1E */
+  border-radius: 12px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+/* Individual Row */
+.drawer-metric-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  font-size: 14px;
+  border-bottom: 0.5px solid var(--opaque-separator);
+}
+.drawer-metric-row:last-child {
+  border-bottom: none;
+}
+
+.drawer-metric-lbl {
+  color: var(--text-main);
+  font-weight: 500;
+}
+.drawer-metric-val {
+  color: var(--text-mute);
+  font-weight: 400;
+  text-align: right;
+  max-width: 60%;
+}
+.drawer-metric-row .text-blue {
+  color: var(--ios-blue);
+}
+.drawer-metric-row .text-red {
+  color: var(--ios-red);
+}
+
+/* iOS 27 Large Action Buttons (Inset Grouped Style) */
+.drawer-quick-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 0 !important;
+}
+
+.ios-large-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: transform 100ms ease, opacity 100ms ease;
+}
+.ios-large-action-btn:active {
+  transform: scale(0.97);
+  opacity: 0.8;
+}
+
+.btn-primary-ios {
+  background: var(--ios-blue);
+  color: white;
+}
+.btn-whatsapp-ios {
+  background: var(--ios-green);
+  color: white;
+}
+.btn-secondary-ios {
+  background: var(--surface-card);
+  color: var(--ios-blue);
+}
+
+/* Header inside sheet */
+.ios-sheet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding: 0 4px;
+}
+.ios-sheet-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0;
+}
+.ios-close-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 15px;
+  background: var(--surface-well);
+  color: var(--text-mute);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+}
+[data-theme="dark"] .ios-close-btn {
+  background: #2C2C2E;
+}

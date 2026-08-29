@@ -4,7 +4,7 @@ import type { Doctor } from '../types';
 import SpecialistIcon from './SpecialistIcon';
 import { getInitials, getSpecialtyBadgeClass, formatTimeSlot } from '../lib/schedule-utils';
 import { triggerHaptic } from '../lib/haptics';
-import {
+import { X, 
   Clock,
   Ticket,
   UserPlus,
@@ -17,7 +17,7 @@ import {
   CalendarOff,
   ChevronDown,
   Sparkles,
-} from 'lucide-react';
+ } from 'lucide-react';
 
 interface DoctorCardProps {
   doctor: Doctor;
@@ -281,7 +281,12 @@ export default function DoctorCard({
         <div className="ios-sheet-backdrop" onClick={(e) => { e.stopPropagation(); toggleExpand(); }}>
           <div className="ios-bottom-sheet" onClick={(e) => e.stopPropagation()}>
             <div className="ios-sheet-drag-handle" />
-            <h3 className="doc-name mb-12 text-center" style={{ fontSize: '16px' }}>{doctor.name}</h3>
+            <div className="ios-sheet-header">
+              <h3 className="ios-sheet-title">{doctor.name}</h3>
+              <button className="ios-close-btn" onClick={(e) => { e.stopPropagation(); toggleExpand(); }}>
+                <X size={18} />
+              </button>
+            </div>
             <div className="drawer-metric-list">
             {doctor.queueCode && (
               <div className="drawer-metric-row">
@@ -327,38 +332,43 @@ export default function DoctorCard({
               )}%20(${encodeURIComponent(doctor.specialty)})`}
               target="_blank"
               rel="noopener noreferrer"
-              className="drawer-wa-btn"
+              className="ios-large-action-btn btn-whatsapp-ios"
               onClick={(e) => {
                 e.stopPropagation();
                 triggerHaptic('light');
               }}
             >
-              <MessageCircle size={14} />
-              <span>Tanya CS WA</span>
+              <MessageCircle size={18} />
+              <span>Tanya CS WhatsApp</span>
             </a>
 
             <button
               type="button"
-              className="drawer-cal-btn"
-              onClick={handleAddToCalendar}
+              className="ios-large-action-btn btn-primary-ios"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleAddToCalendar(e);
+              }}
               title="Simpan Jadwal ke Kalender HP"
             >
-              <Calendar size={14} />
-              <span>Ke Kalender</span>
+              <Calendar size={18} />
+              <span>Simpan ke Kalender</span>
             </button>
 
             <button
               type="button"
-              className="drawer-share-btn"
-              onClick={handleShare}
+              className="ios-large-action-btn btn-secondary-ios"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleShare(e);
+              }}
               title="Bagikan Informasi Dokter"
             >
-              <Share2 size={14} />
-              <span>Bagikan</span>
+              <Share2 size={18} />
+              <span>Bagikan Dokter</span>
             </button>
           </div>
-        </div>
-      </div>, document.body) : null}
+        </div>, document.body) : null}
 
       {/* iOS 27 Haptic Touch Context Menu */}
       {showContextMenu && typeof document !== 'undefined' ? createPortal(
