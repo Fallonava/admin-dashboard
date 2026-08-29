@@ -4236,8 +4236,8 @@
         line-height: 1 !important;
       }
 
-      /* ═══ COMPACT ELEGAN TV QR & HOTLINE CARD (Apple Widget Style - Large & High Contrast) ═══ */
-      .tv-qr-compact-card {
+      /* ═══ PROPER APPLE WALLET STYLE TV QR & FULL-WIDTH HOTLINE CARD ═══ */
+      .tv-qr-hero-card {
         width: 100%;
         background: #FFFFFF;
         border-radius: 22px;
@@ -4248,13 +4248,14 @@
           inset 0 1.5px 1.5px #FFFFFF;
         display: flex;
         flex-direction: column;
+        align-items: stretch;
         gap: 10px;
         box-sizing: border-box;
         overflow: hidden;
         flex-shrink: 0;
       }
 
-      [data-theme="dark"] .tv-qr-compact-card {
+      [data-theme="dark"] .tv-qr-hero-card {
         background: #101726;
         border-color: rgba(255, 255, 255, 0.08);
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.1);
@@ -4265,60 +4266,99 @@
         align-items: center;
         justify-content: space-between;
         border-bottom: 1px solid rgba(226, 234, 245, 0.7);
-        padding-bottom: 6px;
+        padding-bottom: 7px;
       }
 
       [data-theme="dark"] .tv-qr-header {
         border-bottom-color: rgba(255, 255, 255, 0.08);
       }
 
-      .tv-qr-title {
-        font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 12px;
-        font-weight: 800;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
+      .tv-qr-brand {
         display: flex;
         align-items: center;
-        gap: 6px;
-        color: #0F172A;
+        gap: 8px;
       }
 
-      [data-theme="dark"] .tv-qr-title {
+      .tv-qr-icon {
+        font-size: 18px;
+        color: #0284C7;
+        background: rgba(2, 132, 199, 0.1);
+        padding: 4px;
+        border-radius: 8px;
+        border: 1px solid rgba(2, 132, 199, 0.25);
+      }
+
+      .tv-qr-title-wrap {
+        display: flex;
+        flex-direction: column;
+        line-height: 1.15;
+      }
+
+      .tv-qr-main-title {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 11.5px;
+        font-weight: 900;
+        color: #0F172A;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      [data-theme="dark"] .tv-qr-main-title {
         color: #F8FAFC;
       }
 
-      .tv-qr-live-badge {
+      .tv-qr-sub-title {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 9px;
+        font-weight: 700;
+        color: #64748B;
+        letter-spacing: 0.02em;
+      }
+
+      [data-theme="dark"] .tv-qr-sub-title {
+        color: #94A3B8;
+      }
+
+      .tv-qr-url-badge {
         display: inline-flex;
         align-items: center;
-        gap: 4px;
-        padding: 3px 9px;
+        gap: 5px;
+        padding: 3px 8px;
         border-radius: 9999px;
-        background: #ECFDF5;
-        color: #059669;
-        border: 1px solid #A7F3D0;
-        font-family: "Plus Jakarta Sans", sans-serif;
+        background: #F1F5F9;
+        border: 1px solid rgba(226, 232, 240, 0.95);
+        font-family: "Plus Jakarta Sans", monospace;
         font-size: 10px;
-        font-weight: 900;
-        letter-spacing: 0.04em;
+        font-weight: 800;
+        color: #0284C7;
       }
 
-      [data-theme="dark"] .tv-qr-live-badge {
-        background: rgba(16, 185, 129, 0.2);
-        color: #34D399;
-        border: 1px solid rgba(52, 211, 153, 0.4);
+      [data-theme="dark"] .tv-qr-url-badge {
+        background: rgba(255, 255, 255, 0.06);
+        border-color: rgba(255, 255, 255, 0.1);
+        color: #38BDF8;
       }
 
-      .tv-qr-body {
+      .tv-qr-url-badge .radar-dot {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: #0284C7;
+        box-shadow: 0 0 6px #0284C7;
+      }
+
+      .tv-qr-center-stage {
+        width: 100%;
         display: flex;
         align-items: center;
-        gap: 14px;
+        justify-content: center;
+        padding: 2px 0;
       }
 
       .dynamic-qr-box {
         position: relative;
-        width: 145px;
-        height: 145px;
+        width: 140px;
+        height: 140px;
         border-radius: 18px;
         background: #FFFFFF;
         padding: 8px;
@@ -4338,35 +4378,35 @@
         border-color: rgba(255, 255, 255, 0.2);
       }
 
-      .tv-qr-side-info {
-        flex: 1;
-        min-width: 0;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        justify-content: center;
-      }
-
-      .hotline-compact-pill {
+      /* Proper Full-Width Hotline Banner */
+      .hotline-full-banner {
+        width: 100%;
         display: flex;
         align-items: center;
-        gap: 9px;
+        justify-content: space-between;
         padding: 8px 12px;
         background: rgba(240, 253, 244, 0.98);
         border-radius: 14px;
         border: 1.5px solid rgba(187, 247, 208, 0.95);
         box-shadow: 
-          0 4px 12px -2px rgba(22, 163, 74, 0.12),
+          0 4px 14px -2px rgba(22, 163, 74, 0.12),
           inset 0 1px 1px #FFFFFF;
+        box-sizing: border-box;
       }
 
-      [data-theme="dark"] .hotline-compact-pill {
-        background: rgba(16, 185, 129, 0.16);
-        border-color: rgba(52, 211, 153, 0.4);
+      [data-theme="dark"] .hotline-full-banner {
+        background: rgba(16, 185, 129, 0.14);
+        border-color: rgba(52, 211, 153, 0.35);
         box-shadow: none;
       }
 
-      .hotline-icon-badge {
+      .hotline-left {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .hotline-wa-badge {
         width: 32px;
         height: 32px;
         border-radius: 10px;
@@ -4378,19 +4418,20 @@
         box-shadow: 0 2px 6px rgba(16, 185, 129, 0.35);
       }
 
-      .hotline-icon-badge .hotline-wa-icon {
-        width: 20px;
-        height: 20px;
+      .hotline-wa-badge .hotline-wa-icon {
+        width: 18px;
+        height: 18px;
         fill: #FFFFFF;
       }
 
-      .hotline-text-wrap {
+      .hotline-title-group {
         display: flex;
         flex-direction: column;
         line-height: 1.15;
+        text-align: left;
       }
 
-      .hotline-sub {
+      .hotline-tag {
         font-family: "Plus Jakarta Sans", sans-serif;
         font-size: 9.5px;
         font-weight: 800;
@@ -4399,44 +4440,40 @@
         text-transform: uppercase;
       }
 
-      [data-theme="dark"] .hotline-sub {
+      [data-theme="dark"] .hotline-tag {
         color: #6EE7B7;
       }
 
-      .hotline-val {
+      .hotline-subtag {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 8.5px;
+        font-weight: 700;
+        color: #059669;
+        opacity: 0.85;
+      }
+
+      [data-theme="dark"] .hotline-subtag {
+        color: #A7F3D0;
+      }
+
+      .hotline-number-pill {
         font-family: "Plus Jakarta Sans", monospace;
-        font-size: 17.5px;
+        font-size: 16px;
         font-weight: 900;
         color: #064E3B;
         letter-spacing: 0.02em;
         font-variant-numeric: tabular-nums;
+        background: #FFFFFF;
+        padding: 4px 10px;
+        border-radius: 10px;
+        border: 1px solid rgba(187, 247, 208, 0.95);
+        box-shadow: 0 2px 4px rgba(22, 163, 74, 0.08);
       }
 
-      [data-theme="dark"] .hotline-val {
+      [data-theme="dark"] .hotline-number-pill {
+        background: rgba(0, 0, 0, 0.3);
         color: #FFFFFF;
-      }
-
-      .tv-qr-url-pill {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        padding: 6px 10px;
-        border-radius: 12px;
-        background: #F1F5F9;
-        border: 1px solid rgba(226, 232, 240, 0.95);
-        font-family: "Plus Jakarta Sans", monospace;
-        font-size: 11.5px;
-        font-weight: 800;
-        color: #0F172A;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-
-      [data-theme="dark"] .tv-qr-url-pill {
-        background: rgba(255, 255, 255, 0.06);
-        border-color: rgba(255, 255, 255, 0.1);
-        color: #E2E8F0;
+        border-color: rgba(52, 211, 153, 0.4);
       }
 
       /* ===== EXPANDED DETAIL (Apple Live Activity Drawer) ===== */
@@ -5758,19 +5795,25 @@
             </div>
           </div>
 
-          <!-- 3. 📱 Dynamic QR Code & Hotline Compact Widget -->
-          <div class="tv-qr-compact-card">
-            <!-- Header -->
+          <!-- 3. 📱 Dynamic QR Code & WhatsApp Hotline Hero Card -->
+          <div class="tv-qr-hero-card">
+            <!-- Header Bar: Title & Domain Link -->
             <div class="tv-qr-header">
-              <div class="tv-qr-title">
-                <span class="material-icons-round" style="font-size: 15px; color: #0284C7;">qr_code_scanner</span>
-                <span>JADWAL REAL-TIME DI HP</span>
+              <div class="tv-qr-brand">
+                <span class="material-icons-round tv-qr-icon">qr_code_2</span>
+                <div class="tv-qr-title-wrap">
+                  <span class="tv-qr-main-title">PANTAL JADWAL DI HP</span>
+                  <span class="tv-qr-sub-title">Scan barcode kamera smartphone</span>
+                </div>
               </div>
-              <span class="tv-qr-live-badge"><span class="radar-dot"></span>LIVE</span>
+              <div class="tv-qr-url-badge">
+                <span class="radar-dot"></span>
+                <span>simed.fallonava.my.id/jadwal</span>
+              </div>
             </div>
 
-            <!-- QR & URL Row -->
-            <div class="tv-qr-body">
+            <!-- Centered Large QR Code -->
+            <div class="tv-qr-center-stage">
               <div class="dynamic-qr-box">
                 <span class="qr-reticle qr-reticle-tl"></span>
                 <span class="qr-reticle qr-reticle-tr"></span>
@@ -5778,26 +5821,23 @@
                 <span class="qr-reticle qr-reticle-br"></span>
                 <div id="tvQrCode" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;"></div>
               </div>
-              
-              <div class="tv-qr-side-info">
-                <!-- Large High-Visibility Hotline Badge -->
-                <div class="hotline-compact-pill">
-                  <div class="hotline-icon-badge">
-                    <svg class="hotline-wa-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
-                    </svg>
-                  </div>
-                  <div class="hotline-text-wrap">
-                    <span class="hotline-sub">HOTLINE CS WHATSAPP</span>
-                    <span class="hotline-val">0823-2344-6076</span>
-                  </div>
-                </div>
+            </div>
 
-                <!-- Clean URL Pill -->
-                <div class="tv-qr-url-pill">
-                  <span class="material-icons-round" style="font-size: 13px; color: #0284C7; flex-shrink: 0;">public</span>
-                  <span>simed.fallonava.my.id/jadwal</span>
+            <!-- Full-Width Proper WhatsApp Hotline Bar -->
+            <div class="hotline-full-banner">
+              <div class="hotline-left">
+                <div class="hotline-wa-badge">
+                  <svg class="hotline-wa-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+                  </svg>
                 </div>
+                <div class="hotline-title-group">
+                  <span class="hotline-tag">INFORMASI &amp; CS WA</span>
+                  <span class="hotline-subtag">RSU Siaga Medika</span>
+                </div>
+              </div>
+              <div class="hotline-number-pill">
+                0823-2344-6076
               </div>
             </div>
           </div>
