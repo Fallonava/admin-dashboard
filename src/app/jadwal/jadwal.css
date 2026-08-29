@@ -412,7 +412,7 @@ body.dark .jadwal-brand-logo-squircle {
   transform: scale(0.88);
 }
 
-.jadwal-nav-icon-btn.hotline-btn, .nav-icon-action-btn.hotline-btn, .2027-emergency-btn {
+.jadwal-nav-icon-btn.hotline-btn, .nav-icon-action-btn.hotline-btn, .emergency-btn-2027 {
   width: auto;
   padding: 0 10px;
   gap: 5px;
@@ -423,7 +423,7 @@ body.dark .jadwal-brand-logo-squircle {
   box-shadow: 0 4px 12px rgba(255, 59, 48, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.4);
 }
 
-.jadwal-nav-icon-btn.hotline-btn:active, .nav-icon-action-btn.hotline-btn:active, .2027-emergency-btn:active {
+.jadwal-nav-icon-btn.hotline-btn:active, .nav-icon-action-btn.hotline-btn:active, .emergency-btn-2027:active {
   background: rgba(255, 59, 48, 0.28);
   transform: scale(0.92);
 }

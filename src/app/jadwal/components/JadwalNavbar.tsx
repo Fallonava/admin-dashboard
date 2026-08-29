@@ -94,7 +94,7 @@ export default function JadwalNavbar({
             {/* Emergency Hotline Button PBG (High Priority Pulse) */}
             <a
               href="tel:0281891888"
-              className="jadwal-nav-icon-btn hotline-btn 2027-emergency-btn"
+              className="jadwal-nav-icon-btn hotline-btn emergency-btn-2027"
               title="IGD 24 Jam Siaga Medika PBG (0281) 891888"
               onClick={() => triggerHaptic('medium')}
               aria-label="Telepon IGD (0281) 891888"
