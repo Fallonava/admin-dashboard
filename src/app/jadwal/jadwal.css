@@ -1208,33 +1208,56 @@ body.dark .card-reg-pill {
   white-space: nowrap;
 }
 
-.card-cuti-badge-mini {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: 26px;
-  padding: 0 8px;
-  border-radius: 9999px;
-  font-size: 10px;
-  font-weight: 700;
-  background: rgba(255, 59, 48, 0.12);
-  color: var(--ios-red);
-  flex-shrink: 0;
-  white-space: nowrap;
-}
-
 .card-book-pill-btn:active {
   transform: scale(0.92);
   box-shadow: 0 1px 4px rgba(0, 122, 255, 0.2);
 }
 
-.card-cuti-badge-mini {
-  font-size: 10.5px;
+.card-wa-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 3.5px;
+  height: 28px;
+  padding: 0 9px;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+  color: #FFFFFF;
+  font-size: 11px;
   font-weight: 700;
-  padding: 3.5px 8px;
-  border-radius: 9999px;
-  background: rgba(255, 59, 48, 0.14);
+  letter-spacing: -0.2px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 2px 8px rgba(37, 211, 102, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  transition: transform 140ms ease, box-shadow 140ms ease;
+  flex-shrink: 0;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.card-wa-pill-btn:active {
+  transform: scale(0.92);
+  box-shadow: 0 1px 4px rgba(37, 211, 102, 0.2);
+}
+
+.card-cuti-reason {
   color: var(--ios-red);
+  font-weight: 600;
+  font-size: 10.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.platter.is-cuti {
+  border-color: rgba(255, 59, 48, 0.18);
+  background: var(--surface-card);
+}
+
+[data-theme="dark"] .platter.is-cuti,
+html.dark .platter.is-cuti,
+body.dark .platter.is-cuti {
+  border-color: rgba(255, 69, 58, 0.25);
+  background: var(--surface-card);
 }
 
 .platter {

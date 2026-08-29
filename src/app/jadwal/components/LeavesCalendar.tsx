@@ -15,6 +15,7 @@ import {
   ArrowLeftRight,
   AlertCircle,
   Calendar,
+  CalendarOff,
   MessageCircle,
   CheckCircle2,
 } from 'lucide-react';
@@ -254,8 +255,8 @@ export default function LeavesCalendar({ leaves, doctors }: LeavesCalendarProps)
                     </div>
 
                     <div className="card-time-row">
-                      <AlertCircle size={12} className="time-icon text-red" />
-                      <span className="card-time-val text-red">
+                      <CalendarOff size={11.5} className="time-icon text-red flex-shrink-0" />
+                      <span className="card-cuti-reason">
                         {leave.reason || 'Izin Dinas / Cuti Dokter'}
                       </span>
                     </div>
@@ -269,13 +270,12 @@ export default function LeavesCalendar({ leaves, doctors }: LeavesCalendarProps)
                       )}%20(${encodeURIComponent(specialty)})`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="card-book-pill-btn"
-                      style={{ background: 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)' }}
+                      className="card-wa-pill-btn"
                       onClick={() => triggerHaptic('light')}
                       title="Konfirmasi CS WA"
                       aria-label="Konfirmasi CS WA"
                     >
-                      <MessageCircle size={12} />
+                      <MessageCircle size={11.5} />
                       <span>CS WA</span>
                     </a>
                   </div>

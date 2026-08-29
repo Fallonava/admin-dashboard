@@ -15,6 +15,7 @@ import {
   Clock,
   MessageCircle,
   CalendarCheck,
+  CalendarOff,
   RotateCcw,
   Sparkles,
   Search,
@@ -336,9 +337,12 @@ export default function WeeklyView({
                     {/* Time & Shift Slots Row */}
                     <div className="card-time-row">
                       {isCuti ? (
-                        <span className="text-red font-semibold text-[11px]">
-                          Cuti: {leave?.reason || 'Izin Tidak Praktik'}
-                        </span>
+                        <>
+                          <CalendarOff size={11.5} className="time-icon text-red flex-shrink-0" />
+                          <span className="card-cuti-reason">
+                            {leave?.reason || 'Izin Tidak Praktik'}
+                          </span>
+                        </>
                       ) : doc.dayShifts.length > 1 ? (
                         <div className="card-multi-shifts-wrap">
                           {doc.dayShifts.map((s, sIdx) => (
@@ -356,7 +360,7 @@ export default function WeeklyView({
                         </div>
                       ) : (
                         <>
-                          <Clock size={12} className="time-icon text-blue" />
+                          <Clock size={12} className="time-icon text-blue flex-shrink-0" />
                           <span className="card-time-val">
                             {formatTimeSlot(doc.startTime, doc.endTime, doc.todayShift?.formattedTime)}
                           </span>
@@ -384,11 +388,27 @@ export default function WeeklyView({
                         title="Daftar Online"
                         aria-label="Daftar Online"
                       >
-                        <Sparkles size={13} />
+                        <Sparkles size={11.5} />
                         <span>Daftar</span>
                       </button>
                     ) : (
-                      <span className="card-cuti-badge-mini">Cuti</span>
+                      <a
+                        href={`https://wa.me/6282323446076?text=Halo%20RSU%20Siaga%20Medika,%20saya%20ingin%20bertanya%20jadwal%20pengganti%20${encodeURIComponent(
+                          doc.name
+                        )}%20(${encodeURIComponent(doc.specialty)})`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="card-wa-pill-btn"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          triggerHaptic('light');
+                        }}
+                        title="Tanya CS WhatsApp"
+                        aria-label="Tanya CS WhatsApp"
+                      >
+                        <MessageCircle size={11.5} />
+                        <span>CS WA</span>
+                      </a>
                     )}
                   </div>
                 </div>

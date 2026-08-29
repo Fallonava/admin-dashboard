@@ -13,6 +13,7 @@ import {
   MessageCircle,
   Check,
   Calendar,
+  CalendarOff,
   ChevronDown,
   Sparkles,
 } from 'lucide-react';
@@ -184,14 +185,25 @@ export default function DoctorCard({
           </div>
 
           <div className="card-time-row">
-            <Clock size={12} className="time-icon text-blue" />
-            <span className="card-time-val">
-              {formatTimeSlot(doctor.startTime, doctor.endTime, doctor.todayShift?.formattedTime)}
-            </span>
-            {doctor.registrationTime && (
-              <span className="card-reg-pill" title="Waktu Pemanggilan Registrasi">
-                Reg: {doctor.registrationTime}
-              </span>
+            {isCuti ? (
+              <>
+                <CalendarOff size={11.5} className="time-icon text-red flex-shrink-0" />
+                <span className="card-cuti-reason">
+                  {doctor.activeLeave?.reason || 'Izin Tidak Praktik'}
+                </span>
+              </>
+            ) : (
+              <>
+                <Clock size={12} className="time-icon text-blue flex-shrink-0" />
+                <span className="card-time-val">
+                  {formatTimeSlot(doctor.startTime, doctor.endTime, doctor.todayShift?.formattedTime)}
+                </span>
+                {doctor.registrationTime && (
+                  <span className="card-reg-pill" title="Waktu Pemanggilan Registrasi">
+                    Reg: {doctor.registrationTime}
+                  </span>
+                )}
+              </>
             )}
           </div>
         </div>
@@ -205,7 +217,7 @@ export default function DoctorCard({
             title={isFavorite ? 'Hapus Favorit' : 'Tambah Favorit'}
             aria-label="Simpan Dokter Favorit"
           >
-            <Star size={16} className={isFavorite ? 'fill-star' : ''} />
+            <Star size={14} className={isFavorite ? 'fill-star' : ''} />
           </button>
 
           {!isCuti ? (
@@ -216,11 +228,27 @@ export default function DoctorCard({
               title="Daftar Online"
               aria-label="Daftar Online"
             >
-              <Sparkles size={13} />
+              <Sparkles size={11.5} />
               <span>Daftar</span>
             </button>
           ) : (
-            <span className="card-cuti-badge-mini">Cuti</span>
+            <a
+              href={`https://wa.me/6282323446076?text=Halo%20RSU%20Siaga%20Medika,%20saya%20ingin%20bertanya%20jadwal%20pengganti%20${encodeURIComponent(
+                doctor.name
+              )}%20(${encodeURIComponent(doctor.specialty)})`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="card-wa-pill-btn"
+              onClick={(e) => {
+                e.stopPropagation();
+                triggerHaptic('light');
+              }}
+              title="Tanya CS WhatsApp"
+              aria-label="Tanya CS WhatsApp"
+            >
+              <MessageCircle size={11.5} />
+              <span>CS WA</span>
+            </a>
           )}
         </div>
       </div>
