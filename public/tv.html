@@ -3162,10 +3162,7 @@
         font-size: 23.5px;
         font-weight: 900;
         color: #090D16;
-        white-space: normal;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
+        white-space: nowrap; display: block;
         overflow: hidden;
         text-overflow: ellipsis;
         letter-spacing: -0.015em;
@@ -3417,6 +3414,7 @@
       
       /* ===== ACTIVE CALL HIGHLIGHT (Pure White Surface + Ambient Halo) ===== */
       .platter-main {
+        min-height: 58px;
         display: flex;
         align-items: center;
         gap: 16px;
