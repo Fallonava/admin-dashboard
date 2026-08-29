@@ -18,7 +18,7 @@ export default function Toast({ toast, onDismiss }: ToastProps) {
     if (toast) {
       const timer = setTimeout(() => {
         onDismiss();
-      }, 3000);
+      }, 2800);
       return () => clearTimeout(timer);
     }
   }, [toast, onDismiss]);
@@ -28,28 +28,29 @@ export default function Toast({ toast, onDismiss }: ToastProps) {
   const getIcon = () => {
     switch (toast.type) {
       case 'success':
-        return <CheckCircle2 size={18} className="toast-icon-green" />;
+        return <CheckCircle2 size={16} className="toast-icon-green" />;
       case 'favorite':
-        return <Star size={18} className="toast-icon-amber" />;
+        return <Star size={16} className="toast-icon-amber fill-amber" />;
       case 'share':
-        return <Share2 size={18} className="toast-icon-blue" />;
+        return <Share2 size={16} className="toast-icon-blue" />;
       case 'copy':
-        return <Copy size={18} className="toast-icon-blue" />;
+        return <Copy size={16} className="toast-icon-blue" />;
       case 'info':
       default:
-        return <Info size={18} className="toast-icon-blue" />;
+        return <Info size={16} className="toast-icon-blue" />;
     }
   };
 
   return (
-    <div className="ios-toast-container" onClick={onDismiss}>
-      <div className="ios-toast">
+    <aside className="ios27-toast-container" onClick={onDismiss} aria-live="polite">
+      <div className="ios27-toast-capsule">
+        <span className="toast-top-specular" aria-hidden="true" />
         <div className="toast-leading-icon">{getIcon()}</div>
         <div className="toast-content">
           <span className="toast-title">{toast.title}</span>
           {toast.description && <span className="toast-desc">{toast.description}</span>}
         </div>
       </div>
-    </div>
+    </aside>
   );
 }

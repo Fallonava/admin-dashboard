@@ -94,7 +94,7 @@ export default function DynamicIsland({
                   <span className="island-badge-pill">{activeDoctorCount} Sedang Praktek</span>
                 </div>
                 <div className="island-sub-stats">
-                  <span>RSU Siaga Medika Pemalang — Pelayanan Rawat Jalan & Spesialis</span>
+                  <span>RSU Siaga Medika Purbalingga — Pelayanan Rawat Jalan & Spesialis</span>
                 </div>
               </div>
             )}

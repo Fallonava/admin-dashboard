@@ -26,8 +26,11 @@ export default function IosTabBar({
   leavesCount = 0,
 }: IosTabBarProps) {
   return (
-    <nav className="ios27-tabbar-container" aria-label="Navigasi Utama">
-      <div className="ios27-tabbar material-regular">
+    <nav className="ios27-floating-tabbar-container" aria-label="Navigasi Utama">
+      <div className="ios27-spatial-dock material-spatial-glass">
+        {/* Top Specular Sheen on Dock */}
+        <span className="dock-specular-highlight" aria-hidden="true" />
+
         {/* 1. Hari Ini */}
         <button
           type="button"
@@ -39,9 +42,9 @@ export default function IosTabBar({
           aria-label="Jadwal Hari Ini"
         >
           <div className="ios27-tab-icon-wrap">
-            <Calendar size={22} strokeWidth={activeTab === 'today' ? 2.4 : 1.8} />
+            <Calendar size={20} strokeWidth={activeTab === 'today' ? 2.4 : 1.8} />
             {todayCount > 0 && (
-              <span className="ios27-tab-badge" aria-label={`${todayCount} dokter praktek`}>
+              <span className="ios27-tab-badge" aria-label={`${todayCount} dokter bertugas`}>
                 {todayCount}
               </span>
             )}
@@ -57,29 +60,30 @@ export default function IosTabBar({
             triggerHaptic('selection');
             onTabChange('weekly');
           }}
-          aria-label="Jadwal Keseluruhan"
+          aria-label="Jadwal Mingguan Keseluruhan"
         >
           <div className="ios27-tab-icon-wrap">
-            <CalendarDays size={22} strokeWidth={activeTab === 'weekly' ? 2.4 : 1.8} />
+            <CalendarDays size={20} strokeWidth={activeTab === 'weekly' ? 2.4 : 1.8} />
           </div>
           <span className="ios27-tab-label">Keseluruhan</span>
         </button>
 
-        {/* 3. TENGAH: CARI DOKTER (Primary Center Action Pill) */}
+        {/* 3. TENGAH: SPOTLIGHT CARI DOKTER (Center Action Orb) */}
         {onSearchFocus && (
           <button
             type="button"
-            className="ios27-tab-item ios27-tab-primary-action"
+            className="ios27-tab-item ios27-tab-spotlight-action"
             onClick={() => {
               triggerHaptic('medium');
               onSearchFocus();
             }}
             aria-label="Cari Dokter Spesialis"
           >
-            <div className="ios27-primary-action-pill search-center-pill">
+            <div className="spotlight-dynamic-orb" title="Cari Dokter Spesialis">
               <Search size={18} strokeWidth={2.4} />
-              <span className="ios27-primary-action-txt">Cari</span>
+              <span className="spotlight-orb-glow" />
             </div>
+            <span className="ios27-tab-label spotlight-lbl">Cari</span>
           </button>
         )}
 
@@ -94,7 +98,7 @@ export default function IosTabBar({
           aria-label="Jadwal Cuti Dokter"
         >
           <div className="ios27-tab-icon-wrap">
-            <CalendarOff size={22} strokeWidth={activeTab === 'leaves' ? 2.4 : 1.8} />
+            <CalendarOff size={20} strokeWidth={activeTab === 'leaves' ? 2.4 : 1.8} />
             {leavesCount > 0 && (
               <span className="ios27-tab-badge badge-red" aria-label={`${leavesCount} dokter cuti`}>
                 {leavesCount}
@@ -113,17 +117,17 @@ export default function IosTabBar({
               triggerHaptic('selection');
               onOpenRegistration();
             }}
-            aria-label="Daftar Online"
+            aria-label="Pendaftaran Online Poliklinik"
           >
             <div className="ios27-tab-icon-wrap">
-              <UserPlus size={22} strokeWidth={1.8} />
+              <UserPlus size={20} strokeWidth={1.8} />
             </div>
             <span className="ios27-tab-label">Daftar</span>
           </button>
         )}
       </div>
 
-      {/* Apple Native Home Indicator Bar */}
+      {/* Apple Native Home Indicator Floating Capsule */}
       <div className="ios27-home-indicator-wrap" aria-hidden="true">
         <div className="ios27-home-indicator-bar" />
       </div>

@@ -9,11 +9,8 @@ import {
   AlertTriangle,
   SearchX,
   Star,
-  Activity,
   Clock,
   CalendarX,
-  CheckCircle2,
-  Stethoscope,
   Sparkles,
 } from 'lucide-react';
 
@@ -351,10 +348,8 @@ export default function JadwalPage() {
         totalDoctorCount={evaluatedDoctors.length}
       />
 
-      {/* Apple iOS 27 Liquid Navigation Bar (Siaga Medika PBG) */}
+      {/* Apple iOS 27 Liquid Navigation Bar (Siaga Medika PBG - Ultra Compact) */}
       <JadwalNavbar
-        activeTab={activeTab}
-        onTabChange={handleTabChange}
         isDarkMode={isDarkMode}
         onToggleTheme={handleThemeToggle}
         isRefreshing={isRefreshing}
@@ -381,12 +376,10 @@ export default function JadwalPage() {
         {/* Loading Skeleton */}
         {isLoading && (
           <div className="ios-skeleton">
-            <div className="bento-grid mb-24">
-              <div className="bento-card-main skeleton-pulse" style={{ height: '110px' }}></div>
-              <div className="bento-card-main skeleton-pulse" style={{ height: '110px' }}></div>
-            </div>
-            <div className="platter skeleton-pulse" style={{ height: '140px', marginBottom: '16px' }}></div>
-            <div className="platter skeleton-pulse" style={{ height: '140px' }}></div>
+            <div className="ios27-glance-capsule-bar mb-20 skeleton-pulse" style={{ height: '44px' }} />
+            <div className="platter skeleton-pulse mb-12" style={{ height: '88px' }} />
+            <div className="platter skeleton-pulse mb-12" style={{ height: '88px' }} />
+            <div className="platter skeleton-pulse" style={{ height: '88px' }} />
           </div>
         )}
 
@@ -408,19 +401,23 @@ export default function JadwalPage() {
         {/* 1. TODAY'S VIEW (HANYA DOKTER PRAKTEK / JADWAL HARI INI) */}
         {!isLoading && !error && activeTab === 'today' && (
           <div className="today-view-wrapper">
-            {/* Bento Stats (Evaluated for Today's Active Doctors) */}
-            <BentoStats doctors={evaluatedDoctors} />
+            {/* iOS 27 Glance Metric Capsule Bar */}
+            <BentoStats
+              doctors={evaluatedDoctors}
+              onFilterStatus={(st) => setStatusFilter(st)}
+              activeStatus={statusFilter}
+            />
 
-            {/* Search & Category Filter Chips */}
-            <div className="search-and-filter-wrapper mb-24">
+            {/* Spotlight Search & Filter Bar */}
+            <div className="search-and-filter-wrapper mb-20">
               {/* Search Bar Capsule */}
-              <div className="ios-search-bar mb-16">
-                <Search className="search-icon" size={18} />
+              <div className="ios-search-bar spotlight-search mb-12">
+                <Search className="search-icon" size={17} />
                 <input
                   ref={searchInputRef}
                   type="text"
                   className="ios-search-input"
-                  placeholder="Cari dokter yang praktik hari ini..."
+                  placeholder="Cari dokter spesialis atau poliklinik..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
@@ -431,17 +428,18 @@ export default function JadwalPage() {
                 )}
               </div>
 
-              {/* Status Filter Chips Row */}
-              <div className="category-chips-row mb-12">
+              {/* Status & Specialty Filter Horizontal Strip */}
+              <div className="category-chips-row">
                 <button
                   type="button"
-                  className={`category-chip ${statusFilter === 'all' ? 'active' : ''}`}
+                  className={`category-chip ${statusFilter === 'all' && specialtyFilter === 'all' ? 'active' : ''}`}
                   onClick={() => {
                     triggerHaptic('selection');
                     setStatusFilter('all');
+                    setSpecialtyFilter('all');
                   }}
                 >
-                  Semua Praktik Hari Ini ({todayOnlyDoctors.length})
+                  Semua ({todayOnlyDoctors.length})
                 </button>
 
                 <button
@@ -449,11 +447,11 @@ export default function JadwalPage() {
                   className={`category-chip ${statusFilter === 'praktek' ? 'active' : ''}`}
                   onClick={() => {
                     triggerHaptic('selection');
-                    setStatusFilter('praktek');
+                    setStatusFilter(statusFilter === 'praktek' ? 'all' : 'praktek');
                   }}
                 >
                   <span className="status-dot st-dot-green" />
-                  <span>Sedang Praktik ({todayOnlyDoctors.filter((d) => d.status === 'PRAKTEK').length})</span>
+                  <span>Praktik ({todayOnlyDoctors.filter((d) => d.status === 'PRAKTEK').length})</span>
                 </button>
 
                 <button
@@ -461,10 +459,10 @@ export default function JadwalPage() {
                   className={`category-chip ${statusFilter === 'terjadwal' ? 'active' : ''}`}
                   onClick={() => {
                     triggerHaptic('selection');
-                    setStatusFilter('terjadwal');
+                    setStatusFilter(statusFilter === 'terjadwal' ? 'all' : 'terjadwal');
                   }}
                 >
-                  <Clock size={13} />
+                  <Clock size={12} />
                   <span>Terjadwal ({todayOnlyDoctors.filter((d) => d.status === 'TERJADWAL').length})</span>
                 </button>
 
@@ -474,10 +472,10 @@ export default function JadwalPage() {
                     className={`category-chip ${statusFilter === 'cuti' ? 'active' : ''}`}
                     onClick={() => {
                       triggerHaptic('selection');
-                      setStatusFilter('cuti');
+                      setStatusFilter(statusFilter === 'cuti' ? 'all' : 'cuti');
                     }}
                   >
-                    <CalendarX size={13} />
+                    <CalendarX size={12} />
                     <span>Cuti ({todayOnlyDoctors.filter((d) => (d.status || '').includes('CUTI')).length})</span>
                   </button>
                 )}
@@ -488,43 +486,29 @@ export default function JadwalPage() {
                     className={`category-chip fav-chip ${statusFilter === 'favorite' ? 'active' : ''}`}
                     onClick={() => {
                       triggerHaptic('selection');
-                      setStatusFilter('favorite');
+                      setStatusFilter(statusFilter === 'favorite' ? 'all' : 'favorite');
                     }}
                   >
-                    <Star size={13} className="fill-star" />
+                    <Star size={12} className="fill-star" />
                     <span>Favorit ({favoriteDoctorIds.length})</span>
                   </button>
                 )}
-              </div>
 
-              {/* Specialty Filter Horizontal Strip */}
-              {uniqueSpecialties.length > 0 && (
-                <div className="category-chips-row">
+                {/* Specialties dynamic chips */}
+                {uniqueSpecialties.map((spec) => (
                   <button
+                    key={spec}
                     type="button"
-                    className={`category-chip spec-chip ${specialtyFilter === 'all' ? 'active' : ''}`}
+                    className={`category-chip spec-chip ${specialtyFilter === spec ? 'active' : ''}`}
                     onClick={() => {
                       triggerHaptic('selection');
-                      setSpecialtyFilter('all');
+                      setSpecialtyFilter(specialtyFilter === spec ? 'all' : spec);
                     }}
                   >
-                    Semua Poliklinik Hari Ini
+                    {spec}
                   </button>
-                  {uniqueSpecialties.map((spec) => (
-                    <button
-                      key={spec}
-                      type="button"
-                      className={`category-chip spec-chip ${specialtyFilter === spec ? 'active' : ''}`}
-                      onClick={() => {
-                        triggerHaptic('selection');
-                        setSpecialtyFilter(spec);
-                      }}
-                    >
-                      {spec}
-                    </button>
-                  ))}
-                </div>
-              )}
+                ))}
+              </div>
             </div>
 
             {/* Doctors List: ONLY TODAY'S DOCTORS */}
@@ -537,7 +521,7 @@ export default function JadwalPage() {
                 <div className="ios-empty-sub">
                   {statusFilter === 'favorite'
                     ? 'Belum ada dokter favorit Anda yang bertugas hari ini.'
-                    : `Tidak ditemukan dokter yang praktik hari ini untuk kata kunci/filter "${searchQuery || specialtyFilter}".`}
+                    : `Tidak ditemukan dokter yang praktik untuk filter "${searchQuery || specialtyFilter}".`}
                 </div>
                 <button
                   type="button"
@@ -555,7 +539,7 @@ export default function JadwalPage() {
               <div className="platter-list-container">
                 {/* 1. SEDANG PRAKTEK SEKARANG (LIVE NOW) */}
                 {livePraktekDoctors.length > 0 && (
-                  <section className="doctor-section mb-24">
+                  <section className="doctor-section mb-20">
                     <div className="section-header-pill live-section-pill">
                       <div className="section-title-wrap">
                         <span className="brand-live-pulse-dot" />
@@ -563,7 +547,7 @@ export default function JadwalPage() {
                       </div>
                       <span className="section-count live-count">{livePraktekDoctors.length} Dokter</span>
                     </div>
-                    <div className="platter-grid">
+                    <div className="compact-platter-grid">
                       {livePraktekDoctors.map((doc) => (
                         <DoctorCard
                           key={doc.id}
@@ -581,15 +565,15 @@ export default function JadwalPage() {
 
                 {/* 2. TERJADWAL NANTI HARI INI (UPCOMING TODAY) */}
                 {upcomingTerjadwalDoctors.length > 0 && (
-                  <section className="doctor-section mb-24">
+                  <section className="doctor-section mb-20">
                     <div className="section-header-pill">
                       <div className="section-title-wrap">
-                        <Clock size={16} className="text-blue" />
+                        <Clock size={15} className="text-blue" />
                         <h2 className="section-title">Terjadwal Nanti Hari Ini</h2>
                       </div>
                       <span className="section-count">{upcomingTerjadwalDoctors.length} Dokter</span>
                     </div>
-                    <div className="platter-grid">
+                    <div className="compact-platter-grid">
                       {upcomingTerjadwalDoctors.map((doc) => (
                         <DoctorCard
                           key={doc.id}
@@ -607,15 +591,15 @@ export default function JadwalPage() {
 
                 {/* 3. DOKTER CUTI HARI INI (ON LEAVE) */}
                 {cutiDoctors.length > 0 && (
-                  <section className="doctor-section mb-24">
+                  <section className="doctor-section mb-20">
                     <div className="section-header-pill">
                       <div className="section-title-wrap">
-                        <CalendarX size={16} className="text-red" />
+                        <CalendarX size={15} className="text-red" />
                         <h2 className="section-title">Sedang Cuti / Izin Hari Ini</h2>
                       </div>
                       <span className="section-count cuti-count">{cutiDoctors.length} Dokter</span>
                     </div>
-                    <div className="platter-grid">
+                    <div className="compact-platter-grid">
                       {cutiDoctors.map((doc) => (
                         <DoctorCard
                           key={doc.id}

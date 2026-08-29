@@ -1,104 +1,77 @@
 import React from 'react';
 import type { Doctor } from '../types';
-import { CheckCircle2, CalendarX, Stethoscope, Activity } from 'lucide-react';
 import { triggerHaptic } from '../lib/haptics';
+import { Activity, Clock, CalendarX, Stethoscope } from 'lucide-react';
 
 interface BentoStatsProps {
   doctors: Doctor[];
+  onFilterStatus?: (status: 'all' | 'praktek' | 'terjadwal' | 'cuti') => void;
+  activeStatus?: string;
 }
 
-export default function BentoStats({ doctors }: BentoStatsProps) {
+export default function BentoStats({ doctors, onFilterStatus, activeStatus }: BentoStatsProps) {
   const presentCount = doctors.filter((d) => (d.status || '').toUpperCase() === 'PRAKTEK').length;
-  const totalCount = doctors.length;
+  const scheduledCount = doctors.filter((d) => (d.status || '').toUpperCase() === 'TERJADWAL').length;
   const leaveCount = doctors.filter((d) => (d.status || '').toUpperCase().includes('CUTI')).length;
-  
-  // Count unique specialties
   const uniqueSpecialties = new Set(doctors.map((d) => d.specialty).filter(Boolean)).size;
-  const presentPercentage = totalCount > 0 ? Math.round((presentCount / totalCount) * 100) : 0;
-
-  const handleTileClick = () => {
-    triggerHaptic('light');
-  };
 
   return (
-    <div className="bento-grid mb-24">
-      {/* 1. Dokter Praktek Tile */}
-      <div className="bento-card-main bento-liquid-tile" onClick={handleTileClick}>
-        <div className="bento-card-top">
-          <div className="bento-icon-coin praktek">
-            <CheckCircle2 size={18} />
-          </div>
-          <span className="bento-status-pill praktek">
-            <span className="brand-live-pulse-dot inline-pulse"></span>
-            <span>Buka</span>
-          </span>
+    <div className="ios27-glance-capsule-bar mb-20" role="region" aria-label="Ringkasan Status Hari Ini">
+      <div className="glance-scroll-track">
+        {/* 1. Sedang Praktik */}
+        <div
+          className={`glance-metric-chip chip-praktek ${activeStatus === 'praktek' ? 'selected' : ''}`}
+          onClick={() => {
+            triggerHaptic('selection');
+            onFilterStatus?.('praktek');
+          }}
+          title="Filter dokter yang sedang praktik sekarang"
+        >
+          <span className="glance-pulse-dot" />
+          <span className="glance-chip-num">{presentCount}</span>
+          <span className="glance-chip-label">Praktik Sekarang</span>
         </div>
-        <div className="bento-num-wrap">
-          <span className="bento-num">{presentCount}</span>
-          <span className="bento-unit">Poli</span>
-        </div>
-        <div className="bento-text-group">
-          <span className="bento-title">Praktik Hari Ini</span>
-          <span className="bento-sub">Siap melayani pasien</span>
-        </div>
-      </div>
 
-      {/* 2. Dokter Cuti Tile */}
-      <div className="bento-card-main bento-liquid-tile" onClick={handleTileClick}>
-        <div className="bento-card-top">
-          <div className="bento-icon-coin cuti">
-            <CalendarX size={18} />
-          </div>
-          <span className="bento-status-pill cuti">Cuti</span>
+        {/* 2. Terjadwal Nanti */}
+        <div
+          className={`glance-metric-chip chip-terjadwal ${activeStatus === 'terjadwal' ? 'selected' : ''}`}
+          onClick={() => {
+            triggerHaptic('selection');
+            onFilterStatus?.('terjadwal');
+          }}
+          title="Filter dokter yang terjadwal nanti hari ini"
+        >
+          <Clock size={13} className="glance-chip-icon text-blue" />
+          <span className="glance-chip-num">{scheduledCount}</span>
+          <span className="glance-chip-label">Terjadwal</span>
         </div>
-        <div className="bento-num-wrap">
-          <span className="bento-num text-red">{leaveCount}</span>
-          <span className="bento-unit">Dokter</span>
-        </div>
-        <div className="bento-text-group">
-          <span className="bento-title">Sedang Cuti</span>
-          <span className="bento-sub">Izin / Sakit / Tugas</span>
-        </div>
-      </div>
 
-      {/* 3. Total Spesialisasi */}
-      <div className="bento-card-main bento-liquid-tile" onClick={handleTileClick}>
-        <div className="bento-card-top">
-          <div className="bento-icon-coin spec">
-            <Stethoscope size={18} />
-          </div>
-          <span className="bento-status-pill spec">{totalCount} Dokter</span>
+        {/* 3. Sedang Cuti */}
+        <div
+          className={`glance-metric-chip chip-cuti ${activeStatus === 'cuti' ? 'selected' : ''}`}
+          onClick={() => {
+            triggerHaptic('selection');
+            onFilterStatus?.('cuti');
+          }}
+          title="Filter dokter yang sedang cuti hari ini"
+        >
+          <CalendarX size={13} className="glance-chip-icon text-red" />
+          <span className="glance-chip-num">{leaveCount}</span>
+          <span className="glance-chip-label">Cuti</span>
         </div>
-        <div className="bento-num-wrap">
-          <span className="bento-num text-blue">{uniqueSpecialties}</span>
-          <span className="bento-unit">Layanan</span>
-        </div>
-        <div className="bento-text-group">
-          <span className="bento-title">Total Spesialis</span>
-          <span className="bento-sub">Poliklinik terpadu</span>
-        </div>
-      </div>
 
-      {/* 4. Kapasitas & Tingkat Kehadiran Bar */}
-      <div className="bento-card-main bento-liquid-tile" onClick={handleTileClick}>
-        <div className="bento-card-top">
-          <div className="bento-icon-coin rate">
-            <Activity size={18} />
-          </div>
-          <span className="bento-status-pill rate">{presentPercentage}% Aktif</span>
-        </div>
-        <div className="bento-num-wrap">
-          <span className="bento-num text-emerald">{presentPercentage}%</span>
-          <span className="bento-unit">Rasio</span>
-        </div>
-        <div className="bento-text-group">
-          <div className="bento-progress-track">
-            <div
-              className="bento-progress-fill"
-              style={{ width: `${Math.min(100, Math.max(0, presentPercentage))}%` }}
-            ></div>
-          </div>
-          <span className="bento-sub">Tingkat kehadiran hari ini</span>
+        {/* 4. Layanan Poliklinik */}
+        <div
+          className="glance-metric-chip chip-layanan"
+          onClick={() => {
+            triggerHaptic('light');
+            onFilterStatus?.('all');
+          }}
+          title="Total poliklinik spesialis aktif"
+        >
+          <Stethoscope size={13} className="glance-chip-icon text-purple" />
+          <span className="glance-chip-num">{uniqueSpecialties}</span>
+          <span className="glance-chip-label">Poliklinik</span>
         </div>
       </div>
     </div>

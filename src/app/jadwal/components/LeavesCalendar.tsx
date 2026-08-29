@@ -88,12 +88,12 @@ export default function LeavesCalendar({ leaves, doctors }: LeavesCalendarProps)
 
   return (
     <div className="leaves-view-container">
-      {/* Calendar Header & Month Navigation (Apple Liquid Glass) */}
-      <div className="ios-calendar-card mb-24">
+      {/* Calendar Card (Apple iOS 27 Liquid Glass) */}
+      <div className="ios-calendar-card mb-20">
         <div className="cal-nav-bar">
           <div className="cal-month-title-group">
             <h3 className="cal-month-name">{monthNames[currentMonth]}</h3>
-            <span className="cal-year-tag">{currentYear} (WIB)</span>
+            <span className="cal-year-tag">{currentYear} WIB</span>
           </div>
 
           <div className="cal-nav-btn-group">
@@ -112,7 +112,7 @@ export default function LeavesCalendar({ leaves, doctors }: LeavesCalendarProps)
               title="Bulan Sebelumnya"
               aria-label="Bulan Sebelumnya"
             >
-              <ChevronLeft size={18} />
+              <ChevronLeft size={16} />
             </button>
             <button
               type="button"
@@ -121,7 +121,7 @@ export default function LeavesCalendar({ leaves, doctors }: LeavesCalendarProps)
               title="Bulan Berikutnya"
               aria-label="Bulan Berikutnya"
             >
-              <ChevronRight size={18} />
+              <ChevronRight size={16} />
             </button>
           </div>
         </div>
@@ -170,10 +170,10 @@ export default function LeavesCalendar({ leaves, doctors }: LeavesCalendarProps)
         </div>
       </div>
 
-      {/* Selected Date Context Summary Banner (Synchronized with Calendar) */}
-      <div className="cal-selected-day-pill mb-24">
+      {/* Selected Date Context Summary Pill */}
+      <div className="cal-selected-day-pill mb-16">
         <div className="selected-day-info">
-          <Calendar size={18} className="text-blue" />
+          <Calendar size={16} className="text-blue" />
           <span className="selected-day-title">
             {formatDateIndonesian(selectedDate)}
           </span>
@@ -183,7 +183,7 @@ export default function LeavesCalendar({ leaves, doctors }: LeavesCalendarProps)
         </span>
       </div>
 
-      {/* List of Leave Platter Cards for Selected Date */}
+      {/* List of Leave Doctor Cards (Compact Platter Grid) */}
       {leavesForSelectedDate.length === 0 ? (
         <div className="ios-empty-state">
           <div className="ios-empty-coin">
@@ -195,7 +195,7 @@ export default function LeavesCalendar({ leaves, doctors }: LeavesCalendarProps)
           </div>
         </div>
       ) : (
-        <div className="platter-grid">
+        <div className="compact-platter-grid">
           {leavesForSelectedDate.map((leave) => {
             const docName =
               typeof leave.doctor === 'object' && leave.doctor !== null
@@ -207,10 +207,12 @@ export default function LeavesCalendar({ leaves, doctors }: LeavesCalendarProps)
             const badgeClass = getSpecialtyBadgeClass(specialty);
 
             return (
-              <div key={leave.id} className="platter leave-platter is-cuti">
-                {/* Platter Head */}
-                <div className="platter-head-row">
-                  <div className="avatar-squircle-wrap">
+              <div key={leave.id} className="platter ios27-compact-card is-cuti">
+                <span className="card-top-specular" aria-hidden="true" />
+
+                <div className="card-main-content">
+                  {/* Squircle Avatar */}
+                  <div className="card-avatar-col">
                     <div className="avatar-squircle">
                       {doctorObj?.image ? (
                         <img src={doctorObj.image} alt={displayName} className="avatar-img" loading="lazy" />
@@ -220,70 +222,58 @@ export default function LeavesCalendar({ leaves, doctors }: LeavesCalendarProps)
                     </div>
                   </div>
 
-                  <div className="doc-info">
-                    <h3 className="doc-name">{displayName}</h3>
-                    <div className="doc-meta-row">
+                  {/* Info Center */}
+                  <div className="card-info-col">
+                    <div className="card-name-row">
+                      <h3 className="doc-name">{displayName}</h3>
+                      <span className="status-pill compact-status st-cuti">
+                        <span className="status-dot" />
+                        <span>Cuti</span>
+                      </span>
+                    </div>
+
+                    <div className="card-sub-row">
                       <span className={`doc-spec-badge ${badgeClass}`}>
-                        <SpecialistIcon department={specialty} size={14} className="spec-icon-inline" />
+                        <SpecialistIcon department={specialty} size={12} className="spec-icon-inline" />
                         <span>{specialty}</span>
+                      </span>
+                    </div>
+
+                    <div className="card-time-row">
+                      <AlertCircle size={13} className="time-icon text-red" />
+                      <span className="card-time-val text-red">
+                        {leave.reason || 'Izin Dinas / Cuti Dokter'}
                       </span>
                     </div>
                   </div>
 
-                  <div className="platter-top-actions">
-                    <span className="status-pill st-cuti">
-                      <span className="status-dot" />
-                      <span>Cuti</span>
-                    </span>
+                  {/* Action Right */}
+                  <div className="card-action-col">
+                    <a
+                      href={`https://wa.me/6282323446076?text=Halo%20RSU%20Siaga%20Medika,%20saya%20ingin%20konsultasi%20mengenai%20jadwal%20pengganti%20${encodeURIComponent(
+                        displayName
+                      )}%20(${encodeURIComponent(specialty)})`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="card-book-pill-btn"
+                      style={{ background: 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)' }}
+                      onClick={() => triggerHaptic('light')}
+                      title="Konfirmasi CS WA"
+                    >
+                      <MessageCircle size={13} />
+                      <span>CS WA</span>
+                    </a>
                   </div>
                 </div>
 
-                {/* Body: Period & Reason */}
-                <div className="platter-body-row">
-                  <div className="leave-date-capsule">
-                    <div className="leave-date-row">
-                      <CalendarRange size={16} className="text-red" />
-                      <div className="leave-date-info">
-                        <span className="leave-date-lbl">Periode Cuti</span>
-                        <span className="leave-date-val">
-                          {formatDateIndonesian(new Date(leave.startDate))} s.d.{' '}
-                          {formatDateIndonesian(new Date(leave.endDate || leave.startDate))}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="leave-reason-pill">
-                      <AlertCircle size={15} className="text-red" />
-                      <span>{leave.reason || 'Izin Dinas / Cuti Dokter'}</span>
-                    </div>
-
-                    {leave.replacementDoctor && (
-                      <div className="leave-replacement-pill">
-                        <ArrowLeftRight size={15} className="text-blue" />
-                        <div className="leave-rep-col">
-                          <span className="leave-rep-lbl">Dokter Pengganti:</span>
-                          <span className="leave-rep-val">{leave.replacementDoctor}</span>
-                        </div>
-                      </div>
-                    )}
+                {/* Additional context if replacement doctor exists */}
+                {leave.replacementDoctor && (
+                  <div className="leave-replacement-pill mt-6">
+                    <ArrowLeftRight size={13} className="text-blue" />
+                    <span className="leave-rep-lbl">Dokter Pengganti:</span>
+                    <span className="leave-rep-val">{leave.replacementDoctor}</span>
                   </div>
-                </div>
-
-                {/* Action Tray */}
-                <div className="leave-action-tray">
-                  <a
-                    href={`https://wa.me/6282323446076?text=Halo%20RSU%20Siaga%20Medika,%20saya%20ingin%20konsultasi%20mengenai%20jadwal%20pengganti%20${encodeURIComponent(
-                      displayName
-                    )}%20(${encodeURIComponent(specialty)})`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="leave-wa-action-btn"
-                    onClick={() => triggerHaptic('light')}
-                  >
-                    <MessageCircle size={16} />
-                    <span>Konfirmasi Pengganti via CS WhatsApp</span>
-                  </a>
-                </div>
+                )}
               </div>
             );
           })}

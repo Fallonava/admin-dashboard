@@ -3,7 +3,19 @@ import type { Doctor } from '../types';
 import SpecialistIcon from './SpecialistIcon';
 import { getInitials, getSpecialtyBadgeClass, formatTimeSlot } from '../lib/schedule-utils';
 import { triggerHaptic } from '../lib/haptics';
-import { Clock, Ticket, UserPlus, Star, Share2, Copy, MessageCircle, ChevronDown, Check, Calendar } from 'lucide-react';
+import {
+  Clock,
+  Ticket,
+  UserPlus,
+  Star,
+  Share2,
+  Copy,
+  MessageCircle,
+  Check,
+  Calendar,
+  ChevronDown,
+  Sparkles,
+} from 'lucide-react';
 
 interface DoctorCardProps {
   doctor: Doctor;
@@ -29,17 +41,13 @@ export default function DoctorCard({
   const statusUpper = (doctor.status || 'LIBUR').toUpperCase();
   const isPraktek = statusUpper === 'PRAKTEK';
   const isTerjadwal = statusUpper === 'TERJADWAL';
-  const isCuti = statusUpper === 'CUTI';
-  const isLibur = statusUpper === 'LIBUR';
-  const isSelesai = statusUpper === 'SELESAI';
-  const isOperasi = statusUpper === 'OPERASI';
-  const isPenuh = statusUpper === 'PENUH';
+  const isCuti = statusUpper.includes('CUTI') || Boolean(doctor.activeLeave);
 
   let statusLabel = 'Praktek';
   let statusClass = 'st-praktek';
 
   if (isPraktek) {
-    statusLabel = 'Praktek';
+    statusLabel = 'Praktik';
     statusClass = 'st-praktek';
   } else if (isTerjadwal) {
     statusLabel = 'Terjadwal';
@@ -47,18 +55,9 @@ export default function DoctorCard({
   } else if (isCuti) {
     statusLabel = 'Cuti';
     statusClass = 'st-cuti';
-  } else if (isSelesai) {
-    statusLabel = 'Selesai';
-    statusClass = 'st-selesai';
-  } else if (isOperasi) {
-    statusLabel = 'Operasi';
-    statusClass = 'st-operasi';
-  } else if (isPenuh) {
-    statusLabel = 'Penuh';
-    statusClass = 'st-penuh';
   } else {
-    statusLabel = 'Libur';
-    statusClass = 'st-libur';
+    statusLabel = 'Tersedia';
+    statusClass = 'st-praktek';
   }
 
   const handleBooking = (e: React.MouseEvent) => {
@@ -96,9 +95,9 @@ export default function DoctorCard({
     e.stopPropagation();
     triggerHaptic('success');
     const title = `Praktik ${doctor.name} (${doctor.specialty})`;
-    const location = 'RSU Siaga Medika Pemalang';
-    const description = `Jadwal Dokter ${doctor.name} - ${doctor.specialty}. Jam: ${doctor.todayShift?.formattedTime || 'Sesuai Jadwal'}. Kode Antrean: ${doctor.queueCode || 'POLI'}.`;
-    
+    const location = 'RSU Siaga Medika Purbalingga';
+    const description = `Jadwal Dokter ${doctor.name} - ${doctor.specialty}. Jam: ${doctor.todayShift?.formattedTime || 'Sesuai Jadwal'}. Kode: ${doctor.queueCode || 'POLI'}.`;
+
     const now = new Date();
     const startStr = now.toISOString().replace(/-|:|\.\d+/g, '').slice(0, 15) + 'Z';
     const endStr = new Date(now.getTime() + 2 * 3600000).toISOString().replace(/-|:|\.\d+/g, '').slice(0, 15) + 'Z';
@@ -118,7 +117,7 @@ export default function DoctorCard({
       'BEGIN:VALARM',
       'TRIGGER:-PT1H',
       'ACTION:DISPLAY',
-      `DESCRIPTION:Pengingat Praktik Dokter: ${title}`,
+      `DESCRIPTION:Pengingat Praktik: ${title}`,
       'END:VALARM',
       'END:VEVENT',
       'END:VCALENDAR'
@@ -142,12 +141,19 @@ export default function DoctorCard({
 
   return (
     <div
-      className={`platter ${isCuti ? 'is-cuti' : ''} ${isExpanded ? 'is-expanded' : ''}`}
+      className={`platter ios27-compact-card ${isCuti ? 'is-cuti' : ''} ${isExpanded ? 'is-expanded' : ''}`}
       onClick={toggleExpand}
+      role="button"
+      tabIndex={0}
+      aria-expanded={isExpanded}
     >
-      {/* Platter Header */}
-      <div className="platter-head-row">
-        <div className="avatar-squircle-wrap">
+      {/* Top Specular Glass Sheen */}
+      <span className="card-top-specular" aria-hidden="true" />
+
+      {/* Card Main Horizontal Row (Ultra-Compact) */}
+      <div className="card-main-content">
+        {/* 1. Squircle Avatar */}
+        <div className="card-avatar-col">
           <div className="avatar-squircle">
             {doctor.image ? (
               <img src={doctor.image} alt={doctor.name} className="avatar-img" loading="lazy" />
@@ -155,75 +161,82 @@ export default function DoctorCard({
               <span className="initials">{getInitials(doctor.name)}</span>
             )}
           </div>
-          {isPraktek && <span className="avatar-live-pulse" title="Sedang Bertugas"></span>}
+          {isPraktek && <span className="avatar-live-pulse" title="Sedang Bertugas Sekarang" />}
         </div>
 
-        <div className="doc-info">
-          <div className="doc-name-row">
+        {/* 2. Doctor Info Center */}
+        <div className="card-info-col">
+          <div className="card-name-row">
             <h3 className="doc-name">{doctor.name}</h3>
+            {/* Status Pill Inline */}
+            <span className={`status-pill compact-status ${statusClass}`}>
+              <span className="status-dot" />
+              <span>{statusLabel}</span>
+            </span>
           </div>
-          <div className="doc-meta-row">
+
+          <div className="card-sub-row">
             <span className={`doc-spec-badge ${badgeClass}`}>
-              <SpecialistIcon department={doctor.specialty} size={14} className="spec-icon-inline" />
+              <SpecialistIcon department={doctor.specialty} size={12} className="spec-icon-inline" />
               <span>{doctor.specialty}</span>
+            </span>
+            {doctor.queueCode && (
+              <span
+                className="card-queue-badge"
+                onClick={handleCopy}
+                title="Klik untuk salin kode antrean"
+              >
+                <Ticket size={11} />
+                <span>{doctor.queueCode}</span>
+                {copiedCode && <Check size={10} className="copy-check text-green" />}
+              </span>
+            )}
+          </div>
+
+          <div className="card-time-row">
+            <Clock size={13} className="time-icon text-blue" />
+            <span className="card-time-val">
+              {formatTimeSlot(doctor.startTime, doctor.endTime, doctor.todayShift?.formattedTime)}
             </span>
           </div>
         </div>
 
-        <div className="platter-top-actions">
-          {/* Favorite Toggle Button */}
+        {/* 3. Action Capsule Right */}
+        <div className="card-action-col">
           <button
             type="button"
-            className={`favorite-toggle-btn ${isFavorite ? 'active' : ''}`}
+            className={`card-fav-btn ${isFavorite ? 'active' : ''}`}
             onClick={handleFavorite}
-            title={isFavorite ? 'Hapus dari Favorit' : 'Simpan Dokter Favorit'}
+            title={isFavorite ? 'Hapus Favorit' : 'Tambah Favorit'}
+            aria-label="Simpan Dokter Favorit"
           >
-            <Star size={17} className={isFavorite ? 'fill-star' : ''} />
+            <Star size={16} className={isFavorite ? 'fill-star' : ''} />
           </button>
 
-          {/* Status Pill */}
-          <div className={`status-pill ${statusClass}`}>
-            <span className="status-dot"></span>
-            <span>{statusLabel}</span>
-          </div>
+          {!isCuti ? (
+            <button
+              type="button"
+              className="card-book-pill-btn"
+              onClick={handleBooking}
+              title="Daftar Online"
+              aria-label="Daftar Online"
+            >
+              <Sparkles size={13} />
+              <span>Daftar</span>
+            </button>
+          ) : (
+            <span className="card-cuti-badge-mini">Cuti</span>
+          )}
         </div>
       </div>
 
-      {/* Platter Body / Time Capsule */}
-      <div className="platter-body-row">
-        <div className="platter-time-capsule">
-          <div className="time-capsule-slot">
-            <Clock size={15} className="time-capsule-icon" />
-            <div className="time-capsule-info">
-              <span className="time-capsule-lbl">Jam Praktik</span>
-              <span className="time-capsule-val">
-                {formatTimeSlot(doctor.startTime, doctor.endTime, doctor.todayShift?.formattedTime)}
-              </span>
-            </div>
-          </div>
-
-          <div className="time-capsule-divider"></div>
-
-          <div className="time-capsule-slot queue-slot" onClick={handleCopy} title="Salin Kode Antrean">
-            <Ticket size={15} className="time-capsule-icon" />
-            <div className="time-capsule-info">
-              <span className="time-capsule-lbl">Kode Antrean</span>
-              <span className="time-capsule-val flex-row-center">
-                {doctor.queueCode || 'POLI'}
-                {copiedCode ? <Check size={12} className="copy-check" /> : <Copy size={12} className="copy-hint" />}
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Expandable Details Drawer */}
+      {/* Expandable Accordion Drawer for Extra Context */}
       {isExpanded && (
         <div className="platter-expanded-drawer">
           <div className="drawer-info-grid">
             <div className="drawer-info-item">
-              <span className="drawer-lbl">Kategori Poli</span>
-              <span className="drawer-val">{doctor.category || 'Poliklinik Spesialis'}</span>
+              <span className="drawer-lbl">Kategori Poliklinik</span>
+              <span className="drawer-val">{doctor.category || 'Poliklinik Spesialis Terpadu'}</span>
             </div>
             {doctor.registrationTime && (
               <div className="drawer-info-item">
@@ -251,7 +264,7 @@ export default function DoctorCard({
             )}
           </div>
 
-          {/* Quick Doctor Action Bar inside Drawer */}
+          {/* Quick Actions inside Drawer */}
           <div className="drawer-quick-actions">
             <a
               href={`https://wa.me/6282323446076?text=Halo%20RSU%20Siaga%20Medika,%20saya%20ingin%20konsultasi%20jadwal%20${encodeURIComponent(
@@ -265,17 +278,17 @@ export default function DoctorCard({
                 triggerHaptic('light');
               }}
             >
-              <MessageCircle size={15} />
-              <span>Tanya CS Dokter</span>
+              <MessageCircle size={14} />
+              <span>Tanya CS WA</span>
             </a>
 
             <button
               type="button"
               className="drawer-cal-btn"
               onClick={handleAddToCalendar}
-              title="Simpan ke Apple/Google Calendar"
+              title="Simpan Jadwal ke Kalender HP"
             >
-              <Calendar size={15} />
+              <Calendar size={14} />
               <span>Ke Kalender</span>
             </button>
 
@@ -283,21 +296,12 @@ export default function DoctorCard({
               type="button"
               className="drawer-share-btn"
               onClick={handleShare}
+              title="Bagikan Informasi Dokter"
             >
-              <Share2 size={15} />
+              <Share2 size={14} />
               <span>Bagikan</span>
             </button>
           </div>
-        </div>
-      )}
-
-      {/* Platter Action Tray */}
-      {isPraktek && (
-        <div className="platter-action-tray">
-          <button className="platter-action-btn" onClick={handleBooking}>
-            <UserPlus size={16} className="action-btn-icon" />
-            <span>Daftar Online</span>
-          </button>
         </div>
       )}
     </div>

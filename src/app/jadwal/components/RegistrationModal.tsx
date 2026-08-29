@@ -3,7 +3,7 @@ import type { Doctor } from '../types';
 import SpecialistIcon from './SpecialistIcon';
 import { getInitials, getSpecialtyBadgeClass, formatTimeSlot } from '../lib/schedule-utils';
 import { triggerHaptic } from '../lib/haptics';
-import { X, ChevronRight, MessageCircle, Smartphone, ShieldCheck, Copy, Check, Ticket } from 'lucide-react';
+import { X, ChevronRight, MessageCircle, Smartphone, ShieldCheck, Copy, Check, Ticket, Sparkles } from 'lucide-react';
 
 interface RegistrationModalProps {
   doctor: Doctor | null;
@@ -51,15 +51,15 @@ export default function RegistrationModal({ doctor, isOpen, onClose, onShowToast
 
   return (
     <div className="ios-sheet-overlay" onClick={onClose}>
-      <div className="ios-sheet" onClick={(e) => e.stopPropagation()}>
+      <div className="ios-sheet spatial-visionos-sheet" onClick={(e) => e.stopPropagation()}>
         {/* Grab Handle */}
-        <div className="sheet-grab-bar"></div>
+        <div className="sheet-grab-bar" />
 
         {/* Modal Header */}
         <div className="ios-modal-header">
           <div className="ios-modal-title-group">
-            <h3 className="ios-modal-title">Pendaftaran Pasien</h3>
-            <span className="ios-modal-sub">Pilih saluran registrasi online resmi</span>
+            <h3 className="ios-modal-title">Pendaftaran Poliklinik</h3>
+            <span className="ios-modal-sub">Pilih jalur registrasi online resmi</span>
           </div>
           <button
             type="button"
@@ -68,12 +68,13 @@ export default function RegistrationModal({ doctor, isOpen, onClose, onShowToast
               triggerHaptic('light');
               onClose();
             }}
+            aria-label="Tutup"
           >
-            <X size={16} />
+            <X size={15} />
           </button>
         </div>
 
-        {/* Doctor Summary Context */}
+        {/* Doctor Summary Context Platter */}
         <div className="booking-doc-context">
           <div className="avatar-squircle">
             {doctor.image ? (
@@ -86,7 +87,7 @@ export default function RegistrationModal({ doctor, isOpen, onClose, onShowToast
             <h4 className="booking-doc-name">{doctor.name}</h4>
             <div className="booking-doc-spec">
               <span className={`doc-spec-badge ${badgeClass}`}>
-                <SpecialistIcon department={doctor.specialty} size={12} className="spec-icon-inline" />
+                <SpecialistIcon department={doctor.specialty} size={11} className="spec-icon-inline" />
                 <span>{doctor.specialty}</span>
               </span>
             </div>
@@ -101,16 +102,16 @@ export default function RegistrationModal({ doctor, isOpen, onClose, onShowToast
                   onClick={handleCopyCode}
                   title="Salin Kode Antrean"
                 >
-                  <Ticket size={12} />
+                  <Ticket size={11} />
                   <span>{doctor.queueCode}</span>
-                  {copiedCode ? <Check size={11} className="text-green" /> : <Copy size={11} />}
+                  {copiedCode ? <Check size={10} className="text-green" /> : <Copy size={10} />}
                 </button>
               )}
             </div>
           </div>
         </div>
 
-        {/* 3 Action Tiles */}
+        {/* 3 Action Tiles with iOS Specular Rim */}
         <div className="ios-action-list">
           {/* BPJS Mobile JKN */}
           <a
@@ -121,18 +122,18 @@ export default function RegistrationModal({ doctor, isOpen, onClose, onShowToast
             onClick={() => handleAction('bpjs')}
           >
             <div className="ios-action-icon bpjs">
-              <ShieldCheck size={24} />
+              <ShieldCheck size={22} />
             </div>
             <div className="ios-action-content">
               <div className="ios-action-title-row">
-                <span className="ios-action-title">Daftar Online BPJS</span>
+                <span className="ios-action-title">Daftar Pasien BPJS</span>
                 <span className="ios-action-tag bpjs">Mobile JKN</span>
               </div>
               <span className="ios-action-desc">
                 Ambil nomor antrean rujukan BPJS Kesehatan via aplikasi resmi Mobile JKN
               </span>
             </div>
-            <ChevronRight size={18} className="ios-action-chevron" />
+            <ChevronRight size={16} className="ios-action-chevron" />
           </a>
 
           {/* Non-BPJS Nuha App */}
@@ -144,18 +145,18 @@ export default function RegistrationModal({ doctor, isOpen, onClose, onShowToast
             onClick={() => handleAction('nuha')}
           >
             <div className="ios-action-icon non-bpjs">
-              <Smartphone size={24} />
+              <Smartphone size={22} />
             </div>
             <div className="ios-action-content">
               <div className="ios-action-title-row">
-                <span className="ios-action-title">Daftar Online Pasien Umum</span>
+                <span className="ios-action-title">Daftar Pasien Umum</span>
                 <span className="ios-action-tag non-bpjs">Nuha App</span>
               </div>
               <span className="ios-action-desc">
                 Booking antrean pasien umum, asuransi rekanan & perusahaan via aplikasi Nuha
               </span>
             </div>
-            <ChevronRight size={18} className="ios-action-chevron" />
+            <ChevronRight size={16} className="ios-action-chevron" />
           </a>
 
           {/* WhatsApp CS */}
@@ -169,18 +170,18 @@ export default function RegistrationModal({ doctor, isOpen, onClose, onShowToast
             onClick={() => handleAction('wa')}
           >
             <div className="ios-action-icon wa">
-              <MessageCircle size={24} />
+              <MessageCircle size={22} />
             </div>
             <div className="ios-action-content">
               <div className="ios-action-title-row">
-                <span className="ios-action-title">WhatsApp CS Pendaftaran</span>
+                <span className="ios-action-title">CS WhatsApp Pendaftaran</span>
                 <span className="ios-action-tag wa">WhatsApp</span>
               </div>
               <span className="ios-action-desc">
-                Konsultasi langsung dengan customer service pendaftaran via WhatsApp resmi
+                Konsultasi pendaftaran langsung dengan customer service resmi via WhatsApp
               </span>
             </div>
-            <ChevronRight size={18} className="ios-action-chevron" />
+            <ChevronRight size={16} className="ios-action-chevron" />
           </a>
         </div>
       </div>

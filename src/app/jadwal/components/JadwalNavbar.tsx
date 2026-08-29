@@ -1,10 +1,16 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { triggerHaptic } from '../lib/haptics';
-import { RotateCcw, Sun, Moon, PhoneCall, Share2, Search, ShieldCheck } from 'lucide-react';
+import {
+  RotateCcw,
+  Sun,
+  Moon,
+  PhoneCall,
+  Share2,
+  Search,
+  ShieldCheck,
+} from 'lucide-react';
 
 interface JadwalNavbarProps {
-  activeTab: 'today' | 'weekly' | 'leaves';
-  onTabChange: (tab: 'today' | 'weekly' | 'leaves') => void;
   isDarkMode: boolean;
   onToggleTheme: () => void;
   isRefreshing: boolean;
@@ -13,63 +19,88 @@ interface JadwalNavbarProps {
   onSearchFocus?: () => void;
   todayCount?: number;
   leavesCount?: number;
+  activeTab?: 'today' | 'weekly' | 'leaves';
+  onTabChange?: (tab: 'today' | 'weekly' | 'leaves') => void;
 }
 
 export default function JadwalNavbar({
-  activeTab,
-  onTabChange,
   isDarkMode,
   onToggleTheme,
   isRefreshing,
   onRefresh,
   onShare,
   onSearchFocus,
-  todayCount = 0,
-  leavesCount = 0,
 }: JadwalNavbarProps) {
+  // Live WIB clock telemetry
+  const [wibTimeStr, setWibTimeStr] = useState<string>('');
+
+  useEffect(() => {
+    const updateTime = () => {
+      const now = new Date();
+      const timeFormatter = new Intl.DateTimeFormat('id-ID', {
+        timeZone: 'Asia/Jakarta',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+      });
+      setWibTimeStr(`${timeFormatter.format(now)} WIB`);
+    };
+    updateTime();
+    const timer = setInterval(updateTime, 15000);
+    return () => clearInterval(timer);
+  }, []);
+
   return (
-    <header className="jadwal-dedicated-navbar ios27-header">
+    <header className="jadwal-dedicated-navbar ios27-header spatial-glass-header compact-header-2027">
       <div className="jadwal-nav-inner">
-        {/* Top Brand & Utility Toolbar (Ultra-Compact iOS 27 Platter) */}
+        {/* Top Brand & Utility Toolbar (2027 Spatial Specular Layer) */}
         <div className="jadwal-nav-top-row">
           {/* Hospital Branding (Siaga Medika PBG) */}
           <div className="jadwal-brand-group">
             <div className="jadwal-brand-logo-squircle" aria-hidden="true">
               <img
-                src="/icon.svg"
+                src="/logo-rs.png"
                 alt="RSU Siaga Medika Purbalingga"
                 className="jadwal-brand-img"
                 onError={(e) => {
-                  e.currentTarget.style.display = 'none';
+                  e.currentTarget.src = '/logo-rs-orig.png';
                 }}
               />
+              <span className="logo-specular-sheen" />
             </div>
+
             <div className="jadwal-brand-meta">
               <div className="jadwal-brand-title-row">
                 <span className="jadwal-brand-title">RSU Siaga Medika</span>
-                <span className="jadwal-verified-pill pbg-pill" title="Terverifikasi Resmi PBG">
-                  <ShieldCheck size={10.5} className="verified-icon" />
+                <span className="jadwal-verified-pill pbg-pill" title="Terverifikasi Resmi RS Purbalingga">
+                  <ShieldCheck size={11} className="verified-icon" />
                   <span>PBG</span>
                 </span>
               </div>
+
               <div className="jadwal-brand-status-row">
-                <span className="brand-live-pulse-dot" />
-                <span className="jadwal-brand-sub">Purbalingga · Live Jadwal</span>
+                <span className="telemetry-live-pill">
+                  <span className="brand-live-pulse-dot" />
+                  <span className="telemetry-txt">{wibTimeStr || 'LIVE WIB'}</span>
+                </span>
+                <span className="telemetry-divider">·</span>
+                <span className="jadwal-brand-sub">Live Jadwal Dokter</span>
               </div>
             </div>
           </div>
 
-          {/* Right Toolbar Actions */}
+          {/* Right Toolbar Actions (2027 Micro Glass Capsule) */}
           <div className="jadwal-nav-actions">
-            {/* Emergency Hotline Button PBG */}
+            {/* Emergency Hotline Button PBG (High Priority Pulse) */}
             <a
               href="tel:0281891888"
-              className="jadwal-nav-icon-btn hotline-btn"
-              title="IGD & Informasi Siaga Medika PBG (0281) 891888"
-              onClick={() => triggerHaptic('light')}
-              aria-label="Call Center IGD (0281) 891888"
+              className="jadwal-nav-icon-btn hotline-btn 2027-emergency-btn"
+              title="IGD 24 Jam Siaga Medika PBG (0281) 891888"
+              onClick={() => triggerHaptic('medium')}
+              aria-label="Telepon IGD (0281) 891888"
             >
-              <PhoneCall size={15} />
+              <PhoneCall size={14} />
+              <span className="emergency-txt-mini">IGD</span>
             </a>
 
             {/* Search Shortcut */}
@@ -126,56 +157,12 @@ export default function JadwalNavbar({
                 triggerHaptic('medium');
                 onRefresh();
               }}
-              title="Sinkronkan Jadwal Terbaru"
-              aria-label="Sinkronkan Jadwal Terbaru"
+              title="Sinkronkan Jadwal Real-time"
+              aria-label="Sinkronkan Jadwal Real-time"
             >
               <RotateCcw size={15} />
             </button>
           </div>
-        </div>
-
-        {/* Apple iOS 27 Liquid Segmented Control Bar */}
-        <div className="jadwal-segmented-track" role="tablist" aria-label="Pilihan Jadwal">
-          <button
-            type="button"
-            role="tab"
-            aria-selected={activeTab === 'today'}
-            className={`jadwal-seg-btn ${activeTab === 'today' ? 'active' : ''}`}
-            onClick={() => {
-              triggerHaptic('selection');
-              onTabChange('today');
-            }}
-          >
-            <span>Hari Ini</span>
-            {todayCount > 0 && <span className="seg-badge">{todayCount}</span>}
-          </button>
-
-          <button
-            type="button"
-            role="tab"
-            aria-selected={activeTab === 'weekly'}
-            className={`jadwal-seg-btn ${activeTab === 'weekly' ? 'active' : ''}`}
-            onClick={() => {
-              triggerHaptic('selection');
-              onTabChange('weekly');
-            }}
-          >
-            <span>Keseluruhan</span>
-          </button>
-
-          <button
-            type="button"
-            role="tab"
-            aria-selected={activeTab === 'leaves'}
-            className={`jadwal-seg-btn ${activeTab === 'leaves' ? 'active' : ''}`}
-            onClick={() => {
-              triggerHaptic('selection');
-              onTabChange('leaves');
-            }}
-          >
-            <span>Jadwal Cuti</span>
-            {leavesCount > 0 && <span className="seg-badge red">{leavesCount}</span>}
-          </button>
         </div>
       </div>
     </header>

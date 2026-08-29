@@ -18,6 +18,7 @@ import {
   RotateCcw,
   Sparkles,
   Ticket,
+  ChevronDown,
 } from 'lucide-react';
 
 interface WeeklyViewProps {
@@ -34,6 +35,7 @@ export default function WeeklyView({
   onSelectDoctor,
 }: WeeklyViewProps) {
   const [selectedDayIdx, setSelectedDayIdx] = useState<number>(0);
+  const [expandedDocId, setExpandedDocId] = useState<string | null>(null);
 
   const dateStrip = useMemo<DayDateItem[]>(() => getWeeklyDateStrip(new Date()), []);
   const activeDateItem = dateStrip[selectedDayIdx] || dateStrip[0];
@@ -68,7 +70,6 @@ export default function WeeklyView({
   // Filtered doctors list for active day
   const filteredDoctors = useMemo(() => {
     return doctors.filter((doc) => {
-      // Shift matching for target day
       const hasShift = shifts.some(
         (s) =>
           s.doctorId === doc.id &&
@@ -76,7 +77,6 @@ export default function WeeklyView({
           !(s.disabledDates || []).includes(targetDateStr) &&
           isShiftActiveForDate(s.extra, targetWibTime)
       );
-
       return hasShift;
     });
   }, [doctors, shifts, targetDayIdx, targetDateStr, targetWibTime]);
@@ -84,17 +84,24 @@ export default function WeeklyView({
   const handleSelectDay = (index: number) => {
     triggerHaptic('selection');
     setSelectedDayIdx(index);
+    setExpandedDocId(null);
   };
 
   const handleResetToToday = () => {
     triggerHaptic('medium');
     setSelectedDayIdx(0);
+    setExpandedDocId(null);
+  };
+
+  const toggleExpand = (id: string) => {
+    triggerHaptic('light');
+    setExpandedDocId((prev) => (prev === id ? null : id));
   };
 
   return (
     <div className="weekly-view-container">
-      {/* 7-Day Horizontal Date Strip (Apple Liquid Glass) */}
-      <div className="weekly-date-strip-container mb-24">
+      {/* 7-Day Horizontal Date Strip (Apple iOS 27 Liquid Glass Pills) */}
+      <div className="weekly-date-strip-container mb-20">
         <div className="weekly-date-strip">
           {dateStrip.map((item, idx) => {
             const isSelected = idx === selectedDayIdx;
@@ -118,10 +125,10 @@ export default function WeeklyView({
         </div>
       </div>
 
-      {/* Selected Day Header Pill */}
-      <div className="weekly-day-header-pill mb-24">
+      {/* Selected Day Context Pill Header */}
+      <div className="weekly-day-header-pill mb-16">
         <div className="weekly-day-title-wrap">
-          <CalendarCheck size={18} className="text-blue" />
+          <CalendarCheck size={16} className="text-blue" />
           <span className="weekly-day-title">
             {activeDateItem?.dayName}, {activeDateItem?.dayNum} {activeDateItem?.monthName}
           </span>
@@ -131,13 +138,13 @@ export default function WeeklyView({
           <span className="weekly-holiday-tag">{activeDateItem?.holidayName || 'Libur Nasional'}</span>
         ) : selectedDayIdx !== 0 ? (
           <button type="button" className="weekly-jump-today-btn" onClick={handleResetToToday}>
-            <RotateCcw size={13} />
+            <RotateCcw size={12} />
             <span>Hari Ini</span>
           </button>
         ) : null}
       </div>
 
-      {/* List of Doctor Cards for Selected Day */}
+      {/* List of Doctor Cards for Selected Day (Compact Platter Grid) */}
       {filteredDoctors.length === 0 ? (
         <div className="ios-empty-state">
           <div className="ios-empty-coin">
@@ -145,7 +152,7 @@ export default function WeeklyView({
           </div>
           <div className="ios-empty-title">Tidak Ada Praktik</div>
           <div className="ios-empty-sub">
-            Tidak ditemukan jadwal praktik dokter pada hari {activeDateItem?.dayName}, {activeDateItem?.dayNum} {activeDateItem?.monthName}.
+            Tidak ditemukan jadwal dokter pada hari {activeDateItem?.dayName}, {activeDateItem?.dayNum} {activeDateItem?.monthName}.
           </div>
           {selectedDayIdx !== 0 && (
             <button type="button" className="empty-reset-btn" onClick={handleResetToToday}>
@@ -154,7 +161,7 @@ export default function WeeklyView({
           )}
         </div>
       ) : (
-        <div className="platter-grid">
+        <div className="compact-platter-grid">
           {filteredDoctors.map((doc) => {
             const shift = shifts.find(
               (s) =>
@@ -166,13 +173,25 @@ export default function WeeklyView({
 
             const leave = isDoctorOnLeave(doc.id, activeDateItem.date, leaves);
             const isCuti = Boolean(leave);
+            const isExpanded = expandedDocId === doc.id;
             const badgeClass = getSpecialtyBadgeClass(doc.specialty);
 
             return (
-              <div key={doc.id} className={`platter weekly-platter ${isCuti ? 'is-cuti' : ''}`}>
-                {/* Platter Header */}
-                <div className="platter-head-row">
-                  <div className="avatar-squircle-wrap">
+              <div
+                key={doc.id}
+                className={`platter ios27-compact-card weekly-compact-card ${isCuti ? 'is-cuti' : ''} ${
+                  isExpanded ? 'is-expanded' : ''
+                }`}
+                onClick={() => toggleExpand(doc.id)}
+                role="button"
+                tabIndex={0}
+                aria-expanded={isExpanded}
+              >
+                <span className="card-top-specular" aria-hidden="true" />
+
+                <div className="card-main-content">
+                  {/* Avatar Squircle */}
+                  <div className="card-avatar-col">
                     <div className="avatar-squircle">
                       {doc.image ? (
                         <img src={doc.image} alt={doc.name} className="avatar-img" loading="lazy" />
@@ -183,96 +202,104 @@ export default function WeeklyView({
                     {!isCuti && <span className="avatar-live-pulse" title="Tersedia Bertugas" />}
                   </div>
 
-                  <div className="doc-info">
-                    <h3 className="doc-name">{doc.name}</h3>
-                    <div className="doc-meta-row">
+                  {/* Doctor Info Center */}
+                  <div className="card-info-col">
+                    <div className="card-name-row">
+                      <h3 className="doc-name">{doc.name}</h3>
+                      <span className={`status-pill compact-status ${isCuti ? 'st-cuti' : 'st-praktek'}`}>
+                        <span className="status-dot" />
+                        <span>{isCuti ? 'Cuti' : 'Tersedia'}</span>
+                      </span>
+                    </div>
+
+                    <div className="card-sub-row">
                       <span className={`doc-spec-badge ${badgeClass}`}>
-                        <SpecialistIcon department={doc.specialty} size={14} className="spec-icon-inline" />
+                        <SpecialistIcon department={doc.specialty} size={12} className="spec-icon-inline" />
                         <span>{doc.specialty}</span>
+                      </span>
+                      {shift?.title && (
+                        <span className="card-queue-badge">
+                          <Ticket size={11} />
+                          <span>{shift.title}</span>
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="card-time-row">
+                      <Clock size={13} className="time-icon text-blue" />
+                      <span className="card-time-val">
+                        {isCuti
+                          ? `Cuti: ${leave?.reason || 'Izin Tidak Praktik'}`
+                          : formatTimeSlot(doc.startTime, doc.endTime, shift?.formattedTime)}
                       </span>
                     </div>
                   </div>
 
-                  <div className="platter-top-actions">
-                    <span className={`status-pill ${isCuti ? 'st-cuti' : 'st-praktek'}`}>
-                      <span className="status-dot" />
-                      <span>{isCuti ? 'Cuti' : 'Tersedia'}</span>
-                    </span>
+                  {/* Actions Right */}
+                  <div className="card-action-col">
+                    {!isCuti && onSelectDoctor ? (
+                      <button
+                        type="button"
+                        className="card-book-pill-btn"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          triggerHaptic('medium');
+                          onSelectDoctor(doc);
+                        }}
+                        title="Daftar Online"
+                      >
+                        <Sparkles size={13} />
+                        <span>Daftar</span>
+                      </button>
+                    ) : (
+                      <span className="card-cuti-badge-mini">Cuti</span>
+                    )}
                   </div>
                 </div>
 
-                {/* Body / Schedule Info */}
-                <div className="platter-body-row">
-                  {isCuti ? (
-                    <div className="wk-cuti-banner">
-                      <CalendarX size={18} className="wk-cuti-icon" />
-                      <div className="wk-cuti-text">
-                        <span className="wk-cuti-title">Dokter Sedang Cuti</span>
-                        <span className="wk-cuti-sub">{leave?.reason || 'Izin Tidak Praktik'}</span>
-                        {leave?.replacementDoctor && (
-                          <span className="wk-cuti-replacement">
-                            Dokter Pengganti: {leave.replacementDoctor}
-                          </span>
-                        )}
+                {/* Accordion Detail Drawer */}
+                {isExpanded && (
+                  <div className="platter-expanded-drawer">
+                    <div className="drawer-info-grid">
+                      <div className="drawer-info-item">
+                        <span className="drawer-lbl">Hari & Sesi Praktik</span>
+                        <span className="drawer-val">
+                          {activeDateItem?.dayName}, {shift?.title || 'Sesi Poliklinik'}
+                        </span>
                       </div>
-                    </div>
-                  ) : (
-                    <div className="platter-time-capsule">
-                      <div className="time-capsule-slot">
-                        <Clock size={15} className="time-capsule-icon" />
-                        <div className="time-capsule-info">
-                          <span className="time-capsule-lbl">Jam Praktik</span>
-                          <span className="time-capsule-val">
-                            {formatTimeSlot(doc.startTime, doc.endTime, shift?.formattedTime)}
-                          </span>
+                      <div className="drawer-info-item">
+                        <span className="drawer-lbl">Jam Layanan</span>
+                        <span className="drawer-val">
+                          {formatTimeSlot(doc.startTime, doc.endTime, shift?.formattedTime)}
+                        </span>
+                      </div>
+                      {leave?.replacementDoctor && (
+                        <div className="drawer-info-item full">
+                          <span className="drawer-lbl">Dokter Pengganti</span>
+                          <span className="drawer-val text-blue">{leave.replacementDoctor}</span>
                         </div>
-                      </div>
-
-                      <div className="time-capsule-divider" />
-
-                      <div className="time-capsule-slot queue-slot">
-                        <Ticket size={15} className="time-capsule-icon" />
-                        <div className="time-capsule-info">
-                          <span className="time-capsule-lbl">Sesi Poliklinik</span>
-                          <span className="time-capsule-val">
-                            {shift?.title || `${activeDateItem?.dayName}`}
-                          </span>
-                        </div>
-                      </div>
+                      )}
                     </div>
-                  )}
-                </div>
 
-                {/* Platter Actions */}
-                <div className="weekly-card-action-bar">
-                  {!isCuti && onSelectDoctor && (
-                    <button
-                      type="button"
-                      className="platter-action-btn"
-                      onClick={() => {
-                        triggerHaptic('medium');
-                        onSelectDoctor(doc);
-                      }}
-                    >
-                      <Sparkles size={15} />
-                      <span>Daftar Online</span>
-                    </button>
-                  )}
-
-                  <a
-                    href={`https://wa.me/6282323446076?text=Halo%20RSU%20Siaga%20Medika,%20saya%20ingin%20bertanya%20jadwal%20${encodeURIComponent(
-                      doc.name
-                    )}%20pada%20hari%20${activeDateItem?.dayName}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="wk-btn-wa-pill"
-                    onClick={() => triggerHaptic('light')}
-                    title="Tanya CS via WA"
-                  >
-                    <MessageCircle size={15} />
-                    <span>WhatsApp</span>
-                  </a>
-                </div>
+                    <div className="drawer-quick-actions">
+                      <a
+                        href={`https://wa.me/6282323446076?text=Halo%20RSU%20Siaga%20Medika,%20saya%20ingin%20bertanya%20jadwal%20${encodeURIComponent(
+                          doc.name
+                        )}%20pada%20hari%20${activeDateItem?.dayName}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="drawer-wa-btn"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          triggerHaptic('light');
+                        }}
+                      >
+                        <MessageCircle size={14} />
+                        <span>Tanya CS WhatsApp</span>
+                      </a>
+                    </div>
+                  </div>
+                )}
               </div>
             );
           })}
