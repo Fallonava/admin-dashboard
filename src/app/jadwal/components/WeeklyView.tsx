@@ -350,17 +350,17 @@ export default function WeeklyView({
                           <Clock size={12} className="time-icon text-blue flex-shrink-0" />
                           <span className="card-time-val">
                             {formatTimeSlot(doc.startTime, doc.endTime, doc.todayShift?.formattedTime)}
+                            {doc.todayShift?.title && (
+                              <span className="shift-slot-text">
+                                {' '}— {doc.todayShift.title}
+                              </span>
+                            )}
+                            {regTime && (
+                              <span className="card-reg-text" title="Waktu Registrasi">
+                                {' '}• Reg: {regTime}
+                              </span>
+                            )}
                           </span>
-                          {doc.todayShift?.title && (
-                            <span className="shift-slot-pill">
-                              {doc.todayShift.title}
-                            </span>
-                          )}
-                          {regTime && (
-                            <span className="card-reg-pill" title="Waktu Registrasi">
-                              Reg: {regTime}
-                            </span>
-                          )}
                         </>
                       )}
                     </div>

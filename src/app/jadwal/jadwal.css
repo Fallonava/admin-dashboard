@@ -1405,10 +1405,10 @@ body.dark .avatar-squircle {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 2px 8px;
-  border-radius: 9999px;
   font-size: 11.5px;
   font-weight: 600;
+}
+
 }
 
 .platter-top-actions {
@@ -2800,17 +2800,17 @@ body.dark .ios27-spatial-dock {
 /* ═══════════════════════════════════════════════════════════════
    10. SPECIALIST BADGES COLOR PALETTE
    ═══════════════════════════════════════════════════════════════ */
-.spec-jantung { background: rgba(255, 45, 85, 0.12); color: var(--ios-pink); }
-.spec-anak { background: rgba(255, 149, 0, 0.12); color: var(--ios-orange); }
-.spec-bedah { background: rgba(88, 86, 214, 0.12); color: var(--ios-indigo); }
-.spec-saraf { background: rgba(175, 82, 222, 0.12); color: var(--ios-purple); }
-.spec-kandungan { background: rgba(255, 45, 85, 0.12); color: var(--ios-rose); }
-.spec-gigi { background: rgba(0, 199, 190, 0.12); color: var(--ios-mint); }
-.spec-paru { background: rgba(48, 176, 199, 0.12); color: var(--ios-teal); }
-.spec-mata { background: rgba(50, 173, 230, 0.12); color: var(--ios-cyan); }
-.spec-tht { background: rgba(255, 204, 0, 0.12); color: var(--ios-yellow); }
-.spec-ortho { background: rgba(0, 122, 255, 0.12); color: var(--ios-blue); }
-.spec-default { background: rgba(142, 142, 147, 0.12); color: var(--ios-gray); }
+.spec-jantung { color: var(--ios-pink); }
+.spec-anak { color: var(--ios-orange); }
+.spec-bedah { color: var(--ios-indigo); }
+.spec-saraf { color: var(--ios-purple); }
+.spec-kandungan { color: var(--ios-rose); }
+.spec-gigi { color: var(--ios-mint); }
+.spec-paru { color: var(--ios-teal); }
+.spec-mata { color: var(--ios-cyan); }
+.spec-tht { color: var(--ios-yellow); }
+.spec-ortho { color: var(--ios-blue); }
+.spec-default { color: var(--ios-gray); }
 
 /* ═══════════════════════════════════════════════════════════════
    11. TOAST NOTIFICATIONS & EMPTY STATES (iOS 27 Dynamic Capsule)
@@ -2987,4 +2987,22 @@ body.dark .st-cuti {
   background: rgba(255, 69, 58, 0.15); /* Tinted red adapted for dark mode */
   color: var(--ios-red); /* Solid red for contrast */
   border: 1px solid rgba(255, 69, 58, 0.3);
+}
+
+.shift-slot-text {
+  font-weight: 700;
+  color: var(--ios-blue);
+  opacity: 0.9;
+}
+
+.card-reg-text {
+  font-weight: 600;
+  color: var(--text-mute);
+  font-size: 11px;
+}
+
+[data-theme="dark"] .shift-slot-text,
+html.dark .shift-slot-text,
+body.dark .shift-slot-text {
+  color: var(--ios-cyan);
 }
