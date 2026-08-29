@@ -38,6 +38,7 @@ sshpass -p "qwer" ssh -o StrictHostKeyChecking=no -o ProxyCommand="cloudflared a
 > * **Direktori Backup**: `C:\simed-production\backups` & `C:\backups`
 > * **Database**: PostgreSQL 16 (`medcoredb` di `localhost:5432`)
 > * **PM2 Profile**: `C:\Users\ANTRIAN 1\.pm2`
+> * **Windows Service**: `pm2.exe` (StartMode: `Auto`, runs as background system service immune to user logoff)
 
 ---
 
@@ -45,7 +46,7 @@ sshpass -p "qwer" ssh -o StrictHostKeyChecking=no -o ProxyCommand="cloudflared a
 
 ### Metode A: Otomatis 1-Klik (Sangat Direkomendasikan)
 
-Jalankan script deploy otomatis yang sudah dilengkapi pelindung database, non-destructive schema migration, dan proses restart bersih:
+Jalankan script deploy otomatis yang sudah dilengkapi pelindung database, non-destructive schema migration, dan zero-downtime reload:
 
 ```powershell
 # Jalankan di PowerShell server Windows:
@@ -58,8 +59,8 @@ Script ini secara otomatis melakukan 6 tahap:
 2. 🔄 **[2/6] Clean Git Sync**: `git fetch origin master; git reset --hard origin/master` (menghindari konflik file lokal).
 3. 📦 **[3/6] Prisma Client & DB Sync**: `npx prisma generate` dan `npx prisma db push --skip-generate` (sinkronisasi tabel baru tanpa menghapus data).
 4. ⚡ **[4/6] Production Compile**: `npm run build` (Next.js 16 + esbuild bundle `server.js`).
-5. 🔁 **[5/6] PM2 Fork Refresh**: `pm2 restart ecosystem.config.js --update-env` (re-bind port 3000 secara bersih).
-6. 💾 **[6/6] Save PM2 State**: `pm2 save` untuk auto-resurrect saat server restart.
+5. 🔁 **[5/6] Zero-Downtime Reload**: `pm2 reload ecosystem.config.js --update-env` (smooth process swap via `process.send('ready')`).
+6. 💾 **[6/6] Save PM2 State**: `pm2 save` untuk persistensi state PM2 Windows Service.
 
 ---
 
@@ -84,8 +85,8 @@ npx prisma db push --skip-generate
 # 4. Compile build Next.js dan server bundler
 npm run build
 
-# 5. Restart PM2 dengan environment terbaru
-pm2 restart ecosystem.config.js --update-env
+# 5. Reload PM2 Zero-Downtime dengan environment terbaru
+pm2 reload ecosystem.config.js --update-env
 pm2 save
 ```
 
@@ -93,23 +94,25 @@ pm2 save
 
 ## 3. Panduan Mengatasi Masalah (Troubleshooting Matrix)
 
-### Masalah 1: PM2 Status `errored` / Port Bentrok `EADDRINUSE 3000` / PID 0
+### Masalah 1: PM2 Windows Service & Status Proses
 
-**Gejala**: `pm2 status` menampilkan status `errored`, `launching`, memori `8.0kb`, atau angka restart (`↺`) terus bertambah.
-**Penyebab**: Di OS Windows, mode PM2 `cluster` bentrok karena Windows tidak mendukung socket handle sharing port 3000 antar worker.
-**Langkah Penanganan**:
-1. Pastikan `ecosystem.config.js` menggunakan `exec_mode: 'fork'` dan `instances: 1`:
-   ```javascript
-   // ecosystem.config.js
-   instances: 1,
-   exec_mode: 'fork',
-   ```
-2. Reset proses PM2 secara bersih:
-   ```powershell
-   pm2 delete all
-   pm2 start ecosystem.config.js
-   pm2 save
-   ```
+**Anti-Kill Background Service**:
+PM2 berjalan sebagai Windows Service (`pm2.exe`). Aplikasi tetap berjalan 24/7 di background tanpa bergantung pada login/sesi desktop user Windows.
+
+* Cek status service Windows:
+  ```powershell
+  Get-Service pm2.exe
+  ```
+* Restart service jika PM2 daemon berhenti total:
+  ```powershell
+  Restart-Service pm2.exe
+  ```
+* Jika terjadi port bentrok atau perlu reset proses bersih:
+  ```powershell
+  pm2 kill
+  Start-Service pm2.exe
+  pm2 status
+  ```
 
 ---
 

@@ -89,15 +89,15 @@ if ($LASTEXITCODE -ne 0) {
     exit 1
 }
 
-# -- 6. PM2 PROCESS REFRESH (FORK MODE WINDOWS) --------------------------------
+# -- 6. PM2 PROCESS REFRESH (ZERO DOWNTIME RELOAD) ----------------------------
 Write-Host ""
-Write-Host "[5/6] Me-restart proses PM2 dengan environment terbaru..." -ForegroundColor Yellow
+Write-Host "[5/6] Me-reload proses PM2 (Zero-Downtime Swap)..." -ForegroundColor Yellow
 
-pm2 restart ecosystem.config.js --update-env
+pm2 reload ecosystem.config.js --update-env
 
 if ($LASTEXITCODE -ne 0) {
-    Write-Host "[WARN] PM2 restart mengalami kendala, mencoba start fresh..." -ForegroundColor Yellow
-    pm2 start ecosystem.config.js
+    Write-Host "[WARN] PM2 reload mengalami kendala, mencoba restart..." -ForegroundColor Yellow
+    pm2 restart ecosystem.config.js --update-env
 }
 
 # -- 7. SIMPAN STATE & VERIFIKASI HEALTH CHECK --------------------------------
