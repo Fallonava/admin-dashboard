@@ -481,7 +481,8 @@ export default function WeeklyView({
                         <span>Tanya CS WhatsApp</span>
                       </a>
                     </div>
-                  </div>, document.body) : null}
+                  </div>
+                </div>, document.body) : null}
               </div>
             );
           })}

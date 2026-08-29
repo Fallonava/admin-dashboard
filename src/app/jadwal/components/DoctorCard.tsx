@@ -368,7 +368,8 @@ export default function DoctorCard({
               <span>Bagikan Dokter</span>
             </button>
           </div>
-        </div>, document.body) : null}
+        </div>
+      </div>, document.body) : null}
 
       {/* iOS 27 Haptic Touch Context Menu */}
       {showContextMenu && typeof document !== 'undefined' ? createPortal(
