@@ -4102,6 +4102,140 @@
 
 
 
+      /* ═══ STANDARISASI UKURAN CARD TERJADWAL & NON-ACTIVE UNIFORM HEIGHT ═══ */
+      .platter.st-terjadwal,
+      .platter:not(.active):not(.platter-mini) {
+        height: 104px !important;
+        min-height: 104px !important;
+        max-height: 104px !important;
+        padding: 14px 18px !important;
+        box-sizing: border-box !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+        gap: 0 !important;
+        overflow: hidden !important;
+      }
+
+      .platter.st-terjadwal .platter-detail-wrap,
+      .platter:not(.active):not(.platter-mini) .platter-detail-wrap {
+        display: none !important;
+        height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+
+      .platter.st-terjadwal .platter-main,
+      .platter:not(.active):not(.platter-mini) .platter-main {
+        height: 74px !important;
+        min-height: 74px !important;
+        max-height: 74px !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 16px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+      }
+
+      .platter.st-terjadwal .initials,
+      .platter:not(.active):not(.platter-mini) .initials {
+        width: 74px !important;
+        height: 74px !important;
+        flex-shrink: 0 !important;
+      }
+
+      .platter.st-terjadwal .info-col,
+      .platter:not(.active):not(.platter-mini) .info-col {
+        flex: 1 1 auto !important;
+        min-width: 0 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+        gap: 3px !important;
+        overflow: hidden !important;
+      }
+
+      .platter.st-terjadwal .doc-spec-badge,
+      .platter:not(.active):not(.platter-mini) .doc-spec-badge {
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 6px !important;
+        width: fit-content !important;
+        max-width: 100% !important;
+        padding: 3px 10px !important;
+        border-radius: 9999px !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        margin-bottom: 2px !important;
+      }
+
+      .platter.st-terjadwal .doc-spec,
+      .platter:not(.active):not(.platter-mini) .doc-spec {
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        max-width: 250px !important;
+        font-size: 14.5px !important;
+      }
+
+      .platter.st-terjadwal .doc-name,
+      .platter:not(.active):not(.platter-mini) .doc-name {
+        font-size: 22px !important;
+        font-weight: 900 !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        line-height: 1.15 !important;
+        max-width: 100% !important;
+      }
+
+      .platter.st-terjadwal .meta-col,
+      .platter:not(.active):not(.platter-mini) .meta-col {
+        width: 155px !important;
+        min-width: 155px !important;
+        max-width: 155px !important;
+        height: 74px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+        align-items: flex-end !important;
+        gap: 5px !important;
+        flex-shrink: 0 !important;
+      }
+
+      .platter.st-terjadwal .status-pill,
+      .platter:not(.active):not(.platter-mini) .status-pill {
+        height: 30px !important;
+        padding: 4px 12px !important;
+        border-radius: 9999px !important;
+        box-sizing: border-box !important;
+        font-size: 13.5px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        margin: 0 !important;
+      }
+
+      .platter.st-terjadwal .jam-box,
+      .platter:not(.active):not(.platter-mini) .jam-box {
+        height: 36px !important;
+        min-width: 120px !important;
+        padding: 4px 12px !important;
+        border-radius: 12px !important;
+        box-sizing: border-box !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        margin: 0 !important;
+      }
+
+      .platter.st-terjadwal .jam-val,
+      .platter:not(.active):not(.platter-mini) .jam-val {
+        font-size: 20px !important;
+        line-height: 1 !important;
+      }
+
       /* ===== EXPANDED DETAIL (Apple Live Activity Drawer) ===== */
       /* ─── Smooth Expand: grid-rows trick (no max-height pop) ─── */
       .platter-detail-wrap {
@@ -5638,12 +5772,15 @@
 
       // ===== CARD HTML BUILDER (Satu Fungsi untuk render() & _renderSidebar()) =====
       const buildCardHTML = (d, avatarText, statusGlyph, statusLabel, labelJam, labelLive) => {
-        const jamTampil = d.JamDaftar !== "-"
+        const jamTampil = d.JamDaftar && d.JamDaftar !== "-"
           ? esc(d.JamDaftar)
           : formatJam((d.JamPraktek || "").split("-")[0]);
           
         const isCPO = ["CUTI", "PENUH", "OPERASI"].some(st => (d.Status || "").toUpperCase().includes(st));
         const specTheme = getSpecialistTheme(d.Spesialis);
+
+        const hasJam = (d.JamPraktek && d.JamPraktek !== "-") || (d.JamDaftar && d.JamDaftar !== "-");
+        const jamDisplay = hasJam ? jamTampil : (d.Status === "TERJADWAL" ? "SESUAI JADWAL" : "—:—");
 
         return `
           <div class="platter-main">
@@ -5660,10 +5797,10 @@
                 ${statusGlyph}
                 <span class="status-text">${statusLabel}</span>
               </div>
-              ${!isCPO && d.JamPraktek && d.JamPraktek !== "-" ? `
-              <div class="jam-box">
+              ${!isCPO ? `
+              <div class="jam-box ${!hasJam ? 'jam-box-fallback' : ''}">
                 <svg class="jam-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                <span class="jam-val jam-val-daftar">${jamTampil}</span>
+                <span class="jam-val jam-val-daftar" style="${!hasJam ? 'font-size:14px; font-weight:800; opacity:0.85;' : ''}">${jamDisplay}</span>
               </div>` : ""}
             </div>
           </div>
