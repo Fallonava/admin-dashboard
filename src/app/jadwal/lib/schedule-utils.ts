@@ -12,20 +12,27 @@ export const INDO_MONTHS_SHORT = [
   'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'
 ];
 
+const wibDateFormatter = new Intl.DateTimeFormat('en-CA', {
+  timeZone: 'Asia/Jakarta',
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+});
+
 /**
  * Gold-standard WIB (Asia/Jakarta) date string converter 'YYYY-MM-DD'
  */
 export function toWibDateStr(dateInput: Date | string): string {
   try {
-    const d = typeof dateInput === 'string' ? new Date(dateInput) : dateInput;
-    if (isNaN(d.getTime())) return '';
-    const formatter = new Intl.DateTimeFormat('en-CA', {
-      timeZone: 'Asia/Jakarta',
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-    });
-    return formatter.format(d); // returns 'YYYY-MM-DD'
+    if (!dateInput) return '';
+    if (typeof dateInput === 'string') {
+      if (/^\d{4}-\d{2}-\d{2}$/.test(dateInput)) return dateInput;
+      const d = new Date(dateInput);
+      if (isNaN(d.getTime())) return '';
+      return wibDateFormatter.format(d);
+    }
+    if (isNaN(dateInput.getTime())) return '';
+    return wibDateFormatter.format(dateInput);
   } catch {
     return '';
   }
@@ -290,13 +297,30 @@ export function getCalendarGrid(year: number, month: number, leaves: LeaveReques
 
   const startDayOfWeek = firstDay.getDay(); // 0 = Sunday
 
+  // Pre-normalize all leaves to string bounds once for O(1) matching
+  const normalizedLeaves = leaves.map((l) => {
+    const startStr = toWibDateStr(l.startDate);
+    const endStr = toWibDateStr(l.endDate || l.startDate);
+    return {
+      leave: l,
+      startStr,
+      endStr: endStr || startStr,
+    };
+  });
+
+  const getLeavesForDate = (dateStr: string) => {
+    return normalizedLeaves
+      .filter((nl) => nl.startStr && dateStr >= nl.startStr && dateStr <= nl.endStr)
+      .map((nl) => nl.leave);
+  };
+
   // Padding days from previous month
   const prevMonthLastDay = new Date(year, month, 0).getDate();
   for (let i = startDayOfWeek - 1; i >= 0; i--) {
     const d = new Date(year, month - 1, prevMonthLastDay - i);
     const dateStr = toWibDateStr(d);
     const holiday = getIndonesianHoliday(d);
-    const dayLeaves = leaves.filter((l) => isDateInLeave(dateStr, l));
+    const dayLeaves = getLeavesForDate(dateStr);
     result.push({
       dayNum: d.getDate(),
       date: d,
@@ -315,7 +339,7 @@ export function getCalendarGrid(year: number, month: number, leaves: LeaveReques
     const d = new Date(year, month, day);
     const dateStr = toWibDateStr(d);
     const holiday = getIndonesianHoliday(d);
-    const dayLeaves = leaves.filter((l) => isDateInLeave(dateStr, l));
+    const dayLeaves = getLeavesForDate(dateStr);
     result.push({
       dayNum: day,
       date: d,
@@ -335,7 +359,7 @@ export function getCalendarGrid(year: number, month: number, leaves: LeaveReques
     const d = new Date(year, month + 1, i);
     const dateStr = toWibDateStr(d);
     const holiday = getIndonesianHoliday(d);
-    const dayLeaves = leaves.filter((l) => isDateInLeave(dateStr, l));
+    const dayLeaves = getLeavesForDate(dateStr);
     result.push({
       dayNum: i,
       date: d,

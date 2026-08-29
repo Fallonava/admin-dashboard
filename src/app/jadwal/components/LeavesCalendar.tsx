@@ -1,20 +1,17 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import type { LeaveRequest, Doctor } from '../types';
 import SpecialistIcon from './SpecialistIcon';
 import {
   getCalendarGrid,
   formatDateIndonesian,
-  getInitials,
   getSpecialtyBadgeClass,
   toWibDateStr,
-  isDateInLeave,
   getWibNow,
 } from '../lib/schedule-utils';
 import { triggerHaptic } from '../lib/haptics';
 import {
   ChevronLeft,
   ChevronRight,
-  CalendarRange,
   ArrowLeftRight,
   AlertCircle,
   Calendar,
@@ -38,7 +35,20 @@ export default function LeavesCalendar({ leaves, doctors }: LeavesCalendarProps)
     'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
   ];
 
-  const handlePrevMonth = () => {
+  // Pre-normalize all leaves once for instantaneous O(1) date comparison
+  const normalizedLeaves = useMemo(() => {
+    return leaves.map((leave) => {
+      const startStr = toWibDateStr(leave.startDate);
+      const endStr = toWibDateStr(leave.endDate || leave.startDate);
+      return {
+        ...leave,
+        _startStr: startStr,
+        _endStr: endStr || startStr,
+      };
+    });
+  }, [leaves]);
+
+  const handlePrevMonth = useCallback(() => {
     triggerHaptic('light');
     if (currentMonth === 0) {
       setCurrentMonth(11);
@@ -46,9 +56,9 @@ export default function LeavesCalendar({ leaves, doctors }: LeavesCalendarProps)
     } else {
       setCurrentMonth((m) => m - 1);
     }
-  };
+  }, [currentMonth]);
 
-  const handleNextMonth = () => {
+  const handleNextMonth = useCallback(() => {
     triggerHaptic('light');
     if (currentMonth === 11) {
       setCurrentMonth(0);
@@ -56,17 +66,17 @@ export default function LeavesCalendar({ leaves, doctors }: LeavesCalendarProps)
     } else {
       setCurrentMonth((m) => m + 1);
     }
-  };
+  }, [currentMonth]);
 
-  const handleTodayMonth = () => {
+  const handleTodayMonth = useCallback(() => {
     triggerHaptic('selection');
     const now = getWibNow();
     setCurrentYear(now.getFullYear());
     setCurrentMonth(now.getMonth());
     setSelectedDate(now);
-  };
+  }, []);
 
-  // Build calendar cells using WIB date calculations
+  // Build calendar cells using WIB date calculations (super fast)
   const calendarCells = useMemo(() => {
     return getCalendarGrid(currentYear, currentMonth, leaves);
   }, [currentYear, currentMonth, leaves]);
@@ -75,16 +85,18 @@ export default function LeavesCalendar({ leaves, doctors }: LeavesCalendarProps)
     return toWibDateStr(selectedDate);
   }, [selectedDate]);
 
-  // Leaves strictly matching the selected date on the calendar
+  // Leaves strictly matching the selected date on the calendar (O(1) string comparison)
   const leavesForSelectedDate = useMemo(() => {
     if (!selectedDateStr) return [];
-    return leaves.filter((leave) => isDateInLeave(selectedDateStr, leave));
-  }, [leaves, selectedDateStr]);
+    return normalizedLeaves.filter(
+      (nl) => nl._startStr && selectedDateStr >= nl._startStr && selectedDateStr <= nl._endStr
+    );
+  }, [normalizedLeaves, selectedDateStr]);
 
-  const handleSelectDate = (d: Date) => {
+  const handleSelectDate = useCallback((d: Date) => {
     triggerHaptic('selection');
     setSelectedDate(d);
-  };
+  }, []);
 
   return (
     <div className="leaves-view-container">
@@ -211,16 +223,14 @@ export default function LeavesCalendar({ leaves, doctors }: LeavesCalendarProps)
 
             return (
               <div key={leave.id} className="platter ios27-compact-card is-cuti">
-                <span className="card-top-specular" aria-hidden="true" />
-
                 <div className="card-main-content">
-                  {/* Squircle Avatar */}
+                  {/* Squircle Avatar (3D Ceramic Squircle) */}
                   <div className="card-avatar-col">
                     <div className="avatar-squircle">
                       {doctorObj?.image ? (
                         <img src={doctorObj.image} alt={displayName} className="avatar-img" loading="lazy" />
                       ) : (
-                        <span className="initials">{getInitials(displayName)}</span>
+                        <SpecialistIcon department={specialty} size={24} className="avatar-spec-icon" />
                       )}
                     </div>
                   </div>
@@ -229,10 +239,6 @@ export default function LeavesCalendar({ leaves, doctors }: LeavesCalendarProps)
                   <div className="card-info-col">
                     <div className="card-name-row">
                       <h3 className="doc-name">{displayName}</h3>
-                      <span className="status-pill compact-status st-cuti">
-                        <span className="status-dot" />
-                        <span>Cuti</span>
-                      </span>
                     </div>
 
                     <div className="card-sub-row">
@@ -240,10 +246,15 @@ export default function LeavesCalendar({ leaves, doctors }: LeavesCalendarProps)
                         <SpecialistIcon department={specialty} size={12} className="spec-icon-inline" />
                         <span>{specialty}</span>
                       </span>
+
+                      <span className="status-pill compact-status st-cuti">
+                        <span className="status-dot" />
+                        <span>Cuti</span>
+                      </span>
                     </div>
 
                     <div className="card-time-row">
-                      <AlertCircle size={13} className="time-icon text-red" />
+                      <AlertCircle size={12} className="time-icon text-red" />
                       <span className="card-time-val text-red">
                         {leave.reason || 'Izin Dinas / Cuti Dokter'}
                       </span>
@@ -262,8 +273,9 @@ export default function LeavesCalendar({ leaves, doctors }: LeavesCalendarProps)
                       style={{ background: 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)' }}
                       onClick={() => triggerHaptic('light')}
                       title="Konfirmasi CS WA"
+                      aria-label="Konfirmasi CS WA"
                     >
-                      <MessageCircle size={13} />
+                      <MessageCircle size={12} />
                       <span>CS WA</span>
                     </a>
                   </div>

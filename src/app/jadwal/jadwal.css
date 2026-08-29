@@ -995,29 +995,23 @@ body.dark .ios-search-bar:focus-within {
 }
 
 .ios27-compact-card {
-  padding: 11px 14px;
-  border-radius: 18px;
+  padding: 10px 12px;
+  border-radius: 16px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 0;
 }
 
 .card-top-specular {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 45%;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0) 100%);
-  pointer-events: none;
-  border-top-left-radius: 18px;
-  border-top-right-radius: 18px;
+  display: none;
 }
 
 .card-main-content {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
+  width: 100%;
+  min-width: 0;
 }
 
 .card-avatar-col {
@@ -1028,6 +1022,8 @@ body.dark .ios-search-bar:focus-within {
 .card-avatar-col .avatar-squircle {
   width: 44px;
   height: 44px;
+  min-width: 44px;
+  min-height: 44px;
   border-radius: 13px;
 }
 
@@ -1036,78 +1032,93 @@ body.dark .ios-search-bar:focus-within {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 2.5px;
+  gap: 2px;
+  overflow: hidden;
 }
 
 .card-name-row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 6px;
+  width: 100%;
+  min-width: 0;
 }
 
 .card-name-row .doc-name {
-  font-size: 14.5px;
-  font-weight: 800;
-  letter-spacing: -0.3px;
+  font-size: 13.5px;
+  font-weight: 750;
+  letter-spacing: -0.2px;
+  line-height: 1.25;
   color: var(--text-main);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-.status-pill.compact-status {
-  padding: 1.5px 6.5px;
-  font-size: 10px;
-  font-weight: 700;
+  margin: 0;
 }
 
 .card-sub-row {
   display: flex;
   align-items: center;
-  gap: 6px;
-  flex-wrap: wrap;
+  gap: 5px;
+  flex-wrap: nowrap;
+  overflow: hidden;
+  min-width: 0;
 }
 
-.card-queue-badge {
+.doc-spec-badge {
   display: inline-flex;
   align-items: center;
   gap: 3.5px;
-  font-size: 10.5px;
-  font-weight: 700;
-  padding: 1px 6px;
-  border-radius: 6px;
-  background: var(--surface-well);
-  color: var(--text-sub);
-  cursor: pointer;
-  transition: transform 120ms ease, background 120ms ease;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 5.5px;
+  border-radius: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 135px;
+  flex-shrink: 1;
 }
 
-.card-queue-badge:active {
-  transform: scale(0.92);
-  background: var(--surface-card);
+.status-pill.compact-status {
+  padding: 1px 5px;
+  font-size: 9.5px;
+  font-weight: 700;
+  border-radius: 5px;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .card-time-row {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 11.5px;
+  gap: 5px;
+  font-size: 10.5px;
   font-weight: 600;
   color: var(--text-sub);
-  flex-wrap: wrap;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-time-val {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .card-reg-pill {
   display: inline-flex;
   align-items: center;
-  font-size: 10px;
+  font-size: 9.5px;
   font-weight: 700;
-  padding: 1px 6px;
-  border-radius: 6px;
+  padding: 0.5px 5px;
+  border-radius: 5px;
   background: rgba(0, 122, 255, 0.08);
   color: var(--ios-blue);
   letter-spacing: -0.1px;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 [data-theme="dark"] .card-reg-pill,
@@ -1120,24 +1131,28 @@ body.dark .card-reg-pill {
 .card-multi-shifts-wrap {
   display: flex;
   align-items: center;
-  gap: 5px;
-  flex-wrap: wrap;
+  gap: 4px;
+  flex-wrap: nowrap;
+  overflow: hidden;
+  min-width: 0;
 }
 
 .shift-slot-pill {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  font-size: 11px;
+  gap: 3.5px;
+  font-size: 10px;
   font-weight: 600;
   color: var(--text-main);
   background: var(--surface-well);
-  padding: 1.5px 6px;
-  border-radius: 6px;
+  padding: 1px 5px;
+  border-radius: 5px;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .shift-title-tag {
-  font-size: 9.5px;
+  font-size: 9px;
   font-weight: 700;
   color: var(--text-sub);
   margin-left: 2px;
@@ -1146,13 +1161,14 @@ body.dark .card-reg-pill {
 .card-action-col {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   flex-shrink: 0;
+  margin-left: auto;
 }
 
 .card-fav-btn {
-  width: 30px;
-  height: 30px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   border: none;
   background: transparent;
@@ -1161,6 +1177,7 @@ body.dark .card-reg-pill {
   align-items: center;
   justify-content: center;
   transition: transform 140ms ease, color 140ms ease;
+  flex-shrink: 0;
 }
 
 .card-fav-btn:active {
@@ -1174,18 +1191,36 @@ body.dark .card-reg-pill {
 .card-book-pill-btn {
   display: inline-flex;
   align-items: center;
-  gap: 4.5px;
-  padding: 6.5px 12px;
+  gap: 3.5px;
+  height: 28px;
+  padding: 0 9px;
   border-radius: var(--radius-pill);
   background: linear-gradient(135deg, var(--ios-blue) 0%, #0056B3 100%);
   color: #FFFFFF;
-  font-size: 11.5px;
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: -0.2px;
   border: 1px solid rgba(255, 255, 255, 0.25);
-  box-shadow: 0 3px 10px rgba(0, 122, 255, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  box-shadow: 0 2px 8px rgba(0, 122, 255, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.4);
   cursor: pointer;
   transition: transform 140ms ease, box-shadow 140ms ease;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.card-cuti-badge-mini {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 26px;
+  padding: 0 8px;
+  border-radius: 9999px;
+  font-size: 10px;
+  font-weight: 700;
+  background: rgba(255, 59, 48, 0.12);
+  color: var(--ios-red);
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .card-book-pill-btn:active {
