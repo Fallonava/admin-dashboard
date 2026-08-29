@@ -155,13 +155,16 @@ export default function LeavesCalendar({ leaves, doctors }: LeavesCalendarProps)
                 disabled={!cell.date}
                 aria-label={`${cell.dayNum} ${monthNames[currentMonth]}, ${cell.leavesCount} dokter cuti`}
               >
-                <span className="cal-cell-num">{cell.dayNum}</span>
+                <div className="cal-cell-num-wrap">
+                  <span className="cal-cell-num">{cell.dayNum}</span>
+                </div>
                 <div className="cal-cell-indicators">
-                  {cell.isHoliday && <span className="cal-dot holiday-dot" title="Libur" />}
-                  {cell.leavesCount > 0 && (
-                    <span className="cal-dot leave-dot" title={`${cell.leavesCount} Dokter Cuti`}>
-                      {cell.leavesCount > 1 ? cell.leavesCount : ''}
-                    </span>
+                  {cell.leavesCount > 0 ? (
+                    <span className="cal-event-dot leave-dot" title={`${cell.leavesCount} Dokter Cuti`} />
+                  ) : cell.isHoliday ? (
+                    <span className="cal-event-dot holiday-dot" title="Libur" />
+                  ) : (
+                    <span className="cal-event-dot-spacer" />
                   )}
                 </div>
               </button>

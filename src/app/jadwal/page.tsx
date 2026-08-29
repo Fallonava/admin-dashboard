@@ -15,7 +15,12 @@ import {
 } from 'lucide-react';
 
 import type { Doctor, Shift, LeaveRequest, DisplayApiResponse } from './types';
-import { evaluateDoctorRealtimeStatus, isShiftActiveForDate, toWibDateStr } from './lib/schedule-utils';
+import {
+  evaluateDoctorRealtimeStatus,
+  isShiftActiveForDate,
+  toWibDateStr,
+  sortDoctorsBySchedule,
+} from './lib/schedule-utils';
 import { triggerHaptic } from './lib/haptics';
 
 import DynamicIsland, { DynamicIslandAlert } from './components/DynamicIsland';
@@ -201,7 +206,7 @@ export default function JadwalPage() {
 
   // STRICT FILTER: Only doctors who practice or have scheduled shifts or leave TODAY
   const todayOnlyDoctors = useMemo(() => {
-    return evaluatedDoctors.filter((doc) => {
+    const list = evaluatedDoctors.filter((doc) => {
       const statusUpper = (doc.status || '').toUpperCase();
       const hasTodayShift = Boolean(doc.todayShift);
       const isLiveOrScheduled = statusUpper === 'PRAKTEK' || statusUpper === 'TERJADWAL';
@@ -209,6 +214,7 @@ export default function JadwalPage() {
 
       return hasTodayShift || isLiveOrScheduled || isCutiToday;
     });
+    return sortDoctorsBySchedule(list);
   }, [evaluatedDoctors]);
 
   // Extract unique specialties from today's active doctors
@@ -271,7 +277,7 @@ export default function JadwalPage() {
 
   // Filtered doctors based on search, status filter, and specialty filter (STRICTLY FROM TODAY'S DOCTORS)
   const filteredTodayDoctors = useMemo(() => {
-    return todayOnlyDoctors.filter((doc) => {
+    const list = todayOnlyDoctors.filter((doc) => {
       // Favorite filter
       if (statusFilter === 'favorite' && !favoriteDoctorIds.includes(doc.id)) {
         return false;
@@ -303,19 +309,20 @@ export default function JadwalPage() {
 
       return true;
     });
+    return sortDoctorsBySchedule(list);
   }, [todayOnlyDoctors, statusFilter, specialtyFilter, searchQuery, favoriteDoctorIds]);
 
   // Group filtered doctors by operational state
   const livePraktekDoctors = useMemo(
-    () => filteredTodayDoctors.filter((d) => (d.status || '').toUpperCase() === 'PRAKTEK'),
+    () => sortDoctorsBySchedule(filteredTodayDoctors.filter((d) => (d.status || '').toUpperCase() === 'PRAKTEK')),
     [filteredTodayDoctors]
   );
   const upcomingTerjadwalDoctors = useMemo(
-    () => filteredTodayDoctors.filter((d) => (d.status || '').toUpperCase() === 'TERJADWAL'),
+    () => sortDoctorsBySchedule(filteredTodayDoctors.filter((d) => (d.status || '').toUpperCase() === 'TERJADWAL')),
     [filteredTodayDoctors]
   );
   const cutiDoctors = useMemo(
-    () => filteredTodayDoctors.filter((d) => (d.status || '').toUpperCase().includes('CUTI')),
+    () => sortDoctorsBySchedule(filteredTodayDoctors.filter((d) => (d.status || '').toUpperCase().includes('CUTI'))),
     [filteredTodayDoctors]
   );
 

@@ -8,6 +8,7 @@ import {
   isDoctorOnLeave,
   formatTimeSlot,
   isShiftActiveForDate,
+  sortDoctorsBySchedule,
 } from '../lib/schedule-utils';
 import { triggerHaptic } from '../lib/haptics';
 import {
@@ -67,18 +68,33 @@ export default function WeeklyView({
     });
   }, [dateStrip, doctors, shifts]);
 
-  // Filtered doctors list for active day
+  // Filtered doctors list for active day (sorted by shift time & status)
   const filteredDoctors = useMemo(() => {
-    return doctors.filter((doc) => {
-      const hasShift = shifts.some(
-        (s) =>
-          s.doctorId === doc.id &&
-          s.dayIdx === targetDayIdx &&
-          !(s.disabledDates || []).includes(targetDateStr) &&
-          isShiftActiveForDate(s.extra, targetWibTime)
-      );
-      return hasShift;
-    });
+    const list = doctors
+      .filter((doc) => {
+        const hasShift = shifts.some(
+          (s) =>
+            s.doctorId === doc.id &&
+            s.dayIdx === targetDayIdx &&
+            !(s.disabledDates || []).includes(targetDateStr) &&
+            isShiftActiveForDate(s.extra, targetWibTime)
+        );
+        return hasShift;
+      })
+      .map((doc) => {
+        const activeShift = shifts.find(
+          (s) =>
+            s.doctorId === doc.id &&
+            s.dayIdx === targetDayIdx &&
+            !(s.disabledDates || []).includes(targetDateStr) &&
+            isShiftActiveForDate(s.extra, targetWibTime)
+        );
+        return {
+          ...doc,
+          todayShift: activeShift || doc.todayShift,
+        };
+      });
+    return sortDoctorsBySchedule(list);
   }, [doctors, shifts, targetDayIdx, targetDateStr, targetWibTime]);
 
   const handleSelectDay = (index: number) => {
@@ -106,18 +122,24 @@ export default function WeeklyView({
           {dateStrip.map((item, idx) => {
             const isSelected = idx === selectedDayIdx;
             const docCount = doctorCountPerDay[idx] || 0;
+            const isToday = idx === 0;
             return (
               <button
                 key={item.dateStr}
                 type="button"
-                className={`weekly-day-btn ${isSelected ? 'active' : ''} ${item.isHoliday ? 'is-holiday' : ''}`}
+                className={`weekly-day-btn ${isSelected ? 'active' : ''} ${isToday ? 'is-today' : ''} ${
+                  item.isHoliday ? 'is-holiday' : ''
+                }`}
                 onClick={() => handleSelectDay(idx)}
                 aria-label={`Jadwal ${item.dayName}, ${item.dayNum} ${item.monthName}`}
               >
-                <span className="date-day-name">{item.dayName}</span>
-                <span className="date-number">{item.dayNum}</span>
-                <span className="date-month-name">{item.monthName}</span>
-                <span className="date-doc-count">{docCount} Dokter</span>
+                <span className="date-day-name">{item.dayName.slice(0, 3)}</span>
+                <div className="date-bubble-wrap">
+                  <span className="date-number">{item.dayNum}</span>
+                </div>
+                <div className="date-doc-count-pill">
+                  {docCount > 0 ? <span>{docCount} dr</span> : <span className="count-zero">-</span>}
+                </div>
                 {item.isHoliday && <span className="holiday-dot" title={item.holidayName} />}
               </button>
             );

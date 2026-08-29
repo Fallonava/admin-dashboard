@@ -96,75 +96,48 @@ export default function DynamicIsland({
     }
   };
 
+  // If no alert and no active broadcast, do not render static black pill over navbar
+  if (!currentAlert && !activeBroadcast) {
+    return null;
+  }
+
   return (
     <div className="dynamic-island-container" aria-label="Dynamic Island Notifikasi & Status">
       <div
-        className={`dynamic-island ${isExpanded ? 'island-expanded' : 'island-compact'} ${
+        className={`dynamic-island island-expanded ${
           activeBroadcast ? 'has-broadcast' : ''
-        } ${currentAlert ? `has-alert alert-${currentAlert.type}` : 'is-standby'}`}
+        } ${currentAlert ? `has-alert alert-${currentAlert.type}` : ''}`}
         onClick={toggleExpand}
         role="button"
         tabIndex={0}
         aria-expanded={isExpanded}
       >
-        {isExpanded ? (
-          /* ── 1. EXPANDED / NOTIFICATION MORPH STATE ── */
-          <div className="island-expanded-view">
-            {currentAlert ? (
-              /* Dynamic Notification Event */
-              <div className="island-alert-row">
-                <div className="island-leading">{getAlertIcon(currentAlert.type)}</div>
-                <div className="island-content">
-                  <div className="island-title">{currentAlert.title}</div>
-                  {currentAlert.message && <div className="island-sub">{currentAlert.message}</div>}
-                </div>
-                <div className="island-trailing-badge">
-                  <span className="island-mini-dot" />
-                </div>
+        <div className="island-expanded-view">
+          {currentAlert ? (
+            /* Dynamic Notification Event */
+            <div className="island-alert-row">
+              <div className="island-leading">{getAlertIcon(currentAlert.type)}</div>
+              <div className="island-content">
+                <div className="island-title">{currentAlert.title}</div>
+                {currentAlert.message && <div className="island-sub">{currentAlert.message}</div>}
               </div>
-            ) : activeBroadcast ? (
-              /* Hospital Broadcast Announcement */
-              <div className="island-broadcast-row">
-                <div className="island-leading">
-                  <ShieldAlert size={20} className="text-amber" />
-                </div>
-                <div className="island-content">
-                  <div className="island-title">Pengumuman Rumah Sakit</div>
-                  <div className="island-sub">{activeBroadcast.message}</div>
-                </div>
+              <div className="island-trailing-badge">
+                <span className="island-mini-dot" />
               </div>
-            ) : (
-              /* Standby Expanded Operational Summary */
-              <div className="island-operational-row">
-                <div className="island-status-head">
-                  <div className="island-brand-tag">
-                    <span className="brand-live-dot" />
-                    <span>Live Operasional Poliklinik</span>
-                  </div>
-                  <span className="island-badge-pill">{activeDoctorCount} Sedang Praktik</span>
-                </div>
-                <div className="island-sub-stats">
-                  <span>RSU Siaga Medika Purbalingga — Rawat Jalan & Spesialis</span>
-                </div>
-              </div>
-            )}
-          </div>
-        ) : (
-          /* ── 2. COMPACT STANDBY PILL ── */
-          <div className="island-compact-row">
-            <div className="island-leading-dot" />
-            <span className="island-compact-txt">
-              {activeBroadcast
-                ? 'Pengumuman RS'
-                : `${activeDoctorCount} Dokter Aktif`}
-            </span>
-            <div className="island-wave-indicator" aria-hidden="true">
-              <span className="wave-bar b1" />
-              <span className="wave-bar b2" />
-              <span className="wave-bar b3" />
             </div>
-          </div>
-        )}
+          ) : activeBroadcast ? (
+            /* Hospital Broadcast Announcement */
+            <div className="island-broadcast-row">
+              <div className="island-leading">
+                <ShieldAlert size={20} className="text-amber" />
+              </div>
+              <div className="island-content">
+                <div className="island-title">Pengumuman Rumah Sakit</div>
+                <div className="island-sub">{activeBroadcast.message}</div>
+              </div>
+            </div>
+          ) : null}
+        </div>
       </div>
     </div>
   );

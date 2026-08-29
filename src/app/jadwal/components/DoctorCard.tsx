@@ -230,36 +230,36 @@ export default function DoctorCard({
         </div>
       </div>
 
-      {/* Expandable Accordion Drawer for Extra Context */}
+      {/* Expandable Accordion Drawer for Extra Context (Apple Inset Metric List) */}
       {isExpanded && (
         <div className="platter-expanded-drawer">
-          <div className="drawer-info-grid">
-            <div className="drawer-info-item">
-              <span className="drawer-lbl">Kategori Poliklinik</span>
-              <span className="drawer-val">{doctor.category || 'Poliklinik Spesialis Terpadu'}</span>
+          <div className="drawer-metric-list">
+            <div className="drawer-metric-row">
+              <span className="drawer-metric-lbl">Kategori Poliklinik</span>
+              <span className="drawer-metric-val">{doctor.category || 'Poliklinik Spesialis Terpadu'}</span>
             </div>
             {doctor.registrationTime && (
-              <div className="drawer-info-item">
-                <span className="drawer-lbl">Waktu Registrasi</span>
-                <span className="drawer-val">{doctor.registrationTime}</span>
+              <div className="drawer-metric-row">
+                <span className="drawer-metric-lbl">Waktu Registrasi</span>
+                <span className="drawer-metric-val">{doctor.registrationTime}</span>
               </div>
             )}
             {doctor.todayShift?.title && (
-              <div className="drawer-info-item">
-                <span className="drawer-lbl">Sesi Poliklinik</span>
-                <span className="drawer-val">{doctor.todayShift.title}</span>
+              <div className="drawer-metric-row">
+                <span className="drawer-metric-lbl">Sesi Poliklinik</span>
+                <span className="drawer-metric-val">{doctor.todayShift.title}</span>
               </div>
             )}
             {doctor.activeLeave?.reason && (
-              <div className="drawer-info-item full">
-                <span className="drawer-lbl">Keterangan Cuti</span>
-                <span className="drawer-val text-red">{doctor.activeLeave.reason}</span>
+              <div className="drawer-metric-row alert-leave">
+                <span className="drawer-metric-lbl">Keterangan Cuti</span>
+                <span className="drawer-metric-val text-red">{doctor.activeLeave.reason}</span>
               </div>
             )}
             {doctor.activeLeave?.replacementDoctor && (
-              <div className="drawer-info-item full">
-                <span className="drawer-lbl">Dokter Pengganti</span>
-                <span className="drawer-val text-blue">{doctor.activeLeave.replacementDoctor}</span>
+              <div className="drawer-metric-row alert-replacement">
+                <span className="drawer-metric-lbl">Dokter Pengganti</span>
+                <span className="drawer-metric-val text-blue">{doctor.activeLeave.replacementDoctor}</span>
               </div>
             )}
           </div>

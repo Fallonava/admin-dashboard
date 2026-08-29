@@ -367,3 +367,79 @@ export function formatDateIndonesian(dateInput: Date | string): string {
     return String(dateInput);
   }
 }
+
+/**
+ * Parses time string like "07:30", "07.30 - 11.00", "08:00 - Selesai" into total minutes from midnight
+ */
+export function parseTimeToMinutes(timeStr?: string | null): number {
+  if (!timeStr) return 9999;
+  const str = String(timeStr).trim();
+  const match = str.match(/(\d{1,2})[:.](\d{2})/);
+  if (match) {
+    const hours = parseInt(match[1], 10);
+    const minutes = parseInt(match[2], 10);
+    if (!isNaN(hours) && !isNaN(minutes)) {
+      return hours * 60 + minutes;
+    }
+  }
+  const singleHourMatch = str.match(/^(\d{1,2})/);
+  if (singleHourMatch) {
+    const hours = parseInt(singleHourMatch[1], 10);
+    if (!isNaN(hours)) return hours * 60;
+  }
+  return 9999;
+}
+
+/**
+ * Returns numeric priority weight for doctor operational status
+ */
+export function getStatusWeight(status?: string | null): number {
+  const st = (status || '').toUpperCase();
+  if (st === 'PRAKTEK' || st === 'PENDAFTARAN') return 1; // Prioritas 1: Sedang berlangsung / Loket Buka
+  if (st === 'TERJADWAL') return 2;                      // Prioritas 2: Terjadwal bertugas hari ini
+  if (st === 'SELESAI' || st === 'PENUH') return 3;       // Prioritas 3: Selesai / Kuota Penuh
+  if (st.includes('CUTI') || st === 'LIBUR') return 4;   // Prioritas 4: Cuti / Libur
+  return 5;
+}
+
+/**
+ * Standard multi-tier sorting for doctors:
+ * Tier 1: Operational Status (Praktek/Pendaftaran -> Terjadwal -> Selesai -> Cuti)
+ * Tier 2: Registration Opening Time (Earliest first)
+ * Tier 3: Practice Start Time (Earliest first)
+ * Tier 4: Specialty (A-Z)
+ * Tier 5: Doctor Name (A-Z)
+ */
+export function sortDoctorsBySchedule(doctors: Doctor[]): Doctor[] {
+  return [...doctors].sort((a, b) => {
+    // 1. Status Weight
+    const weightA = getStatusWeight(a.status);
+    const weightB = getStatusWeight(b.status);
+    if (weightA !== weightB) {
+      return weightA - weightB;
+    }
+
+    // 2. Registration Time (Paling Pagi Duluan)
+    const regA = parseTimeToMinutes(a.registrationTime || a.todayShift?.registrationTime);
+    const regB = parseTimeToMinutes(b.registrationTime || b.todayShift?.registrationTime);
+    if (regA !== regB && regA !== 9999 && regB !== 9999) {
+      return regA - regB;
+    }
+
+    // 3. Practice Start Time (Paling Pagi Duluan)
+    const startA = parseTimeToMinutes(a.startTime || a.todayShift?.formattedTime);
+    const startB = parseTimeToMinutes(b.startTime || b.todayShift?.formattedTime);
+    if (startA !== startB) {
+      return startA - startB;
+    }
+
+    // 4. Specialty (A-Z)
+    const specA = a.specialty || '';
+    const specB = b.specialty || '';
+    const specDiff = specA.localeCompare(specB);
+    if (specDiff !== 0) return specDiff;
+
+    // 5. Doctor Name (A-Z)
+    return (a.name || '').localeCompare(b.name || '');
+  });
+}
