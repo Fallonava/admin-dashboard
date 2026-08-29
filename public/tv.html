@@ -5581,12 +5581,78 @@
         box-shadow: 0 3.5px 0 rgba(253, 186, 116, 0.8), 0 6px 16px rgba(245, 158, 11, 0.08) !important;
       }
 
-      .complication-card,
+      .complication-status-pass,
+      .complication-journey-card,
       .tv-qr-hero-card {
         background: linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%) !important;
         border: 1px solid rgba(226, 234, 245, 0.95) !important;
         border-top: 1.5px solid #FFFFFF !important;
         box-shadow: 0 3px 0 rgba(203, 213, 225, 0.7), 0 6px 14px rgba(15, 23, 42, 0.05) !important;
+      }
+
+      /* ⛅ 3D ATMOSPHERIC WEATHER MASTER CARD (APPLE SPATIAL ELEVATION) */
+      .complication-weather-master {
+        background: linear-gradient(145deg, #F0F9FF 0%, #E0F2FE 45%, #BAE6FD 100%) !important;
+        border: 1.5px solid #7DD3FC !important;
+        border-top: 2px solid #FFFFFF !important;
+        box-shadow: 0 3.5px 0 #38BDF8, 0 8px 18px rgba(2, 132, 199, 0.14) !important;
+        border-radius: 20px !important;
+      }
+
+      .complication-weather-master .complication-header {
+        border-bottom: 1px solid rgba(56, 189, 248, 0.25);
+        padding-bottom: 4px;
+      }
+
+      .complication-weather-master .complication-title span {
+        color: #0369A1 !important;
+        font-weight: 800;
+      }
+
+      .complication-weather-master .complication-tag {
+        background: #0284C7 !important;
+        color: #FFFFFF !important;
+        border: none !important;
+        box-shadow: 0 2px 0 #0369A1 !important;
+        font-weight: 800;
+      }
+
+      .complication-weather-master .weather-temp-master-val {
+        color: #0369A1 !important;
+        font-size: 48px !important;
+        font-weight: 900 !important;
+        text-shadow: 0 1.5px 0 #FFFFFF;
+        -webkit-text-fill-color: #0369A1 !important;
+      }
+
+      .complication-weather-master .weather-temp-master-unit {
+        color: #0284C7 !important;
+        font-size: 22px !important;
+        font-weight: 900 !important;
+        text-shadow: 0 1px 0 #FFFFFF;
+      }
+
+      .complication-weather-master .weather-condition-master-text {
+        color: #0F172A !important;
+        font-weight: 900 !important;
+        font-size: 14.5px !important;
+      }
+
+      .complication-weather-master .weather-range-master-text {
+        color: #0369A1 !important;
+        font-weight: 800 !important;
+        font-size: 11px !important;
+      }
+
+      .complication-weather-master .weather-master-icon-wrap {
+        background: rgba(255, 255, 255, 0.85);
+        border: 1.5px solid #FFFFFF;
+        border-radius: 16px;
+        padding: 5px;
+        box-shadow: 0 3px 0 rgba(186, 230, 253, 0.9), 0 6px 12px rgba(2, 132, 199, 0.15);
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
 
       /* 🎨 Color-Coded Tree Flow Branch & Trunk Cards (Light Mode) */
@@ -5654,12 +5720,50 @@
         box-shadow: 0 3.5px 0 rgba(120, 53, 15, 0.7), 0 8px 18px rgba(0, 0, 0, 0.4) !important;
       }
 
-      [data-theme="dark"] .complication-card,
+      [data-theme="dark"] .complication-status-pass,
+      [data-theme="dark"] .complication-journey-card,
       [data-theme="dark"] .tv-qr-hero-card {
         background: linear-gradient(180deg, #1E293B 0%, #131A26 100%) !important;
         border: 1px solid rgba(255, 255, 255, 0.08) !important;
         border-top: 1.5px solid rgba(255, 255, 255, 0.16) !important;
         box-shadow: 0 3.5px 0 rgba(0, 0, 0, 0.6), 0 8px 18px rgba(0, 0, 0, 0.35) !important;
+      }
+
+      /* Dark Mode 3D Atmospheric Weather Card */
+      [data-theme="dark"] .complication-weather-master {
+        background: linear-gradient(145deg, #0C4A6E 0%, #075985 50%, #0369A1 100%) !important;
+        border: 1.5px solid rgba(56, 189, 248, 0.5) !important;
+        border-top: 2px solid rgba(125, 211, 252, 0.8) !important;
+        box-shadow: 0 4px 0 #075985, 0 10px 22px rgba(0, 0, 0, 0.5) !important;
+      }
+
+      [data-theme="dark"] .complication-weather-master .complication-title span {
+        color: #E0F2FE !important;
+      }
+
+      [data-theme="dark"] .complication-weather-master .weather-temp-master-val {
+        color: #FFFFFF !important;
+        -webkit-text-fill-color: #FFFFFF !important;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+      }
+
+      [data-theme="dark"] .complication-weather-master .weather-temp-master-unit {
+        color: #7DD3FC !important;
+        text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+      }
+
+      [data-theme="dark"] .complication-weather-master .weather-condition-master-text {
+        color: #FFFFFF !important;
+      }
+
+      [data-theme="dark"] .complication-weather-master .weather-range-master-text {
+        color: #BAE6FD !important;
+      }
+
+      [data-theme="dark"] .complication-weather-master .weather-master-icon-wrap {
+        background: rgba(15, 23, 42, 0.5);
+        border: 1.5px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 3px 0 rgba(0, 0, 0, 0.6), 0 6px 12px rgba(0, 0, 0, 0.4);
       }
 
       [data-theme="dark"] .tree-branch-column:first-child .tree-step-card {
