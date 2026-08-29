@@ -1084,12 +1084,12 @@ body.dark .ios-search-bar:focus-within {
 }
 
 .status-pill.compact-status {
-  padding: 1px 5px;
-  font-size: 9.5px;
+  padding: 3px 8px;
+  font-size: 11px;
   font-weight: 700;
-  border-radius: 5px;
+  border-radius: 9999px;
   flex-shrink: 0;
-  white-space: nowrap;
+  border: none;
 }
 
 .card-time-row {
@@ -1460,13 +1460,13 @@ body.dark .avatar-squircle {
   background: currentColor;
 }
 
-.st-praktek { background: rgba(52, 199, 89, 0.12); color: var(--ios-green); border: 1px solid rgba(52, 199, 89, 0.25); }
-.st-terjadwal { background: rgba(0, 122, 255, 0.12); color: var(--ios-blue); border: 1px solid rgba(0, 122, 255, 0.25); }
-.st-cuti { background: rgba(255, 59, 48, 0.12); color: var(--ios-red); border: 1px solid rgba(255, 59, 48, 0.25); }
-.st-libur { background: rgba(255, 149, 0, 0.12); color: var(--ios-orange); border: 1px solid rgba(255, 149, 0, 0.25); }
-.st-selesai { background: rgba(142, 142, 147, 0.14); color: var(--ios-gray); border: 1px solid rgba(142, 142, 147, 0.25); }
-.st-operasi { background: rgba(175, 82, 222, 0.14); color: var(--ios-purple); border: 1px solid rgba(175, 82, 222, 0.25); }
-.st-penuh { background: rgba(255, 45, 85, 0.14); color: var(--ios-pink); border: 1px solid rgba(255, 45, 85, 0.25); }
+.st-praktek { background: rgba(52, 199, 89, 0.15); color: var(--ios-green); border: none; }
+.st-terjadwal { background: rgba(0, 122, 255, 0.15); color: var(--ios-blue); border: none; }
+.st-cuti { background: rgba(255, 59, 48, 0.15); color: var(--ios-red); border: none; }
+.st-libur { background: rgba(255, 149, 0, 0.15); color: var(--ios-orange); border: none; }
+.st-selesai { background: rgba(142, 142, 147, 0.15); color: var(--ios-gray); border: none; }
+.st-operasi { background: rgba(175, 82, 222, 0.15); color: var(--ios-purple); border: none; }
+.st-penuh { background: rgba(255, 45, 85, 0.15); color: var(--ios-pink); border: none; }
 
 /* Time Capsule */
 .platter-body-row {
@@ -2971,9 +2971,9 @@ body.dark .skeleton-pulse {
 [data-theme="dark"] .st-cuti,
 html.dark .st-cuti,
 body.dark .st-cuti {
-  background: rgba(255, 69, 58, 0.15); /* Tinted red adapted for dark mode */
-  color: var(--ios-red); /* Solid red for contrast */
-  border: 1px solid rgba(255, 69, 58, 0.3);
+  background: rgba(255, 69, 58, 0.2);
+  color: var(--ios-red);
+  border: none;
 }
 
 .shift-slot-text {
@@ -3160,4 +3160,15 @@ body.dark .ios-bottom-sheet {
 }
 .platter:active .card-top-specular {
   opacity: 1;
+}
+
+/* Live Pulsing Dot for Status */
+@keyframes statusPulse {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(52, 199, 89, 0.7); }
+  70% { transform: scale(1); box-shadow: 0 0 0 4px rgba(52, 199, 89, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(52, 199, 89, 0); }
+}
+
+.st-praktek .status-dot {
+  animation: statusPulse 2s infinite;
 }
