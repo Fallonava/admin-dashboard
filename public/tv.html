@@ -1585,7 +1585,7 @@
       }
 
       .sidebar-panel.sidebar-mode-weather .sidebar-complications {
-        flex: 1;
+        height: 100%;
         display: flex;
         flex-direction: column;
         justify-content: stretch;
@@ -5442,18 +5442,49 @@
             ></div>
           </div>
 
-          <!-- Minimalist QR Code -->
-          <div class="sidebar-qr-minimal" style="display:flex; flex-direction:column; align-items:center; gap:8px;">
-            <div class="dynamic-qr-box" style="width: 130px; height: 130px; margin: 0;">
-              <span class="qr-reticle qr-reticle-tl"></span>
-              <span class="qr-reticle qr-reticle-tr"></span>
-              <span class="qr-reticle qr-reticle-bl"></span>
-              <span class="qr-reticle qr-reticle-br"></span>
-              <div id="tvQrCode" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;"></div>
+          <!-- Dynamic QR Code & Highlighted Hotline Number -->
+          <div class="sidebar-qr-hotline">
+            <!-- Apple Wallet-Style Digital Pass Hero Card -->
+            <div class="tv-qr-hero-card">
+              <div class="wallet-pass-header">
+                <div class="wallet-pass-brand">
+                  <span class="material-icons-round wallet-pass-icon">smartphone</span>
+                  <div class="wallet-pass-title-group">
+                    <span class="wallet-pass-tag">DIGITAL PASS RS</span>
+                    <span class="wallet-pass-sub">Jadwal Real-Time HP</span>
+                  </div>
+                </div>
+                <div class="wallet-pass-badge">
+                  <span class="radar-dot"></span>
+                  <span>LIVE WEB</span>
+                </div>
+              </div>
+              <div class="dynamic-qr-box">
+                <span class="qr-reticle qr-reticle-tl"></span>
+                <span class="qr-reticle qr-reticle-tr"></span>
+                <span class="qr-reticle qr-reticle-bl"></span>
+                <span class="qr-reticle qr-reticle-br"></span>
+                <div id="tvQrCode" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;"></div>
+              </div>
+              <div class="tv-qr-url-pill">
+                <span class="material-icons-round" style="font-size: 13px; color: #0284C7;">public</span>
+                <span>simed.fallonava.my.id/jadwal</span>
+              </div>
+              <span class="wallet-pass-hint">Arahkan kamera smartphone ke barcode untuk pantau jadwal dokter di HP</span>
             </div>
-            <div class="tv-qr-url-pill" style="margin:0; padding: 4px 10px; font-size: 11px;">
-              <span class="material-icons-round" style="font-size: 12px; color: #0284C7;">public</span>
-              <span>simed.fallonava.my.id/jadwal</span>
+
+            <!-- Apple tvOS View-Only WhatsApp Hotline Widget -->
+            <div class="hotline-info-banner">
+              <div class="hotline-icon-wrap">
+                <!-- WhatsApp SVG icon -->
+                <svg class="hotline-wa-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+                </svg>
+              </div>
+              <div class="hotline-details">
+                <span class="hotline-tag">INFORMASI &amp; PENDAFTARAN RS</span>
+                <span class="hotline-num">0823-2344-6076</span>
+              </div>
             </div>
           </div>
 
@@ -7954,137 +7985,182 @@
         // Render sidebar dengan section header terpisah
         _renderSidebar(operasiList, penuhList, cutiList, updateList) {
           const container = $("scrollSidebar");
-          const allDocs = [...operasiList, ...penuhList, ...cutiList];
-          
-          const sidebarPanel = document.querySelector(".sidebar-panel");
-          if (sidebarPanel) {
-            sidebarPanel.classList.add("sidebar-mode-weather");
-          }
+          const oldMap = new Map();
+          Array.from(container.children).forEach((el) => {
+            if (el.dataset.id) oldMap.set(el.dataset.id, el);
+          });
 
-          const w = this._weatherCache;
-          const heroIconMarkup = w.iconHTML || this.getWeatherIconSVG("partly-cloudy-day", 44);
-          
-          const weatherHTML = `
-              <div class="complication-card complication-weather-master weather-theme-${w.atmosphereTheme}" style="height: 100%; margin: 0; min-height: 140px;">
-                <div class="complication-header">
-                  <div class="complication-title">
-                    <span class="material-icons-round" style="font-size:14px; color:#0284C7;">wb_sunny</span>
-                    <span>CUACA PURBALINGGA</span>
-                  </div>
-                  <span class="complication-tag tag-sky">LIVE BMKG</span>
-                </div>
-                <div class="weather-master-hero-row">
-                  <div class="weather-master-hero-left">
-                    <div class="weather-temp-master-group">
-                      <span class="weather-temp-master-val" id="tvWeatherTemp">${w.temp}</span>
-                      <span class="weather-temp-master-unit">°C</span>
-                    </div>
-                    <div class="weather-condition-master-text" id="tvWeatherCondition">${w.condition}</div>
-                    <div class="weather-range-master-text" id="tvWeatherRange">Suhu Harian: H: ${w.tempMax}° • L: ${w.tempMin}°</div>
-                  </div>
-                  <div class="weather-master-hero-right">
-                    <div class="weather-master-icon-wrap" id="tvWeatherIcon">${heroIconMarkup}</div>
-                  </div>
-                </div>
-              </div>`;
+          const allElements = [];
+          let hasLayoutChange = false;
 
-          const alurHTML = `
-              <div class="complication-card complication-journey-card" style="margin-top: 10px; flex: 1;">
-                <div class="complication-header">
-                  <div class="complication-title">
-                    <span class="material-icons-round" style="font-size:14px; color:#007AFF;">route</span>
-                    <span>ALUR PENDAFTARAN</span>
-                  </div>
-                </div>
-                <div class="journey-track-wrapper">
-                  <div class="journey-pulse-line"></div>
-                  <div class="journey-node-item active-node">
-                    <div class="j-node-icon"><span class="material-icons-round">how_to_reg</span></div>
-                    <div class="j-node-text">
-                      <span class="j-node-title">1. Registrasi</span>
-                      <span class="j-node-desc">Ambil antrean / daftar online</span>
-                    </div>
-                  </div>
-                  <div class="journey-node-item">
-                    <div class="j-node-icon"><span class="material-icons-round">stethoscope</span></div>
-                    <div class="j-node-text">
-                      <span class="j-node-title">2. Poliklinik</span>
-                      <span class="j-node-desc">Pemeriksaan &amp; tindakan dokter</span>
-                    </div>
-                  </div>
-                  <div class="journey-node-item">
-                    <div class="j-node-icon"><span class="material-icons-round">vaccines</span></div>
-                    <div class="j-node-text">
-                      <span class="j-node-title">3. Farmasi &amp; Kasir</span>
-                      <span class="j-node-desc">Pengambilan obat &amp; administrasi</span>
-                    </div>
-                  </div>
-                </div>
-              </div>`;
+          // Helper: Buat section header
+          const makeSectionHeader = (label, color, count, id) => {
+            let el = container.querySelector(`[data-section="${id}"]`);
+            if (!el) {
+              el = document.createElement("div");
+              el.className = "sidebar-section-header";
+              el.dataset.section = id;
+              hasLayoutChange = true;
+            }
+            el.innerHTML = `
+                        <div class="sidebar-section-dot" style="background:${color}"></div>
+                        <span class="sidebar-section-label">${label}</span>
+                        <div class="sidebar-section-line"></div>
+                        <span class="sidebar-section-count">${count}</span>
+                    `;
+            return el;
+          };
 
-          let slidesHTML = `
-            <div class="carousel-slide" style="width: 100%; flex-shrink: 0; padding-right: 2px;">
-              ${weatherHTML}
-            </div>
-          `;
-
-          allDocs.forEach((d, idx) => {
+          // Helper: Buat platter card (reuse dari updateList logic)
+          const makeCard = (d) => {
+            // Unique ID: Name + Shift Time
+            const shiftJam = d.Jam && d.Jam !== "-" ? d.Jam : "no-time";
+            const id = `${d.Dokter}_${shiftJam}`;
+            const hash = `${d.Status}|${d.Jam}|${d._isActive}|${d["Code Antrian"] || ""}|${d.JamDaftar}|${d.NextBuka || ""}|${d.CutiSampai || ""}|${d.CutiCatatan || ""}|${d.DocNote || ""}`;
             const st = (d.Status || "").toUpperCase();
-            let c = "st-nopoli", l = d.Status || "-";
-            if (st === "PENUH") { c = "st-penuh"; l = "PENUH"; }
-            else if (st === "OPERASI") { c = "st-operasi"; l = "OPERASI"; }
-            else if (st === "CUTI") { c = "st-cuti"; l = "CUTI"; }
-            
+            let c = "st-nopoli", i = "block", l = d.Status || "-";
+            if (st === "PRAKTEK") { c = "st-praktek"; i = "check_circle"; l = "PRAKTEK"; }
+            else if (st === "PENDAFTARAN") { c = "st-pendaftaran"; i = "assignment"; l = "PENDAFTARAN"; }
+            else if (st === "TERJADWAL") { c = "st-terjadwal"; i = "schedule"; l = "TERJADWAL"; }
+            else if (st === "SELESAI") { c = "st-selesai"; i = "done_all"; l = "SELESAI"; }
+            else if (st === "PENUH") { c = "st-penuh"; i = "front_hand"; l = "PENUH"; }
+            else if (st === "OPERASI") { c = "st-operasi"; i = "local_hospital"; l = "OPERASI"; }
+            else if (st === "CUTI") { c = "st-cuti"; i = "flight"; l = "CUTI"; }
+            else if (st === "LIBUR") { c = "st-libur"; i = "block"; l = "LIBUR"; }
             const avatarIcon = getSpecialistIcon(d.Spesialis);
             const avatarText = avatarIcon.startsWith("<svg") ? avatarIcon : `<span class="material-icons-round" style="font-size:44px;">${avatarIcon}</span>`;
             if (d._isActive) c += " active";
 
-            const cardHTML = buildSidebarCardHTML(d, avatarText, getStatusGlyph(d.Status), l);
-            
-            slidesHTML += `
-            <div class="carousel-slide" style="width: 100%; flex-shrink: 0; padding-right: 2px;">
-              <div class="carousel-slide-inner" style="height: 100%; display: flex; flex-direction: column; justify-content: center;">
-                <div class="platter platter-mini ${c}" style="margin: 0; box-shadow: 0 4px 12px rgba(0,0,0,0.05); position: relative;">
-                  <div style="position: absolute; right: 14px; top: 12px; font-size: 10px; font-weight: 800; color: var(--text-mute); background: rgba(0,0,0,0.05); padding: 2px 8px; border-radius: 12px; z-index: 10;">${idx + 1} / ${allDocs.length}</div>
-                  ${cardHTML}
-                </div>
-              </div>
-            </div>`;
-          });
+            let labelJam = "JADWAL PRAKTEK";
+            let labelLive = "SEDANG MELAYANI";
+            if (st.includes("OPERASI")) {
+              labelJam = "TINDAKAN MEDIS";
+              labelLive = "SEDANG OPERASI";
+            } else if (st.includes("PENUH")) {
+              labelJam = "STATUS KUOTA";
+              labelLive = "TELAH PENUH";
+            } else if (st.includes("CUTI")) {
+              labelJam = "JADWAL CUTI";
+              labelLive = "TIDAK MELAYANI";
+            } else if (st === "PENDAFTARAN") {
+              labelJam = "REGISTRASI DIBUKA";
+              labelLive = "LOKET DIBUKA";
+            } else if (st === "TERJADWAL") {
+              labelJam = "MENUNGGU SHIFT";
+              labelLive = "BELUM MULAI";
+            }
 
-          const totalSlides = 1 + allDocs.length;
+            let el = oldMap.get(id);
 
-          let htmlContent = `
-            <div class="sidebar-carousel-container" style="overflow: hidden; width: 100%; flex-shrink: 0; margin-bottom: 2px; border-radius: 20px;">
-              <div id="sidebarCarouselTrack" style="display: flex; transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1); width: 100%;">
-                ${slidesHTML}
-              </div>
-            </div>
-            ${alurHTML}
-          `;
-          
-          // Re-render check so we don't restart animations unnecessarily if nothing changed
-          const newHash = allDocs.map(d => d.Dokter + d.Status).join("|") + "|" + w.temp + w.condition;
-          if (container.dataset.carouselHash !== newHash) {
-             container.innerHTML = htmlContent;
-             container.dataset.carouselHash = newHash;
+            if (el) {
+              if (el.dataset.hash !== hash) {
+                el.className = `platter platter-mini ${c}`;
+                el.innerHTML = buildSidebarCardHTML(d, avatarText, getStatusGlyph(d.Status), l);
+                el.dataset.hash = hash;
+              }
+              el.classList.remove("platter-new");
+              oldMap.delete(id);
+            } else {
+              el = document.createElement("div");
+              el.className = `platter platter-mini ${c} platter-new`;
+              el.dataset.id = id;
+              el.dataset.hash = hash;
+              el.innerHTML = buildSidebarCardHTML(d, avatarText, getStatusGlyph(d.Status), l);
+              hasLayoutChange = true;
+              el.addEventListener(
+                "animationend",
+                () => el.classList.remove("platter-new"),
+                { once: true },
+              );
+            }
+            return el;
+          };
 
-             if (window._sidebarCarouselInterval) clearInterval(window._sidebarCarouselInterval);
-             window._sidebarCarouselIdx = 0;
-             
-             if (totalSlides > 1) {
-               window._sidebarCarouselInterval = setInterval(() => {
-                 window._sidebarCarouselIdx++;
-                 if (window._sidebarCarouselIdx >= totalSlides) window._sidebarCarouselIdx = 0;
-                 const track = document.getElementById("sidebarCarouselTrack");
-                 if (track) {
-                   track.style.transform = `translateX(-${window._sidebarCarouselIdx * 100}%)`;
-                 }
-               }, 6000); 
-             }
-             return true;
+          const isComplicationMode = (operasiList.length === 0 && penuhList.length === 0 && cutiList.length === 0);
+          const sidebarPanel = document.querySelector(".sidebar-panel");
+          if (sidebarPanel) {
+            sidebarPanel.classList.toggle("sidebar-mode-weather", isComplicationMode);
           }
-          
+
+          // --- Build grouped layout or Apple Watch Complications if empty ---
+          if (isComplicationMode) {
+            if (s3) s3.stop();
+            let wrapper = container.querySelector('[data-id="sec-complications"]');
+            if (!wrapper) {
+              wrapper = document.createElement("div");
+              wrapper.dataset.id = "sec-complications";
+              wrapper.style.height = "100%";
+              wrapper.innerHTML = this.buildSidebarComplicationsHTML();
+              allElements.push(wrapper);
+              hasLayoutChange = true;
+            } else {
+              allElements.push(wrapper);
+              oldMap.delete("sec-complications");
+            }
+          } else {
+            if (s3) s3.active = true;
+            if (operasiList.length > 0) {
+              allElements.push(
+                makeSectionHeader(
+                  "Tindakan Operasi",
+                  "#BF5AF2",
+                  operasiList.length,
+                  "sec-operasi",
+                ),
+              );
+              operasiList.forEach((d) => allElements.push(makeCard(d)));
+            }
+
+            if (penuhList.length > 0) {
+              allElements.push(
+                makeSectionHeader(
+                  "Kuota Penuh",
+                  "#FF9F0A",
+                  penuhList.length,
+                  "sec-penuh",
+                ),
+              );
+              penuhList.forEach((d) => allElements.push(makeCard(d)));
+            }
+
+            if (cutiList.length > 0) {
+              allElements.push(
+                makeSectionHeader(
+                  "Sedang Cuti",
+                  "#FF453A",
+                  cutiList.length,
+                  "sec-cuti",
+                ),
+              );
+              cutiList.forEach((d) => allElements.push(makeCard(d)));
+            }
+          }
+
+          // Update visionOS Segment Bar counts
+          if ($("segCountOp")) $("segCountOp").textContent = operasiList.length;
+          if ($("segCountPenuh")) $("segCountPenuh").textContent = penuhList.length;
+          if ($("segCountCuti")) $("segCountCuti").textContent = cutiList.length;
+
+          // Deteksi perubahan
+          if (oldMap.size > 0) hasLayoutChange = true;
+          if (!hasLayoutChange) {
+            const currentChildren = Array.from(container.children);
+            if (currentChildren.length !== allElements.length) {
+              hasLayoutChange = true;
+            } else {
+              for (let i = 0; i < allElements.length; i++) {
+                if (currentChildren[i] !== allElements[i]) {
+                  hasLayoutChange = true;
+                  break;
+                }
+              }
+            }
+          }
+
+          if (hasLayoutChange) {
+            container.replaceChildren(...allElements);
+            return true;
+          }
           return false;
         },
       };
