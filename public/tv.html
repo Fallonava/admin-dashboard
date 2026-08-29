@@ -5592,64 +5592,37 @@
 
       /* ⛅ 3D ATMOSPHERIC WEATHER MASTER CARD (APPLE SPATIAL ELEVATION) */
       .complication-weather-master {
-        background: linear-gradient(145deg, #F0F9FF 0%, #E0F2FE 45%, #BAE6FD 100%) !important;
-        border: 1.5px solid #7DD3FC !important;
-        border-top: 2px solid #FFFFFF !important;
-        box-shadow: 0 3.5px 0 #38BDF8, 0 8px 18px rgba(2, 132, 199, 0.14) !important;
         border-radius: 20px !important;
+        border-top: 2px solid #FFFFFF !important;
+        transition: background 0.5s ease, border-color 0.5s ease;
       }
 
       .complication-weather-master .complication-header {
-        border-bottom: 1px solid rgba(56, 189, 248, 0.25);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
         padding-bottom: 4px;
       }
-
-      .complication-weather-master .complication-title span {
-        color: #0369A1 !important;
-        font-weight: 800;
-      }
-
-      .complication-weather-master .complication-tag {
-        background: #0284C7 !important;
-        color: #FFFFFF !important;
-        border: none !important;
-        box-shadow: 0 2px 0 #0369A1 !important;
-        font-weight: 800;
-      }
-
       .complication-weather-master .weather-temp-master-val {
-        color: #0369A1 !important;
         font-size: 48px !important;
         font-weight: 900 !important;
-        text-shadow: 0 1.5px 0 #FFFFFF;
-        -webkit-text-fill-color: #0369A1 !important;
       }
-
       .complication-weather-master .weather-temp-master-unit {
-        color: #0284C7 !important;
         font-size: 22px !important;
         font-weight: 900 !important;
-        text-shadow: 0 1px 0 #FFFFFF;
       }
-
       .complication-weather-master .weather-condition-master-text {
-        color: #0F172A !important;
-        font-weight: 900 !important;
         font-size: 14.5px !important;
+        font-weight: 900 !important;
       }
-
       .complication-weather-master .weather-range-master-text {
-        color: #0369A1 !important;
-        font-weight: 800 !important;
         font-size: 11px !important;
+        font-weight: 800 !important;
       }
-
       .complication-weather-master .weather-master-icon-wrap {
         background: rgba(255, 255, 255, 0.85);
         border: 1.5px solid #FFFFFF;
         border-radius: 16px;
         padding: 5px;
-        box-shadow: 0 3px 0 rgba(186, 230, 253, 0.9), 0 6px 12px rgba(2, 132, 199, 0.15);
+        box-shadow: 0 3px 0 rgba(0, 0, 0, 0.1), 0 6px 12px rgba(0, 0, 0, 0.08);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -7644,7 +7617,7 @@
           code: 2,
           condition: "Sebagian Berawan",
           iconHTML: "",
-          atmosphereTheme: "sore",
+          atmosphereTheme: "hour-" + getJakartaParts().hour,
           hourly: [],
           lastFetched: 0
         },
