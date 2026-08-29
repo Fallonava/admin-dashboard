@@ -5517,13 +5517,26 @@
       /* ═══════════════════════════════════════════════════════════════
          ⚡ SMART TV LIGHTWEIGHT HARDWARE PERFORMANCE OVERRIDES
          ═══════════════════════════════════════════════════════════════ */
-      /* 1. Hardware Composite Acceleration on Scroll Viewports */
+      /* 1. Hardware Composite Acceleration & Strict Layout Containment */
       #scrollBedah, #scrollNonBedah, #sidebarCarouselTrack {
         will-change: transform;
         transform: translate3d(0, 0, 0);
         backface-visibility: hidden;
         -webkit-backface-visibility: hidden;
         perspective: 1000px;
+        contain: layout paint style;
+      }
+
+      .mask-container, #maskBedah, #maskNonBedah {
+        contain: strict;
+      }
+
+      .sidebar-panel {
+        contain: layout style;
+      }
+
+      .platter {
+        contain: content;
       }
 
       /* 2. Disable heavy GPU-taxing continuous animations on TV */
@@ -7588,10 +7601,16 @@
         },
 
         connectRealtime() {
+          if (this._es) {
+            try { this._es.close(); } catch (_) {}
+          }
+
           const es = new EventSource("/api/stream/live");
+          this._es = es;
 
           es.onopen = () => {
             this.status("LIVE STREAM", false);
+            this._reconnectAttempts = 0;
           };
 
           // Legacy/Initial snapshot (unnamed)
@@ -7619,6 +7638,11 @@
 
           es.onerror = () => {
             this.status("RECONNECTING...", true);
+            try { es.close(); } catch (_) {}
+            const backoff = Math.min(10000, 1500 * Math.pow(1.5, this._reconnectAttempts || 0));
+            this._reconnectAttempts = (this._reconnectAttempts || 0) + 1;
+            if (this._reconnectTimer) clearTimeout(this._reconnectTimer);
+            this._reconnectTimer = setTimeout(() => this.connectRealtime(), backoff);
           };
         },
 
