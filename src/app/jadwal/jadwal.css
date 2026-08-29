@@ -48,7 +48,7 @@
   --liquid-glass-border: 0.5px solid rgba(0, 0, 0, 0.06);
   --liquid-glass-shine: none;
   --liquid-glass-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
-  --liquid-glass-blur: none;
+  --liquid-glass-blur: blur(24px) saturate(180%) contrast(1.1);
 
   --shadow-level-1: 0 1px 4px rgba(0, 0, 0, 0.04), 0 0 0 0.5px rgba(0, 0, 0, 0.04);
   --shadow-level-2: 0 6px 20px rgba(0, 0, 0, 0.06), 0 0 0 0.5px rgba(0, 0, 0, 0.04);
@@ -113,7 +113,7 @@
   --liquid-glass-border: 0.5px solid rgba(255, 255, 255, 0.08);
   --liquid-glass-shine: none;
   --liquid-glass-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-  --liquid-glass-blur: none;
+  --liquid-glass-blur: blur(24px) saturate(180%) contrast(1.1);
 
   --shadow-level-1: 0 2px 12px rgba(0, 0, 0, 0.4), 0 0 0 0.5px rgba(255, 255, 255, 0.08);
   --shadow-level-2: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 0 0.5px rgba(255, 255, 255, 0.08);
@@ -366,7 +366,7 @@ body.dark .jadwal-brand-logo-squircle {
 }
 
 .telemetry-txt {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
   color: var(--ios-green);
   letter-spacing: -0.1px;
@@ -500,7 +500,7 @@ body.dark .jadwal-segmented-track {
 }
 
 .seg-badge {
-  font-size: 10.5px;
+  font-size: 11px;
   font-weight: 700;
   padding: 1px 6px;
   border-radius: 9999px;
@@ -731,6 +731,8 @@ body.dark .jadwal-segmented-track {
   overflow-x: auto;
   padding: 2px 2px 6px;
   scrollbar-width: none;
+  scroll-snap-type: x mandatory;
+  scroll-padding-left: 12px;
 }
 
 .glance-scroll-track::-webkit-scrollbar {
@@ -749,6 +751,7 @@ body.dark .jadwal-segmented-track {
   cursor: pointer;
   user-select: none;
   white-space: nowrap;
+  scroll-snap-align: start;
   transition: transform 140ms ease, background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
 }
 
@@ -1110,7 +1113,7 @@ body.dark .ios-search-bar:focus-within {
 .card-reg-pill {
   display: inline-flex;
   align-items: center;
-  font-size: 9.5px;
+  font-size: 11px;
   font-weight: 700;
   padding: 0.5px 5px;
   border-radius: 5px;
@@ -1178,7 +1181,15 @@ body.dark .card-reg-pill {
   justify-content: center;
   transition: transform 140ms ease, color 140ms ease;
   flex-shrink: 0;
+  position: relative;
 }
+
+.card-fav-btn::before {
+  content: '';
+  position: absolute;
+  top: -8px; right: -8px; bottom: -8px; left: -8px;
+}
+
 
 .card-fav-btn:active {
   transform: scale(0.85);
@@ -1207,12 +1218,6 @@ body.dark .card-reg-pill {
   flex-shrink: 0;
   white-space: nowrap;
 }
-
-.card-book-pill-btn:active {
-  transform: scale(0.92);
-  box-shadow: 0 1px 4px rgba(0, 122, 255, 0.2);
-}
-
 .card-wa-pill-btn {
   display: inline-flex;
   align-items: center;
@@ -1220,18 +1225,25 @@ body.dark .card-reg-pill {
   height: 28px;
   padding: 0 9px;
   border-radius: var(--radius-pill);
-  background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
-  color: #FFFFFF;
+  background: var(--surface-card);
+  border: 1px solid rgba(37, 211, 102, 0.4);
+  color: #25D366;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: -0.2px;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  box-shadow: 0 2px 8px rgba(37, 211, 102, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.4);
-  cursor: pointer;
   transition: transform 140ms ease, box-shadow 140ms ease;
   flex-shrink: 0;
   white-space: nowrap;
   text-decoration: none;
+  position: relative;
+  box-shadow: 0 2px 8px rgba(37, 211, 102, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+}
+
+.card-wa-pill-btn::before {
+  content: '';
+  position: absolute;
+  top: -8px; right: -8px; bottom: -8px; left: -8px;
 }
 
 .card-wa-pill-btn:active {
@@ -2968,4 +2980,11 @@ body.dark .skeleton-pulse {
   font-size: 13px;
   font-weight: 700;
   box-shadow: var(--shadow-level-1);
+}
+[data-theme="dark"] .st-cuti,
+html.dark .st-cuti,
+body.dark .st-cuti {
+  background: rgba(255, 69, 58, 0.15); /* Tinted red adapted for dark mode */
+  color: var(--ios-red); /* Solid red for contrast */
+  border: 1px solid rgba(255, 69, 58, 0.3);
 }
