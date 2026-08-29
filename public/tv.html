@@ -5405,44 +5405,157 @@
       <main class="content">
         <!-- Sidebar (Left - Integrated Header) -->
         <aside class="island sidebar-panel">
-          <!-- 🌟 PRIMARY ISLAND HEADER: STATUS KHUSUS -->
-          <div class="sidebar-status-khusus-header">
-            <div class="island-header-left">
-              <div class="island-icon-box island-icon-khusus">
-                <span class="material-icons-round">medical_information</span>
+          <!-- 1. 🔄 DYNAMIC CAROUSEL WIDGET: Cuaca BMKG & Compact Status Khusus Passes -->
+          <div class="sidebar-carousel-container" style="overflow: hidden; width: 100%; height: 140px; min-height: 140px; flex-shrink: 0; border-radius: 20px; box-sizing: border-box;">
+            <div id="sidebarCarouselTrack" style="display: flex; transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1); width: 100%; height: 100%;">
+              <!-- Slides populated dynamically by _renderSidebar -->
+            </div>
+          </div>
+
+          <!-- 2. 🌳 PATIENT ADMISSION VERTICAL TREE FLOW (PANDUAN ALUR PENDAFTARAN) -->
+          <div class="sidebar-journey-container" style="flex: 1 1 0%; min-height: 0; display: flex; flex-direction: column; overflow: hidden;">
+            <div class="complication-card complication-journey-card" style="height: 100%; margin: 0; display: flex; flex-direction: column; justify-content: space-between;">
+              <!-- 1. Header Bar -->
+              <div class="complication-header">
+                <div class="complication-title">
+                  <span class="material-icons-round" style="font-size:14px; color:#007AFF;">route</span>
+                  <span>ALUR PENDAFTARAN</span>
+                </div>
+                <span class="complication-tag tag-sky">PANDUAN</span>
               </div>
-              <span class="sk-main-title">STATUS KHUSUS</span>
+
+              <!-- 2. Cabang Atas: 2 Jalur Masuk (Grid 2 Kolom) -->
+              <div class="tree-branch-grid">
+                <!-- Cabang Kiri: Online (Fast Track) -->
+                <div class="tree-branch-column">
+                  <div class="tree-branch-header">
+                    <span class="tree-branch-title title-online">
+                      <span class="material-icons-round" style="font-size:12px;">bolt</span>
+                      <span>ONLINE</span>
+                    </span>
+                    <span class="tree-branch-badge badge-online-fast">FAST TRACK</span>
+                  </div>
+                  <div class="tree-step-card tree-step-card-tall">
+                    <div class="tree-step-icon-wrap icon-online-1 anim-qr-laser">
+                      <span class="material-icons-round" style="font-size:16px;">smartphone</span>
+                    </div>
+                    <div class="tree-step-content">
+                      <span class="tree-step-title">Tunjukkan Kode Booking</span>
+                      <span class="tree-step-sub">Mobile JKN / Web RS</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Cabang Kanan: Reguler (On-Site) -->
+                <div class="tree-branch-column">
+                  <div class="tree-branch-header">
+                    <span class="tree-branch-title title-reguler">
+                      <span class="material-icons-round" style="font-size:12px;">storefront</span>
+                      <span>REGULER</span>
+                    </span>
+                    <span class="tree-branch-badge badge-reguler-onsite">ON-SITE</span>
+                  </div>
+                  <div class="tree-step-card">
+                    <div class="tree-step-icon-wrap icon-reg-1 anim-kiosk-touch">
+                      <span class="material-icons-round" style="font-size:15px;">confirmation_number</span>
+                    </div>
+                    <div class="tree-step-content">
+                      <span class="tree-step-title">Tiket Antrean</span>
+                      <span class="tree-step-sub">Kios Mandiri</span>
+                    </div>
+                  </div>
+                  <div class="tree-micro-down-connector">
+                    <span class="material-icons-round tree-micro-down-arrow">south</span>
+                  </div>
+                  <div class="tree-step-card">
+                    <div class="tree-step-icon-wrap icon-reg-2 anim-voice-broadcast">
+                      <span class="material-icons-round" style="font-size:15px;">record_voice_over</span>
+                    </div>
+                    <div class="tree-step-content">
+                      <span class="tree-step-title">Tunggu Panggilan</span>
+                      <span class="tree-step-sub">Siapkan KTP & BPJS</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 3. Convergence Ribbon (Alur Terpadu) -->
+              <div class="tree-convergence-ribbon">
+                <div class="tree-convergence-line"></div>
+                <div class="tree-convergence-badge">
+                  <span class="material-icons-round" style="font-size:11px; color:#007AFF;">alt_route</span>
+                  <span>TAHAPAN PELAYANAN</span>
+                  <span class="material-icons-round" style="font-size:11px;">south</span>
+                </div>
+              </div>
+
+              <!-- 4. Batang Pohon Utama Menuju ke Bawah (3 Tahap) -->
+              <div class="tree-trunk-section">
+                <!-- Tahap 1: Loket Admisi -->
+                <div class="tree-trunk-row-card row-stage-1">
+                  <div class="tree-trunk-left">
+                    <div class="tree-step-icon-wrap icon-unified-1 anim-desk-verified">
+                      <span class="material-icons-round" style="font-size:15px;">how_to_reg</span>
+                    </div>
+                    <div class="tree-step-content">
+                      <div class="tree-step-pill-row">
+                        <span class="tree-step-num-pill pill-blue">01</span>
+                        <span class="tree-step-title">Loket Admisi</span>
+                      </div>
+                      <span class="tree-step-sub">Validasi berkas & cetak SEP</span>
+                    </div>
+                  </div>
+                  <span class="tree-trunk-tag tag-loket">LOKET</span>
+                </div>
+
+                <!-- Panah ke Bawah -->
+                <div class="tree-trunk-down-connector">
+                  <span class="material-icons-round tree-trunk-down-arrow">south</span>
+                </div>
+
+                <!-- Tahap 2: Nurse Station -->
+                <div class="tree-trunk-row-card row-stage-2">
+                  <div class="tree-trunk-left">
+                    <div class="tree-step-icon-wrap icon-unified-2 anim-heart-pump">
+                      <span class="material-icons-round" style="font-size:15px;">monitor_heart</span>
+                    </div>
+                    <div class="tree-step-content">
+                      <div class="tree-step-pill-row">
+                        <span class="tree-step-num-pill pill-rose">02</span>
+                        <span class="tree-step-title">Nurse Station</span>
+                      </div>
+                      <span class="tree-step-sub">Pemeriksaan tensi & fisik</span>
+                    </div>
+                  </div>
+                  <span class="tree-trunk-tag tag-tensi">TENSI</span>
+                </div>
+
+                <!-- Panah ke Bawah -->
+                <div class="tree-trunk-down-connector">
+                  <span class="material-icons-round tree-trunk-down-arrow">south</span>
+                </div>
+
+                <!-- Tahap 3: Ruang Poli Dokter -->
+                <div class="tree-trunk-row-card row-stage-3">
+                  <div class="tree-trunk-left">
+                    <div class="tree-step-icon-wrap icon-unified-3 anim-doc-float">
+                      <span class="material-icons-round" style="font-size:15px;">medical_services</span>
+                    </div>
+                    <div class="tree-step-content">
+                      <div class="tree-step-pill-row">
+                        <span class="tree-step-num-pill pill-purple">03</span>
+                        <span class="tree-step-title">Poli Dokter</span>
+                      </div>
+                      <span class="tree-step-sub">Pemeriksaan & resep obat</span>
+                    </div>
+                  </div>
+                  <span class="tree-trunk-tag tag-poli">DOKTER</span>
+                </div>
+              </div>
             </div>
           </div>
 
-          <!-- 🎚️ visionOS Floating Filter Segment Bar -->
-          <div class="sk-segment-bar" id="skSegmentBar">
-            <div class="sk-segment-item seg-op">
-              <span class="sk-seg-dot" style="background:#7C3AED;box-shadow:0 0 6px rgba(124,58,237,0.6);"></span>
-              <span class="sk-seg-label" style="color:#7C3AED;">Operasi</span>
-              <span class="sk-seg-badge" id="segCountOp" style="background:rgba(124,58,237,0.15);color:#7C3AED;">0</span>
-            </div>
-            <div class="sk-segment-item seg-penuh">
-              <span class="sk-seg-dot" style="background:#B45309;box-shadow:0 0 6px rgba(180,83,9,0.6);"></span>
-              <span class="sk-seg-label" style="color:#B45309;">Penuh</span>
-              <span class="sk-seg-badge" id="segCountPenuh" style="background:rgba(180,83,9,0.15);color:#B45309;">0</span>
-            </div>
-            <div class="sk-segment-item seg-cuti">
-              <span class="sk-seg-dot" style="background:#DC2626;box-shadow:0 0 6px rgba(220,38,38,0.6);"></span>
-              <span class="sk-seg-label" style="color:#DC2626;">Cuti</span>
-              <span class="sk-seg-badge" id="segCountCuti" style="background:rgba(220,38,38,0.15);color:#DC2626;">0</span>
-            </div>
-          </div>
-
-          <div class="scroll-mask" id="maskSidebar">
-            <div
-              class="scroller"
-              id="scrollSidebar"
-              style="padding: 10px; gap: 8px"
-            ></div>
-          </div>
-
-          <!-- Dynamic QR Code & Highlighted Hotline Number -->
+          <!-- 3. 📱 Dynamic QR Code & Highlighted Hotline Number -->
           <div class="sidebar-qr-hotline">
             <!-- Apple Wallet-Style Digital Pass Hero Card -->
             <div class="tv-qr-hero-card">
@@ -5487,8 +5600,6 @@
               </div>
             </div>
           </div>
-
-
         </aside>
 
         <!-- Bedah Island -->
@@ -6244,12 +6355,10 @@
 
       const isMobile = window.innerWidth <= 768;
 
-      let s1, s2, s3;
-
+      let s1, s2;
       if (!isMobile) {
         s1 = new SmoothScroller("scrollBedah", "progressBedah", { mode: "cascade" });
         s2 = new SmoothScroller("scrollNonBedah", "progressNonBedah", { mode: "cascade" });
-        s3 = new SmoothScroller("scrollSidebar", null, { mode: "yoyo" });
       }
 
       // ═══ APPLE iOS INTERACTIVE DYNAMIC ISLAND CONTROLLER ═══
@@ -7975,192 +8084,159 @@
               s2.reset();
               requestAnimationFrame(() => s2.updateMetrics());
             }
-            if (changed3) {
-              s3.reset();
-              requestAnimationFrame(() => s3.updateMetrics());
-            }
+            // Sidebar carousel is self-managed by CSS transform
           }
         },
 
         // Render sidebar dengan section header terpisah
         _renderSidebar(operasiList, penuhList, cutiList, updateList) {
-          const container = $("scrollSidebar");
-          const oldMap = new Map();
-          Array.from(container.children).forEach((el) => {
-            if (el.dataset.id) oldMap.set(el.dataset.id, el);
+          const track = $("sidebarCarouselTrack");
+          if (!track) return false;
+
+          const allDocs = [...operasiList, ...penuhList, ...cutiList];
+          const w = this._weatherCache;
+          const heroIconMarkup = w.iconHTML || this.getWeatherIconSVG("partly-cloudy-day", 44);
+
+          // 1. Slide Cuaca BMKG (Paten)
+          const weatherSlideHTML = `
+            <div class="carousel-slide" style="width: 100%; height: 100%; flex-shrink: 0; box-sizing: border-box;">
+              <div class="complication-card complication-weather-master weather-theme-${w.atmosphereTheme}" style="height: 100%; margin: 0; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between;">
+                <!-- Header Bar -->
+                <div class="complication-header">
+                  <div class="complication-title">
+                    <span class="material-icons-round" style="font-size:14px; color:#0284C7;">wb_sunny</span>
+                    <span>CUACA PURBALINGGA</span>
+                  </div>
+                  <span class="complication-tag tag-sky">LIVE BMKG</span>
+                </div>
+
+                <!-- Hero Temperature & Visual Status -->
+                <div class="weather-master-hero-row">
+                  <div class="weather-master-hero-left">
+                    <div class="weather-temp-master-group">
+                      <span class="weather-temp-master-val" id="tvWeatherTemp">${w.temp}</span>
+                      <span class="weather-temp-master-unit">°C</span>
+                    </div>
+                    <div class="weather-condition-master-text" id="tvWeatherCondition">${w.condition}</div>
+                    <div class="weather-range-master-text" id="tvWeatherRange">Suhu: H: ${w.tempMax}° • L: ${w.tempMin}°</div>
+                  </div>
+                  <div class="weather-master-hero-right">
+                    <div class="weather-master-icon-wrap" id="tvWeatherIcon">${heroIconMarkup}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+
+          let slidesHTML = weatherSlideHTML;
+
+          // 2. Slides Status Khusus Compact Pass
+          allDocs.forEach((d, idx) => {
+            const st = (d.Status || "").toUpperCase();
+            const specTheme = getSpecialistTheme(d.Spesialis);
+            let statusTitle = "SEDANG CUTI";
+            let statusColor = "#DC2626";
+            let tagClass = "tag-rose";
+            let statusIcon = '<span class="material-icons-round" style="font-size:13px; color:#DC2626;">event_busy</span>';
+            let footerIcon = "event_available";
+            let infoValue = "Konfirmasi Informasi Loket";
+
+            if (st.includes("CUTI")) {
+              statusTitle = "SEDANG CUTI";
+              statusColor = "#DC2626";
+              tagClass = "tag-rose";
+              statusIcon = '<span class="material-icons-round" style="font-size:13px; color:#DC2626;">event_busy</span>';
+              footerIcon = "event_available";
+              if (d.NextBuka) {
+                infoValue = `Kembali: ${esc(d.NextBuka)}`;
+              } else if (d.CutiSampai) {
+                infoValue = `Cuti Sampai: ${esc(d.CutiSampai)}`;
+              } else if (d.CutiCatatan) {
+                infoValue = esc(d.CutiCatatan);
+              } else if (d.DocNote) {
+                infoValue = esc(d.DocNote);
+              }
+            } else if (st.includes("OPERASI")) {
+              statusTitle = "TINDAKAN OPERASI";
+              statusColor = "#7C3AED";
+              tagClass = "tag-purple";
+              statusIcon = '<span class="material-icons-round" style="font-size:13px; color:#7C3AED;">local_hospital</span>';
+              footerIcon = "schedule";
+              infoValue = d.JamPraktek && d.JamPraktek !== "-" ? `Jadwal: ${formatJam(d.JamPraktek)} WIB` : "Tindakan Medis di IBS";
+            } else if (st.includes("PENUH")) {
+              statusTitle = "KUOTA PENUH";
+              statusColor = "#B45309";
+              tagClass = "tag-amber";
+              statusIcon = '<span class="material-icons-round" style="font-size:13px; color:#B45309;">front_hand</span>';
+              footerIcon = "lock";
+              infoValue = "Pendaftaran Hari Ini Ditutup";
+            }
+
+            const avatarIcon = getSpecialistIcon(d.Spesialis);
+            const avatarText = avatarIcon.startsWith("<svg") ? avatarIcon : `<span class="material-icons-round" style="font-size:20px;">${avatarIcon}</span>`;
+
+            slidesHTML += `
+              <div class="carousel-slide" style="width: 100%; height: 100%; flex-shrink: 0; box-sizing: border-box;">
+                <div class="complication-card complication-status-pass" style="height: 100%; margin: 0; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between; border-left: 4px solid ${statusColor};">
+                  <!-- Header -->
+                  <div class="complication-header" style="padding-bottom: 5px;">
+                    <div class="complication-title" style="color: ${statusColor}; font-size: 11px;">
+                      ${statusIcon}
+                      <span>${statusTitle}</span>
+                    </div>
+                    <span class="complication-tag ${tagClass}">${idx + 1} / ${allDocs.length}</span>
+                  </div>
+
+                  <!-- Body -->
+                  <div style="display: flex; align-items: center; gap: 10px; margin: 2px 0;">
+                    <div class="initials" style="width: 42px; height: 42px; min-width: 42px; border-radius: 12px; font-size: 14px; box-shadow: none;">
+                      ${avatarText}
+                    </div>
+                    <div style="flex: 1; min-width: 0; overflow: hidden; display: flex; flex-direction: column; gap: 2px;">
+                      <div class="doc-spec-badge ${specTheme}" style="padding: 2px 8px; font-size: 10px; margin-bottom: 2px; max-width: 100%;">
+                        <span class="spec-dot" style="width: 5px; height: 5px;"></span>
+                        <span class="doc-spec" style="font-size: 10px; max-width: 190px;">${esc(d.Spesialis)}</span>
+                      </div>
+                      <div class="doc-name" style="font-size: 14.5px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.15;">
+                        ${esc(d.Dokter)}
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Footer Info -->
+                  <div style="display: flex; align-items: center; gap: 6px; padding: 3px 8px; border-radius: 8px; background: rgba(0,0,0,0.03); font-size: 11px; font-weight: 700; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                    <span class="material-icons-round" style="font-size: 13px; color: ${statusColor}; flex-shrink: 0;">${footerIcon}</span>
+                    <span style="overflow: hidden; text-overflow: ellipsis;">${infoValue}</span>
+                  </div>
+                </div>
+              </div>
+            `;
           });
 
-          const allElements = [];
-          let hasLayoutChange = false;
+          const totalSlides = 1 + allDocs.length;
+          const newHash = allDocs.map(d => d.Dokter + d.Status + (d.NextBuka || "")).join("|") + "|" + w.temp + w.condition;
 
-          // Helper: Buat section header
-          const makeSectionHeader = (label, color, count, id) => {
-            let el = container.querySelector(`[data-section="${id}"]`);
-            if (!el) {
-              el = document.createElement("div");
-              el.className = "sidebar-section-header";
-              el.dataset.section = id;
-              hasLayoutChange = true;
-            }
-            el.innerHTML = `
-                        <div class="sidebar-section-dot" style="background:${color}"></div>
-                        <span class="sidebar-section-label">${label}</span>
-                        <div class="sidebar-section-line"></div>
-                        <span class="sidebar-section-count">${count}</span>
-                    `;
-            return el;
-          };
+          if (track.dataset.hash !== newHash) {
+            track.innerHTML = slidesHTML;
+            track.dataset.hash = newHash;
 
-          // Helper: Buat platter card (reuse dari updateList logic)
-          const makeCard = (d) => {
-            // Unique ID: Name + Shift Time
-            const shiftJam = d.Jam && d.Jam !== "-" ? d.Jam : "no-time";
-            const id = `${d.Dokter}_${shiftJam}`;
-            const hash = `${d.Status}|${d.Jam}|${d._isActive}|${d["Code Antrian"] || ""}|${d.JamDaftar}|${d.NextBuka || ""}|${d.CutiSampai || ""}|${d.CutiCatatan || ""}|${d.DocNote || ""}`;
-            const st = (d.Status || "").toUpperCase();
-            let c = "st-nopoli", i = "block", l = d.Status || "-";
-            if (st === "PRAKTEK") { c = "st-praktek"; i = "check_circle"; l = "PRAKTEK"; }
-            else if (st === "PENDAFTARAN") { c = "st-pendaftaran"; i = "assignment"; l = "PENDAFTARAN"; }
-            else if (st === "TERJADWAL") { c = "st-terjadwal"; i = "schedule"; l = "TERJADWAL"; }
-            else if (st === "SELESAI") { c = "st-selesai"; i = "done_all"; l = "SELESAI"; }
-            else if (st === "PENUH") { c = "st-penuh"; i = "front_hand"; l = "PENUH"; }
-            else if (st === "OPERASI") { c = "st-operasi"; i = "local_hospital"; l = "OPERASI"; }
-            else if (st === "CUTI") { c = "st-cuti"; i = "flight"; l = "CUTI"; }
-            else if (st === "LIBUR") { c = "st-libur"; i = "block"; l = "LIBUR"; }
-            const avatarIcon = getSpecialistIcon(d.Spesialis);
-            const avatarText = avatarIcon.startsWith("<svg") ? avatarIcon : `<span class="material-icons-round" style="font-size:44px;">${avatarIcon}</span>`;
-            if (d._isActive) c += " active";
+            if (window._sidebarCarouselInterval) clearInterval(window._sidebarCarouselInterval);
+            window._sidebarCarouselIdx = 0;
+            track.style.transform = `translateX(0%)`;
 
-            let labelJam = "JADWAL PRAKTEK";
-            let labelLive = "SEDANG MELAYANI";
-            if (st.includes("OPERASI")) {
-              labelJam = "TINDAKAN MEDIS";
-              labelLive = "SEDANG OPERASI";
-            } else if (st.includes("PENUH")) {
-              labelJam = "STATUS KUOTA";
-              labelLive = "TELAH PENUH";
-            } else if (st.includes("CUTI")) {
-              labelJam = "JADWAL CUTI";
-              labelLive = "TIDAK MELAYANI";
-            } else if (st === "PENDAFTARAN") {
-              labelJam = "REGISTRASI DIBUKA";
-              labelLive = "LOKET DIBUKA";
-            } else if (st === "TERJADWAL") {
-              labelJam = "MENUNGGU SHIFT";
-              labelLive = "BELUM MULAI";
-            }
-
-            let el = oldMap.get(id);
-
-            if (el) {
-              if (el.dataset.hash !== hash) {
-                el.className = `platter platter-mini ${c}`;
-                el.innerHTML = buildSidebarCardHTML(d, avatarText, getStatusGlyph(d.Status), l);
-                el.dataset.hash = hash;
-              }
-              el.classList.remove("platter-new");
-              oldMap.delete(id);
-            } else {
-              el = document.createElement("div");
-              el.className = `platter platter-mini ${c} platter-new`;
-              el.dataset.id = id;
-              el.dataset.hash = hash;
-              el.innerHTML = buildSidebarCardHTML(d, avatarText, getStatusGlyph(d.Status), l);
-              hasLayoutChange = true;
-              el.addEventListener(
-                "animationend",
-                () => el.classList.remove("platter-new"),
-                { once: true },
-              );
-            }
-            return el;
-          };
-
-          const isComplicationMode = (operasiList.length === 0 && penuhList.length === 0 && cutiList.length === 0);
-          const sidebarPanel = document.querySelector(".sidebar-panel");
-          if (sidebarPanel) {
-            sidebarPanel.classList.toggle("sidebar-mode-weather", isComplicationMode);
-          }
-
-          // --- Build grouped layout or Apple Watch Complications if empty ---
-          if (isComplicationMode) {
-            if (s3) s3.stop();
-            let wrapper = container.querySelector('[data-id="sec-complications"]');
-            if (!wrapper) {
-              wrapper = document.createElement("div");
-              wrapper.dataset.id = "sec-complications";
-              wrapper.style.height = "100%";
-              wrapper.innerHTML = this.buildSidebarComplicationsHTML();
-              allElements.push(wrapper);
-              hasLayoutChange = true;
-            } else {
-              allElements.push(wrapper);
-              oldMap.delete("sec-complications");
-            }
-          } else {
-            if (s3) s3.active = true;
-            if (operasiList.length > 0) {
-              allElements.push(
-                makeSectionHeader(
-                  "Tindakan Operasi",
-                  "#BF5AF2",
-                  operasiList.length,
-                  "sec-operasi",
-                ),
-              );
-              operasiList.forEach((d) => allElements.push(makeCard(d)));
-            }
-
-            if (penuhList.length > 0) {
-              allElements.push(
-                makeSectionHeader(
-                  "Kuota Penuh",
-                  "#FF9F0A",
-                  penuhList.length,
-                  "sec-penuh",
-                ),
-              );
-              penuhList.forEach((d) => allElements.push(makeCard(d)));
-            }
-
-            if (cutiList.length > 0) {
-              allElements.push(
-                makeSectionHeader(
-                  "Sedang Cuti",
-                  "#FF453A",
-                  cutiList.length,
-                  "sec-cuti",
-                ),
-              );
-              cutiList.forEach((d) => allElements.push(makeCard(d)));
-            }
-          }
-
-          // Update visionOS Segment Bar counts
-          if ($("segCountOp")) $("segCountOp").textContent = operasiList.length;
-          if ($("segCountPenuh")) $("segCountPenuh").textContent = penuhList.length;
-          if ($("segCountCuti")) $("segCountCuti").textContent = cutiList.length;
-
-          // Deteksi perubahan
-          if (oldMap.size > 0) hasLayoutChange = true;
-          if (!hasLayoutChange) {
-            const currentChildren = Array.from(container.children);
-            if (currentChildren.length !== allElements.length) {
-              hasLayoutChange = true;
-            } else {
-              for (let i = 0; i < allElements.length; i++) {
-                if (currentChildren[i] !== allElements[i]) {
-                  hasLayoutChange = true;
-                  break;
+            if (totalSlides > 1) {
+              window._sidebarCarouselInterval = setInterval(() => {
+                window._sidebarCarouselIdx++;
+                if (window._sidebarCarouselIdx >= totalSlides) window._sidebarCarouselIdx = 0;
+                const t = $("sidebarCarouselTrack");
+                if (t) {
+                  t.style.transform = `translateX(-${window._sidebarCarouselIdx * 100}%)`;
                 }
-              }
+              }, 7000);
             }
-          }
-
-          if (hasLayoutChange) {
-            container.replaceChildren(...allElements);
             return true;
           }
+
           return false;
         },
       };
