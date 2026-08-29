@@ -417,16 +417,7 @@ export default function JadwalPage() {
 
       {/* Main Content View */}
       <main className="main-content main-content-padded">
-        {/* Large Title Area */}
-        <div className="large-title-area mb-20" style={{ 
-          opacity: Math.max(0, 1 - scrollY / 50), 
-          transform: `translateY(-${scrollY * 0.5}px)`,
-          padding: '0 20px',
-          marginTop: '10px'
-        }}>
-          <h1 className="large-title font-bold" style={{ fontSize: '32px', letterSpacing: '-1px' }}>Jadwal Dokter</h1>
-          <p className="subtitle text-mute mt-4" style={{ fontSize: '15px' }}>Temukan jadwal praktik spesialis hari ini</p>
-        </div>
+        
         {/* Loading Skeleton */}
         {isLoading && (
           <div className="ios-skeleton">
