@@ -5559,7 +5559,7 @@
         transform: none !important;
       }
 
-      /* 3. 🧊 APPLE SPATIAL CLEAN 3D TACTILE BEVEL & HARDWARE ELEVATION */
+      /* 3. 🧊 APPLE SPATIAL CLEAN 3D TACTILE BEVEL & COLOR-CODED DEPTH */
       .platter {
         background: linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%) !important;
         border: 1px solid rgba(226, 232, 240, 0.95) !important;
@@ -5589,12 +5589,40 @@
         box-shadow: 0 3px 0 rgba(203, 213, 225, 0.7), 0 6px 14px rgba(15, 23, 42, 0.05) !important;
       }
 
-      .tree-step-card,
-      .tree-trunk-row-card {
-        background: linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%) !important;
-        border: 1px solid rgba(226, 232, 240, 0.95) !important;
+      /* 🎨 Color-Coded Tree Flow Branch & Trunk Cards (Light Mode) */
+      .tree-branch-column:first-child .tree-step-card {
+        background: linear-gradient(180deg, #F0FDF4 0%, #DCFCE7 100%) !important;
+        border: 1.5px solid rgba(187, 247, 208, 0.95) !important;
         border-top: 1.5px solid #FFFFFF !important;
-        box-shadow: 0 2.5px 0 rgba(203, 213, 225, 0.6), 0 4px 8px rgba(15, 23, 42, 0.04) !important;
+        box-shadow: 0 2.5px 0 rgba(134, 239, 172, 0.75), 0 4px 8px rgba(16, 185, 129, 0.05) !important;
+      }
+
+      .tree-branch-column:last-child .tree-step-card {
+        background: linear-gradient(180deg, #FFFBEB 0%, #FEF3C7 100%) !important;
+        border: 1.5px solid rgba(254, 215, 170, 0.95) !important;
+        border-top: 1.5px solid #FFFFFF !important;
+        box-shadow: 0 2.5px 0 rgba(253, 186, 116, 0.75), 0 4px 8px rgba(217, 119, 6, 0.05) !important;
+      }
+
+      .tree-trunk-row-card.row-stage-1 {
+        background: linear-gradient(180deg, #F0F9FF 0%, #E0F2FE 100%) !important;
+        border: 1.5px solid rgba(186, 230, 253, 0.95) !important;
+        border-top: 1.5px solid #FFFFFF !important;
+        box-shadow: 0 2.5px 0 rgba(147, 197, 253, 0.7), 0 4px 8px rgba(2, 132, 199, 0.05) !important;
+      }
+
+      .tree-trunk-row-card.row-stage-2 {
+        background: linear-gradient(180deg, #FFF1F2 0%, #FFE4E6 100%) !important;
+        border: 1.5px solid rgba(254, 205, 211, 0.95) !important;
+        border-top: 1.5px solid #FFFFFF !important;
+        box-shadow: 0 2.5px 0 rgba(253, 164, 175, 0.7), 0 4px 8px rgba(225, 29, 72, 0.05) !important;
+      }
+
+      .tree-trunk-row-card.row-stage-3 {
+        background: linear-gradient(180deg, #EEF2FF 0%, #E0E7FF 100%) !important;
+        border: 1.5px solid rgba(199, 210, 254, 0.95) !important;
+        border-top: 1.5px solid #FFFFFF !important;
+        box-shadow: 0 2.5px 0 rgba(165, 180, 252, 0.7), 0 4px 8px rgba(99, 102, 241, 0.05) !important;
       }
 
       .hotline-clean-bar {
@@ -5604,6 +5632,7 @@
         box-shadow: 0 2.5px 0 rgba(134, 239, 172, 0.75), 0 4px 10px rgba(22, 163, 74, 0.08) !important;
       }
 
+      /* Dark Mode Color-Coded Translucent Tint */
       [data-theme="dark"] .platter {
         background: linear-gradient(180deg, #1E293B 0%, #131A26 100%) !important;
         border: 1px solid rgba(255, 255, 255, 0.08) !important;
@@ -5633,12 +5662,39 @@
         box-shadow: 0 3.5px 0 rgba(0, 0, 0, 0.6), 0 8px 18px rgba(0, 0, 0, 0.35) !important;
       }
 
-      [data-theme="dark"] .tree-step-card,
-      [data-theme="dark"] .tree-trunk-row-card {
-        background: linear-gradient(180deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.03) 100%) !important;
-        border: 1px solid rgba(255, 255, 255, 0.09) !important;
-        border-top: 1.5px solid rgba(255, 255, 255, 0.14) !important;
-        box-shadow: 0 2.5px 0 rgba(0, 0, 0, 0.5), 0 6px 12px rgba(0, 0, 0, 0.3) !important;
+      [data-theme="dark"] .tree-branch-column:first-child .tree-step-card {
+        background: linear-gradient(180deg, rgba(16, 185, 129, 0.16) 0%, rgba(6, 78, 59, 0.22) 100%) !important;
+        border: 1px solid rgba(52, 211, 153, 0.35) !important;
+        border-top: 1.5px solid rgba(52, 211, 153, 0.5) !important;
+        box-shadow: 0 2.5px 0 rgba(6, 78, 59, 0.7), 0 6px 12px rgba(0, 0, 0, 0.3) !important;
+      }
+
+      [data-theme="dark"] .tree-branch-column:last-child .tree-step-card {
+        background: linear-gradient(180deg, rgba(245, 158, 11, 0.16) 0%, rgba(120, 53, 15, 0.22) 100%) !important;
+        border: 1px solid rgba(251, 191, 36, 0.35) !important;
+        border-top: 1.5px solid rgba(251, 191, 36, 0.5) !important;
+        box-shadow: 0 2.5px 0 rgba(120, 53, 15, 0.7), 0 6px 12px rgba(0, 0, 0, 0.3) !important;
+      }
+
+      [data-theme="dark"] .tree-trunk-row-card.row-stage-1 {
+        background: linear-gradient(180deg, rgba(2, 132, 199, 0.16) 0%, rgba(12, 74, 110, 0.22) 100%) !important;
+        border: 1px solid rgba(56, 189, 248, 0.35) !important;
+        border-top: 1.5px solid rgba(56, 189, 248, 0.5) !important;
+        box-shadow: 0 2.5px 0 rgba(12, 74, 110, 0.7), 0 6px 12px rgba(0, 0, 0, 0.3) !important;
+      }
+
+      [data-theme="dark"] .tree-trunk-row-card.row-stage-2 {
+        background: linear-gradient(180deg, rgba(225, 29, 72, 0.16) 0%, rgba(136, 19, 55, 0.22) 100%) !important;
+        border: 1px solid rgba(251, 113, 133, 0.35) !important;
+        border-top: 1.5px solid rgba(251, 113, 133, 0.5) !important;
+        box-shadow: 0 2.5px 0 rgba(136, 19, 55, 0.7), 0 6px 12px rgba(0, 0, 0, 0.3) !important;
+      }
+
+      [data-theme="dark"] .tree-trunk-row-card.row-stage-3 {
+        background: linear-gradient(180deg, rgba(99, 102, 241, 0.16) 0%, rgba(49, 46, 129, 0.22) 100%) !important;
+        border: 1px solid rgba(129, 140, 248, 0.35) !important;
+        border-top: 1.5px solid rgba(129, 140, 248, 0.5) !important;
+        box-shadow: 0 2.5px 0 rgba(49, 46, 129, 0.7), 0 6px 12px rgba(0, 0, 0, 0.3) !important;
       }
 
       [data-theme="dark"] .hotline-clean-bar {
