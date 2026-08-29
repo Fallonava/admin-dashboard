@@ -276,7 +276,7 @@ export default function DoctorCard({
       </div>
 
       {/* iOS 27 Bottom Sheet Modal */}
-      {isExpanded && (
+      {isExpanded && typeof document !== 'undefined' ? createPortal(
         <div className="ios-sheet-backdrop" onClick={(e) => { e.stopPropagation(); toggleExpand(); }}>
           <div className="ios-bottom-sheet" onClick={(e) => e.stopPropagation()}>
             <div className="ios-sheet-drag-handle" />
@@ -357,11 +357,10 @@ export default function DoctorCard({
             </button>
           </div>
         </div>
-      </div>
-      )}
+      </div>, document.body) : null}
 
       {/* iOS 27 Haptic Touch Context Menu */}
-      {showContextMenu && (
+      {showContextMenu && typeof document !== 'undefined' ? createPortal(
         <div className="ios-context-backdrop" onClick={(e) => { e.stopPropagation(); setShowContextMenu(false); }}>
           <div className="ios-context-card-clone">
             <div className="card-main-content">
@@ -394,8 +393,8 @@ export default function DoctorCard({
               <Share2 size={16} />
             </button>
           </div>
-        </div>
-      )}
+        </div>, document.body
+      ) : null}
     </div>
   );
 }

@@ -1,0 +1,18 @@
+
+.shift-slot-text {
+  font-weight: 700;
+  color: var(--ios-blue);
+  opacity: 0.9;
+}
+
+.card-reg-text {
+  font-weight: 600;
+  color: var(--text-mute);
+  font-size: 11px;
+}
+
+[data-theme="dark"] .shift-slot-text,
+html.dark .shift-slot-text,
+body.dark .shift-slot-text {
+  color: var(--ios-cyan);
+}

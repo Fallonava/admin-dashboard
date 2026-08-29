@@ -3172,3 +3172,39 @@ body.dark .ios-bottom-sheet {
 .st-praktek .status-dot {
   animation: statusPulse 2s infinite;
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   iOS 27 DYNAMIC ISLAND & HEADER UPGRADES
+   ═══════════════════════════════════════════════════════════════ */
+.ios27-glance-capsule-bar.is-scrolled {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(40px) saturate(200%);
+  -webkit-backdrop-filter: blur(40px) saturate(200%);
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="dark"] .ios27-glance-capsule-bar.is-scrolled,
+html.dark .ios27-glance-capsule-bar.is-scrolled,
+body.dark .ios27-glance-capsule-bar.is-scrolled {
+  background: rgba(28, 28, 30, 0.75);
+  border-bottom: 0.5px solid rgba(255, 255, 255, 0.1);
+}
+
+.dynamic-island {
+  transition: all 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.dynamic-island.is-expanded {
+  padding: 6px 16px;
+  border-radius: 9999px;
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+}
+
+[data-theme="dark"] .dynamic-island.is-expanded {
+  background: rgba(255, 255, 255, 0.9);
+  color: black;
+}

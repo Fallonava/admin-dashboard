@@ -1,0 +1,25 @@
+.card-wa-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 3.5px;
+  height: 28px;
+  padding: 0 9px;
+  border-radius: var(--radius-pill);
+  background: var(--surface-card);
+  border: 1px solid rgba(37, 211, 102, 0.4);
+  color: #25D366;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+  transition: transform 140ms ease, box-shadow 140ms ease;
+  flex-shrink: 0;
+  white-space: nowrap;
+  text-decoration: none;
+  position: relative;
+}
+
+.card-wa-pill-btn::before {
+  content: '';
+  position: absolute;
+  top: -8px; right: -8px; bottom: -8px; left: -8px;
+}

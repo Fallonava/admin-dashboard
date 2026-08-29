@@ -1,0 +1,8 @@
+
+[data-theme="dark"] .st-cuti,
+html.dark .st-cuti,
+body.dark .st-cuti {
+  background: rgba(255, 69, 58, 0.15); /* Tinted red adapted for dark mode */
+  color: var(--ios-red); /* Solid red for contrast */
+  border: 1px solid rgba(255, 69, 58, 0.3);
+}

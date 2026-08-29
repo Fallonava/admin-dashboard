@@ -401,7 +401,7 @@ export default function WeeklyView({
                 </div>
 
                 {/* iOS 27 Bottom Sheet Modal */}
-                {isExpanded && (
+                {isExpanded && typeof document !== 'undefined' ? createPortal(
                   <div className="ios-sheet-backdrop" onClick={(e) => { e.stopPropagation(); toggleExpand(doc.id); }}>
                     <div className="ios-bottom-sheet" onClick={(e) => e.stopPropagation()}>
                       <div className="ios-sheet-drag-handle" />
@@ -476,8 +476,7 @@ export default function WeeklyView({
                       </a>
                     </div>
                   </div>
-                </div>
-                )}
+                </div>, document.body) : null}
               </div>
             );
           })}

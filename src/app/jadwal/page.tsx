@@ -49,6 +49,14 @@ export default function JadwalPage() {
   const [favoriteDoctorIds, setFavoriteDoctorIds] = useState<string[]>([]);
   const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
+  const [scrollY, setScrollY] = useState(0);
+  const [islandMessage, setIslandMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    const handleScroll = () => setScrollY(window.scrollY);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   // Initialize theme and favorites from localStorage
@@ -297,7 +305,10 @@ export default function JadwalPage() {
   const handleManualRefresh = async () => {
     triggerHaptic('medium');
     setIsRefreshing(true);
+    setIslandMessage('Memperbarui Data...');
     await mutate();
+    setIslandMessage('Pembaruan Selesai');
+    setTimeout(() => setIslandMessage(null), 2500);
     setIsRefreshing(false);
     showToast('Data Diperbarui', 'Jadwal terkini berhasil disinkronkan', 'success');
   };
@@ -406,6 +417,16 @@ export default function JadwalPage() {
 
       {/* Main Content View */}
       <main className="main-content main-content-padded">
+        {/* Large Title Area */}
+        <div className="large-title-area mb-20" style={{ 
+          opacity: Math.max(0, 1 - scrollY / 50), 
+          transform: `translateY(-${scrollY * 0.5}px)`,
+          padding: '0 20px',
+          marginTop: '10px'
+        }}>
+          <h1 className="large-title font-bold" style={{ fontSize: '32px', letterSpacing: '-1px' }}>Jadwal Dokter</h1>
+          <p className="subtitle text-mute mt-4" style={{ fontSize: '15px' }}>Temukan jadwal praktik spesialis hari ini</p>
+        </div>
         {/* Loading Skeleton */}
         {isLoading && (
           <div className="ios-skeleton">

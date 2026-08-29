@@ -1,0 +1,150 @@
+
+/* ═══════════════════════════════════════════════════════════════
+   iOS 27 BOTTOM SHEET & CONTEXT MENU
+   ═══════════════════════════════════════════════════════════════ */
+/* Bottom Sheet Backdrop */
+.ios-sheet-backdrop {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  animation: sheetFadeIn 300ms var(--ease) forwards;
+}
+
+/* The Sheet */
+.ios-bottom-sheet {
+  background: var(--surface-card);
+  border-top-left-radius: 24px;
+  border-top-right-radius: 24px;
+  padding: 16px 20px calc(var(--sab) + 24px);
+  box-shadow: 0 -10px 40px rgba(0,0,0,0.15);
+  transform: translateY(100%);
+  animation: sheetSlideUp 400ms var(--spring) forwards;
+  will-change: transform;
+}
+
+[data-theme="dark"] .ios-bottom-sheet,
+html.dark .ios-bottom-sheet,
+body.dark .ios-bottom-sheet {
+  background: var(--surface-card-solid);
+  border-top: 0.5px solid rgba(255, 255, 255, 0.15);
+}
+
+.ios-sheet-drag-handle {
+  width: 36px;
+  height: 5px;
+  background: var(--opaque-separator);
+  border-radius: 9999px;
+  margin: 0 auto 16px;
+}
+
+@keyframes sheetFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes sheetSlideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+/* Context Menu (Long Press) */
+.ios-context-backdrop {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  z-index: 300;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  animation: contextFadeIn 250ms var(--ease) forwards;
+}
+
+.ios-context-card-clone {
+  width: 100%;
+  max-width: 400px;
+  background: var(--surface-card);
+  border-radius: var(--radius-card);
+  padding: 16px;
+  box-shadow: var(--shadow-island);
+  transform: scale(0.95);
+  animation: contextPop 400ms var(--spring) forwards;
+  pointer-events: none; /* Just for display */
+}
+
+.ios-context-menu {
+  width: 100%;
+  max-width: 250px;
+  margin-top: 16px;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(30px) saturate(180%);
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transform: scale(0.95);
+  opacity: 0;
+  animation: contextPopMenu 400ms var(--spring) 50ms forwards;
+}
+
+[data-theme="dark"] .ios-context-menu {
+  background: rgba(40, 40, 42, 0.75);
+  border: 0.5px solid rgba(255, 255, 255, 0.1);
+}
+
+.ios-context-menu-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-main);
+  background: transparent;
+  border: none;
+  border-bottom: 0.5px solid var(--separator);
+  text-align: left;
+  transition: background 150ms ease;
+}
+.ios-context-menu-item:last-child {
+  border-bottom: none;
+}
+.ios-context-menu-item:active {
+  background: rgba(0, 0, 0, 0.05);
+}
+[data-theme="dark"] .ios-context-menu-item:active {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+@keyframes contextFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes contextPop {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1.03); }
+}
+@keyframes contextPopMenu {
+  from { opacity: 0; transform: scale(0.9) translateY(-10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* Breathe Skeleton */
+.skeleton-breathe {
+  background: var(--surface-well);
+  border-radius: 8px;
+  animation: iosBreathe 2s infinite ease-in-out;
+}
+@keyframes iosBreathe {
+  0%, 100% { opacity: 0.7; transform: scale(1); }
+  50% { opacity: 0.3; transform: scale(0.98); }
+}
