@@ -1757,23 +1757,23 @@
       .complication-journey-card {
         flex: 1;
         background: #FFFFFF !important;
-        border-radius: 20px;
+        border-radius: 22px;
         position: relative;
         box-sizing: border-box;
-        padding: 13px 15px;
+        padding: 14px 16px;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        gap: 8px;
+        gap: 10px;
         border: 1px solid rgba(60, 60, 67, 0.10);
         box-shadow: 
           0 1px 0 rgba(60, 60, 67, 0.08),
-          0 4px 14px -2px rgba(60, 60, 67, 0.04);
+          0 6px 18px -2px rgba(60, 60, 67, 0.06);
         transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
       }
 
       [data-theme="dark"] .complication-journey-card {
-        background: #2C2C2E !important;
+        background: #1C2433 !important;
         border: 1px solid rgba(255, 255, 255, 0.08);
         box-shadow: 
           0 2px 0 rgba(255, 255, 255, 0.06),
@@ -1784,7 +1784,7 @@
       .tree-branch-grid {
         display: grid;
         grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-        gap: 6px;
+        gap: 10px;
         width: 100%;
         box-sizing: border-box;
       }
@@ -1792,7 +1792,7 @@
       .tree-branch-column {
         display: flex;
         flex-direction: column;
-        gap: 4px;
+        gap: 6px;
         min-width: 0;
         overflow: hidden;
       }
@@ -1801,20 +1801,20 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 0 1px;
+        padding: 0 2px;
         min-width: 0;
         gap: 4px;
       }
 
       .tree-branch-title {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 10.5px;
+        font-size: 12px;
         font-weight: 900;
-        letter-spacing: 0.02em;
+        letter-spacing: 0.03em;
         text-transform: uppercase;
         display: flex;
         align-items: center;
-        gap: 3px;
+        gap: 4px;
         white-space: nowrap;
         min-width: 0;
         overflow: hidden;
@@ -1829,47 +1829,47 @@
 
       .tree-branch-badge {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 8px;
-        font-weight: 800;
-        padding: 1.5px 5px;
+        font-size: 9.5px;
+        font-weight: 900;
+        padding: 2px 7px;
         border-radius: 9999px;
-        letter-spacing: 0.02em;
+        letter-spacing: 0.03em;
         text-transform: uppercase;
         white-space: nowrap;
         flex-shrink: 0;
       }
 
       .badge-online-fast {
-        background: rgba(5, 150, 105, 0.12);
+        background: rgba(5, 150, 105, 0.14);
         color: #059669;
-        border: 1px solid rgba(5, 150, 105, 0.25);
+        border: 1px solid rgba(5, 150, 105, 0.3);
       }
       [data-theme="dark"] .badge-online-fast {
-        background: rgba(52, 211, 153, 0.18);
+        background: rgba(52, 211, 153, 0.2);
         color: #6EE7B7;
-        border-color: rgba(52, 211, 153, 0.35);
+        border-color: rgba(52, 211, 153, 0.4);
       }
 
       .badge-reguler-onsite {
-        background: rgba(217, 119, 6, 0.12);
+        background: rgba(217, 119, 6, 0.14);
         color: #D97706;
-        border: 1px solid rgba(217, 119, 6, 0.25);
+        border: 1px solid rgba(217, 119, 6, 0.3);
       }
       [data-theme="dark"] .badge-reguler-onsite {
-        background: rgba(245, 158, 11, 0.18);
+        background: rgba(245, 158, 11, 0.2);
         color: #FCD34D;
-        border-color: rgba(245, 158, 11, 0.35);
+        border-color: rgba(245, 158, 11, 0.4);
       }
 
       /* Apple iOS Native Step Card */
       .tree-step-card {
         background: #F8FAFC;
-        border: 1px solid rgba(226, 232, 240, 0.95);
-        border-radius: 12px;
-        padding: 6px 8px;
+        border: 1.5px solid rgba(226, 232, 240, 0.95);
+        border-radius: 14px;
+        padding: 9px 10px;
         display: flex;
         align-items: center;
-        gap: 7px;
+        gap: 9px;
         box-sizing: border-box;
         min-width: 0;
         overflow: hidden;
@@ -1878,7 +1878,7 @@
 
       [data-theme="dark"] .tree-step-card {
         background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.09);
+        border: 1px solid rgba(255, 255, 255, 0.1);
       }
 
       .tree-step-card.tree-step-card-tall {
@@ -1887,9 +1887,9 @@
       }
 
       .tree-step-icon-wrap {
-        width: 30px;
-        height: 30px;
-        border-radius: 9px;
+        width: 36px;
+        height: 36px;
+        border-radius: 11px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -1901,25 +1901,25 @@
       .tree-step-content {
         display: flex;
         flex-direction: column;
-        line-height: 1.18;
+        line-height: 1.2;
         min-width: 0;
-        gap: 1.5px;
+        gap: 2px;
       }
 
       /* Apple iOS Capsule Step Number Pill */
       .tree-step-pill-row {
         display: flex;
         align-items: center;
-        gap: 5px;
+        gap: 6px;
       }
 
       .tree-step-num-pill {
-        font-family: "SF Pro Display", "Plus Jakarta Sans", system-ui, sans-serif;
-        font-size: 9px;
+        font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+        font-size: 11px;
         font-weight: 900;
         line-height: 1;
-        padding: 1.5px 5px;
-        border-radius: 4px;
+        padding: 2.5px 6.5px;
+        border-radius: 6px;
         letter-spacing: 0.02em;
         display: inline-flex;
         align-items: center;
@@ -1927,66 +1927,66 @@
       }
 
       .pill-emerald {
-        background: rgba(5, 150, 105, 0.12);
+        background: rgba(5, 150, 105, 0.14);
         color: #059669;
-        border: 1px solid rgba(5, 150, 105, 0.25);
+        border: 1px solid rgba(5, 150, 105, 0.3);
       }
       [data-theme="dark"] .pill-emerald {
-        background: rgba(52, 211, 153, 0.2);
+        background: rgba(52, 211, 153, 0.22);
         color: #34D399;
-        border-color: rgba(52, 211, 153, 0.35);
+        border-color: rgba(52, 211, 153, 0.4);
       }
 
       .pill-amber {
-        background: rgba(217, 119, 6, 0.12);
+        background: rgba(217, 119, 6, 0.14);
         color: #D97706;
-        border: 1px solid rgba(217, 119, 6, 0.25);
+        border: 1px solid rgba(217, 119, 6, 0.3);
       }
       [data-theme="dark"] .pill-amber {
-        background: rgba(245, 158, 11, 0.2);
+        background: rgba(245, 158, 11, 0.22);
         color: #FBBF24;
-        border-color: rgba(245, 158, 11, 0.35);
+        border-color: rgba(245, 158, 11, 0.4);
       }
 
       .pill-blue {
-        background: rgba(2, 132, 199, 0.12);
+        background: rgba(2, 132, 199, 0.14);
         color: #0284C7;
-        border: 1px solid rgba(2, 132, 199, 0.25);
+        border: 1px solid rgba(2, 132, 199, 0.3);
       }
       [data-theme="dark"] .pill-blue {
-        background: rgba(56, 189, 248, 0.2);
+        background: rgba(56, 189, 248, 0.22);
         color: #38BDF8;
-        border-color: rgba(56, 189, 248, 0.35);
+        border-color: rgba(56, 189, 248, 0.4);
       }
 
       .pill-rose {
-        background: rgba(225, 29, 72, 0.12);
+        background: rgba(225, 29, 72, 0.14);
         color: #E11D48;
-        border: 1px solid rgba(225, 29, 72, 0.25);
+        border: 1px solid rgba(225, 29, 72, 0.3);
       }
       [data-theme="dark"] .pill-rose {
-        background: rgba(251, 113, 133, 0.2);
+        background: rgba(251, 113, 133, 0.22);
         color: #FB7185;
-        border-color: rgba(251, 113, 133, 0.35);
+        border-color: rgba(251, 113, 133, 0.4);
       }
 
       .pill-purple {
-        background: rgba(99, 102, 241, 0.12);
+        background: rgba(99, 102, 241, 0.14);
         color: #6366F1;
-        border: 1px solid rgba(99, 102, 241, 0.25);
+        border: 1px solid rgba(99, 102, 241, 0.3);
       }
       [data-theme="dark"] .pill-purple {
-        background: rgba(129, 140, 248, 0.2);
+        background: rgba(129, 140, 248, 0.22);
         color: #818CF8;
-        border-color: rgba(129, 140, 248, 0.35);
+        border-color: rgba(129, 140, 248, 0.4);
       }
 
       .tree-step-title {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 11px;
+        font-size: 13.5px;
         font-weight: 800;
         color: #0F172A;
-        line-height: 1.22;
+        line-height: 1.2;
         letter-spacing: -0.01em;
         word-break: normal;
       }
@@ -1997,7 +1997,7 @@
 
       .tree-step-sub {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 9.5px;
+        font-size: 11px;
         font-weight: 600;
         color: #64748B;
         line-height: 1.2;
@@ -2008,16 +2008,16 @@
         color: #94A3B8;
       }
 
-      /* Micro Down Connectors & Interactive Apple Micro-Animations */
+      /* Micro Down Connectors */
       .tree-micro-down-connector {
         display: flex;
         align-items: center;
         justify-content: center;
-        height: 11px;
+        height: 12px;
       }
 
       .tree-micro-down-arrow {
-        font-size: 12px;
+        font-size: 14px;
         color: #D97706;
         font-weight: 900;
         animation: appleMicroDownGlide 2.2s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
@@ -2028,54 +2028,38 @@
         color: #FBBF24;
       }
 
-      @keyframes appleMicroDownGlide {
-        0%, 100% {
-          transform: translate3d(0, -2px, 0) scale(0.95);
-          opacity: 0.45;
-        }
-        50% {
-          transform: translate3d(0, 2px, 0) scale(1.15);
-          opacity: 1;
-          filter: drop-shadow(0 2px 5px rgba(217, 119, 6, 0.5));
-        }
-      }
-
       /* Tree Convergence Divider with Branching Line */
       .tree-convergence-ribbon {
         display: flex;
         align-items: center;
         justify-content: center;
         position: relative;
-        margin: 2px 0;
+        margin: 4px 0;
       }
 
       .tree-convergence-badge {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 9.5px;
+        font-size: 11px;
         font-weight: 900;
         letter-spacing: 0.04em;
         text-transform: uppercase;
         color: #0F172A;
         background: #F1F5F9;
-        border: 1px solid rgba(203, 213, 225, 0.95);
-        padding: 2.5px 11px;
+        border: 1.5px solid rgba(203, 213, 225, 0.95);
+        padding: 3px 14px;
         border-radius: 9999px;
         display: flex;
         align-items: center;
-        gap: 5px;
+        gap: 6px;
         z-index: 2;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.04);
         animation: appleConvergenceBreathe 4s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate;
-      }
-
-      @keyframes appleConvergenceBreathe {
-        0% { transform: scale(1); }
-        100% { transform: scale(1.025); }
       }
 
       [data-theme="dark"] .tree-convergence-badge {
         color: #F8FAFC;
-        background: rgba(255, 255, 255, 0.08);
-        border-color: rgba(255, 255, 255, 0.12);
+        background: #1E293B;
+        border-color: rgba(255, 255, 255, 0.15);
       }
 
       .tree-convergence-line {
@@ -2083,95 +2067,90 @@
         left: 0;
         right: 0;
         top: 50%;
-        height: 1px;
-        background: rgba(203, 213, 225, 0.7);
+        height: 1.5px;
+        background: rgba(203, 213, 225, 0.8);
         z-index: 1;
       }
       [data-theme="dark"] .tree-convergence-line {
-        background: rgba(255, 255, 255, 0.08);
+        background: rgba(255, 255, 255, 0.1);
       }
 
       /* Vertical Tree Downward Trunk */
       .tree-trunk-section {
         display: flex;
         flex-direction: column;
-        gap: 4px;
-        background: #F8FAFC;
-        border: 1px solid rgba(226, 232, 240, 0.95);
-        border-radius: 14px;
-        padding: 7px 9px;
-      }
-
-      [data-theme="dark"] .tree-trunk-section {
-        background: rgba(255, 255, 255, 0.03);
-        border-color: rgba(255, 255, 255, 0.08);
+        gap: 6px;
+        background: transparent;
+        border: none;
+        padding: 0;
       }
 
       .tree-trunk-row-card {
-        background: #FFFFFF;
-        border: 1px solid rgba(226, 232, 240, 0.9);
-        border-radius: 12px;
-        padding: 6px 9px;
+        background: #F8FAFC;
+        border: 1.5px solid rgba(226, 232, 240, 0.95);
+        border-radius: 15px;
+        padding: 9px 12px;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 7px;
+        gap: 9px;
+        box-shadow: 0 2px 6px -1px rgba(45, 65, 95, 0.04);
         transition: transform 0.2s ease;
       }
 
       [data-theme="dark"] .tree-trunk-row-card {
         background: rgba(255, 255, 255, 0.05);
-        border-color: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.1);
       }
 
       .tree-trunk-left {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 10px;
         min-width: 0;
       }
 
       .tree-trunk-tag {
         font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 9px;
+        font-size: 10.5px;
         font-weight: 900;
-        padding: 2.5px 7.5px;
-        border-radius: 6px;
-        letter-spacing: 0.02em;
+        padding: 3px 9px;
+        border-radius: 8px;
+        letter-spacing: 0.03em;
         white-space: nowrap;
       }
 
       .tag-loket {
-        background: rgba(2, 132, 199, 0.1);
+        background: rgba(2, 132, 199, 0.12);
         color: #0284C7;
-        border: 1px solid rgba(2, 132, 199, 0.25);
+        border: 1px solid rgba(2, 132, 199, 0.3);
       }
       [data-theme="dark"] .tag-loket {
-        background: rgba(56, 189, 248, 0.15);
+        background: rgba(56, 189, 248, 0.18);
         color: #38BDF8;
-        border-color: rgba(56, 189, 248, 0.3);
+        border-color: rgba(56, 189, 248, 0.35);
       }
 
       .tag-tensi {
-        background: rgba(225, 29, 72, 0.1);
+        background: rgba(225, 29, 72, 0.12);
         color: #E11D48;
-        border: 1px solid rgba(225, 29, 72, 0.25);
+        border: 1px solid rgba(225, 29, 72, 0.3);
       }
       [data-theme="dark"] .tag-tensi {
-        background: rgba(251, 113, 133, 0.15);
+        background: rgba(251, 113, 133, 0.18);
         color: #FB7185;
-        border-color: rgba(251, 113, 133, 0.3);
+        border-color: rgba(251, 113, 133, 0.35);
       }
 
       .tag-poli {
-        background: rgba(99, 102, 241, 0.1);
+        background: rgba(99, 102, 241, 0.12);
         color: #6366F1;
-        border: 1px solid rgba(99, 102, 241, 0.25);
+        border: 1px solid rgba(99, 102, 241, 0.3);
       }
       [data-theme="dark"] .tag-poli {
-        background: rgba(129, 140, 248, 0.15);
+        background: rgba(129, 140, 248, 0.18);
         color: #818CF8;
-        border-color: rgba(129, 140, 248, 0.3);
+        border-color: rgba(129, 140, 248, 0.35);
       }
 
       /* Downward Trunk Connectors */
@@ -2179,12 +2158,12 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        height: 10px;
+        height: 12px;
         position: relative;
       }
 
       .tree-trunk-down-arrow {
-        font-size: 13px;
+        font-size: 15px;
         color: #0284C7;
         font-weight: 900;
         animation: appleTrunkDownGlide 2.4s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
@@ -5634,7 +5613,7 @@
                   </div>
                   <div class="tree-step-card tree-step-card-tall">
                     <div class="tree-step-icon-wrap icon-online-1 anim-qr-laser">
-                      <span class="material-icons-round" style="font-size:16px;">smartphone</span>
+                      <span class="material-icons-round" style="font-size:20px;">smartphone</span>
                     </div>
                     <div class="tree-step-content">
                       <span class="tree-step-title">Tunjukkan Kode Booking</span>
@@ -5654,7 +5633,7 @@
                   </div>
                   <div class="tree-step-card">
                     <div class="tree-step-icon-wrap icon-reg-1 anim-kiosk-touch">
-                      <span class="material-icons-round" style="font-size:15px;">confirmation_number</span>
+                      <span class="material-icons-round" style="font-size:19px;">confirmation_number</span>
                     </div>
                     <div class="tree-step-content">
                       <span class="tree-step-title">Tiket Antrean</span>
@@ -5666,7 +5645,7 @@
                   </div>
                   <div class="tree-step-card">
                     <div class="tree-step-icon-wrap icon-reg-2 anim-voice-broadcast">
-                      <span class="material-icons-round" style="font-size:15px;">record_voice_over</span>
+                      <span class="material-icons-round" style="font-size:19px;">record_voice_over</span>
                     </div>
                     <div class="tree-step-content">
                       <span class="tree-step-title">Tunggu Panggilan</span>
@@ -5692,7 +5671,7 @@
                 <div class="tree-trunk-row-card row-stage-1">
                   <div class="tree-trunk-left">
                     <div class="tree-step-icon-wrap icon-unified-1 anim-desk-verified">
-                      <span class="material-icons-round" style="font-size:15px;">how_to_reg</span>
+                      <span class="material-icons-round" style="font-size:20px;">how_to_reg</span>
                     </div>
                     <div class="tree-step-content">
                       <div class="tree-step-pill-row">
@@ -5714,7 +5693,7 @@
                 <div class="tree-trunk-row-card row-stage-2">
                   <div class="tree-trunk-left">
                     <div class="tree-step-icon-wrap icon-unified-2 anim-heart-pump">
-                      <span class="material-icons-round" style="font-size:15px;">monitor_heart</span>
+                      <span class="material-icons-round" style="font-size:20px;">monitor_heart</span>
                     </div>
                     <div class="tree-step-content">
                       <div class="tree-step-pill-row">
@@ -5736,7 +5715,7 @@
                 <div class="tree-trunk-row-card row-stage-3">
                   <div class="tree-trunk-left">
                     <div class="tree-step-icon-wrap icon-unified-3 anim-doc-float">
-                      <span class="material-icons-round" style="font-size:15px;">medical_services</span>
+                      <span class="material-icons-round" style="font-size:20px;">medical_services</span>
                     </div>
                     <div class="tree-step-content">
                       <div class="tree-step-pill-row">
@@ -7131,7 +7110,7 @@
                     </div>
                     <div class="tree-step-card tree-step-card-tall">
                       <div class="tree-step-icon-wrap icon-online-1 anim-qr-laser">
-                        <span class="material-icons-round" style="font-size:16px;">smartphone</span>
+                        <span class="material-icons-round" style="font-size:20px;">smartphone</span>
                       </div>
                       <div class="tree-step-content">
                         <span class="tree-step-title">Tunjukkan Nomor Pendaftaran</span>
@@ -7151,7 +7130,7 @@
                     </div>
                     <div class="tree-step-card">
                       <div class="tree-step-icon-wrap icon-reg-1 anim-kiosk-touch">
-                        <span class="material-icons-round" style="font-size:15px;">confirmation_number</span>
+                        <span class="material-icons-round" style="font-size:19px;">confirmation_number</span>
                       </div>
                       <div class="tree-step-content">
                         <span class="tree-step-title">Tiket Antrean</span>
@@ -7163,7 +7142,7 @@
                     </div>
                     <div class="tree-step-card">
                       <div class="tree-step-icon-wrap icon-reg-2 anim-voice-broadcast">
-                        <span class="material-icons-round" style="font-size:15px;">record_voice_over</span>
+                        <span class="material-icons-round" style="font-size:19px;">record_voice_over</span>
                       </div>
                       <div class="tree-step-content">
                         <span class="tree-step-title">Tunggu Panggilan</span>
@@ -7189,7 +7168,7 @@
                   <div class="tree-trunk-row-card row-stage-1">
                     <div class="tree-trunk-left">
                       <div class="tree-step-icon-wrap icon-unified-1 anim-desk-verified">
-                        <span class="material-icons-round" style="font-size:15px;">how_to_reg</span>
+                        <span class="material-icons-round" style="font-size:20px;">how_to_reg</span>
                       </div>
                       <div class="tree-step-content">
                         <div class="tree-step-pill-row">
@@ -7211,7 +7190,7 @@
                   <div class="tree-trunk-row-card row-stage-2">
                     <div class="tree-trunk-left">
                       <div class="tree-step-icon-wrap icon-unified-2 anim-heart-pump">
-                        <span class="material-icons-round" style="font-size:15px;">monitor_heart</span>
+                        <span class="material-icons-round" style="font-size:20px;">monitor_heart</span>
                       </div>
                       <div class="tree-step-content">
                         <div class="tree-step-pill-row">
@@ -7233,7 +7212,7 @@
                   <div class="tree-trunk-row-card row-stage-3">
                     <div class="tree-trunk-left">
                       <div class="tree-step-icon-wrap icon-unified-3 anim-doc-float">
-                        <span class="material-icons-round" style="font-size:15px;">medical_services</span>
+                        <span class="material-icons-round" style="font-size:20px;">medical_services</span>
                       </div>
                       <div class="tree-step-content">
                         <div class="tree-step-pill-row">
