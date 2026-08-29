@@ -400,10 +400,13 @@ export default function WeeklyView({
                   </div>
                 </div>
 
-                {/* Expandable Accordion Drawer for Extra Context (Apple Inset Metric List) */}
+                {/* iOS 27 Bottom Sheet Modal */}
                 {isExpanded && (
-                  <div className="platter-expanded-drawer">
-                    <div className="drawer-metric-list">
+                  <div className="ios-sheet-backdrop" onClick={(e) => { e.stopPropagation(); toggleExpand(doc.id); }}>
+                    <div className="ios-bottom-sheet" onClick={(e) => e.stopPropagation()}>
+                      <div className="ios-sheet-drag-handle" />
+                      <h3 className="doc-name mb-12 text-center" style={{ fontSize: '16px' }}>{doc.name}</h3>
+                      <div className="drawer-metric-list">
                       <div className="drawer-metric-row">
                         <span className="drawer-metric-lbl">Hari Praktik</span>
                         <span className="drawer-metric-val">
@@ -473,6 +476,7 @@ export default function WeeklyView({
                       </a>
                     </div>
                   </div>
+                </div>
                 )}
               </div>
             );

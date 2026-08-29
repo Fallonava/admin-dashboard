@@ -37,6 +37,20 @@ export default function DoctorCard({
 }: DoctorCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [copiedCode, setCopiedCode] = useState(false);
+  const [showContextMenu, setShowContextMenu] = useState(false);
+  const [pressTimer, setPressTimer] = useState<NodeJS.Timeout | null>(null);
+
+  const handleTouchStart = () => {
+    const timer = setTimeout(() => {
+      triggerHaptic('success');
+      setShowContextMenu(true);
+    }, 450);
+    setPressTimer(timer);
+  };
+
+  const handleTouchEnd = () => {
+    if (pressTimer) clearTimeout(pressTimer);
+  };
 
   const badgeClass = getSpecialtyBadgeClass(doctor.specialty);
   const statusUpper = (doctor.status || 'LIBUR').toUpperCase();
@@ -147,6 +161,14 @@ export default function DoctorCard({
       role="button"
       tabIndex={0}
       aria-expanded={isExpanded}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+      onTouchMove={handleTouchEnd}
+      onContextMenu={(e) => {
+        e.preventDefault();
+        triggerHaptic('success');
+        setShowContextMenu(true);
+      }}
     >
       {/* Top Specular Glass Sheen */}
       <span className="card-top-specular" aria-hidden="true" />
@@ -253,10 +275,13 @@ export default function DoctorCard({
         </div>
       </div>
 
-      {/* Expandable Accordion Drawer for Extra Context (Apple Inset Metric List) */}
+      {/* iOS 27 Bottom Sheet Modal */}
       {isExpanded && (
-        <div className="platter-expanded-drawer">
-          <div className="drawer-metric-list">
+        <div className="ios-sheet-backdrop" onClick={(e) => { e.stopPropagation(); toggleExpand(); }}>
+          <div className="ios-bottom-sheet" onClick={(e) => e.stopPropagation()}>
+            <div className="ios-sheet-drag-handle" />
+            <h3 className="doc-name mb-12 text-center" style={{ fontSize: '16px' }}>{doctor.name}</h3>
+            <div className="drawer-metric-list">
             {doctor.queueCode && (
               <div className="drawer-metric-row">
                 <span className="drawer-metric-lbl">Kode Antrean Tiket</span>
@@ -329,6 +354,44 @@ export default function DoctorCard({
             >
               <Share2 size={14} />
               <span>Bagikan</span>
+            </button>
+          </div>
+        </div>
+      </div>
+      )}
+
+      {/* iOS 27 Haptic Touch Context Menu */}
+      {showContextMenu && (
+        <div className="ios-context-backdrop" onClick={(e) => { e.stopPropagation(); setShowContextMenu(false); }}>
+          <div className="ios-context-card-clone">
+            <div className="card-main-content">
+              <div className="card-avatar-col">
+                <div className="avatar-squircle">
+                  {doctor.image ? (
+                    <img src={doctor.image} alt={doctor.name} className="avatar-img" />
+                  ) : (
+                    <SpecialistIcon department={doctor.specialty} size={24} className="avatar-spec-icon" />
+                  )}
+                </div>
+              </div>
+              <div className="card-info-col">
+                <h3 className="doc-name">{doctor.name}</h3>
+                <span className="doc-spec-badge text-blue">{doctor.specialty}</span>
+              </div>
+            </div>
+          </div>
+          <div className="ios-context-menu" onClick={(e) => e.stopPropagation()}>
+            <button className="ios-context-menu-item" onClick={(e) => { setShowContextMenu(false); handleFavorite(e); }}>
+              <span>{isFavorite ? 'Hapus dari Favorit' : 'Jadikan Favorit'}</span>
+              <Star size={16} className={isFavorite ? 'fill-star text-yellow' : ''} />
+            </button>
+            <button className="ios-context-menu-item" onClick={(e) => { setShowContextMenu(false); handleAddToCalendar(e); }}>
+              <span>Tambah ke Kalender</span>
+              <Calendar size={16} />
+            </button>
+            <button className="ios-context-menu-item" onClick={(e) => { setShowContextMenu(false); handleShare(e); }}>
+              <span>Bagikan Dokter</span>
+              <Share2 size={16} />
             </button>
           </div>
         </div>
