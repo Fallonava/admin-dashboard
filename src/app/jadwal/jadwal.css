@@ -1117,6 +1117,32 @@ body.dark .card-reg-pill {
   color: #64D2FF;
 }
 
+.card-multi-shifts-wrap {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.shift-slot-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-main);
+  background: var(--surface-well);
+  padding: 1.5px 6px;
+  border-radius: 6px;
+}
+
+.shift-title-tag {
+  font-size: 9.5px;
+  font-weight: 700;
+  color: var(--text-sub);
+  margin-left: 2px;
+}
+
 .card-action-col {
   display: flex;
   align-items: center;
