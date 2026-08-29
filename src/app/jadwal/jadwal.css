@@ -186,6 +186,7 @@ a {
 
 .main-content, .main-content-padded {
   width: 100%;
+  padding-bottom: calc(var(--sab) + 80px);
 }
 
 @media (min-width: 768px) {
@@ -412,26 +413,10 @@ body.dark .jadwal-brand-logo-squircle {
   transform: scale(0.88);
 }
 
-.jadwal-nav-icon-btn.hotline-btn, .nav-icon-action-btn.hotline-btn, .emergency-btn-2027 {
-  width: auto;
-  padding: 0 10px;
-  gap: 5px;
-  border-radius: 9999px;
-  background: linear-gradient(135deg, rgba(255, 59, 48, 0.16), rgba(255, 59, 48, 0.08));
-  border-color: rgba(255, 59, 48, 0.35);
-  color: var(--ios-red);
-  box-shadow: 0 4px 12px rgba(255, 59, 48, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.4);
-}
-
-.jadwal-nav-icon-btn.hotline-btn:active, .nav-icon-action-btn.hotline-btn:active, .emergency-btn-2027:active {
-  background: rgba(255, 59, 48, 0.28);
-  transform: scale(0.92);
-}
-
-.emergency-txt-mini {
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.2px;
+.theme-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
 }
 
 .jadwal-nav-icon-btn.is-spinning, .refresh-spin {
@@ -636,6 +621,60 @@ body.dark .jadwal-segmented-track {
   color: rgba(255, 255, 255, 0.65);
 }
 
+.island-alert-row, .island-broadcast-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.island-leading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.island-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.island-title {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+  color: #FFFFFF;
+  line-height: 1.2;
+}
+
+.island-sub {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.72);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 1px;
+}
+
+.island-trailing-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.island-mini-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ios-green);
+  box-shadow: 0 0 6px var(--ios-green);
+  animation: liveBreathe 2s infinite ease-in-out;
+}
+
 /* ═══════════════════════════════════════════════════════════════
    3. IOS 27 GLANCE METRIC CAPSULE BAR (BentoStats.tsx)
    ═══════════════════════════════════════════════════════════════ */
@@ -710,166 +749,7 @@ body.dark .jadwal-segmented-track {
   flex-shrink: 0;
 }
 
-.bento-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-}
-
-@media (min-width: 768px) {
-  .bento-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
-
-.bento-card-main {
-  background: var(--liquid-glass-bg);
-  backdrop-filter: var(--liquid-glass-blur);
-  -webkit-backdrop-filter: var(--liquid-glass-blur);
-  border: var(--liquid-glass-border);
-  box-shadow: var(--liquid-glass-shadow);
-  border-radius: var(--radius-card);
-  padding: 16px;
-  position: relative;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  cursor: pointer;
-  user-select: none;
-  transition: transform 260ms var(--spring), box-shadow 260ms ease, filter 180ms ease;
-}
-
-.bento-card-main::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: var(--liquid-glass-shine);
-  pointer-events: none;
-  border-radius: inherit;
-}
-
-.bento-card-main:active {
-  transform: scale(0.96) translateY(1px);
-  filter: brightness(0.97);
-}
-
-.bento-card-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-}
-
-.bento-icon-coin {
-  width: 34px;
-  height: 34px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.bento-icon-coin.praktek {
-  background: rgba(52, 199, 89, 0.16);
-  color: var(--ios-green);
-}
-
-.bento-icon-coin.cuti {
-  background: rgba(255, 59, 48, 0.16);
-  color: var(--ios-red);
-}
-
-.bento-icon-coin.spec {
-  background: rgba(0, 122, 255, 0.16);
-  color: var(--ios-blue);
-}
-
-.bento-icon-coin.rate {
-  background: rgba(175, 82, 222, 0.16);
-  color: var(--ios-purple);
-}
-
-.bento-status-pill {
-  font-size: 10.5px;
-  font-weight: 700;
-  padding: 2px 7px;
-  border-radius: 9999px;
-}
-
-.bento-status-pill.praktek {
-  background: rgba(52, 199, 89, 0.14);
-  color: var(--ios-green);
-}
-
-.bento-status-pill.cuti {
-  background: rgba(255, 59, 48, 0.14);
-  color: var(--ios-red);
-}
-
-.bento-status-pill.spec {
-  background: rgba(0, 122, 255, 0.14);
-  color: var(--ios-blue);
-}
-
-.bento-status-pill.rate {
-  background: rgba(175, 82, 222, 0.14);
-  color: var(--ios-purple);
-}
-
-.bento-num-wrap {
-  display: flex;
-  align-items: baseline;
-  gap: 4px;
-}
-
-.bento-num {
-  font-size: 26px;
-  font-weight: 800;
-  letter-spacing: -0.5px;
-  line-height: 1;
-  color: var(--text-main);
-}
-
-.bento-unit {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text-sub);
-}
-
-.bento-text-group {
-  display: flex;
-  flex-direction: column;
-}
-
-.bento-title {
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: -0.2px;
-  color: var(--text-main);
-}
-
-.bento-sub {
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--text-sub);
-}
-
-.bento-progress-track {
-  width: 100%;
-  height: 6px;
-  border-radius: 9999px;
-  background: var(--surface-well);
-  overflow: hidden;
-  margin-bottom: 4px;
-}
-
-.bento-progress-fill {
-  height: 100%;
-  border-radius: 9999px;
-  background: linear-gradient(90deg, var(--ios-blue), var(--ios-green));
-  transition: width 400ms var(--ease);
-}
+/* (Legacy bento grid cleaned up & replaced by iOS 27 Glance Capsule Bar) */
 
 /* ═══════════════════════════════════════════════════════════════
    4. SEARCH BAR & CATEGORY FILTER CHIPS
@@ -2399,7 +2279,7 @@ body.dark .jadwal-segmented-track {
    ═══════════════════════════════════════════════════════════════ */
 .ios27-floating-tabbar-container, .ios27-tabbar-container {
   position: fixed;
-  bottom: calc(var(--sab) + 12px);
+  bottom: 0;
   left: 0;
   right: 0;
   z-index: 95;
@@ -2407,7 +2287,7 @@ body.dark .jadwal-segmented-track {
   flex-direction: column;
   align-items: center;
   pointer-events: none;
-  padding: 0 16px;
+  padding: 0 12px max(var(--sab), 6px);
 }
 
 .ios27-spatial-dock, .ios27-tabbar {
@@ -2418,13 +2298,13 @@ body.dark .jadwal-segmented-track {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 6px 8px;
+  padding: 5px 8px;
   background: var(--surface-dock);
-  backdrop-filter: blur(36px) saturate(210%);
-  -webkit-backdrop-filter: blur(36px) saturate(210%);
+  backdrop-filter: blur(32px) saturate(210%);
+  -webkit-backdrop-filter: blur(32px) saturate(210%);
   border: 0.5px solid var(--separator);
   border-radius: 9999px;
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.22), inset 0 1px 1px rgba(255, 255, 255, 0.7);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.16), inset 0 1px 1px rgba(255, 255, 255, 0.7);
   user-select: none;
   transition: background-color 240ms ease, border-color 240ms ease, box-shadow 240ms ease;
 }

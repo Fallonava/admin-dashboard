@@ -1,20 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { triggerHaptic } from '../lib/haptics';
-import {
-  RotateCcw,
-  Sun,
-  Moon,
-  PhoneCall,
-  Share2,
-  Search,
-  ShieldCheck,
-} from 'lucide-react';
+import { Sun, Moon, ShieldCheck } from 'lucide-react';
 
 interface JadwalNavbarProps {
   isDarkMode: boolean;
   onToggleTheme: () => void;
-  isRefreshing: boolean;
-  onRefresh: () => void;
+  isRefreshing?: boolean;
+  onRefresh?: () => void;
   onShare?: () => void;
   onSearchFocus?: () => void;
   todayCount?: number;
@@ -26,10 +18,6 @@ interface JadwalNavbarProps {
 export default function JadwalNavbar({
   isDarkMode,
   onToggleTheme,
-  isRefreshing,
-  onRefresh,
-  onShare,
-  onSearchFocus,
 }: JadwalNavbarProps) {
   // Live WIB clock telemetry
   const [wibTimeStr, setWibTimeStr] = useState<string>('');
@@ -53,7 +41,7 @@ export default function JadwalNavbar({
   return (
     <header className="jadwal-dedicated-navbar ios27-header spatial-glass-header compact-header-2027">
       <div className="jadwal-nav-inner">
-        {/* Top Brand & Utility Toolbar (2027 Spatial Specular Layer) */}
+        {/* Top Brand Toolbar (Ultra Clean Apple iOS 27 Layout) */}
         <div className="jadwal-nav-top-row">
           {/* Hospital Branding (Siaga Medika PBG) */}
           <div className="jadwal-brand-group">
@@ -84,58 +72,13 @@ export default function JadwalNavbar({
                   <span className="telemetry-txt">{wibTimeStr || 'LIVE WIB'}</span>
                 </span>
                 <span className="telemetry-divider">·</span>
-                <span className="jadwal-brand-sub">Live Jadwal Dokter</span>
+                <span className="jadwal-brand-sub">Portal Dokter Spesialis</span>
               </div>
             </div>
           </div>
 
-          {/* Right Toolbar Actions (2027 Micro Glass Capsule) */}
+          {/* Right Area: Clean Theme Toggle Capsule */}
           <div className="jadwal-nav-actions">
-            {/* Emergency Hotline Button PBG (High Priority Pulse) */}
-            <a
-              href="tel:0281891888"
-              className="jadwal-nav-icon-btn hotline-btn emergency-btn-2027"
-              title="IGD 24 Jam Siaga Medika PBG (0281) 891888"
-              onClick={() => triggerHaptic('medium')}
-              aria-label="Telepon IGD (0281) 891888"
-            >
-              <PhoneCall size={14} />
-              <span className="emergency-txt-mini">IGD</span>
-            </a>
-
-            {/* Search Shortcut */}
-            {onSearchFocus && (
-              <button
-                type="button"
-                className="jadwal-nav-icon-btn"
-                onClick={() => {
-                  triggerHaptic('selection');
-                  onSearchFocus();
-                }}
-                title="Cari Dokter / Spesialis"
-                aria-label="Cari Dokter Spesialis"
-              >
-                <Search size={15} />
-              </button>
-            )}
-
-            {/* Share Portal */}
-            {onShare && (
-              <button
-                type="button"
-                className="jadwal-nav-icon-btn"
-                onClick={() => {
-                  triggerHaptic('light');
-                  onShare();
-                }}
-                title="Bagikan Portal Jadwal"
-                aria-label="Bagikan Jadwal Dokter"
-              >
-                <Share2 size={15} />
-              </button>
-            )}
-
-            {/* Dark Mode Toggle */}
             <button
               type="button"
               className="jadwal-nav-icon-btn theme-btn"
@@ -143,24 +86,10 @@ export default function JadwalNavbar({
                 triggerHaptic('selection');
                 onToggleTheme();
               }}
-              title={isDarkMode ? 'Mode Terang' : 'Mode OLED Gelap'}
+              title={isDarkMode ? 'Beralih ke Mode Terang' : 'Beralih ke Mode Gelap OLED'}
               aria-label="Ubah Tema Tampilan"
             >
-              {isDarkMode ? <Sun size={15} /> : <Moon size={15} />}
-            </button>
-
-            {/* Refresh Sync */}
-            <button
-              type="button"
-              className={`jadwal-nav-icon-btn refresh-btn ${isRefreshing ? 'is-spinning' : ''}`}
-              onClick={() => {
-                triggerHaptic('medium');
-                onRefresh();
-              }}
-              title="Sinkronkan Jadwal Real-time"
-              aria-label="Sinkronkan Jadwal Real-time"
-            >
-              <RotateCcw size={15} />
+              {isDarkMode ? <Sun size={16} /> : <Moon size={16} />}
             </button>
           </div>
         </div>

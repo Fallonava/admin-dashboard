@@ -24,7 +24,6 @@ import DoctorCard from './components/DoctorCard';
 import WeeklyView from './components/WeeklyView';
 import LeavesCalendar from './components/LeavesCalendar';
 import RegistrationModal from './components/RegistrationModal';
-import Toast, { ToastMessage } from './components/Toast';
 import JadwalNavbar from './components/JadwalNavbar';
 import IosTabBar from './components/IosTabBar';
 
@@ -42,7 +41,6 @@ export default function JadwalPage() {
   const [selectedDoctorForModal, setSelectedDoctorForModal] = useState<Doctor | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [islandAlert, setIslandAlert] = useState<DynamicIslandAlert | null>(null);
-  const [toast, setToast] = useState<ToastMessage | null>(null);
   const [favoriteDoctorIds, setFavoriteDoctorIds] = useState<string[]>([]);
   const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
@@ -99,11 +97,11 @@ export default function JadwalPage() {
     }, 100);
   };
 
-  const showToast = (title: string, description?: string, type: ToastMessage['type'] = 'info') => {
-    setToast({
+  const showToast = (title: string, description?: string, type: DynamicIslandAlert['type'] = 'info') => {
+    setIslandAlert({
       id: String(Date.now()),
       title,
-      description,
+      message: description || '',
       type,
     });
   };
@@ -340,9 +338,10 @@ export default function JadwalPage() {
 
   return (
     <div className="jadwal-container">
-      {/* Top Dynamic Island Area */}
+      {/* Top Dynamic Island Area (Unified Standby & Live Notification Morph) */}
       <DynamicIsland
         alert={islandAlert}
+        onDismissAlert={() => setIslandAlert(null)}
         broadcasts={broadcasts}
         activeDoctorCount={evaluatedDoctors.filter((d) => d.status === 'PRAKTEK').length}
         totalDoctorCount={evaluatedDoctors.length}
@@ -428,57 +427,19 @@ export default function JadwalPage() {
                 )}
               </div>
 
-              {/* Status & Specialty Filter Horizontal Strip */}
+              {/* Specialty & Favorites Filter Horizontal Strip (Zero Duplication) */}
               <div className="category-chips-row">
                 <button
                   type="button"
-                  className={`category-chip ${statusFilter === 'all' && specialtyFilter === 'all' ? 'active' : ''}`}
+                  className={`category-chip ${specialtyFilter === 'all' && statusFilter !== 'favorite' ? 'active' : ''}`}
                   onClick={() => {
                     triggerHaptic('selection');
-                    setStatusFilter('all');
                     setSpecialtyFilter('all');
+                    if (statusFilter === 'favorite') setStatusFilter('all');
                   }}
                 >
-                  Semua ({todayOnlyDoctors.length})
+                  <span>Semua Poliklinik</span>
                 </button>
-
-                <button
-                  type="button"
-                  className={`category-chip ${statusFilter === 'praktek' ? 'active' : ''}`}
-                  onClick={() => {
-                    triggerHaptic('selection');
-                    setStatusFilter(statusFilter === 'praktek' ? 'all' : 'praktek');
-                  }}
-                >
-                  <span className="status-dot st-dot-green" />
-                  <span>Praktik ({todayOnlyDoctors.filter((d) => d.status === 'PRAKTEK').length})</span>
-                </button>
-
-                <button
-                  type="button"
-                  className={`category-chip ${statusFilter === 'terjadwal' ? 'active' : ''}`}
-                  onClick={() => {
-                    triggerHaptic('selection');
-                    setStatusFilter(statusFilter === 'terjadwal' ? 'all' : 'terjadwal');
-                  }}
-                >
-                  <Clock size={12} />
-                  <span>Terjadwal ({todayOnlyDoctors.filter((d) => d.status === 'TERJADWAL').length})</span>
-                </button>
-
-                {todayOnlyDoctors.some((d) => (d.status || '').includes('CUTI')) && (
-                  <button
-                    type="button"
-                    className={`category-chip ${statusFilter === 'cuti' ? 'active' : ''}`}
-                    onClick={() => {
-                      triggerHaptic('selection');
-                      setStatusFilter(statusFilter === 'cuti' ? 'all' : 'cuti');
-                    }}
-                  >
-                    <CalendarX size={12} />
-                    <span>Cuti ({todayOnlyDoctors.filter((d) => (d.status || '').includes('CUTI')).length})</span>
-                  </button>
-                )}
 
                 {favoriteDoctorIds.length > 0 && (
                   <button
@@ -505,7 +466,7 @@ export default function JadwalPage() {
                       setSpecialtyFilter(specialtyFilter === spec ? 'all' : spec);
                     }}
                   >
-                    {spec}
+                    <span>{spec}</span>
                   </button>
                 ))}
               </div>
@@ -634,9 +595,6 @@ export default function JadwalPage() {
           <LeavesCalendar leaves={leaves} doctors={evaluatedDoctors} />
         )}
       </main>
-
-      {/* Floating Dynamic Toast Notification */}
-      <Toast toast={toast} onDismiss={() => setToast(null)} />
 
       {/* Registration Bottom Sheet Modal */}
       <RegistrationModal

@@ -4,8 +4,8 @@ module.exports = {
       name: 'simed',
       script: 'server.js',
       cwd: 'C:\\simed-production',
-      instances: 1,
-      exec_mode: 'fork',
+      instances: 2,
+      exec_mode: 'cluster',
       autorestart: true,
       watch: false,
 
