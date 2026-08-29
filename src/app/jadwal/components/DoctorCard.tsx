@@ -1,3 +1,4 @@
+import { createPortal } from 'react-dom';
 import React, { useState } from 'react';
 import type { Doctor } from '../types';
 import SpecialistIcon from './SpecialistIcon';
