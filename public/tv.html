@@ -762,9 +762,7 @@
         padding: 44px 28px;
         margin: 40px auto;
         width: min(90%, 420px);
-        background: rgba(255, 255, 255, 0.85);
-        backdrop-filter: blur(24px);
-        -webkit-backdrop-filter: blur(24px);
+        background: #FFFFFF;
         border: 1px solid rgba(226, 234, 245, 0.95);
         border-radius: 28px;
         box-shadow: 
@@ -1718,11 +1716,9 @@
         display: grid;
         grid-template-columns: repeat(6, 1fr);
         gap: 3px;
-        background: rgba(248, 250, 252, 0.75);
+        background: #F8FAFC;
         border: 1px solid rgba(226, 234, 245, 0.9);
         box-shadow: inset 0 1px 1px #FFFFFF;
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
         border-radius: 12px;
         padding: 4px 2px;
         margin: 0;
@@ -5202,7 +5198,7 @@
           z-index: 5;
           background: var(--card-bg);
           /* Ensure visibility when sticky */
-          backdrop-filter: blur(10px);
+          /* backdrop-filter removed for TV performance */
         }
 
         /* Content Stack */
@@ -5515,6 +5511,68 @@
           opacity: 1;
           transform: scale(1);
         }
+      }
+
+    
+      /* ═══════════════════════════════════════════════════════════════
+         ⚡ SMART TV LIGHTWEIGHT HARDWARE PERFORMANCE OVERRIDES
+         ═══════════════════════════════════════════════════════════════ */
+      /* 1. Hardware Composite Acceleration on Scroll Viewports */
+      #scrollBedah, #scrollNonBedah, #sidebarCarouselTrack {
+        will-change: transform;
+        transform: translate3d(0, 0, 0);
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+        perspective: 1000px;
+      }
+
+      /* 2. Disable heavy GPU-taxing continuous animations on TV */
+      .anim-qr-laser, 
+      .anim-kiosk-touch, 
+      .anim-voice-broadcast,
+      .anim-desk-verified, 
+      .anim-heart-pump, 
+      .anim-doc-float,
+      .tree-micro-down-arrow, 
+      .tree-trunk-down-arrow, 
+      .tree-convergence-badge,
+      .weather-temp-master-val,
+      .weather-master-icon-wrap,
+      .empty-icon-wrap,
+      .di-music-eq,
+      .laserPulse,
+      .ecg-pulse {
+        animation: none !important;
+        transform: none !important;
+      }
+
+      /* 3. Simplify Multi-Layer Box Shadows to lightweight 1-layer GPU friendly shadows */
+      .platter,
+      .complication-card,
+      .tv-qr-hero-card,
+      .hotline-clean-bar,
+      .dynamic-island,
+      .sidebar-panel,
+      .island {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+      }
+
+      [data-theme="dark"] .platter,
+      [data-theme="dark"] .complication-card,
+      [data-theme="dark"] .tv-qr-hero-card,
+      [data-theme="dark"] .hotline-clean-bar,
+      [data-theme="dark"] .dynamic-island,
+      [data-theme="dark"] .sidebar-panel,
+      [data-theme="dark"] .island {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+      }
+
+      /* 4. Ensure high contrast solid backgrounds without expensive filter overlays */
+      .sidebar-panel {
+        background: #F1F5F9 !important;
+      }
+      [data-theme="dark"] .sidebar-panel {
+        background: #0F172A !important;
       }
 
     </style>
@@ -5854,8 +5912,8 @@
         API_MAIN: "/api/display",
         POLL_MS: 3000, // Reduced for faster dev/test feedback, can be restored later
         // Scroll Profesional: Item-by-Item
-        SCROLL_ITEM_PAUSE: 3000, // Jeda antar item (ms) — waktu baca per kartu
-        SCROLL_EDGE_PAUSE: 6000, // Jeda di ujung atas/bawah (ms)
+        SCROLL_ITEM_PAUSE: 6500, // 6.5s idle reading time per card (Low CPU load) // Jeda antar item (ms) — waktu baca per kartu
+        SCROLL_EDGE_PAUSE: 9000, // 9s idle rest at top/bottom of list // Jeda di ujung atas/bawah (ms)
         SCROLL_DURATION: 800, // Durasi animasi geser per item (ms)
       };
 
@@ -7566,7 +7624,11 @@
 
         processData(partial) {
           if (!partial) return;
+          if (this._debounceTimer) clearTimeout(this._debounceTimer);
           this._data = { ...this._data, ...partial };
+          this._debounceTimer = setTimeout(() => this._processDataDebounced(), 150);
+        },
+        _processDataDebounced() {
           const res = this._data;
 
           // Real-time synchronization of Admin Custom Messages for Dynamic Island
@@ -8433,6 +8495,32 @@
           return false;
         },
       };
+
+      
+      // ═══ SMART TV STABILITY WATCHDOG & MEMORY RECOVERY ═══
+      let _lastTickTime = Date.now();
+      const _bootTime = Date.now();
+
+      setInterval(() => {
+        const now = Date.now();
+        // If main thread hung for > 15s and just recovered, re-sync state
+        if (now - _lastTickTime > 15000) {
+          console.warn("[Watchdog] Main thread lag detected. Resetting scrollers.");
+          if (s1) s1.reset();
+          if (s2) s2.reset();
+        }
+        _lastTickTime = now;
+
+        // Auto Soft-Reload every 4 hours to flush TV WebView RAM fragmentation
+        const hoursRunning = (now - _bootTime) / (1000 * 60 * 60);
+        const currentMinute = new Date().getMinutes();
+        const currentSecond = new Date().getSeconds();
+        
+        if (hoursRunning >= 4 && currentMinute === 0 && currentSecond <= 5) {
+          console.log("[Auto-Flush] Performing scheduled soft reload for TV memory optimization.");
+          window.location.reload();
+        }
+      }, 5000);
 
       App.init();
     </script>
