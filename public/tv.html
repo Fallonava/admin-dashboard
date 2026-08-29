@@ -1861,15 +1861,17 @@
         border-color: rgba(245, 158, 11, 0.4);
       }
 
-      /* Apple iOS Native Step Card */
+      /* Apple iOS Native Step Card - Vertical Layout (Icon Top, Text Bottom) */
       .tree-step-card {
         background: #F8FAFC;
         border: 1.5px solid rgba(226, 232, 240, 0.95);
         border-radius: 14px;
-        padding: 9px 10px;
+        padding: 9px 8px;
         display: flex;
+        flex-direction: column;
         align-items: center;
-        gap: 9px;
+        text-align: center;
+        gap: 6px;
         box-sizing: border-box;
         min-width: 0;
         overflow: hidden;
@@ -1884,12 +1886,33 @@
       .tree-step-card.tree-step-card-tall {
         height: 100%;
         box-sizing: border-box;
+        justify-content: center;
+        padding: 14px 10px;
+        gap: 10px;
+      }
+
+      .tree-step-card-tall .tree-step-icon-wrap {
+        width: 48px;
+        height: 48px;
+        border-radius: 14px;
+      }
+
+      .tree-step-card-tall .tree-step-icon-wrap span {
+        font-size: 26px !important;
+      }
+
+      .tree-step-card-tall .tree-step-title {
+        font-size: 14px;
+      }
+
+      .tree-step-card-tall .tree-step-sub {
+        font-size: 12px;
       }
 
       .tree-step-icon-wrap {
-        width: 36px;
-        height: 36px;
-        border-radius: 11px;
+        width: 38px;
+        height: 38px;
+        border-radius: 12px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -1901,7 +1924,9 @@
       .tree-step-content {
         display: flex;
         flex-direction: column;
-        line-height: 1.2;
+        align-items: center;
+        text-align: center;
+        line-height: 1.25;
         min-width: 0;
         gap: 2px;
       }
