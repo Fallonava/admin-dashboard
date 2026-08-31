@@ -73,3 +73,15 @@ current_doctors.json
 # private documents folder
 .secret/
 private/
+
+# temporary scratch patches
+patch*.js
+patch*.css
+fix_*.js
+remove_*.js
+restore_*.js
+robust_*.js
+test_perf_*.js
+update_*.js
+hotfix.js
+

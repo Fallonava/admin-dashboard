@@ -9112,6 +9112,14 @@
           if (track.dataset.hash !== newHash) {
             track.innerHTML = slidesHTML;
             track.dataset.hash = newHash;
+            track.style.width = `${totalSlides * 100}%`;
+
+            // Adjust each slide width relative to total track width
+            const slides = track.querySelectorAll(".carousel-slide");
+            slides.forEach((sl) => {
+              sl.style.width = `${100 / totalSlides}%`;
+              sl.style.flexShrink = "0";
+            });
 
             if (window._sidebarCarouselInterval) clearInterval(window._sidebarCarouselInterval);
             window._sidebarCarouselIdx = 0;
@@ -9123,7 +9131,8 @@
                 if (window._sidebarCarouselIdx >= totalSlides) window._sidebarCarouselIdx = 0;
                 const t = $("sidebarCarouselTrack");
                 if (t) {
-                  t.style.transform = `translateX(-${window._sidebarCarouselIdx * 100}%)`;
+                  const stepPercent = (window._sidebarCarouselIdx * 100) / totalSlides;
+                  t.style.transform = `translateX(-${stepPercent}%)`;
                 }
               }, 7000);
             }
