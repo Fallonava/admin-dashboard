@@ -245,35 +245,34 @@ export default function PosterStudioPage() {
       const docLeave = activeLeaves.find((l) => l.doctorId === doc.id);
 
       if (isLeave) {
+        // Exclusively add to leaveDoctors list (do NOT display in main schedule)
         leaveDoctors.push({
           doctorName: doc.name,
           specialty: doc.specialty || "Umum",
           replacement: docLeave?.replacementDoctor || null,
         });
-      }
+      } else {
+        // Only active practicing doctors are displayed in main schedule
+        const docShifts = shifts.filter(
+          (s) => s.doctorId === doc.id && s.dayIdx === dayIdx
+        );
 
-      // Find shifts for today by dayIdx
-      const docShifts = shifts.filter(
-        (s) => s.doctorId === doc.id && s.dayIdx === dayIdx
-      );
+        if (docShifts.length > 0) {
+          const specName = doc.specialty?.toUpperCase() || "POLIKLINIK UMUM";
+          if (!specMap[specName]) specMap[specName] = [];
 
-      if (docShifts.length > 0 || isLeave) {
-        const specName = doc.specialty?.toUpperCase() || "POLIKLINIK UMUM";
-        if (!specMap[specName]) specMap[specName] = [];
+          const timeStr = docShifts
+            .map((s) => s.formattedTime || s.extra || "09.00 sd selesai")
+            .join("\n") || "09.00 sd selesai";
 
-        const timeStr = isLeave
-          ? "LIBUR"
-          : docShifts
-              .map((s) => s.formattedTime || s.extra || "09.00 sd selesai")
-              .join("\n") || "09.00 sd selesai";
-
-        specMap[specName].push({
-          doctorName: doc.name,
-          time: timeStr,
-          status: isLeave ? "CUTI" : "PRAKTEK",
-          category: doc.category || "Poli",
-          replacement: docLeave?.replacementDoctor || null,
-        });
+          specMap[specName].push({
+            doctorName: doc.name,
+            time: timeStr,
+            status: "PRAKTEK",
+            category: doc.category || "Poli",
+            replacement: null,
+          });
+        }
       }
     }
 

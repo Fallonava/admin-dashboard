@@ -141,7 +141,7 @@ export function renderPoster(
   const preset = THEME_PRESETS[themeMode] || THEME_PRESETS.siagaOfficial;
   const c = customColors.useCustom ? customColors : preset;
 
-  // Standardized High-Legibility Font Stacks
+  // Standardized High-Legibility SF Pro Stack
   const fontSans = `-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, sans-serif`;
   const fontSerif = `"Playfair Display", "Merriweather", Georgia, serif`;
   const fontMono = `"JetBrains Mono", "SF Mono", monospace`;
@@ -177,7 +177,6 @@ export function renderPoster(
     ctx.restore();
   } else if (visualStyle === "luxuryGold") {
     ctx.save();
-    // Outer Luxury Gold Border Frame
     ctx.strokeStyle = "#D4AF37";
     ctx.lineWidth = 4;
     ctx.strokeRect(16, 16, baseWidth - 32, baseHeight - 32);
@@ -215,9 +214,9 @@ export function renderPoster(
     ctx.restore();
   }
 
-  // ── 2. DYNAMIC HEADER BAR ARCHITECTURE ──
+  // ── 2. DYNAMIC HEADER BAR ARCHITECTURE (ZERO-COLLISION GUARANTEE) ──
   const padX = 48;
-  let curY = 40;
+  let curY = 36;
   const contentWidth = baseWidth - padX * 2;
 
   const days = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
@@ -226,101 +225,122 @@ export function renderPoster(
   const dateFormatted = `${dayName}, ${String(selectedDate.getDate()).padStart(2, "0")} ${months[selectedDate.getMonth()]} ${selectedDate.getFullYear()}`;
 
   if (headerStyle === "officialSplit" || visualStyle === "siagaOfficial") {
-    // ── OFFICIAL SPLIT HOSPITAL HEADER (WITH PROMINENT KARS PARIPURNA PLACEMENT) ──
-    const headH = 120;
-    const logoSize = 64;
+    // ── OFFICIAL HOSPITAL 3-TIER HEADER (ZERO COLLISION) ──
+    const logoSize = 60;
     const logoX = padX;
-    const logoY = curY + 6;
+    const logoY = curY;
 
+    // 1. Hospital Logo
     if (customLogoImg) {
       ctx.drawImage(customLogoImg, logoX, logoY, logoSize, logoSize);
     } else {
       ctx.save();
       ctx.fillStyle = c.specBgStart || "#0D9488";
       ctx.beginPath();
-      ctx.roundRect(logoX, logoY, 28, 52, 8);
+      ctx.roundRect(logoX, logoY, 26, 48, 6);
       ctx.fill();
       ctx.fillStyle = c.footerBgStart || "#E11D48";
       ctx.beginPath();
-      ctx.roundRect(logoX + 32, logoY + 12, 28, 40, 8);
+      ctx.roundRect(logoX + 30, logoY + 10, 26, 38, 6);
       ctx.fill();
       ctx.restore();
     }
 
-    const brandX = logoX + logoSize + 18;
+    // 2. Left Identity
+    const brandX = logoX + logoSize + 16;
     ctx.save();
     ctx.fillStyle = "#475569";
-    ctx.font = `800 13px ${baseFont}`;
-    ctx.fillText("RUMAH SAKIT UMUM", brandX, logoY + 16);
+    ctx.font = `800 12px ${baseFont}`;
+    ctx.fillText("RUMAH SAKIT UMUM", brandX, logoY + 14);
 
     ctx.fillStyle = c.headerTitle || "#0F766E";
-    ctx.font = `900 24px ${baseFont}`;
-    ctx.fillText(hospitalName.replace("RUMAH SAKIT UMUM ", ""), brandX, logoY + 40);
+    ctx.font = `900 23px ${baseFont}`;
+    ctx.fillText(hospitalName.replace("RUMAH SAKIT UMUM ", ""), brandX, logoY + 36);
 
     ctx.fillStyle = c.headerSub || "#0D9488";
-    ctx.font = `800 13.5px ${baseFont}`;
-    ctx.fillText("PURBALINGGA", brandX, logoY + 58);
+    ctx.font = `800 13px ${baseFont}`;
+    ctx.fillText("PURBALINGGA", brandX, logoY + 54);
+    ctx.restore();
 
-    // Prestigious Official KARS Paripurna Accreditation Box
+    // 3. Right: Official KARS Paripurna Accreditation Box
     if (showAccreditation) {
-      const akredX = brandX + 225;
-      const akredW = 160;
-      const akredH = 58;
+      const akredW = 164;
+      const akredH = 56;
+      const akredX = padX + contentWidth - akredW;
+      const akredY = logoY;
 
+      ctx.save();
       ctx.fillStyle = "rgba(225, 29, 72, 0.06)";
       ctx.beginPath();
-      ctx.roundRect(akredX, logoY + 2, akredW, akredH, 10);
+      ctx.roundRect(akredX, akredY, akredW, akredH, 10);
       ctx.fill();
 
       ctx.strokeStyle = "rgba(225, 29, 72, 0.25)";
-      ctx.lineWidth = 1;
+      ctx.lineWidth = 1.2;
       ctx.stroke();
 
       ctx.fillStyle = "#E11D48";
       ctx.font = `800 12px ${baseFont}`;
-      ctx.fillText("⭐ ⭐ ⭐ ⭐ ⭐", akredX + 12, logoY + 18);
+      ctx.fillText("⭐ ⭐ ⭐ ⭐ ⭐", akredX + 14, akredY + 18);
 
-      ctx.font = `900 14px ${baseFont}`;
-      ctx.fillText("PARIPURNA", akredX + 12, logoY + 36);
+      ctx.font = `900 13.5px ${baseFont}`;
+      ctx.fillText("PARIPURNA", akredX + 14, akredY + 35);
 
-      ctx.fillStyle = "#475569";
-      ctx.font = `700 9.5px ${baseFont}`;
-      ctx.fillText("KARS Kemenkes RI", akredX + 12, logoY + 50);
+      ctx.fillStyle = "#64748B";
+      ctx.font = `700 9px ${baseFont}`;
+      ctx.fillText("KARS Kemenkes RI", akredX + 14, akredY + 48);
+      ctx.restore();
     }
 
-    // Right: Script "Jadwal" + "Poliklinik & Dokter Spesialis"
-    const rightX = padX + contentWidth;
-    ctx.textAlign = "right";
+    // 4. Middle Tier: Script "Jadwal" + "Poliklinik & Dokter Spesialis" Banner
+    const midY = curY + 70;
+    ctx.save();
+    ctx.fillStyle = "#0F172A";
+    ctx.font = `italic 700 42px ${fontScript}, ${baseFont}`;
+    ctx.fillText("Jadwal", padX, midY + 38);
 
-    ctx.fillStyle = c.cardText || "#1E293B";
-    ctx.font = `italic 700 46px ${fontScript}, ${baseFont}`;
-    ctx.fillText("Jadwal", rightX - 310, logoY + 38);
+    ctx.fillStyle = "#0F172A";
+    ctx.font = `900 32px ${baseFont}`;
+    ctx.fillText("Poliklinik & Dokter Spesialis", padX + 130, midY + 38);
 
-    ctx.font = `900 34px ${baseFont}`;
-    ctx.fillText("Poliklinik &", rightX, logoY + 30);
+    // Right IGD 24 Jam Badge
+    if (showIgdBadge) {
+      const igdW = 175;
+      const igdX = padX + contentWidth - igdW;
+      ctx.fillStyle = "rgba(13, 148, 136, 0.08)";
+      ctx.beginPath();
+      ctx.roundRect(igdX, midY + 12, igdW, 32, 16);
+      ctx.fill();
 
-    ctx.font = `900 40px ${baseFont}`;
-    ctx.fillText("Dokter Spesialis", rightX, logoY + 72);
+      ctx.strokeStyle = "rgba(13, 148, 136, 0.3)";
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      ctx.fillStyle = "#0F766E";
+      ctx.font = `800 11.5px ${baseFont}`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText("🚨 IGD 24 Jam Siaga", igdX + igdW / 2, midY + 28);
+    }
     ctx.restore();
 
-    curY += headH;
-
-    // Date Banner
+    // 5. Date Banner Row
+    const dateRowY = midY + 54;
     ctx.save();
     ctx.fillStyle = c.footerBgStart || "#E11D48";
-    ctx.font = `900 36px ${baseFont}`;
+    ctx.font = `900 34px ${baseFont}`;
     ctx.textAlign = "center";
-    ctx.fillText(dateFormatted, baseWidth / 2, curY + 16);
+    ctx.fillText(dateFormatted, baseWidth / 2, dateRowY + 16);
 
     ctx.fillStyle = "rgba(225, 29, 72, 0.25)";
-    ctx.fillRect(baseWidth / 2 - 160, curY + 28, 320, 3);
+    ctx.fillRect(baseWidth / 2 - 160, dateRowY + 26, 320, 3);
     ctx.restore();
 
-    curY += 50;
+    curY = dateRowY + 44;
 
   } else {
-    // ── MODERN DISTINCTIVE TEMPLATE HEADERS ──
-    const headH = 132;
+    // ── MODERN iOS 27 FROSTED ISLAND HEADER (ZERO COLLISION) ──
+    const headH = 136;
     const grad = ctx.createLinearGradient(padX, curY, padX, curY + headH);
     grad.addColorStop(0, c.headerBgStart);
     grad.addColorStop(1, c.headerBgEnd);
@@ -345,7 +365,6 @@ export function renderPoster(
       ctx.lineWidth = 2.5;
       ctx.stroke();
 
-      // Swiss Red Accent Tab
       ctx.fillStyle = "#DC2626";
       ctx.fillRect(padX, curY, 10, headH);
     } else if (visualStyle === "neonNoir") {
@@ -362,9 +381,9 @@ export function renderPoster(
       ctx.stroke();
     }
 
-    // Emblem on Left
-    const embSize = 66;
-    const embX = padX + 24;
+    // Left Emblem
+    const embSize = 64;
+    const embX = padX + 22;
     const embY = curY + (headH - embSize) / 2;
 
     const embGrad = ctx.createLinearGradient(embX, embY, embX + embSize, embY + embSize);
@@ -376,49 +395,35 @@ export function renderPoster(
     ctx.fill();
 
     ctx.fillStyle = c.specText || "#FFFFFF";
-    ctx.font = `bold 30px ${baseFont}`;
+    ctx.font = `bold 28px ${baseFont}`;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText(headerEmblemIcon || "🏥", embX + embSize / 2, embY + embSize / 2);
 
-    // Title & Subtitle
+    // Left Typography
+    const textStartX = embX + embSize + 20;
     ctx.textAlign = "left";
     ctx.textBaseline = "alphabetic";
     ctx.fillStyle = c.headerTitle;
-    ctx.font = `900 24px ${baseFont}`;
-    ctx.fillText(hospitalName, embX + embSize + 20, curY + 48);
+    ctx.font = `900 23px ${baseFont}`;
+    ctx.fillText(hospitalName, textStartX, curY + 50);
 
     ctx.fillStyle = c.headerSub;
     ctx.font = `700 13px ${baseFont}`;
-    ctx.fillText(hospitalSubtitle, embX + embSize + 20, curY + 74);
+    ctx.fillText(hospitalSubtitle, textStartX, curY + 76);
 
-    // Right: Date Pill or KARS Accreditation Pill
-    const datePillW = 240;
-    const datePillH = 44;
-    const datePillX = padX + contentWidth - datePillW - 20;
-    const datePillY = curY + (headH - datePillH) / 2;
+    // Right Stacked Capsule Group (Auto-Layout Vertical Stack)
+    const rightBoxW = 240;
+    const rightBoxX = padX + contentWidth - rightBoxW - 16;
 
-    ctx.fillStyle = c.timePillBg;
-    ctx.beginPath();
-    ctx.roundRect(datePillX, datePillY, datePillW, datePillH, 22);
-    ctx.fill();
-
-    ctx.fillStyle = c.timePillText;
-    ctx.font = `800 13px ${baseFont}`;
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillText(dateFormatted, datePillX + datePillW / 2, datePillY + datePillH / 2);
-
-    // Accreditation Badge Pill for Modern Themes
     if (showAccreditation) {
-      const akredPillW = 190;
-      const akredPillH = 26;
-      const akredPillX = datePillX - akredPillW - 14;
-      const akredPillY = curY + (headH - akredPillH) / 2;
+      // Top Accreditation Capsule Pill
+      const akredPillH = 30;
+      const akredPillY = curY + 22;
 
       ctx.fillStyle = "rgba(225, 29, 72, 0.08)";
       ctx.beginPath();
-      ctx.roundRect(akredPillX, akredPillY, akredPillW, akredPillH, 13);
+      ctx.roundRect(rightBoxX, akredPillY, rightBoxW, akredPillH, 15);
       ctx.fill();
 
       ctx.strokeStyle = "rgba(225, 29, 72, 0.3)";
@@ -426,10 +431,38 @@ export function renderPoster(
       ctx.stroke();
 
       ctx.fillStyle = "#E11D48";
-      ctx.font = `800 10.5px ${baseFont}`;
+      ctx.font = `800 11px ${baseFont}`;
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      ctx.fillText("⭐ ⭐ ⭐ ⭐ ⭐ PARIPURNA", akredPillX + akredPillW / 2, akredPillY + akredPillH / 2);
+      ctx.fillText("⭐ ⭐ ⭐ ⭐ ⭐ PARIPURNA", rightBoxX + rightBoxW / 2, akredPillY + akredPillH / 2);
+
+      // Bottom Date Capsule Pill
+      const datePillH = 40;
+      const datePillY = curY + 62;
+
+      ctx.fillStyle = c.timePillBg || "rgba(15, 23, 42, 0.08)";
+      ctx.beginPath();
+      ctx.roundRect(rightBoxX, datePillY, rightBoxW, datePillH, 20);
+      ctx.fill();
+
+      ctx.fillStyle = c.timePillText || "#0F172A";
+      ctx.font = `800 13px ${baseFont}`;
+      ctx.fillText(dateFormatted, rightBoxX + rightBoxW / 2, datePillY + datePillH / 2);
+    } else {
+      // Centered Date Pill
+      const datePillH = 44;
+      const datePillY = curY + (headH - datePillH) / 2;
+
+      ctx.fillStyle = c.timePillBg || "rgba(15, 23, 42, 0.08)";
+      ctx.beginPath();
+      ctx.roundRect(rightBoxX, datePillY, rightBoxW, datePillH, 22);
+      ctx.fill();
+
+      ctx.fillStyle = c.timePillText || "#0F172A";
+      ctx.font = `800 13px ${baseFont}`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(dateFormatted, rightBoxX + rightBoxW / 2, datePillY + datePillH / 2);
     }
 
     curY += headH + 24;
@@ -462,7 +495,6 @@ export function renderPoster(
 
     // ── DISTINCT SPECIALTY PILL PER THEME ──
     if (visualStyle === "monochromeSwiss") {
-      // Swiss Editorial Tabular Header
       ctx.fillStyle = "#09090B";
       ctx.fillRect(x, groupY, 32, pillH);
 
@@ -486,7 +518,6 @@ export function renderPoster(
       ctx.fillText("JAM PRAKTIK", x + w - 8, groupY + pillH / 2);
 
     } else if (visualStyle === "luxuryGold") {
-      // Luxury Gold Regal Ribbon Banner
       const pillGrad = ctx.createLinearGradient(x, groupY, x + w * 0.65, groupY + pillH);
       pillGrad.addColorStop(0, "#B48B1B");
       pillGrad.addColorStop(1, "#8C6A0E");
@@ -511,7 +542,6 @@ export function renderPoster(
       ctx.fillText("Waktu Praktik", x + w - 8, groupY + pillH / 2);
 
     } else if (visualStyle === "neonNoir") {
-      // Tokyo Cyberpunk HUD Header
       ctx.strokeStyle = "#06B6D4";
       ctx.lineWidth = 1.5;
       ctx.strokeRect(x, groupY, w * 0.65, pillH);
@@ -531,7 +561,6 @@ export function renderPoster(
       ctx.fillText("● LIVE SCHEDULE", x + w - 8, groupY + pillH / 2);
 
     } else {
-      // Standard & Smooth Pill
       const pillGrad = ctx.createLinearGradient(x, groupY, x + w * 0.62, groupY + pillH);
       pillGrad.addColorStop(0, c.specBgStart);
       pillGrad.addColorStop(1, c.specBgEnd);
@@ -562,7 +591,6 @@ export function renderPoster(
 
       ctx.save();
 
-      // Distinct Card Treatment per Variant / Visual Style
       if (cardVariant === "glassFrost" || visualStyle === "liquidGlass") {
         ctx.fillStyle = "#FFFFFF";
         ctx.beginPath();
@@ -581,12 +609,10 @@ export function renderPoster(
         ctx.lineWidth = 1.2;
         ctx.strokeRect(x, groupY, w, rowH);
 
-        // Swiss Left Red Line
         ctx.fillStyle = "#DC2626";
         ctx.fillRect(x, groupY, 3, rowH);
 
       } else if (visualStyle === "clay3d") {
-        // 3D Neumorphic Clay Shadow
         ctx.shadowColor = "rgba(0, 0, 0, 0.05)";
         ctx.shadowBlur = 6;
         ctx.shadowOffsetY = 2;
@@ -598,7 +624,6 @@ export function renderPoster(
 
         ctx.shadowColor = "transparent";
       } else {
-        // Clean Smooth Material
         ctx.fillStyle = "#FFFFFF";
         ctx.beginPath();
         ctx.roundRect(x, groupY, w, rowH, 10);
@@ -609,14 +634,12 @@ export function renderPoster(
         ctx.stroke();
       }
 
-      // Doctor Name (High-Contrast Slate #0F172A)
       ctx.fillStyle = c.cardText || "#0F172A";
       ctx.font = `700 13.5px ${baseFont}`;
       ctx.textAlign = "left";
       ctx.textBaseline = "top";
       ctx.fillText(doc.doctorName, x + 10, groupY + 5);
 
-      // Time / Status (Right Side)
       ctx.textAlign = "right";
       if (isCuti) {
         ctx.fillStyle = c.leaveText || "#DC2626";
@@ -651,7 +674,6 @@ export function renderPoster(
 
   if (showAiEducation && articleBoxH > 220) {
     ctx.save();
-    // Container
     const artGrad = ctx.createLinearGradient(leftX, articleBoxY, leftX, articleBoxY + articleBoxH);
     artGrad.addColorStop(0, "#FFFFFF");
     artGrad.addColorStop(1, c.cardBgEnd || "#F0FDFA");
@@ -664,7 +686,6 @@ export function renderPoster(
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
-    // Header Banner
     const artHeaderH = 100;
     const artHeadGrad = ctx.createLinearGradient(leftX, articleBoxY, leftX + colW, articleBoxY + artHeaderH);
     artHeadGrad.addColorStop(0, `${c.specBgStart}25`);
@@ -674,13 +695,11 @@ export function renderPoster(
     ctx.roundRect(leftX, articleBoxY, colW, artHeaderH, [cardCornerRadius + 4, cardCornerRadius + 4, 0, 0]);
     ctx.fill();
 
-    // Watermark Icon
     ctx.font = `56px ${baseFont}`;
     ctx.fillStyle = `${c.specBgStart}20`;
     ctx.textAlign = "right";
     ctx.fillText("🫀", leftX + colW - 20, articleBoxY + 70);
 
-    // Article Title & Subtitle (WCAG AAA Contrast)
     ctx.textAlign = "left";
     ctx.fillStyle = c.footerBgStart || "#E11D48";
     ctx.font = `900 32px ${baseFont}`;
@@ -690,7 +709,6 @@ export function renderPoster(
     ctx.font = `800 15px ${baseFont}`;
     ctx.fillText(article.subtitle || "Edukasi & Pencegahan Dini Medis", leftX + 22, articleBoxY + 78);
 
-    // Flowing Text
     let artTextY = articleBoxY + artHeaderH + 20;
     const textPadX = leftX + 22;
     const textW = colW - 44;
@@ -717,7 +735,6 @@ export function renderPoster(
     ctx.font = `500 13px ${baseFont}`;
     artTextY = wrapText(article.summary, textPadX, artTextY, textW, 18) + 6;
 
-    // Gejala Section
     ctx.fillStyle = "#0F172A";
     ctx.font = `800 14px ${baseFont}`;
     ctx.fillText("Gejala " + article.title, textPadX, artTextY);
@@ -732,7 +749,6 @@ export function renderPoster(
     }
     artTextY += 6;
 
-    // Penyebab Section
     if (article.causes && artTextY < articleBoxY + articleBoxH - 70) {
       ctx.fillStyle = "#0F172A";
       ctx.font = `800 14px ${baseFont}`;
@@ -743,7 +759,6 @@ export function renderPoster(
       artTextY = wrapText(article.causes, textPadX, artTextY, textW, 17) + 6;
     }
 
-    // Footnote Citation
     ctx.fillStyle = c.specBgStart || "#0284C7";
     ctx.font = `italic 600 11.5px ${baseFont}`;
     ctx.fillText(article.sourceUrl || "Sumber: RSU Siaga Medika Purbalingga", textPadX, articleBoxY + articleBoxH - 16);
@@ -756,6 +771,86 @@ export function renderPoster(
   for (const spec of rightSpecs) {
     if (rightCurY > baseHeight - (showFooter ? 140 : 60)) break;
     rightCurY = drawCard(spec, specMap[spec] || [], rightX, rightCurY, colW);
+  }
+
+  // ── DRAW DEDICATED DOCTOR LEAVE NOTICE CARD (SYNCED WITH THEME, AUTO-HIDES WHEN NO LEAVES) ──
+  if (showLeaveCard && leaveDoctors.length > 0 && rightCurY < baseHeight - (showFooter ? 140 : 60)) {
+    const leaveCardY = rightCurY + 10;
+    const leaveRowH = 34;
+    const leaveHeaderH = 38;
+    const leaveTotalH = Math.min(leaveHeaderH + leaveDoctors.length * (leaveRowH + 6) + 14, baseHeight - leaveCardY - (showFooter ? 80 : 30));
+
+    ctx.save();
+    // Leave Card Background Container
+    const leaveGrad = ctx.createLinearGradient(rightX, leaveCardY, rightX + colW, leaveCardY + leaveTotalH);
+    leaveGrad.addColorStop(0, c.leaveBg || "#FEF2F2");
+    leaveGrad.addColorStop(1, "#FFFFFF");
+    ctx.fillStyle = leaveGrad;
+    ctx.beginPath();
+    ctx.roundRect(rightX, leaveCardY, colW, leaveTotalH, cardCornerRadius);
+    ctx.fill();
+
+    ctx.strokeStyle = c.leaveBorder || "rgba(220, 38, 38, 0.3)";
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // Leave Header Banner
+    ctx.fillStyle = c.leaveText || "#DC2626";
+    ctx.beginPath();
+    ctx.roundRect(rightX, leaveCardY, colW, leaveHeaderH, [cardCornerRadius, cardCornerRadius, 0, 0]);
+    ctx.fill();
+
+    ctx.fillStyle = "#FFFFFF";
+    ctx.font = `900 13px ${baseFont}`;
+    ctx.textAlign = "left";
+    ctx.textBaseline = "middle";
+    ctx.fillText("🚨 PEMBERITAHUAN DOKTER CUTI / LIBUR", rightX + 16, leaveCardY + leaveHeaderH / 2);
+
+    ctx.font = `800 11.5px ${baseFont}`;
+    ctx.textAlign = "right";
+    ctx.fillText(`${leaveDoctors.length} Dokter`, rightX + colW - 14, leaveCardY + leaveHeaderH / 2);
+
+    // Doctor Leave Rows
+    let rowY = leaveCardY + leaveHeaderH + 10;
+    ctx.textAlign = "left";
+
+    for (const lDoc of leaveDoctors) {
+      if (rowY + leaveRowH > leaveCardY + leaveTotalH) break;
+
+      // Doctor Row Container
+      ctx.fillStyle = "#FFFFFF";
+      ctx.beginPath();
+      ctx.roundRect(rightX + 8, rowY, colW - 16, leaveRowH, 8);
+      ctx.fill();
+
+      ctx.strokeStyle = "rgba(220, 38, 38, 0.15)";
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      // Red Warning Dot
+      ctx.fillStyle = c.leaveText || "#DC2626";
+      ctx.beginPath();
+      ctx.arc(rightX + 20, rowY + leaveRowH / 2, 4, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Doctor Name
+      ctx.fillStyle = "#0F172A";
+      ctx.font = `700 13px ${baseFont}`;
+      ctx.textBaseline = "middle";
+      ctx.fillText(lDoc.doctorName, rightX + 30, rowY + leaveRowH / 2);
+
+      // Specialty & Replacement on Right
+      ctx.textAlign = "right";
+      ctx.fillStyle = c.leaveText || "#DC2626";
+      ctx.font = `800 11.5px ${baseFont}`;
+      const statusLabel = lDoc.replacement ? `Diganti: ${lDoc.replacement}` : `Cuti (${lDoc.specialty})`;
+      ctx.fillText(statusLabel, rightX + colW - 18, rowY + leaveRowH / 2);
+
+      ctx.textAlign = "left";
+      rowY += leaveRowH + 6;
+    }
+
+    ctx.restore();
   }
 
   // ── 4. STANDARDIZED FOOTER BAR ──
@@ -773,19 +868,16 @@ export function renderPoster(
     ctx.fillStyle = "rgba(255, 255, 255, 0.35)";
     ctx.fillRect(0, footY, baseWidth, 2);
 
-    // Left: Information Title
     ctx.fillStyle = c.footerText || "#FFFFFF";
     ctx.font = `900 19px ${baseFont}`;
     ctx.textAlign = "left";
     ctx.textBaseline = "middle";
     ctx.fillText("Informasi Jadwal dokter dan Poliklinik:", padX, footY + footH / 2);
 
-    // Center Hotline WhatsApp
     const waX = baseWidth * 0.58;
     ctx.font = `900 19px ${baseFont}`;
     ctx.fillText(`💬 ${hotlinePhone}`, waX, footY + footH / 2);
 
-    // Right Instagram Handle
     const igX = baseWidth - padX;
     ctx.textAlign = "right";
     ctx.fillText(`📷 siagamedika_pbg`, igX, footY + footH / 2);
