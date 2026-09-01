@@ -667,172 +667,114 @@ export function renderPoster(
       groupY += rowH + (isLowDoctorDay ? 8 : 6);
     }
 
-    return groupY + (isLowDoctorDay ? 14 : 10);
+    return groupY + 10;
   };
 
-  // ── DRAW LEFT COLUMN (Top Specs + AI Health Education Box) ──
+  // ── DRAW LEFT COLUMN (Doctor Specs) ──
   let leftCurY = curY;
   for (const spec of leftSpecs) {
     leftCurY = drawCard(spec, specMap[spec] || [], leftX, leftCurY, colW);
   }
 
-  // ── COMPREHENSIVE AI HEALTH EDUCATION CARD WITH MEDICAL IMAGE ──
+  // ── COMPACT iOS 27 AI HEALTH EDUCATION CARD (SLIM & ELEGANT WIDGET) ──
   const article = aiTopic || DEFAULT_ARTICLE_TOPIC;
-  const articleBoxY = leftCurY + 8;
-  const articleBoxH = baseHeight - articleBoxY - (showFooter ? 130 : 50);
+  const artWidgetH = 118;
+  const artWidgetY = leftCurY + 8;
 
-  if (showAiEducation && articleBoxH > 220) {
+  if (showAiEducation && artWidgetY + artWidgetH <= baseHeight - (showFooter ? 80 : 30)) {
     ctx.save();
-    const artGrad = ctx.createLinearGradient(leftX, articleBoxY, leftX, articleBoxY + articleBoxH);
-    artGrad.addColorStop(0, "#FFFFFF");
-    artGrad.addColorStop(1, c.cardBgEnd || "#F8FAFC");
-    ctx.fillStyle = artGrad;
+    // Card Container
+    ctx.fillStyle = "#FFFFFF";
     ctx.beginPath();
-    ctx.roundRect(leftX, articleBoxY, colW, articleBoxH, cardCornerRadius + 4);
+    ctx.roundRect(leftX, artWidgetY, colW, artWidgetH, cardCornerRadius);
     ctx.fill();
 
     ctx.strokeStyle = c.specBgStart ? `${c.specBgStart}35` : "rgba(13, 148, 136, 0.25)";
-    ctx.lineWidth = 1.5;
+    ctx.lineWidth = 1.2;
     ctx.stroke();
 
-    const artHeaderH = 110;
-    if (topicImageImg) {
+    // Left Squircle Image Thumbnail
+    const imgSize = 86;
+    const imgX = leftX + 14;
+    const imgY = artWidgetY + (artWidgetH - imgSize) / 2;
+
+    if (topicImageImg && topicImageImg.complete && topicImageImg.naturalWidth > 0) {
       ctx.save();
       ctx.beginPath();
-      ctx.roundRect(leftX, articleBoxY, colW, artHeaderH, [cardCornerRadius + 4, cardCornerRadius + 4, 0, 0]);
+      ctx.roundRect(imgX, imgY, imgSize, imgSize, 12);
       ctx.clip();
-      ctx.drawImage(topicImageImg, leftX, articleBoxY, colW, artHeaderH);
-
-      const scrim = ctx.createLinearGradient(leftX, articleBoxY, leftX, articleBoxY + artHeaderH);
-      scrim.addColorStop(0, "rgba(15, 23, 42, 0.75)");
-      scrim.addColorStop(1, "rgba(15, 23, 42, 0.9)");
-      ctx.fillStyle = scrim;
-      ctx.fillRect(leftX, articleBoxY, colW, artHeaderH);
+      ctx.drawImage(topicImageImg, imgX, imgY, imgSize, imgSize);
       ctx.restore();
 
-      ctx.fillStyle = c.specBgStart || "#0D9488";
+      ctx.strokeStyle = "rgba(0, 0, 0, 0.08)";
+      ctx.lineWidth = 1;
       ctx.beginPath();
-      ctx.roundRect(leftX + 18, articleBoxY + 12, 140, 22, 11);
-      ctx.fill();
-
-      ctx.fillStyle = "#FFFFFF";
-      ctx.font = `900 10.5px ${baseFont}`;
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillText(article.tag || "EDUKASI MEDIS", leftX + 18 + 70, articleBoxY + 23);
-
-      ctx.textAlign = "left";
-      ctx.fillStyle = "#FFFFFF";
-      ctx.font = `900 24px ${baseFont}`;
-      ctx.fillText(article.title, leftX + 18, articleBoxY + 62);
-
-      ctx.fillStyle = "#38BDF8";
-      ctx.font = `800 13px ${baseFont}`;
-      ctx.fillText(article.subtitle || "Edukasi & Deteksi Dini Medis", leftX + 18, articleBoxY + 86);
-
+      ctx.roundRect(imgX, imgY, imgSize, imgSize, 12);
+      ctx.stroke();
     } else {
-      const artHeadGrad = ctx.createLinearGradient(leftX, articleBoxY, leftX + colW, articleBoxY + artHeaderH);
-      artHeadGrad.addColorStop(0, `${c.specBgStart}25`);
-      artHeadGrad.addColorStop(1, `${c.footerBgStart}15`);
-      ctx.fillStyle = artHeadGrad;
+      ctx.fillStyle = `${c.specBgStart}18`;
       ctx.beginPath();
-      ctx.roundRect(leftX, articleBoxY, colW, artHeaderH, [cardCornerRadius + 4, cardCornerRadius + 4, 0, 0]);
+      ctx.roundRect(imgX, imgY, imgSize, imgSize, 12);
       ctx.fill();
 
-      ctx.font = `56px ${baseFont}`;
-      ctx.fillStyle = `${c.specBgStart}20`;
-      ctx.textAlign = "right";
-      ctx.fillText("🫀", leftX + colW - 20, articleBoxY + 70);
-
-      ctx.fillStyle = c.specBgStart || "#0D9488";
-      ctx.beginPath();
-      ctx.roundRect(leftX + 18, articleBoxY + 12, 130, 22, 11);
-      ctx.fill();
-
-      ctx.fillStyle = "#FFFFFF";
-      ctx.font = `900 10.5px ${baseFont}`;
+      ctx.font = `38px ${baseFont}`;
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      ctx.fillText(article.tag || "EDUKASI MEDIS", leftX + 18 + 65, articleBoxY + 23);
-
-      ctx.textAlign = "left";
-      ctx.fillStyle = c.footerBgStart || "#E11D48";
-      ctx.font = `900 26px ${baseFont}`;
-      ctx.fillText(article.title, leftX + 18, articleBoxY + 62);
-
-      ctx.fillStyle = c.specBgStart || "#0D9488";
-      ctx.font = `800 13.5px ${baseFont}`;
-      ctx.fillText(article.subtitle || "Edukasi & Deteksi Dini Medis", leftX + 18, articleBoxY + 86);
+      ctx.fillText("🩺", imgX + imgSize / 2, imgY + imgSize / 2);
     }
 
-    let artTextY = articleBoxY + artHeaderH + 16;
-    const textPadX = leftX + 20;
-    const textW = colW - 40;
+    // Right Content Info
+    const textStartX = imgX + imgSize + 14;
+    const textW = colW - (imgSize + 40);
 
-    const wrapText = (text: string, x: number, y: number, maxW: number, lineH: number): number => {
-      const words = text.split(" ");
-      let line = "";
-      let currentY = y;
-      for (const word of words) {
-        const testLine = line + word + " ";
-        if (ctx.measureText(testLine).width > maxW) {
-          ctx.fillText(line.trim(), x, currentY);
-          line = word + " ";
-          currentY += lineH;
-        } else {
-          line = testLine;
-        }
+    // Tag Capsule Pill
+    ctx.fillStyle = c.specBgStart || "#0D9488";
+    ctx.beginPath();
+    ctx.roundRect(textStartX, imgY, 115, 18, 9);
+    ctx.fill();
+
+    ctx.fillStyle = "#FFFFFF";
+    ctx.font = `900 9px ${baseFont}`;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(article.tag || "EDUKASI MEDIS", textStartX + 115 / 2, imgY + 9);
+
+    // Title
+    ctx.textAlign = "left";
+    ctx.fillStyle = c.footerBgStart || "#E11D48";
+    ctx.font = `900 15px ${baseFont}`;
+    ctx.fillText(article.title, textStartX, imgY + 35);
+
+    // Subtitle
+    ctx.fillStyle = c.specBgStart || "#0D9488";
+    ctx.font = `700 11.5px ${baseFont}`;
+    ctx.fillText(article.subtitle || "Edukasi & Deteksi Dini Medis", textStartX, imgY + 50);
+
+    // Short 2-line summary
+    ctx.fillStyle = "#334155";
+    ctx.font = `500 10.5px ${baseFont}`;
+    const words = (article.summary || "").split(" ");
+    let line1 = "";
+    let line2 = "";
+    for (const w of words) {
+      if (ctx.measureText(line1 + w + " ").width < textW) {
+        line1 += w + " ";
+      } else if (ctx.measureText(line2 + w + " ").width < textW) {
+        line2 += w + " ";
       }
-      ctx.fillText(line.trim(), x, currentY);
-      return currentY + lineH;
-    };
-
-    ctx.fillStyle = "#1E293B";
-    ctx.font = `500 12.5px ${baseFont}`;
-    artTextY = wrapText(article.summary, textPadX, artTextY, textW, 17) + 6;
-
-    const symptomsList = article.symptoms || article.bullets || [];
-    if (symptomsList.length > 0 && artTextY < articleBoxY + articleBoxH - 80) {
-      ctx.fillStyle = "#E11D48";
-      ctx.font = `800 13px ${baseFont}`;
-      ctx.fillText("⚠️ Gejala & Tanda Klinis:", textPadX, artTextY);
-      artTextY += 17;
-
-      ctx.font = `500 12px ${baseFont}`;
-      ctx.fillStyle = "#334155";
-      for (const sym of symptomsList.slice(0, 3)) {
-        if (artTextY > articleBoxY + articleBoxH - 50) break;
-        ctx.fillText("• " + sym, textPadX + 6, artTextY);
-        artTextY += 16;
-      }
-      artTextY += 4;
     }
+    ctx.fillText(line1.trim(), textStartX, imgY + 66);
+    if (line2) ctx.fillText(line2.trim() + "...", textStartX, imgY + 80);
 
-    const prevList = article.prevention || [];
-    if (prevList.length > 0 && artTextY < articleBoxY + articleBoxH - 60) {
-      ctx.fillStyle = "#0D9488";
-      ctx.font = `800 13px ${baseFont}`;
-      ctx.fillText("🛡️ Pencegahan & Tips Medis:", textPadX, artTextY);
-      artTextY += 17;
-
-      ctx.font = `500 12px ${baseFont}`;
-      ctx.fillStyle = "#334155";
-      for (const prv of prevList.slice(0, 2)) {
-        if (artTextY > articleBoxY + articleBoxH - 45) break;
-        ctx.fillText("✓ " + prv, textPadX + 6, artTextY);
-        artTextY += 16;
-      }
-      artTextY += 4;
-    }
-
-    ctx.fillStyle = c.specBgStart || "#0284C7";
-    ctx.font = `italic 600 11px ${baseFont}`;
-    ctx.fillText(article.sourceUrl || "Sumber: RSU Siaga Medika Purbalingga", textPadX, articleBoxY + articleBoxH - 14);
+    // Citation
+    ctx.fillStyle = "#64748B";
+    ctx.font = `italic 600 9.5px ${baseFont}`;
+    ctx.fillText(article.sourceUrl || "Sumber: RSU Siaga Medika", textStartX, imgY + 95);
 
     ctx.restore();
   }
 
-  // ── DRAW RIGHT COLUMN ──
+  // ── DRAW RIGHT COLUMN (Doctor Specs) ──
   let rightCurY = curY;
   for (const spec of rightSpecs) {
     if (rightCurY > baseHeight - (showFooter ? 140 : 60)) break;
@@ -843,7 +785,7 @@ export function renderPoster(
   if (showLeaveCard && leaveDoctors.length > 0 && rightCurY < baseHeight - (showFooter ? 140 : 60)) {
     const leaveCardY = rightCurY + 10;
     const leaveRowH = 34;
-    const leaveHeaderH = 38;
+    const leaveHeaderH = 36;
     const leaveTotalH = Math.min(leaveHeaderH + leaveDoctors.length * (leaveRowH + 6) + 14, baseHeight - leaveCardY - (showFooter ? 80 : 30));
 
     ctx.save();
@@ -859,6 +801,7 @@ export function renderPoster(
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
+    // Leave Header Banner
     ctx.fillStyle = c.leaveText || "#DC2626";
     ctx.beginPath();
     ctx.roundRect(rightX, leaveCardY, colW, leaveHeaderH, [cardCornerRadius, cardCornerRadius, 0, 0]);
@@ -907,79 +850,6 @@ export function renderPoster(
 
       ctx.textAlign = "left";
       rowY += leaveRowH + 6;
-    }
-
-    ctx.restore();
-    rightCurY = leaveCardY + leaveTotalH;
-  }
-
-  // ── SMART AUTO-FILL FOR LOW-DOCTOR DAYS: HOSPITAL EXCELLENCE & 24-HOUR SERVICES PLATTER ──
-  const remainingRightSpace = baseHeight - rightCurY - (showFooter ? 110 : 40);
-  if (remainingRightSpace > 140) {
-    ctx.save();
-    const facilBoxY = rightCurY + 12;
-    const facilBoxH = remainingRightSpace - 8;
-
-    const facilGrad = ctx.createLinearGradient(rightX, facilBoxY, rightX + colW, facilBoxY + facilBoxH);
-    facilGrad.addColorStop(0, "#FFFFFF");
-    facilGrad.addColorStop(1, c.cardBgEnd || "#F0FDFA");
-    ctx.fillStyle = facilGrad;
-    ctx.beginPath();
-    ctx.roundRect(rightX, facilBoxY, colW, facilBoxH, cardCornerRadius);
-    ctx.fill();
-
-    ctx.strokeStyle = c.specBgStart ? `${c.specBgStart}30` : "rgba(13, 148, 136, 0.2)";
-    ctx.lineWidth = 1.2;
-    ctx.stroke();
-
-    // Platter Title
-    const facilHeadH = 34;
-    ctx.fillStyle = c.specBgStart || "#0D9488";
-    ctx.beginPath();
-    ctx.roundRect(rightX, facilBoxY, colW, facilHeadH, [cardCornerRadius, cardCornerRadius, 0, 0]);
-    ctx.fill();
-
-    ctx.fillStyle = "#FFFFFF";
-    ctx.font = `900 12.5px ${baseFont}`;
-    ctx.textAlign = "left";
-    ctx.textBaseline = "middle";
-    ctx.fillText("🏥 LAYANAN & FASILITAS UNGGULAN 24 JAM", rightX + 14, facilBoxY + facilHeadH / 2);
-
-    // Facilities Grid Items
-    const facilities = [
-      { icon: "🚑", title: "IGD & Ambulans 24 Jam", desc: "Penanganan gawat darurat cepat & tepat" },
-      { icon: "🧪", title: "Laboratorium Patologi 24 Jam", desc: "Hasil tes darah cepat & akurat" },
-      { icon: "🩻", title: "Radiologi & Rontgen Digital", desc: "Pelayanan foto rontgen & USG" },
-      { icon: "💊", title: "Farmasi & Apotek 24 Jam", desc: "Obat lengkap & pelayanan resep cepat" },
-    ];
-
-    let fY = facilBoxY + facilHeadH + 10;
-    const fItemH = (facilBoxH - facilHeadH - 18) / facilities.length;
-
-    for (const f of facilities) {
-      if (fY + fItemH > facilBoxY + facilBoxH) break;
-
-      ctx.fillStyle = "#FFFFFF";
-      ctx.beginPath();
-      ctx.roundRect(rightX + 8, fY, colW - 16, fItemH - 4, 8);
-      ctx.fill();
-
-      ctx.strokeStyle = "rgba(0, 0, 0, 0.04)";
-      ctx.lineWidth = 1;
-      ctx.stroke();
-
-      ctx.font = `20px ${baseFont}`;
-      ctx.fillText(f.icon, rightX + 16, fY + (fItemH - 4) / 2);
-
-      ctx.fillStyle = "#0F172A";
-      ctx.font = `800 12px ${baseFont}`;
-      ctx.fillText(f.title, rightX + 44, fY + (fItemH - 4) / 2 - 6);
-
-      ctx.fillStyle = "#64748B";
-      ctx.font = `500 10.5px ${baseFont}`;
-      ctx.fillText(f.desc, rightX + 44, fY + (fItemH - 4) / 2 + 8);
-
-      fY += fItemH;
     }
 
     ctx.restore();

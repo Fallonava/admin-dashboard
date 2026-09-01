@@ -216,21 +216,6 @@ export default function PosterStudioPage() {
     triggerCanvasRedraw();
   };
 
-  // Preload Topic Image for AI Health Education Card
-  useEffect(() => {
-    if (aiTopic?.imageUrl) {
-      const img = new Image();
-      img.crossOrigin = "anonymous";
-      img.src = aiTopic.imageUrl;
-      img.onload = () => {
-        topicImageImgRef.current = img;
-        triggerCanvasRedraw();
-      };
-    } else {
-      topicImageImgRef.current = null;
-    }
-  }, [aiTopic?.imageUrl]);
-
   // Process Doctor Schedule Items
   const scheduleData = useCallback((): {
     specMap: Record<string, DoctorScheduleItem[]>;
@@ -372,6 +357,26 @@ export default function PosterStudioPage() {
     hotlinePhone,
     websiteUrl,
   ]);
+
+  // Preload Topic Image for AI Health Education Card
+  useEffect(() => {
+    if (aiTopic?.imageUrl) {
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      img.src = aiTopic.imageUrl;
+      img.onload = () => {
+        topicImageImgRef.current = img;
+        triggerCanvasRedraw();
+      };
+      img.onerror = () => {
+        topicImageImgRef.current = null;
+        triggerCanvasRedraw();
+      };
+    } else {
+      topicImageImgRef.current = null;
+      triggerCanvasRedraw();
+    }
+  }, [aiTopic?.imageUrl, triggerCanvasRedraw]);
 
   useEffect(() => {
     triggerCanvasRedraw();

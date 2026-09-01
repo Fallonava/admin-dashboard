@@ -1,7 +1,21 @@
 "use client";
 
-import { useState } from "react";
-import { Sparkles, Wand2, X, Check, RefreshCw, BookOpen, Lightbulb, Image as ImageIcon, Heart, Baby, Eye, Activity, ShieldAlert, Sparkle } from "lucide-react";
+import { useState, useEffect } from "react";
+import {
+  Sparkles,
+  Wand2,
+  X,
+  Check,
+  RefreshCw,
+  Lightbulb,
+  Image as ImageIcon,
+  Heart,
+  Baby,
+  Eye,
+  Activity,
+  ShieldAlert,
+  Edit3,
+} from "lucide-react";
 import { HealthEducationTopic } from "../types";
 
 interface AiTopicModalProps {
@@ -45,6 +59,17 @@ export function AiTopicModal({
   const [promptInput, setPromptInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [previewTopic, setPreviewTopic] = useState<HealthEducationTopic | null>(currentTopic);
+  const [isEditing, setIsEditing] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      if (currentTopic) {
+        setPreviewTopic(currentTopic);
+      } else {
+        handleGenerate();
+      }
+    }
+  }, [isOpen, currentTopic]);
 
   if (!isOpen) return null;
 
@@ -95,7 +120,7 @@ export function AiTopicModal({
                 </span>
               </h3>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                Generate materi edukasi kesehatan komprehensif & ilustrasi visual sesuai topik
+                Generate materi edukasi kesehatan & pilih gambar ilustrasi medis untuk poster
               </p>
             </div>
           </div>
@@ -108,7 +133,7 @@ export function AiTopicModal({
         </div>
 
         {/* Content Area */}
-        <div className="p-6 overflow-y-auto space-y-6 flex-1">
+        <div className="p-6 overflow-y-auto space-y-5 flex-1">
           {/* Quick Prompt Chips */}
           <div className="space-y-2">
             <label className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
@@ -136,7 +161,7 @@ export function AiTopicModal({
             <div className="flex gap-2">
               <input
                 type="text"
-                placeholder="Contoh: Waspada Nyeri Dada, Skrining Kanker Payudara, Vaksinasi Anak..."
+                placeholder="Ketik topik edukasi medis..."
                 value={promptInput}
                 onChange={(e) => setPromptInput(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleGenerate()}
@@ -162,7 +187,7 @@ export function AiTopicModal({
             </div>
           </div>
 
-          {/* Choose / Select Matching Medical Image */}
+          {/* Preset Visual Medical Gallery */}
           <div className="space-y-2 pt-1">
             <label className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
               <ImageIcon className="w-3.5 h-3.5 text-sky-500" />
@@ -195,77 +220,103 @@ export function AiTopicModal({
             </div>
           </div>
 
-          {/* Preview Generated Topic */}
+          {/* Live Preview / Editor Card */}
           {previewTopic && (
-            <div className="p-5 rounded-3xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 space-y-4 relative">
-              <div className="flex items-start justify-between gap-4">
-                <div className="space-y-1">
-                  <span className="text-[10.5px] font-extrabold px-3 py-1 rounded-full bg-sky-500 text-white uppercase tracking-wider">
-                    {previewTopic.tag}
-                  </span>
-                  <h4 className="text-lg font-black text-slate-900 dark:text-white pt-2">
-                    {previewTopic.title}
-                  </h4>
-                  {previewTopic.subtitle && (
-                    <p className="text-xs font-bold text-teal-600 dark:text-teal-400">
-                      {previewTopic.subtitle}
-                    </p>
-                  )}
+            <div className="p-5 rounded-3xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                  <Edit3 className="w-3.5 h-3.5 text-indigo-500" />
+                  Preview & Live Edit:
+                </span>
+                <button
+                  onClick={() => setIsEditing(!isEditing)}
+                  className="text-xs font-semibold text-sky-600 hover:text-sky-700 dark:text-sky-400"
+                >
+                  {isEditing ? "Selesai Edit" : "Edit Teks Manual"}
+                </button>
+              </div>
+
+              {isEditing ? (
+                <div className="space-y-3">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400">Tag Kategori</label>
+                      <input
+                        type="text"
+                        value={previewTopic.tag}
+                        onChange={(e) => setPreviewTopic({ ...previewTopic, tag: e.target.value })}
+                        className="w-full mt-1 px-3 py-1.5 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400">Image URL</label>
+                      <input
+                        type="text"
+                        value={previewTopic.imageUrl || ""}
+                        onChange={(e) => setPreviewTopic({ ...previewTopic, imageUrl: e.target.value })}
+                        className="w-full mt-1 px-3 py-1.5 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400">Judul Edukasi</label>
+                    <input
+                      type="text"
+                      value={previewTopic.title}
+                      onChange={(e) => setPreviewTopic({ ...previewTopic, title: e.target.value })}
+                      className="w-full mt-1 px-3 py-1.5 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400">Subjudul</label>
+                    <input
+                      type="text"
+                      value={previewTopic.subtitle || ""}
+                      onChange={(e) => setPreviewTopic({ ...previewTopic, subtitle: e.target.value })}
+                      className="w-full mt-1 px-3 py-1.5 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400">Ringkasan Medis</label>
+                    <textarea
+                      rows={2}
+                      value={previewTopic.summary}
+                      onChange={(e) => setPreviewTopic({ ...previewTopic, summary: e.target.value })}
+                      className="w-full mt-1 px-3 py-1.5 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800"
+                    />
+                  </div>
                 </div>
-                {previewTopic.imageUrl && (
-                  <img
-                    src={previewTopic.imageUrl}
-                    alt="Topic"
-                    className="w-24 h-24 rounded-2xl object-cover border-2 border-white dark:border-slate-700 shadow-md flex-shrink-0"
-                  />
-                )}
-              </div>
-
-              <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed bg-white dark:bg-slate-800/80 p-3 rounded-xl border border-slate-200/60 dark:border-slate-700/40">
-                {previewTopic.summary}
-              </p>
-
-              {/* Grid 2 Kolom: Gejala & Pencegahan */}
-              <div className="grid grid-cols-2 gap-3 text-xs">
-                {previewTopic.symptoms && previewTopic.symptoms.length > 0 && (
-                  <div className="p-3 rounded-xl bg-rose-50/60 dark:bg-rose-950/20 border border-rose-200/50 dark:border-rose-900/30 space-y-1.5">
-                    <span className="font-bold text-rose-600 dark:text-rose-400 text-[11px] flex items-center gap-1">
-                      ⚠️ Gejala Utama:
+              ) : (
+                <div className="flex items-start gap-4 p-4 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/40 shadow-sm">
+                  {previewTopic.imageUrl ? (
+                    <img
+                      src={previewTopic.imageUrl}
+                      alt="Preview"
+                      className="w-20 h-20 rounded-xl object-cover border border-slate-200 dark:border-slate-700 flex-shrink-0 shadow-sm"
+                    />
+                  ) : (
+                    <div className="w-20 h-20 rounded-xl bg-sky-100 dark:bg-sky-950/40 flex items-center justify-center text-2xl flex-shrink-0">
+                      🩺
+                    </div>
+                  )}
+                  <div className="space-y-1 flex-1 min-w-0">
+                    <span className="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-sky-500 text-white uppercase tracking-wider">
+                      {previewTopic.tag}
                     </span>
-                    {previewTopic.symptoms.map((s, idx) => (
-                      <div key={idx} className="text-[11.5px] text-slate-700 dark:text-slate-300 flex items-start gap-1.5">
-                        <span className="text-rose-500">•</span>
-                        <span>{s}</span>
-                      </div>
-                    ))}
+                    <h4 className="text-sm font-bold text-slate-900 dark:text-white pt-1 truncate">
+                      {previewTopic.title}
+                    </h4>
+                    {previewTopic.subtitle && (
+                      <p className="text-xs font-semibold text-teal-600 dark:text-teal-400 truncate">
+                        {previewTopic.subtitle}
+                      </p>
+                    )}
+                    <p className="text-[11.5px] text-slate-600 dark:text-slate-400 line-clamp-2 leading-relaxed pt-0.5">
+                      {previewTopic.summary}
+                    </p>
                   </div>
-                )}
-
-                {previewTopic.prevention && previewTopic.prevention.length > 0 && (
-                  <div className="p-3 rounded-xl bg-emerald-50/60 dark:bg-emerald-950/20 border border-emerald-200/50 dark:border-emerald-900/30 space-y-1.5">
-                    <span className="font-bold text-emerald-600 dark:text-emerald-400 text-[11px] flex items-center gap-1">
-                      🛡️ Pencegahan & Tips:
-                    </span>
-                    {previewTopic.prevention.map((p, idx) => (
-                      <div key={idx} className="text-[11.5px] text-slate-700 dark:text-slate-300 flex items-start gap-1.5">
-                        <span className="text-emerald-500">✓</span>
-                        <span>{p}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {previewTopic.causes && (
-                <div className="text-xs text-slate-600 dark:text-slate-400">
-                  <strong className="text-slate-800 dark:text-slate-200">Penyebab Medis:</strong> {previewTopic.causes}
                 </div>
               )}
-
-              <div className="pt-2 text-[11px] italic text-slate-500 dark:text-slate-400 border-t border-slate-200/60 dark:border-slate-700/60 flex items-center justify-between">
-                <span>💬 {previewTopic.note}</span>
-                <span className="font-semibold text-sky-600 dark:text-sky-400">{previewTopic.sourceUrl}</span>
-              </div>
             </div>
           )}
         </div>
