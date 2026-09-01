@@ -1,21 +1,12 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google"; // Using Inter as requested for modern look
-
 import "./globals.css";
 import { OfflineSyncer } from "@/components/OfflineSyncer";
-
 import { SWRProvider } from "@/components/swr-provider";
 import { AuthProvider } from "@/lib/auth-context";
 import { AppShell } from "@/components/layouts/AppShell";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 
-const inter = Inter({
-  subsets: ["latin"],
-  display: "swap",
-  preload: true,
-  adjustFontFallback: true,
-  fallback: ["-apple-system", "BlinkMacSystemFont", "SF Pro Text", "Segoe UI", "sans-serif"],
-});
+const inter = { className: "font-sans" };
 
 export const metadata: Metadata = {
   title: "SIMED26 | Sistem Informasi Manajemen Medis & TV Display",
