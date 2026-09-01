@@ -188,7 +188,7 @@ export function StudioSidebar(props: StudioSidebarProps) {
   ];
 
   return (
-    <div className="w-full lg:w-[420px] bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col h-full overflow-hidden shadow-xl z-20">
+    <div className="w-full bg-white dark:bg-slate-900 flex flex-col h-full overflow-hidden">
       {/* Tab Navigation */}
       <div className="flex border-b border-slate-200 dark:border-slate-800 overflow-x-auto bg-slate-50/50 dark:bg-slate-900/50 p-1.5 gap-1 scrollbar-none">
         {tabs.map((tab) => {

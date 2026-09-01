@@ -17,6 +17,13 @@ import {
   Maximize2,
   FileImage,
   Printer,
+  Palette,
+  Sliders,
+  X,
+  Share2,
+  Expand,
+  RotateCcw,
+  Sparkle,
 } from "lucide-react";
 import type { Doctor, Shift, LeaveRequest } from "@/lib/data-service";
 import { getIndonesianHoliday } from "@/lib/holidays";
@@ -40,7 +47,7 @@ import {
   LeaveDoctorItem,
 } from "./types";
 
-import { DEFAULT_CUSTOM_COLORS } from "./constants/themes";
+import { DEFAULT_CUSTOM_COLORS, THEME_PRESETS, ASPECT_RATIOS } from "./constants/themes";
 import { renderPoster } from "./engine/renderer";
 import {
   downloadCanvasImage,
@@ -57,11 +64,11 @@ export default function PosterStudioPage() {
   const [activeTab, setActiveTab] = useState<ActiveTab>("template");
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [aspectRatio, setAspectRatio] = useState<AspectRatioMode>("poster");
-  const [themeMode, setThemeMode] = useState<ThemeType>("liquidGlass");
-  const [visualStyle, setVisualStyle] = useState<VisualStyle>("liquidGlass");
-  const [cardVariant, setCardVariant] = useState<CardVariant>("glassFrost");
-  const [headerStyle, setHeaderStyle] = useState<HeaderStyle>("islandFloating");
-  const [footerStyle, setFooterStyle] = useState<FooterStyle>("bentoHub");
+  const [themeMode, setThemeMode] = useState<ThemeType>("siagaOfficial");
+  const [visualStyle, setVisualStyle] = useState<VisualStyle>("siagaOfficial");
+  const [cardVariant, setCardVariant] = useState<CardVariant>("smooth");
+  const [headerStyle, setHeaderStyle] = useState<HeaderStyle>("officialSplit");
+  const [footerStyle, setFooterStyle] = useState<FooterStyle>("officialBar");
   const [emblemShape, setEmblemShape] = useState<EmblemShape>("squircle");
   const [leaveCardStyle, setLeaveCardStyle] = useState<LeaveCardStyle>("bentoBox");
   const [avatarMode, setAvatarMode] = useState<AvatarMode>("specialtyIcon");
@@ -82,7 +89,7 @@ export default function PosterStudioPage() {
   const [showAccreditation, setShowAccreditation] = useState<boolean>(true);
   const [showHeaderDateBadge, setShowHeaderDateBadge] = useState<boolean>(true);
   const [showStatsBar, setShowStatsBar] = useState<boolean>(true);
-  const [showAiEducation, setShowAiEducation] = useState<boolean>(false);
+  const [showAiEducation, setShowAiEducation] = useState<boolean>(true);
 
   // Filter & Search
   const [poliFilter, setPoliFilter] = useState<"all" | "Bedah" | "NonBedah">("all");
@@ -93,8 +100,13 @@ export default function PosterStudioPage() {
   const [shared, setShared] = useState(false);
   const [exportMenuOpen, setExportMenuOpen] = useState(false);
 
+  // Mobile Drawer State
+  const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
+  const [isFullscreenPreview, setIsFullscreenPreview] = useState(false);
+
   // Zoom & Preview Viewport
-  const [zoomLevel, setZoomLevel] = useState<number>(0.65);
+  const [zoomLevel, setZoomLevel] = useState<number>(0.55);
+  const [isAutoFit, setIsAutoFit] = useState(true);
 
   // AI Topic Modal State
   const [isAiModalOpen, setIsAiModalOpen] = useState(false);
@@ -114,54 +126,75 @@ export default function PosterStudioPage() {
 
   // Refs
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const previewContainerRef = useRef<HTMLDivElement | null>(null);
   const qrImageRef = useRef<HTMLImageElement | null>(null);
   const customLogoImgRef = useRef<HTMLImageElement | null>(null);
 
   // SWR Data Fetching
-  const { data: rawShifts } = useSWR<Shift[]>("/api/shifts");
-  const { data: rawDoctors } = useSWR<Doctor[]>("/api/doctors");
-  const { data: rawLeaves } = useSWR<LeaveRequest[]>("/api/leaves");
+  const { data: displayData } = useSWR<{
+    doctors: Doctor[];
+    shifts: Shift[];
+    leaves: LeaveRequest[];
+  }>("/api/display", async (url) => {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("Gagal mengambil data jadwal");
+    return res.json();
+  }, { revalidateOnFocus: false, dedupingInterval: 30000 });
 
-  const shifts = Array.isArray(rawShifts) ? rawShifts : [];
-  const doctors = Array.isArray(rawDoctors) ? rawDoctors : [];
-  const leaves = Array.isArray(rawLeaves) ? rawLeaves : [];
+  // Compute Auto-Fit Zoom Scale dynamically
+  const calculateAutoFitZoom = useCallback(() => {
+    if (!previewContainerRef.current) return 0.55;
+    const containerW = previewContainerRef.current.clientWidth - 48;
+    const containerH = previewContainerRef.current.clientHeight - 48;
+    const ratioSpec = ASPECT_RATIOS[aspectRatio] || ASPECT_RATIOS.poster;
+    
+    const scaleW = containerW / ratioSpec.width;
+    const scaleH = containerH / ratioSpec.height;
+    const optimalScale = Math.min(scaleW, scaleH, 1);
+    return Math.max(0.25, Math.min(optimalScale, 1.2));
+  }, [aspectRatio]);
 
-  // Load Saved Presets on mount
+  // Adjust zoom on mount & window resize
+  useEffect(() => {
+    const handleResize = () => {
+      if (isAutoFit) {
+        setZoomLevel(calculateAutoFitZoom());
+      }
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [calculateAutoFitZoom, isAutoFit]);
+
+  // Load Saved Presets from localStorage
   useEffect(() => {
     try {
-      const stored = localStorage.getItem("nava_studio_presets_v3");
+      const stored = localStorage.getItem("nava_studio_presets");
       if (stored) setSavedPresets(JSON.parse(stored));
-    } catch (e) {}
+    } catch {
+      // ignore
+    }
   }, []);
 
-  const persistPresets = (list: SavedPreset[]) => {
-    setSavedPresets(list);
+  const persistPresets = (presets: SavedPreset[]) => {
+    setSavedPresets(presets);
     try {
-      localStorage.setItem("nava_studio_presets_v3", JSON.stringify(list));
-    } catch (e) {}
+      localStorage.setItem("nava_studio_presets", JSON.stringify(presets));
+    } catch {
+      // ignore
+    }
   };
 
-  // Preload QR Image
-  useEffect(() => {
-    const img = new Image();
-    img.crossOrigin = "anonymous";
-    img.src = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://" + websiteUrl;
-    img.onload = () => {
-      qrImageRef.current = img;
-      triggerCanvasRedraw();
-    };
-  }, [websiteUrl]);
-
-  // Handle Logo Upload
+  // Custom Logo upload handler
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
     reader.onload = (event) => {
-      const result = event.target?.result as string;
-      setCustomLogoSrc(result);
+      const dataUrl = event.target?.result as string;
+      setCustomLogoSrc(dataUrl);
       const img = new Image();
-      img.src = result;
+      img.src = dataUrl;
       img.onload = () => {
         customLogoImgRef.current = img;
         triggerCanvasRedraw();
@@ -176,62 +209,76 @@ export default function PosterStudioPage() {
     triggerCanvasRedraw();
   };
 
-  // Compute Schedule Data
-  const scheduleData = useCallback(() => {
-    const dayIdx = (selectedDate.getDay() + 6) % 7;
-    const dateStr = selectedDate.toISOString().slice(0, 10);
-    const holiday = getIndonesianHoliday(selectedDate);
+  // Process Doctor Schedule Items
+  const scheduleData = useCallback((): {
+    specMap: Record<string, DoctorScheduleItem[]>;
+    leaveDoctors: LeaveDoctorItem[];
+    holiday?: { name?: string; isHoliday: boolean } | null;
+  } => {
+    if (!displayData) {
+      return { specMap: {}, leaveDoctors: [] };
+    }
 
-    const activeShifts = shifts.filter((s) => s.dayIdx === dayIdx);
-    const specMap: Record<string, DoctorScheduleItem[]> = {};
+    const { doctors = [], shifts = [], leaves = [] } = displayData;
+    const dayIdx = selectedDate.getDay();
+    const dayNames = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+    const currentDayName = dayNames[dayIdx];
+
+    const selDateStr = selectedDate.toISOString().slice(0, 10);
+    const activeLeaves = leaves.filter((l) => {
+      const start = new Date(l.startDate).toISOString().slice(0, 10);
+      const end = new Date(l.endDate).toISOString().slice(0, 10);
+      return selDateStr >= start && selDateStr <= end;
+    });
+
+    const leaveDocIds = new Set(activeLeaves.map((l) => l.doctorId));
     const leaveDoctors: LeaveDoctorItem[] = [];
 
-    activeShifts.forEach((s) => {
-      const doc = doctors.find((d) => d.id === s.doctorId);
-      if (!doc) return;
+    const specMap: Record<string, DoctorScheduleItem[]> = {};
 
-      if (poliFilter !== "all" && (doc.category || "NonBedah") !== poliFilter) return;
+    for (const doc of doctors) {
+      const isLeave = leaveDocIds.has(doc.id);
+      const docLeave = activeLeaves.find((l) => l.doctorId === doc.id);
 
-      if (searchQuery.trim()) {
-        const q = searchQuery.toLowerCase();
-        const matchName = doc.name.toLowerCase().includes(q);
-        const matchSpec = (doc.specialty || "").toLowerCase().includes(q);
-        if (!matchName && !matchSpec) return;
-      }
-
-      const matchingLeave = leaves.find(
-        (l) =>
-          (l.doctorId === doc.id || (l.doctor && l.doctor === doc.name)) &&
-          new Date(l.startDate) <= selectedDate &&
-          new Date(l.endDate || l.startDate) >= selectedDate
-      );
-
-      const isCuti = (s.disabledDates || []).includes(dateStr) || Boolean(matchingLeave);
-      let status = isCuti ? "CUTI" : (doc.status || "PRAKTEK");
-      const specName = (doc.specialty || "Umum").replace(/Spesialis\\s*/i, "").replace(/Poli\\s*/i, "").trim().toUpperCase();
-
-      if (isCuti) {
+      if (isLeave) {
         leaveDoctors.push({
           doctorName: doc.name,
-          specialty: specName,
-          replacement: matchingLeave ? (matchingLeave.replacementDoctor || null) : null,
+          specialty: doc.specialty || "Umum",
+          replacement: docLeave?.replacementDoctor || null,
         });
       }
 
-      if (!specMap[specName]) specMap[specName] = [];
-      specMap[specName].push({
-        doctorName: doc.name,
-        time: s.formattedTime || s.title || "Jam 08.00 sd Selesai",
-        status: status.toUpperCase(),
-        category: doc.category || "NonBedah",
-        replacement: matchingLeave ? (matchingLeave.replacementDoctor || null) : null,
-      });
-    });
+      // Find shifts for today by dayIdx
+      const docShifts = shifts.filter(
+        (s) => s.doctorId === doc.id && s.dayIdx === dayIdx
+      );
 
-    return { specMap, leaveDoctors, holiday };
-  }, [selectedDate, doctors, shifts, leaves, poliFilter, searchQuery]);
+      if (docShifts.length > 0 || isLeave) {
+        const specName = doc.specialty?.toUpperCase() || "POLIKLINIK UMUM";
+        if (!specMap[specName]) specMap[specName] = [];
 
-  // Main Canvas Render trigger
+        const timeStr = isLeave
+          ? "LIBUR"
+          : docShifts
+              .map((s) => s.formattedTime || s.extra || "09.00 sd selesai")
+              .join("\n") || "09.00 sd selesai";
+
+        specMap[specName].push({
+          doctorName: doc.name,
+          time: timeStr,
+          status: isLeave ? "CUTI" : "PRAKTEK",
+          category: doc.category || "Poli",
+          replacement: docLeave?.replacementDoctor || null,
+        });
+      }
+    }
+
+    const holidayInfo = getIndonesianHoliday(selectedDate);
+
+    return { specMap, leaveDoctors, holiday: holidayInfo };
+  }, [displayData, selectedDate]);
+
+  // Canvas Redraw Trigger
   const triggerCanvasRedraw = useCallback(() => {
     if (!canvasRef.current) return;
     const data = scheduleData();
@@ -336,8 +383,8 @@ export default function PosterStudioPage() {
     setThemeMode(p.themeMode);
     setVisualStyle(p.visualStyle);
     setCardVariant(p.cardVariant);
-    setHeaderStyle(p.headerStyle || "islandFloating");
-    setFooterStyle(p.footerStyle || "bentoHub");
+    setHeaderStyle(p.headerStyle || "officialSplit");
+    setFooterStyle(p.footerStyle || "officialBar");
     setLeaveCardStyle(p.leaveCardStyle || "bentoBox");
     setAvatarMode(p.avatarMode || "specialtyIcon");
     setFontTheme(p.fontTheme || "sans");
@@ -381,56 +428,66 @@ export default function PosterStudioPage() {
     setSelectedDate(next);
   };
 
+  const openMobileTab = (tab: ActiveTab) => {
+    setActiveTab(tab);
+    setIsMobileDrawerOpen(true);
+  };
+
   return (
-    <div className="flex flex-col h-screen overflow-hidden bg-slate-100 dark:bg-slate-950 font-sans">
-      {/* Top App Header */}
-      <header className="h-16 px-6 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md flex items-center justify-between z-30 shrink-0">
-        <div className="flex items-center gap-4">
+    <div className="flex flex-col h-screen overflow-hidden bg-slate-100 dark:bg-slate-950 font-sans select-none">
+      {/* ── 1. ADAPTIVE TOP APP HEADER ── */}
+      <header className="h-14 sm:h-16 px-3 sm:px-6 border-b border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md flex items-center justify-between z-30 shrink-0">
+        <div className="flex items-center gap-2 sm:gap-4 min-w-0">
           <Link
             href="/schedules"
-            className="p-2 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors"
+            className="p-1.5 sm:p-2 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors shrink-0"
           >
-            <ChevronLeft className="w-5 h-5" />
+            <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
           </Link>
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-base font-extrabold text-slate-900 dark:text-white">Studio Poster Generator</h1>
-              <span className="text-[10px] uppercase font-extrabold tracking-wider bg-gradient-to-r from-sky-500 to-indigo-600 text-white px-2 py-0.5 rounded-full shadow-sm">
-                Pro v3.0
+          <div className="min-w-0">
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <h1 className="text-xs sm:text-base font-extrabold text-slate-900 dark:text-white truncate">
+                Studio Poster
+              </h1>
+              <span className="text-[9px] sm:text-[10px] uppercase font-extrabold tracking-wider bg-gradient-to-r from-teal-500 to-emerald-600 text-white px-1.5 sm:px-2 py-0.5 rounded-full shadow-sm shrink-0">
+                v3.0
               </span>
             </div>
-            <p className="text-xs text-slate-400">Desain poster jadwal dokter & edukasi kesehatan instan</p>
+            <p className="hidden sm:block text-xs text-slate-400 truncate">
+              Desain poster jadwal dokter & edukasi kesehatan instan
+            </p>
           </div>
         </div>
 
         {/* Date Selector & Action Buttons */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-1.5 sm:gap-3">
           {/* Date Picker Pill */}
-          <div className="flex items-center bg-slate-100 dark:bg-slate-800 rounded-2xl p-1 border border-slate-200 dark:border-slate-700">
+          <div className="flex items-center bg-slate-100 dark:bg-slate-800 rounded-xl sm:rounded-2xl p-0.5 sm:p-1 border border-slate-200 dark:border-slate-700">
             <button
               onClick={() => changeDateByDays(-1)}
-              className="p-1.5 hover:bg-white dark:hover:bg-slate-700 rounded-xl text-slate-600 dark:text-slate-300 transition-colors"
+              className="p-1 sm:p-1.5 hover:bg-white dark:hover:bg-slate-700 rounded-lg sm:rounded-xl text-slate-600 dark:text-slate-300 transition-colors"
             >
-              <ChevronLeft className="w-4 h-4" />
+              <ChevronLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </button>
-            <div className="px-3 flex items-center gap-2 text-xs font-bold text-slate-800 dark:text-slate-200">
-              <CalendarIcon className="w-3.5 h-3.5 text-sky-500" />
-              {selectedDate.toLocaleDateString("id-ID", {
-                weekday: "short",
-                day: "numeric",
-                month: "short",
-                year: "numeric",
-              })}
+            <div className="px-1.5 sm:px-3 flex items-center gap-1 sm:gap-2 text-[11px] sm:text-xs font-bold text-slate-800 dark:text-slate-200">
+              <CalendarIcon className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-teal-600 dark:text-teal-400" />
+              <span>
+                {selectedDate.toLocaleDateString("id-ID", {
+                  weekday: "short",
+                  day: "numeric",
+                  month: "short",
+                })}
+              </span>
             </div>
             <button
               onClick={() => changeDateByDays(1)}
-              className="p-1.5 hover:bg-white dark:hover:bg-slate-700 rounded-xl text-slate-600 dark:text-slate-300 transition-colors"
+              className="p-1 sm:p-1.5 hover:bg-white dark:hover:bg-slate-700 rounded-lg sm:rounded-xl text-slate-600 dark:text-slate-300 transition-colors"
             >
-              <ChevronRight className="w-4 h-4" />
+              <ChevronRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </button>
           </div>
 
-          {/* Direct WhatsApp Share */}
+          {/* Quick WhatsApp Share Button */}
           <button
             onClick={async () => {
               if (!canvasRef.current) return;
@@ -446,13 +503,14 @@ export default function PosterStudioPage() {
               });
               setTimeout(() => setShared(false), 2000);
             }}
-            className="px-4 py-2 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md flex items-center gap-2 transition-all"
+            className="p-2 sm:px-3.5 sm:py-2 rounded-xl sm:rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md flex items-center gap-1.5 transition-all"
+            title="Bagikan ke WhatsApp"
           >
-            <PhoneCall className="w-4 h-4" />
-            {shared ? "Membuka WA..." : "Share WhatsApp"}
+            <PhoneCall className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            <span className="hidden md:inline">{shared ? "Membuka..." : "Share WA"}</span>
           </button>
 
-          {/* Quick Copy to Clipboard */}
+          {/* Quick Copy */}
           <button
             onClick={async () => {
               if (!canvasRef.current) return;
@@ -462,26 +520,27 @@ export default function PosterStudioPage() {
                 setTimeout(() => setCopied(false), 2000);
               }
             }}
-            className="px-4 py-2 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs flex items-center gap-2 transition-all"
+            className="hidden sm:flex p-2 sm:px-3.5 sm:py-2 rounded-xl sm:rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs items-center gap-1.5 transition-all"
+            title="Salin Gambar ke Clipboard"
           >
             {copied ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}
-            {copied ? "Tersalin!" : "Salin Gambar"}
+            <span className="hidden lg:inline">{copied ? "Tersalin!" : "Salin"}</span>
           </button>
 
           {/* Export Dropdown Menu */}
           <div className="relative">
             <button
               onClick={() => setExportMenuOpen(!exportMenuOpen)}
-              className="px-5 py-2 rounded-2xl bg-gradient-to-r from-sky-500 to-indigo-600 hover:opacity-95 text-white font-bold text-xs shadow-lg shadow-sky-500/25 flex items-center gap-2 transition-all"
+              className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl sm:rounded-2xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:opacity-95 text-white font-bold text-xs shadow-md flex items-center gap-1.5 transition-all"
             >
-              <Download className="w-4 h-4" />
-              Export HD
+              <Download className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <span>Export</span>
             </button>
 
             {exportMenuOpen && (
               <div className="absolute right-0 mt-2 w-64 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl p-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
-                <div className="px-3 py-2 text-[11px] font-extrabold text-slate-400 uppercase tracking-wider">
-                  Pilihan Resolusi Export
+                <div className="px-3 py-2 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
+                  Resolusi Export
                 </div>
                 <button
                   onClick={() => {
@@ -490,10 +549,10 @@ export default function PosterStudioPage() {
                     }
                     setExportMenuOpen(false);
                   }}
-                  className="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 text-left text-xs font-bold text-slate-800 dark:text-slate-200"
+                  className="w-full flex items-center justify-between p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 text-left text-xs font-bold text-slate-800 dark:text-slate-200"
                 >
                   <span className="flex items-center gap-2">
-                    <FileImage className="w-4 h-4 text-sky-500" /> PNG Standar (1x Web)
+                    <FileImage className="w-4 h-4 text-teal-600" /> PNG Standar (1x Web)
                   </span>
                 </button>
 
@@ -542,7 +601,7 @@ export default function PosterStudioPage() {
                     );
                     setExportMenuOpen(false);
                   }}
-                  className="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 text-left text-xs font-bold text-slate-800 dark:text-slate-200"
+                  className="w-full flex items-center justify-between p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 text-left text-xs font-bold text-slate-800 dark:text-slate-200"
                 >
                   <span className="flex items-center gap-2">
                     <Sparkles className="w-4 h-4 text-indigo-500" /> Retina HD (2x Crisp)
@@ -594,10 +653,10 @@ export default function PosterStudioPage() {
                     );
                     setExportMenuOpen(false);
                   }}
-                  className="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 text-left text-xs font-bold text-slate-800 dark:text-slate-200"
+                  className="w-full flex items-center justify-between p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 text-left text-xs font-bold text-slate-800 dark:text-slate-200"
                 >
                   <span className="flex items-center gap-2">
-                    <Printer className="w-4 h-4 text-emerald-500" /> Ultra HD 300 DPI (A4/A3 Print)
+                    <Printer className="w-4 h-4 text-emerald-500" /> Ultra HD 300 DPI (Print)
                   </span>
                 </button>
               </div>
@@ -606,109 +665,143 @@ export default function PosterStudioPage() {
         </div>
       </header>
 
-      {/* Main Workspace: Sidebar Controls + Interactive Canvas Preview */}
+      {/* ── 2. MAIN WORKSPACE ── */}
       <div className="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
-        {/* Left Sidebar Controls */}
-        <StudioSidebar
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-          themeMode={themeMode}
-          setThemeMode={setThemeMode}
-          visualStyle={visualStyle}
-          setVisualStyle={setVisualStyle}
-          cardVariant={cardVariant}
-          setCardVariant={setCardVariant}
-          aspectRatio={aspectRatio}
-          setAspectRatio={setAspectRatio}
-          headerStyle={headerStyle}
-          setHeaderStyle={setHeaderStyle}
-          footerStyle={footerStyle}
-          setFooterStyle={setFooterStyle}
-          emblemShape={emblemShape}
-          setEmblemShape={setEmblemShape}
-          fontTheme={fontTheme}
-          setFontTheme={setFontTheme}
-          cardCornerRadius={cardCornerRadius}
-          setCardCornerRadius={setCardCornerRadius}
-          headerEmblemIcon={headerEmblemIcon}
-          setHeaderEmblemIcon={setHeaderEmblemIcon}
-          emergencyBadgeText={emergencyBadgeText}
-          setEmergencyBadgeText={setEmergencyBadgeText}
-          watermarkText={watermarkText}
-          setWatermarkText={setWatermarkText}
-          colors={colors}
-          setColors={setColors}
-          showLeaveCard={showLeaveCard}
-          setShowLeaveCard={setShowLeaveCard}
-          showFooter={showFooter}
-          setShowFooter={setShowFooter}
-          showQrCode={showQrCode}
-          setShowQrCode={setShowQrCode}
-          showIgdBadge={showIgdBadge}
-          setShowIgdBadge={setShowIgdBadge}
-          showHeaderDateBadge={showHeaderDateBadge}
-          setShowHeaderDateBadge={setShowHeaderDateBadge}
-          showStatsBar={showStatsBar}
-          setShowStatsBar={setShowStatsBar}
-          showAiEducation={showAiEducation}
-          setShowAiEducation={setShowAiEducation}
-          aiTopic={aiTopic}
-          onOpenAiModal={() => setIsAiModalOpen(true)}
-          hospitalName={hospitalName}
-          setHospitalName={setHospitalName}
-          hospitalSubtitle={hospitalSubtitle}
-          setHospitalSubtitle={setHospitalSubtitle}
-          hotlinePhone={hotlinePhone}
-          setHotlinePhone={setHotlinePhone}
-          websiteUrl={websiteUrl}
-          setWebsiteUrl={setWebsiteUrl}
-          customLogoSrc={customLogoSrc}
-          onLogoUpload={handleLogoUpload}
-          onRemoveLogo={handleRemoveLogo}
-          savedPresets={savedPresets}
-          newPresetName={newPresetName}
-          setNewPresetName={setNewPresetName}
-          onSavePreset={handleSaveCurrentPreset}
-          onLoadPreset={handleLoadPreset}
-          onDeletePreset={handleDeletePreset}
-          onExportPresets={handleExportPresetsJson}
-          onImportPresets={handleImportPresetsJson}
-        />
+        {/* Desktop Left Sidebar */}
+        <div className="hidden lg:block w-[380px] xl:w-[420px] h-full shrink-0 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-y-auto">
+          <StudioSidebar
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            themeMode={themeMode}
+            setThemeMode={setThemeMode}
+            visualStyle={visualStyle}
+            setVisualStyle={setVisualStyle}
+            cardVariant={cardVariant}
+            setCardVariant={setCardVariant}
+            aspectRatio={aspectRatio}
+            setAspectRatio={setAspectRatio}
+            headerStyle={headerStyle}
+            setHeaderStyle={setHeaderStyle}
+            footerStyle={footerStyle}
+            setFooterStyle={setFooterStyle}
+            emblemShape={emblemShape}
+            setEmblemShape={setEmblemShape}
+            fontTheme={fontTheme}
+            setFontTheme={setFontTheme}
+            cardCornerRadius={cardCornerRadius}
+            setCardCornerRadius={setCardCornerRadius}
+            headerEmblemIcon={headerEmblemIcon}
+            setHeaderEmblemIcon={setHeaderEmblemIcon}
+            emergencyBadgeText={emergencyBadgeText}
+            setEmergencyBadgeText={setEmergencyBadgeText}
+            watermarkText={watermarkText}
+            setWatermarkText={setWatermarkText}
+            colors={colors}
+            setColors={setColors}
+            showLeaveCard={showLeaveCard}
+            setShowLeaveCard={setShowLeaveCard}
+            showFooter={showFooter}
+            setShowFooter={setShowFooter}
+            showQrCode={showQrCode}
+            setShowQrCode={setShowQrCode}
+            showIgdBadge={showIgdBadge}
+            setShowIgdBadge={setShowIgdBadge}
+            showHeaderDateBadge={showHeaderDateBadge}
+            setShowHeaderDateBadge={setShowHeaderDateBadge}
+            showStatsBar={showStatsBar}
+            setShowStatsBar={setShowStatsBar}
+            showAiEducation={showAiEducation}
+            setShowAiEducation={setShowAiEducation}
+            aiTopic={aiTopic}
+            onOpenAiModal={() => setIsAiModalOpen(true)}
+            hospitalName={hospitalName}
+            setHospitalName={setHospitalName}
+            hospitalSubtitle={hospitalSubtitle}
+            setHospitalSubtitle={setHospitalSubtitle}
+            hotlinePhone={hotlinePhone}
+            setHotlinePhone={setHotlinePhone}
+            websiteUrl={websiteUrl}
+            setWebsiteUrl={setWebsiteUrl}
+            customLogoSrc={customLogoSrc}
+            onLogoUpload={handleLogoUpload}
+            onRemoveLogo={handleRemoveLogo}
+            savedPresets={savedPresets}
+            newPresetName={newPresetName}
+            setNewPresetName={setNewPresetName}
+            onSavePreset={handleSaveCurrentPreset}
+            onLoadPreset={handleLoadPreset}
+            onDeletePreset={handleDeletePreset}
+            onExportPresets={handleExportPresetsJson}
+            onImportPresets={handleImportPresetsJson}
+          />
+        </div>
 
-        {/* Right Canvas Preview Area */}
-        <div className="flex-1 flex flex-col items-center justify-between p-6 overflow-auto bg-slate-200/70 dark:bg-slate-950/80 relative">
-          {/* Zoom & Viewport Bar */}
-          <div className="absolute top-6 right-6 z-20 flex items-center gap-1.5 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md p-1.5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-lg">
+        {/* ── 3. INTERACTIVE LIVE CANVAS PREVIEW AREA ── */}
+        <div
+          ref={previewContainerRef}
+          className="flex-1 flex flex-col items-center justify-center p-3 sm:p-6 overflow-auto bg-slate-200/80 dark:bg-slate-950 relative"
+        >
+          {/* Floating Viewport Toolbar */}
+          <div className="absolute top-3 right-3 sm:top-6 sm:right-6 z-20 flex items-center gap-1 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md p-1 sm:p-1.5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-lg">
             <button
-              onClick={() => setZoomLevel((z) => Math.max(0.3, z - 0.1))}
-              className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl text-slate-600 dark:text-slate-300"
+              onClick={() => {
+                setIsAutoFit(false);
+                setZoomLevel((z) => Math.max(0.2, +(z - 0.05).toFixed(2)));
+              }}
+              className="p-1 sm:p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl text-slate-600 dark:text-slate-300"
+              title="Perkecil"
             >
-              <ZoomOut className="w-4 h-4" />
+              <ZoomOut className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </button>
-            <span className="text-xs font-bold text-slate-700 dark:text-slate-300 px-2 min-w-12 text-center">
+            <button
+              onClick={() => {
+                setIsAutoFit(true);
+                setZoomLevel(calculateAutoFitZoom());
+              }}
+              className="text-[10px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 px-1.5 sm:px-2 hover:text-teal-600 transition-colors"
+              title="Klik untuk Auto Fit Layar"
+            >
               {Math.round(zoomLevel * 100)}%
-            </span>
-            <button
-              onClick={() => setZoomLevel((z) => Math.min(1.5, z + 0.1))}
-              className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl text-slate-600 dark:text-slate-300"
-            >
-              <ZoomIn className="w-4 h-4" />
             </button>
             <button
-              onClick={() => setZoomLevel(0.65)}
-              className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl text-slate-600 dark:text-slate-300 border-l border-slate-200 dark:border-slate-700 ml-1"
-              title="Reset Zoom"
+              onClick={() => {
+                setIsAutoFit(false);
+                setZoomLevel((z) => Math.min(1.5, +(z + 0.05).toFixed(2)));
+              }}
+              className="p-1 sm:p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl text-slate-600 dark:text-slate-300"
+              title="Perbesar"
             >
-              <Maximize2 className="w-4 h-4" />
+              <ZoomIn className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            </button>
+            <button
+              onClick={() => {
+                setIsAutoFit(true);
+                setZoomLevel(calculateAutoFitZoom());
+              }}
+              className="p-1 sm:p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl text-teal-600 dark:text-teal-400 border-l border-slate-200 dark:border-slate-700 ml-0.5"
+              title="Reset Fit Layar"
+            >
+              <Maximize2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </button>
           </div>
 
-          {/* Canvas Wrapper */}
-          <div className="my-auto transition-transform duration-150 flex items-center justify-center">
+          {/* Quick Floating AI Generator Trigger on Canvas */}
+          <div className="absolute top-3 left-3 sm:top-6 sm:left-6 z-20 flex items-center gap-2">
+            <button
+              onClick={() => setIsAiModalOpen(true)}
+              className="px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl sm:rounded-2xl bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 font-bold text-[10px] sm:text-xs shadow-md flex items-center gap-1.5 hover:bg-teal-50 dark:hover:bg-teal-950/40 hover:text-teal-600 transition-all"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-teal-500" />
+              <span>AI Edukasi</span>
+            </button>
+          </div>
+
+          {/* Canvas Wrapper with Smooth CSS Transforms */}
+          <div className="my-auto flex items-center justify-center transition-all duration-200">
             <div
-              className="shadow-2xl rounded-3xl overflow-hidden border border-slate-300/80 dark:border-slate-800 bg-white"
+              className="shadow-2xl rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-300/80 dark:border-slate-800 bg-white"
               style={{
-                transform: "scale(" + zoomLevel + ")",
+                transform: `scale(${zoomLevel})`,
                 transformOrigin: "center center",
               }}
             >
@@ -718,7 +811,188 @@ export default function PosterStudioPage() {
         </div>
       </div>
 
-      {/* AI Health Education Modal */}
+      {/* ── 4. MOBILE FLOATING ACTION BAR (Hanya di Layar Mobile < lg) ── */}
+      <div className="lg:hidden shrink-0 border-t border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-lg px-2 py-1.5 z-30 flex items-center justify-around gap-1 overflow-x-auto">
+        <button
+          onClick={() => openMobileTab("template")}
+          className={`flex flex-col items-center py-1 px-2 rounded-xl text-[10px] font-bold transition-all ${
+            activeTab === "template" && isMobileDrawerOpen
+              ? "text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-950/50"
+              : "text-slate-600 dark:text-slate-400"
+          }`}
+        >
+          <Palette className="w-4 h-4 mb-0.5" />
+          <span>Tema</span>
+        </button>
+
+        <button
+          onClick={() => openMobileTab("layout")}
+          className={`flex flex-col items-center py-1 px-2 rounded-xl text-[10px] font-bold transition-all ${
+            activeTab === "layout" && isMobileDrawerOpen
+              ? "text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-950/50"
+              : "text-slate-600 dark:text-slate-400"
+          }`}
+        >
+          <Sliders className="w-4 h-4 mb-0.5" />
+          <span>Format</span>
+        </button>
+
+        <button
+          onClick={() => openMobileTab("colors")}
+          className={`flex flex-col items-center py-1 px-2 rounded-xl text-[10px] font-bold transition-all ${
+            activeTab === "colors" && isMobileDrawerOpen
+              ? "text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-950/50"
+              : "text-slate-600 dark:text-slate-400"
+          }`}
+        >
+          <Palette className="w-4 h-4 mb-0.5" />
+          <span>Warna</span>
+        </button>
+
+        <button
+          onClick={() => {
+            setIsAiModalOpen(true);
+          }}
+          className="flex flex-col items-center py-1 px-2 rounded-xl text-[10px] font-bold text-teal-600 dark:text-teal-400"
+        >
+          <Sparkles className="w-4 h-4 mb-0.5 text-teal-500" />
+          <span>AI Edu</span>
+        </button>
+
+        <button
+          onClick={() => openMobileTab("branding")}
+          className={`flex flex-col items-center py-1 px-2 rounded-xl text-[10px] font-bold transition-all ${
+            activeTab === "branding" && isMobileDrawerOpen
+              ? "text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-950/50"
+              : "text-slate-600 dark:text-slate-400"
+          }`}
+        >
+          <Sliders className="w-4 h-4 mb-0.5" />
+          <span>Branding</span>
+        </button>
+
+        <button
+          onClick={() => openMobileTab("presets")}
+          className={`flex flex-col items-center py-1 px-2 rounded-xl text-[10px] font-bold transition-all ${
+            activeTab === "presets" && isMobileDrawerOpen
+              ? "text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-950/50"
+              : "text-slate-600 dark:text-slate-400"
+          }`}
+        >
+          <Sparkle className="w-4 h-4 mb-0.5" />
+          <span>Preset</span>
+        </button>
+      </div>
+
+      {/* ── 5. MOBILE SETTINGS BOTTOM SHEET DRAWER ── */}
+      {isMobileDrawerOpen && (
+        <div className="lg:hidden fixed inset-0 z-50 flex flex-col justify-end bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div
+            className="bg-white dark:bg-slate-900 rounded-t-3xl max-h-[75vh] flex flex-col overflow-hidden shadow-2xl border-t border-slate-200 dark:border-slate-800 animate-in slide-in-from-bottom duration-250"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Drawer Header */}
+            <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between shrink-0">
+              <div className="flex items-center gap-2">
+                <span className="w-8 h-1 bg-slate-300 dark:bg-slate-700 rounded-full mx-auto absolute left-1/2 -translate-x-1/2 top-2" />
+                <h3 className="text-sm font-black text-slate-900 dark:text-white capitalize">
+                  Pengaturan {activeTab}
+                </h3>
+              </div>
+              <button
+                onClick={() => setIsMobileDrawerOpen(false)}
+                className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Drawer Content Body */}
+            <div className="flex-1 overflow-y-auto p-4">
+              <StudioSidebar
+                activeTab={activeTab}
+                setActiveTab={setActiveTab}
+                themeMode={themeMode}
+                setThemeMode={setThemeMode}
+                visualStyle={visualStyle}
+                setVisualStyle={setVisualStyle}
+                cardVariant={cardVariant}
+                setCardVariant={setCardVariant}
+                aspectRatio={aspectRatio}
+                setAspectRatio={setAspectRatio}
+                headerStyle={headerStyle}
+                setHeaderStyle={setHeaderStyle}
+                footerStyle={footerStyle}
+                setFooterStyle={setFooterStyle}
+                emblemShape={emblemShape}
+                setEmblemShape={setEmblemShape}
+                fontTheme={fontTheme}
+                setFontTheme={setFontTheme}
+                cardCornerRadius={cardCornerRadius}
+                setCardCornerRadius={setCardCornerRadius}
+                headerEmblemIcon={headerEmblemIcon}
+                setHeaderEmblemIcon={setHeaderEmblemIcon}
+                emergencyBadgeText={emergencyBadgeText}
+                setEmergencyBadgeText={setEmergencyBadgeText}
+                watermarkText={watermarkText}
+                setWatermarkText={setWatermarkText}
+                colors={colors}
+                setColors={setColors}
+                showLeaveCard={showLeaveCard}
+                setShowLeaveCard={setShowLeaveCard}
+                showFooter={showFooter}
+                setShowFooter={setShowFooter}
+                showQrCode={showQrCode}
+                setShowQrCode={setShowQrCode}
+                showIgdBadge={showIgdBadge}
+                setShowIgdBadge={setShowIgdBadge}
+                showHeaderDateBadge={showHeaderDateBadge}
+                setShowHeaderDateBadge={setShowHeaderDateBadge}
+                showStatsBar={showStatsBar}
+                setShowStatsBar={setShowStatsBar}
+                showAiEducation={showAiEducation}
+                setShowAiEducation={setShowAiEducation}
+                aiTopic={aiTopic}
+                onOpenAiModal={() => {
+                  setIsMobileDrawerOpen(false);
+                  setIsAiModalOpen(true);
+                }}
+                hospitalName={hospitalName}
+                setHospitalName={setHospitalName}
+                hospitalSubtitle={hospitalSubtitle}
+                setHospitalSubtitle={setHospitalSubtitle}
+                hotlinePhone={hotlinePhone}
+                setHotlinePhone={setHotlinePhone}
+                websiteUrl={websiteUrl}
+                setWebsiteUrl={setWebsiteUrl}
+                customLogoSrc={customLogoSrc}
+                onLogoUpload={handleLogoUpload}
+                onRemoveLogo={handleRemoveLogo}
+                savedPresets={savedPresets}
+                newPresetName={newPresetName}
+                setNewPresetName={setNewPresetName}
+                onSavePreset={handleSaveCurrentPreset}
+                onLoadPreset={handleLoadPreset}
+                onDeletePreset={handleDeletePreset}
+                onExportPresets={handleExportPresetsJson}
+                onImportPresets={handleImportPresetsJson}
+              />
+            </div>
+
+            {/* Bottom Done Button */}
+            <div className="p-3 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50">
+              <button
+                onClick={() => setIsMobileDrawerOpen(false)}
+                className="w-full py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs shadow-md"
+              >
+                Terapkan & Lihat Poster
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── 6. AI HEALTH EDUCATION MODAL ── */}
       <AiTopicModal
         isOpen={isAiModalOpen}
         onClose={() => setIsAiModalOpen(false)}
