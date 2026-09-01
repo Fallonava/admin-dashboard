@@ -477,9 +477,6 @@ export function renderPoster(
   const rightX = padX + colW + gapX;
 
   const specialties = Object.keys(specMap);
-  const totalDoctorsCount = specialties.reduce((acc, s) => acc + (specMap[s]?.length || 0), 0);
-  const isLowDoctorDay = totalDoctorsCount <= 8;
-
   const leftSpecs = specialties.slice(0, Math.ceil(specialties.length / 2));
   const rightSpecs = specialties.slice(Math.ceil(specialties.length / 2));
 
@@ -493,7 +490,7 @@ export function renderPoster(
     w: number
   ): number => {
     let groupY = y;
-    const pillH = isLowDoctorDay ? 38 : 36;
+    const pillH = 40;
     const specNumStr = String(specCounter++).padStart(2, "0");
 
     ctx.save();
@@ -501,26 +498,26 @@ export function renderPoster(
     // ── DISTINCT SPECIALTY PILL PER THEME ──
     if (visualStyle === "monochromeSwiss") {
       ctx.fillStyle = "#09090B";
-      ctx.fillRect(x, groupY, 32, pillH);
+      ctx.fillRect(x, groupY, 36, pillH);
 
       ctx.fillStyle = "#FFFFFF";
-      ctx.font = `900 14px ${baseFont}`;
+      ctx.font = `900 15px ${baseFont}`;
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      ctx.fillText(specNumStr, x + 16, groupY + pillH / 2);
+      ctx.fillText(specNumStr, x + 18, groupY + pillH / 2);
 
       ctx.fillStyle = "#DC2626";
-      ctx.fillRect(x + 32, groupY, 6, pillH);
+      ctx.fillRect(x + 36, groupY, 6, pillH);
 
       ctx.fillStyle = "#09090B";
-      ctx.font = `900 14px ${baseFont}`;
+      ctx.font = `900 15px ${baseFont}`;
       ctx.textAlign = "left";
-      ctx.fillText(specName.toUpperCase(), x + 46, groupY + pillH / 2);
+      ctx.fillText(specName.toUpperCase(), x + 50, groupY + pillH / 2);
 
       ctx.fillStyle = "#DC2626";
-      ctx.font = `800 12.5px ${baseFont}`;
+      ctx.font = `800 13px ${baseFont}`;
       ctx.textAlign = "right";
-      ctx.fillText("JAM PRAKTIK", x + w - 8, groupY + pillH / 2);
+      ctx.fillText("JAM PRAKTIK", x + w - 10, groupY + pillH / 2);
 
     } else if (visualStyle === "luxuryGold") {
       const pillGrad = ctx.createLinearGradient(x, groupY, x + w * 0.65, groupY + pillH);
@@ -536,15 +533,15 @@ export function renderPoster(
       ctx.stroke();
 
       ctx.fillStyle = "#FFFFFF";
-      ctx.font = `900 13px ${baseFont}`;
+      ctx.font = `900 14px ${baseFont}`;
       ctx.textAlign = "left";
       ctx.textBaseline = "middle";
       ctx.fillText(`◆ ${specName}`, x + 16, groupY + pillH / 2);
 
       ctx.fillStyle = "#8C6A0E";
-      ctx.font = `800 12px ${baseFont}`;
+      ctx.font = `800 13px ${baseFont}`;
       ctx.textAlign = "right";
-      ctx.fillText("Waktu Praktik", x + w - 8, groupY + pillH / 2);
+      ctx.fillText("Waktu Praktik", x + w - 10, groupY + pillH / 2);
 
     } else if (visualStyle === "neonNoir") {
       ctx.strokeStyle = "#06B6D4";
@@ -555,15 +552,15 @@ export function renderPoster(
       ctx.fillRect(x, groupY, w * 0.65, pillH);
 
       ctx.fillStyle = "#0891B2";
-      ctx.font = `900 13px ${fontMono}, ${baseFont}`;
+      ctx.font = `900 14px ${fontMono}, ${baseFont}`;
       ctx.textAlign = "left";
       ctx.textBaseline = "middle";
-      ctx.fillText(`[ ${specNumStr} ] ${specName}`, x + 12, groupY + pillH / 2);
+      ctx.fillText(`[ ${specNumStr} ] ${specName}`, x + 14, groupY + pillH / 2);
 
       ctx.fillStyle = "#E11D48";
-      ctx.font = `800 12px ${fontMono}, ${baseFont}`;
+      ctx.font = `800 13px ${fontMono}, ${baseFont}`;
       ctx.textAlign = "right";
-      ctx.fillText("● LIVE SCHEDULE", x + w - 8, groupY + pillH / 2);
+      ctx.fillText("● LIVE SCHEDULE", x + w - 10, groupY + pillH / 2);
 
     } else {
       const pillGrad = ctx.createLinearGradient(x, groupY, x + w * 0.62, groupY + pillH);
@@ -575,24 +572,24 @@ export function renderPoster(
       ctx.fill();
 
       ctx.fillStyle = c.specText || "#FFFFFF";
-      ctx.font = `900 13px ${baseFont}`;
+      ctx.font = `900 14.5px ${baseFont}`;
       ctx.textAlign = "left";
       ctx.textBaseline = "middle";
       ctx.fillText(specName, x + 16, groupY + pillH / 2 + 1);
 
       ctx.fillStyle = c.specBgStart;
-      ctx.font = `800 12.5px ${baseFont}`;
+      ctx.font = `800 13px ${baseFont}`;
       ctx.textAlign = "right";
-      ctx.fillText("Jam Praktik", x + w - 8, groupY + pillH / 2 + 1);
+      ctx.fillText("Jam Praktik", x + w - 10, groupY + pillH / 2 + 1);
     }
 
     ctx.restore();
-    groupY += pillH + (isLowDoctorDay ? 12 : 10);
+    groupY += pillH + 10;
 
     // ── DOCTOR ROWS DRAWING ENGINE ──
     for (const doc of docs) {
       const isCuti = doc.status === "CUTI";
-      const rowH = doc.time.includes("\n") ? 50 : (isLowDoctorDay ? 36 : 30);
+      const rowH = doc.time.includes("\n") ? 54 : 40;
 
       ctx.save();
 
@@ -634,144 +631,46 @@ export function renderPoster(
         ctx.roundRect(x, groupY, w, rowH, 10);
         ctx.fill();
 
-        ctx.strokeStyle = "rgba(0, 0, 0, 0.05)";
+        ctx.strokeStyle = "rgba(0, 0, 0, 0.06)";
         ctx.lineWidth = 1;
         ctx.stroke();
       }
 
       ctx.fillStyle = c.cardText || "#0F172A";
-      ctx.font = `700 13.5px ${baseFont}`;
+      ctx.font = `800 14.5px ${baseFont}`;
       ctx.textAlign = "left";
       ctx.textBaseline = "middle";
-      ctx.fillText(doc.doctorName, x + 12, groupY + rowH / 2);
+      ctx.fillText(doc.doctorName, x + 14, groupY + rowH / 2);
 
       ctx.textAlign = "right";
       if (isCuti) {
         ctx.fillStyle = c.leaveText || "#DC2626";
-        ctx.font = `900 12.5px ${baseFont}`;
-        ctx.fillText("LIBUR", x + w - 10, groupY + rowH / 2);
+        ctx.font = `900 13px ${baseFont}`;
+        ctx.fillText("LIBUR", x + w - 12, groupY + rowH / 2);
       } else {
         ctx.fillStyle = c.timePillText || c.cardText || "#0F172A";
-        ctx.font = `600 13px ${baseFont}`;
+        ctx.font = `700 14px ${baseFont}`;
         const times = doc.time.split("\n");
         if (times.length === 1) {
-          ctx.fillText(times[0].trim(), x + w - 12, groupY + rowH / 2);
+          ctx.fillText(times[0].trim(), x + w - 14, groupY + rowH / 2);
         } else {
           times.forEach((t, tIdx) => {
-            ctx.fillText(t.trim(), x + w - 12, groupY + 12 + tIdx * 18);
+            ctx.fillText(t.trim(), x + w - 14, groupY + 14 + tIdx * 20);
           });
         }
       }
       ctx.restore();
 
-      groupY += rowH + (isLowDoctorDay ? 8 : 6);
+      groupY += rowH + 8;
     }
 
-    return groupY + 10;
+    return groupY + 8;
   };
 
   // ── DRAW LEFT COLUMN (Doctor Specs) ──
   let leftCurY = curY;
   for (const spec of leftSpecs) {
     leftCurY = drawCard(spec, specMap[spec] || [], leftX, leftCurY, colW);
-  }
-
-  // ── COMPACT iOS 27 AI HEALTH EDUCATION CARD (SLIM & ELEGANT WIDGET) ──
-  const article = aiTopic || DEFAULT_ARTICLE_TOPIC;
-  const artWidgetH = 118;
-  const artWidgetY = leftCurY + 8;
-
-  if (showAiEducation && artWidgetY + artWidgetH <= baseHeight - (showFooter ? 80 : 30)) {
-    ctx.save();
-    // Card Container
-    ctx.fillStyle = "#FFFFFF";
-    ctx.beginPath();
-    ctx.roundRect(leftX, artWidgetY, colW, artWidgetH, cardCornerRadius);
-    ctx.fill();
-
-    ctx.strokeStyle = c.specBgStart ? `${c.specBgStart}35` : "rgba(13, 148, 136, 0.25)";
-    ctx.lineWidth = 1.2;
-    ctx.stroke();
-
-    // Left Squircle Image Thumbnail
-    const imgSize = 86;
-    const imgX = leftX + 14;
-    const imgY = artWidgetY + (artWidgetH - imgSize) / 2;
-
-    if (topicImageImg && topicImageImg.complete && topicImageImg.naturalWidth > 0) {
-      ctx.save();
-      ctx.beginPath();
-      ctx.roundRect(imgX, imgY, imgSize, imgSize, 12);
-      ctx.clip();
-      ctx.drawImage(topicImageImg, imgX, imgY, imgSize, imgSize);
-      ctx.restore();
-
-      ctx.strokeStyle = "rgba(0, 0, 0, 0.08)";
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.roundRect(imgX, imgY, imgSize, imgSize, 12);
-      ctx.stroke();
-    } else {
-      ctx.fillStyle = `${c.specBgStart}18`;
-      ctx.beginPath();
-      ctx.roundRect(imgX, imgY, imgSize, imgSize, 12);
-      ctx.fill();
-
-      ctx.font = `38px ${baseFont}`;
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillText("🩺", imgX + imgSize / 2, imgY + imgSize / 2);
-    }
-
-    // Right Content Info
-    const textStartX = imgX + imgSize + 14;
-    const textW = colW - (imgSize + 40);
-
-    // Tag Capsule Pill
-    ctx.fillStyle = c.specBgStart || "#0D9488";
-    ctx.beginPath();
-    ctx.roundRect(textStartX, imgY, 115, 18, 9);
-    ctx.fill();
-
-    ctx.fillStyle = "#FFFFFF";
-    ctx.font = `900 9px ${baseFont}`;
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillText(article.tag || "EDUKASI MEDIS", textStartX + 115 / 2, imgY + 9);
-
-    // Title
-    ctx.textAlign = "left";
-    ctx.fillStyle = c.footerBgStart || "#E11D48";
-    ctx.font = `900 15px ${baseFont}`;
-    ctx.fillText(article.title, textStartX, imgY + 35);
-
-    // Subtitle
-    ctx.fillStyle = c.specBgStart || "#0D9488";
-    ctx.font = `700 11.5px ${baseFont}`;
-    ctx.fillText(article.subtitle || "Edukasi & Deteksi Dini Medis", textStartX, imgY + 50);
-
-    // Short 2-line summary
-    ctx.fillStyle = "#334155";
-    ctx.font = `500 10.5px ${baseFont}`;
-    const words = (article.summary || "").split(" ");
-    let line1 = "";
-    let line2 = "";
-    for (const w of words) {
-      if (ctx.measureText(line1 + w + " ").width < textW) {
-        line1 += w + " ";
-      } else if (ctx.measureText(line2 + w + " ").width < textW) {
-        line2 += w + " ";
-      }
-    }
-    ctx.fillText(line1.trim(), textStartX, imgY + 66);
-    if (line2) ctx.fillText(line2.trim() + "...", textStartX, imgY + 80);
-
-    // Citation
-    ctx.fillStyle = "#64748B";
-    ctx.font = `italic 600 9.5px ${baseFont}`;
-    ctx.fillText(article.sourceUrl || "Sumber: RSU Siaga Medika", textStartX, imgY + 95);
-
-    ctx.restore();
   }
 
   // ── DRAW RIGHT COLUMN (Doctor Specs) ──
@@ -784,8 +683,8 @@ export function renderPoster(
   // ── DRAW DEDICATED DOCTOR LEAVE NOTICE CARD (IF LEAVES EXIST) ──
   if (showLeaveCard && leaveDoctors.length > 0 && rightCurY < baseHeight - (showFooter ? 140 : 60)) {
     const leaveCardY = rightCurY + 10;
-    const leaveRowH = 34;
-    const leaveHeaderH = 36;
+    const leaveRowH = 38;
+    const leaveHeaderH = 38;
     const leaveTotalH = Math.min(leaveHeaderH + leaveDoctors.length * (leaveRowH + 6) + 14, baseHeight - leaveCardY - (showFooter ? 80 : 30));
 
     ctx.save();
@@ -797,7 +696,7 @@ export function renderPoster(
     ctx.roundRect(rightX, leaveCardY, colW, leaveTotalH, cardCornerRadius);
     ctx.fill();
 
-    ctx.strokeStyle = c.leaveBorder || "rgba(220, 38, 38, 0.3)";
+    ctx.strokeStyle = c.leaveBorder || "rgba(220, 38, 38, 0.35)";
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
@@ -808,12 +707,12 @@ export function renderPoster(
     ctx.fill();
 
     ctx.fillStyle = "#FFFFFF";
-    ctx.font = `900 13px ${baseFont}`;
+    ctx.font = `900 13.5px ${baseFont}`;
     ctx.textAlign = "left";
     ctx.textBaseline = "middle";
     ctx.fillText("🚨 PEMBERITAHUAN DOKTER CUTI / LIBUR", rightX + 16, leaveCardY + leaveHeaderH / 2);
 
-    ctx.font = `800 11.5px ${baseFont}`;
+    ctx.font = `800 12px ${baseFont}`;
     ctx.textAlign = "right";
     ctx.fillText(`${leaveDoctors.length} Dokter`, rightX + colW - 14, leaveCardY + leaveHeaderH / 2);
 
@@ -828,23 +727,23 @@ export function renderPoster(
       ctx.roundRect(rightX + 8, rowY, colW - 16, leaveRowH, 8);
       ctx.fill();
 
-      ctx.strokeStyle = "rgba(220, 38, 38, 0.15)";
+      ctx.strokeStyle = "rgba(220, 38, 38, 0.2)";
       ctx.lineWidth = 1;
       ctx.stroke();
 
       ctx.fillStyle = c.leaveText || "#DC2626";
       ctx.beginPath();
-      ctx.arc(rightX + 20, rowY + leaveRowH / 2, 4, 0, Math.PI * 2);
+      ctx.arc(rightX + 22, rowY + leaveRowH / 2, 4.5, 0, Math.PI * 2);
       ctx.fill();
 
       ctx.fillStyle = "#0F172A";
-      ctx.font = `700 13px ${baseFont}`;
+      ctx.font = `800 14px ${baseFont}`;
       ctx.textBaseline = "middle";
-      ctx.fillText(lDoc.doctorName, rightX + 30, rowY + leaveRowH / 2);
+      ctx.fillText(lDoc.doctorName, rightX + 34, rowY + leaveRowH / 2);
 
       ctx.textAlign = "right";
       ctx.fillStyle = c.leaveText || "#DC2626";
-      ctx.font = `800 11.5px ${baseFont}`;
+      ctx.font = `800 12.5px ${baseFont}`;
       const statusLabel = lDoc.replacement ? `Diganti: ${lDoc.replacement}` : `Cuti (${lDoc.specialty})`;
       ctx.fillText(statusLabel, rightX + colW - 18, rowY + leaveRowH / 2);
 

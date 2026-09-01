@@ -95,7 +95,7 @@ export default function PosterStudioPage() {
   const [showAccreditation, setShowAccreditation] = useState<boolean>(true);
   const [showHeaderDateBadge, setShowHeaderDateBadge] = useState<boolean>(true);
   const [showStatsBar, setShowStatsBar] = useState<boolean>(true);
-  const [showAiEducation, setShowAiEducation] = useState<boolean>(true);
+  const [showAiEducation, setShowAiEducation] = useState<boolean>(false);
 
   // Filter & Search
   const [poliFilter, setPoliFilter] = useState<"all" | "Bedah" | "NonBedah">("all");
@@ -229,10 +229,20 @@ export default function PosterStudioPage() {
     const { doctors = [], shifts = [], leaves = [] } = displayData;
     const dayIdx = (selectedDate.getDay() + 6) % 7; // SIMED DB: 0=Senin, 1=Selasa ... 6=Minggu
 
-    const selDateStr = selectedDate.toISOString().slice(0, 10);
+    const toLocalDateStr = (d: Date | string): string => {
+      if (typeof d === "string") {
+        if (/^\d{4}-\d{2}-\d{2}$/.test(d)) return d;
+        if (d.includes("T")) return d.slice(0, 10);
+        const dt = new Date(d);
+        return `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, "0")}-${String(dt.getDate()).padStart(2, "0")}`;
+      }
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    };
+
+    const selDateStr = toLocalDateStr(selectedDate);
     const activeLeaves = leaves.filter((l) => {
-      const start = new Date(l.startDate).toISOString().slice(0, 10);
-      const end = new Date(l.endDate).toISOString().slice(0, 10);
+      const start = toLocalDateStr(l.startDate);
+      const end = toLocalDateStr(l.endDate);
       return selDateStr >= start && selDateStr <= end;
     });
 
