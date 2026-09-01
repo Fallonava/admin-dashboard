@@ -141,7 +141,8 @@ export function renderPoster(
   const preset = THEME_PRESETS[themeMode] || THEME_PRESETS.siagaOfficial;
   const c = customColors.useCustom ? customColors : preset;
 
-  const fontSans = `-apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif`;
+  // Standardized High-Legibility Font Stacks
+  const fontSans = `-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, sans-serif`;
   const fontSerif = `"Playfair Display", "Merriweather", Georgia, serif`;
   const fontMono = `"JetBrains Mono", "SF Mono", monospace`;
   const fontRounded = `"SF Pro Rounded", "Quicksand", "Nunito", sans-serif`;
@@ -163,38 +164,49 @@ export function renderPoster(
   ctx.fillStyle = bgGrad;
   ctx.fillRect(0, 0, baseWidth, baseHeight);
 
-  // Dynamic Ambient Glow & Background Highlights
-  if (visualStyle === "liquidGlass" || visualStyle === "neonNoir" || visualStyle === "clay3d") {
+  // Dynamic Ambient Atmospheric Effects per Theme
+  if (visualStyle === "liquidGlass") {
     ctx.save();
-    // Ambient Orb Top Right
-    const orb1 = ctx.createRadialGradient(baseWidth * 0.85, 200, 20, baseWidth * 0.85, 200, 450);
-    orb1.addColorStop(0, c.bgGlow || "rgba(56, 189, 248, 0.25)");
+    const orb1 = ctx.createRadialGradient(baseWidth * 0.85, 180, 20, baseWidth * 0.85, 180, 480);
+    orb1.addColorStop(0, "rgba(2, 132, 199, 0.15)");
     orb1.addColorStop(1, "transparent");
     ctx.fillStyle = orb1;
     ctx.beginPath();
-    ctx.arc(baseWidth * 0.85, 200, 450, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Ambient Orb Bottom Left
-    const orb2 = ctx.createRadialGradient(baseWidth * 0.15, baseHeight * 0.8, 30, baseWidth * 0.15, baseHeight * 0.8, 500);
-    orb2.addColorStop(0, c.bgGlow || "rgba(99, 102, 241, 0.2)");
-    orb2.addColorStop(1, "transparent");
-    ctx.fillStyle = orb2;
-    ctx.beginPath();
-    ctx.arc(baseWidth * 0.15, baseHeight * 0.8, 500, 0, Math.PI * 2);
+    ctx.arc(baseWidth * 0.85, 180, 480, 0, Math.PI * 2);
     ctx.fill();
     ctx.restore();
   } else if (visualStyle === "luxuryGold") {
-    // Elegant Gold Shimmer Accents
     ctx.save();
-    const goldOrb = ctx.createRadialGradient(baseWidth / 2, 0, 50, baseWidth / 2, 0, 600);
-    goldOrb.addColorStop(0, "rgba(212, 175, 55, 0.25)");
-    goldOrb.addColorStop(1, "transparent");
-    ctx.fillStyle = goldOrb;
-    ctx.fillRect(0, 0, baseWidth, 600);
+    // Outer Luxury Gold Border Frame
+    ctx.strokeStyle = "#D4AF37";
+    ctx.lineWidth = 4;
+    ctx.strokeRect(16, 16, baseWidth - 32, baseHeight - 32);
+
+    ctx.strokeStyle = "rgba(212, 175, 55, 0.4)";
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(22, 22, baseWidth - 44, baseHeight - 44);
+
+    const goldGlow = ctx.createRadialGradient(baseWidth / 2, 80, 40, baseWidth / 2, 80, 500);
+    goldGlow.addColorStop(0, "rgba(212, 175, 55, 0.18)");
+    goldGlow.addColorStop(1, "transparent");
+    ctx.fillStyle = goldGlow;
+    ctx.fillRect(0, 0, baseWidth, 500);
+    ctx.restore();
+  } else if (visualStyle === "vintageBotanical") {
+    ctx.save();
+    ctx.fillStyle = "rgba(21, 128, 61, 0.05)";
+    ctx.font = `280px ${baseFont}`;
+    ctx.textAlign = "right";
+    ctx.fillText("🌿", baseWidth + 40, baseHeight * 0.4);
+    ctx.restore();
+  } else if (visualStyle === "sakuraZen") {
+    ctx.save();
+    ctx.fillStyle = "rgba(190, 24, 93, 0.05)";
+    ctx.font = `260px ${baseFont}`;
+    ctx.textAlign = "right";
+    ctx.fillText("🌸", baseWidth + 30, baseHeight * 0.38);
     ctx.restore();
   } else if (visualStyle === "siagaOfficial") {
-    // Crisp Geometric Arc
     ctx.save();
     ctx.fillStyle = "rgba(13, 148, 136, 0.05)";
     ctx.beginPath();
@@ -203,7 +215,7 @@ export function renderPoster(
     ctx.restore();
   }
 
-  // ── 2. DYNAMIC HEADER BAR ──
+  // ── 2. DYNAMIC HEADER BAR ARCHITECTURE ──
   const padX = 48;
   let curY = 40;
   const contentWidth = baseWidth - padX * 2;
@@ -214,13 +226,11 @@ export function renderPoster(
   const dateFormatted = `${dayName}, ${String(selectedDate.getDate()).padStart(2, "0")} ${months[selectedDate.getMonth()]} ${selectedDate.getFullYear()}`;
 
   if (headerStyle === "officialSplit" || visualStyle === "siagaOfficial") {
-    // ── OFFICIAL SPLIT HOSPITAL HEADER ──
+    // ── OFFICIAL SPLIT HOSPITAL HEADER (WITH PROMINENT KARS PARIPURNA PLACEMENT) ──
     const headH = 120;
-
-    // Left: Logo & Hospital Name
-    const logoSize = 60;
+    const logoSize = 64;
     const logoX = padX;
-    const logoY = curY + 8;
+    const logoY = curY + 6;
 
     if (customLogoImg) {
       ctx.drawImage(customLogoImg, logoX, logoY, logoSize, logoSize);
@@ -228,40 +238,54 @@ export function renderPoster(
       ctx.save();
       ctx.fillStyle = c.specBgStart || "#0D9488";
       ctx.beginPath();
-      ctx.roundRect(logoX, logoY, 26, 48, 6);
+      ctx.roundRect(logoX, logoY, 28, 52, 8);
       ctx.fill();
       ctx.fillStyle = c.footerBgStart || "#E11D48";
       ctx.beginPath();
-      ctx.roundRect(logoX + 30, logoY + 10, 26, 38, 6);
+      ctx.roundRect(logoX + 32, logoY + 12, 28, 40, 8);
       ctx.fill();
       ctx.restore();
     }
 
-    const brandX = logoX + logoSize + 16;
+    const brandX = logoX + logoSize + 18;
     ctx.save();
     ctx.fillStyle = "#475569";
-    ctx.font = `800 12px ${baseFont}`;
-    ctx.fillText("RUMAH SAKIT UMUM", brandX, logoY + 15);
+    ctx.font = `800 13px ${baseFont}`;
+    ctx.fillText("RUMAH SAKIT UMUM", brandX, logoY + 16);
 
     ctx.fillStyle = c.headerTitle || "#0F766E";
-    ctx.font = `900 23px ${baseFont}`;
-    ctx.fillText(hospitalName.replace("RUMAH SAKIT UMUM ", ""), brandX, logoY + 38);
+    ctx.font = `900 24px ${baseFont}`;
+    ctx.fillText(hospitalName.replace("RUMAH SAKIT UMUM ", ""), brandX, logoY + 40);
 
     ctx.fillStyle = c.headerSub || "#0D9488";
-    ctx.font = `800 13px ${baseFont}`;
-    ctx.fillText("PURBALINGGA", brandX, logoY + 56);
+    ctx.font = `800 13.5px ${baseFont}`;
+    ctx.fillText("PURBALINGGA", brandX, logoY + 58);
 
-    // KARS Accreditation
+    // Prestigious Official KARS Paripurna Accreditation Box
     if (showAccreditation) {
-      const akredX = brandX + 210;
+      const akredX = brandX + 225;
+      const akredW = 160;
+      const akredH = 58;
+
+      ctx.fillStyle = "rgba(225, 29, 72, 0.06)";
+      ctx.beginPath();
+      ctx.roundRect(akredX, logoY + 2, akredW, akredH, 10);
+      ctx.fill();
+
+      ctx.strokeStyle = "rgba(225, 29, 72, 0.25)";
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
       ctx.fillStyle = "#E11D48";
-      ctx.font = `800 13px ${baseFont}`;
-      ctx.fillText("⭐ ⭐ ⭐ ⭐ ⭐", akredX, logoY + 16);
+      ctx.font = `800 12px ${baseFont}`;
+      ctx.fillText("⭐ ⭐ ⭐ ⭐ ⭐", akredX + 12, logoY + 18);
+
       ctx.font = `900 14px ${baseFont}`;
-      ctx.fillText("PARIPURNA", akredX, logoY + 35);
-      ctx.fillStyle = "#64748B";
-      ctx.font = `600 9px ${baseFont}`;
-      ctx.fillText("Komisi Akreditasi RS", akredX, logoY + 49);
+      ctx.fillText("PARIPURNA", akredX + 12, logoY + 36);
+
+      ctx.fillStyle = "#475569";
+      ctx.font = `700 9.5px ${baseFont}`;
+      ctx.fillText("KARS Kemenkes RI", akredX + 12, logoY + 50);
     }
 
     // Right: Script "Jadwal" + "Poliklinik & Dokter Spesialis"
@@ -269,14 +293,14 @@ export function renderPoster(
     ctx.textAlign = "right";
 
     ctx.fillStyle = c.cardText || "#1E293B";
-    ctx.font = `italic 700 44px ${fontScript}, ${baseFont}`;
-    ctx.fillText("Jadwal", rightX - 290, logoY + 36);
+    ctx.font = `italic 700 46px ${fontScript}, ${baseFont}`;
+    ctx.fillText("Jadwal", rightX - 310, logoY + 38);
 
-    ctx.font = `900 32px ${baseFont}`;
-    ctx.fillText("Poliklinik &", rightX, logoY + 28);
+    ctx.font = `900 34px ${baseFont}`;
+    ctx.fillText("Poliklinik &", rightX, logoY + 30);
 
-    ctx.font = `900 38px ${baseFont}`;
-    ctx.fillText("Dokter Spesialis", rightX, logoY + 68);
+    ctx.font = `900 40px ${baseFont}`;
+    ctx.fillText("Dokter Spesialis", rightX, logoY + 72);
     ctx.restore();
 
     curY += headH;
@@ -289,14 +313,14 @@ export function renderPoster(
     ctx.fillText(dateFormatted, baseWidth / 2, curY + 16);
 
     ctx.fillStyle = "rgba(225, 29, 72, 0.25)";
-    ctx.fillRect(baseWidth / 2 - 150, curY + 28, 300, 3);
+    ctx.fillRect(baseWidth / 2 - 160, curY + 28, 320, 3);
     ctx.restore();
 
     curY += 50;
 
   } else {
-    // ── MODERN LIQUID GLASS / BENTO / FLOATING ISLAND HEADER ──
-    const headH = 130;
+    // ── MODERN DISTINCTIVE TEMPLATE HEADERS ──
+    const headH = 132;
     const grad = ctx.createLinearGradient(padX, curY, padX, curY + headH);
     grad.addColorStop(0, c.headerBgStart);
     grad.addColorStop(1, c.headerBgEnd);
@@ -305,52 +329,25 @@ export function renderPoster(
     ctx.roundRect(padX, curY, contentWidth, headH, cardCornerRadius + 4);
     ctx.fill();
 
-    // Distinctive Header Border & Embellishments
+    // Distinctive Styling per Visual Theme
     if (visualStyle === "luxuryGold") {
       ctx.strokeStyle = "#D4AF37";
       ctx.lineWidth = 2;
       ctx.stroke();
 
-      // Inner Gold Hairline Frame
       ctx.strokeStyle = "rgba(212, 175, 55, 0.4)";
       ctx.lineWidth = 1;
       ctx.beginPath();
-      ctx.roundRect(padX + 5, curY + 5, contentWidth - 10, headH - 10, cardCornerRadius);
+      ctx.roundRect(padX + 6, curY + 6, contentWidth - 12, headH - 12, cardCornerRadius);
       ctx.stroke();
-
-      // Gold Sparkle Embellishment
-      ctx.fillStyle = "#D4AF37";
-      ctx.font = `18px ${baseFont}`;
-      ctx.textAlign = "right";
-      ctx.fillText("✨", padX + contentWidth - 280, curY + 45);
     } else if (visualStyle === "monochromeSwiss") {
       ctx.strokeStyle = "#09090B";
-      ctx.lineWidth = 2;
+      ctx.lineWidth = 2.5;
       ctx.stroke();
 
-      // Swiss Red Accent Tab on Top Left
+      // Swiss Red Accent Tab
       ctx.fillStyle = "#DC2626";
-      ctx.fillRect(padX, curY, 8, headH);
-    } else if (visualStyle === "vintageBotanical") {
-      ctx.strokeStyle = "rgba(21, 128, 61, 0.25)";
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
-
-      // Botanical Leaf Watermark
-      ctx.fillStyle = "rgba(21, 128, 61, 0.15)";
-      ctx.font = `48px ${baseFont}`;
-      ctx.textAlign = "right";
-      ctx.fillText("🌿", padX + contentWidth - 270, curY + 75);
-    } else if (visualStyle === "sakuraZen") {
-      ctx.strokeStyle = "rgba(190, 24, 93, 0.25)";
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
-
-      // Sakura Blossom Watermark
-      ctx.fillStyle = "rgba(190, 24, 93, 0.15)";
-      ctx.font = `48px ${baseFont}`;
-      ctx.textAlign = "right";
-      ctx.fillText("🌸", padX + contentWidth - 270, curY + 75);
+      ctx.fillRect(padX, curY, 10, headH);
     } else if (visualStyle === "neonNoir") {
       ctx.strokeStyle = "#06B6D4";
       ctx.lineWidth = 1.5;
@@ -366,7 +363,7 @@ export function renderPoster(
     }
 
     // Emblem on Left
-    const embSize = 64;
+    const embSize = 66;
     const embX = padX + 24;
     const embY = curY + (headH - embSize) / 2;
 
@@ -378,8 +375,8 @@ export function renderPoster(
     ctx.roundRect(embX, embY, embSize, embSize, emblemShape === "circle" ? embSize / 2 : 16);
     ctx.fill();
 
-    ctx.fillStyle = c.specText;
-    ctx.font = `bold 28px ${baseFont}`;
+    ctx.fillStyle = c.specText || "#FFFFFF";
+    ctx.font = `bold 30px ${baseFont}`;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText(headerEmblemIcon || "🏥", embX + embSize / 2, embY + embSize / 2);
@@ -395,15 +392,15 @@ export function renderPoster(
     ctx.font = `700 13px ${baseFont}`;
     ctx.fillText(hospitalSubtitle, embX + embSize + 20, curY + 74);
 
-    // Right Date Pill
+    // Right: Date Pill or KARS Accreditation Pill
     const datePillW = 240;
-    const datePillH = 42;
+    const datePillH = 44;
     const datePillX = padX + contentWidth - datePillW - 20;
     const datePillY = curY + (headH - datePillH) / 2;
 
     ctx.fillStyle = c.timePillBg;
     ctx.beginPath();
-    ctx.roundRect(datePillX, datePillY, datePillW, datePillH, 21);
+    ctx.roundRect(datePillX, datePillY, datePillW, datePillH, 22);
     ctx.fill();
 
     ctx.fillStyle = c.timePillText;
@@ -412,10 +409,33 @@ export function renderPoster(
     ctx.textBaseline = "middle";
     ctx.fillText(dateFormatted, datePillX + datePillW / 2, datePillY + datePillH / 2);
 
+    // Accreditation Badge Pill for Modern Themes
+    if (showAccreditation) {
+      const akredPillW = 190;
+      const akredPillH = 26;
+      const akredPillX = datePillX - akredPillW - 14;
+      const akredPillY = curY + (headH - akredPillH) / 2;
+
+      ctx.fillStyle = "rgba(225, 29, 72, 0.08)";
+      ctx.beginPath();
+      ctx.roundRect(akredPillX, akredPillY, akredPillW, akredPillH, 13);
+      ctx.fill();
+
+      ctx.strokeStyle = "rgba(225, 29, 72, 0.3)";
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      ctx.fillStyle = "#E11D48";
+      ctx.font = `800 10.5px ${baseFont}`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText("⭐ ⭐ ⭐ ⭐ ⭐ PARIPURNA", akredPillX + akredPillW / 2, akredPillY + akredPillH / 2);
+    }
+
     curY += headH + 24;
   }
 
-  // ── 3. DYNAMIC SPECIALTY & DOCTOR CARD DRAWING ENGINE ──
+  // ── 3. DISTINCTIVE SPECIALTY & DOCTOR CARD DRAWING ENGINE ──
   const gapX = 32;
   const colW = (contentWidth - gapX) / 2;
   const leftX = padX;
@@ -425,6 +445,8 @@ export function renderPoster(
   const leftSpecs = specialties.slice(0, 4);
   const rightSpecs = specialties.slice(4);
 
+  let specCounter = 1;
+
   const drawCard = (
     specName: string,
     docs: DoctorScheduleItem[],
@@ -433,77 +455,179 @@ export function renderPoster(
     w: number
   ): number => {
     let groupY = y;
-    const pillH = 34;
+    const pillH = 36;
+    const specNumStr = String(specCounter++).padStart(2, "0");
 
-    // Specialty Pill Header
     ctx.save();
-    const pillGrad = ctx.createLinearGradient(x, groupY, x + w * 0.6, groupY + pillH);
-    pillGrad.addColorStop(0, c.specBgStart);
-    pillGrad.addColorStop(1, c.specBgEnd);
-    ctx.fillStyle = pillGrad;
-    ctx.beginPath();
-    ctx.roundRect(x, groupY, w * 0.62, pillH, pillH / 2);
-    ctx.fill();
 
-    // Subtle Glow/Shadow for Neon/Liquid Glass
-    if (visualStyle === "neonNoir" || visualStyle === "liquidGlass") {
-      ctx.strokeStyle = c.specBgStart;
+    // ── DISTINCT SPECIALTY PILL PER THEME ──
+    if (visualStyle === "monochromeSwiss") {
+      // Swiss Editorial Tabular Header
+      ctx.fillStyle = "#09090B";
+      ctx.fillRect(x, groupY, 32, pillH);
+
+      ctx.fillStyle = "#FFFFFF";
+      ctx.font = `900 14px ${baseFont}`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(specNumStr, x + 16, groupY + pillH / 2);
+
+      ctx.fillStyle = "#DC2626";
+      ctx.fillRect(x + 32, groupY, 6, pillH);
+
+      ctx.fillStyle = "#09090B";
+      ctx.font = `900 14px ${baseFont}`;
+      ctx.textAlign = "left";
+      ctx.fillText(specName.toUpperCase(), x + 46, groupY + pillH / 2);
+
+      ctx.fillStyle = "#DC2626";
+      ctx.font = `800 12.5px ${baseFont}`;
+      ctx.textAlign = "right";
+      ctx.fillText("JAM PRAKTIK", x + w - 8, groupY + pillH / 2);
+
+    } else if (visualStyle === "luxuryGold") {
+      // Luxury Gold Regal Ribbon Banner
+      const pillGrad = ctx.createLinearGradient(x, groupY, x + w * 0.65, groupY + pillH);
+      pillGrad.addColorStop(0, "#B48B1B");
+      pillGrad.addColorStop(1, "#8C6A0E");
+      ctx.fillStyle = pillGrad;
+      ctx.beginPath();
+      ctx.roundRect(x, groupY, w * 0.65, pillH, [pillH / 2, 0, pillH / 2, 0]);
+      ctx.fill();
+
+      ctx.strokeStyle = "#D4AF37";
       ctx.lineWidth = 1;
       ctx.stroke();
+
+      ctx.fillStyle = "#FFFFFF";
+      ctx.font = `900 13px ${baseFont}`;
+      ctx.textAlign = "left";
+      ctx.textBaseline = "middle";
+      ctx.fillText(`◆ ${specName}`, x + 16, groupY + pillH / 2);
+
+      ctx.fillStyle = "#8C6A0E";
+      ctx.font = `800 12px ${baseFont}`;
+      ctx.textAlign = "right";
+      ctx.fillText("Waktu Praktik", x + w - 8, groupY + pillH / 2);
+
+    } else if (visualStyle === "neonNoir") {
+      // Tokyo Cyberpunk HUD Header
+      ctx.strokeStyle = "#06B6D4";
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(x, groupY, w * 0.65, pillH);
+
+      ctx.fillStyle = "rgba(6, 182, 212, 0.12)";
+      ctx.fillRect(x, groupY, w * 0.65, pillH);
+
+      ctx.fillStyle = "#0891B2";
+      ctx.font = `900 13px ${fontMono}, ${baseFont}`;
+      ctx.textAlign = "left";
+      ctx.textBaseline = "middle";
+      ctx.fillText(`[ ${specNumStr} ] ${specName}`, x + 12, groupY + pillH / 2);
+
+      ctx.fillStyle = "#E11D48";
+      ctx.font = `800 12px ${fontMono}, ${baseFont}`;
+      ctx.textAlign = "right";
+      ctx.fillText("● LIVE SCHEDULE", x + w - 8, groupY + pillH / 2);
+
+    } else {
+      // Standard & Smooth Pill
+      const pillGrad = ctx.createLinearGradient(x, groupY, x + w * 0.62, groupY + pillH);
+      pillGrad.addColorStop(0, c.specBgStart);
+      pillGrad.addColorStop(1, c.specBgEnd);
+      ctx.fillStyle = pillGrad;
+      ctx.beginPath();
+      ctx.roundRect(x, groupY, w * 0.62, pillH, pillH / 2);
+      ctx.fill();
+
+      ctx.fillStyle = c.specText || "#FFFFFF";
+      ctx.font = `900 13px ${baseFont}`;
+      ctx.textAlign = "left";
+      ctx.textBaseline = "middle";
+      ctx.fillText(specName, x + 16, groupY + pillH / 2 + 1);
+
+      ctx.fillStyle = c.specBgStart;
+      ctx.font = `800 12.5px ${baseFont}`;
+      ctx.textAlign = "right";
+      ctx.fillText("Jam Praktik", x + w - 8, groupY + pillH / 2 + 1);
     }
 
-    // Pill Text
-    ctx.fillStyle = c.specText;
-    ctx.font = `900 12.5px ${baseFont}`;
-    ctx.textAlign = "left";
-    ctx.textBaseline = "middle";
-    ctx.fillText(specName, x + 16, groupY + pillH / 2 + 1);
-
-    // "Jam Praktik" Right Label
-    ctx.fillStyle = c.specBgStart;
-    ctx.font = `800 12.5px ${baseFont}`;
-    ctx.textAlign = "right";
-    ctx.fillText("Jam Praktik", x + w - 8, groupY + pillH / 2 + 1);
     ctx.restore();
-
     groupY += pillH + 10;
 
-    // Doctor Rows
+    // ── DOCTOR ROWS DRAWING ENGINE ──
     for (const doc of docs) {
       const isCuti = doc.status === "CUTI";
-      const rowH = doc.time.includes("\n") ? 46 : 28;
+      const rowH = doc.time.includes("\n") ? 48 : 30;
 
       ctx.save();
-      // Doctor Card Container if cardVariant is glassFrost / smooth
-      if (cardVariant === "glassFrost" || cardVariant === "smooth") {
-        const rowBg = ctx.createLinearGradient(x, groupY, x + w, groupY + rowH);
-        rowBg.addColorStop(0, c.cardBgStart);
-        rowBg.addColorStop(1, c.cardBgEnd);
-        ctx.fillStyle = rowBg;
+
+      // Distinct Card Treatment per Variant / Visual Style
+      if (cardVariant === "glassFrost" || visualStyle === "liquidGlass") {
+        ctx.fillStyle = "#FFFFFF";
+        ctx.beginPath();
+        ctx.roundRect(x, groupY, w, rowH, 12);
+        ctx.fill();
+
+        ctx.strokeStyle = "rgba(2, 132, 199, 0.18)";
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+      } else if (cardVariant === "minimalBorder" || visualStyle === "monochromeSwiss") {
+        ctx.fillStyle = "#FFFFFF";
+        ctx.fillRect(x, groupY, w, rowH);
+
+        ctx.strokeStyle = "#E4E4E7";
+        ctx.lineWidth = 1.2;
+        ctx.strokeRect(x, groupY, w, rowH);
+
+        // Swiss Left Red Line
+        ctx.fillStyle = "#DC2626";
+        ctx.fillRect(x, groupY, 3, rowH);
+
+      } else if (visualStyle === "clay3d") {
+        // 3D Neumorphic Clay Shadow
+        ctx.shadowColor = "rgba(0, 0, 0, 0.05)";
+        ctx.shadowBlur = 6;
+        ctx.shadowOffsetY = 2;
+
+        ctx.fillStyle = "#FFFFFF";
+        ctx.beginPath();
+        ctx.roundRect(x, groupY, w, rowH, 14);
+        ctx.fill();
+
+        ctx.shadowColor = "transparent";
+      } else {
+        // Clean Smooth Material
+        ctx.fillStyle = "#FFFFFF";
         ctx.beginPath();
         ctx.roundRect(x, groupY, w, rowH, 10);
         ctx.fill();
+
+        ctx.strokeStyle = "rgba(0, 0, 0, 0.05)";
+        ctx.lineWidth = 1;
+        ctx.stroke();
       }
 
-      // Doctor Name (Left)
-      ctx.fillStyle = c.cardText;
-      ctx.font = `700 13px ${baseFont}`;
+      // Doctor Name (High-Contrast Slate #0F172A)
+      ctx.fillStyle = c.cardText || "#0F172A";
+      ctx.font = `700 13.5px ${baseFont}`;
       ctx.textAlign = "left";
       ctx.textBaseline = "top";
-      ctx.fillText(doc.doctorName, x + 8, groupY + 4);
+      ctx.fillText(doc.doctorName, x + 10, groupY + 5);
 
-      // Time / Status (Right)
+      // Time / Status (Right Side)
       ctx.textAlign = "right";
       if (isCuti) {
         ctx.fillStyle = c.leaveText || "#DC2626";
-        ctx.font = `900 12px ${baseFont}`;
-        ctx.fillText("LIBUR", x + w - 8, groupY + 4);
+        ctx.font = `900 12.5px ${baseFont}`;
+        ctx.fillText("LIBUR", x + w - 10, groupY + 5);
       } else {
-        ctx.fillStyle = c.timePillText || c.cardText;
-        ctx.font = `600 12.5px ${baseFont}`;
+        ctx.fillStyle = c.timePillText || c.cardText || "#0F172A";
+        ctx.font = `600 13px ${baseFont}`;
         const times = doc.time.split("\n");
         times.forEach((t, tIdx) => {
-          ctx.fillText(t.trim(), x + w - 8, groupY + 4 + tIdx * 18);
+          ctx.fillText(t.trim(), x + w - 10, groupY + 5 + tIdx * 18);
         });
       }
       ctx.restore();
@@ -511,7 +635,7 @@ export function renderPoster(
       groupY += rowH + 6;
     }
 
-    return groupY + 8;
+    return groupY + 10;
   };
 
   // ── DRAW LEFT COLUMN (Top Specs + AI Health Education Box) ──
@@ -527,20 +651,20 @@ export function renderPoster(
 
   if (showAiEducation && articleBoxH > 220) {
     ctx.save();
-    // Glass Container
+    // Container
     const artGrad = ctx.createLinearGradient(leftX, articleBoxY, leftX, articleBoxY + articleBoxH);
-    artGrad.addColorStop(0, c.cardBgStart || "rgba(255, 255, 255, 0.95)");
-    artGrad.addColorStop(1, c.cardBgEnd || "rgba(240, 253, 250, 0.9)");
+    artGrad.addColorStop(0, "#FFFFFF");
+    artGrad.addColorStop(1, c.cardBgEnd || "#F0FDFA");
     ctx.fillStyle = artGrad;
     ctx.beginPath();
     ctx.roundRect(leftX, articleBoxY, colW, articleBoxH, cardCornerRadius + 4);
     ctx.fill();
 
-    ctx.strokeStyle = c.specBgStart ? `${c.specBgStart}40` : "rgba(13, 148, 136, 0.25)";
+    ctx.strokeStyle = c.specBgStart ? `${c.specBgStart}35` : "rgba(13, 148, 136, 0.25)";
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
-    // Article Header Banner Area
+    // Header Banner
     const artHeaderH = 100;
     const artHeadGrad = ctx.createLinearGradient(leftX, articleBoxY, leftX + colW, articleBoxY + artHeaderH);
     artHeadGrad.addColorStop(0, `${c.specBgStart}25`);
@@ -556,7 +680,7 @@ export function renderPoster(
     ctx.textAlign = "right";
     ctx.fillText("🫀", leftX + colW - 20, articleBoxY + 70);
 
-    // Article Title & Subtitle
+    // Article Title & Subtitle (WCAG AAA Contrast)
     ctx.textAlign = "left";
     ctx.fillStyle = c.footerBgStart || "#E11D48";
     ctx.font = `900 32px ${baseFont}`;
@@ -566,7 +690,7 @@ export function renderPoster(
     ctx.font = `800 15px ${baseFont}`;
     ctx.fillText(article.subtitle || "Edukasi & Pencegahan Dini Medis", leftX + 22, articleBoxY + 78);
 
-    // Article Content Flow
+    // Flowing Text
     let artTextY = articleBoxY + artHeaderH + 20;
     const textPadX = leftX + 22;
     const textW = colW - 44;
@@ -619,7 +743,7 @@ export function renderPoster(
       artTextY = wrapText(article.causes, textPadX, artTextY, textW, 17) + 6;
     }
 
-    // Footnote
+    // Footnote Citation
     ctx.fillStyle = c.specBgStart || "#0284C7";
     ctx.font = `italic 600 11.5px ${baseFont}`;
     ctx.fillText(article.sourceUrl || "Sumber: RSU Siaga Medika Purbalingga", textPadX, articleBoxY + articleBoxH - 16);
@@ -627,14 +751,14 @@ export function renderPoster(
     ctx.restore();
   }
 
-  // ── DRAW RIGHT COLUMN (Dense Stack of Remaining Specialties) ──
+  // ── DRAW RIGHT COLUMN ──
   let rightCurY = curY;
   for (const spec of rightSpecs) {
     if (rightCurY > baseHeight - (showFooter ? 140 : 60)) break;
     rightCurY = drawCard(spec, specMap[spec] || [], rightX, rightCurY, colW);
   }
 
-  // ── 4. DYNAMIC FOOTER BAR ──
+  // ── 4. STANDARDIZED FOOTER BAR ──
   if (showFooter) {
     const footH = 68;
     const footY = baseHeight - footH;
@@ -646,23 +770,22 @@ export function renderPoster(
     ctx.fillStyle = footGrad;
     ctx.fillRect(0, footY, baseWidth, footH);
 
-    // Accent line
     ctx.fillStyle = "rgba(255, 255, 255, 0.35)";
     ctx.fillRect(0, footY, baseWidth, 2);
 
-    // Footer Text Info
+    // Left: Information Title
     ctx.fillStyle = c.footerText || "#FFFFFF";
     ctx.font = `900 19px ${baseFont}`;
     ctx.textAlign = "left";
     ctx.textBaseline = "middle";
     ctx.fillText("Informasi Jadwal dokter dan Poliklinik:", padX, footY + footH / 2);
 
-    // Center Phone
+    // Center Hotline WhatsApp
     const waX = baseWidth * 0.58;
     ctx.font = `900 19px ${baseFont}`;
     ctx.fillText(`💬 ${hotlinePhone}`, waX, footY + footH / 2);
 
-    // Right Instagram
+    // Right Instagram Handle
     const igX = baseWidth - padX;
     ctx.textAlign = "right";
     ctx.fillText(`📷 siagamedika_pbg`, igX, footY + footH / 2);
