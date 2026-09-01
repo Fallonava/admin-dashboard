@@ -1,0 +1,13 @@
+services:
+  simed-ha-proxy:
+    image: nginx:alpine
+    container_name: simed-ha-proxy
+    restart: always
+    network_mode: host
+    volumes:
+      - /home/fallonava/simed/failover/nginx.conf:/etc/nginx/nginx.conf:ro
+    healthcheck:
+      test: ["CMD", "nc", "-z", "127.0.0.1", "3009"]
+      interval: 10s
+      timeout: 3s
+      retries: 3

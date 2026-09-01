@@ -79,7 +79,7 @@
 
 ## 🔄 Arsitektur Multi-Server & High Availability (HA)
 
-SIMED menerapkan sistem **Hybrid Dual-Server High-Availability (Active-Passive Auto-Failover)** untuk memastikan operasional antrean klinik dan Smart TV berjalan 24/7 tanpa downtime:
+SIMED menerapkan sistem **High-Availability (HA) Active-Passive Auto-Failover** dengan **SIMED Server RS sebagai Utama (Primary Master)** dan **Home Server sebagai Cadangan Otomatis (Secondary Failover)** untuk memastikan operasional antrean klinik, Smart TV, dan portal publik berjalan 24/7 dengan **Zero Downtime**:
 
 ### Skema Aliran Trafik & Failover Otomatis
 
@@ -88,43 +88,45 @@ SIMED menerapkan sistem **Hybrid Dual-Server High-Availability (Active-Passive A
                                 │
                                 ▼
                    Cloudflare Edge Network
-                     (Tunnel ID: srimed)
+       (jadwal.fallonava.my.id / simed.fallonava.my.id)
+                                │
+                                ▼
+            [ Zero-Downtime HA Proxy (simed-ha-proxy) ]
                                 │
         ┌───────────────────────┴───────────────────────┐
-        │ [Kondisi Normal: Primary Aktif]                │ [Kondisi Darurat: RS Offline]
-        ▼                                               ▼
+        │ [Kondisi Normal: Primary 100% Aktif]           │ [Kondisi Darurat: RS Down / Mati Listrik]
+        ▼ (Target Utama)                                ▼ (Failover Otomatis ≤ 2 Detik)
 ┌─────────────────────────────────┐           ┌─────────────────────────────────┐
 │   Server Utama RS (Production)  │           │   Server Backup (Home Server)   │
 │   Host: ANTRIAN 1 (Windows)     │           │   Host: fallonava (Linux Docker)│
 │                                 │           │                                 │
-│ • PM2: simed (Port 3000)        │           │ • PM2: simed (Port 3008)        │
-│ • Database: PostgreSQL Native   │           │ • Container: cloudflared-simed-ha│
-│ • Master Data (Publisher)       │           │ • Database: Docker (panel-db)   │
+│ • PM2: simed (Port 3008)        │           │ • PM2: simed (Port 3008)        │
+│ • Database: PostgreSQL Native   │           │ • Container: simed-ha-proxy     │
+│ • Master Data & WA Worker       │           │ • Database: Docker (panel-db)   │
+│ • Display Smart TV Fisik RS     │           │ • Standby Hot-Replica           │
 └────────────────┬────────────────┘           └────────────────▲────────────────┘
                  │                                             │
-                 │ Live pg_dump sync via Tailscale (tiap 5 mnt)│
+                 │ Live Database Replication via Tailscale     │
                  └─────────────────────────────────────────────┘
 ```
 
-### Matriks Peran Server (RS vs Home Backup)
+### Matriks Peran Server (RS Primary vs Home Backup)
 
 | Parameter | Server Utama (Production RS) | Server Backup (Home Server Replica) |
 | :--- | :--- | :--- |
+| **Peran Sistem** | **UTAMA (Primary Ground Truth)** | **CADANGAN (Automatic Failover Standby)** |
 | **Lokasi Fisik** | Server Windows RS (`ANTRIAN 1`) | Linux Server Docker (`fallonava`) |
-| **Sistem Operasi** | Windows Server 64-bit | Linux Ubuntu / Debian 64-bit |
-| **Akses SSH** | `ssh "ANTRIAN 1"@srimed.fallonava.my.id` | `ssh fallonava@ssh.fallonava.my.id` |
-| **Database** | PostgreSQL 16 Native (`localhost:5432`) | PostgreSQL 16 Docker (`panel-db`) |
-| **Aplikasi Web** | PM2 Fork Mode Port 3000 | PM2 Fork Mode Port 3008 |
-| **Peran Replikasi** | Master Data Publisher | Replica Subscriber (`*/5 * * * *`) |
+| **Sistem Operasi** | Windows Server / Desktop 64-bit | Debian Linux 6.12+ 64-bit |
+| **Akses SSH** | `ssh "ANTRIAN 1"@100.117.70.113` | `ssh fallonava@100.72.180.95` |
+| **Database** | PostgreSQL 16 Native (`medcoredb` Port 5432) | PostgreSQL 16 Docker (`panel-db` Port 5432) |
+| **Aplikasi Web** | PM2 `simed` (Port 3008) & `wa-worker` | PM2 `simed` (Port 3008) Standby |
+| **Penanganan Trafik** | Menangani 100% trafik normal & TV RS | Otomatis mengambil alih jika RS mati |
 | **Koneksi Privat** | Tailscale IP: `100.117.70.113` | Tailscale IP: `100.72.180.95` |
 
-### Mekanisme Replikasi Database
+### Mekanisme Failover & Replikasi Database
+1. **Nginx Upstream Sub-Second Failover**: Reverse proxy `simed-ha-proxy` mengarahkan 100% request publik ke `100.117.70.113:3008`. Jika koneksi ke RS putus/timeout (2 detik), Nginx langsung meneruskan request ke Home Server (`127.0.0.1:3008`) secara transparan tanpa error 502.
+2. **Replikasi Otomatis Berkala**: Crontab di Home Server mengeksekusi `scripts/sync-from-rs.sh` secara terjadwal untuk mereplikasi tabel `Doctor`, `Shift`, `LeaveRequest`, `Settings`, dan `AutomationRule` dari RS ke database replika lokal.
 
-Crontab di Home Server menjalankan script:
-```bash
-*/5 * * * * /home/fallonava/simed/scripts/sync-from-rs.sh >/dev/null 2>&1
-```
-Script tersebut melakukan non-blocking snapshot `pg_dump` dari server RS via jaringan privat Tailscale (`100.117.70.113:5432`) dan mengimpornya ke database `panel-db`, menjamin data di Home Server selalu mutakhir (maksimal selisih 5 menit).
 
 ---
 
@@ -223,12 +225,15 @@ pm2 save
 
 ### 1. Portal Publik Jadwal Dokter (`/jadwal` / `jadwal.html`)
 Halaman portal publik utama yang diakses pasien via smartphone atau scan QR code resmi RS di lobi:
+* **Apple iOS 27 Liquid Glass (Kaca Cair) Design System**: Antarmuka transparan modern dengan material `.regularMaterial` / `.ultraThinMaterial`, refraksi cahaya dinamis, dan tipografi native SF Pro.
+* **ProMotion 120 FPS Physics**: Transisi pegas iOS 380ms (`will-change: transform`, `contain: layout style`) dengan respon mikro-haptic feedback.
 * **Bento Health Stats Widgets**: Live counter dokter Praktek (🟢), Kuota Penuh (🟠), dan Sedang Cuti (🔴).
 * **Spotlight Search & Live Text Highlighting**: Pencarian instan nama dokter dan poliklinik.
-* **Quick Specialty Chips**: Filter cepat (Semua Poli, Sp. Anak, Sp. Bedah, Sp. Penyakit Dalam, dll.).
-* **Kartu Dokter 3D Clay**: Detail dokter, status praktek, jam pendaftaran, dan drawer menu instan 120 FPS.
-* **Modal Pendaftaran 3-in-1**: Pilihan jalur BPJS (Mobile JKN), Non-BPJS (Nuha App), dan direct WhatsApp CS.
-* **Tab Master Weekly Shift & Kalender Cuti**: Tampilan mingguan penuh dan agenda cuti dokter.
+* **Segmented Filter Chips**: Filter cepat (Semua Poli, Bedah, Non-Bedah, Sp. Anak, Sp. Penyakit Dalam, dll.).
+* **Kartu Dokter Platter Inset Grouped**: Detail dokter, status praktek realtime, jam pendaftaran, kuota, dan tombol Daftar.
+* **Modal Pendaftaran 3-in-1 Bottom Sheet**: Pilihan jalur BPJS (Mobile JKN), Non-BPJS (Nuha App), dan direct WhatsApp CS dengan gesture dismiss halus.
+* **Tab Master Weekly Shift & Kalender Cuti**: Tampilan mingguan horizontal strip 7 hari dengan indikator tanggal merah SKB 3 Menteri dan agenda cuti dokter.
+
 
 ---
 
