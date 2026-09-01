@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useState, useRef } from "react";
 import {
   Palette,
   LayoutGrid,
@@ -22,6 +22,10 @@ import {
   PhoneCall,
   Save,
   RotateCcw,
+  Sparkle,
+  Layers,
+  Settings2,
+  CheckCircle2,
 } from "lucide-react";
 import {
   ThemeType,
@@ -34,6 +38,7 @@ import {
   AvatarMode,
   FontTheme,
   AspectRatioMode,
+  LayoutMode,
   ActiveTab,
   CustomColors,
   SavedPreset,
@@ -50,6 +55,8 @@ interface StudioSidebarProps {
   setVisualStyle: (v: VisualStyle) => void;
   cardVariant: CardVariant;
   setCardVariant: (c: CardVariant) => void;
+  layoutMode?: LayoutMode;
+  setLayoutMode?: (l: LayoutMode) => void;
   aspectRatio: AspectRatioMode;
   setAspectRatio: (a: AspectRatioMode) => void;
   headerStyle: HeaderStyle;
@@ -78,6 +85,8 @@ interface StudioSidebarProps {
   setShowQrCode: (b: boolean) => void;
   showIgdBadge: boolean;
   setShowIgdBadge: (b: boolean) => void;
+  showAccreditation: boolean;
+  setShowAccreditation: (b: boolean) => void;
   showHeaderDateBadge: boolean;
   setShowHeaderDateBadge: (b: boolean) => void;
   showStatsBar: boolean;
@@ -117,6 +126,8 @@ export function StudioSidebar(props: StudioSidebarProps) {
     setVisualStyle,
     cardVariant,
     setCardVariant,
+    layoutMode = "heroSplit",
+    setLayoutMode,
     aspectRatio,
     setAspectRatio,
     headerStyle,
@@ -145,6 +156,8 @@ export function StudioSidebar(props: StudioSidebarProps) {
     setShowQrCode,
     showIgdBadge,
     setShowIgdBadge,
+    showAccreditation,
+    setShowAccreditation,
     showHeaderDateBadge,
     setShowHeaderDateBadge,
     showStatsBar,
@@ -174,6 +187,7 @@ export function StudioSidebar(props: StudioSidebarProps) {
     onImportPresets,
   } = props;
 
+  const [categoryFilter, setCategoryFilter] = useState<string>("Semua");
   const logoInputRef = useRef<HTMLInputElement | null>(null);
   const fileImportRef = useRef<HTMLInputElement | null>(null);
 
@@ -187,10 +201,17 @@ export function StudioSidebar(props: StudioSidebarProps) {
     { id: "presets", label: "Preset", icon: Bookmark },
   ];
 
+  const categories = ["Semua", "Official RS", "Liquid Glass", "Luxury", "Clay 3D", "Editorial Pastel", "Modern Dark"];
+
+  const filteredThemes = Object.values(THEME_PRESETS).filter((t) => {
+    if (categoryFilter === "Semua") return true;
+    return t.category === categoryFilter;
+  });
+
   return (
     <div className="w-full bg-white dark:bg-slate-900 flex flex-col h-full overflow-hidden">
       {/* Tab Navigation */}
-      <div className="flex border-b border-slate-200 dark:border-slate-800 overflow-x-auto bg-slate-50/50 dark:bg-slate-900/50 p-1.5 gap-1 scrollbar-none">
+      <div className="flex border-b border-slate-200 dark:border-slate-800 overflow-x-auto bg-slate-50/70 dark:bg-slate-900/70 p-1.5 gap-1 scrollbar-none shrink-0">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -200,7 +221,7 @@ export function StudioSidebar(props: StudioSidebarProps) {
               onClick={() => setActiveTab(tab.id)}
               className={`flex items-center gap-1.5 px-3 py-2 text-xs font-bold rounded-xl whitespace-nowrap transition-all ${
                 isActive
-                  ? "bg-white dark:bg-slate-800 text-sky-600 dark:text-sky-400 shadow-sm border border-slate-200/80 dark:border-slate-700"
+                  ? "bg-white dark:bg-slate-800 text-teal-600 dark:text-teal-400 shadow-sm border border-slate-200/80 dark:border-slate-700"
                   : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
               }`}
             >
@@ -212,17 +233,34 @@ export function StudioSidebar(props: StudioSidebarProps) {
       </div>
 
       {/* Tab Content Panel */}
-      <div className="flex-1 overflow-y-auto p-5 space-y-6">
+      <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-6">
         {/* ── TAB 1: TEMPLATE ── */}
         {activeTab === "template" && (
           <div className="space-y-4">
             <div>
               <h4 className="text-sm font-extrabold text-slate-900 dark:text-white">Pilih Template Visual</h4>
-              <p className="text-xs text-slate-500">Preset tema dengan tata letak warna dan gaya visual siap pakai</p>
+              <p className="text-xs text-slate-500">16 Tema desain modern siap pakai untuk berbagai kebutuhan</p>
+            </div>
+
+            {/* Category Filter Pills */}
+            <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+              {categories.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setCategoryFilter(cat)}
+                  className={`px-2.5 py-1 text-[11px] font-bold rounded-lg whitespace-nowrap transition-all ${
+                    categoryFilter === cat
+                      ? "bg-teal-600 text-white shadow-sm"
+                      : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200"
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
             </div>
 
             <div className="grid grid-cols-1 gap-2.5">
-              {Object.values(THEME_PRESETS).map((t) => {
+              {filteredThemes.map((t) => {
                 const isSelected = themeMode === t.id && !colors.useCustom;
                 return (
                   <button
@@ -235,32 +273,32 @@ export function StudioSidebar(props: StudioSidebarProps) {
                     }}
                     className={`flex items-center justify-between p-3.5 rounded-2xl border text-left transition-all relative overflow-hidden ${
                       isSelected
-                        ? "border-sky-500 bg-sky-50/60 dark:bg-sky-950/30 ring-2 ring-sky-500/20"
+                        ? "border-teal-500 bg-teal-50/70 dark:bg-teal-950/30 ring-2 ring-teal-500/20"
                         : "border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-white dark:bg-slate-800/40"
                     }`}
                   >
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 min-w-0">
                       {/* Color Preview Swatch */}
                       <div
-                        className="w-10 h-10 rounded-xl shadow-md flex items-center justify-center text-white text-xs font-bold"
+                        className="w-10 h-10 rounded-xl shadow-md flex items-center justify-center text-white text-xs font-bold shrink-0"
                         style={{ background: `linear-gradient(135deg, ${t.bgStart}, ${t.bgEnd})` }}
                       >
                         <div
-                          className="w-4 h-4 rounded-full border border-white/50"
+                          className="w-4 h-4 rounded-full border border-white/60 shadow-inner"
                           style={{ background: t.specBgStart }}
                         />
                       </div>
-                      <div>
+                      <div className="min-w-0">
                         <div className="flex items-center gap-2">
-                          <span className="text-xs font-extrabold text-slate-900 dark:text-white">{t.name}</span>
-                          <span className="text-[9px] px-1.5 py-0.5 rounded-md font-bold uppercase tracking-wider bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                          <span className="text-xs font-extrabold text-slate-900 dark:text-white truncate">{t.name}</span>
+                          <span className="text-[9px] px-1.5 py-0.5 rounded-md font-bold uppercase tracking-wider bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 shrink-0">
                             {t.category}
                           </span>
                         </div>
                         <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1">{t.description}</p>
                       </div>
                     </div>
-                    {isSelected && <Check className="w-4 h-4 text-sky-500 shrink-0" />}
+                    {isSelected && <Check className="w-4 h-4 text-teal-600 shrink-0 ml-2" />}
                   </button>
                 );
               })}
@@ -284,7 +322,7 @@ export function StudioSidebar(props: StudioSidebarProps) {
                       onClick={() => setAspectRatio(rKey)}
                       className={`flex items-center gap-2 p-3 rounded-2xl border text-left transition-all ${
                         isSelected
-                          ? "border-sky-500 bg-sky-50/60 dark:bg-sky-950/30 ring-2 ring-sky-500/20 font-bold text-sky-600 dark:text-sky-400"
+                          ? "border-teal-500 bg-teal-50/60 dark:bg-teal-950/30 ring-2 ring-teal-500/20 font-bold text-teal-700 dark:text-teal-300"
                           : "border-slate-200 dark:border-slate-800 hover:border-slate-300 text-slate-700 dark:text-slate-300"
                       }`}
                     >
@@ -292,6 +330,33 @@ export function StudioSidebar(props: StudioSidebarProps) {
                     </button>
                   );
                 })}
+              </div>
+            </div>
+
+            {/* Card Variant Styling */}
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Gaya Varian Kartu Dokter</label>
+              <div className="grid grid-cols-2 gap-2">
+                {[
+                  { id: "smooth", name: "Smooth Material" },
+                  { id: "glassFrost", name: "Liquid Glass Frost" },
+                  { id: "neumorphic", name: "Clay 3D Neumorphic" },
+                  { id: "cyberGlow", name: "Cyber Glow Neon" },
+                  { id: "minimalBorder", name: "Minimal Swiss Border" },
+                  { id: "accentBar", name: "Retro Accent Bar" },
+                ].map((v) => (
+                  <button
+                    key={v.id}
+                    onClick={() => setCardVariant(v.id as CardVariant)}
+                    className={`p-2.5 rounded-xl border text-xs font-bold text-left transition-all ${
+                      cardVariant === v.id
+                        ? "border-teal-500 bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-300"
+                        : "border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400"
+                    }`}
+                  >
+                    {v.name}
+                  </button>
+                ))}
               </div>
             </div>
 
@@ -305,7 +370,7 @@ export function StudioSidebar(props: StudioSidebarProps) {
                     onClick={() => setFontTheme(f)}
                     className={`py-2 text-xs rounded-xl border font-bold capitalize transition-all ${
                       fontTheme === f
-                        ? "border-sky-500 bg-sky-50 dark:bg-sky-950/40 text-sky-600 dark:text-sky-400"
+                        ? "border-teal-500 bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-300"
                         : "border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400"
                     }`}
                   >
@@ -319,7 +384,7 @@ export function StudioSidebar(props: StudioSidebarProps) {
             <div className="space-y-2">
               <div className="flex justify-between items-center text-xs font-bold">
                 <span className="text-slate-700 dark:text-slate-300">Sudut Kelengkungan Kartu (Border Radius)</span>
-                <span className="text-sky-600">{cardCornerRadius}px</span>
+                <span className="text-teal-600">{cardCornerRadius}px</span>
               </div>
               <input
                 type="range"
@@ -328,7 +393,7 @@ export function StudioSidebar(props: StudioSidebarProps) {
                 step={2}
                 value={cardCornerRadius}
                 onChange={(e) => setCardCornerRadius(Number(e.target.value))}
-                className="w-full accent-sky-500"
+                className="w-full accent-teal-600"
               />
             </div>
 
@@ -342,7 +407,7 @@ export function StudioSidebar(props: StudioSidebarProps) {
                     onClick={() => setEmblemShape(s)}
                     className={`py-2 text-xs rounded-xl border font-bold capitalize transition-all ${
                       emblemShape === s
-                        ? "border-sky-500 bg-sky-50 dark:bg-sky-950/40 text-sky-600 dark:text-sky-400"
+                        ? "border-teal-500 bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-300"
                         : "border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400"
                     }`}
                   >
@@ -371,7 +436,7 @@ export function StudioSidebar(props: StudioSidebarProps) {
                 }
                 className={`px-3 py-1 text-xs font-bold rounded-xl border transition-all ${
                   colors.useCustom
-                    ? "bg-sky-500 text-white border-sky-500"
+                    ? "bg-teal-600 text-white border-teal-600"
                     : "border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400"
                 }`}
               >
@@ -449,19 +514,21 @@ export function StudioSidebar(props: StudioSidebarProps) {
               <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Gaya Header</label>
               <div className="grid grid-cols-2 gap-2">
                 {[
-                  { id: "islandFloating", label: "Dynamic Island (Floating)" },
-                  { id: "splitBento", label: "Split Bento Box" },
+                  { id: "officialSplit", name: "Official Split RS" },
+                  { id: "islandFloating", name: "Dynamic Island" },
+                  { id: "splitBento", name: "Split Bento Box" },
+                  { id: "minimalHeadline", name: "Minimal Headline" },
                 ].map((h) => (
                   <button
                     key={h.id}
                     onClick={() => setHeaderStyle(h.id as HeaderStyle)}
-                    className={`p-2.5 text-xs rounded-xl border font-bold text-left transition-all ${
+                    className={`p-2.5 rounded-xl border text-xs font-bold text-left transition-all ${
                       headerStyle === h.id
-                        ? "border-sky-500 bg-sky-50 dark:bg-sky-950/40 text-sky-600 dark:text-sky-400"
-                        : "border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300"
+                        ? "border-teal-500 bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-300"
+                        : "border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400"
                     }`}
                   >
-                    {h.label}
+                    {h.name}
                   </button>
                 ))}
               </div>
@@ -469,60 +536,40 @@ export function StudioSidebar(props: StudioSidebarProps) {
 
             {/* Emblem Icon */}
             <div className="space-y-2">
-              <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Ikon Simbol Header</label>
+              <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Ikon Header</label>
               <div className="flex gap-2">
-                {["🏥", "🩺", "❤️", "⭐", "+"].map((icon) => (
+                {["🏥", "🩺", "⚕️", "🚑", "❤️", "🧬"].map((emoji) => (
                   <button
-                    key={icon}
-                    onClick={() => setHeaderEmblemIcon(icon)}
-                    className={`w-10 h-10 rounded-xl border text-base flex items-center justify-center transition-all ${
-                      headerEmblemIcon === icon
-                        ? "border-sky-500 bg-sky-50 dark:bg-sky-950/40"
+                    key={emoji}
+                    onClick={() => setHeaderEmblemIcon(emoji)}
+                    className={`w-9 h-9 rounded-xl border text-base flex items-center justify-center transition-all ${
+                      headerEmblemIcon === emoji
+                        ? "border-teal-500 bg-teal-50 dark:bg-teal-950/40 shadow-sm"
                         : "border-slate-200 dark:border-slate-800"
                     }`}
                   >
-                    {icon}
+                    {emoji}
                   </button>
                 ))}
               </div>
             </div>
 
-            {/* Emergency Badge */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Badge Darurat 24 Jam</label>
-                <input
-                  type="checkbox"
-                  checked={showIgdBadge}
-                  onChange={(e) => setShowIgdBadge(e.target.checked)}
-                  className="rounded accent-sky-500"
-                />
-              </div>
-              <input
-                type="text"
-                value={emergencyBadgeText}
-                onChange={(e) => setEmergencyBadgeText(e.target.value)}
-                className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white"
-              />
-            </div>
-
-            {/* Toggles */}
-            <div className="space-y-2.5 pt-2 border-t border-slate-200 dark:border-slate-800">
-              <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Visibilitas Elemen</label>
+            {/* Element Visibility Toggles */}
+            <div className="space-y-3 pt-2">
+              <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Tampilkan Elemen</label>
               {[
-                { label: "Tampilkan Footer Kontak & Web", val: showFooter, set: setShowFooter },
-                { label: "Tampilkan QR Code Registrasi", val: showQrCode, set: setShowQrCode },
-                { label: "Tampilkan Badge Tanggal & Libur SKB", val: showHeaderDateBadge, set: setShowHeaderDateBadge },
-                { label: "Tampilkan Baris Statistik Dokter Hadir", val: showStatsBar, set: setShowStatsBar },
-                { label: "Tampilkan Box Dokter Cuti Hari Ini", val: showLeaveCard, set: setShowLeaveCard },
-              ].map((t, idx) => (
+                { label: "Badge Akreditasi Paripurna ⭐", val: showAccreditation, set: setShowAccreditation },
+                { label: "Footer Informasi Kontak & Hotline", val: showFooter, set: setShowFooter },
+                { label: "Banner Tanggal Merah", val: showHeaderDateBadge, set: setShowHeaderDateBadge },
+                { label: "Artikel Edukasi Kesehatan AI", val: showAiEducation, set: setShowAiEducation },
+              ].map((item, idx) => (
                 <div key={idx} className="flex items-center justify-between text-xs">
-                  <span className="text-slate-600 dark:text-slate-400">{t.label}</span>
+                  <span className="text-slate-700 dark:text-slate-300 font-medium">{item.label}</span>
                   <input
                     type="checkbox"
-                    checked={t.val}
-                    onChange={(e) => t.set(e.target.checked)}
-                    className="rounded accent-sky-500"
+                    checked={item.val}
+                    onChange={(e) => item.set(e.target.checked)}
+                    className="w-4 h-4 rounded accent-teal-600"
                   />
                 </div>
               ))}
@@ -532,42 +579,38 @@ export function StudioSidebar(props: StudioSidebarProps) {
 
         {/* ── TAB 5: AI HEALTH EDUCATION ── */}
         {activeTab === "aiEducation" && (
-          <div className="space-y-4">
-            <div>
-              <h4 className="text-sm font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-sky-500" />
-                AI Health Education Infobox
-              </h4>
-              <p className="text-xs text-slate-500">
-                Tambahkan materi edukasi kesehatan harian otomatis langsung pada poster
-              </p>
-            </div>
-
-            <div className="flex items-center justify-between p-3 rounded-2xl bg-sky-50/60 dark:bg-sky-950/30 border border-sky-200 dark:border-sky-800">
-              <span className="text-xs font-bold text-slate-900 dark:text-white">Tampilkan Box Edukasi di Poster</span>
+          <div className="space-y-5">
+            <div className="flex items-center justify-between">
+              <div>
+                <h4 className="text-xs font-bold text-slate-900 dark:text-white">AI Health Education Infobox</h4>
+                <p className="text-[11px] text-slate-500">Materi edukasi medis harian langsung di poster</p>
+              </div>
               <input
                 type="checkbox"
                 checked={showAiEducation}
                 onChange={(e) => setShowAiEducation(e.target.checked)}
-                className="rounded accent-sky-500 w-4 h-4"
+                className="w-4 h-4 rounded accent-teal-600"
               />
             </div>
 
             <button
               onClick={onOpenAiModal}
-              className="w-full py-3 rounded-2xl bg-gradient-to-r from-sky-500 to-indigo-600 text-white font-bold text-xs shadow-lg shadow-sky-500/20 hover:opacity-95 transition-all flex items-center justify-center gap-2"
+              className="w-full py-3 rounded-2xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:opacity-95 text-white font-bold text-xs shadow-md flex items-center justify-center gap-2 transition-all"
             >
               <Sparkles className="w-4 h-4" />
-              Buka AI Topic Generator & Custom Prompt
+              Buka AI Generator Topik Medis
             </button>
 
             {aiTopic && (
-              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 space-y-2">
-                <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-sky-500 text-white">
-                  {aiTopic.tag}
-                </span>
+              <div className="p-3.5 rounded-2xl bg-teal-50 dark:bg-teal-950/40 border border-teal-200 dark:border-teal-800 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-teal-600">
+                    {aiTopic.tag}
+                  </span>
+                  <span className="text-[10px] text-slate-400">Aktif</span>
+                </div>
                 <h5 className="text-xs font-extrabold text-slate-900 dark:text-white">{aiTopic.title}</h5>
-                <p className="text-[11px] text-slate-500 leading-relaxed line-clamp-2">{aiTopic.summary}</p>
+                <p className="text-[11px] text-slate-600 dark:text-slate-400 line-clamp-2">{aiTopic.summary}</p>
               </div>
             )}
           </div>
@@ -577,98 +620,68 @@ export function StudioSidebar(props: StudioSidebarProps) {
         {activeTab === "branding" && (
           <div className="space-y-4">
             <div>
-              <h4 className="text-sm font-extrabold text-slate-900 dark:text-white">Kustomisasi Branding RS</h4>
-              <p className="text-xs text-slate-500">Sesuaikan nama instansi, logo, dan nomor kontak resmi</p>
+              <h4 className="text-xs font-bold text-slate-900 dark:text-white">Identitas Rumah Sakit</h4>
+              <p className="text-[11px] text-slate-500">Informasi nama, kontak, dan logo yang dicetak pada poster</p>
             </div>
 
-            {/* Logo Upload */}
-            <div className="space-y-2">
-              <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Logo Rumah Sakit</label>
-              <div className="flex items-center gap-3">
-                {customLogoSrc ? (
-                  <div className="relative group">
-                    <img
-                      src={customLogoSrc}
-                      alt="Logo RS"
-                      className="w-14 h-14 rounded-2xl object-cover border border-slate-200"
-                    />
-                    <button
-                      onClick={onRemoveLogo}
-                      className="absolute -top-1.5 -right-1.5 p-1 rounded-full bg-red-500 text-white shadow-md hover:bg-red-600"
-                    >
-                      <Trash2 className="w-3 h-3" />
-                    </button>
-                  </div>
-                ) : (
-                  <button
-                    onClick={() => logoInputRef.current?.click()}
-                    className="flex-1 py-3 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-2xl text-xs font-semibold text-slate-600 dark:text-slate-400 hover:border-sky-500 transition-all flex items-center justify-center gap-2"
-                  >
-                    <Upload className="w-4 h-4 text-sky-500" />
-                    Upload Logo Resmi (PNG/JPG)
-                  </button>
-                )}
-                <input
-                  ref={logoInputRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={onLogoUpload}
-                  className="hidden"
-                />
-              </div>
-            </div>
-
-            {/* Hospital Name & Subtitle */}
             <div className="space-y-3">
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Nama Rumah Sakit</label>
+              <div>
+                <label className="text-[11px] font-bold text-slate-700 dark:text-slate-300">Nama Rumah Sakit</label>
                 <input
                   type="text"
                   value={hospitalName}
                   onChange={(e) => setHospitalName(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white font-bold"
+                  className="w-full mt-1 px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 font-bold"
                 />
               </div>
 
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Sub-Judul Header</label>
+              <div>
+                <label className="text-[11px] font-bold text-slate-700 dark:text-slate-300">Subtitle / Tagline</label>
                 <input
                   type="text"
                   value={hospitalSubtitle}
                   onChange={(e) => setHospitalSubtitle(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white"
+                  className="w-full mt-1 px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800"
                 />
               </div>
 
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Hotline WhatsApp Pendaftaran</label>
+              <div>
+                <label className="text-[11px] font-bold text-slate-700 dark:text-slate-300">Hotline / WhatsApp</label>
                 <input
                   type="text"
                   value={hotlinePhone}
                   onChange={(e) => setHotlinePhone(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white"
+                  className="w-full mt-1 px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 font-bold"
                 />
               </div>
 
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Website URL (Untuk QR Code)</label>
-                <input
-                  type="text"
-                  value={websiteUrl}
-                  onChange={(e) => setWebsiteUrl(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Teks Watermark Bawah</label>
-                <input
-                  type="text"
-                  placeholder="Opsional (contoh: DOKUMEN RESMI RS SIAGA MEDIKA)"
-                  value={watermarkText}
-                  onChange={(e) => setWatermarkText(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white"
-                />
+              {/* Logo Upload */}
+              <div className="pt-2">
+                <label className="text-[11px] font-bold text-slate-700 dark:text-slate-300">Logo Rumah Sakit</label>
+                <div className="mt-1 flex items-center gap-3">
+                  <input
+                    ref={logoInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={onLogoUpload}
+                    className="hidden"
+                  />
+                  <button
+                    onClick={() => logoInputRef.current?.click()}
+                    className="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 text-xs font-bold flex items-center gap-1.5"
+                  >
+                    <Upload className="w-3.5 h-3.5" />
+                    Upload Logo PNG
+                  </button>
+                  {customLogoSrc && (
+                    <button
+                      onClick={onRemoveLogo}
+                      className="text-xs text-rose-500 font-bold hover:underline"
+                    >
+                      Hapus
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -676,79 +689,71 @@ export function StudioSidebar(props: StudioSidebarProps) {
 
         {/* ── TAB 7: PRESETS ── */}
         {activeTab === "presets" && (
-          <div className="space-y-4">
+          <div className="space-y-5">
             <div>
-              <h4 className="text-sm font-extrabold text-slate-900 dark:text-white">Manajer Preset Tersimpan</h4>
-              <p className="text-xs text-slate-500">Simpan konfigurasi desain poster favorit Anda</p>
+              <h4 className="text-xs font-bold text-slate-900 dark:text-white">Simpan Preset Kustom</h4>
+              <p className="text-[11px] text-slate-500">Simpan kombinasi gaya dan warna favorit untuk digunakan kembali</p>
             </div>
 
-            {/* Save New Preset */}
             <div className="flex gap-2">
               <input
                 type="text"
-                placeholder="Nama Preset Baru..."
+                placeholder="Nama Preset..."
                 value={newPresetName}
                 onChange={(e) => setNewPresetName(e.target.value)}
-                className="flex-1 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white"
+                className="flex-1 px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 font-bold"
               />
               <button
                 onClick={onSavePreset}
-                disabled={!newPresetName.trim()}
-                className="px-4 py-2 rounded-xl bg-sky-500 text-white font-bold text-xs hover:bg-sky-600 disabled:opacity-50 flex items-center gap-1.5"
+                className="px-3 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs shrink-0"
               >
-                <Save className="w-3.5 h-3.5" />
                 Simpan
               </button>
             </div>
 
-            {/* Saved Presets List */}
+            {/* Presets List */}
             <div className="space-y-2 pt-2">
+              <label className="text-[11px] font-bold text-slate-500">Preset Tersimpan ({savedPresets.length})</label>
               {savedPresets.length === 0 ? (
-                <div className="p-6 text-center border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-2xl text-xs text-slate-400">
-                  Belum ada preset tersimpan.
-                </div>
+                <p className="text-xs text-slate-400 italic">Belum ada preset kustom yang disimpan.</p>
               ) : (
-                savedPresets.map((p) => (
-                  <div
-                    key={p.id}
-                    className="flex items-center justify-between p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30"
-                  >
-                    <div>
-                      <h5 className="text-xs font-bold text-slate-900 dark:text-white">{p.name}</h5>
-                      <span className="text-[10px] text-slate-400">{p.date} • {p.themeMode}</span>
+                <div className="space-y-2">
+                  {savedPresets.map((p) => (
+                    <div
+                      key={p.id}
+                      className="p-3 rounded-2xl border border-slate-200 dark:border-slate-800 flex items-center justify-between"
+                    >
+                      <div>
+                        <h5 className="text-xs font-bold text-slate-900 dark:text-white">{p.name}</h5>
+                        <span className="text-[10px] text-slate-400">{p.date}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          onClick={() => onLoadPreset(p)}
+                          className="px-2.5 py-1 rounded-lg bg-teal-50 dark:bg-teal-950 text-teal-600 dark:text-teal-400 font-bold text-xs"
+                        >
+                          Terapkan
+                        </button>
+                        <button
+                          onClick={() => onDeletePreset(p.id)}
+                          className="p-1 text-slate-400 hover:text-rose-500"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-1.5">
-                      <button
-                        onClick={() => onLoadPreset(p)}
-                        className="px-2.5 py-1 text-xs font-bold text-sky-600 hover:bg-sky-50 dark:hover:bg-sky-950/40 rounded-lg"
-                      >
-                        Terapkan
-                      </button>
-                      <button
-                        onClick={() => onDeletePreset(p.id)}
-                        className="p-1 text-red-400 hover:text-red-600 rounded-lg"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  </div>
-                ))
+                  ))}
+                </div>
               )}
             </div>
 
-            {/* Import / Export JSON */}
-            <div className="flex gap-2 pt-2 border-t border-slate-200 dark:border-slate-800">
+            {/* Export / Import JSON */}
+            <div className="pt-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
               <button
                 onClick={onExportPresets}
-                className="flex-1 py-2 text-xs font-bold rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center justify-center gap-1.5"
+                className="text-xs text-slate-600 dark:text-slate-400 font-bold hover:text-teal-600 flex items-center gap-1"
               >
                 <FileDown className="w-3.5 h-3.5" /> Export JSON
-              </button>
-              <button
-                onClick={() => fileImportRef.current?.click()}
-                className="flex-1 py-2 text-xs font-bold rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center justify-center gap-1.5"
-              >
-                <FileUp className="w-3.5 h-3.5" /> Import JSON
               </button>
               <input
                 ref={fileImportRef}
@@ -757,6 +762,12 @@ export function StudioSidebar(props: StudioSidebarProps) {
                 onChange={onImportPresets}
                 className="hidden"
               />
+              <button
+                onClick={() => fileImportRef.current?.click()}
+                className="text-xs text-slate-600 dark:text-slate-400 font-bold hover:text-teal-600 flex items-center gap-1"
+              >
+                <FileUp className="w-3.5 h-3.5" /> Import JSON
+              </button>
             </div>
           </div>
         )}

@@ -24,6 +24,10 @@ import {
   Expand,
   RotateCcw,
   Sparkle,
+  Layers,
+  Settings2,
+  CheckCircle2,
+  SlidersHorizontal,
 } from "lucide-react";
 import type { Doctor, Shift, LeaveRequest } from "@/lib/data-service";
 import { getIndonesianHoliday } from "@/lib/holidays";
@@ -39,6 +43,7 @@ import {
   AvatarMode,
   FontTheme,
   AspectRatioMode,
+  LayoutMode,
   ActiveTab,
   CustomColors,
   SavedPreset,
@@ -64,6 +69,7 @@ export default function PosterStudioPage() {
   const [activeTab, setActiveTab] = useState<ActiveTab>("template");
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [aspectRatio, setAspectRatio] = useState<AspectRatioMode>("poster");
+  const [layoutMode, setLayoutMode] = useState<LayoutMode>("heroSplit");
   const [themeMode, setThemeMode] = useState<ThemeType>("siagaOfficial");
   const [visualStyle, setVisualStyle] = useState<VisualStyle>("siagaOfficial");
   const [cardVariant, setCardVariant] = useState<CardVariant>("smooth");
@@ -102,7 +108,7 @@ export default function PosterStudioPage() {
 
   // Mobile Drawer State
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
-  const [isFullscreenPreview, setIsFullscreenPreview] = useState(false);
+  const [desktopSidebarOpen, setDesktopSidebarOpen] = useState(true);
 
   // Zoom & Preview Viewport
   const [zoomLevel, setZoomLevel] = useState<number>(0.55);
@@ -144,14 +150,14 @@ export default function PosterStudioPage() {
   // Compute Auto-Fit Zoom Scale dynamically
   const calculateAutoFitZoom = useCallback(() => {
     if (!previewContainerRef.current) return 0.55;
-    const containerW = previewContainerRef.current.clientWidth - 48;
+    const containerW = previewContainerRef.current.clientWidth - 32;
     const containerH = previewContainerRef.current.clientHeight - 48;
     const ratioSpec = ASPECT_RATIOS[aspectRatio] || ASPECT_RATIOS.poster;
     
     const scaleW = containerW / ratioSpec.width;
     const scaleH = containerH / ratioSpec.height;
-    const optimalScale = Math.min(scaleW, scaleH, 1);
-    return Math.max(0.25, Math.min(optimalScale, 1.2));
+    const optimalScale = Math.min(scaleW, scaleH);
+    return Math.max(0.2, Math.min(optimalScale, 1.2));
   }, [aspectRatio]);
 
   // Adjust zoom on mount & window resize
@@ -221,8 +227,6 @@ export default function PosterStudioPage() {
 
     const { doctors = [], shifts = [], leaves = [] } = displayData;
     const dayIdx = selectedDate.getDay();
-    const dayNames = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
-    const currentDayName = dayNames[dayIdx];
 
     const selDateStr = selectedDate.toISOString().slice(0, 10);
     const activeLeaves = leaves.filter((l) => {
@@ -287,6 +291,7 @@ export default function PosterStudioPage() {
       themeMode,
       visualStyle,
       cardVariant,
+      layoutMode,
       headerStyle,
       footerStyle,
       emblemShape,
@@ -323,6 +328,7 @@ export default function PosterStudioPage() {
     themeMode,
     visualStyle,
     cardVariant,
+    layoutMode,
     headerStyle,
     footerStyle,
     emblemShape,
@@ -428,66 +434,64 @@ export default function PosterStudioPage() {
     setSelectedDate(next);
   };
 
-  const openMobileTab = (tab: ActiveTab) => {
+  const openTab = (tab: ActiveTab) => {
     setActiveTab(tab);
     setIsMobileDrawerOpen(true);
   };
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden bg-slate-100 dark:bg-slate-950 font-sans select-none">
-      {/* ── 1. ADAPTIVE TOP APP HEADER ── */}
-      <header className="h-14 sm:h-16 px-3 sm:px-6 border-b border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md flex items-center justify-between z-30 shrink-0">
-        <div className="flex items-center gap-2 sm:gap-4 min-w-0">
+    <div className="flex flex-col h-screen overflow-hidden bg-[#F2F2F7] dark:bg-[#000000] font-sans select-none text-slate-900 dark:text-slate-100">
+      {/* ── 1. NATIVE APPLE iOS 27 HEADER BAR ── */}
+      <header className="h-14 sm:h-16 px-3 sm:px-6 border-b border-black/5 dark:border-white/10 bg-white/80 dark:bg-slate-900/80 backdrop-blur-2xl flex items-center justify-between z-30 shrink-0">
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
           <Link
             href="/schedules"
-            className="p-1.5 sm:p-2 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors shrink-0"
+            className="flex items-center gap-1 p-2 rounded-2xl bg-black/5 dark:bg-white/10 hover:bg-black/10 text-teal-600 dark:text-teal-400 font-bold text-xs transition-all active:scale-95"
           >
-            <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+            <ChevronLeft className="w-4 h-4" />
+            <span className="hidden sm:inline">Kembali</span>
           </Link>
           <div className="min-w-0">
-            <div className="flex items-center gap-1.5 sm:gap-2">
-              <h1 className="text-xs sm:text-base font-extrabold text-slate-900 dark:text-white truncate">
+            <div className="flex items-center gap-1.5">
+              <h1 className="text-xs sm:text-sm font-extrabold tracking-tight truncate">
                 Studio Poster
               </h1>
-              <span className="text-[9px] sm:text-[10px] uppercase font-extrabold tracking-wider bg-gradient-to-r from-teal-500 to-emerald-600 text-white px-1.5 sm:px-2 py-0.5 rounded-full shadow-sm shrink-0">
-                v3.0
+              <span className="text-[9px] uppercase font-black tracking-wider bg-teal-500/15 text-teal-600 dark:text-teal-400 px-1.5 py-0.5 rounded-full border border-teal-500/20">
+                PRO
               </span>
             </div>
-            <p className="hidden sm:block text-xs text-slate-400 truncate">
-              Desain poster jadwal dokter & edukasi kesehatan instan
-            </p>
           </div>
         </div>
 
-        {/* Date Selector & Action Buttons */}
-        <div className="flex items-center gap-1.5 sm:gap-3">
-          {/* Date Picker Pill */}
-          <div className="flex items-center bg-slate-100 dark:bg-slate-800 rounded-xl sm:rounded-2xl p-0.5 sm:p-1 border border-slate-200 dark:border-slate-700">
-            <button
-              onClick={() => changeDateByDays(-1)}
-              className="p-1 sm:p-1.5 hover:bg-white dark:hover:bg-slate-700 rounded-lg sm:rounded-xl text-slate-600 dark:text-slate-300 transition-colors"
-            >
-              <ChevronLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            </button>
-            <div className="px-1.5 sm:px-3 flex items-center gap-1 sm:gap-2 text-[11px] sm:text-xs font-bold text-slate-800 dark:text-slate-200">
-              <CalendarIcon className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-teal-600 dark:text-teal-400" />
-              <span>
-                {selectedDate.toLocaleDateString("id-ID", {
-                  weekday: "short",
-                  day: "numeric",
-                  month: "short",
-                })}
-              </span>
-            </div>
-            <button
-              onClick={() => changeDateByDays(1)}
-              className="p-1 sm:p-1.5 hover:bg-white dark:hover:bg-slate-700 rounded-lg sm:rounded-xl text-slate-600 dark:text-slate-300 transition-colors"
-            >
-              <ChevronRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            </button>
+        {/* Center Date Picker Capsule */}
+        <div className="flex items-center bg-black/5 dark:bg-white/10 rounded-full p-1 border border-black/5 dark:border-white/10 shadow-inner">
+          <button
+            onClick={() => changeDateByDays(-1)}
+            className="p-1 hover:bg-white dark:hover:bg-slate-800 rounded-full text-slate-600 dark:text-slate-300 transition-all active:scale-90"
+          >
+            <ChevronLeft className="w-3.5 h-3.5" />
+          </button>
+          <div className="px-2 flex items-center gap-1.5 text-[11px] sm:text-xs font-bold text-slate-800 dark:text-slate-200">
+            <CalendarIcon className="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" />
+            <span>
+              {selectedDate.toLocaleDateString("id-ID", {
+                weekday: "short",
+                day: "numeric",
+                month: "short",
+              })}
+            </span>
           </div>
+          <button
+            onClick={() => changeDateByDays(1)}
+            className="p-1 hover:bg-white dark:hover:bg-slate-800 rounded-full text-slate-600 dark:text-slate-300 transition-all active:scale-90"
+          >
+            <ChevronRight className="w-3.5 h-3.5" />
+          </button>
+        </div>
 
-          {/* Quick WhatsApp Share Button */}
+        {/* Right Action Icons */}
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          {/* Quick WhatsApp Share */}
           <button
             onClick={async () => {
               if (!canvasRef.current) return;
@@ -503,45 +507,25 @@ export default function PosterStudioPage() {
               });
               setTimeout(() => setShared(false), 2000);
             }}
-            className="p-2 sm:px-3.5 sm:py-2 rounded-xl sm:rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md flex items-center gap-1.5 transition-all"
+            className="p-2 sm:px-3 sm:py-1.5 rounded-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs shadow-sm flex items-center gap-1.5 transition-all active:scale-95"
             title="Bagikan ke WhatsApp"
           >
-            <PhoneCall className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            <PhoneCall className="w-3.5 h-3.5" />
             <span className="hidden md:inline">{shared ? "Membuka..." : "Share WA"}</span>
           </button>
 
-          {/* Quick Copy */}
-          <button
-            onClick={async () => {
-              if (!canvasRef.current) return;
-              const ok = await copyCanvasToClipboard(canvasRef.current);
-              if (ok) {
-                setCopied(true);
-                setTimeout(() => setCopied(false), 2000);
-              }
-            }}
-            className="hidden sm:flex p-2 sm:px-3.5 sm:py-2 rounded-xl sm:rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs items-center gap-1.5 transition-all"
-            title="Salin Gambar ke Clipboard"
-          >
-            {copied ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}
-            <span className="hidden lg:inline">{copied ? "Tersalin!" : "Salin"}</span>
-          </button>
-
-          {/* Export Dropdown Menu */}
+          {/* Export Dropdown */}
           <div className="relative">
             <button
               onClick={() => setExportMenuOpen(!exportMenuOpen)}
-              className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl sm:rounded-2xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:opacity-95 text-white font-bold text-xs shadow-md flex items-center gap-1.5 transition-all"
+              className="p-2 sm:px-3.5 sm:py-1.5 rounded-full bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs shadow-sm flex items-center gap-1.5 transition-all active:scale-95"
             >
-              <Download className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-              <span>Export</span>
+              <Download className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Export</span>
             </button>
 
             {exportMenuOpen && (
-              <div className="absolute right-0 mt-2 w-64 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl p-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
-                <div className="px-3 py-2 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
-                  Resolusi Export
-                </div>
+              <div className="absolute right-0 mt-2 w-64 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl p-2 z-50 animate-in fade-in duration-150">
                 <button
                   onClick={() => {
                     if (canvasRef.current) {
@@ -549,13 +533,10 @@ export default function PosterStudioPage() {
                     }
                     setExportMenuOpen(false);
                   }}
-                  className="w-full flex items-center justify-between p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 text-left text-xs font-bold text-slate-800 dark:text-slate-200"
+                  className="w-full flex items-center gap-2 p-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 text-xs font-bold"
                 >
-                  <span className="flex items-center gap-2">
-                    <FileImage className="w-4 h-4 text-teal-600" /> PNG Standar (1x Web)
-                  </span>
+                  <FileImage className="w-4 h-4 text-teal-600" /> PNG Standar (1x Web)
                 </button>
-
                 <button
                   onClick={() => {
                     const data = scheduleData();
@@ -567,6 +548,7 @@ export default function PosterStudioPage() {
                         themeMode,
                         visualStyle,
                         cardVariant,
+                        layoutMode,
                         headerStyle,
                         footerStyle,
                         emblemShape,
@@ -601,13 +583,10 @@ export default function PosterStudioPage() {
                     );
                     setExportMenuOpen(false);
                   }}
-                  className="w-full flex items-center justify-between p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 text-left text-xs font-bold text-slate-800 dark:text-slate-200"
+                  className="w-full flex items-center gap-2 p-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 text-xs font-bold"
                 >
-                  <span className="flex items-center gap-2">
-                    <Sparkles className="w-4 h-4 text-indigo-500" /> Retina HD (2x Crisp)
-                  </span>
+                  <Sparkles className="w-4 h-4 text-indigo-500" /> Retina HD (2x Crisp)
                 </button>
-
                 <button
                   onClick={() => {
                     const data = scheduleData();
@@ -619,6 +598,7 @@ export default function PosterStudioPage() {
                         themeMode,
                         visualStyle,
                         cardVariant,
+                        layoutMode,
                         headerStyle,
                         footerStyle,
                         emblemShape,
@@ -653,11 +633,9 @@ export default function PosterStudioPage() {
                     );
                     setExportMenuOpen(false);
                   }}
-                  className="w-full flex items-center justify-between p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 text-left text-xs font-bold text-slate-800 dark:text-slate-200"
+                  className="w-full flex items-center gap-2 p-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 text-xs font-bold"
                 >
-                  <span className="flex items-center gap-2">
-                    <Printer className="w-4 h-4 text-emerald-500" /> Ultra HD 300 DPI (Print)
-                  </span>
+                  <Printer className="w-4 h-4 text-emerald-500" /> Ultra HD 300 DPI (Cetak)
                 </button>
               </div>
             )}
@@ -665,101 +643,137 @@ export default function PosterStudioPage() {
         </div>
       </header>
 
-      {/* ── 2. MAIN WORKSPACE ── */}
-      <div className="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
-        {/* Desktop Left Sidebar */}
-        <div className="hidden lg:block w-[380px] xl:w-[420px] h-full shrink-0 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-y-auto">
-          <StudioSidebar
-            activeTab={activeTab}
-            setActiveTab={setActiveTab}
-            themeMode={themeMode}
-            setThemeMode={setThemeMode}
-            visualStyle={visualStyle}
-            setVisualStyle={setVisualStyle}
-            cardVariant={cardVariant}
-            setCardVariant={setCardVariant}
-            aspectRatio={aspectRatio}
-            setAspectRatio={setAspectRatio}
-            headerStyle={headerStyle}
-            setHeaderStyle={setHeaderStyle}
-            footerStyle={footerStyle}
-            setFooterStyle={setFooterStyle}
-            emblemShape={emblemShape}
-            setEmblemShape={setEmblemShape}
-            fontTheme={fontTheme}
-            setFontTheme={setFontTheme}
-            cardCornerRadius={cardCornerRadius}
-            setCardCornerRadius={setCardCornerRadius}
-            headerEmblemIcon={headerEmblemIcon}
-            setHeaderEmblemIcon={setHeaderEmblemIcon}
-            emergencyBadgeText={emergencyBadgeText}
-            setEmergencyBadgeText={setEmergencyBadgeText}
-            watermarkText={watermarkText}
-            setWatermarkText={setWatermarkText}
-            colors={colors}
-            setColors={setColors}
-            showLeaveCard={showLeaveCard}
-            setShowLeaveCard={setShowLeaveCard}
-            showFooter={showFooter}
-            setShowFooter={setShowFooter}
-            showQrCode={showQrCode}
-            setShowQrCode={setShowQrCode}
-            showIgdBadge={showIgdBadge}
-            setShowIgdBadge={setShowIgdBadge}
-            showHeaderDateBadge={showHeaderDateBadge}
-            setShowHeaderDateBadge={setShowHeaderDateBadge}
-            showStatsBar={showStatsBar}
-            setShowStatsBar={setShowStatsBar}
-            showAiEducation={showAiEducation}
-            setShowAiEducation={setShowAiEducation}
-            aiTopic={aiTopic}
-            onOpenAiModal={() => setIsAiModalOpen(true)}
-            hospitalName={hospitalName}
-            setHospitalName={setHospitalName}
-            hospitalSubtitle={hospitalSubtitle}
-            setHospitalSubtitle={setHospitalSubtitle}
-            hotlinePhone={hotlinePhone}
-            setHotlinePhone={setHotlinePhone}
-            websiteUrl={websiteUrl}
-            setWebsiteUrl={setWebsiteUrl}
-            customLogoSrc={customLogoSrc}
-            onLogoUpload={handleLogoUpload}
-            onRemoveLogo={handleRemoveLogo}
-            savedPresets={savedPresets}
-            newPresetName={newPresetName}
-            setNewPresetName={setNewPresetName}
-            onSavePreset={handleSaveCurrentPreset}
-            onLoadPreset={handleLoadPreset}
-            onDeletePreset={handleDeletePreset}
-            onExportPresets={handleExportPresetsJson}
-            onImportPresets={handleImportPresetsJson}
-          />
-        </div>
+      {/* ── 2. QUICK HORIZONTAL THEME PICKER PILLS ── */}
+      <div className="bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl border-b border-black/5 dark:border-white/10 px-3 py-2 overflow-x-auto scrollbar-none flex items-center gap-2 shrink-0 z-20">
+        <span className="text-[11px] font-black uppercase text-slate-400 tracking-wider shrink-0 pl-1">
+          Tema:
+        </span>
+        {Object.values(THEME_PRESETS).map((t) => {
+          const isSelected = themeMode === t.id && !colors.useCustom;
+          return (
+            <button
+              key={t.id}
+              onClick={() => {
+                setThemeMode(t.id);
+                setVisualStyle(t.visualStyle);
+                setCardVariant(t.cardVariant);
+                setColors((prev) => ({ ...prev, useCustom: false }));
+              }}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-bold whitespace-nowrap transition-all shrink-0 active:scale-95 ${
+                isSelected
+                  ? "border-teal-500 bg-teal-500 text-white shadow-md shadow-teal-500/20"
+                  : "border-black/5 dark:border-white/10 hover:border-slate-300 text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800"
+              }`}
+            >
+              <div
+                className="w-3.5 h-3.5 rounded-full border border-white/80 shadow-inner"
+                style={{ background: `linear-gradient(135deg, ${t.specBgStart}, ${t.specBgEnd})` }}
+              />
+              <span>{t.name}</span>
+            </button>
+          );
+        })}
+      </div>
 
-        {/* ── 3. INTERACTIVE LIVE CANVAS PREVIEW AREA ── */}
+      {/* ── 3. MAIN WORKSPACE AREA ── */}
+      <div className="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
+        {/* Desktop Sidebar */}
+        {desktopSidebarOpen && (
+          <div className="hidden lg:block w-[380px] xl:w-[420px] h-full shrink-0 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-y-auto">
+            <StudioSidebar
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+              themeMode={themeMode}
+              setThemeMode={setThemeMode}
+              visualStyle={visualStyle}
+              setVisualStyle={setVisualStyle}
+              cardVariant={cardVariant}
+              setCardVariant={setCardVariant}
+              aspectRatio={aspectRatio}
+              setAspectRatio={setAspectRatio}
+              headerStyle={headerStyle}
+              setHeaderStyle={setHeaderStyle}
+              footerStyle={footerStyle}
+              setFooterStyle={setFooterStyle}
+              emblemShape={emblemShape}
+              setEmblemShape={setEmblemShape}
+              fontTheme={fontTheme}
+              setFontTheme={setFontTheme}
+              cardCornerRadius={cardCornerRadius}
+              setCardCornerRadius={setCardCornerRadius}
+              headerEmblemIcon={headerEmblemIcon}
+              setHeaderEmblemIcon={setHeaderEmblemIcon}
+              emergencyBadgeText={emergencyBadgeText}
+              setEmergencyBadgeText={setEmergencyBadgeText}
+              watermarkText={watermarkText}
+              setWatermarkText={setWatermarkText}
+              colors={colors}
+              setColors={setColors}
+              showLeaveCard={showLeaveCard}
+              setShowLeaveCard={setShowLeaveCard}
+              showFooter={showFooter}
+              setShowFooter={setShowFooter}
+              showQrCode={showQrCode}
+              setShowQrCode={setShowQrCode}
+              showIgdBadge={showIgdBadge}
+              setShowIgdBadge={setShowIgdBadge}
+              showAccreditation={showAccreditation}
+              setShowAccreditation={setShowAccreditation}
+              showHeaderDateBadge={showHeaderDateBadge}
+              setShowHeaderDateBadge={setShowHeaderDateBadge}
+              showStatsBar={showStatsBar}
+              setShowStatsBar={setShowStatsBar}
+              showAiEducation={showAiEducation}
+              setShowAiEducation={setShowAiEducation}
+              aiTopic={aiTopic}
+              onOpenAiModal={() => setIsAiModalOpen(true)}
+              hospitalName={hospitalName}
+              setHospitalName={setHospitalName}
+              hospitalSubtitle={hospitalSubtitle}
+              setHospitalSubtitle={setHospitalSubtitle}
+              hotlinePhone={hotlinePhone}
+              setHotlinePhone={setHotlinePhone}
+              websiteUrl={websiteUrl}
+              setWebsiteUrl={setWebsiteUrl}
+              customLogoSrc={customLogoSrc}
+              onLogoUpload={handleLogoUpload}
+              onRemoveLogo={handleRemoveLogo}
+              savedPresets={savedPresets}
+              newPresetName={newPresetName}
+              setNewPresetName={setNewPresetName}
+              onSavePreset={handleSaveCurrentPreset}
+              onLoadPreset={handleLoadPreset}
+              onDeletePreset={handleDeletePreset}
+              onExportPresets={handleExportPresetsJson}
+              onImportPresets={handleImportPresetsJson}
+            />
+          </div>
+        )}
+
+        {/* ── 4. LIVE INTERACTIVE CANVAS PREVIEW ── */}
         <div
           ref={previewContainerRef}
-          className="flex-1 flex flex-col items-center justify-center p-3 sm:p-6 overflow-auto bg-slate-200/80 dark:bg-slate-950 relative"
+          className="flex-1 flex flex-col items-center justify-center p-3 sm:p-6 overflow-auto bg-[#E5E5EA] dark:bg-[#121214] relative"
         >
-          {/* Floating Viewport Toolbar */}
-          <div className="absolute top-3 right-3 sm:top-6 sm:right-6 z-20 flex items-center gap-1 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md p-1 sm:p-1.5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-lg">
+          {/* Floating Viewport Toolbar (Top Right) */}
+          <div className="absolute top-3 right-3 sm:top-6 sm:right-6 z-20 flex items-center gap-1 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl p-1 rounded-full border border-black/5 dark:border-white/10 shadow-lg">
             <button
               onClick={() => {
                 setIsAutoFit(false);
                 setZoomLevel((z) => Math.max(0.2, +(z - 0.05).toFixed(2)));
               }}
-              className="p-1 sm:p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl text-slate-600 dark:text-slate-300"
+              className="p-1.5 hover:bg-black/5 dark:hover:bg-white/10 rounded-full text-slate-600 dark:text-slate-300 active:scale-90"
               title="Perkecil"
             >
-              <ZoomOut className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <ZoomOut className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={() => {
                 setIsAutoFit(true);
                 setZoomLevel(calculateAutoFitZoom());
               }}
-              className="text-[10px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 px-1.5 sm:px-2 hover:text-teal-600 transition-colors"
-              title="Klik untuk Auto Fit Layar"
+              className="text-[10px] sm:text-xs font-bold px-2 text-teal-600 dark:text-teal-400"
+              title="Auto Fit"
             >
               {Math.round(zoomLevel * 100)}%
             </button>
@@ -768,38 +782,38 @@ export default function PosterStudioPage() {
                 setIsAutoFit(false);
                 setZoomLevel((z) => Math.min(1.5, +(z + 0.05).toFixed(2)));
               }}
-              className="p-1 sm:p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl text-slate-600 dark:text-slate-300"
+              className="p-1.5 hover:bg-black/5 dark:hover:bg-white/10 rounded-full text-slate-600 dark:text-slate-300 active:scale-90"
               title="Perbesar"
             >
-              <ZoomIn className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <ZoomIn className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={() => {
                 setIsAutoFit(true);
                 setZoomLevel(calculateAutoFitZoom());
               }}
-              className="p-1 sm:p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl text-teal-600 dark:text-teal-400 border-l border-slate-200 dark:border-slate-700 ml-0.5"
-              title="Reset Fit Layar"
+              className="p-1.5 hover:bg-black/5 dark:hover:bg-white/10 rounded-full text-teal-600 dark:text-teal-400 border-l border-black/10 dark:border-white/10 ml-0.5"
+              title="Reset Layar"
             >
-              <Maximize2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <Maximize2 className="w-3.5 h-3.5" />
             </button>
           </div>
 
-          {/* Quick Floating AI Generator Trigger on Canvas */}
-          <div className="absolute top-3 left-3 sm:top-6 sm:left-6 z-20 flex items-center gap-2">
+          {/* Quick Floating AI Generator Pill (Top Left) */}
+          <div className="absolute top-3 left-3 sm:top-6 sm:left-6 z-20">
             <button
               onClick={() => setIsAiModalOpen(true)}
-              className="px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl sm:rounded-2xl bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 font-bold text-[10px] sm:text-xs shadow-md flex items-center gap-1.5 hover:bg-teal-50 dark:hover:bg-teal-950/40 hover:text-teal-600 transition-all"
+              className="px-3 py-1.5 rounded-full bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-black/5 dark:border-white/10 text-slate-800 dark:text-slate-200 font-bold text-xs shadow-md flex items-center gap-1.5 hover:bg-teal-50 dark:hover:bg-teal-950/40 hover:text-teal-600 transition-all active:scale-95"
             >
               <Sparkles className="w-3.5 h-3.5 text-teal-500" />
               <span>AI Edukasi</span>
             </button>
           </div>
 
-          {/* Canvas Wrapper with Smooth CSS Transforms */}
-          <div className="my-auto flex items-center justify-center transition-all duration-200">
+          {/* Canvas Render Element */}
+          <div className="my-auto flex items-center justify-center transition-transform duration-150">
             <div
-              className="shadow-2xl rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-300/80 dark:border-slate-800 bg-white"
+              className="shadow-[0_20px_50px_rgba(0,0,0,0.15)] rounded-2xl sm:rounded-3xl overflow-hidden border border-black/10 dark:border-white/10 bg-white"
               style={{
                 transform: `scale(${zoomLevel})`,
                 transformOrigin: "center center",
@@ -811,104 +825,62 @@ export default function PosterStudioPage() {
         </div>
       </div>
 
-      {/* ── 4. MOBILE FLOATING ACTION BAR (Hanya di Layar Mobile < lg) ── */}
-      <div className="lg:hidden shrink-0 border-t border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-lg px-2 py-1.5 z-30 flex items-center justify-around gap-1 overflow-x-auto">
-        <button
-          onClick={() => openMobileTab("template")}
-          className={`flex flex-col items-center py-1 px-2 rounded-xl text-[10px] font-bold transition-all ${
-            activeTab === "template" && isMobileDrawerOpen
-              ? "text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-950/50"
-              : "text-slate-600 dark:text-slate-400"
-          }`}
-        >
-          <Palette className="w-4 h-4 mb-0.5" />
-          <span>Tema</span>
-        </button>
-
-        <button
-          onClick={() => openMobileTab("layout")}
-          className={`flex flex-col items-center py-1 px-2 rounded-xl text-[10px] font-bold transition-all ${
-            activeTab === "layout" && isMobileDrawerOpen
-              ? "text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-950/50"
-              : "text-slate-600 dark:text-slate-400"
-          }`}
-        >
-          <Sliders className="w-4 h-4 mb-0.5" />
-          <span>Format</span>
-        </button>
-
-        <button
-          onClick={() => openMobileTab("colors")}
-          className={`flex flex-col items-center py-1 px-2 rounded-xl text-[10px] font-bold transition-all ${
-            activeTab === "colors" && isMobileDrawerOpen
-              ? "text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-950/50"
-              : "text-slate-600 dark:text-slate-400"
-          }`}
-        >
-          <Palette className="w-4 h-4 mb-0.5" />
-          <span>Warna</span>
-        </button>
-
-        <button
-          onClick={() => {
-            setIsAiModalOpen(true);
-          }}
-          className="flex flex-col items-center py-1 px-2 rounded-xl text-[10px] font-bold text-teal-600 dark:text-teal-400"
-        >
-          <Sparkles className="w-4 h-4 mb-0.5 text-teal-500" />
-          <span>AI Edu</span>
-        </button>
-
-        <button
-          onClick={() => openMobileTab("branding")}
-          className={`flex flex-col items-center py-1 px-2 rounded-xl text-[10px] font-bold transition-all ${
-            activeTab === "branding" && isMobileDrawerOpen
-              ? "text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-950/50"
-              : "text-slate-600 dark:text-slate-400"
-          }`}
-        >
-          <Sliders className="w-4 h-4 mb-0.5" />
-          <span>Branding</span>
-        </button>
-
-        <button
-          onClick={() => openMobileTab("presets")}
-          className={`flex flex-col items-center py-1 px-2 rounded-xl text-[10px] font-bold transition-all ${
-            activeTab === "presets" && isMobileDrawerOpen
-              ? "text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-950/50"
-              : "text-slate-600 dark:text-slate-400"
-          }`}
-        >
-          <Sparkle className="w-4 h-4 mb-0.5" />
-          <span>Preset</span>
-        </button>
+      {/* ── 5. NATIVE iOS 27 FLOATING ACTION DOCK (MOBILE ONLY) ── */}
+      <div className="lg:hidden shrink-0 border-t border-black/5 dark:border-white/10 bg-white/85 dark:bg-slate-900/85 backdrop-blur-2xl px-3 py-2 z-30 flex items-center justify-around gap-1 pb-[calc(env(safe-area-inset-bottom,0)+8px)]">
+        {[
+          { id: "template", label: "Tema", icon: Palette },
+          { id: "layout", label: "Format", icon: Sliders },
+          { id: "colors", label: "Warna", icon: Palette },
+          { id: "headerFooter", label: "Header", icon: Layers },
+          { id: "branding", label: "Branding", icon: Settings2 },
+          { id: "presets", label: "Preset", icon: Sparkle },
+        ].map((tab) => {
+          const Icon = tab.icon;
+          const isActive = activeTab === tab.id && isMobileDrawerOpen;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => openTab(tab.id as ActiveTab)}
+              className={`flex flex-col items-center py-1 px-2.5 rounded-2xl text-[10px] font-extrabold transition-all active:scale-90 ${
+                isActive
+                  ? "text-teal-600 dark:text-teal-400 bg-teal-500/15"
+                  : "text-slate-600 dark:text-slate-400"
+              }`}
+            >
+              <Icon className="w-4 h-4 mb-0.5" />
+              <span>{tab.label}</span>
+            </button>
+          );
+        })}
       </div>
 
-      {/* ── 5. MOBILE SETTINGS BOTTOM SHEET DRAWER ── */}
+      {/* ── 6. NATIVE iOS 27 BOTTOM SHEET DRAWER (MOBILE) ── */}
       {isMobileDrawerOpen && (
-        <div className="lg:hidden fixed inset-0 z-50 flex flex-col justify-end bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+        <div className="lg:hidden fixed inset-0 z-50 flex flex-col justify-end bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
           <div
-            className="bg-white dark:bg-slate-900 rounded-t-3xl max-h-[75vh] flex flex-col overflow-hidden shadow-2xl border-t border-slate-200 dark:border-slate-800 animate-in slide-in-from-bottom duration-250"
+            className="bg-[#F2F2F7] dark:bg-[#1C1C1E] rounded-t-[32px] max-h-[82vh] flex flex-col overflow-hidden shadow-2xl border-t border-black/10 dark:border-white/10 animate-in slide-in-from-bottom duration-250"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Drawer Header */}
-            <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between shrink-0">
-              <div className="flex items-center gap-2">
-                <span className="w-8 h-1 bg-slate-300 dark:bg-slate-700 rounded-full mx-auto absolute left-1/2 -translate-x-1/2 top-2" />
-                <h3 className="text-sm font-black text-slate-900 dark:text-white capitalize">
-                  Pengaturan {activeTab}
-                </h3>
-              </div>
+            {/* Grabber Bar */}
+            <div className="pt-2.5 pb-1 flex justify-center shrink-0">
+              <div className="w-10 h-1 bg-slate-400/40 rounded-full" />
+            </div>
+
+            {/* Sheet Title */}
+            <div className="px-4 py-2 border-b border-black/5 dark:border-white/10 flex items-center justify-between shrink-0">
+              <h3 className="text-sm font-black text-slate-900 dark:text-white capitalize">
+                Kustomisasi ({activeTab})
+              </h3>
               <button
                 onClick={() => setIsMobileDrawerOpen(false)}
-                className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500"
+                className="p-1 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            {/* Drawer Content Body */}
-            <div className="flex-1 overflow-y-auto p-4">
+            {/* Sheet Content Body */}
+            <div className="flex-1 overflow-y-auto p-4 bg-white dark:bg-slate-900">
               <StudioSidebar
                 activeTab={activeTab}
                 setActiveTab={setActiveTab}
@@ -946,6 +918,8 @@ export default function PosterStudioPage() {
                 setShowQrCode={setShowQrCode}
                 showIgdBadge={showIgdBadge}
                 setShowIgdBadge={setShowIgdBadge}
+                showAccreditation={showAccreditation}
+                setShowAccreditation={setShowAccreditation}
                 showHeaderDateBadge={showHeaderDateBadge}
                 setShowHeaderDateBadge={setShowHeaderDateBadge}
                 showStatsBar={showStatsBar}
@@ -979,20 +953,20 @@ export default function PosterStudioPage() {
               />
             </div>
 
-            {/* Bottom Done Button */}
-            <div className="p-3 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50">
+            {/* Bottom Done Action */}
+            <div className="p-3 border-t border-black/5 dark:border-white/10 bg-[#F2F2F7] dark:bg-[#1C1C1E] pb-[calc(env(safe-area-inset-bottom,0)+12px)]">
               <button
                 onClick={() => setIsMobileDrawerOpen(false)}
-                className="w-full py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs shadow-md"
+                className="w-full py-3 rounded-2xl bg-teal-600 hover:bg-teal-700 text-white font-black text-xs shadow-md transition-all active:scale-98"
               >
-                Terapkan & Lihat Poster
+                Selesai & Lihat Poster
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* ── 6. AI HEALTH EDUCATION MODAL ── */}
+      {/* ── 7. AI TOPIC MODAL ── */}
       <AiTopicModal
         isOpen={isAiModalOpen}
         onClose={() => setIsAiModalOpen(false)}
