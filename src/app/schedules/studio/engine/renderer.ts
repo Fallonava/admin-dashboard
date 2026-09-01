@@ -51,31 +51,38 @@ export interface RenderOptions {
   websiteUrl: string;
   customLogoImg: HTMLImageElement | null;
   qrImage: HTMLImageElement | null;
+  topicImageImg?: HTMLImageElement | null;
   scaleFactor?: number;
 }
 
 const DEFAULT_ARTICLE_TOPIC: HealthEducationTopic = {
-  tag: "EDUKASI KESEHATAN",
-  title: "Angin Duduk",
-  subtitle: "Dikira Masuk Angin, Ternyata Fatal!",
+  tag: "KESEHATAN JANTUNG",
+  title: "Waspada Angin Duduk",
+  subtitle: "Nyeri Dada Menjalar, Jangan Disepelekan!",
   summary:
-    "Angin duduk adalah nyeri dada yang disebabkan oleh berkurangnya aliran darah ke otot jantung. Kondisi ini sering disalahartikan dan diremehkan karena mirip masuk angin biasa.",
+    "Angin duduk (angina) adalah nyeri dada akibat berkurangnya pasokan oksigen ke otot jantung. Kondisi ini sering disalahartikan sebagai masuk angin biasa padahal berisiko fatal.",
   bullets: [
     "Nyeri dada seperti ditindih beban berat",
-    "Menjalar ke leher, bahu, punggung, & rahang",
+    "Menjalar ke bahu, leher, punggung, & rahang",
     "Disertai sesak napas & keringat dingin",
   ],
   symptoms: [
-    "Nyeri dada terasa seperti tertindih atau ditekan",
-    "Nyeri menjalar ke bahu, punggung, leher, atau rahang",
-    "Rasa terbakar di dada mirip gejala maag/GERD",
+    "Nyeri dada terasa seperti tertindih atau ditekan kuat",
+    "Nyeri menjalar ke bahu, leher, atau rahang",
+    "Sensasi sesak napas dan keringat dingin mendadak",
   ],
   causes:
-    "Penyempitan pembuluh darah koroner akibat penumpukan plak kolesterol yang menghambat suplai oksigen ke otot jantung.",
+    "Penyempitan pembuluh darah koroner akibat penumpukan plak kolesterol (aterosklerosis).",
+  prevention: [
+    "Kontrol tekanan darah dan kolesterol rutin",
+    "Hindari merokok dan batasi konsumsi garam",
+    "Olahraga aerobik teratur minimal 30 menit sehari",
+  ],
   whenToDoctor:
-    "Segera ke IGD 24 Jam jika nyeri dada berlangsung >15 menit dan disertai keringat dingin, pusing, atau sesak napas.",
+    "Segera ke IGD 24 Jam jika nyeri dada berlangsung >15 menit dan disertai keringat dingin.",
   note: "IGD RSU Siaga Medika siaga 24 jam dengan tim dokter spesialis dan fasilitas EKG terpadu.",
-  sourceUrl: "Sumber: Kemenkes RI & Alodokter",
+  sourceUrl: "Sumber: PERKI & Kemenkes RI",
+  imageUrl: "https://images.unsplash.com/photo-1628348068343-c6a848d2b6dd?w=600&auto=format&fit=crop&q=80",
 };
 
 export function renderPoster(
@@ -124,6 +131,7 @@ export function renderPoster(
     websiteUrl,
     customLogoImg,
     qrImage,
+    topicImageImg,
     scaleFactor = 1,
   } = options;
 
@@ -141,7 +149,7 @@ export function renderPoster(
   const preset = THEME_PRESETS[themeMode] || THEME_PRESETS.siagaOfficial;
   const c = customColors.useCustom ? customColors : preset;
 
-  // Standardized High-Legibility SF Pro Stack
+  // Standardized High-Legibility SF Pro Typography Stack
   const fontSans = `-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, sans-serif`;
   const fontSerif = `"Playfair Display", "Merriweather", Georgia, serif`;
   const fontMono = `"JetBrains Mono", "SF Mono", monospace`;
@@ -292,16 +300,29 @@ export function renderPoster(
       ctx.restore();
     }
 
-    // 4. Middle Tier: Script "Jadwal" + "Poliklinik & Dokter Spesialis" Banner
+    // 4. Middle Tier: Modern iOS 27 Large Title "Jadwal Poliklinik & Dokter Spesialis"
     const midY = curY + 70;
     ctx.save();
-    ctx.fillStyle = "#0F172A";
-    ctx.font = `italic 700 42px ${fontScript}, ${baseFont}`;
-    ctx.fillText("Jadwal", padX, midY + 38);
 
+    // Aesthetic Script "Jadwal"
+    ctx.fillStyle = "#0F172A";
+    ctx.font = `italic 700 44px ${fontScript}, ${baseFont}`;
+    ctx.fillText("Jadwal", padX, midY + 36);
+
+    // Large Title "Poliklinik & Dokter Spesialis" in Apple SF Pro 900 Black
     ctx.fillStyle = "#0F172A";
     ctx.font = `900 32px ${baseFont}`;
-    ctx.fillText("Poliklinik & Dokter Spesialis", padX + 130, midY + 38);
+    ctx.fillText("Poliklinik & Dokter Spesialis", padX + 132, midY + 36);
+
+    // Subtitle Capsule Pill
+    ctx.fillStyle = "rgba(13, 148, 136, 0.1)";
+    ctx.beginPath();
+    ctx.roundRect(padX + 132, midY + 44, 210, 22, 11);
+    ctx.fill();
+
+    ctx.fillStyle = "#0F766E";
+    ctx.font = `800 10.5px ${baseFont}`;
+    ctx.fillText("🩺 PELAYANAN SPESIALIS TERPADU", padX + 142, midY + 59);
 
     // Right IGD 24 Jam Badge
     if (showIgdBadge) {
@@ -309,7 +330,7 @@ export function renderPoster(
       const igdX = padX + contentWidth - igdW;
       ctx.fillStyle = "rgba(13, 148, 136, 0.08)";
       ctx.beginPath();
-      ctx.roundRect(igdX, midY + 12, igdW, 32, 16);
+      ctx.roundRect(igdX, midY + 14, igdW, 32, 16);
       ctx.fill();
 
       ctx.strokeStyle = "rgba(13, 148, 136, 0.3)";
@@ -320,12 +341,12 @@ export function renderPoster(
       ctx.font = `800 11.5px ${baseFont}`;
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      ctx.fillText("🚨 IGD 24 Jam Siaga", igdX + igdW / 2, midY + 28);
+      ctx.fillText("🚨 IGD 24 Jam Siaga", igdX + igdW / 2, midY + 30);
     }
     ctx.restore();
 
     // 5. Date Banner Row
-    const dateRowY = midY + 54;
+    const dateRowY = midY + 68;
     ctx.save();
     ctx.fillStyle = c.footerBgStart || "#E11D48";
     ctx.font = `900 34px ${baseFont}`;
@@ -349,7 +370,6 @@ export function renderPoster(
     ctx.roundRect(padX, curY, contentWidth, headH, cardCornerRadius + 4);
     ctx.fill();
 
-    // Distinctive Styling per Visual Theme
     if (visualStyle === "luxuryGold") {
       ctx.strokeStyle = "#D4AF37";
       ctx.lineWidth = 2;
@@ -412,12 +432,11 @@ export function renderPoster(
     ctx.font = `700 13px ${baseFont}`;
     ctx.fillText(hospitalSubtitle, textStartX, curY + 76);
 
-    // Right Stacked Capsule Group (Auto-Layout Vertical Stack)
+    // Right Stacked Capsule Group
     const rightBoxW = 240;
     const rightBoxX = padX + contentWidth - rightBoxW - 16;
 
     if (showAccreditation) {
-      // Top Accreditation Capsule Pill
       const akredPillH = 30;
       const akredPillY = curY + 22;
 
@@ -436,7 +455,6 @@ export function renderPoster(
       ctx.textBaseline = "middle";
       ctx.fillText("⭐ ⭐ ⭐ ⭐ ⭐ PARIPURNA", rightBoxX + rightBoxW / 2, akredPillY + akredPillH / 2);
 
-      // Bottom Date Capsule Pill
       const datePillH = 40;
       const datePillY = curY + 62;
 
@@ -449,7 +467,6 @@ export function renderPoster(
       ctx.font = `800 13px ${baseFont}`;
       ctx.fillText(dateFormatted, rightBoxX + rightBoxW / 2, datePillY + datePillH / 2);
     } else {
-      // Centered Date Pill
       const datePillH = 44;
       const datePillY = curY + (headH - datePillH) / 2;
 
@@ -667,16 +684,17 @@ export function renderPoster(
     leftCurY = drawCard(spec, specMap[spec] || [], leftX, leftCurY, colW);
   }
 
-  // Draw Health Education Article Box in Left Column
+  // ── COMPREHENSIVE AI HEALTH EDUCATION CARD WITH MEDICAL IMAGE ──
   const article = aiTopic || DEFAULT_ARTICLE_TOPIC;
   const articleBoxY = leftCurY + 8;
   const articleBoxH = baseHeight - articleBoxY - (showFooter ? 130 : 50);
 
   if (showAiEducation && articleBoxH > 220) {
     ctx.save();
+    // Card Container
     const artGrad = ctx.createLinearGradient(leftX, articleBoxY, leftX, articleBoxY + articleBoxH);
     artGrad.addColorStop(0, "#FFFFFF");
-    artGrad.addColorStop(1, c.cardBgEnd || "#F0FDFA");
+    artGrad.addColorStop(1, c.cardBgEnd || "#F8FAFC");
     ctx.fillStyle = artGrad;
     ctx.beginPath();
     ctx.roundRect(leftX, articleBoxY, colW, articleBoxH, cardCornerRadius + 4);
@@ -686,32 +704,89 @@ export function renderPoster(
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
-    const artHeaderH = 100;
-    const artHeadGrad = ctx.createLinearGradient(leftX, articleBoxY, leftX + colW, articleBoxY + artHeaderH);
-    artHeadGrad.addColorStop(0, `${c.specBgStart}25`);
-    artHeadGrad.addColorStop(1, `${c.footerBgStart}15`);
-    ctx.fillStyle = artHeadGrad;
-    ctx.beginPath();
-    ctx.roundRect(leftX, articleBoxY, colW, artHeaderH, [cardCornerRadius + 4, cardCornerRadius + 4, 0, 0]);
-    ctx.fill();
+    // Top Header with Medical Image or Gradient Scrim
+    const artHeaderH = 110;
+    if (topicImageImg) {
+      // Draw Medical Photo
+      ctx.save();
+      ctx.beginPath();
+      ctx.roundRect(leftX, articleBoxY, colW, artHeaderH, [cardCornerRadius + 4, cardCornerRadius + 4, 0, 0]);
+      ctx.clip();
+      ctx.drawImage(topicImageImg, leftX, articleBoxY, colW, artHeaderH);
 
-    ctx.font = `56px ${baseFont}`;
-    ctx.fillStyle = `${c.specBgStart}20`;
-    ctx.textAlign = "right";
-    ctx.fillText("🫀", leftX + colW - 20, articleBoxY + 70);
+      // Dark Overlay Scrim for 100% Text Readability
+      const scrim = ctx.createLinearGradient(leftX, articleBoxY, leftX, articleBoxY + artHeaderH);
+      scrim.addColorStop(0, "rgba(15, 23, 42, 0.75)");
+      scrim.addColorStop(1, "rgba(15, 23, 42, 0.9)");
+      ctx.fillStyle = scrim;
+      ctx.fillRect(leftX, articleBoxY, colW, artHeaderH);
+      ctx.restore();
 
-    ctx.textAlign = "left";
-    ctx.fillStyle = c.footerBgStart || "#E11D48";
-    ctx.font = `900 32px ${baseFont}`;
-    ctx.fillText(article.title, leftX + 22, articleBoxY + 48);
+      // Top Tag Pill on Image
+      ctx.fillStyle = c.specBgStart || "#0D9488";
+      ctx.beginPath();
+      ctx.roundRect(leftX + 18, articleBoxY + 12, 140, 22, 11);
+      ctx.fill();
 
-    ctx.fillStyle = c.specBgStart || "#0D9488";
-    ctx.font = `800 15px ${baseFont}`;
-    ctx.fillText(article.subtitle || "Edukasi & Pencegahan Dini Medis", leftX + 22, articleBoxY + 78);
+      ctx.fillStyle = "#FFFFFF";
+      ctx.font = `900 10.5px ${baseFont}`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(article.tag || "EDUKASI MEDIS", leftX + 18 + 70, articleBoxY + 23);
 
-    let artTextY = articleBoxY + artHeaderH + 20;
-    const textPadX = leftX + 22;
-    const textW = colW - 44;
+      // Title & Subtitle on Image
+      ctx.textAlign = "left";
+      ctx.fillStyle = "#FFFFFF";
+      ctx.font = `900 24px ${baseFont}`;
+      ctx.fillText(article.title, leftX + 18, articleBoxY + 62);
+
+      ctx.fillStyle = "#38BDF8";
+      ctx.font = `800 13px ${baseFont}`;
+      ctx.fillText(article.subtitle || "Edukasi & Deteksi Dini Medis", leftX + 18, articleBoxY + 86);
+
+    } else {
+      // Gradient Header Fallback
+      const artHeadGrad = ctx.createLinearGradient(leftX, articleBoxY, leftX + colW, articleBoxY + artHeaderH);
+      artHeadGrad.addColorStop(0, `${c.specBgStart}25`);
+      artHeadGrad.addColorStop(1, `${c.footerBgStart}15`);
+      ctx.fillStyle = artHeadGrad;
+      ctx.beginPath();
+      ctx.roundRect(leftX, articleBoxY, colW, artHeaderH, [cardCornerRadius + 4, cardCornerRadius + 4, 0, 0]);
+      ctx.fill();
+
+      // Large Icon Watermark
+      ctx.font = `56px ${baseFont}`;
+      ctx.fillStyle = `${c.specBgStart}20`;
+      ctx.textAlign = "right";
+      ctx.fillText("🫀", leftX + colW - 20, articleBoxY + 70);
+
+      // Category Tag Pill
+      ctx.fillStyle = c.specBgStart || "#0D9488";
+      ctx.beginPath();
+      ctx.roundRect(leftX + 18, articleBoxY + 12, 130, 22, 11);
+      ctx.fill();
+
+      ctx.fillStyle = "#FFFFFF";
+      ctx.font = `900 10.5px ${baseFont}`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(article.tag || "EDUKASI MEDIS", leftX + 18 + 65, articleBoxY + 23);
+
+      // Title & Subtitle
+      ctx.textAlign = "left";
+      ctx.fillStyle = c.footerBgStart || "#E11D48";
+      ctx.font = `900 26px ${baseFont}`;
+      ctx.fillText(article.title, leftX + 18, articleBoxY + 62);
+
+      ctx.fillStyle = c.specBgStart || "#0D9488";
+      ctx.font = `800 13.5px ${baseFont}`;
+      ctx.fillText(article.subtitle || "Edukasi & Deteksi Dini Medis", leftX + 18, articleBoxY + 86);
+    }
+
+    // Body Medical Flow
+    let artTextY = articleBoxY + artHeaderH + 16;
+    const textPadX = leftX + 20;
+    const textW = colW - 40;
 
     const wrapText = (text: string, x: number, y: number, maxW: number, lineH: number): number => {
       const words = text.split(" ");
@@ -731,37 +806,51 @@ export function renderPoster(
       return currentY + lineH;
     };
 
+    // Summary
     ctx.fillStyle = "#1E293B";
-    ctx.font = `500 13px ${baseFont}`;
-    artTextY = wrapText(article.summary, textPadX, artTextY, textW, 18) + 6;
-
-    ctx.fillStyle = "#0F172A";
-    ctx.font = `800 14px ${baseFont}`;
-    ctx.fillText("Gejala " + article.title, textPadX, artTextY);
-    artTextY += 19;
-
-    const symptomsList = article.symptoms || article.bullets || [];
     ctx.font = `500 12.5px ${baseFont}`;
-    ctx.fillStyle = "#334155";
-    for (const sym of symptomsList.slice(0, 3)) {
-      ctx.fillText("• " + sym, textPadX + 6, artTextY);
-      artTextY += 18;
+    artTextY = wrapText(article.summary, textPadX, artTextY, textW, 17) + 6;
+
+    // Grid: Gejala & Pencegahan
+    const symptomsList = article.symptoms || article.bullets || [];
+    if (symptomsList.length > 0 && artTextY < articleBoxY + articleBoxH - 80) {
+      ctx.fillStyle = "#E11D48";
+      ctx.font = `800 13px ${baseFont}`;
+      ctx.fillText("⚠️ Gejala & Tanda Klinis:", textPadX, artTextY);
+      artTextY += 17;
+
+      ctx.font = `500 12px ${baseFont}`;
+      ctx.fillStyle = "#334155";
+      for (const sym of symptomsList.slice(0, 3)) {
+        if (artTextY > articleBoxY + articleBoxH - 50) break;
+        ctx.fillText("• " + sym, textPadX + 6, artTextY);
+        artTextY += 16;
+      }
+      artTextY += 4;
     }
-    artTextY += 6;
 
-    if (article.causes && artTextY < articleBoxY + articleBoxH - 70) {
-      ctx.fillStyle = "#0F172A";
-      ctx.font = `800 14px ${baseFont}`;
-      ctx.fillText("Penyebab " + article.title, textPadX, artTextY);
-      artTextY += 19;
+    // Pencegahan / Solusi
+    const prevList = article.prevention || [];
+    if (prevList.length > 0 && artTextY < articleBoxY + articleBoxH - 60) {
+      ctx.fillStyle = "#0D9488";
+      ctx.font = `800 13px ${baseFont}`;
+      ctx.fillText("🛡️ Pencegahan & Tips Medis:", textPadX, artTextY);
+      artTextY += 17;
 
-      ctx.font = `500 12.5px ${baseFont}`;
-      artTextY = wrapText(article.causes, textPadX, artTextY, textW, 17) + 6;
+      ctx.font = `500 12px ${baseFont}`;
+      ctx.fillStyle = "#334155";
+      for (const prv of prevList.slice(0, 2)) {
+        if (artTextY > articleBoxY + articleBoxH - 45) break;
+        ctx.fillText("✓ " + prv, textPadX + 6, artTextY);
+        artTextY += 16;
+      }
+      artTextY += 4;
     }
 
+    // Footnote Citation
     ctx.fillStyle = c.specBgStart || "#0284C7";
-    ctx.font = `italic 600 11.5px ${baseFont}`;
-    ctx.fillText(article.sourceUrl || "Sumber: RSU Siaga Medika Purbalingga", textPadX, articleBoxY + articleBoxH - 16);
+    ctx.font = `italic 600 11px ${baseFont}`;
+    ctx.fillText(article.sourceUrl || "Sumber: RSU Siaga Medika Purbalingga", textPadX, articleBoxY + articleBoxH - 14);
 
     ctx.restore();
   }
@@ -781,7 +870,6 @@ export function renderPoster(
     const leaveTotalH = Math.min(leaveHeaderH + leaveDoctors.length * (leaveRowH + 6) + 14, baseHeight - leaveCardY - (showFooter ? 80 : 30));
 
     ctx.save();
-    // Leave Card Background Container
     const leaveGrad = ctx.createLinearGradient(rightX, leaveCardY, rightX + colW, leaveCardY + leaveTotalH);
     leaveGrad.addColorStop(0, c.leaveBg || "#FEF2F2");
     leaveGrad.addColorStop(1, "#FFFFFF");
@@ -817,7 +905,6 @@ export function renderPoster(
     for (const lDoc of leaveDoctors) {
       if (rowY + leaveRowH > leaveCardY + leaveTotalH) break;
 
-      // Doctor Row Container
       ctx.fillStyle = "#FFFFFF";
       ctx.beginPath();
       ctx.roundRect(rightX + 8, rowY, colW - 16, leaveRowH, 8);
@@ -827,19 +914,16 @@ export function renderPoster(
       ctx.lineWidth = 1;
       ctx.stroke();
 
-      // Red Warning Dot
       ctx.fillStyle = c.leaveText || "#DC2626";
       ctx.beginPath();
       ctx.arc(rightX + 20, rowY + leaveRowH / 2, 4, 0, Math.PI * 2);
       ctx.fill();
 
-      // Doctor Name
       ctx.fillStyle = "#0F172A";
       ctx.font = `700 13px ${baseFont}`;
       ctx.textBaseline = "middle";
       ctx.fillText(lDoc.doctorName, rightX + 30, rowY + leaveRowH / 2);
 
-      // Specialty & Replacement on Right
       ctx.textAlign = "right";
       ctx.fillStyle = c.leaveText || "#DC2626";
       ctx.font = `800 11.5px ${baseFont}`;

@@ -135,6 +135,7 @@ export default function PosterStudioPage() {
   const previewContainerRef = useRef<HTMLDivElement | null>(null);
   const qrImageRef = useRef<HTMLImageElement | null>(null);
   const customLogoImgRef = useRef<HTMLImageElement | null>(null);
+  const topicImageImgRef = useRef<HTMLImageElement | null>(null);
 
   // SWR Data Fetching
   const { data: displayData } = useSWR<{
@@ -214,6 +215,21 @@ export default function PosterStudioPage() {
     customLogoImgRef.current = null;
     triggerCanvasRedraw();
   };
+
+  // Preload Topic Image for AI Health Education Card
+  useEffect(() => {
+    if (aiTopic?.imageUrl) {
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      img.src = aiTopic.imageUrl;
+      img.onload = () => {
+        topicImageImgRef.current = img;
+        triggerCanvasRedraw();
+      };
+    } else {
+      topicImageImgRef.current = null;
+    }
+  }, [aiTopic?.imageUrl]);
 
   // Process Doctor Schedule Items
   const scheduleData = useCallback((): {
@@ -319,6 +335,7 @@ export default function PosterStudioPage() {
       websiteUrl,
       customLogoImg: customLogoImgRef.current,
       qrImage: qrImageRef.current,
+      topicImageImg: topicImageImgRef.current,
       scaleFactor: 1.5,
     });
   }, [

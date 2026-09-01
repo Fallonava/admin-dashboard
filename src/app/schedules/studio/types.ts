@@ -109,8 +109,10 @@ export interface HealthEducationTopic {
   note: string;
   symptoms?: string[];
   causes?: string;
+  prevention?: string[];
   whenToDoctor?: string;
   sourceUrl?: string;
+  imageUrl?: string;
 }
 
 export interface DoctorScheduleItem {
