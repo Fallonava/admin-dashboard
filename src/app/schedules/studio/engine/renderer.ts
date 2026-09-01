@@ -305,10 +305,65 @@ export function renderPoster(
     ctx.roundRect(padX, curY, contentWidth, headH, cardCornerRadius + 4);
     ctx.fill();
 
-    // Glass Border
-    ctx.strokeStyle = visualStyle === "liquidGlass" ? "rgba(255, 255, 255, 0.6)" : "rgba(0,0,0,0.08)";
-    ctx.lineWidth = 1.5;
-    ctx.stroke();
+    // Distinctive Header Border & Embellishments
+    if (visualStyle === "luxuryGold") {
+      ctx.strokeStyle = "#D4AF37";
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // Inner Gold Hairline Frame
+      ctx.strokeStyle = "rgba(212, 175, 55, 0.4)";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.roundRect(padX + 5, curY + 5, contentWidth - 10, headH - 10, cardCornerRadius);
+      ctx.stroke();
+
+      // Gold Sparkle Embellishment
+      ctx.fillStyle = "#D4AF37";
+      ctx.font = `18px ${baseFont}`;
+      ctx.textAlign = "right";
+      ctx.fillText("✨", padX + contentWidth - 280, curY + 45);
+    } else if (visualStyle === "monochromeSwiss") {
+      ctx.strokeStyle = "#09090B";
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // Swiss Red Accent Tab on Top Left
+      ctx.fillStyle = "#DC2626";
+      ctx.fillRect(padX, curY, 8, headH);
+    } else if (visualStyle === "vintageBotanical") {
+      ctx.strokeStyle = "rgba(21, 128, 61, 0.25)";
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      // Botanical Leaf Watermark
+      ctx.fillStyle = "rgba(21, 128, 61, 0.15)";
+      ctx.font = `48px ${baseFont}`;
+      ctx.textAlign = "right";
+      ctx.fillText("🌿", padX + contentWidth - 270, curY + 75);
+    } else if (visualStyle === "sakuraZen") {
+      ctx.strokeStyle = "rgba(190, 24, 93, 0.25)";
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      // Sakura Blossom Watermark
+      ctx.fillStyle = "rgba(190, 24, 93, 0.15)";
+      ctx.font = `48px ${baseFont}`;
+      ctx.textAlign = "right";
+      ctx.fillText("🌸", padX + contentWidth - 270, curY + 75);
+    } else if (visualStyle === "neonNoir") {
+      ctx.strokeStyle = "#06B6D4";
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+    } else if (visualStyle === "liquidGlass") {
+      ctx.strokeStyle = "rgba(2, 132, 199, 0.25)";
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+    } else {
+      ctx.strokeStyle = "rgba(0, 0, 0, 0.08)";
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+    }
 
     // Emblem on Left
     const embSize = 64;
