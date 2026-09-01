@@ -534,39 +534,39 @@ export function renderPoster(
       return currentY + lineH;
     };
 
-    ctx.fillStyle = c.cardText || "#334155";
-    ctx.font = `500 12.5px ${baseFont}`;
-    artTextY = wrapText(article.summary, textPadX, artTextY, textW, 17) + 6;
+    ctx.fillStyle = "#1E293B";
+    ctx.font = `500 13px ${baseFont}`;
+    artTextY = wrapText(article.summary, textPadX, artTextY, textW, 18) + 6;
 
     // Gejala Section
-    ctx.fillStyle = c.cardText || "#0F172A";
-    ctx.font = `800 13.5px ${baseFont}`;
+    ctx.fillStyle = "#0F172A";
+    ctx.font = `800 14px ${baseFont}`;
     ctx.fillText("Gejala " + article.title, textPadX, artTextY);
-    artTextY += 18;
+    artTextY += 19;
 
     const symptomsList = article.symptoms || article.bullets || [];
-    ctx.font = `500 12px ${baseFont}`;
-    ctx.fillStyle = c.cardText ? `${c.cardText}CC` : "#475569";
+    ctx.font = `500 12.5px ${baseFont}`;
+    ctx.fillStyle = "#334155";
     for (const sym of symptomsList.slice(0, 3)) {
       ctx.fillText("• " + sym, textPadX + 6, artTextY);
-      artTextY += 17;
+      artTextY += 18;
     }
     artTextY += 6;
 
     // Penyebab Section
     if (article.causes && artTextY < articleBoxY + articleBoxH - 70) {
-      ctx.fillStyle = c.cardText || "#0F172A";
-      ctx.font = `800 13.5px ${baseFont}`;
+      ctx.fillStyle = "#0F172A";
+      ctx.font = `800 14px ${baseFont}`;
       ctx.fillText("Penyebab " + article.title, textPadX, artTextY);
-      artTextY += 18;
+      artTextY += 19;
 
-      ctx.font = `500 12px ${baseFont}`;
-      artTextY = wrapText(article.causes, textPadX, artTextY, textW, 16) + 6;
+      ctx.font = `500 12.5px ${baseFont}`;
+      artTextY = wrapText(article.causes, textPadX, artTextY, textW, 17) + 6;
     }
 
     // Footnote
     ctx.fillStyle = c.specBgStart || "#0284C7";
-    ctx.font = `italic 11px ${baseFont}`;
+    ctx.font = `italic 600 11.5px ${baseFont}`;
     ctx.fillText(article.sourceUrl || "Sumber: RSU Siaga Medika Purbalingga", textPadX, articleBoxY + articleBoxH - 16);
 
     ctx.restore();
