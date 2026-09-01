@@ -242,7 +242,7 @@ export default function PosterStudioPage() {
     }
 
     const { doctors = [], shifts = [], leaves = [] } = displayData;
-    const dayIdx = selectedDate.getDay();
+    const dayIdx = (selectedDate.getDay() + 6) % 7; // SIMED DB: 0=Senin, 1=Selasa ... 6=Minggu
 
     const selDateStr = selectedDate.toISOString().slice(0, 10);
     const activeLeaves = leaves.filter((l) => {
