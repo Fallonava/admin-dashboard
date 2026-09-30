@@ -4236,23 +4236,68 @@
         line-height: 1 !important;
       }
 
-      /* ═══ 🕒 DUAL-ROW TIME CAPSULE (Khusus Status TERJADWAL) ═══ */
+      /* ═══ 🕒 DUAL-ROW TIME CAPSULE & INLINE PILL (Khusus Status TERJADWAL) ═══ */
+      .doc-header-row {
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        flex-wrap: nowrap !important;
+        margin-bottom: 2px !important;
+        max-width: 100% !important;
+      }
+
+      .doc-header-row .doc-spec-badge {
+        margin-bottom: 0 !important;
+      }
+
+      .status-pill-inline {
+        height: 25px !important;
+        padding: 2px 10px !important;
+        font-size: 12px !important;
+        font-weight: 800 !important;
+        margin: 0 !important;
+        flex-shrink: 0 !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 5px !important;
+        border-radius: 9999px !important;
+      }
+
+      .status-pill-inline .status-glyph,
+      .status-pill-inline .status-icon {
+        width: 13px !important;
+        height: 13px !important;
+      }
+
+      .platter.st-terjadwal .meta-col,
+      .meta-col.meta-col-terjadwal {
+        width: 155px !important;
+        min-width: 155px !important;
+        max-width: 155px !important;
+        height: 74px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+        align-items: flex-end !important;
+        gap: 0 !important;
+        flex-shrink: 0 !important;
+      }
+
       .platter.st-terjadwal .jam-box.jam-box-dual,
-      .platter:not(.active):not(.platter-mini) .jam-box.jam-box-dual,
       .jam-box.jam-box-dual {
-        height: 38px !important;
-        min-width: 140px !important;
-        width: 140px !important;
-        padding: 3px 9px !important;
-        border-radius: 12px !important;
+        height: 52px !important;
+        min-width: 148px !important;
+        width: 148px !important;
+        padding: 5px 11px !important;
+        border-radius: 14px !important;
         box-sizing: border-box !important;
         display: flex !important;
         flex-direction: column !important;
         justify-content: space-evenly !important;
         align-items: stretch !important;
         background: rgba(240, 249, 255, 0.96) !important;
-        border: 1px solid rgba(14, 165, 233, 0.32) !important;
-        box-shadow: inset 0 1px 1.5px #FFFFFF, 0 2px 6px rgba(2, 132, 199, 0.08) !important;
+        border: 1px solid rgba(14, 165, 233, 0.35) !important;
+        box-shadow: inset 0 1px 1.5px #FFFFFF, 0 3px 8px rgba(2, 132, 199, 0.10) !important;
         margin: 0 !important;
       }
 
@@ -4266,9 +4311,9 @@
 
       .jam-dual-label {
         font-family: "Plus Jakarta Sans", sans-serif !important;
-        font-size: 9.5px !important;
+        font-size: 10px !important;
         font-weight: 800 !important;
-        letter-spacing: 0.04em !important;
+        letter-spacing: 0.05em !important;
         text-transform: uppercase !important;
         line-height: 1 !important;
       }
@@ -4283,7 +4328,7 @@
 
       .jam-dual-val {
         font-family: "Plus Jakarta Sans", "Inter", sans-serif !important;
-        font-size: 13.5px !important;
+        font-size: 15px !important;
         font-weight: 900 !important;
         font-feature-settings: "tnum" 1 !important;
         font-variant-numeric: tabular-nums !important;
@@ -4296,10 +4341,22 @@
         width: 100% !important;
         height: 1px !important;
         background: rgba(14, 165, 233, 0.16) !important;
-        margin: 0 !important;
+        margin: 2px 0 !important;
       }
 
-      /* Dark mode support untuk Dual-Row */
+      /* Single-box untuk TERJADWAL jika hanya 1 jam */
+      .platter.st-terjadwal .jam-box:not(.jam-box-dual) {
+        height: 44px !important;
+        min-width: 125px !important;
+        padding: 4px 14px !important;
+        border-radius: 14px !important;
+      }
+
+      .platter.st-terjadwal .jam-box:not(.jam-box-dual) .jam-val {
+        font-size: 22px !important;
+      }
+
+      /* Dark mode support untuk Dual-Row & Inline Pill */
       [data-theme="dark"] .jam-box.jam-box-dual {
         background: rgba(255, 255, 255, 0.06) !important;
         border-color: rgba(56, 189, 248, 0.28) !important;
@@ -6959,21 +7016,31 @@
           }
         }
 
+        const isTerjadwal = st === "TERJADWAL";
+
         return `
           <div class="platter-main">
             <div class="initials">${avatarText}</div>
             <div class="info-col">
-              <div class="doc-spec-badge ${statusTheme}">
-                <span class="spec-dot"></span>
-                <span class="doc-spec">${esc(d.Spesialis)}</span>
+              <div class="doc-header-row">
+                <div class="doc-spec-badge ${statusTheme}">
+                  <span class="spec-dot"></span>
+                  <span class="doc-spec">${esc(d.Spesialis)}</span>
+                </div>
+                ${isTerjadwal ? `
+                <div class="status-pill status-pill-inline">
+                  ${statusGlyph}
+                  <span class="status-text">${statusLabel}</span>
+                </div>` : ''}
               </div>
               <div class="doc-name">${esc(d.Dokter)}</div>
             </div>
-            <div class="meta-col">
+            <div class="meta-col ${isTerjadwal ? 'meta-col-terjadwal' : ''}">
+              ${!isTerjadwal ? `
               <div class="status-pill">
                 ${statusGlyph}
                 <span class="status-text">${statusLabel}</span>
-              </div>
+              </div>` : ''}
               ${jamBoxHTML}
             </div>
           </div>
