@@ -4236,6 +4236,92 @@
         line-height: 1 !important;
       }
 
+      /* ═══ 🕒 DUAL-ROW TIME CAPSULE (Khusus Status TERJADWAL) ═══ */
+      .platter.st-terjadwal .jam-box.jam-box-dual,
+      .platter:not(.active):not(.platter-mini) .jam-box.jam-box-dual,
+      .jam-box.jam-box-dual {
+        height: 38px !important;
+        min-width: 140px !important;
+        width: 140px !important;
+        padding: 3px 9px !important;
+        border-radius: 12px !important;
+        box-sizing: border-box !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-evenly !important;
+        align-items: stretch !important;
+        background: rgba(240, 249, 255, 0.96) !important;
+        border: 1px solid rgba(14, 165, 233, 0.32) !important;
+        box-shadow: inset 0 1px 1.5px #FFFFFF, 0 2px 6px rgba(2, 132, 199, 0.08) !important;
+        margin: 0 !important;
+      }
+
+      .jam-dual-row {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        width: 100% !important;
+        line-height: 1 !important;
+      }
+
+      .jam-dual-label {
+        font-family: "Plus Jakarta Sans", sans-serif !important;
+        font-size: 9.5px !important;
+        font-weight: 800 !important;
+        letter-spacing: 0.04em !important;
+        text-transform: uppercase !important;
+        line-height: 1 !important;
+      }
+
+      .row-daftar .jam-dual-label {
+        color: #D97706 !important;
+      }
+
+      .row-praktek .jam-dual-label {
+        color: #0284C7 !important;
+      }
+
+      .jam-dual-val {
+        font-family: "Plus Jakarta Sans", "Inter", sans-serif !important;
+        font-size: 13.5px !important;
+        font-weight: 900 !important;
+        font-feature-settings: "tnum" 1 !important;
+        font-variant-numeric: tabular-nums !important;
+        color: #0F172A !important;
+        letter-spacing: -0.01em !important;
+        line-height: 1 !important;
+      }
+
+      .jam-dual-divider {
+        width: 100% !important;
+        height: 1px !important;
+        background: rgba(14, 165, 233, 0.16) !important;
+        margin: 0 !important;
+      }
+
+      /* Dark mode support untuk Dual-Row */
+      [data-theme="dark"] .jam-box.jam-box-dual {
+        background: rgba(255, 255, 255, 0.06) !important;
+        border-color: rgba(56, 189, 248, 0.28) !important;
+        box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1) !important;
+      }
+
+      [data-theme="dark"] .row-daftar .jam-dual-label {
+        color: #FBBF24 !important;
+      }
+
+      [data-theme="dark"] .row-praktek .jam-dual-label {
+        color: #38BDF8 !important;
+      }
+
+      [data-theme="dark"] .jam-dual-val {
+        color: #F8FAFC !important;
+      }
+
+      [data-theme="dark"] .jam-dual-divider {
+        background: rgba(255, 255, 255, 0.12) !important;
+      }
+
       /* ═══ PROPER APPLE WALLET STYLE TV QR & FULL-WIDTH HOTLINE CARD ═══ */
       .tv-qr-hero-card {
         width: 100%;
@@ -6798,15 +6884,80 @@
 
       // ===== CARD HTML BUILDER (Satu Fungsi untuk render() & _renderSidebar()) =====
       const buildCardHTML = (d, avatarText, statusGlyph, statusLabel, labelJam, labelLive) => {
-        const jamTampil = d.JamDaftar && d.JamDaftar !== "-"
-          ? esc(d.JamDaftar)
-          : formatJam((d.JamPraktek || "").split("-")[0]);
-        const isCPO = ["CUTI", "PENUH", "OPERASI"].some(st => (d.Status || "").toUpperCase().includes(st));
+        const st = (d.Status || "").toUpperCase();
         const specTheme = getSpecialistTheme(d.Spesialis);
         const statusTheme = getStatusThemeClass(d.Status);
+        const isCPO = ["CUTI", "PENUH", "OPERASI"].some(s => st.includes(s));
 
-        const hasJam = (d.JamPraktek && d.JamPraktek !== "-") || (d.JamDaftar && d.JamDaftar !== "-");
-        const jamDisplay = hasJam ? jamTampil : (d.Status === "TERJADWAL" ? "SESUAI JADWAL" : "—:—");
+        // Format waktu terstandarisasi
+        const jamPraktekMulai = (d.JamPraktek && d.JamPraktek !== "-")
+          ? formatJam((d.JamPraktek || "").split("-")[0]).trim()
+          : "";
+        const jamDaftarMulai = (d.JamDaftar && d.JamDaftar !== "-")
+          ? formatJam(d.JamDaftar).trim()
+          : "";
+        const jamPraktekFull = (d.JamPraktek && d.JamPraktek !== "-")
+          ? formatJam(d.JamPraktek).trim()
+          : "";
+
+        // Evaluasi Dual Time khusus status TERJADWAL
+        const hasDualTime = (st === "TERJADWAL") &&
+                            Boolean(jamDaftarMulai && jamPraktekMulai && jamDaftarMulai !== jamPraktekMulai);
+
+        // Tentukan nilai jam untuk Single-Row fallback
+        let singleJamVal = "—:—";
+        if (st === "PENDAFTARAN") {
+          singleJamVal = jamDaftarMulai || jamPraktekMulai || "SESUAI JADWAL";
+        } else if (st === "PRAKTEK") {
+          singleJamVal = jamPraktekMulai || jamDaftarMulai || "SESUAI JADWAL";
+        } else if (st === "TERJADWAL") {
+          singleJamVal = jamPraktekMulai || jamDaftarMulai || "SESUAI JADWAL";
+        } else {
+          singleJamVal = jamDaftarMulai || jamPraktekMulai || "SESUAI JADWAL";
+        }
+
+        const hasJam = Boolean(jamPraktekMulai || jamDaftarMulai);
+
+        // Keterangan jam untuk pita detail bawah (.detail-time)
+        let jamDetailTampil = "";
+        if (st === "PENDAFTARAN") {
+          jamDetailTampil = jamDaftarMulai ? `${jamDaftarMulai} WIB` : (jamPraktekFull ? `${jamPraktekFull} WIB` : "Sesuai Jadwal");
+        } else if (st === "PRAKTEK") {
+          jamDetailTampil = jamPraktekFull ? `${jamPraktekFull} WIB` : (jamPraktekMulai ? `${jamPraktekMulai} WIB` : "Sesuai Jadwal");
+        } else if (st === "TERJADWAL") {
+          if (hasDualTime) {
+            jamDetailTampil = `Daftar ${jamDaftarMulai} • Praktek ${jamPraktekFull || jamPraktekMulai} WIB`;
+          } else {
+            jamDetailTampil = jamPraktekFull ? `${jamPraktekFull} WIB` : (jamPraktekMulai ? `${jamPraktekMulai} WIB` : "Sesuai Jadwal");
+          }
+        } else {
+          jamDetailTampil = jamPraktekFull ? `${jamPraktekFull} WIB` : (jamDaftarMulai ? `${jamDaftarMulai} WIB` : "Sesuai Jadwal");
+        }
+
+        // Render jam-box: Dual-Row atau Single-Row
+        let jamBoxHTML = "";
+        if (!isCPO) {
+          if (hasDualTime) {
+            jamBoxHTML = `
+              <div class="jam-box jam-box-dual" title="Buka Loket Pendaftaran & Mulai Praktek">
+                <div class="jam-dual-row row-daftar">
+                  <span class="jam-dual-label">DAFTAR</span>
+                  <span class="jam-dual-val">${esc(jamDaftarMulai)}</span>
+                </div>
+                <div class="jam-dual-divider"></div>
+                <div class="jam-dual-row row-praktek">
+                  <span class="jam-dual-label">PRAKTEK</span>
+                  <span class="jam-dual-val">${esc(jamPraktekMulai)}</span>
+                </div>
+              </div>`;
+          } else {
+            jamBoxHTML = `
+              <div class="jam-box ${!hasJam ? 'jam-box-fallback' : ''}">
+                <svg class="jam-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <span class="jam-val ${st === 'PENDAFTARAN' ? 'jam-val-daftar' : ''}" style="${!hasJam ? 'font-size:14px; font-weight:800; opacity:0.85;' : ''}">${esc(singleJamVal)}</span>
+              </div>`;
+          }
+        }
 
         return `
           <div class="platter-main">
@@ -6823,11 +6974,7 @@
                 ${statusGlyph}
                 <span class="status-text">${statusLabel}</span>
               </div>
-              ${!isCPO ? `
-              <div class="jam-box ${!hasJam ? 'jam-box-fallback' : ''}">
-                <svg class="jam-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                <span class="jam-val jam-val-daftar" style="${!hasJam ? 'font-size:14px; font-weight:800; opacity:0.85;' : ''}">${jamDisplay}</span>
-              </div>` : ""}
+              ${jamBoxHTML}
             </div>
           </div>
           <div class="platter-detail-wrap">
@@ -6837,7 +6984,7 @@
                 <svg class="detail-clock-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                 <span class="detail-label">${labelJam}</span>
               </div>
-              <span class="detail-time">${jamTampil} WIB</span>
+              <span class="detail-time">${jamDetailTampil}</span>
             </div>
             <div class="live-status">
               <div class="live-wave">
@@ -8843,7 +8990,7 @@
               const id = `${d.Dokter}_${shiftJam}`;
               const specTheme = getSpecialistTheme(d.Spesialis);
               const statusTheme = getStatusThemeClass(d.Status);
-              const hash = `${d.Status}|${d.Jam}|${d._isActive}|${statusTheme}|${d["Code Antrian"] || ""}|${d.JamDaftar}`;
+              const hash = `${d.Status}|${d.Jam}|${d.JamPraktek || ""}|${d._isActive}|${statusTheme}|${d["Code Antrian"] || ""}|${d.JamDaftar}`;
 
               // Helpers for styles
               const st = (d.Status || "").toUpperCase();
