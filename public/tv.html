@@ -5722,158 +5722,246 @@
         transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
       }
 
-      /* 🔴 Apple 3D Tactile Status Pass: CUTI */
+      /* ═══════════════════════════════════════════════════════════════
+         🎟️ APPLE WALLET EVENT TICKET PASS & BENTO CHAMBER DESIGN
+         ═══════════════════════════════════════════════════════════════ */
+      /* Summary Chips in Header */
+      .apple-status-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 2.5px 8.5px;
+        border-radius: 9999px;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 10px;
+        font-weight: 900;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+      }
+      .apple-status-chip .chip-radar {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+      }
+      .chip-cuti { background: #FFE4E6; color: #BE123C; border: 1px solid #FDA4AF; }
+      .chip-cuti .chip-radar { background: #E11D48; box-shadow: 0 0 6px rgba(225,29,72,0.8); }
+      .chip-operasi { background: #EDE9FE; color: #6D28D9; border: 1px solid #DDD6FE; }
+      .chip-operasi .chip-radar { background: #7C3AED; box-shadow: 0 0 6px rgba(124,58,237,0.8); }
+      .chip-penuh { background: #FFEDD5; color: #C2410C; border: 1px solid #FED7AA; }
+      .chip-penuh .chip-radar { background: #EA580C; box-shadow: 0 0 6px rgba(234,88,12,0.8); }
+
+      [data-theme="dark"] .chip-cuti { background: rgba(225,29,72,0.22); color: #FDA4AF; border-color: rgba(244,63,94,0.45); }
+      [data-theme="dark"] .chip-operasi { background: rgba(124,58,237,0.22); color: #DDD6FE; border-color: rgba(168,85,247,0.45); }
+      [data-theme="dark"] .chip-penuh { background: rgba(234,88,12,0.22); color: #FED7AA; border-color: rgba(251,146,60,0.45); }
+
+      /* Hero Glanceable Time/Date Pill in Card Top-Right */
+      .status-hero-time-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 3.5px 10px;
+        border-radius: 8px;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 11px;
+        font-weight: 900;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+        color: #FFFFFF !important;
+      }
+      .pill-hero-cuti {
+        background: linear-gradient(135deg, #BE123C 0%, #E11D48 100%);
+        box-shadow: 0 2.5px 6px rgba(190, 18, 60, 0.35);
+      }
+      .pill-hero-operasi {
+        background: linear-gradient(135deg, #6D28D9 0%, #7C3AED 100%);
+        box-shadow: 0 2.5px 6px rgba(109, 40, 217, 0.35);
+      }
+      .pill-hero-penuh {
+        background: linear-gradient(135deg, #C2410C 0%, #EA580C 100%);
+        box-shadow: 0 2.5px 6px rgba(194, 65, 12, 0.35);
+      }
+
+      /* Bento Sub-Platter Chamber (Kotak Inset Cekung) */
+      .bento-sub-chamber {
+        border-radius: 12px;
+        background: rgba(0, 0, 0, 0.035);
+        border: 1px solid rgba(0, 0, 0, 0.06);
+        padding: 8px 11px;
+        display: flex;
+        flex-direction: column;
+        gap: 4.5px;
+        box-sizing: border-box;
+      }
+      [data-theme="dark"] .bento-sub-chamber {
+        background: rgba(255, 255, 255, 0.04);
+        border-color: rgba(255, 255, 255, 0.08);
+      }
+
+      .bento-row {
+        display: flex;
+        align-items: flex-start;
+        gap: 6px;
+        font-size: 11.5px;
+        line-height: 1.25;
+      }
+      .bento-icon {
+        font-size: 13.5px;
+        flex-shrink: 0;
+        margin-top: 1px;
+      }
+      .bento-reason {
+        color: #334155;
+        font-weight: 700;
+      }
+      [data-theme="dark"] .bento-reason {
+        color: #E2E8F0;
+      }
+      .bento-solution {
+        color: #0284C7;
+        font-weight: 800;
+      }
+      [data-theme="dark"] .bento-solution {
+        color: #38BDF8;
+      }
+
+      /* 🔴 Card CUTI (Apple Ticket Pass) */
       .status-card-cuti {
-        background: linear-gradient(180deg, #FFFFFF 0%, #FFF1F2 100%) !important;
+        background: linear-gradient(170deg, #FFFFFF 0%, #FFF1F2 65%, #FFE4E6 100%) !important;
         border: 1.5px solid rgba(254, 205, 211, 0.95) !important;
-        border-left: 5px solid #E11D48 !important;
-        border-top: 1.5px solid #FFFFFF !important;
-        box-shadow: 0 3px 0 rgba(253, 164, 175, 0.75), 0 6px 14px rgba(225, 29, 72, 0.08) !important;
+        border-left: 5.5px solid #E11D48 !important;
+        border-top: 2px solid #FFFFFF !important;
+        box-shadow: 0 3px 0 rgba(253, 164, 175, 0.8), 0 8px 18px rgba(225, 29, 72, 0.09) !important;
       }
       .status-card-cuti .status-pass-badge {
         background: #FFE4E6 !important;
         color: #BE123C !important;
         border: 1px solid #FDA4AF !important;
-        box-shadow: 0 2px 0 #FECDD3 !important;
+        box-shadow: 0 1.5px 0 #FECDD3 !important;
       }
       .status-card-cuti .status-pass-avatar {
         background: linear-gradient(135deg, #FFE4E6 0%, #FECDD3 100%) !important;
         border: 1.5px solid #FDA4AF !important;
         color: #E11D48 !important;
-        box-shadow: 0 3px 8px -2px rgba(225, 29, 72, 0.25) !important;
+        box-shadow: 0 4px 10px -2px rgba(225, 29, 72, 0.28) !important;
       }
       .status-card-cuti .doc-name { color: #0F172A !important; }
-      .status-card-cuti .status-pass-footer {
-        background: rgba(225, 29, 72, 0.08) !important;
-        border: 1px solid rgba(225, 29, 72, 0.2) !important;
-        color: #9F1239 !important;
-      }
 
-      /* 🟣 Apple 3D Tactile Status Pass: OPERASI IBS */
+      /* 🟣 Card OPERASI IBS (Apple Ticket Pass) */
       .status-card-operasi {
-        background: linear-gradient(180deg, #FFFFFF 0%, #F5F3FF 100%) !important;
+        background: linear-gradient(170deg, #FFFFFF 0%, #F5F3FF 65%, #EDE9FE 100%) !important;
         border: 1.5px solid rgba(221, 214, 254, 0.95) !important;
-        border-left: 5px solid #7C3AED !important;
-        border-top: 1.5px solid #FFFFFF !important;
-        box-shadow: 0 3px 0 rgba(196, 181, 253, 0.75), 0 6px 14px rgba(124, 58, 237, 0.08) !important;
+        border-left: 5.5px solid #7C3AED !important;
+        border-top: 2px solid #FFFFFF !important;
+        box-shadow: 0 3px 0 rgba(196, 181, 253, 0.8), 0 8px 18px rgba(124, 58, 237, 0.09) !important;
       }
       .status-card-operasi .status-pass-badge {
         background: #EDE9FE !important;
         color: #6D28D9 !important;
         border: 1px solid #C4B5FD !important;
-        box-shadow: 0 2px 0 #DDD6FE !important;
+        box-shadow: 0 1.5px 0 #DDD6FE !important;
       }
       .status-card-operasi .status-pass-avatar {
         background: linear-gradient(135deg, #EDE9FE 0%, #DDD6FE 100%) !important;
         border: 1.5px solid #C4B5FD !important;
         color: #7C3AED !important;
-        box-shadow: 0 3px 8px -2px rgba(124, 58, 237, 0.25) !important;
+        box-shadow: 0 4px 10px -2px rgba(124, 58, 237, 0.28) !important;
       }
       .status-card-operasi .doc-name { color: #0F172A !important; }
-      .status-card-operasi .status-pass-footer {
-        background: rgba(124, 58, 237, 0.08) !important;
-        border: 1px solid rgba(124, 58, 237, 0.2) !important;
-        color: #5B21B6 !important;
-      }
 
-      /* 🟠 Apple 3D Tactile Status Pass: KUOTA PENUH */
+      /* 🟠 Card KUOTA PENUH (Apple Ticket Pass) */
       .status-card-penuh {
-        background: linear-gradient(180deg, #FFFFFF 0%, #FFF7ED 100%) !important;
+        background: linear-gradient(170deg, #FFFFFF 0%, #FFF7ED 65%, #FFEDD5 100%) !important;
         border: 1.5px solid rgba(254, 215, 170, 0.95) !important;
-        border-left: 5px solid #EA580C !important;
-        border-top: 1.5px solid #FFFFFF !important;
-        box-shadow: 0 3px 0 rgba(253, 186, 116, 0.75), 0 6px 14px rgba(234, 88, 12, 0.08) !important;
+        border-left: 5.5px solid #EA580C !important;
+        border-top: 2px solid #FFFFFF !important;
+        box-shadow: 0 3px 0 rgba(253, 186, 116, 0.8), 0 8px 18px rgba(234, 88, 12, 0.09) !important;
       }
       .status-card-penuh .status-pass-badge {
         background: #FFEDD5 !important;
         color: #C2410C !important;
         border: 1px solid #FDBA74 !important;
-        box-shadow: 0 2px 0 #FED7AA !important;
+        box-shadow: 0 1.5px 0 #FED7AA !important;
       }
       .status-card-penuh .status-pass-avatar {
         background: linear-gradient(135deg, #FFEDD5 0%, #FED7AA 100%) !important;
         border: 1.5px solid #FDBA74 !important;
         color: #EA580C !important;
-        box-shadow: 0 3px 8px -2px rgba(234, 88, 12, 0.25) !important;
+        box-shadow: 0 4px 10px -2px rgba(234, 88, 12, 0.28) !important;
       }
       .status-card-penuh .doc-name { color: #0F172A !important; }
-      .status-card-penuh .status-pass-footer {
-        background: rgba(234, 88, 12, 0.08) !important;
-        border: 1px solid rgba(234, 88, 12, 0.2) !important;
-        color: #9A3412 !important;
-      }
 
-      /* Dark Mode Status Passes */
+      /* Dark Mode Variations */
       [data-theme="dark"] .status-card-cuti {
-        background: linear-gradient(180deg, rgba(225, 29, 72, 0.2) 0%, rgba(136, 19, 55, 0.28) 100%) !important;
-        border: 1.5px solid rgba(244, 63, 94, 0.4) !important;
-        border-left: 5px solid #FB7185 !important;
-        border-top: 1.5px solid rgba(251, 113, 133, 0.5) !important;
-        box-shadow: 0 3px 0 rgba(136, 19, 55, 0.7), 0 6px 14px rgba(0, 0, 0, 0.4) !important;
+        background: linear-gradient(170deg, rgba(225, 29, 72, 0.22) 0%, rgba(136, 19, 55, 0.30) 100%) !important;
+        border: 1.5px solid rgba(244, 63, 94, 0.45) !important;
+        border-left: 5.5px solid #FB7185 !important;
+        border-top: 2px solid rgba(251, 113, 133, 0.55) !important;
+        box-shadow: 0 3px 0 rgba(136, 19, 55, 0.75), 0 8px 20px rgba(0, 0, 0, 0.45) !important;
       }
       [data-theme="dark"] .status-card-cuti .status-pass-badge {
-        background: rgba(225, 29, 72, 0.25) !important;
+        background: rgba(225, 29, 72, 0.28) !important;
         color: #FDA4AF !important;
-        border-color: rgba(244, 63, 94, 0.5) !important;
+        border-color: rgba(244, 63, 94, 0.55) !important;
       }
       [data-theme="dark"] .status-card-cuti .status-pass-avatar {
-        background: rgba(225, 29, 72, 0.25) !important;
-        border-color: rgba(244, 63, 94, 0.5) !important;
+        background: rgba(225, 29, 72, 0.28) !important;
+        border-color: rgba(244, 63, 94, 0.55) !important;
         color: #FDA4AF !important;
       }
       [data-theme="dark"] .status-card-cuti .doc-name { color: #FFFFFF !important; }
-      [data-theme="dark"] .status-card-cuti .status-pass-footer {
-        background: rgba(225, 29, 72, 0.16) !important;
-        border-color: rgba(244, 63, 94, 0.35) !important;
-        color: #FECDD3 !important;
-      }
 
       [data-theme="dark"] .status-card-operasi {
-        background: linear-gradient(180deg, rgba(124, 58, 237, 0.2) 0%, rgba(76, 29, 149, 0.28) 100%) !important;
-        border: 1.5px solid rgba(168, 85, 247, 0.4) !important;
-        border-left: 5px solid #C084FC !important;
-        border-top: 1.5px solid rgba(192, 132, 252, 0.5) !important;
-        box-shadow: 0 3px 0 rgba(76, 29, 149, 0.7), 0 6px 14px rgba(0, 0, 0, 0.4) !important;
+        background: linear-gradient(170deg, rgba(124, 58, 237, 0.22) 0%, rgba(76, 29, 149, 0.30) 100%) !important;
+        border: 1.5px solid rgba(168, 85, 247, 0.45) !important;
+        border-left: 5.5px solid #C084FC !important;
+        border-top: 2px solid rgba(192, 132, 252, 0.55) !important;
+        box-shadow: 0 3px 0 rgba(76, 29, 149, 0.75), 0 8px 20px rgba(0, 0, 0, 0.45) !important;
       }
       [data-theme="dark"] .status-card-operasi .status-pass-badge {
-        background: rgba(124, 58, 237, 0.25) !important;
+        background: rgba(124, 58, 237, 0.28) !important;
         color: #D8B4FE !important;
-        border-color: rgba(168, 85, 247, 0.5) !important;
+        border-color: rgba(168, 85, 247, 0.55) !important;
       }
       [data-theme="dark"] .status-card-operasi .status-pass-avatar {
-        background: rgba(124, 58, 237, 0.25) !important;
-        border-color: rgba(168, 85, 247, 0.5) !important;
+        background: rgba(124, 58, 237, 0.28) !important;
+        border-color: rgba(168, 85, 247, 0.55) !important;
         color: #D8B4FE !important;
       }
       [data-theme="dark"] .status-card-operasi .doc-name { color: #FFFFFF !important; }
-      [data-theme="dark"] .status-card-operasi .status-pass-footer {
-        background: rgba(124, 58, 237, 0.16) !important;
-        border-color: rgba(168, 85, 247, 0.35) !important;
-        color: #E9D5FF !important;
-      }
 
       [data-theme="dark"] .status-card-penuh {
-        background: linear-gradient(180deg, rgba(234, 88, 12, 0.2) 0%, rgba(124, 45, 18, 0.28) 100%) !important;
-        border: 1.5px solid rgba(251, 146, 60, 0.4) !important;
-        border-left: 5px solid #FB923C !important;
-        border-top: 1.5px solid rgba(251, 146, 60, 0.5) !important;
-        box-shadow: 0 3px 0 rgba(124, 45, 18, 0.7), 0 6px 14px rgba(0, 0, 0, 0.4) !important;
+        background: linear-gradient(170deg, rgba(234, 88, 12, 0.22) 0%, rgba(124, 45, 18, 0.30) 100%) !important;
+        border: 1.5px solid rgba(251, 146, 60, 0.45) !important;
+        border-left: 5.5px solid #FB923C !important;
+        border-top: 2px solid rgba(251, 146, 60, 0.55) !important;
+        box-shadow: 0 3px 0 rgba(124, 45, 18, 0.75), 0 8px 20px rgba(0, 0, 0, 0.45) !important;
       }
       [data-theme="dark"] .status-card-penuh .status-pass-badge {
-        background: rgba(234, 88, 12, 0.25) !important;
+        background: rgba(234, 88, 12, 0.28) !important;
         color: #FDBA74 !important;
-        border-color: rgba(251, 146, 60, 0.5) !important;
+        border-color: rgba(251, 146, 60, 0.55) !important;
       }
       [data-theme="dark"] .status-card-penuh .status-pass-avatar {
-        background: rgba(234, 88, 12, 0.25) !important;
-        border-color: rgba(251, 146, 60, 0.5) !important;
+        background: rgba(234, 88, 12, 0.28) !important;
+        border-color: rgba(251, 146, 60, 0.55) !important;
         color: #FDBA74 !important;
       }
       [data-theme="dark"] .status-card-penuh .doc-name { color: #FFFFFF !important; }
-      [data-theme="dark"] .status-card-penuh .status-pass-footer {
-        background: rgba(234, 88, 12, 0.16) !important;
-        border-color: rgba(251, 146, 60, 0.35) !important;
-        color: #FED7AA !important;
+
+      /* Showcase Hero Card (Ketika N = 1 Dokter) */
+      .status-card-hero {
+        padding: 16px 18px !important;
+        gap: 12px !important;
+      }
+      .status-card-hero .doc-name {
+        font-size: 18.5px !important;
+      }
+      .status-card-hero .bento-sub-chamber {
+        padding: 11px 14px !important;
+        gap: 6px !important;
+      }
+      .status-card-hero .bento-row {
+        font-size: 12.5px !important;
       }
 
       .sidebar-panel {
@@ -8346,59 +8434,90 @@
         },
 
         buildStatusKhususPanelHTML(allDocs) {
+          const isHero = allDocs.length === 1;
+
+          // Hitung summary chip
+          const cutiCount = allDocs.filter(d => (d.Status || "").toUpperCase().includes("CUTI")).length;
+          const operasiCount = allDocs.filter(d => (d.Status || "").toUpperCase().includes("OPERASI")).length;
+          const penuhCount = allDocs.filter(d => (d.Status || "").toUpperCase().includes("PENUH")).length;
+
+          let chipsHTML = "";
+          if (cutiCount > 0) chipsHTML += `<span class="apple-status-chip chip-cuti"><span class="chip-radar"></span>${cutiCount} Cuti</span>`;
+          if (operasiCount > 0) chipsHTML += `<span class="apple-status-chip chip-operasi"><span class="chip-radar"></span>${operasiCount} Operasi</span>`;
+          if (penuhCount > 0) chipsHTML += `<span class="apple-status-chip chip-penuh"><span class="chip-radar"></span>${penuhCount} Penuh</span>`;
+
           const cardsHTML = allDocs.map((d, idx) => {
             const st = (d.Status || "").toUpperCase();
             let statusTitle = "SEDANG CUTI";
             let statusClass = "status-card-cuti";
             let statusIcon = '<span class="material-icons-round" style="font-size:14px;">event_busy</span>';
-            let footerIcon = "event_available";
-            let infoValue = "Konfirmasi Informasi Loket";
+            let heroTimePillClass = "pill-hero-cuti";
+            let heroTimeIcon = "event";
+            let heroTimeText = "Konfirmasi Loket";
+            let reasonText = "Dokter tidak berpraktek melayani pasien pada hari ini.";
+            let solutionText = "Pilih dokter pengganti atau daftar jadwal hari berikutnya via barcode.";
 
             if (st.includes("CUTI")) {
               statusTitle = "SEDANG CUTI";
               statusClass = "status-card-cuti";
               statusIcon = '<span class="material-icons-round" style="font-size:14px;">event_busy</span>';
-              footerIcon = "event_available";
+              heroTimePillClass = "pill-hero-cuti";
+              heroTimeIcon = "event";
               if (d.NextBuka) {
-                infoValue = `Kembali: ${esc(d.NextBuka)}`;
+                heroTimeText = `Kembali: ${esc(d.NextBuka)}`;
               } else if (d.CutiSampai) {
-                infoValue = `Cuti Sampai: ${esc(d.CutiSampai)}`;
-              } else if (d.CutiCatatan) {
-                infoValue = esc(d.CutiCatatan);
-              } else if (d.DocNote) {
-                infoValue = esc(d.DocNote);
+                heroTimeText = `s/d ${esc(d.CutiSampai)}`;
+              } else {
+                heroTimeText = "Cuti Hari Ini";
               }
+
+              if (d.CutiCatatan) {
+                reasonText = esc(d.CutiCatatan);
+              } else if (d.DocNote) {
+                reasonText = esc(d.DocNote);
+              }
+              solutionText = "Silakan daftar antrean hari berikutnya via scan barcode di bawah.";
             } else if (st.includes("OPERASI")) {
               statusTitle = "TINDAKAN OPERASI";
               statusClass = "status-card-operasi";
               statusIcon = '<span class="material-icons-round" style="font-size:14px;">local_hospital</span>';
-              footerIcon = "schedule";
-              infoValue = d.JamPraktek && d.JamPraktek !== "-" ? `Jadwal: ${formatJam(d.JamPraktek)}` : "Tindakan Medis di IBS";
+              heroTimePillClass = "pill-hero-operasi";
+              heroTimeIcon = "schedule";
+              heroTimeText = d.JamPraktek && d.JamPraktek !== "-" ? formatJam(d.JamPraktek) : "Kamar Bedah IBS";
+              reasonText = "Sedang melaksanakan tindakan bedah medis di Instalasi Bedah Sentral.";
+              solutionText = "Pelayanan poliklinik dilanjutkan segera usai tindakan operasi selesai.";
             } else if (st.includes("PENUH")) {
               statusTitle = "KUOTA PENUH";
               statusClass = "status-card-penuh";
               statusIcon = '<span class="material-icons-round" style="font-size:14px;">front_hand</span>';
-              footerIcon = "lock";
-              infoValue = "Pendaftaran Hari Ini Ditutup";
+              heroTimePillClass = "pill-hero-penuh";
+              heroTimeIcon = "block";
+              heroTimeText = "Pendaftaran Tutup";
+              reasonText = "Kapasitas kuota antrean pendaftaran hari ini telah terpenuhi.";
+              solutionText = "Pendaftaran antrean online hari berikutnya dibuka di aplikasi HP.";
             }
 
             const avatarIcon = getSpecialistIcon(d.Spesialis);
-            const avatarText = avatarIcon.startsWith("<svg") ? avatarIcon : `<span class="material-icons-round" style="font-size:24px;">${avatarIcon}</span>`;
+            const avatarText = avatarIcon.startsWith("<svg") ? avatarIcon : `<span class="material-icons-round" style="font-size:${isHero ? '28px' : '24px'};">${avatarIcon}</span>`;
+            const heroCardExtra = isHero ? "status-card-hero" : "";
 
             return `
-              <div class="sidebar-status-card ${statusClass}" style="width: 100%; box-sizing: border-box; padding: 13px 15px; display: flex; flex-direction: column; gap: 9px; flex-shrink: 0;">
-                <!-- Header Card: Status Pill & Counter -->
-                <div style="display: flex; align-items: center; justify-content: space-between;">
+              <div class="sidebar-status-card ${statusClass} ${heroCardExtra}" style="width: 100%; box-sizing: border-box; padding: 13px 15px; display: flex; flex-direction: column; gap: 9px; flex-shrink: 0;">
+                <!-- 1. Header Ticket Bar: Status Pill (Left) & Hero Glanceable Time/Date (Right) -->
+                <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px;">
                   <div class="status-pass-badge" style="display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.05em; padding: 3px 10px; border-radius: 9999px;">
                     ${statusIcon}
                     <span>${statusTitle}</span>
                   </div>
-                  <span class="status-pass-badge" style="font-size: 10px; font-weight: 900; padding: 2px 8px; border-radius: 9999px;">${idx + 1} / ${allDocs.length}</span>
+                  <span class="status-hero-time-pill ${heroTimePillClass}">
+                    <span class="material-icons-round" style="font-size:12px;">${heroTimeIcon}</span>
+                    <span>${heroTimeText}</span>
+                  </span>
                 </div>
 
-                <!-- Body Card: Avatar & Doctor Info -->
+                <!-- 2. Body: Spatial Avatar & Doctor Info -->
                 <div style="display: flex; align-items: center; gap: 12px;">
-                  <div class="status-pass-avatar initials" style="width: 48px; height: 48px; min-width: 48px; border-radius: 14px; font-size: 15px;">
+                  <div class="status-pass-avatar initials" style="width: ${isHero ? '54px' : '48px'}; height: ${isHero ? '54px' : '48px'}; min-width: ${isHero ? '54px' : '48px'}; border-radius: 14px; font-size: 15px;">
                     ${avatarText}
                   </div>
                   <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px;">
@@ -8406,16 +8525,22 @@
                       <span class="spec-dot" style="width: 5px; height: 5px;"></span>
                       <span class="doc-spec" style="font-size: 10.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 210px;">${esc(d.Spesialis)}</span>
                     </div>
-                    <div class="doc-name" style="font-size: 16.5px; font-weight: 900; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2;">
+                    <div class="doc-name" style="font-size: ${isHero ? '18px' : '16.5px'}; font-weight: 900; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2;">
                       ${esc(d.Dokter)}
                     </div>
                   </div>
                 </div>
 
-                <!-- Footer Pill: Catatan / Jadwal / Instruksi -->
-                <div class="status-pass-footer" style="display: flex; align-items: center; gap: 7px; padding: 6px 12px; border-radius: 10px; font-size: 12px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                  <span class="material-icons-round" style="font-size: 15px; flex-shrink: 0;">${footerIcon}</span>
-                  <span style="overflow: hidden; text-overflow: ellipsis;">${infoValue}</span>
+                <!-- 3. Inset Bento Chamber: Detail Alasan & Solusi Pasien -->
+                <div class="bento-sub-chamber">
+                  <div class="bento-row bento-reason">
+                    <span class="material-icons-round bento-icon" style="color: #64748B;">info</span>
+                    <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${reasonText}</span>
+                  </div>
+                  <div class="bento-row bento-solution">
+                    <span class="material-icons-round bento-icon">assistant_direction</span>
+                    <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${solutionText}</span>
+                  </div>
                 </div>
               </div>
             `;
@@ -8423,14 +8548,17 @@
 
           return `
             <div class="complication-card complication-status-panel" style="height: 100%; margin: 0; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; padding: 12px 14px;">
-              <!-- 1. Header Bar -->
-              <div class="complication-header" style="flex-shrink: 0; padding-bottom: 8px;">
-                <div class="complication-title" style="font-size: 13px;">
-                  <span class="material-icons-round" style="font-size: 16px; color: #DC2626;">campaign</span>
-                  <span>PEMBERITAHUAN DOKTER</span>
+              <!-- 1. Header Bar with Dynamic Summary Chips -->
+              <div class="complication-header" style="flex-shrink: 0; padding-bottom: 9px;">
+                <div style="display: flex; flex-direction: column; gap: 1px;">
+                  <div class="complication-title" style="font-size: 13.5px; font-weight: 900; letter-spacing: 0.04em; display: flex; align-items: center; gap: 6px;">
+                    <span class="material-icons-round" style="font-size: 17px; color: #DC2626;">campaign</span>
+                    <span>STATUS DOKTER</span>
+                  </div>
+                  <span style="font-size: 9.5px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em;">Pembaruan Layanan Poliklinik</span>
                 </div>
-                <div style="display: flex; align-items: center; gap: 6px;">
-                  <span class="complication-tag tag-rose" style="font-weight: 900; font-size: 10px;">${allDocs.length} DOKTER</span>
+                <div style="display: flex; align-items: center; gap: 5px;">
+                  ${chipsHTML}
                 </div>
               </div>
 
@@ -8441,15 +8569,15 @@
 
               <!-- 3. Mask & Scroller -->
               <div class="scroll-mask" id="maskSidebar" style="flex: 1; min-height: 0; overflow: hidden; position: relative;">
-                <div class="scroller" id="scrollSidebar" style="display: flex; flex-direction: column; gap: 10px; will-change: transform;">
+                <div class="scroller" id="scrollSidebar" style="display: flex; flex-direction: column; gap: 11px; will-change: transform;">
                   ${cardsHTML}
                 </div>
               </div>
 
-              <!-- 4. Footer Hint untuk Pasien -->
-              <div style="flex-shrink: 0; padding-top: 8px; border-top: 1px solid rgba(226, 234, 245, 0.7); display: flex; align-items: center; justify-content: center; gap: 5px; font-size: 10.5px; font-weight: 700; color: var(--text-muted); text-align: center;">
-                <span class="material-icons-round" style="font-size: 13px; color: #0284C7;">qr_code_2</span>
-                <span>Pendaftaran online & info jadwal dapat discan di bawah</span>
+              <!-- 4. Footer Prompt Bar: Direktori Scan Smartphone -->
+              <div style="flex-shrink: 0; padding-top: 8px; border-top: 1px solid rgba(226, 234, 245, 0.7); display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 10.5px; font-weight: 800; color: var(--text-muted); text-align: center;">
+                <span class="material-icons-round" style="font-size: 14px; color: #0284C7;">qr_code_scanner</span>
+                <span>Pendaftaran online dokter pengganti dapat discan di bawah</span>
               </div>
             </div>
           `;
