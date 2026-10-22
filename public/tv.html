@@ -5701,6 +5701,7 @@
         display: flex;
         flex-direction: column;
         border: 1px solid rgba(60, 60, 67, 0.10);
+        border-top: 2px solid #FFFFFF !important;
         box-shadow: 
           0 1px 0 rgba(60, 60, 67, 0.08),
           0 6px 18px -2px rgba(60, 60, 67, 0.06);
@@ -5709,23 +5710,170 @@
       [data-theme="dark"] .complication-status-panel {
         background: #1C2433 !important;
         border: 1px solid rgba(255, 255, 255, 0.08);
+        border-top: 2px solid rgba(255, 255, 255, 0.16) !important;
         box-shadow: 
           0 2px 0 rgba(255, 255, 255, 0.06),
           0 1px 0 rgba(0, 0, 0, 0.3);
       }
 
       .sidebar-status-card {
-        background: #F8FAFC;
-        border: 1.5px solid rgba(226, 232, 240, 0.95);
-        border-radius: 16px;
-        padding: 11px 13px;
+        border-radius: 18px;
         box-sizing: border-box;
-        transition: transform 0.2s ease;
+        transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
       }
 
-      [data-theme="dark"] .sidebar-status-card {
-        background: rgba(255, 255, 255, 0.05) !important;
-        border-color: rgba(255, 255, 255, 0.1) !important;
+      /* 🔴 Apple 3D Tactile Status Pass: CUTI */
+      .status-card-cuti {
+        background: linear-gradient(180deg, #FFFFFF 0%, #FFF1F2 100%) !important;
+        border: 1.5px solid rgba(254, 205, 211, 0.95) !important;
+        border-left: 5px solid #E11D48 !important;
+        border-top: 1.5px solid #FFFFFF !important;
+        box-shadow: 0 3px 0 rgba(253, 164, 175, 0.75), 0 6px 14px rgba(225, 29, 72, 0.08) !important;
+      }
+      .status-card-cuti .status-pass-badge {
+        background: #FFE4E6 !important;
+        color: #BE123C !important;
+        border: 1px solid #FDA4AF !important;
+        box-shadow: 0 2px 0 #FECDD3 !important;
+      }
+      .status-card-cuti .status-pass-avatar {
+        background: linear-gradient(135deg, #FFE4E6 0%, #FECDD3 100%) !important;
+        border: 1.5px solid #FDA4AF !important;
+        color: #E11D48 !important;
+        box-shadow: 0 3px 8px -2px rgba(225, 29, 72, 0.25) !important;
+      }
+      .status-card-cuti .doc-name { color: #0F172A !important; }
+      .status-card-cuti .status-pass-footer {
+        background: rgba(225, 29, 72, 0.08) !important;
+        border: 1px solid rgba(225, 29, 72, 0.2) !important;
+        color: #9F1239 !important;
+      }
+
+      /* 🟣 Apple 3D Tactile Status Pass: OPERASI IBS */
+      .status-card-operasi {
+        background: linear-gradient(180deg, #FFFFFF 0%, #F5F3FF 100%) !important;
+        border: 1.5px solid rgba(221, 214, 254, 0.95) !important;
+        border-left: 5px solid #7C3AED !important;
+        border-top: 1.5px solid #FFFFFF !important;
+        box-shadow: 0 3px 0 rgba(196, 181, 253, 0.75), 0 6px 14px rgba(124, 58, 237, 0.08) !important;
+      }
+      .status-card-operasi .status-pass-badge {
+        background: #EDE9FE !important;
+        color: #6D28D9 !important;
+        border: 1px solid #C4B5FD !important;
+        box-shadow: 0 2px 0 #DDD6FE !important;
+      }
+      .status-card-operasi .status-pass-avatar {
+        background: linear-gradient(135deg, #EDE9FE 0%, #DDD6FE 100%) !important;
+        border: 1.5px solid #C4B5FD !important;
+        color: #7C3AED !important;
+        box-shadow: 0 3px 8px -2px rgba(124, 58, 237, 0.25) !important;
+      }
+      .status-card-operasi .doc-name { color: #0F172A !important; }
+      .status-card-operasi .status-pass-footer {
+        background: rgba(124, 58, 237, 0.08) !important;
+        border: 1px solid rgba(124, 58, 237, 0.2) !important;
+        color: #5B21B6 !important;
+      }
+
+      /* 🟠 Apple 3D Tactile Status Pass: KUOTA PENUH */
+      .status-card-penuh {
+        background: linear-gradient(180deg, #FFFFFF 0%, #FFF7ED 100%) !important;
+        border: 1.5px solid rgba(254, 215, 170, 0.95) !important;
+        border-left: 5px solid #EA580C !important;
+        border-top: 1.5px solid #FFFFFF !important;
+        box-shadow: 0 3px 0 rgba(253, 186, 116, 0.75), 0 6px 14px rgba(234, 88, 12, 0.08) !important;
+      }
+      .status-card-penuh .status-pass-badge {
+        background: #FFEDD5 !important;
+        color: #C2410C !important;
+        border: 1px solid #FDBA74 !important;
+        box-shadow: 0 2px 0 #FED7AA !important;
+      }
+      .status-card-penuh .status-pass-avatar {
+        background: linear-gradient(135deg, #FFEDD5 0%, #FED7AA 100%) !important;
+        border: 1.5px solid #FDBA74 !important;
+        color: #EA580C !important;
+        box-shadow: 0 3px 8px -2px rgba(234, 88, 12, 0.25) !important;
+      }
+      .status-card-penuh .doc-name { color: #0F172A !important; }
+      .status-card-penuh .status-pass-footer {
+        background: rgba(234, 88, 12, 0.08) !important;
+        border: 1px solid rgba(234, 88, 12, 0.2) !important;
+        color: #9A3412 !important;
+      }
+
+      /* Dark Mode Status Passes */
+      [data-theme="dark"] .status-card-cuti {
+        background: linear-gradient(180deg, rgba(225, 29, 72, 0.2) 0%, rgba(136, 19, 55, 0.28) 100%) !important;
+        border: 1.5px solid rgba(244, 63, 94, 0.4) !important;
+        border-left: 5px solid #FB7185 !important;
+        border-top: 1.5px solid rgba(251, 113, 133, 0.5) !important;
+        box-shadow: 0 3px 0 rgba(136, 19, 55, 0.7), 0 6px 14px rgba(0, 0, 0, 0.4) !important;
+      }
+      [data-theme="dark"] .status-card-cuti .status-pass-badge {
+        background: rgba(225, 29, 72, 0.25) !important;
+        color: #FDA4AF !important;
+        border-color: rgba(244, 63, 94, 0.5) !important;
+      }
+      [data-theme="dark"] .status-card-cuti .status-pass-avatar {
+        background: rgba(225, 29, 72, 0.25) !important;
+        border-color: rgba(244, 63, 94, 0.5) !important;
+        color: #FDA4AF !important;
+      }
+      [data-theme="dark"] .status-card-cuti .doc-name { color: #FFFFFF !important; }
+      [data-theme="dark"] .status-card-cuti .status-pass-footer {
+        background: rgba(225, 29, 72, 0.16) !important;
+        border-color: rgba(244, 63, 94, 0.35) !important;
+        color: #FECDD3 !important;
+      }
+
+      [data-theme="dark"] .status-card-operasi {
+        background: linear-gradient(180deg, rgba(124, 58, 237, 0.2) 0%, rgba(76, 29, 149, 0.28) 100%) !important;
+        border: 1.5px solid rgba(168, 85, 247, 0.4) !important;
+        border-left: 5px solid #C084FC !important;
+        border-top: 1.5px solid rgba(192, 132, 252, 0.5) !important;
+        box-shadow: 0 3px 0 rgba(76, 29, 149, 0.7), 0 6px 14px rgba(0, 0, 0, 0.4) !important;
+      }
+      [data-theme="dark"] .status-card-operasi .status-pass-badge {
+        background: rgba(124, 58, 237, 0.25) !important;
+        color: #D8B4FE !important;
+        border-color: rgba(168, 85, 247, 0.5) !important;
+      }
+      [data-theme="dark"] .status-card-operasi .status-pass-avatar {
+        background: rgba(124, 58, 237, 0.25) !important;
+        border-color: rgba(168, 85, 247, 0.5) !important;
+        color: #D8B4FE !important;
+      }
+      [data-theme="dark"] .status-card-operasi .doc-name { color: #FFFFFF !important; }
+      [data-theme="dark"] .status-card-operasi .status-pass-footer {
+        background: rgba(124, 58, 237, 0.16) !important;
+        border-color: rgba(168, 85, 247, 0.35) !important;
+        color: #E9D5FF !important;
+      }
+
+      [data-theme="dark"] .status-card-penuh {
+        background: linear-gradient(180deg, rgba(234, 88, 12, 0.2) 0%, rgba(124, 45, 18, 0.28) 100%) !important;
+        border: 1.5px solid rgba(251, 146, 60, 0.4) !important;
+        border-left: 5px solid #FB923C !important;
+        border-top: 1.5px solid rgba(251, 146, 60, 0.5) !important;
+        box-shadow: 0 3px 0 rgba(124, 45, 18, 0.7), 0 6px 14px rgba(0, 0, 0, 0.4) !important;
+      }
+      [data-theme="dark"] .status-card-penuh .status-pass-badge {
+        background: rgba(234, 88, 12, 0.25) !important;
+        color: #FDBA74 !important;
+        border-color: rgba(251, 146, 60, 0.5) !important;
+      }
+      [data-theme="dark"] .status-card-penuh .status-pass-avatar {
+        background: rgba(234, 88, 12, 0.25) !important;
+        border-color: rgba(251, 146, 60, 0.5) !important;
+        color: #FDBA74 !important;
+      }
+      [data-theme="dark"] .status-card-penuh .doc-name { color: #FFFFFF !important; }
+      [data-theme="dark"] .status-card-penuh .status-pass-footer {
+        background: rgba(234, 88, 12, 0.16) !important;
+        border-color: rgba(251, 146, 60, 0.35) !important;
+        color: #FED7AA !important;
       }
 
       .sidebar-panel {
@@ -5778,7 +5926,6 @@
         box-shadow: 0 3.5px 0 rgba(253, 186, 116, 0.8), 0 6px 16px rgba(245, 158, 11, 0.08) !important;
       }
 
-      .complication-status-pass,
       .complication-journey-card,
       .tv-qr-hero-card {
         background: linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%) !important;
@@ -5890,7 +6037,6 @@
         box-shadow: 0 3.5px 0 rgba(120, 53, 15, 0.7), 0 8px 18px rgba(0, 0, 0, 0.4) !important;
       }
 
-      [data-theme="dark"] .complication-status-pass,
       [data-theme="dark"] .complication-journey-card,
       [data-theme="dark"] .tv-qr-hero-card {
         background: linear-gradient(180deg, #1E293B 0%, #131A26 100%) !important;
@@ -6484,7 +6630,7 @@
         <aside class="island sidebar-panel">
           <!-- 1. ⛅ LIVING WEATHER COMPLICATION: Cuaca Purbalingga (BMKG) -->
           <div id="sidebarWeatherWidget" class="sidebar-weather-container" style="width: 100%; height: 135px; min-height: 135px; flex-shrink: 0; box-sizing: border-box;">
-            <div class="complication-card complication-weather-master weather-theme-siang" style="height: 100%; margin: 0; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between;">
+            <div class="complication-card complication-weather-master weather-hour-9" style="height: 100%; margin: 0; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between;">
               <!-- Header Bar -->
               <div class="complication-header">
                 <div class="complication-title">
@@ -8003,11 +8149,14 @@
         updateWeatherUI() {
           const w = this._weatherCache;
 
-          // Dynamically apply current diurnal theme class to Master Weather Card
+          // Dynamically apply current diurnal 24-hour theme class to Master Weather Card
           const masterCard = document.querySelector(".complication-weather-master");
           if (masterCard) {
-            masterCard.classList.remove("weather-theme-pagi", "weather-theme-siang", "weather-theme-sore", "weather-theme-malam", "weather-theme-rainy", "weather-theme-day-sunny", "weather-theme-day-cloudy", "weather-theme-night-clear");
-            masterCard.classList.add(`weather-theme-${w.atmosphereTheme}`);
+            Array.from(masterCard.classList).forEach((c) => {
+              if (c.startsWith("weather-")) masterCard.classList.remove(c);
+            });
+            const themeClass = w.atmosphereTheme ? (w.atmosphereTheme.startsWith("hour-") ? `weather-${w.atmosphereTheme}` : `weather-hour-${w.atmosphereTheme}`) : `weather-hour-${getJakartaParts().hour}`;
+            masterCard.classList.add(themeClass);
           }
 
           if ($("tvWeatherTemp")) $("tvWeatherTemp").textContent = w.temp;
@@ -8199,23 +8348,16 @@
         buildStatusKhususPanelHTML(allDocs) {
           const cardsHTML = allDocs.map((d, idx) => {
             const st = (d.Status || "").toUpperCase();
-            const specTheme = getSpecialistTheme(d.Spesialis);
             let statusTitle = "SEDANG CUTI";
-            let statusBadgeClass = "tag-rose";
-            let statusColor = "#DC2626";
-            let cardBorderColor = "rgba(225, 29, 72, 0.4)";
-            let cardBgTint = "rgba(225, 29, 72, 0.04)";
-            let statusIcon = '<span class="material-icons-round" style="font-size:14px; color:#DC2626;">event_busy</span>';
+            let statusClass = "status-card-cuti";
+            let statusIcon = '<span class="material-icons-round" style="font-size:14px;">event_busy</span>';
             let footerIcon = "event_available";
             let infoValue = "Konfirmasi Informasi Loket";
 
             if (st.includes("CUTI")) {
               statusTitle = "SEDANG CUTI";
-              statusBadgeClass = "tag-rose";
-              statusColor = "#DC2626";
-              cardBorderColor = "rgba(225, 29, 72, 0.4)";
-              cardBgTint = "rgba(225, 29, 72, 0.04)";
-              statusIcon = '<span class="material-icons-round" style="font-size:14px; color:#DC2626;">event_busy</span>';
+              statusClass = "status-card-cuti";
+              statusIcon = '<span class="material-icons-round" style="font-size:14px;">event_busy</span>';
               footerIcon = "event_available";
               if (d.NextBuka) {
                 infoValue = `Kembali: ${esc(d.NextBuka)}`;
@@ -8228,20 +8370,14 @@
               }
             } else if (st.includes("OPERASI")) {
               statusTitle = "TINDAKAN OPERASI";
-              statusBadgeClass = "tag-purple";
-              statusColor = "#7C3AED";
-              cardBorderColor = "rgba(124, 58, 237, 0.4)";
-              cardBgTint = "rgba(124, 58, 237, 0.04)";
-              statusIcon = '<span class="material-icons-round" style="font-size:14px; color:#7C3AED;">local_hospital</span>';
+              statusClass = "status-card-operasi";
+              statusIcon = '<span class="material-icons-round" style="font-size:14px;">local_hospital</span>';
               footerIcon = "schedule";
               infoValue = d.JamPraktek && d.JamPraktek !== "-" ? `Jadwal: ${formatJam(d.JamPraktek)}` : "Tindakan Medis di IBS";
             } else if (st.includes("PENUH")) {
               statusTitle = "KUOTA PENUH";
-              statusBadgeClass = "tag-amber";
-              statusColor = "#B45309";
-              cardBorderColor = "rgba(217, 119, 6, 0.4)";
-              cardBgTint = "rgba(217, 119, 6, 0.04)";
-              statusIcon = '<span class="material-icons-round" style="font-size:14px; color:#B45309;">front_hand</span>';
+              statusClass = "status-card-penuh";
+              statusIcon = '<span class="material-icons-round" style="font-size:14px;">front_hand</span>';
               footerIcon = "lock";
               infoValue = "Pendaftaran Hari Ini Ditutup";
             }
@@ -8250,19 +8386,19 @@
             const avatarText = avatarIcon.startsWith("<svg") ? avatarIcon : `<span class="material-icons-round" style="font-size:24px;">${avatarIcon}</span>`;
 
             return `
-              <div class="sidebar-status-card complication-status-pass" style="width: 100%; box-sizing: border-box; border-left: 4.5px solid ${statusColor}; border-color: ${cardBorderColor}; background: ${cardBgTint}; border-radius: 16px; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; flex-shrink: 0;">
+              <div class="sidebar-status-card ${statusClass}" style="width: 100%; box-sizing: border-box; padding: 13px 15px; display: flex; flex-direction: column; gap: 9px; flex-shrink: 0;">
                 <!-- Header Card: Status Pill & Counter -->
                 <div style="display: flex; align-items: center; justify-content: space-between;">
-                  <div style="display: flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 800; color: ${statusColor}; text-transform: uppercase; letter-spacing: 0.04em;">
+                  <div class="status-pass-badge" style="display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.05em; padding: 3px 10px; border-radius: 9999px;">
                     ${statusIcon}
                     <span>${statusTitle}</span>
                   </div>
-                  <span class="complication-tag ${statusBadgeClass}" style="font-size: 9.5px; font-weight: 800;">${idx + 1} / ${allDocs.length}</span>
+                  <span class="status-pass-badge" style="font-size: 10px; font-weight: 900; padding: 2px 8px; border-radius: 9999px;">${idx + 1} / ${allDocs.length}</span>
                 </div>
 
                 <!-- Body Card: Avatar & Doctor Info -->
                 <div style="display: flex; align-items: center; gap: 12px;">
-                  <div class="initials" style="width: 46px; height: 46px; min-width: 46px; border-radius: 14px; font-size: 15px; box-shadow: none;">
+                  <div class="status-pass-avatar initials" style="width: 48px; height: 48px; min-width: 48px; border-radius: 14px; font-size: 15px;">
                     ${avatarText}
                   </div>
                   <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px;">
@@ -8270,15 +8406,15 @@
                       <span class="spec-dot" style="width: 5px; height: 5px;"></span>
                       <span class="doc-spec" style="font-size: 10.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 210px;">${esc(d.Spesialis)}</span>
                     </div>
-                    <div class="doc-name" style="font-size: 16px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2;">
+                    <div class="doc-name" style="font-size: 16.5px; font-weight: 900; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2;">
                       ${esc(d.Dokter)}
                     </div>
                   </div>
                 </div>
 
                 <!-- Footer Pill: Catatan / Jadwal / Instruksi -->
-                <div style="display: flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 10px; background: rgba(0,0,0,0.04); font-size: 11.5px; font-weight: 700; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                  <span class="material-icons-round" style="font-size: 14px; color: ${statusColor}; flex-shrink: 0;">${footerIcon}</span>
+                <div class="status-pass-footer" style="display: flex; align-items: center; gap: 7px; padding: 6px 12px; border-radius: 10px; font-size: 12px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                  <span class="material-icons-round" style="font-size: 15px; flex-shrink: 0;">${footerIcon}</span>
                   <span style="overflow: hidden; text-overflow: ellipsis;">${infoValue}</span>
                 </div>
               </div>
