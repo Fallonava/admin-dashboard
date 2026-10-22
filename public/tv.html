@@ -5677,7 +5677,7 @@
          ⚡ SMART TV LIGHTWEIGHT HARDWARE PERFORMANCE OVERRIDES
          ═══════════════════════════════════════════════════════════════ */
       /* 1. Hardware Composite Acceleration & Strict Layout Containment */
-      #scrollBedah, #scrollNonBedah, #sidebarCarouselTrack {
+      #scrollBedah, #scrollNonBedah, #scrollSidebar {
         will-change: transform;
         transform: translate3d(0, 0, 0);
         backface-visibility: hidden;
@@ -5686,8 +5686,46 @@
         contain: layout paint style;
       }
 
-      .mask-container, #maskBedah, #maskNonBedah {
+      .mask-container, #maskBedah, #maskNonBedah, #maskSidebar {
         contain: strict;
+      }
+
+      /* Dynamic Sidebar Middle Panel Styling */
+      .complication-status-panel {
+        flex: 1;
+        background: #FFFFFF !important;
+        border-radius: 22px;
+        position: relative;
+        box-sizing: border-box;
+        padding: 12px 14px;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid rgba(60, 60, 67, 0.10);
+        box-shadow: 
+          0 1px 0 rgba(60, 60, 67, 0.08),
+          0 6px 18px -2px rgba(60, 60, 67, 0.06);
+      }
+
+      [data-theme="dark"] .complication-status-panel {
+        background: #1C2433 !important;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 
+          0 2px 0 rgba(255, 255, 255, 0.06),
+          0 1px 0 rgba(0, 0, 0, 0.3);
+      }
+
+      .sidebar-status-card {
+        background: #F8FAFC;
+        border: 1.5px solid rgba(226, 232, 240, 0.95);
+        border-radius: 16px;
+        padding: 11px 13px;
+        box-sizing: border-box;
+        transition: transform 0.2s ease;
+      }
+
+      [data-theme="dark"] .sidebar-status-card {
+        background: rgba(255, 255, 255, 0.05) !important;
+        border-color: rgba(255, 255, 255, 0.1) !important;
       }
 
       .sidebar-panel {
@@ -6444,16 +6482,38 @@
       <main class="content">
         <!-- Sidebar (Left - Integrated Header) -->
         <aside class="island sidebar-panel">
-          <!-- 1. 🔄 DYNAMIC CAROUSEL WIDGET: Cuaca BMKG & Compact Status Khusus Passes -->
-          <div class="sidebar-carousel-container" style="overflow: hidden; width: 100%; height: 140px; min-height: 140px; flex-shrink: 0; border-radius: 20px; box-sizing: border-box;">
-            <div id="sidebarCarouselTrack" style="display: flex; transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1); width: 100%; height: 100%;">
-              <!-- Slides populated dynamically by _renderSidebar -->
+          <!-- 1. ⛅ LIVING WEATHER COMPLICATION: Cuaca Purbalingga (BMKG) -->
+          <div id="sidebarWeatherWidget" class="sidebar-weather-container" style="width: 100%; height: 135px; min-height: 135px; flex-shrink: 0; box-sizing: border-box;">
+            <div class="complication-card complication-weather-master weather-theme-siang" style="height: 100%; margin: 0; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between;">
+              <!-- Header Bar -->
+              <div class="complication-header">
+                <div class="complication-title">
+                  <span class="material-icons-round" style="font-size:14px; color:#0284C7;">wb_sunny</span>
+                  <span>CUACA PURBALINGGA</span>
+                </div>
+                <span class="complication-tag tag-sky">LIVE BMKG</span>
+              </div>
+
+              <!-- Hero Temperature & Visual Status -->
+              <div class="weather-master-hero-row">
+                <div class="weather-master-hero-left">
+                  <div class="weather-temp-master-group">
+                    <span class="weather-temp-master-val" id="tvWeatherTemp">29</span>
+                    <span class="weather-temp-master-unit">°C</span>
+                  </div>
+                  <div class="weather-condition-master-text" id="tvWeatherCondition">Cerah Berawan</div>
+                  <div class="weather-range-master-text" id="tvWeatherRange">Suhu Harian BMKG</div>
+                </div>
+                <div class="weather-master-hero-right">
+                  <div class="weather-master-icon-wrap" id="tvWeatherIcon"></div>
+                </div>
+              </div>
             </div>
           </div>
 
-          <!-- 2. 🌳 PATIENT ADMISSION VERTICAL TREE FLOW (PANDUAN ALUR PENDAFTARAN) -->
-          <div class="sidebar-journey-container" style="flex: 1 1 0%; min-height: 0; display: flex; flex-direction: column; overflow: hidden;">
-            <div class="complication-card complication-journey-card" style="height: 100%; margin: 0; display: flex; flex-direction: column; justify-content: space-between;">
+          <!-- 2. 🔄 DYNAMIC MIDDLE SECTION: Status Khusus (Jika Ada) ATAU Panduan Alur Pendaftaran (Jika 0) -->
+          <div id="sidebarDynamicMiddle" class="sidebar-dynamic-middle" data-mode="tree-flow" style="flex: 1 1 0%; min-height: 0; display: flex; flex-direction: column; overflow: hidden; margin: 10px 0;">
+            <div class="complication-card complication-journey-card" style="height: 100%; margin: 0; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden;">
               <!-- 1. Header Bar -->
               <div class="complication-header">
                 <div class="complication-title">
@@ -7469,7 +7529,7 @@
 
       const isMobile = window.innerWidth <= 768;
 
-      let s1, s2;
+      let s1, s2, s3;
       if (!isMobile) {
         s1 = new SmoothScroller("scrollBedah", "progressBedah", { mode: "cascade" });
         s2 = new SmoothScroller("scrollNonBedah", "progressNonBedah", { mode: "cascade" });
@@ -7992,178 +8052,268 @@
           return list;
         },
 
-        buildSidebarComplicationsHTML() {
-          const w = this._weatherCache;
-          const heroIconMarkup = w.iconHTML || this.getWeatherIconSVG("partly-cloudy-day", 44);
-
+        buildAdmissionTreeHTML() {
           return `
-            <div class="sidebar-complications">
-              <!-- ⛅ ULTRA-COMPACT APPLE tvOS WEATHER COMPLICATION -->
-              <div class="complication-card complication-weather-master weather-${w.atmosphereTheme}">
-                <!-- 1. Header Bar -->
-                <div class="complication-header">
-                  <div class="complication-title">
-                    <span class="material-icons-round" style="font-size:14px; color:#0284C7;">wb_sunny</span>
-                    <span>CUACA PURBALINGGA</span>
+            <div class="complication-card complication-journey-card" style="height: 100%; margin: 0; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden;">
+              <!-- 1. Header Bar -->
+              <div class="complication-header">
+                <div class="complication-title">
+                  <span class="material-icons-round" style="font-size:14px; color:#007AFF;">route</span>
+                  <span>ALUR PENDAFTARAN</span>
+                </div>
+                <span class="complication-tag tag-sky">PANDUAN</span>
+              </div>
+
+              <!-- 2. Cabang Atas: 2 Jalur Masuk (Grid 2 Kolom) -->
+              <div class="tree-branch-grid">
+                <!-- Cabang Kiri: Online (Fast Track) -->
+                <div class="tree-branch-column">
+                  <div class="tree-branch-header">
+                    <span class="tree-branch-title title-online">
+                      <span class="material-icons-round" style="font-size:12px;">bolt</span>
+                      <span>ONLINE</span>
+                    </span>
+                    <span class="tree-branch-badge badge-online-fast">FAST TRACK</span>
                   </div>
-                  <span class="complication-tag tag-sky">LIVE BMKG</span>
+                  <div class="tree-step-card tree-step-card-tall">
+                    <div class="tree-step-icon-wrap icon-online-1 anim-qr-laser">
+                      <span class="material-icons-round" style="font-size:20px;">smartphone</span>
+                    </div>
+                    <div class="tree-step-content">
+                      <span class="tree-step-title">Tunjukkan Kode Booking</span>
+                      <span class="tree-step-sub">Mobile JKN / Web RS</span>
+                    </div>
+                  </div>
                 </div>
 
-                <!-- 2. Hero Temperature & Visual Status -->
-                <div class="weather-master-hero-row">
-                  <div class="weather-master-hero-left">
-                    <div class="weather-temp-master-group">
-                      <span class="weather-temp-master-val" id="tvWeatherTemp">${w.temp}</span>
-                      <span class="weather-temp-master-unit">°C</span>
-                    </div>
-                    <div class="weather-condition-master-text" id="tvWeatherCondition">${w.condition}</div>
-                    <div class="weather-range-master-text" id="tvWeatherRange">Suhu Harian: H: ${w.tempMax}° • L: ${w.tempMin}°</div>
+                <!-- Cabang Kanan: Reguler (On-Site) -->
+                <div class="tree-branch-column">
+                  <div class="tree-branch-header">
+                    <span class="tree-branch-title title-reguler">
+                      <span class="material-icons-round" style="font-size:12px;">storefront</span>
+                      <span>REGULER</span>
+                    </span>
+                    <span class="tree-branch-badge badge-reguler-onsite">ON-SITE</span>
                   </div>
-                  <div class="weather-master-hero-right">
-                    <div class="weather-master-icon-wrap" id="tvWeatherIcon">${heroIconMarkup}</div>
+                  <div class="tree-step-card">
+                    <div class="tree-step-icon-wrap icon-reg-1 anim-kiosk-touch">
+                      <span class="material-icons-round" style="font-size:19px;">confirmation_number</span>
+                    </div>
+                    <div class="tree-step-content">
+                      <span class="tree-step-title">Tiket Antrean</span>
+                      <span class="tree-step-sub">Kios Mandiri</span>
+                    </div>
+                  </div>
+                  <div class="tree-micro-down-connector">
+                    <span class="material-icons-round tree-micro-down-arrow">south</span>
+                  </div>
+                  <div class="tree-step-card">
+                    <div class="tree-step-icon-wrap icon-reg-2 anim-voice-broadcast">
+                      <span class="material-icons-round" style="font-size:19px;">record_voice_over</span>
+                    </div>
+                    <div class="tree-step-content">
+                      <span class="tree-step-title">Tunggu Panggilan</span>
+                      <span class="tree-step-sub">Siapkan KTP & BPJS</span>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              <!-- 🌳 APPLE tvOS PATIENT ADMISSION VERTICAL TREE FLOW COMPLICATION -->
-              <div class="complication-card complication-journey-card">
-                <!-- 1. Header Bar -->
-                <div class="complication-header">
-                  <div class="complication-title">
-                    <span class="material-icons-round" style="font-size:14px; color:#007AFF;">route</span>
-                    <span>ALUR PENDAFTARAN</span>
+              <!-- 3. Convergence Ribbon (Alur Terpadu) -->
+              <div class="tree-convergence-ribbon">
+                <div class="tree-convergence-line"></div>
+                <div class="tree-convergence-badge">
+                  <span class="material-icons-round" style="font-size:11px; color:#007AFF;">alt_route</span>
+                  <span>TAHAPAN PELAYANAN</span>
+                  <span class="material-icons-round" style="font-size:11px;">south</span>
+                </div>
+              </div>
+
+              <!-- 4. Batang Pohon Utama Menuju ke Bawah (3 Tahap) -->
+              <div class="tree-trunk-section">
+                <!-- Tahap 1: Loket Admisi -->
+                <div class="tree-trunk-row-card row-stage-1">
+                  <div class="tree-trunk-left">
+                    <div class="tree-step-icon-wrap icon-unified-1 anim-desk-verified">
+                      <span class="material-icons-round" style="font-size:20px;">how_to_reg</span>
+                    </div>
+                    <div class="tree-step-content">
+                      <div class="tree-step-pill-row">
+                        <span class="tree-step-num-pill pill-blue">01</span>
+                        <span class="tree-step-title">Loket Admisi</span>
+                      </div>
+                      <span class="tree-step-sub">Validasi berkas & cetak SEP</span>
+                    </div>
                   </div>
-                  <span class="complication-tag tag-sky">PANDUAN</span>
+                  <span class="tree-trunk-tag tag-loket">LOKET</span>
                 </div>
 
-                <!-- 2. Cabang Atas: 2 Jalur Masuk (Grid 2 Kolom) -->
-                <div class="tree-branch-grid">
-                  <!-- Cabang Kiri: Online (Fast Track) -->
-                  <div class="tree-branch-column">
-                    <div class="tree-branch-header">
-                      <span class="tree-branch-title title-online">
-                        <span class="material-icons-round" style="font-size:12px;">bolt</span>
-                        <span>ONLINE</span>
-                      </span>
-                      <span class="tree-branch-badge badge-online-fast">FAST TRACK</span>
+                <!-- Panah ke Bawah -->
+                <div class="tree-trunk-down-connector">
+                  <span class="material-icons-round tree-trunk-down-arrow">south</span>
+                </div>
+
+                <!-- Tahap 2: Nurse Station -->
+                <div class="tree-trunk-row-card row-stage-2">
+                  <div class="tree-trunk-left">
+                    <div class="tree-step-icon-wrap icon-unified-2 anim-heart-pump">
+                      <span class="material-icons-round" style="font-size:20px;">monitor_heart</span>
                     </div>
-                    <div class="tree-step-card tree-step-card-tall">
-                      <div class="tree-step-icon-wrap icon-online-1 anim-qr-laser">
-                        <span class="material-icons-round" style="font-size:20px;">smartphone</span>
+                    <div class="tree-step-content">
+                      <div class="tree-step-pill-row">
+                        <span class="tree-step-num-pill pill-rose">02</span>
+                        <span class="tree-step-title">Nurse Station</span>
                       </div>
-                      <div class="tree-step-content">
-                        <span class="tree-step-title">Tunjukkan Nomor Pendaftaran</span>
-                        <span class="tree-step-sub">Mobile JKN / Web RS</span>
-                      </div>
+                      <span class="tree-step-sub">Pemeriksaan tensi & fisik</span>
                     </div>
                   </div>
+                  <span class="tree-trunk-tag tag-tensi">TENSI</span>
+                </div>
 
-                  <!-- Cabang Kanan: Reguler (On-Site) -->
-                  <div class="tree-branch-column">
-                    <div class="tree-branch-header">
-                      <span class="tree-branch-title title-reguler">
-                        <span class="material-icons-round" style="font-size:12px;">storefront</span>
-                        <span>REGULER</span>
-                      </span>
-                      <span class="tree-branch-badge badge-reguler-onsite">ON-SITE</span>
+                <!-- Panah ke Bawah -->
+                <div class="tree-trunk-down-connector">
+                  <span class="material-icons-round tree-trunk-down-arrow">south</span>
+                </div>
+
+                <!-- Tahap 3: Ruang Poli Dokter -->
+                <div class="tree-trunk-row-card row-stage-3">
+                  <div class="tree-trunk-left">
+                    <div class="tree-step-icon-wrap icon-unified-3 anim-doc-float">
+                      <span class="material-icons-round" style="font-size:20px;">medical_services</span>
                     </div>
-                    <div class="tree-step-card">
-                      <div class="tree-step-icon-wrap icon-reg-1 anim-kiosk-touch">
-                        <span class="material-icons-round" style="font-size:19px;">confirmation_number</span>
+                    <div class="tree-step-content">
+                      <div class="tree-step-pill-row">
+                        <span class="tree-step-num-pill pill-purple">03</span>
+                        <span class="tree-step-title">Poli Dokter</span>
                       </div>
-                      <div class="tree-step-content">
-                        <span class="tree-step-title">Tiket Antrean</span>
-                        <span class="tree-step-sub">Kios Mandiri</span>
-                      </div>
+                      <span class="tree-step-sub">Pemeriksaan & resep obat</span>
                     </div>
-                    <div class="tree-micro-down-connector">
-                      <span class="material-icons-round tree-micro-down-arrow">south</span>
+                  </div>
+                  <span class="tree-trunk-tag tag-poli">DOKTER</span>
+                </div>
+              </div>
+            </div>
+          `;
+        },
+
+        buildStatusKhususPanelHTML(allDocs) {
+          const cardsHTML = allDocs.map((d, idx) => {
+            const st = (d.Status || "").toUpperCase();
+            const specTheme = getSpecialistTheme(d.Spesialis);
+            let statusTitle = "SEDANG CUTI";
+            let statusBadgeClass = "tag-rose";
+            let statusColor = "#DC2626";
+            let cardBorderColor = "rgba(225, 29, 72, 0.4)";
+            let cardBgTint = "rgba(225, 29, 72, 0.04)";
+            let statusIcon = '<span class="material-icons-round" style="font-size:14px; color:#DC2626;">event_busy</span>';
+            let footerIcon = "event_available";
+            let infoValue = "Konfirmasi Informasi Loket";
+
+            if (st.includes("CUTI")) {
+              statusTitle = "SEDANG CUTI";
+              statusBadgeClass = "tag-rose";
+              statusColor = "#DC2626";
+              cardBorderColor = "rgba(225, 29, 72, 0.4)";
+              cardBgTint = "rgba(225, 29, 72, 0.04)";
+              statusIcon = '<span class="material-icons-round" style="font-size:14px; color:#DC2626;">event_busy</span>';
+              footerIcon = "event_available";
+              if (d.NextBuka) {
+                infoValue = `Kembali: ${esc(d.NextBuka)}`;
+              } else if (d.CutiSampai) {
+                infoValue = `Cuti Sampai: ${esc(d.CutiSampai)}`;
+              } else if (d.CutiCatatan) {
+                infoValue = esc(d.CutiCatatan);
+              } else if (d.DocNote) {
+                infoValue = esc(d.DocNote);
+              }
+            } else if (st.includes("OPERASI")) {
+              statusTitle = "TINDAKAN OPERASI";
+              statusBadgeClass = "tag-purple";
+              statusColor = "#7C3AED";
+              cardBorderColor = "rgba(124, 58, 237, 0.4)";
+              cardBgTint = "rgba(124, 58, 237, 0.04)";
+              statusIcon = '<span class="material-icons-round" style="font-size:14px; color:#7C3AED;">local_hospital</span>';
+              footerIcon = "schedule";
+              infoValue = d.JamPraktek && d.JamPraktek !== "-" ? `Jadwal: ${formatJam(d.JamPraktek)}` : "Tindakan Medis di IBS";
+            } else if (st.includes("PENUH")) {
+              statusTitle = "KUOTA PENUH";
+              statusBadgeClass = "tag-amber";
+              statusColor = "#B45309";
+              cardBorderColor = "rgba(217, 119, 6, 0.4)";
+              cardBgTint = "rgba(217, 119, 6, 0.04)";
+              statusIcon = '<span class="material-icons-round" style="font-size:14px; color:#B45309;">front_hand</span>';
+              footerIcon = "lock";
+              infoValue = "Pendaftaran Hari Ini Ditutup";
+            }
+
+            const avatarIcon = getSpecialistIcon(d.Spesialis);
+            const avatarText = avatarIcon.startsWith("<svg") ? avatarIcon : `<span class="material-icons-round" style="font-size:24px;">${avatarIcon}</span>`;
+
+            return `
+              <div class="sidebar-status-card complication-status-pass" style="width: 100%; box-sizing: border-box; border-left: 4.5px solid ${statusColor}; border-color: ${cardBorderColor}; background: ${cardBgTint}; border-radius: 16px; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; flex-shrink: 0;">
+                <!-- Header Card: Status Pill & Counter -->
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                  <div style="display: flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 800; color: ${statusColor}; text-transform: uppercase; letter-spacing: 0.04em;">
+                    ${statusIcon}
+                    <span>${statusTitle}</span>
+                  </div>
+                  <span class="complication-tag ${statusBadgeClass}" style="font-size: 9.5px; font-weight: 800;">${idx + 1} / ${allDocs.length}</span>
+                </div>
+
+                <!-- Body Card: Avatar & Doctor Info -->
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <div class="initials" style="width: 46px; height: 46px; min-width: 46px; border-radius: 14px; font-size: 15px; box-shadow: none;">
+                    ${avatarText}
+                  </div>
+                  <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px;">
+                    <div class="doc-spec-badge ${getStatusThemeClass(d.Status)}" style="padding: 2.5px 8px; font-size: 10.5px; max-width: 100%;">
+                      <span class="spec-dot" style="width: 5px; height: 5px;"></span>
+                      <span class="doc-spec" style="font-size: 10.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 210px;">${esc(d.Spesialis)}</span>
                     </div>
-                    <div class="tree-step-card">
-                      <div class="tree-step-icon-wrap icon-reg-2 anim-voice-broadcast">
-                        <span class="material-icons-round" style="font-size:19px;">record_voice_over</span>
-                      </div>
-                      <div class="tree-step-content">
-                        <span class="tree-step-title">Tunggu Panggilan</span>
-                        <span class="tree-step-sub">Siapkan KTP & BPJS</span>
-                      </div>
+                    <div class="doc-name" style="font-size: 16px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2;">
+                      ${esc(d.Dokter)}
                     </div>
                   </div>
                 </div>
 
-                <!-- 3. Convergence Ribbon (Alur Terpadu) -->
-                <div class="tree-convergence-ribbon">
-                  <div class="tree-convergence-line"></div>
-                  <div class="tree-convergence-badge">
-                    <span class="material-icons-round" style="font-size:11px; color:#007AFF;">alt_route</span>
-                    <span>TAHAPAN PELAYANAN</span>
-                    <span class="material-icons-round" style="font-size:11px;">south</span>
-                  </div>
+                <!-- Footer Pill: Catatan / Jadwal / Instruksi -->
+                <div style="display: flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 10px; background: rgba(0,0,0,0.04); font-size: 11.5px; font-weight: 700; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                  <span class="material-icons-round" style="font-size: 14px; color: ${statusColor}; flex-shrink: 0;">${footerIcon}</span>
+                  <span style="overflow: hidden; text-overflow: ellipsis;">${infoValue}</span>
                 </div>
+              </div>
+            `;
+          }).join("");
 
-                <!-- 4. Batang Pohon Utama Menuju ke Bawah (3 Tahap) -->
-                <div class="tree-trunk-section">
-                  <!-- Tahap 1: Loket Admisi -->
-                  <div class="tree-trunk-row-card row-stage-1">
-                    <div class="tree-trunk-left">
-                      <div class="tree-step-icon-wrap icon-unified-1 anim-desk-verified">
-                        <span class="material-icons-round" style="font-size:20px;">how_to_reg</span>
-                      </div>
-                      <div class="tree-step-content">
-                        <div class="tree-step-pill-row">
-                          <span class="tree-step-num-pill pill-blue">01</span>
-                          <span class="tree-step-title">Loket Admisi</span>
-                        </div>
-                        <span class="tree-step-sub">Validasi berkas & cetak SEP</span>
-                      </div>
-                    </div>
-                    <span class="tree-trunk-tag tag-loket">LOKET</span>
-                  </div>
-
-                  <!-- Panah ke Bawah -->
-                  <div class="tree-trunk-down-connector">
-                    <span class="material-icons-round tree-trunk-down-arrow">south</span>
-                  </div>
-
-                  <!-- Tahap 2: Nurse Station -->
-                  <div class="tree-trunk-row-card row-stage-2">
-                    <div class="tree-trunk-left">
-                      <div class="tree-step-icon-wrap icon-unified-2 anim-heart-pump">
-                        <span class="material-icons-round" style="font-size:20px;">monitor_heart</span>
-                      </div>
-                      <div class="tree-step-content">
-                        <div class="tree-step-pill-row">
-                          <span class="tree-step-num-pill pill-rose">02</span>
-                          <span class="tree-step-title">Nurse Station</span>
-                        </div>
-                        <span class="tree-step-sub">Pemeriksaan tensi & fisik</span>
-                      </div>
-                    </div>
-                    <span class="tree-trunk-tag tag-tensi">TENSI</span>
-                  </div>
-
-                  <!-- Panah ke Bawah -->
-                  <div class="tree-trunk-down-connector">
-                    <span class="material-icons-round tree-trunk-down-arrow">south</span>
-                  </div>
-
-                  <!-- Tahap 3: Ruang Poli Dokter -->
-                  <div class="tree-trunk-row-card row-stage-3">
-                    <div class="tree-trunk-left">
-                      <div class="tree-step-icon-wrap icon-unified-3 anim-doc-float">
-                        <span class="material-icons-round" style="font-size:20px;">medical_services</span>
-                      </div>
-                      <div class="tree-step-content">
-                        <div class="tree-step-pill-row">
-                          <span class="tree-step-num-pill pill-purple">03</span>
-                          <span class="tree-step-title">Poli Dokter</span>
-                        </div>
-                        <span class="tree-step-sub">Pemeriksaan & resep obat</span>
-                      </div>
-                    </div>
-                    <span class="tree-trunk-tag tag-poli">DOKTER</span>
-                  </div>
+          return `
+            <div class="complication-card complication-status-panel" style="height: 100%; margin: 0; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; padding: 12px 14px;">
+              <!-- 1. Header Bar -->
+              <div class="complication-header" style="flex-shrink: 0; padding-bottom: 8px;">
+                <div class="complication-title" style="font-size: 13px;">
+                  <span class="material-icons-round" style="font-size: 16px; color: #DC2626;">campaign</span>
+                  <span>PEMBERITAHUAN DOKTER</span>
                 </div>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                  <span class="complication-tag tag-rose" style="font-weight: 900; font-size: 10px;">${allDocs.length} DOKTER</span>
+                </div>
+              </div>
+
+              <!-- 2. Progress Bar (jika autoscroll aktif) -->
+              <div class="island-progress-track" style="height: 3px; margin: 4px 0 8px 0; flex-shrink: 0; background: rgba(0,0,0,0.06); border-radius: 99px; overflow: hidden;">
+                <div class="island-progress-bar" id="progressSidebar" style="height: 100%; width: 0%; background: linear-gradient(90deg, #DC2626, #F59E0B); border-radius: 99px;"></div>
+              </div>
+
+              <!-- 3. Mask & Scroller -->
+              <div class="scroll-mask" id="maskSidebar" style="flex: 1; min-height: 0; overflow: hidden; position: relative;">
+                <div class="scroller" id="scrollSidebar" style="display: flex; flex-direction: column; gap: 10px; will-change: transform;">
+                  ${cardsHTML}
+                </div>
+              </div>
+
+              <!-- 4. Footer Hint untuk Pasien -->
+              <div style="flex-shrink: 0; padding-top: 8px; border-top: 1px solid rgba(226, 234, 245, 0.7); display: flex; align-items: center; justify-content: center; gap: 5px; font-size: 10.5px; font-weight: 700; color: var(--text-muted); text-align: center;">
+                <span class="material-icons-round" style="font-size: 13px; color: #0284C7;">qr_code_2</span>
+                <span>Pendaftaran online & info jadwal dapat discan di bawah</span>
               </div>
             </div>
           `;
@@ -8171,6 +8321,7 @@
 
         async init() {
           Island.init(); // Initialize Dynamic Island
+          this.updateWeatherUI(); // Immediate weather UI sync
           this.fetchWeather(); // Fetch live Apple Weather for Purbalingga
           setInterval(() => this.fetchWeather(), 900000); // 15-minute background refresh
 
@@ -9184,18 +9335,17 @@
           const changed1 = updateList("scrollBedah", group.Bedah);
           const changed2 = updateList("scrollNonBedah", group.NonBedah);
 
-          // --- SIDEBAR: Grouped Render (OPERASI + PENUH + CUTI terpisah) ---
-          const changed3 = this._renderSidebar(
+          // --- SIDEBAR: Dynamic Render (Status Khusus vs Alur Pendaftaran) ---
+          this._renderSidebar(
             group.SidebarOperasi,
             group.SidebarPenuh,
-            group.SidebarCuti,
-            updateList,
+            group.SidebarCuti
           );
 
           if ($("countBedah")) $("countBedah").textContent = group.Bedah.length;
           if ($("countNonBedah")) $("countNonBedah").textContent = group.NonBedah.length;
           if ($("countSidebar")) $("countSidebar").textContent =
-            group.SidebarPenuh.length + group.SidebarCuti.length;
+            group.SidebarPenuh.length + group.SidebarCuti.length + group.SidebarOperasi.length;
 
           // Only reset scroller if list structure changed (avoid jumpiness on simple updates)
           if (!isMobile) {
@@ -9212,159 +9362,39 @@
         },
 
         // Render sidebar dengan section header terpisah
-        _renderSidebar(operasiList, penuhList, cutiList, updateList) {
-          const track = $("sidebarCarouselTrack");
-          if (!track) return false;
+        _renderSidebar(operasiList, penuhList, cutiList) {
+          const container = $("sidebarDynamicMiddle");
+          if (!container) return false;
 
           const allDocs = [...operasiList, ...penuhList, ...cutiList];
-          const w = this._weatherCache;
-          const heroIconMarkup = w.iconHTML || this.getWeatherIconSVG("partly-cloudy-day", 44);
+          const hasDocs = allDocs.length > 0;
+          const currentMode = container.dataset.mode; // "status-khusus" | "tree-flow"
 
-          // 1. Slide Cuaca BMKG (Paten)
-          const weatherSlideHTML = `
-            <div class="carousel-slide" style="width: 100%; height: 100%; flex-shrink: 0; box-sizing: border-box;">
-              <div class="complication-card complication-weather-master weather-${w.atmosphereTheme}" style="height: 100%; margin: 0; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between;">
-                <!-- Header Bar -->
-                <div class="complication-header">
-                  <div class="complication-title">
-                    <span class="material-icons-round" style="font-size:14px; color:#0284C7;">wb_sunny</span>
-                    <span>CUACA PURBALINGGA</span>
-                  </div>
-                  <span class="complication-tag tag-sky">LIVE BMKG</span>
-                </div>
-
-                <!-- Hero Temperature & Visual Status -->
-                <div class="weather-master-hero-row">
-                  <div class="weather-master-hero-left">
-                    <div class="weather-temp-master-group">
-                      <span class="weather-temp-master-val" id="tvWeatherTemp">${w.temp}</span>
-                      <span class="weather-temp-master-unit">°C</span>
-                    </div>
-                    <div class="weather-condition-master-text" id="tvWeatherCondition">${w.condition}</div>
-                    <div class="weather-range-master-text" id="tvWeatherRange">Suhu: H: ${w.tempMax}° • L: ${w.tempMin}°</div>
-                  </div>
-                  <div class="weather-master-hero-right">
-                    <div class="weather-master-icon-wrap" id="tvWeatherIcon">${heroIconMarkup}</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          `;
-
-          let slidesHTML = weatherSlideHTML;
-
-          // 2. Slides Status Khusus Compact Pass
-          allDocs.forEach((d, idx) => {
-            const st = (d.Status || "").toUpperCase();
-            const specTheme = getSpecialistTheme(d.Spesialis);
-            let statusTitle = "SEDANG CUTI";
-            let statusColor = "#DC2626";
-            let tagClass = "tag-rose";
-            let statusIcon = '<span class="material-icons-round" style="font-size:13px; color:#DC2626;">event_busy</span>';
-            let footerIcon = "event_available";
-            let infoValue = "Konfirmasi Informasi Loket";
-
-            if (st.includes("CUTI")) {
-              statusTitle = "SEDANG CUTI";
-              statusColor = "#DC2626";
-              tagClass = "tag-rose";
-              statusIcon = '<span class="material-icons-round" style="font-size:13px; color:#DC2626;">event_busy</span>';
-              footerIcon = "event_available";
-              if (d.NextBuka) {
-                infoValue = `Kembali: ${esc(d.NextBuka)}`;
-              } else if (d.CutiSampai) {
-                infoValue = `Cuti Sampai: ${esc(d.CutiSampai)}`;
-              } else if (d.CutiCatatan) {
-                infoValue = esc(d.CutiCatatan);
-              } else if (d.DocNote) {
-                infoValue = esc(d.DocNote);
-              }
-            } else if (st.includes("OPERASI")) {
-              statusTitle = "TINDAKAN OPERASI";
-              statusColor = "#7C3AED";
-              tagClass = "tag-purple";
-              statusIcon = '<span class="material-icons-round" style="font-size:13px; color:#7C3AED;">local_hospital</span>';
-              footerIcon = "schedule";
-              infoValue = d.JamPraktek && d.JamPraktek !== "-" ? `Jadwal: ${formatJam(d.JamPraktek)}` : "Tindakan Medis di IBS";
-            } else if (st.includes("PENUH")) {
-              statusTitle = "KUOTA PENUH";
-              statusColor = "#B45309";
-              tagClass = "tag-amber";
-              statusIcon = '<span class="material-icons-round" style="font-size:13px; color:#B45309;">front_hand</span>';
-              footerIcon = "lock";
-              infoValue = "Pendaftaran Hari Ini Ditutup";
+          // ─── KONDISI 1: TIDAK ADA DOKTER STATUS KHUSUS -> TAMPILKAN TREE FLOW ───
+          if (!hasDocs) {
+            if (currentMode !== "tree-flow") {
+              if (s3) s3.stop();
+              container.dataset.mode = "tree-flow";
+              container.dataset.hash = "empty";
+              container.innerHTML = this.buildAdmissionTreeHTML();
+              return true;
             }
+            return false;
+          }
 
-            const avatarIcon = getSpecialistIcon(d.Spesialis);
-            const avatarText = avatarIcon.startsWith("<svg") ? avatarIcon : `<span class="material-icons-round" style="font-size:20px;">${avatarIcon}</span>`;
+          // ─── KONDISI 2: ADA DOKTER STATUS KHUSUS -> TAMPILKAN STATUS KHUSUS PANEL ───
+          const newHash = allDocs.map(d => `${d.Dokter}_${d.Status}_${d.NextBuka || ""}_${d.CutiSampai || ""}_${d.CutiCatatan || ""}_${d.JamPraktek || ""}`).join("|");
 
-            slidesHTML += `
-              <div class="carousel-slide" style="width: 100%; height: 100%; flex-shrink: 0; box-sizing: border-box;">
-                <div class="complication-card complication-status-pass" style="height: 100%; margin: 0; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between; border-left: 4px solid ${statusColor};">
-                  <!-- Header -->
-                  <div class="complication-header" style="padding-bottom: 5px;">
-                    <div class="complication-title" style="color: ${statusColor}; font-size: 11px;">
-                      ${statusIcon}
-                      <span>${statusTitle}</span>
-                    </div>
-                    <span class="complication-tag ${tagClass}">${idx + 1} / ${allDocs.length}</span>
-                  </div>
+          if (currentMode !== "status-khusus" || container.dataset.hash !== newHash) {
+            container.dataset.mode = "status-khusus";
+            container.dataset.hash = newHash;
+            container.innerHTML = this.buildStatusKhususPanelHTML(allDocs);
 
-                  <!-- Body -->
-                  <div style="display: flex; align-items: center; gap: 10px; margin: 2px 0;">
-                    <div class="initials" style="width: 42px; height: 42px; min-width: 42px; border-radius: 12px; font-size: 14px; box-shadow: none;">
-                      ${avatarText}
-                    </div>
-                    <div style="flex: 1; min-width: 0; overflow: hidden; display: flex; flex-direction: column; gap: 2px;">
-                      <div class="doc-spec-badge ${getStatusThemeClass(d.Status)}" style="padding: 2px 8px; font-size: 10px; margin-bottom: 2px; max-width: 100%;">
-                        <span class="spec-dot" style="width: 5px; height: 5px;"></span>
-                        <span class="doc-spec" style="font-size: 10px; max-width: 190px;">${esc(d.Spesialis)}</span>
-                      </div>
-                      <div class="doc-name" style="font-size: 14.5px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.15;">
-                        ${esc(d.Dokter)}
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Footer Info -->
-                  <div style="display: flex; align-items: center; gap: 6px; padding: 3px 8px; border-radius: 8px; background: rgba(0,0,0,0.03); font-size: 11px; font-weight: 700; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                    <span class="material-icons-round" style="font-size: 13px; color: ${statusColor}; flex-shrink: 0;">${footerIcon}</span>
-                    <span style="overflow: hidden; text-overflow: ellipsis;">${infoValue}</span>
-                  </div>
-                </div>
-              </div>
-            `;
-          });
-
-          const totalSlides = 1 + allDocs.length;
-          const newHash = allDocs.map(d => d.Dokter + d.Status + (d.NextBuka || "")).join("|") + "|" + w.temp + w.condition;
-
-          if (track.dataset.hash !== newHash) {
-            track.innerHTML = slidesHTML;
-            track.dataset.hash = newHash;
-            track.style.width = `${totalSlides * 100}%`;
-
-            // Adjust each slide width relative to total track width
-            const slides = track.querySelectorAll(".carousel-slide");
-            slides.forEach((sl) => {
-              sl.style.width = `${100 / totalSlides}%`;
-              sl.style.flexShrink = "0";
-            });
-
-            if (window._sidebarCarouselInterval) clearInterval(window._sidebarCarouselInterval);
-            window._sidebarCarouselIdx = 0;
-            track.style.transform = `translateX(0%)`;
-
-            if (totalSlides > 1) {
-              window._sidebarCarouselInterval = setInterval(() => {
-                window._sidebarCarouselIdx++;
-                if (window._sidebarCarouselIdx >= totalSlides) window._sidebarCarouselIdx = 0;
-                const t = $("sidebarCarouselTrack");
-                if (t) {
-                  const stepPercent = (window._sidebarCarouselIdx * 100) / totalSlides;
-                  t.style.transform = `translateX(-${stepPercent}%)`;
-                }
-              }, 7000);
+            if (!isMobile) {
+              if (s3) s3.stop();
+              s3 = new SmoothScroller("scrollSidebar", "progressSidebar", { mode: "yoyo" });
+              s3.start();
+              requestAnimationFrame(() => s3.updateMetrics());
             }
             return true;
           }
@@ -9373,8 +9403,7 @@
         },
       };
 
-      
-      // ═══ SMART TV STABILITY WATCHDOG & MEMORY RECOVERY ═══
+            // ═══ SMART TV STABILITY WATCHDOG & MEMORY RECOVERY ═══
       let _lastTickTime = Date.now();
       const _bootTime = Date.now();
 
@@ -9385,6 +9414,7 @@
           console.warn("[Watchdog] Main thread lag detected. Resetting scrollers.");
           if (s1) s1.reset();
           if (s2) s2.reset();
+          if (typeof s3 !== "undefined" && s3) s3.reset();
         }
         _lastTickTime = now;
 
