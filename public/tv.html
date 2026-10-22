@@ -6050,14 +6050,28 @@
         font-weight: 800 !important;
       }
       .complication-weather-master .weather-master-icon-wrap {
+        width: 52px;
+        height: 52px;
         background: rgba(255, 255, 255, 0.85);
         border: 1.5px solid #FFFFFF;
         border-radius: 16px;
-        padding: 5px;
+        padding: 4px;
         box-shadow: 0 3px 0 rgba(0, 0, 0, 0.1), 0 6px 12px rgba(0, 0, 0, 0.08);
         display: flex;
         align-items: center;
         justify-content: center;
+        flex-shrink: 0;
+        box-sizing: border-box;
+      }
+
+      .complication-weather-master .weather-master-icon-wrap svg,
+      .complication-weather-master .weather-master-icon-wrap .apple-weather-svg {
+        width: 44px !important;
+        height: 44px !important;
+        max-width: 100% !important;
+        max-height: 100% !important;
+        display: block !important;
+        overflow: visible !important;
       }
 
       /* 🎨 Color-Coded Tree Flow Branch & Trunk Cards (Light Mode) */
@@ -6739,7 +6753,9 @@
                   <div class="weather-range-master-text" id="tvWeatherRange">Suhu Harian BMKG</div>
                 </div>
                 <div class="weather-master-hero-right">
-                  <div class="weather-master-icon-wrap" id="tvWeatherIcon"></div>
+                  <div class="weather-master-icon-wrap" id="tvWeatherIcon">
+                    <svg viewBox="0 0 32 32" width="46" height="46" class="apple-weather-svg svg-partly-cloudy"><defs><linearGradient id="ps_init" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FFD60A"/><stop offset="100%" stop-color="#FF9F0A"/></linearGradient><linearGradient id="pc_init" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#FFFFFF"/><stop offset="100%" stop-color="#CBD5E1"/></linearGradient></defs><circle cx="12" cy="12" r="5.5" fill="url(#ps_init)"/><path d="M25 24H10a5.5 5.5 0 0 1-1-10.9A7 7 0 0 1 22.5 15 4.5 4.5 0 0 1 25 24z" fill="url(#pc_init)"/></svg>
+                  </div>
                 </div>
               </div>
             </div>
@@ -8087,7 +8103,7 @@
             iconType = "storm";
           }
 
-          const heroIconSVG = this.getWeatherIconSVG(iconType, 64);
+          const heroIconSVG = this.getWeatherIconSVG(iconType, 46);
           const miniIconSVG = this.getWeatherIconSVG(iconType, 22);
           return { condition, theme, iconType, heroIconSVG, miniIconSVG };
         },
@@ -8140,7 +8156,7 @@
           isDay: 1,
           code: 2,
           condition: "Sebagian Berawan",
-          iconHTML: "",
+          iconHTML: '<svg viewBox="0 0 32 32" width="46" height="46" class="apple-weather-svg svg-partly-cloudy"><defs><linearGradient id="ps_init" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FFD60A"/><stop offset="100%" stop-color="#FF9F0A"/></linearGradient><linearGradient id="pc_init" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#FFFFFF"/><stop offset="100%" stop-color="#CBD5E1"/></linearGradient></defs><circle cx="12" cy="12" r="5.5" fill="url(#ps_init)"/><path d="M25 24H10a5.5 5.5 0 0 1-1-10.9A7 7 0 0 1 22.5 15 4.5 4.5 0 0 1 25 24z" fill="url(#pc_init)"/></svg>',
           atmosphereTheme: "hour-" + getJakartaParts().hour,
           hourly: [],
           lastFetched: 0
@@ -8249,7 +8265,9 @@
 
           if ($("tvWeatherTemp")) $("tvWeatherTemp").textContent = w.temp;
           if ($("tvWeatherCondition")) $("tvWeatherCondition").textContent = w.condition;
-          if ($("tvWeatherIcon") && w.iconHTML) $("tvWeatherIcon").innerHTML = w.iconHTML;
+          if ($("tvWeatherIcon")) {
+            $("tvWeatherIcon").innerHTML = w.iconHTML || this.getWeatherIconSVG(w.isDay ? "partly-cloudy-day" : "partly-cloudy-night", 46);
+          }
           if ($("tvWeatherRange")) $("tvWeatherRange").textContent = `H: ${w.tempMax}° • L: ${w.tempMin}°`;
 
           if ($("tvWeatherHourlyStrip") && w.hourly && w.hourly.length > 0) {
